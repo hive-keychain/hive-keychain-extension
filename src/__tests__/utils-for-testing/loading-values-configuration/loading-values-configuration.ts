@@ -179,6 +179,9 @@ export interface TestsAppLoadingValues {
       getValueFromLocalStorage?: jest.Mock;
     };
     customData?: CustomDataFromLocalStorage;
+    LocalStorageUtils?: {
+      getMultipleValueFromLocalStorage?: any;
+    };
   };
 }
 
@@ -239,6 +242,12 @@ const set = (params?: {
   //TODO check if bellow is really needed or not, if yes, add into app as localStorageOnInit.
   LocalStorageUtils.saveValueInLocalStorage = jest.fn(); //no impl
   LocalStorageUtils.removeFromLocalStorage = jest.fn(); //no impl
+  LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.localStorageRelated?.LocalStorageUtils
+        ?.getMultipleValueFromLocalStorage ?? undefined,
+    );
   ////////
 
   ///////

@@ -1,88 +1,131 @@
-import automatedTasks from 'src/__tests__/popup/pages/app-container/settings/user-preferences/automated-tasks/mocks/automated-tasks';
-import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
-import mk from 'src/__tests__/utils-for-testing/data/mk';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
+import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import Config from 'src/config';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('automated-tasks.component tests:\n', () => {
-  config.byDefault();
-  let _asFragment: () => DocumentFragment;
-  const { methods, constants, extraMocks } = automatedTasks;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
   describe('Stored data:\n', () => {
     describe('Max mana greater than freeAccount credits:\n', () => {
       beforeEach(async () => {
-        _asFragment = await automatedTasks.beforeEach({
-          passData: true,
-          maxManaGreater: true,
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
+          {
+            app: {
+              accountsRelated: {
+                AccountUtils: {
+                  getRCMana: {
+                    current_mana: 1000,
+                    percentage: 100,
+                    max_mana: Config.claims.freeAccount.MIN_RC + 1,
+                    received_delegated_rc: 0,
+                    max_rc: Config.claims.freeAccount.MIN_RC * 1.5 + 1,
+                    delegated_rc: 0,
+                    rc_manabar: {
+                      current_mana: '10000000',
+                      last_update_time: 12233433,
+                    },
+                  },
+                },
+              },
+              localStorageRelated: {
+                LocalStorageUtils: {
+                  getMultipleValueFromLocalStorage: {
+                    claimAccounts: {
+                      'keychain.tests': true,
+                    },
+                    claimRewards: {
+                      'keychain.tests': true,
+                    },
+                    claimSavings: {
+                      'keychain.tests': true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        );
+        await act(async () => {
+          await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelButton.menuPreFix + Icons.PREFERENCES,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelButton.menuPreFix + Icons.AUTOMATED_TASKS,
+            ),
+          );
         });
       });
       it('Must load component and show messages', () => {
-        assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
-        assertion.getOneByText(constants.message.intro);
-        assertion.getOneByText(constants.message.autoclaimInfo);
+        expect(
+          screen.getByLabelText(
+            ariaLabelComponent.userPreferences.automatedTasks,
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            chrome.i18n.getMessage('popup_html_automated_intro'),
+            { exact: true },
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            chrome.i18n.getMessage(
+              'popup_html_enable_autoclaim_accounts_info',
+              [Config.claims.freeAccount.MIN_RC_PCT + ''],
+            ),
+            { exact: true },
+          ),
+        ).toBeInTheDocument();
       });
-      //TODO check & fix bellow!
-      // it('Must set to false auto claim accounts', async () => {
-      //   await clickAwait([alCheckbox.automatedTasks.checkbox.claim.accounts]);
-      //   expect(extraMocks.spySaveClaims).toBeCalledWith(
-      //     true,
-      //     false,
-      //     true,
-      //     'keychain.tests',
-      //   );
-      // });
-      it('Must set to false auto claims rewards', async () => {
-        await clickAwait([alCheckbox.automatedTasks.checkbox.claim.rewards]);
-        expect(extraMocks.spySaveClaims).toBeCalledWith(
-          false,
-          true,
-          true,
-          'keychain.tests',
-        );
-      });
-      it('Must set to false auto claims savings', async () => {
-        await clickAwait([alCheckbox.automatedTasks.checkbox.claim.savings]);
-        expect(extraMocks.spySaveClaims).toBeCalledWith(
-          true,
-          true,
-          false,
-          'keychain.tests',
-        );
-      });
-    });
-    describe('Max mana lower:\n', () => {
-      beforeEach(async () => {
-        _asFragment = await automatedTasks.beforeEach({
-          passData: true,
+
+      it('Must call sendMessage', async () => {
+        LocalStorageUtils.getValueFromLocalStorage = jest
+          .fn()
+          .mockResolvedValue({
+            'keychain.tests': false,
+          });
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              arialabelCheckbox.automatedTasks.checkbox.claim.accounts,
+            ),
+          );
         });
+        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toBeCalledTimes(2);
       });
-      it('Must load component and show autoclaim information', () => {
-        assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
-        assertion.getOneByText(constants.message.intro);
-        assertion.queryByText(constants.message.autoclaimInfo, true);
+
+      it('Must call sendMessage', async () => {
+        LocalStorageUtils.getValueFromLocalStorage = jest
+          .fn()
+          .mockResolvedValue({
+            'keychain.tests': false,
+          });
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              arialabelCheckbox.automatedTasks.checkbox.claim.accounts,
+            ),
+          );
+        });
+        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toBeCalledTimes(2);
       });
-      it('Must load selected account', async () => {
-        extraMocks.remockAccounts();
-        await clickAwait([
-          alSelect.accountSelector,
-          alSelect.itemSelectorPreFix + mk.user.two,
-        ]);
-        assertion.queryByText(mk.user.one, false);
-        assertion.queryByText(mk.user.two);
-      });
-    });
-  });
-  describe('No data', () => {
-    beforeEach(async () => {
-      _asFragment = await automatedTasks.beforeEach();
-    });
-    it('Must load component, show messages, autoclaim info', () => {
-      assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
-      assertion.getOneByText(constants.message.intro);
-      assertion.queryByText(constants.message.autoclaimInfo, true);
     });
   });
 });

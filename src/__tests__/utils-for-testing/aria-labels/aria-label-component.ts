@@ -1,3 +1,5 @@
+import { Icons } from '@popup/icons.enum';
+
 const ariaLabelComponent = {
   settingsMainPage: 'settings-main-page-component',
   homePage: 'home-page-component',
@@ -50,8 +52,8 @@ const ariaLabelComponent = {
     },
   },
   userPreferences: {
-    authorizedOperations: 'authorized-operations-page',
-    automatedTasks: 'automated-tasks-page',
+    authorizedOperations: `${Icons.AUTHORIZED_OPERATIONS}-page`,
+    automatedTasks: `${Icons.AUTOMATED_TASKS}-page`,
   },
   whatsNew: 'whats-new-component',
 };

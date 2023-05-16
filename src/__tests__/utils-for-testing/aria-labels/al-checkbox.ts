@@ -1,3 +1,4 @@
+//TODO to delete after refactoring
 const selectKeys = {
   import: {
     postingkey: 'checkbox-import-posting-key',
