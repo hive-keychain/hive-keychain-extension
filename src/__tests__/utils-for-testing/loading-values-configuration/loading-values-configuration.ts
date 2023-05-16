@@ -45,6 +45,7 @@ import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-propertie
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -181,6 +182,11 @@ export interface TestsAppLoadingValues {
     customData?: CustomDataFromLocalStorage;
     LocalStorageUtils?: {
       getMultipleValueFromLocalStorage?: any;
+    };
+  };
+  ledgerRelated?: {
+    LedgerUtils?: {
+      isLedgerSupported?: boolean;
     };
   };
 }
@@ -525,6 +531,15 @@ const set = (params?: {
         ),
       );
   ///////////
+
+  //////////
+  //Ledger Related
+  LedgerUtils.isLedgerSupported = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.ledgerRelated?.LedgerUtils?.isLedgerSupported ?? false,
+    );
+  //////////
 };
 
 const loadingValuesConfiguration = { set };

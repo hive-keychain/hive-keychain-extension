@@ -75,10 +75,10 @@ const spies = {
 };
 
 export default {
-  beforeEach,
-  methods,
-  constants,
-  extraMocks,
-  menuPages,
-  spies,
+  // beforeEach,
+  // methods,
+  // constants,
+  // extraMocks,
+  // menuPages,
+  // spies,
 };
