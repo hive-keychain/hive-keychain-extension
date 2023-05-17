@@ -10,7 +10,6 @@ import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-labe
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-
 describe('user-preferences.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -41,7 +40,7 @@ describe('user-preferences.component tests:\n', () => {
     for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
       const menuButtonAriaLabel =
         ariaLabelButton.menuPreFix + UserPreferencesMenuItems[i].icon;
-      const pageAriaLabel = UserPreferencesMenuItems[i].icon + '-page';
+      const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
       await act(async () => {
         await userEvent.click(screen.getByLabelText(menuButtonAriaLabel));
       });
