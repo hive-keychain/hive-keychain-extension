@@ -1,6 +1,7 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import getAdvancedSettingsMenuItems from '@popup/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -36,6 +37,12 @@ describe('advanced-settings.component tests:\n', () => {
         screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
       );
     });
+  });
+
+  it('Must show advanced settings page', () => {
+    expect(
+      screen.getByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
   });
 
   it('Must load advance settings items', () => {
