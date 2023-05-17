@@ -46,7 +46,7 @@ describe('settings-main-page.component tests:\n', () => {
         );
       });
       expect(
-        screen.getByLabelText(filteredCopyItems[i].icon + '-page'),
+        screen.getByLabelText(filteredCopyItems[i].nextScreen + '-page'),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
