@@ -1,12 +1,12 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
 import Config from 'src/config';
@@ -14,6 +14,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('automated-tasks.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
     cleanup();
   });
   describe('Stored data:\n', () => {
@@ -74,9 +75,7 @@ describe('automated-tasks.component tests:\n', () => {
       });
       it('Must load component and show messages', () => {
         expect(
-          screen.getByLabelText(
-            ariaLabelComponent.userPreferences.automatedTasks,
-          ),
+          screen.getByLabelText(`${Screen.SETTINGS_AUTOMATED_TASKS}-page`),
         ).toBeInTheDocument();
         expect(
           screen.getByText(
