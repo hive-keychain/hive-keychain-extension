@@ -1,5 +1,4 @@
-//TODO delete file after refactoring
-export default {
+const ariaLabelSelect = {
   accountSelector: 'Dropdown select',
   itemSelectorPreFix: 'select-account-item-',
   tokens: {
@@ -22,3 +21,5 @@ export default {
     },
   },
 };
+
+export default ariaLabelSelect;
