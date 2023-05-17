@@ -1,11 +1,11 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -36,9 +36,7 @@ describe('authorized-operations.component tests:\n', () => {
     });
     it('Must load component and show no whitelisted operations', () => {
       expect(
-        screen.getByLabelText(
-          ariaLabelComponent.userPreferences.authorizedOperations,
-        ),
+        screen.getByLabelText(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
       ).toBeInTheDocument();
       expect(
         screen.getByText(chrome.i18n.getMessage('popup_html_no_pref'), {
@@ -87,9 +85,7 @@ describe('authorized-operations.component tests:\n', () => {
     });
     it('Must load component and show info', async () => {
       expect(
-        screen.getByLabelText(
-          ariaLabelComponent.userPreferences.authorizedOperations,
-        ),
+        screen.getByLabelText(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
       ).toBeInTheDocument();
       expect(
         screen.getAllByLabelText(ariaLabelDiv.authorizedOperations.item).length,
