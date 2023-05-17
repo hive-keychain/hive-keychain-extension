@@ -1,11 +1,10 @@
 import App from '@popup/App';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
@@ -36,8 +35,9 @@ describe('sign-up.component tests:\n', () => {
   afterEach(() => cleanup());
 
   it('Must show sign up component', async () => {
-    expect(screen.getByLabelText(alComponent.signUp)).toBeInTheDocument();
+    expect(screen.getByLabelText('signup-page')).toBeInTheDocument();
   });
+
   it('Must show error message when using different passwords and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
@@ -126,7 +126,7 @@ describe('sign-up.component tests:\n', () => {
       );
     });
     expect(
-      await screen.findByLabelText(ariaLabelComponent.addAccountMain),
+      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
     ).toBeInTheDocument();
   });
 
@@ -143,7 +143,7 @@ describe('sign-up.component tests:\n', () => {
       await userEvent.click(screen.getByLabelText(ariaLabelButton.signUp));
     });
     expect(
-      await screen.findByLabelText(ariaLabelComponent.addAccountMain),
+      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
     ).toBeInTheDocument();
   });
 });
