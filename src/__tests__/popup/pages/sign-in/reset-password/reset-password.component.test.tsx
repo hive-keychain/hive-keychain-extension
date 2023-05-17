@@ -4,7 +4,6 @@ import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -33,6 +32,7 @@ describe('reset-password.component tests:\n', () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
     cleanup();
   });
   it('Must clear all user data and navigate to sign up page', async () => {
@@ -47,9 +47,8 @@ describe('reset-password.component tests:\n', () => {
         screen.getByLabelText(ariaLabelButton.confirmResetPassword),
       );
     });
-    expect(
-      await screen.findByLabelText(ariaLabelComponent.signUp),
-    ).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByLabelText('signup-page')).toBeInTheDocument();
   });
   it('Must cancel and return to previous window', async () => {
     await act(async () => {
