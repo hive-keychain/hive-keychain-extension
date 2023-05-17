@@ -10,8 +10,9 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './incoming-outgoing-page.component.scss';
@@ -77,7 +78,9 @@ const IncomingOutgoingPage = ({
   }, []);
 
   return (
-    <div className="incoming-outgoing-page" aria-label="incoming-outgoing-page">
+    <div
+      className="incoming-outgoing-page"
+      aria-label={`${Screen.INCOMING_OUTGOING_PAGE}-page`}>
       {delegationType === DelegationType.OUTGOING &&
         totalPendingOutgoingUndelegation > 0 && (
           <div className="pending-disclaimer">

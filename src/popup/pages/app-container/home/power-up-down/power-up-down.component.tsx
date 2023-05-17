@@ -17,7 +17,7 @@ import { Icons } from '@popup/icons.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -254,7 +254,7 @@ const PowerUpDown = ({
   };
 
   return (
-    <div className="power-up-page" aria-label="power-up-page">
+    <div className="power-up-page" aria-label={`${Screen.POWER_UP_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={available}
         bottomRight={

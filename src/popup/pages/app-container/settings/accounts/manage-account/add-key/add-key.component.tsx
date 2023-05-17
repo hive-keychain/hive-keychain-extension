@@ -5,12 +5,13 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
+import { Screen } from '@reference-data/screen.enum';
 import './add-key.component.scss';
 
 const AddKey = ({
@@ -48,7 +49,9 @@ const AddKey = ({
   };
 
   return (
-    <div className="add-key-page">
+    <div
+      className="add-key-page"
+      aria-label={`${Screen.SETTINGS_ADD_KEY}-page`}>
       <p
         aria-label="add-key-page-paragraph-introduction"
         className="introduction"

@@ -136,7 +136,7 @@ const IncomingOutgoingRcPage = ({
   return (
     <div
       className="incoming-outgoing-rc-page"
-      aria-label="incoming-outgoing-rc-page">
+      aria-label={`${Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE}-page`}>
       <div className="list-panel">
         <div className="panel">
           <div className="total">

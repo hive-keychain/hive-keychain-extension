@@ -4,6 +4,7 @@ import { Icons } from '@popup/icons.enum';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -87,7 +88,7 @@ const AuthorizedOperations = ({
 
   return (
     <div
-      aria-label={`${Icons.AUTHORIZED_OPERATIONS}-page`}
+      aria-label={`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`}
       className="authorized-operations-page">
       <div
         className="introduction"

@@ -13,6 +13,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { loadTokenHistory } from '@popup/actions/token.actions';
 import { TokenHistoryItemComponent } from '@popup/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -83,7 +84,9 @@ const TokensHistory = ({
     );
   }, [tokenHistory, filterValue]);
   return (
-    <div aria-label="tokens-history" className="tokens-history">
+    <div
+      aria-label={`${Screen.TOKENS_HISTORY}-page`}
+      className="tokens-history">
       <InputComponent
         ariaLabel="input-filter-box"
         type={InputType.TEXT}

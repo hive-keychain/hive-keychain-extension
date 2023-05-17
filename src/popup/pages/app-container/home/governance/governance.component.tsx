@@ -1,9 +1,9 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { Icons } from '@popup/icons.enum';
 import { ProposalTabComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from '@popup/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from '@popup/pages/app-container/home/governance/witness-tab/witness-tab.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
@@ -19,7 +19,9 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
   });
 
   return (
-    <div className="governance-page" aria-label={`${Icons.HIVE}-page`}>
+    <div
+      className={'governance-page'}
+      aria-label={`${Screen.GOVERNANCE_PAGE}-page`}>
       <Tabs>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>

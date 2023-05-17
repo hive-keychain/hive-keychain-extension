@@ -21,7 +21,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -337,7 +337,9 @@ const TransferFunds = ({
 
   return (
     <>
-      <div className="transfer-funds-page" aria-label="transfer-funds-page">
+      <div
+        className="transfer-funds-page"
+        aria-label={`${Screen.TRANSFER_FUND_PAGE}-page`}>
         <SummaryPanelComponent
           bottom={balance}
           bottomRight={currencyLabels[selectedCurrency]}

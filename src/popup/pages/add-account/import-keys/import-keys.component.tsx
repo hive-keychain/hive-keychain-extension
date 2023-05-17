@@ -1,10 +1,17 @@
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './import-keys.component.scss';
 
 const ImportKeys = ({}: PropsFromRedux) => {
-  return <div className="import-keys-page">Import keys</div>;
+  return (
+    <div
+      className="import-keys-page"
+      aria-label={`${Screen.ACCOUNT_PAGE_IMPORT_KEYS}-page`}>
+      Import keys
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => {

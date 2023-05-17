@@ -4,8 +4,9 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { loadTokens } from '@popup/actions/token.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -69,7 +70,7 @@ const TokensFilter = ({
   }, [tokens, filterValue]);
 
   return (
-    <div aria-label="tokens-filter" className="tokens-filter">
+    <div aria-label={`${Screen.TOKENS_FILTER}-page`} className="tokens-filter">
       <div
         aria-label="tokens-filter-disclaimer"
         className="disclaimer"

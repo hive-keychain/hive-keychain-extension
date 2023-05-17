@@ -14,7 +14,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -200,7 +200,7 @@ const CreateAccountStepOne = ({
 
   return (
     <div
-      aria-label="settings-create-account-step-one"
+      aria-label={`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`}
       className="create-account-step-one">
       {selectedAccount && accountOptions && (
         <Select

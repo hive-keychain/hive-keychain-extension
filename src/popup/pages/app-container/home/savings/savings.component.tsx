@@ -23,7 +23,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -361,7 +361,7 @@ const SavingsPage = ({
   };
 
   return (
-    <div className="savings-page" aria-label="savings-page">
+    <div className="savings-page" aria-label={`${Screen.SAVINGS_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={liquid}
         bottomRight={currency}

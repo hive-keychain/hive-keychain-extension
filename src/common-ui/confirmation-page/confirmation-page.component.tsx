@@ -1,6 +1,7 @@
 import { goBack } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
@@ -49,7 +50,9 @@ const ConfirmationPage = ({
   };
 
   return (
-    <div className="confirmation-page" aria-label="confirmation-page">
+    <div
+      className="confirmation-page"
+      aria-label={`${Screen.CONFIRMATION_PAGE}-page`}>
       <div className="confirmation-top">
         <div
           className="introduction"

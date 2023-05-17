@@ -1,6 +1,7 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './about.component.scss';
@@ -14,7 +15,7 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   }, []);
 
   return (
-    <div aria-label={`${Icons.INFO}-page`} className="about-page">
+    <div aria-label={`${Screen.SETTINGS_ABOUT}-page`} className="about-page">
       <div
         aria-label={`${Icons.INFO}-page-content`}
         className="content"

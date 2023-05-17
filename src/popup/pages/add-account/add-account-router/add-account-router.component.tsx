@@ -31,7 +31,7 @@ const AddAccountRouter = ({
 
   return (
     <div
-      aria-label="settings-add-account-router-page"
+      aria-label={`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`}
       className="add-account-router-page"
       style={{
         height: '100%',

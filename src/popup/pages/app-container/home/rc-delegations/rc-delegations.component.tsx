@@ -233,7 +233,9 @@ const RCDelegations = ({
   };
 
   return (
-    <div className="rc-delegations-page" aria-label="rc-delegations-page">
+    <div
+      className="rc-delegations-page"
+      aria-label={`${Screen.RC_DELEGATIONS_PAGE}-page`}>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
       </div>

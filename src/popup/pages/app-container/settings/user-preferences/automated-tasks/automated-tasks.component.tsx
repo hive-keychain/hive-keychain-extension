@@ -2,9 +2,9 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -134,7 +134,7 @@ const AutomatedTasks = ({
     activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
   return (
     <div
-      aria-label={`${Icons.AUTOMATED_TASKS}-page`}
+      aria-label={`${Screen.SETTINGS_AUTOMATED_TASKS}-page`}
       className="automated-tasks-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}

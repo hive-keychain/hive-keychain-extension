@@ -2,6 +2,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { AccountKeysListComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './manage-account.component.scss';
@@ -16,7 +17,7 @@ const ManageAccount = ({ setTitleContainerProperties }: PropsFromRedux) => {
 
   return (
     <div
-      aria-label="settings-manage-account"
+      aria-label={`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`}
       className="settings-manage-account">
       <SelectAccountSectionComponent />
       <AccountKeysListComponent />

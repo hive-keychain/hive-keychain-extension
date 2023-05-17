@@ -21,7 +21,7 @@ import { Icons } from '@popup/icons.enum';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -270,7 +270,9 @@ const Delegations = ({
   };
 
   return (
-    <div className="delegations-page" aria-label="delegations-page">
+    <div
+      className="delegations-page"
+      aria-label={`${Screen.DELEGATION_PAGE}-page`}>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>

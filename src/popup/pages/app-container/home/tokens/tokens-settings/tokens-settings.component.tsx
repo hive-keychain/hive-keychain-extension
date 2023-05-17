@@ -15,12 +15,13 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { loadTokens } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -214,7 +215,9 @@ const TokensSettings = ({
   };
 
   return (
-    <div aria-label="tokens-settings" className="tokens-settings">
+    <div
+      aria-label={`${Screen.TOKENS_SETTINGS}-page`}
+      className="tokens-settings">
       <div className="hive-engine-rpc-panel">
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">

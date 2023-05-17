@@ -4,10 +4,10 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { Icons } from '@popup/icons.enum';
 import { FavoriteAccountsListComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -177,7 +177,7 @@ const FavoriteAccounts = ({
 
   return (
     <div
-      aria-label={`${Icons.FAVORITE}-page`}
+      aria-label={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
       className="favorite-accounts-page">
       <div className="intro padding">
         {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}

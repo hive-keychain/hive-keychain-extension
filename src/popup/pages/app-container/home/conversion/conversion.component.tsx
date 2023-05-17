@@ -17,7 +17,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -172,7 +172,9 @@ const Conversion = ({
   };
 
   return (
-    <div className="conversion-page" aria-label="conversion-page">
+    <div
+      className="conversion-page"
+      aria-label={`${Screen.CONVERSION_PAGE}-page`}>
       {totalPending > 0 && (
         <SummaryPanelComponent
           top={available}
