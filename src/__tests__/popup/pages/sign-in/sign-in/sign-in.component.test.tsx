@@ -1,10 +1,10 @@
 import App from '@popup/App';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
@@ -69,7 +69,7 @@ describe('sign-in.component.tsx tests:\n', () => {
       );
     });
     expect(
-      await screen.findByLabelText(ariaLabelComponent.homePage),
+      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 
@@ -83,7 +83,7 @@ describe('sign-in.component.tsx tests:\n', () => {
       await userEvent.click(screen.getByLabelText(ariaLabelButton.login));
     });
     expect(
-      await screen.findByLabelText(ariaLabelComponent.homePage),
+      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 });
