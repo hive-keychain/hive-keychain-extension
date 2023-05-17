@@ -7,20 +7,16 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
-// config.afterAllCleanAndResetMocks();
 describe('advanced-settings.component tests:\n', () => {
-  // const { methods, constants, menuPages, spies } = advanceSettings;
-  // const { menuItems } = constants;
-  // methods.afterEach;
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
     cleanup();
   });
   beforeEach(async () => {
-    // await advanceSettings.beforeEach(<App />);
     await reactTestingLibrary.renderWithConfiguration(
       <App />,
       initialStates.iniStateAs.defaultExistent,
@@ -41,7 +37,7 @@ describe('advanced-settings.component tests:\n', () => {
       );
     });
   });
-  //TODO check & fix & clean up
+
   it('Must load advance settings items', () => {
     const advanceMenuItems = getAdvancedSettingsMenuItems(true);
     for (let i = 0; i < advanceMenuItems.length; i++) {
@@ -53,29 +49,34 @@ describe('advanced-settings.component tests:\n', () => {
     }
   });
 
-  // it('Must open each menu page with no actions', async () => {
-  //   const menuAdvanceSettingsFilteredNoActions =
-  //     menuItems.advanceSettings.filter((item) => !item.action);
-  //   for (let i = 0; i < menuAdvanceSettingsFilteredNoActions.length; i++) {
-  //     const arialLabel =
-  //       alButton.menuPreFix + menuAdvanceSettingsFilteredNoActions[i].icon;
-  //     await clickAwait([arialLabel]);
-  //     await assertion.awaitFor(menuPages[i].ariaLabel, QueryDOM.BYLABEL);
-  //     await clickAwait([alIcon.arrowBack]);
-  //     await assertion.awaitFor(alComponent.settingsPage, QueryDOM.BYLABEL);
-  //   }
-  // });
-  //TODO check & fix!
-  // it('Must call tabs.create when opening ledger menu', async () => {
-  //   const tabId = 'unique-ID';
-  //   chrome.management.getSelf = jest.fn().mockResolvedValue({ id: tabId });
-  //   const ledgerMenuItem = menuItems.advanceSettings.filter(
-  //     (item) => item.label === 'ledger_link_ledger_device',
-  //   )[0];
-  //   const ariaLabel = alButton.menuPreFix + ledgerMenuItem.icon;
-  //   await clickAwait([ariaLabel]);
-  //   expect(spies.chrome.tabs.create()).toBeCalledWith({
-  //     url: `chrome-extension://${tabId}/link-ledger-device.html`,
-  //   });
-  // });
+  it('Must open each menu page with no actions', async () => {
+    const menuItems = getAdvancedSettingsMenuItems(false);
+    for (let i = 0; i < menuItems.length; i++) {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.menuPreFix + menuItems[i].icon),
+        );
+      });
+      expect(screen.getByLabelText(`${menuItems[i].nextScreen}-page`));
+      await act(async () => {
+        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+      });
+    }
+  });
+
+  it('Must call tabs.create when opening ledger menu', async () => {
+    const tabId = 'unique-ID';
+    chrome.management.getSelf = jest.fn().mockResolvedValue({ id: tabId });
+    const ledgerMenuItem = getAdvancedSettingsMenuItems(true).filter(
+      (item) => item.label === 'ledger_link_ledger_device',
+    )[0];
+    await act(async () => {
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + ledgerMenuItem.icon),
+      );
+    });
+    expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
+      url: `chrome-extension://${tabId}/link-ledger-device.html`,
+    });
+  });
 });

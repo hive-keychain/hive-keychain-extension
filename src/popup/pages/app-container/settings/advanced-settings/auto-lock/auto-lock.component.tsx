@@ -4,6 +4,7 @@ import { goBack } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -51,7 +52,9 @@ const AutoLock = ({
   };
 
   return (
-    <div aria-label="auto-lock-page" className="auto-lock-page">
+    <div
+      aria-label={`${Screen.SETTINGS_AUTO_LOCK}-page`}
+      className="auto-lock-page">
       <CheckboxComponent
         ariaLabel={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
         title="popup_html_al_default_title"

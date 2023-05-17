@@ -8,7 +8,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -57,7 +57,9 @@ const ChangePassword = ({
   };
 
   return (
-    <div aria-label="change-password-page" className="change-password-page">
+    <div
+      aria-label={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
+      className="change-password-page">
       <div className="caption">
         {chrome.i18n.getMessage('popup_html_change_password_text')}
       </div>

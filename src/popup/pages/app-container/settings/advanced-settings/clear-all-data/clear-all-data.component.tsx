@@ -37,7 +37,9 @@ const ClearAllData = ({
   };
 
   return (
-    <div aria-label="clear-all-data-page" className="clear-all-data-page">
+    <div
+      aria-label={`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`}
+      className="clear-all-data-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{

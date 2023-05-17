@@ -202,8 +202,13 @@ const set = (params?: {
 }) => {
   //////////////
   //Jest/Global Modules configuration used prior loading the app.
-  const chrome = require('chrome-mock');
-  global.chrome = chrome;
+
+  //TODO Check after refactoring all tests: right now we have configured
+  //  Object.assign(global, require('jest-chrome')); in -> jest.setup.js
+  //TODO check if still needed? if not to remove
+  // const chrome = require('chrome-mock');
+  // global.chrome = chrome;
+
   jest.setTimeout(params?.modules?.jestTimeOut ?? 10000);
   //////////////
 

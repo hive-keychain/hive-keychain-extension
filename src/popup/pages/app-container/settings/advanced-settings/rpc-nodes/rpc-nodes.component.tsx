@@ -3,12 +3,13 @@ import { setErrorMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -186,7 +187,9 @@ const RpcNodes = ({
   };
 
   return (
-    <div aria-label="rpc-nodes-page" className="rpc-nodes-page">
+    <div
+      aria-label={`${Screen.SETTINGS_RPC_NODES}-page`}
+      className="rpc-nodes-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
