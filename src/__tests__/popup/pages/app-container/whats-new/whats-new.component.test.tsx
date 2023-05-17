@@ -3,14 +3,11 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelComponent from 'src/__tests__/utils-for-testing/aria-labels/aria-label-component';
 import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import versionLog from 'src/__tests__/utils-for-testing/data/version-log';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
-
 describe('whats-new.component tests:\n', () => {
   /////////////
   //Reset Global Image object after tests done.
@@ -34,7 +31,7 @@ describe('whats-new.component tests:\n', () => {
     });
     it('Must not show whats new component', () => {
       expect(
-        screen.queryByLabelText(alComponent.whatsNew),
+        screen.queryByLabelText('whats-new-popup'),
       ).not.toBeInTheDocument();
     });
   });
@@ -102,7 +99,7 @@ describe('whats-new.component tests:\n', () => {
         imageOnloadCallBack();
       });
       expect(
-        await screen.findByLabelText(ariaLabelComponent.whatsNew),
+        await screen.findByLabelText('whats-new-popup'),
       ).toBeInTheDocument();
     });
 
@@ -144,7 +141,7 @@ describe('whats-new.component tests:\n', () => {
         );
       });
       expect(
-        screen.queryByLabelText(ariaLabelComponent.whatsNew),
+        screen.queryByLabelText('whats-new-popup'),
       ).not.toBeInTheDocument();
     });
   });

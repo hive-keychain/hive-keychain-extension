@@ -78,7 +78,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   if (!ready) return null;
   else
     return (
-      <div aria-label="whats-new-component" className="whats-new">
+      <div aria-label="whats-new-popup" className="whats-new">
         <div className="overlay"></div>
         <div className="whats-new-container">
           <div className="whats-new-title">
