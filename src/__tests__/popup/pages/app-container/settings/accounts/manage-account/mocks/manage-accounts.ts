@@ -2,7 +2,6 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Icons } from '@popup/icons.enum';
-import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -31,6 +30,7 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 import { KeyNamePopupHtml } from 'src/__tests__/utils-for-testing/types/keys-types';
+import AccountUtils from 'src/utils/account.utils';
 
 const keys: KeyShowed[] = [
   {
@@ -196,9 +196,9 @@ const extraMocks = {
 };
 
 export default {
-  beforeEach,
-  methods,
-  constants,
-  extraMocks,
-  keys,
+  // beforeEach,
+  // methods,
+  // constants,
+  // extraMocks,
+  // keys,
 };
