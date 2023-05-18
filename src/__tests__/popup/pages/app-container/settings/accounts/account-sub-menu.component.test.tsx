@@ -1,42 +1,85 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import AccountSubMenuItems from '@popup/pages/app-container/settings/accounts/account-sub-menu-items';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import accountSubMenu from 'src/__tests__/popup/pages/app-container/settings/accounts/mocks/account-sub-menu';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { ariaLabelPage, methods, extraMocks } = accountSubMenu;
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
 describe('account-sub-menu.component tests:\n', () => {
-  methods.afterEach;
-  beforeEach(async () => {
-    await accountSubMenu.beforeEach(<App />);
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must show sub menu items', () => {
-    AccountSubMenuItems.forEach((item) => {
-      assertion.getByLabelText(alButton.menuPreFix + item.icon);
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+      );
     });
   });
-  //TODO check & fix!
-  // it('Must open each sub menu item', async () => {
-  //   const filteredSubMenu = AccountSubMenuItems.filter(
-  //     (item) => item.icon !== Icons.EXPORT,
-  //   );
-  //   for (let i = 0; i < filteredSubMenu.length; i++) {
-  //     const icon = filteredSubMenu[i].icon;
-  //     const ariaLabel = alButton.menuPreFix + icon;
-  //     await clickAwait([ariaLabel]);
-  //     await waitFor(() => {});
-  //     assertion.getByLabelText(ariaLabelPage[i]);
-  //     await clickAwait([alIcon.arrowBack]);
-  //   }
-  // });
+
+  it('Must show sub account menu page', () => {
+    expect(
+      screen.getByLabelText(`${Screen.SETTINGS_ACCOUNTS}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show sub menu items', () => {
+    for (let i = 0; i < AccountSubMenuItems.length; i++) {
+      expect(
+        screen.getByLabelText(
+          ariaLabelButton.menuPreFix + AccountSubMenuItems[i].icon,
+        ),
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('Must open each account sub menu item', async () => {
+    for (let i = 0; i < AccountSubMenuItems.length; i++) {
+      if (AccountSubMenuItems[i].nextScreen) {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelButton.menuPreFix + AccountSubMenuItems[i].icon,
+            ),
+          );
+        });
+        expect(
+          await screen.findByLabelText(
+            `${AccountSubMenuItems[i].nextScreen}-page`,
+          ),
+        ).toBeInTheDocument();
+        await act(async () => {
+          await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        });
+      }
+    }
+  });
+
   it('Must call export account action', async () => {
-    extraMocks.createObjectURL();
-    extraMocks.aClick;
-    await clickAwait([alButton.menuPreFix + Icons.EXPORT]);
-    expect(extraMocks.spyDownloadAccount).toBeCalledTimes(1);
+    window.URL.createObjectURL = jest.fn();
+    HTMLAnchorElement.prototype.click = jest.fn();
+    const sDownloadAccounts = jest
+      .spyOn(AccountUtils, 'downloadAccounts')
+      .mockImplementation((...args) => Promise.resolve(undefined));
+    await act(async () => {
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.EXPORT),
+      );
+    });
+    expect(sDownloadAccounts).toHaveBeenCalledTimes(1);
+    sDownloadAccounts.mockRestore();
   });
 });
