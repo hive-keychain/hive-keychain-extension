@@ -1,102 +1,226 @@
-import changePassword from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/change-password/mocks/change-password';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
 describe('change-password.component tests:\n', () => {
-  let _asFragment: () => {};
-  const { methods, constants, extraMocks } = changePassword;
-  const { clickNType } = methods;
-  const { message, input, mk, screenText } = constants;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    _asFragment = await changePassword.beforeEach();
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.PASSWORD),
+      );
+    });
   });
-  it('Must show message and inputs', () => {
-    assertion.getManyByText(screenText);
-    assertion.getByLabelText(alComponent.advanceSettings.changePassword);
+  it('Must show message and page', () => {
+    expect(
+      screen.getByLabelText(`${Screen.SETTINGS_CHANGE_PASSWORD}-page`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        chrome.i18n.getMessage('popup_html_change_password_text'),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
+
   describe('Click cases:\n', () => {
     it('Must show error when wrong old password after click', async () => {
-      for (let i = 0; i < input.wrongPassword.length; i++) {
-        await clickNType({ old: input.wrongPassword[i] }, true);
-        await assertion.awaitFor(message.wrongPassword, QueryDOM.BYTEXT);
-      }
-    });
-    it('Must show error when different new password confirmation after click', async () => {
-      await clickNType(
-        {
-          old: mk,
-          new: input.badConfirmation[0],
-          confirmation: input.badConfirmation[1],
-        },
-        true,
-      );
-      await assertion.awaitFor(message.passwordMismatch, QueryDOM.BYTEXT);
-    });
-    it('Must show error when new password not valid after click', async () => {
-      for (let i = 0; i < input.invalids.length; i++) {
-        await clickNType(
-          {
-            old: mk,
-            new: input.invalids[i],
-            confirmation: input.invalids[i],
-          },
-          true,
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          'wrong_old_password',
         );
-        await assertion.awaitFor(message.invalidPassword, QueryDOM.BYTEXT);
-      }
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'new_one1234',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'new_one1234',
+        );
+        await userEvent.click(screen.getByLabelText(ariaLabelButton.submit));
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('wrong_password')),
+      ).toBeInTheDocument();
     });
-    it('Must set new password, show message and go home after click', async () => {
-      extraMocks.saveAccounts();
-      await clickNType(
-        {
-          old: mk,
-          new: 'valid16CharactersPLUS',
-          confirmation: 'valid16CharactersPLUS',
-        },
-        true,
-      );
-      await assertion.awaitFor(message.masterChanged, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.homePage);
+
+    it('Must show error when different new password confirmation after click', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'new_one1234',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'different_confirmation1234',
+        );
+        await userEvent.click(screen.getByLabelText(ariaLabelButton.submit));
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_password_mismatch'),
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('Must show error when new password not valid after click', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'notgoodpas',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'notgoodpas',
+        );
+        await userEvent.click(screen.getByLabelText(ariaLabelButton.submit));
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_password_regex')),
+      ).toBeInTheDocument();
+    });
+
+    it('Must set new password, show message and go home page after click', async () => {
+      AccountUtils.saveAccounts = jest.fn();
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'valid16CharactersPLUS',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'valid16CharactersPLUS',
+        );
+        await userEvent.click(screen.getByLabelText(ariaLabelButton.submit));
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_master_changed')),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      ).toBeInTheDocument();
     });
   });
-  describe('Pressing Enter cases:\n', () => {
-    //TODO fix bellow!
-    // it('Must show error when wrong old password after enter', async () => {
-    //   for (let i = 0; i < input.wrongPassword.length; i++) {
-    //     await clickNType({ old: input.wrongPassword[i] + `{enter}` });
-    //     await assertion.awaitFor(message.wrongPassword, QueryDOM.BYTEXT);
-    //   }
-    // });
-    it('Must show error when different new password confirmation after enter', async () => {
-      await clickNType({
-        old: mk,
-        new: input.badConfirmation[0],
-        confirmation: input.badConfirmation[1] + '{enter}',
+
+  describe('Enter press cases:\n', () => {
+    it('Must show error when wrong old password after hitting enter', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          'wrong_old_password',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'new_one1234',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'new_one1234{enter}',
+        );
       });
-      await assertion.awaitFor(message.passwordMismatch, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('wrong_password')),
+      ).toBeInTheDocument();
     });
-    it('Must show error when new password not valid after enter', async () => {
-      for (let i = 0; i < input.invalids.length; i++) {
-        await clickNType({
-          old: mk,
-          new: input.invalids[i],
-          confirmation: input.invalids[i] + '{enter}',
-        });
-        await assertion.awaitFor(message.invalidPassword, QueryDOM.BYTEXT);
-      }
-    });
-    it('Must set new password, show message and go home after enter', async () => {
-      extraMocks.saveAccounts();
-      await clickNType({
-        old: mk,
-        new: 'valid16CharactersPLUS',
-        confirmation: 'valid16CharactersPLUS' + '{enter}',
+
+    it('Must show error when different new password confirmation after hitting enter', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'new_one1234',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'different_confirmation1234{enter}',
+        );
       });
-      await assertion.awaitFor(message.masterChanged, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.homePage);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_password_mismatch'),
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('Must show error when new password not valid after hitting enter', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'notgoodpas',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'notgoodpas{enter}',
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_password_regex')),
+      ).toBeInTheDocument();
+    });
+
+    it('Must set new password, show message and go home page after hitting enter', async () => {
+      AccountUtils.saveAccounts = jest.fn();
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.old),
+          mk.user.one,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.new),
+          'valid16CharactersPLUS',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.changePassword.confirmation),
+          'valid16CharactersPLUS{enter}',
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_master_changed')),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      ).toBeInTheDocument();
     });
   });
 });
