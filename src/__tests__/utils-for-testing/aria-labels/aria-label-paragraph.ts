@@ -1,8 +1,9 @@
-//TODO delete file after refactoring
-export default {
+const ariaLabelParagraph = {
   add: {
     keyPage: {
       introduction: 'add-key-page-paragraph-introduction',
     },
   },
 };
+
+export default ariaLabelParagraph;

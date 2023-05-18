@@ -8,7 +8,7 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -64,6 +64,12 @@ const AccountKeysListItem = ({
     }
   };
 
+  const removePopupTagForAriaLabel = (keyName: string) => {
+    return keyName.includes('popup_html_')
+      ? keyName.split('popup_html_')[1]
+      : keyName;
+  };
+
   const handleClickOnRemoveKey = () => {
     const keyTypeLabel = chrome.i18n.getMessage(keyType.toLowerCase());
 
@@ -96,7 +102,7 @@ const AccountKeysListItem = ({
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && canDelete && (
           <Icon
-            ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
+            ariaLabel={`icon-remove-key-${removePopupTagForAriaLabel(keyName)}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
             type={IconType.OUTLINED}
@@ -106,7 +112,7 @@ const AccountKeysListItem = ({
 
       {!privateKey && !publicKey && (
         <Icon
-          ariaLabel={`icon-add-key-${chrome.i18n.getMessage(keyName)}`}
+          ariaLabel={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
           type={IconType.OUTLINED}
@@ -118,7 +124,7 @@ const AccountKeysListItem = ({
           {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
-                aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
+                aria-label={`clickeable-account-key-${removePopupTagForAriaLabel(
                   keyName,
                 )}`}
                 className={`private-key key-field ${
