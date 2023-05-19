@@ -17,6 +17,7 @@ const ariaLabelButton = {
     tokens: 'action-button-tokens',
     governance: 'action-button-gov.',
     buy: 'action-button-buy',
+    preFix: 'action-button-',
   },
   dropdownMenu: {
     item: {

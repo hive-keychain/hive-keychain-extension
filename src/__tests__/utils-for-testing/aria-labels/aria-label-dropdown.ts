@@ -1,9 +1,9 @@
-//TODO delete after refactoring
-export default {
+const ariaLabelDropdown = {
   arrow: {
     hive: 'dropdown-arrow-hive',
     hbd: 'dropdown-arrow-hbd',
     hp: 'dropdown-arrow-hp',
+    preFix: 'dropdown-arrow-',
   },
   span: {
     send: 'dropdown-menu-item-send',
@@ -32,3 +32,5 @@ export default {
     preFix: 'dropdown-menu-item-',
   },
 };
+
+export default ariaLabelDropdown;
