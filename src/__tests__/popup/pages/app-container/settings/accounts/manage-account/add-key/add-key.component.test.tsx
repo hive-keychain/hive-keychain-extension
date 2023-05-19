@@ -8,12 +8,15 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import ariaLabelParagraph from 'src/__tests__/utils-for-testing/aria-labels/aria-label-paragraph';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
 describe('add-key.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -74,110 +77,210 @@ describe('add-key.component tests:\n', () => {
     );
   });
 
-  //TODO continue from here. SR
+  describe('Hitting enter:/n', () => {
+    it('Must show error if empty active key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.privateKey),
+          '{enter}',
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      );
+    });
+    it('Must add active key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.privateKey),
+          `${userData.one.nonEncryptKeys.active}{enter}`,
+        );
+      });
+      expect(
+        await screen.findByText(userData.one.encryptKeys.active),
+      ).toBeInTheDocument();
+    });
 
-  // describe('Hitting enter:/n', () => {
-  //   it('Must show error if empty key', async () => {
-  //     await methods.clickNType('popup_html_active', ' {enter}');
-  //     await methods.asserByText(message.addKey.missingFields);
-  //   });
-  //   it('Must add active key', async () => {
-  //     await methods.clickNType(
-  //       'popup_html_active',
-  //       userData.one.nonEncryptKeys.active + '{enter}',
-  //     );
-  //     await methods.asserByText(userData.one.encryptKeys.active);
-  //   });
-  //   it('Must add memo key', async () => {
-  //     await methods.clickNType(
-  //       'popup_html_memo',
-  //       userData.one.nonEncryptKeys.memo + '{enter}',
-  //     );
-  //     await assertion.awaitFor(userData.one.encryptKeys.memo, QueryDOM.BYTEXT);
-  //   });
-  //   describe('Using master:\n', () => {
-  //     it('Must add active key using master password', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_active',
-  //         userData.one.nonEncryptKeys.master + '{enter}',
-  //       );
-  //       await methods.asserByText(userData.one.encryptKeys.active);
-  //     });
-  //     it('Must add memo key using master password', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_memo',
-  //         userData.one.nonEncryptKeys.master + '{enter}',
-  //       );
-  //       await methods.asserByText(userData.one.encryptKeys.memo);
-  //     });
-  //   });
-  // });
+    it('Must add memo key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'memo'),
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.privateKey),
+          `${userData.one.nonEncryptKeys.memo}{enter}`,
+        );
+      });
+      expect(
+        await screen.findByText(userData.one.encryptKeys.memo),
+      ).toBeInTheDocument();
+    });
 
-  // describe('Clicking import:\n', () => {
-  //   it('Must show error if empty key', async () => {
-  //     await methods.clickNType('popup_html_active', '{space}', true);
-  //     await methods.asserByText(message.addKey.missingFields);
-  //   });
-  //   it('Must add active key', async () => {
-  //     await methods.clickNType(
-  //       'popup_html_active',
-  //       userData.one.nonEncryptKeys.active,
-  //       true,
-  //     );
-  //     await methods.asserByText(userData.one.encryptKeys.active);
-  //   });
-  //   it('Must add memo key', async () => {
-  //     await methods.clickNType(
-  //       'popup_html_memo',
-  //       userData.one.nonEncryptKeys.memo,
-  //       true,
-  //     );
-  //     await assertion.awaitFor(userData.one.encryptKeys.memo, QueryDOM.BYTEXT);
-  //   });
-  //   describe('Using master:\n', () => {
-  //     it('Must add active key using master password', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_active',
-  //         userData.one.nonEncryptKeys.master,
-  //         true,
-  //       );
-  //       await methods.asserByText(userData.one.encryptKeys.active);
-  //     });
-  //     it('Must add memo key using master password', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_memo',
-  //         userData.one.nonEncryptKeys.master,
-  //         true,
-  //       );
-  //       await methods.asserByText(userData.one.encryptKeys.memo);
-  //     });
-  //   });
-  //   describe('Error cases:\n', () => {
-  //     it('Must show error if using public key', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_active',
-  //         userData.one.encryptKeys.active,
-  //         true,
-  //       );
-  //       await methods.asserByText(message.addKey.isPublicKey);
-  //     });
-  //     it('Must show error if user not found', async () => {
-  //       extraMocks.getAccount([]);
-  //       await methods.clickNType(
-  //         'popup_html_active',
-  //         userData.one.nonEncryptKeys.active,
-  //         true,
-  //       );
-  //       await methods.asserByText(message.addKey.incorrectUser);
-  //     });
-  //     it('Must show error if not valid master password', async () => {
-  //       await methods.clickNType(
-  //         'popup_html_active',
-  //         userData.one.nonEncryptKeys.randomStringKey51,
-  //         true,
-  //       );
-  //       await methods.asserByText(message.addKey.incorrectKey);
-  //     });
-  //   });
-  // });
+    describe('Using master:\n', () => {
+      it('Must add memo keys using master password', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'memo'),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.nonEncryptKeys.master}{enter}`,
+          );
+        });
+        expect(
+          await screen.findByText(userData.one.encryptKeys.memo),
+        ).toBeInTheDocument();
+      });
+
+      it('Must add active key using master password', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.keys.list.preFix.add + 'active',
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.nonEncryptKeys.master}{enter}`,
+          );
+        });
+        expect(
+          await screen.findByText(userData.one.encryptKeys.active),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Clicking import:\n', () => {
+    it('Must show error if empty key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.privateKey),
+          '{space}',
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.importKeys),
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      );
+    });
+
+    it('Must add active key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.privateKey),
+          `${userData.one.nonEncryptKeys.active}`,
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.importKeys),
+        );
+      });
+      expect(
+        await screen.findByText(userData.one.encryptKeys.active),
+      ).toBeInTheDocument();
+    });
+
+    describe('Using master:\n', () => {
+      it('Must add memo key using master password', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.keys.list.preFix.add + 'active',
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.nonEncryptKeys.master}`,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.importKeys),
+          );
+        });
+        expect(
+          await screen.findByText(userData.one.encryptKeys.active),
+        ).toBeInTheDocument();
+      });
+    });
+
+    describe('Error cases:\n', () => {
+      it('Must show error if using active public key', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.keys.list.preFix.add + 'active',
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.encryptKeys.active}`,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.importKeys),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_account_password_is_public_key'),
+          ),
+        );
+      });
+      it('Must show error if user not found', async () => {
+        AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.keys.list.preFix.add + 'active',
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.nonEncryptKeys.active}`,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.importKeys),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_accounts_incorrect_user'),
+          ),
+        );
+      });
+      it('Must show error if not valid master password', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.keys.list.preFix.add + 'active',
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.privateKey),
+            `${userData.one.nonEncryptKeys.randomStringKey51}`,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.importKeys),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_accounts_incorrect_key'),
+          ),
+        );
+      });
+    });
+  });
 });
