@@ -1,5 +1,4 @@
-//TODO delete file when refactoring is done
-export default {
+const ariaLabelToolTip = {
   custom: {
     resources: {
       votingMana: 'custom-tool-tip-popup_html_vm',
@@ -14,3 +13,5 @@ export default {
   },
   content: 'tooltip-content',
 };
+
+export default ariaLabelToolTip;
