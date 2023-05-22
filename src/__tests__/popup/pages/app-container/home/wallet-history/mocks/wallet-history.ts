@@ -1,6 +1,5 @@
 import { Transaction, Transfer } from '@interfaces/transaction.interface';
 import { ReactElement } from 'react';
-import TransactionUtils from 'src/utils/transaction.utils';
 import implementationsWalletHistory from 'src/__tests__/popup/pages/app-container/home/wallet-history/mocks/implementations';
 import results from 'src/__tests__/popup/pages/app-container/home/wallet-history/mocks/results';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -25,6 +24,7 @@ import {
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+import TransactionUtils from 'src/utils/transaction.utils';
 interface ToUse {
   emptyTransactions?: boolean;
   reImplementFilter?: string;
@@ -153,10 +153,10 @@ const extraMocks = {
 };
 
 export default {
-  beforeEach,
-  methods,
-  constants,
-  extraMocks,
-  filters,
-  prefix,
+  // beforeEach,
+  // methods,
+  // constants,
+  // extraMocks,
+  // filters,
+  // prefix,
 };

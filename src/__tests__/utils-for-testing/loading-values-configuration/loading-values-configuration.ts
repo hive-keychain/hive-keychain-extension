@@ -22,7 +22,6 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
-import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
@@ -116,7 +115,10 @@ export interface TestsAppLoadingValues {
       getVotingDollarsPerAccount?: number;
     };
     RewardsUtils?: { hasReward?: boolean };
-    TransactionUtils?: { getAccountTransactions?: [Transaction[], number] };
+    TransactionUtils?: {
+      getAccountTransactions?: [Transaction[], number];
+      getLastTransaction?: number | Transaction;
+    };
     TokensUtils?: {
       getUserBalance?: TokenBalance[];
       getIncomingDelegations?: TokenDelegation[];
@@ -373,7 +375,12 @@ const set = (params?: {
     .fn()
     .mockResolvedValue(
       params?.app?.accountsRelated?.TransactionUtils
-        ?.getAccountTransactions ?? [historyCurrency.transfers, 1000],
+        ?.getAccountTransactions ?? [[], 1],
+    );
+  TransactionUtils.getLastTransaction = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.accountsRelated?.TransactionUtils?.getLastTransaction ?? -1,
     );
   TokensUtils.getUserBalance = jest
     .fn()
