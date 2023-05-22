@@ -31,7 +31,7 @@ const walletInfoSectionItem = ({
   };
 
   return (
-    <div className="wallet-info-row">
+    <div className="wallet-info-row" aria-label={`wallet-info-section-row`}>
       <div className="value">
         <div className="balance">
           {FormatUtils.formatCurrencyValue(mainValue)}
