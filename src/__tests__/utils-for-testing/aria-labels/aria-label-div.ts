@@ -41,8 +41,8 @@ const ariaLabelDiv = {
       filterSelector: {
         preFix: 'filter-selector-',
       },
-      byIn: 'filter-by-incoming',
-      byOut: 'filter-by-outgoing',
+      byIncoming: 'filter-by-incoming',
+      byOutgoing: 'filter-by-outgoing',
     },
   },
   transactions: {

@@ -115,9 +115,14 @@ export interface TestsAppLoadingValues {
       getVotingDollarsPerAccount?: number;
     };
     RewardsUtils?: { hasReward?: boolean };
+    /**
+     * Note: As default will mock raw data into getTransactions.
+     * If used by default, you must declare getLastTransaction = data.length
+     */
     TransactionUtils?: {
       getAccountTransactions?: [Transaction[], number];
       getLastTransaction?: number | Transaction;
+      getTransactions?: any[];
     };
     TokensUtils?: {
       getUserBalance?: TokenBalance[];
@@ -371,16 +376,15 @@ const set = (params?: {
     .mockReturnValue(
       params?.app?.accountsRelated?.RewardsUtils?.hasReward ?? false,
     );
-  TransactionUtils.getAccountTransactions = jest
+  TransactionUtils.getTransactions = jest
     .fn()
     .mockResolvedValue(
-      params?.app?.accountsRelated?.TransactionUtils
-        ?.getAccountTransactions ?? [[], 1],
+      params?.app?.accountsRelated?.TransactionUtils?.getTransactions ?? [],
     );
   TransactionUtils.getLastTransaction = jest
     .fn()
     .mockResolvedValue(
-      params?.app?.accountsRelated?.TransactionUtils?.getLastTransaction ?? -1,
+      params?.app?.accountsRelated?.TransactionUtils?.getLastTransaction ?? 1,
     );
   TokensUtils.getUserBalance = jest
     .fn()

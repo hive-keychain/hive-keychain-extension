@@ -241,4 +241,655 @@ const allTypes = [
   } as Transfer,
 ] as Transaction[];
 
-export default { allTypes };
+const rawAllTypes = [
+  [
+    0,
+    {
+      trx_id: '17d02351037631fa72fdb80ad4e39f0765be9c44',
+      block: 64331617,
+      trx_in_block: 54,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-13T06:58:45',
+      op: [
+        'create_claimed_account',
+        {
+          creator: mk.user.one,
+          new_account_name: mk.user.one,
+          owner: {
+            weight_threshold: 1,
+            account_auths: [],
+            key_auths: [
+              ['STM83ihcfFW9auBRQXbscSZUZjtweA1Sr1RXWdXeMSVu5FHW43R7x', 1],
+            ],
+          },
+          active: {
+            weight_threshold: 1,
+            account_auths: [],
+            key_auths: [
+              ['STM622dVYEu3Hiic6F4QiH1JALAXm8yRqfLd5kCq8xs8ZzNRnKGXC', 1],
+            ],
+          },
+          posting: {
+            weight_threshold: 1,
+            account_auths: [],
+            key_auths: [
+              ['STM7KKUZb1CzwRiaN2RQcGeJUpcHM5BmCNudxXW21xqktBe91RpD8', 1],
+            ],
+          },
+          memo_key: 'STM8eALyQwyb2C4XhXJ7eZfjfjfSeNeeZREaxPcJRApie1uwzzcuF',
+          json_metadata: '{}',
+          extensions: [],
+        },
+      ],
+    },
+  ],
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: 'unique memo',
+        },
+      ],
+    },
+  ],
+  [
+    2,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 73137390,
+      trx_in_block: 4294967295,
+      op_in_trx: 2,
+      virtual_op: true,
+      timestamp: '2023-03-15T13:56:27',
+      op: [
+        'fill_recurrent_transfer',
+        {
+          from: mk.user.one,
+          to: 'theghost1980',
+          amount: '1 HIVE',
+          memo: 'Encrypted memo sample',
+          remaining_executions: 1,
+          remainingExecutions: 1,
+        },
+      ],
+    },
+  ],
+  [
+    3,
+    {
+      trx_id: '657b1fb6baa7ded4f0e6d11b214c0772b86232c3',
+      block: 73137390,
+      trx_in_block: 44,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-03-15T13:56:24',
+      op: [
+        'recurrent_transfer',
+        {
+          from: mk.user.one,
+          to: 'theghost1980',
+          amount: '1.000 HIVE',
+          memo: 'Encrypted memo sample',
+          recurrence: 24,
+          executions: 2,
+          extensions: [],
+        },
+      ],
+    },
+  ],
+  [
+    4,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 72687494,
+      trx_in_block: 4294967295,
+      op_in_trx: 2,
+      virtual_op: true,
+      timestamp: '2023-02-27T22:36:42',
+      op: [
+        'fill_convert_request',
+        {
+          owner: mk.user.one,
+          requestid: 2,
+          amount_in: '0.100 HBD',
+          amount_out: '0.217 HIVE',
+          type: 'convert',
+          subType: 'fill_convert_request',
+        },
+      ],
+    },
+  ],
+  [
+    5,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 72687486,
+      trx_in_block: 4294967295,
+      op_in_trx: 2,
+      virtual_op: true,
+      timestamp: '2023-02-27T22:36:18',
+      op: [
+        'fill_collateralized_convert_request',
+        {
+          owner: mk.user.one,
+          requestid: 1,
+          amount_in: '0.047 HIVE',
+          amount_out: '0.021 HBD',
+          excess_collateral: '0.053 HIVE',
+          type: 'convert',
+          subType: 'fill_collateralized_convert_request',
+        },
+      ],
+    },
+  ],
+  [
+    6,
+    {
+      trx_id: '3110537756006114d18631243540007f4cc7689f',
+      block: 72586806,
+      trx_in_block: 0,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-24T10:36:42',
+      op: [
+        'convert',
+        {
+          owner: mk.user.one,
+          requestid: 2,
+          amount: '0.100 HBD',
+          type: 'convert',
+          subType: 'convert',
+        },
+      ],
+    },
+  ],
+  [
+    7,
+    {
+      trx_id: '3c6b359e25939c2b3ea164b4aaffee099511571e',
+      block: 72586798,
+      trx_in_block: 53,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-24T10:36:18',
+      op: [
+        'collateralized_convert',
+        {
+          owner: mk.user.one,
+          requestid: 1,
+          amount: '0.100 HIVE',
+          type: 'convert',
+          subType: 'collateralized_convert',
+        },
+      ],
+    },
+  ],
+  [
+    8,
+    {
+      trx_id: '72587bd24a01b1774c3c583d1bee61c3bbe05c82',
+      block: 72275399,
+      trx_in_block: 5,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-13T14:48:33',
+      op: [
+        'transfer_from_savings',
+        {
+          from: mk.user.one,
+          request_id: 1262465808,
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+          type: 'savings',
+          subType: 'transfer_from_savings',
+        },
+      ],
+    },
+  ],
+  [
+    9,
+    {
+      trx_id: '3188ad86f8b3f89579a8c46b0758b98c2910ef41',
+      block: 72130134,
+      trx_in_block: 11,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-08T13:33:24',
+      op: [
+        'withdraw_vesting',
+        {
+          account: mk.user.one,
+          vesting_shares: '1.791259 VESTS',
+          type: 'power_up_down',
+          subType: 'withdraw_vesting',
+          amount: '0.001 HP',
+        },
+      ],
+    },
+  ],
+  [
+    10,
+    {
+      trx_id: '63adfcf76143467586d490c6dcae981a1ebbe1ed',
+      block: 72130077,
+      trx_in_block: 35,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-08T13:30:33',
+      op: [
+        'transfer_to_vesting',
+        {
+          from: mk.user.one,
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          type: 'power_up_down',
+          subType: 'transfer_to_vesting',
+        },
+      ],
+    },
+  ],
+  [
+    11,
+    {
+      trx_id: '35a79b77447528f7d16e2fc05e4cee4d9866f8f7',
+      block: 72129697,
+      trx_in_block: 66,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-08T13:11:30',
+      op: [
+        'delegate_vesting_shares',
+        {
+          delegator: 'theghost1980',
+          delegatee: mk.user.one,
+          vesting_shares: '1791.260797 VESTS',
+          amount: '1.008 HP',
+        },
+      ],
+    },
+  ],
+  [
+    12,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 72076338,
+      trx_in_block: 4294967295,
+      op_in_trx: 6,
+      virtual_op: true,
+      timestamp: '2023-02-06T16:40:03',
+      op: [
+        'fill_transfer_from_savings',
+        {
+          from: mk.user.one,
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          request_id: 405155906,
+          memo: '',
+          type: 'savings',
+          subType: 'fill_transfer_from_savings',
+        },
+      ],
+    },
+  ],
+  [
+    13,
+    {
+      trx_id: 'efff63ce107600206101af5ada448e1d8e190342',
+      block: 71984577,
+      trx_in_block: 21,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2023-02-03T12:06:21',
+      op: [
+        'transfer_to_savings',
+        {
+          from: mk.user.one,
+          to: mk.user.one,
+          amount: '0.002 HIVE',
+          memo: '',
+          type: 'savings',
+          subType: 'transfer_to_savings',
+        },
+      ],
+    },
+  ],
+  [
+    14,
+    {
+      trx_id: 'b9ee86f313fd6ded61995d1314dc3ac514cde7a0',
+      block: 71958463,
+      trx_in_block: 46,
+      op_in_trx: 1,
+      virtual_op: true,
+      timestamp: '2023-02-02T14:19:03',
+      op: [
+        'interest',
+        {
+          owner: mk.user.one,
+          interest: '0.026 HBD',
+          is_saved_into_hbd_balance: false,
+          type: 'savings',
+          subType: 'interest',
+        },
+      ],
+    },
+  ],
+];
+
+const rawTransfers = [
+  [
+    0,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    2,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    3,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    4,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    5,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    6,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    7,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    8,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    9,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    10,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    11,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    12,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    13,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    14,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: false,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: mk.user.one,
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+];
+
+export default { allTypes, rawAllTypes, rawTransfers };

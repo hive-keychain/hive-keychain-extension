@@ -13,6 +13,7 @@ import {
   TokenTransaction,
 } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
+import { WalletHistoryFilter } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 
@@ -134,6 +135,7 @@ export interface CustomDataFromLocalStorage {
   customCurrentRpc?: Rpc;
   customMK?: string;
   customAccounts?: string;
+  customWalletHistoryFilters?: WalletHistoryFilter;
 }
 
 export interface MocksOverwrite {

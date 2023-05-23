@@ -44,7 +44,7 @@ type FilterTransactionTypes = {
   [key: string]: boolean;
 };
 
-const DEFAULT_FILTER: WalletHistoryFilter = {
+export const DEFAULT_FILTER: WalletHistoryFilter = {
   filterValue: '',
   inSelected: false,
   outSelected: false,
@@ -60,7 +60,7 @@ const DEFAULT_FILTER: WalletHistoryFilter = {
 };
 const MINIMUM_FETCHED_TRANSACTIONS = 1;
 
-type WalletHistoryFilter = {
+export type WalletHistoryFilter = {
   filterValue: string;
   inSelected: boolean;
   outSelected: boolean;
@@ -148,7 +148,6 @@ const WalletHistory = ({
   }, []);
 
   const finalizeDisplayedList = (list: Transaction[]) => {
-    console.log({ list }); //TODO remove
     setDisplayedTransactions(list);
     setLoading(false);
   };
@@ -158,18 +157,15 @@ const WalletHistory = ({
       title: 'popup_html_wallet_history',
       isBackButtonEnabled: true,
     });
-    console.log('about to call getLastTransaction'); //TODO remove
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
-    console.log({ lastOperationFetched }); //TODO remove
     setLoading(true);
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
   };
 
   useEffect(() => {
-    console.log({ transactions, loadingVar: loading }); //TODO remove
     if (transactions.lastUsedStart !== -1) {
       if (
         transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
@@ -185,14 +181,10 @@ const WalletHistory = ({
           transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
         );
       } else {
-        console.log('about to call setTimeout'); //TODO remove
         setTimeout(() => {
-          console.log('about to filterTransactions'); //TODO remove
           filterTransactions();
         }, 0);
-        console.log({
-          getMinValue: ArrayUtils.getMinValue(transactions.list, 'index'),
-        }); //TODO remove
+
         setLastTransactionIndex(
           ArrayUtils.getMinValue(transactions.list, 'index'),
         );
@@ -204,6 +196,7 @@ const WalletHistory = ({
     const filter = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
     );
+
     if (filter) {
       setFilter(filter);
     }
@@ -332,6 +325,7 @@ const WalletHistory = ({
             .includes(filter.filterValue.toLowerCase()))
       );
     });
+
     if (
       (filteredTransactions.length >= MINIMUM_FETCHED_TRANSACTIONS &&
         filteredTransactions.length >= previousTransactionLength + 1) ||

@@ -1,5 +1,6 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import { DEFAULT_FILTER } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
@@ -28,9 +29,11 @@ const hasKeys = (obj: {}) => {
  * If debug needed, just uncomment the console.log after the default case.
  */
 const getValuefromLS = async (...args: any[]): Promise<any> => {
+  //TODO bellow check if there is better way to handle
+  //  custom data???
   let customData: CustomDataFromLocalStorage =
     dataMocks.customDataFromLocalStorage;
-  //console.log('being called with: ', args[0], customData);
+  // console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
       return hasKeys(customData)
@@ -42,7 +45,9 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
       return hasKeys(customData) ? customData.customSwitchAuto : true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return null;
+      return hasKeys(customData)
+        ? customData.customWalletHistoryFilters
+        : DEFAULT_FILTER;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
       return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
