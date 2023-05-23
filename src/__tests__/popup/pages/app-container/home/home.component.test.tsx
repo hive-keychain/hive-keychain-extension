@@ -119,8 +119,7 @@ describe('home.component tests:\n', () => {
     for (let i = 0; i < ActionButtonList.length; i++) {
       expect(
         screen.getByLabelText(
-          ariaLabelButton.actionBtn.preFix +
-            chrome.i18n.getMessage(ActionButtonList[i].label).toLowerCase(),
+          ariaLabelButton.actionBtn.preFix + ActionButtonList[i].icon,
         ),
       ).toBeInTheDocument();
       expect(
