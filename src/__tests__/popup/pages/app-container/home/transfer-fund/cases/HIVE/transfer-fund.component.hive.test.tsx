@@ -1,127 +1,612 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import clickCancel from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/confirmation/click-cancel';
-import recurrentCancellationConfirmation from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/confirmation/recurrent-cancellation-confirmation';
-import transferBlankMemo from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/confirmation/transfer-blank-memo';
-import emptyReceiverUsername from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/empty-receiver-username';
-import negativeAmount from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/negative-amount';
-import recurrentCancellationNoActiveKey from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-active-key/recurrent-cancellation-no-active-key';
-import recurrentNoActiveKey from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-active-key/recurrent-no-active-key';
-import transferNoActiveKey from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-active-key/transfer-no-active-key';
-import noAmount from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-amount';
-import noFrequency from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-frequency';
-import noIterations from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-iterations';
-import noMemoKey from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-memo-key';
-import noReceiverUsername from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/no-receiver-username';
-import notEnoughBalance from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/not-enough-balance';
-import recurrentCancellationFailed from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/recurrent-cancellation-failed';
-import recurrentFailed from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/recurrent-failed';
-import transactionFailed from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/error-fails/transaction-failed';
-import assertBalance from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/assert-balance';
-import encodeMemo from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/encode-memo';
-import recurrentCancellationSuccess from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/recurrent-cancellation-success';
-import recurrentSuccess from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/recurrent-success';
-import transferSuccess from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/transfer-success';
-import exchangeNeedsMemo from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/warnings/exchange-needs-memo';
-import phishing from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/warnings/phishing';
-import transferFund from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/transfer-fund';
-import { KeyToUse } from 'src/__tests__/utils-for-testing/enums/enums';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
+import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import phishing from 'src/__tests__/utils-for-testing/data/phishing';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 describe('transfer-fund.component tests:\n', () => {
-  const { methods } = transferFund;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('HIVE cases:\n', () => {
-    const currency = 'HIVE';
     describe('Having all keys:\n', () => {
       beforeEach(async () => {
-        await transferFund.beforeEach(<App />, currency);
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${
+                ariaLabelDropdown.arrow.preFix
+              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+          );
+        });
       });
-      it('Must show transfer fund page and user data', () => {
-        assertBalance.run(currency);
+      it('Must show transfer fund page with hive currency selected', async () => {
+        expect(
+          await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
+        ).toBeInTheDocument();
+        expect(
+          await screen.findByLabelText(ariaLabelSelect.accountSelector),
+        ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hive);
       });
-      it('Must show error if no amount', async () => {
-        await noAmount.run();
+
+      it('Must show error if no amount when transferring', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_fill_form_error'),
+          ),
+        );
       });
+
       it('Must show error if no receiverUsername', async () => {
-        await noReceiverUsername.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '1.000',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_fill_form_error'),
+          ),
+        );
       });
+
       it('Must show error if empty receiverUsername', async () => {
-        await emptyReceiverUsername.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            '{space}',
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '1.000',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_fill_form_error'),
+          ),
+        );
       });
+
       it('Must show error if negative amount', async () => {
-        await negativeAmount.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '-1.000',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_need_positive_amount'),
+          ),
+        );
       });
+
       it('Must show error if not enough balance', async () => {
-        await notEnoughBalance.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '1000000000000',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          ),
+        );
       });
-      it('Must show error if no frequency', async () => {
-        await noFrequency.run();
+
+      it('Must show error if no frequency, when selecting recurrent', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage(
+              'popup_html_transfer_recurrent_missing_field',
+            ),
+          ),
+        );
       });
+
       it('Must show error if no iteration', async () => {
-        await noIterations.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.recurrent.frecuency),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage(
+              'popup_html_transfer_recurrent_missing_field',
+            ),
+          ),
+        );
       });
-      it('Must show memo warning when transferring to exchange account', async () => {
-        await exchangeNeedsMemo.run();
+
+      it('Must show memo warning when transferring to an exchange account', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            exchanges.filter((exchange) =>
+              exchange.acceptedCoins.includes('HIVE'),
+            )[0].username,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        await waitFor(async () => {
+          const warningDivHTMLElement = await screen.findByLabelText(
+            ariaLabelDiv.warning.message,
+          );
+          expect(warningDivHTMLElement).toHaveTextContent(
+            chrome.i18n.getMessage('popup_warning_exchange_memo'),
+          );
+        });
       });
+
       it('Must show phishing warning', async () => {
-        await phishing.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            phishing.accounts[0],
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        await waitFor(async () => {
+          const warningDivHTMLElement = await screen.findByLabelText(
+            ariaLabelDiv.warning.message,
+          );
+          expect(warningDivHTMLElement).toHaveTextContent(
+            chrome.i18n.getMessage('popup_warning_phishing', [
+              phishing.accounts[0],
+            ]),
+          );
+        });
       });
-      it('Must load confimation page on recurrent cancelation', async () => {
-        await recurrentCancellationConfirmation.run();
-      });
-      it('Must show confirmation page on transfer with blank memo', async () => {
-        await transferBlankMemo.run();
-      });
+
       it('Must return to transfer page after clicking cancel confirmation', async () => {
-        await clickCancel.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        await waitFor(async () => {
+          expect(
+            await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+          ).toBeInTheDocument();
+        });
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.cancel),
+          );
+        });
+        await waitFor(async () => {
+          expect(
+            await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
+          ).toBeInTheDocument();
+        });
       });
-      it('Must encode memo', async () => {
-        await encodeMemo.run();
+
+      it('Must show encrypted text & confirmation page', async () => {
+        const memoField = '#Private Message';
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.memoOptional),
+            memoField,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        await waitFor(async () => {
+          expect(
+            await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+          ).toBeInTheDocument();
+          expect(
+            await screen.findByText(
+              `${memoField} (${chrome.i18n.getMessage('popup_encrypted')})`,
+            ),
+          ).toBeInTheDocument();
+        });
       });
+
       it('Must show success message on transfer', async () => {
-        await transferSuccess.run(currency);
+        TransferUtils.sendTransfer = jest.fn().mockResolvedValue({
+          tx_id: 'trx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest
+          .fn()
+          .mockResolvedValue(undefined);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_transfer_successful', [
+              `@${mk.user.two}`,
+              '0.001 HIVE',
+            ]),
+          ),
+        ).toBeInTheDocument();
       });
+
       it('Must show success message on recurrent cancellation', async () => {
-        await recurrentCancellationSuccess.run();
+        TransferUtils.sendTransfer = jest.fn().mockResolvedValue({
+          tx_id: 'trx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest
+          .fn()
+          .mockResolvedValue(undefined);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0',
+          );
+          await userEvent.click(
+            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage(
+              'popup_html_cancel_transfer_recurrent_successful',
+              [`@${mk.user.two}`],
+            ),
+          ),
+        ).toBeInTheDocument();
       });
+
       it('Must show success message on recurrent', async () => {
-        await recurrentSuccess.run(currency);
+        TransferUtils.sendTransfer = jest.fn().mockResolvedValue({
+          tx_id: 'trx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest
+          .fn()
+          .mockResolvedValue(undefined);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.recurrent.frecuency),
+            '10',
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.recurrent.iterations),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_transfer_recurrent_successful', [
+              `@${mk.user.two}`,
+              '0.001 HIVE',
+              '10',
+              '10',
+            ]),
+          ),
+        ).toBeInTheDocument();
       });
+
       it('Must show error when failed transaction', async () => {
-        await transactionFailed.run();
+        TransferUtils.sendTransfer = jest.fn().mockResolvedValue(null);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_transfer_failed'),
+          ),
+        ).toBeInTheDocument();
       });
-      it('Must show error on failed recurrent transfer', async () => {
-        await recurrentFailed.run();
-      });
-      it('Must show error on failed recurrent cancellation', async () => {
-        await recurrentCancellationFailed.run();
+
+      it('Must catch error & show, when failed transaction', async () => {
+        TransferUtils.sendTransfer = jest
+          .fn()
+          .mockRejectedValue(new Error('Failed to sign'));
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(await screen.findByText('Failed to sign')).toBeInTheDocument();
       });
     });
+
     describe('No memo Key:\n', () => {
       beforeEach(async () => {
-        await transferFund.beforeEach(<App />, currency, {
-          memoKey: KeyToUse.MEMO,
+        const cloneLocalAccounts = objects.clone(
+          accounts.twoAccounts,
+        ) as LocalAccount[];
+        delete cloneLocalAccounts[0].keys.memo;
+        delete cloneLocalAccounts[0].keys.memoPubkey;
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
+          {
+            app: {
+              accountsRelated: {
+                AccountUtils: {
+                  getAccountsFromLocalStorage: cloneLocalAccounts,
+                },
+              },
+            },
+          },
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${
+                ariaLabelDropdown.arrow.preFix
+              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+          );
         });
       });
       it('Must show error if no memo key', async () => {
-        await noMemoKey.run();
+        const memoField = '#Private Message';
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.memoOptional),
+            memoField,
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_memo_key_missing'),
+          ),
+        ).toBeInTheDocument();
       });
     });
+
     describe('No Active key:\n', () => {
       beforeEach(async () => {
-        await transferFund.beforeEach(<App />, currency, {
-          activeKey: KeyToUse.ACTIVE,
+        const cloneLocalAccounts = objects.clone(
+          accounts.twoAccounts,
+        ) as LocalAccount[];
+        delete cloneLocalAccounts[0].keys.active;
+        delete cloneLocalAccounts[0].keys.activePubkey;
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
+          {
+            app: {
+              accountsRelated: {
+                AccountUtils: {
+                  getAccountsFromLocalStorage: cloneLocalAccounts,
+                },
+              },
+            },
+          },
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${
+                ariaLabelDropdown.arrow.preFix
+              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+          );
         });
       });
       it('Must show error making a transfer', async () => {
-        await transferNoActiveKey.run();
-      });
-      it('Must show error making a recurrent transfer', async () => {
-        await recurrentNoActiveKey.run();
-      });
-      it('Must show error making a recurrent cancellation', async () => {
-        await recurrentCancellationNoActiveKey.run();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.username),
+            mk.user.two,
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '0.001',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_missing_key', ['active']),
+          ),
+        ).toBeInTheDocument();
       });
     });
   });
