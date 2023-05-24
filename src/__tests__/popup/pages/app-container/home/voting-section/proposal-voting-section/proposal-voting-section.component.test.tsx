@@ -1,47 +1,143 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import App from '@popup/App';
+import '@testing-library/jest-dom';
+import { act, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import proposalVotingSection from 'src/__tests__/popup/pages/app-container/home/voting-section/proposal-voting-section/mocks/proposal-voting-section';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { constants, methods, extraMocks } = proposalVotingSection;
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import { screen } from 'src/__tests__/utils-for-testing/setups/render';
+import Config from 'src/config';
+import ProposalUtils from 'src/utils/proposal.utils';
 describe('proposal-voting-section.component tests:\n', () => {
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('With Active key', () => {
     beforeEach(async () => {
-      await proposalVotingSection.beforeEach(<App />, { hasVoted: false });
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            proposal: {
+              ProposalUtils: {
+                hasVotedForProposal: false,
+              },
+            },
+          },
+        },
+      );
     });
+
     it('Must show keychain proposal', async () => {
-      assertion.getOneByText(constants.textRequest);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_proposal_request'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must show vote for keychain proposal', async () => {
-      extraMocks.vote(true);
-      await clickAwait([alButton.operation.voteProposal]);
-      await assertion.awaitFor(constants.voting.success, QueryDOM.BYTEXT);
+
+    it('Must show success message when voting for keychain proposal and hide proposal section', async () => {
+      ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue({
+        tx_id: 'trx_id',
+        id: 'id',
+        confirmed: true,
+      } as TransactionResult);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_kc_proposal_vote_successful'),
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByLabelText(ariaLabelDiv.proposalVotingSection)?.className,
+      ).toContain('hide');
     });
+
     it('Must show error on voting failed', async () => {
-      extraMocks.vote(false);
-      await clickAwait([alButton.operation.voteProposal]);
-      await assertion.awaitFor(constants.voting.failed, QueryDOM.BYTEXT);
+      ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue(null);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_proposal_vote_fail'),
+        ),
+      ).toBeInTheDocument();
     });
+
     it('Must open a new window when open to read', async () => {
-      await clickAwait([alButton.readProposal]);
-      expect(methods.spyChromeTabs()).toBeCalledWith(constants.urlProposal);
+      const sChromeTabs = jest.spyOn(chrome.tabs, 'create');
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.readProposal),
+        );
+      });
+      expect(sChromeTabs).toHaveBeenCalledWith({
+        url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
+      });
+      sChromeTabs.mockRestore();
     });
   });
+
   describe('No Active key', () => {
     beforeEach(async () => {
-      await proposalVotingSection.beforeEach(<App />, {
-        hasVoted: false,
-        removeActiveKey: true,
-      });
+      const cloneLocalAccounts = objects.clone(
+        accounts.twoAccounts,
+      ) as LocalAccount[];
+      delete cloneLocalAccounts[0].keys.active;
+      delete cloneLocalAccounts[0].keys.activePubkey;
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: cloneLocalAccounts,
+              },
+            },
+          },
+        },
+      );
     });
     it('Must show error trying to vote proposal', async () => {
-      await clickAwait([alButton.operation.voteProposal]);
-      await assertion.awaitFor(constants.missingKey, QueryDOM.BYTEXT);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_missing_key', ['active']),
+        ),
+      ).toBeInTheDocument();
     });
   });
 });
