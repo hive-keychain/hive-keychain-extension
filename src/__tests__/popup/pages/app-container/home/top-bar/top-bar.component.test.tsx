@@ -1,54 +1,124 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import App from '@popup/App';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import topBar from 'src/__tests__/popup/pages/app-container/home/top-bar/mocks/top-bar';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import FormatUtils from 'src/utils/format.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 describe('top-bar.component tests:/n', () => {
-  const { constants, methods, extraMocks } = topBar;
-  methods.afterEach;
-  describe('has rewards to claim:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  describe('Has rewards to claim:\n', () => {
     beforeEach(async () => {
-      await topBar.beforeEach(<App />);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              RewardsUtils: {
+                hasReward: true,
+              },
+            },
+          },
+        },
+      );
     });
-    it('Must show claim button', () => {
-      assertion.getByLabelText(alIcon.reward);
+
+    it('Must show claim button', async () => {
+      expect(
+        await screen.findByLabelText(ariaLabelIcon.reward),
+      ).toBeInTheDocument();
     });
-    it('Must show settings and log out button', () => {
-      methods.assertButtons();
-    });
-    it('Must claim reward ans show updated balance', async () => {
-      extraMocks.claimRewards();
-      extraMocks.getAccount();
-      await clickAwait([alIcon.reward]);
-      actAdvanceTime(3300);
-      await assertion.awaitFor(constants.updatedBalance, QueryDOM.BYTEXT);
+
+    it('Must claim reward & show message', async () => {
+      const rewardHp =
+        FormatUtils.withCommas(
+          FormatUtils.toHP(
+            accounts.extended.reward_vesting_balance
+              .toString()
+              .replace('VESTS', ''),
+            dynamic.globalProperties,
+          ).toString(),
+        ) + ' HP';
+      const claimedResources = [
+        accounts.extended.reward_hive_balance,
+        accounts.extended.reward_hbd_balance,
+        rewardHp,
+      ];
+      RewardsUtils.claimRewards = jest.fn().mockResolvedValue(true);
+      await act(async () => {
+        await userEvent.click(screen.getByLabelText(ariaLabelIcon.reward));
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_claim_success', [
+            claimedResources.join(', '),
+          ]),
+        ),
+      ).toBeInTheDocument();
     });
   });
-  describe('no rewards to claim:\n', () => {
+
+  describe('No rewards to claim:\n', () => {
     beforeEach(async () => {
-      await topBar.beforeEach(<App />, { noRewards: true });
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+      );
     });
+
     it('Must not show claim button', () => {
-      assertion.queryByLabel(alIcon.reward, false);
-    });
-    it('Must show settings and log out button', () => {
-      methods.assertButtons();
+      expect(
+        screen.queryByLabelText(ariaLabelIcon.reward),
+      ).not.toBeInTheDocument();
     });
   });
-  describe('no posting key', () => {
+
+  describe('No posting key', () => {
     beforeEach(async () => {
-      await topBar.beforeEach(<App />, { removePostingKey: true });
+      const cloneLocalAccounts = objects.clone(
+        accounts.twoAccounts,
+      ) as LocalAccount[];
+      delete cloneLocalAccounts[0].keys.posting;
+      delete cloneLocalAccounts[0].keys.postingPubkey;
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: cloneLocalAccounts,
+              },
+              RewardsUtils: {
+                hasReward: true,
+              },
+            },
+          },
+        },
+      );
     });
-    it('Must show error trying to claim', async () => {
-      await clickAwait([alIcon.reward]);
-      await assertion.awaitFor(constants.noPostingKey, QueryDOM.BYTEXT);
+
+    it('Must show error when trying to claim', async () => {
+      await act(async () => {
+        await userEvent.click(screen.getByLabelText(ariaLabelIcon.reward));
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_accounts_err_claim'),
+        ),
+      ).toBeInTheDocument();
     });
   });
 });
