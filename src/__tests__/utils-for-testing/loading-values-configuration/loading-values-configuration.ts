@@ -19,7 +19,6 @@ import {
 } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
@@ -236,15 +235,20 @@ const set = (params?: {
 
   ////////
   //LocalStorate related
+
+  //Old way
   //Assigning customData
-  if (params?.app?.localStorageRelated?.customData) {
-    //TODO important to maybe change later on.
-    //  right now this file(dataMocks.customDataFromLocalStorage) it is being
-    //  accessed from the implementation.
-    //  possible idea: why not moving all implementations here into separate function so we can handle/update/control all in one file???
-    dataMocks.customDataFromLocalStorage =
-      params?.app?.localStorageRelated?.customData;
-  }
+  // if (params?.app?.localStorageRelated?.customData) {
+  //   //TODO important to maybe change later on.
+  //   //  right now this file(dataMocks.customDataFromLocalStorage) it is being
+  //   //  accessed from the implementation.
+  //   //  possible idea: why not moving all implementations here into separate function so we can handle/update/control all in one file???
+  //   dataMocks.customDataFromLocalStorage =
+  //     params?.app?.localStorageRelated?.customData;
+  // }
+  //end Old way
+
+  //new way testing just added as arg[1];
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(
@@ -253,7 +257,10 @@ const set = (params?: {
         jest
           .fn()
           .mockImplementation((...args: any[]) =>
-            mocksImplementation.getValuefromLS(args[0]),
+            mocksImplementation.getValuefromLS(
+              args[0],
+              params?.app?.localStorageRelated?.customData,
+            ),
           ),
     );
   //LocalStorage on App init //TODO do we need to implement this one as well?

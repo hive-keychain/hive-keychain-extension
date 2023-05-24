@@ -1,6 +1,4 @@
 import { ReactElement } from 'react';
-import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import tokensImplementations from 'src/__tests__/popup/pages/app-container/home/tokens/mocks/implementations';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -22,7 +20,9 @@ import {
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
-
+import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+//TODO delete file when finish tokens related TESTS.
 const i18n = {
   get: (key: string, extra?: any) =>
     mocksImplementation.i18nGetMessageCustom(key, [extra]),
@@ -139,7 +139,7 @@ const methods = {
 };
 
 export default {
-  beforeEach,
-  methods,
-  constants,
+  // beforeEach,
+  // methods,
+  // constants,
 };

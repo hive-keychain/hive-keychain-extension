@@ -4,7 +4,6 @@ import { DEFAULT_FILTER } from '@popup/pages/app-container/home/wallet-history/w
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
-import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
@@ -31,9 +30,14 @@ const hasKeys = (obj: {}) => {
 const getValuefromLS = async (...args: any[]): Promise<any> => {
   //TODO bellow check if there is better way to handle
   //  custom data???
-  let customData: CustomDataFromLocalStorage =
-    dataMocks.customDataFromLocalStorage;
-  // console.log('being called with: ', args[0], customData);
+
+  //testing new block bellow
+  // let customData: CustomDataFromLocalStorage =
+  //   dataMocks.customDataFromLocalStorage;
+  let customData: CustomDataFromLocalStorage = args[1] ?? {};
+  //end testing block
+
+  console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
       return hasKeys(customData)
@@ -57,7 +61,7 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
         ? customData.customlastVersionSeen
         : manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
-      return [];
+      return hasKeys(customData) ? customData.customHiddenTokenList : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
       return hasKeys(customData) ? customData.accountHistoryApi : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:

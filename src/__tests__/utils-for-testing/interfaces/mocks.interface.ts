@@ -136,6 +136,7 @@ export interface CustomDataFromLocalStorage {
   customMK?: string;
   customAccounts?: string;
   customWalletHistoryFilters?: WalletHistoryFilter;
+  customHiddenTokenList?: string[];
 }
 
 export interface MocksOverwrite {
