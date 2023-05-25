@@ -1,7 +1,7 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-
+//TODO delete file after refactoring tokens related tests!!
 const default_filters_wallet_history = {
   filterValue: '',
   inSelected: false,

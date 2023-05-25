@@ -36,8 +36,7 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
   //   dataMocks.customDataFromLocalStorage;
   let customData: CustomDataFromLocalStorage = args[1] ?? {};
   //end testing block
-
-  console.log('being called with: ', args[0], customData);
+  // console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
       return hasKeys(customData)

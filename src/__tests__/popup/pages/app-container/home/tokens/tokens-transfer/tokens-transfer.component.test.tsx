@@ -1,182 +1,293 @@
-import { waitFor } from '@testing-library/react';
-import tokensTransfer from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-transfer/mocks/tokens-transfer';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import { Token } from '@interfaces/tokens.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
+import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-import {
-  KeyToUse,
-  QueryDOM,
-} from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 describe('tokens-transfer.component tests:\n', () => {
-  const { methods, constants, extraMocks } = tokensTransfer;
-  const { messages, selectedToken, memo } = constants;
-  let _asFragment: () => {};
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
+  const selectedToken = tokensUser.balances.find(
+    (token) => token.symbol === 'LEO',
+  )!;
+  const selectedTokenInfo = tokensList.alltokens.find(
+    (token) => token.symbol === 'LEO',
+  ) as Token;
   describe('Having balances:\n', () => {
     beforeEach(async () => {
-      _asFragment = await tokensTransfer.beforeEach();
-    });
-    it('Must show tokens balances', async () => {
-      await assertion.allToHaveLength(
-        alDiv.token.user.item,
-        tokensUser.balances.length,
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
       );
-    });
-  });
-  describe('No tokens balances:\n', () => {
-    beforeEach(async () => {
-      _asFragment = await tokensTransfer.beforeEach({
-        noTokensBalance: true,
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(
+            ariaLabelButton.actionBtn.preFix + actionButtonTokenIconName,
+          ),
+        );
+      });
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(`${ariaLabelIcon.tokens.prefix.send}LEO`),
+        );
       });
     });
-    it('Must show no balances', () => {
-      assertion.queryByLabel(alDiv.token.user.item, false);
+
+    it('Must show token transfer page showing LEO token info', async () => {
+      expect(
+        await screen.findByLabelText(`${Screen.TOKENS_TRANSFER}-page`),
+      ).toBeInTheDocument();
+      expect(await screen.findAllByText('LEO')).toHaveLength(1);
+      expect(
+        await screen.findByText(selectedToken.balance, { exact: false }),
+      ).toBeInTheDocument();
     });
-  });
-  describe('With tokens balances:\n', () => {
-    beforeEach(async () => {
-      await tokensTransfer.beforeEach();
-      await clickAwait([alIcon.tokens.prefix.send + 'LEO']);
-    });
+
     it('Must show error message if empty receiverUsername', async () => {
-      await clickAwait([alButton.operation.tokens.transfer.send]);
-      await assertion.awaitFor(messages.missingField, QueryDOM.BYTEXT);
+      await act(async () => {
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      ).toBeInTheDocument();
     });
+
     it('Must show error message if empty amount', async () => {
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '{space}',
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.amount),
+          '{space}',
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
       });
-      await assertion.awaitFor(messages.missingField, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      ).toBeInTheDocument();
     });
+
     it('Must show error if negative amount', async () => {
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '-1',
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.amount),
+          '-1',
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
       });
-      await assertion.awaitFor(messages.negativeAmount, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_need_positive_amount'),
+        ),
+      ).toBeInTheDocument();
     });
+
     it('Must show error if unexistent user', async () => {
-      extraMocks.doesAccountExist(false);
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '1',
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(false);
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          'nonExistentUser',
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
       });
-      await assertion.awaitFor(messages.wrongUser, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_no_such_account'),
+        ),
+      ).toBeInTheDocument();
     });
+
     it('Must show error if not enough balance', async () => {
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: (parseFloat(selectedToken.data.balance) + 1).toString(),
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          'nonExistentUser',
+        );
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.amount),
+          selectedToken.balance + 1,
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
       });
-      await assertion.awaitFor(messages.notEnoughBalance, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_power_up_down_error'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must show confirmation page and encrypted memo', async () => {
-      extraMocks.doesAccountExist(true);
-      extraMocks.getPublicMemo();
-      await methods.userInteraction({
-        receiverUsername: 'cedricguillas',
-        amount: '1',
-        hasMemo: true,
+
+    it('Must show confirmation page and go home when cancelling operation', async () => {
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
       });
-      await assertion.awaitFor(alComponent.confirmationPage, QueryDOM.BYLABEL);
-      assertion.getOneByText(memo.encrypted);
-    });
-    it('Must show popup_warning_phishing', async () => {
-      extraMocks.doesAccountExist(true);
-      extraMocks.getPublicMemo();
-      await methods.userInteraction({
-        receiverUsername: constants.phishingAccount,
-        amount: '1',
-        hasMemo: true,
+      expect(
+        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(screen.getByLabelText(ariaLabelIcon.closePage));
       });
-      await assertion.awaitFor(messages.phishingWarning, QueryDOM.BYTEXT);
+      expect(
+        screen.queryByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByLabelText(`${Screen.HOME_PAGE}-page`),
+      ).toBeInTheDocument();
     });
+
     it('Must show Network timeout error', async () => {
-      extraMocks.doesAccountExist(true);
-      extraMocks.getPublicMemo();
-      extraMocks.sendToken(undefined, new Error('Network timeout.'));
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '1',
-        hasMemo: true,
-        confirm: true,
-      });
-      await waitFor(() => {});
-      await assertion.awaitFor('Network timeout.', QueryDOM.BYTEXT);
-    });
-    it('Must show error if transfer fails', async () => {
-      extraMocks.doesAccountExist(true);
-      extraMocks.getPublicMemo();
-      //TODO check bellow & fix.
-      extraMocks.sendToken({
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+      TokensUtils.sendToken = jest.fn().mockResolvedValue({
+        broadcasted: true,
         confirmed: false,
-        broadcasted: false,
         tx_id: 'tx_id',
+      } as HiveEngineTransactionStatus);
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+        );
       });
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '1',
-        hasMemo: true,
-        confirm: true,
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_token_timeout')),
+      ).toBeInTheDocument();
+    });
+
+    it('Must show error if transfer fails', async () => {
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+      TokensUtils.sendToken = jest.fn().mockResolvedValue({
+        broadcasted: false,
+        confirmed: false,
+        tx_id: 'tx_id',
+      } as HiveEngineTransactionStatus);
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+        );
       });
-      await assertion.awaitFor(messages.failed, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_transfer_failed'),
+        ),
+      ).toBeInTheDocument();
     });
-    //TODO check bellow & fix!
-    // it('Must send transfer', async () => {
-    //   extraMocks.doesAccountExist(true);
-    //   extraMocks.getPublicMemo();
-    //   //TODO check bellow & fix.
-    //   extraMocks.sendToken({
-    //     confirmed: true,
-    //     broadcasted: true,
-    //     tx_id: 'tx_id',
-    //   });
-    //   await methods.userInteraction({
-    //     receiverUsername: 'theghost1980',
-    //     amount: '1',
-    //     hasMemo: true,
-    //     confirm: true,
-    //   });
-    //   await waitFor(() => {
-    //     expect(screen.getByText('successful', { exact: false })).toBeDefined();
-    //   });
-    // });
-  });
-  describe('No Memo Key:\n', () => {
-    beforeEach(async () => {
-      await tokensTransfer.beforeEach({ noKey: KeyToUse.MEMO });
-      await clickAwait([alIcon.tokens.prefix.send + 'LEO']);
-    });
-    it('Must error missing key', async () => {
-      extraMocks.doesAccountExist(true);
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '1',
-        hasMemo: true,
+
+    it('Must catch error and display', async () => {
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+      TokensUtils.sendToken = jest
+        .fn()
+        .mockRejectedValue(new Error('Rejection error!'));
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+        );
       });
-      await assertion.awaitFor(messages.missingMemoKey, QueryDOM.BYTEXT);
+      expect(await screen.findByText('Rejection error!')).toBeInTheDocument();
     });
-  });
-  describe('No Active Key:\n', () => {
-    beforeEach(async () => {
-      await tokensTransfer.beforeEach({ noKey: KeyToUse.ACTIVE });
-      await clickAwait([alIcon.tokens.prefix.send + 'LEO']);
-    });
-    it('Must show error trying to transfer', async () => {
-      extraMocks.doesAccountExist(true);
-      extraMocks.getPublicMemo();
-      await methods.userInteraction({
-        receiverUsername: 'theghost1980',
-        amount: '1',
+
+    it('Must send transfer', async () => {
+      const formattedAmount = `${parseFloat('1').toFixed(
+        selectedTokenInfo.precision,
+      )} LEO`;
+      AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+      TokensUtils.sendToken = jest.fn().mockResolvedValue({
+        broadcasted: true,
+        confirmed: true,
+        tx_id: 'tx_id',
+      } as HiveEngineTransactionStatus);
+      FavoriteUserUtils.saveFavoriteUser = jest
+        .fn()
+        .mockResolvedValue(undefined);
+      await act(async () => {
+        await userEvent.type(
+          screen.getByLabelText(ariaLabelInput.username),
+          mk.user.two,
+        );
+        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        );
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+        );
       });
-      await assertion.awaitFor(messages.missingActiveKey, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_transfer_successful', [
+            `@${mk.user.two}`,
+            formattedAmount,
+          ]),
+        ),
+      ).toBeInTheDocument();
     });
   });
 });
