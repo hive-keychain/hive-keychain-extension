@@ -83,7 +83,6 @@ const TokensSettings = ({
 
     const customAccountHistoryApi =
       await HiveEngineConfigUtils.getCustomAccountHistoryApi();
-    console.log({ customAccountHistoryApi }); //TODO remove
     const accountHistoryApiFullList = ArrayUtils.mergeWithoutDuplicate(
       customAccountHistoryApi,
       DefaultAccountHistoryApis,

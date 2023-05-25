@@ -125,7 +125,7 @@ describe('tokens-settings.component tests:\n', () => {
         });
       });
 
-      it('Must not show any custom nodes', async () => {
+      it('Must not show any custom nodes', () => {
         expect(
           screen.queryByLabelText(
             `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
