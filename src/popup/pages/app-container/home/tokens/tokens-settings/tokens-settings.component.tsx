@@ -83,6 +83,7 @@ const TokensSettings = ({
 
     const customAccountHistoryApi =
       await HiveEngineConfigUtils.getCustomAccountHistoryApi();
+    console.log({ customAccountHistoryApi }); //TODO remove
     const accountHistoryApiFullList = ArrayUtils.mergeWithoutDuplicate(
       customAccountHistoryApi,
       DefaultAccountHistoryApis,
@@ -169,7 +170,7 @@ const TokensSettings = ({
         {!selectProps.item.isDefault &&
           selectProps.item.label !== selectProps.props.values[0]?.label && (
             <img
-              aria-label="erase-rpc-img"
+              aria-label={`erase-rpc-img-${selectProps.item.label}`}
               src="/assets/images/clear.png"
               className="erase-button"
               onClick={($event) => {

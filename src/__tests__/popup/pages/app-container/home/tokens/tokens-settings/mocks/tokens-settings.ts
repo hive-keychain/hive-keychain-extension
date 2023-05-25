@@ -1,4 +1,3 @@
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -18,7 +17,8 @@ import {
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
-
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+//TODO delete after refactoring tokens-settings.component.rpcs.tests
 type ChooseFrom = 'rpcNode' | 'accountHistory';
 
 const i18n = {
@@ -115,8 +115,8 @@ const extraMocks = {
 };
 
 export default {
-  beforeEach,
-  methods,
-  constants,
-  extraMocks,
+  // beforeEach,
+  // methods,
+  // constants,
+  // extraMocks,
 };

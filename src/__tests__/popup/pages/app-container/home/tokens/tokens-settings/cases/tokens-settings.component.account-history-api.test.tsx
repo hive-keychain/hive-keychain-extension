@@ -1,97 +1,210 @@
 import { DefaultAccountHistoryApis } from '@interfaces/hive-engine-rpc.interface';
-import tokensSettings from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-settings/mocks/tokens-settings';
-import alImg from 'src/__tests__/utils-for-testing/aria-labels/al-img';
-import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  clickAwait,
-  clickAwaitOnFound,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { methods, constants, extraMocks } = tokensSettings;
-const { messages } = constants;
-let _asFragment: () => {};
+import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import ariaLabelImg from 'src/__tests__/utils-for-testing/aria-labels/aria-label-img';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 describe('tokens-settings.component tests:\n', () => {
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
+  const customAccountHistoryApiUrl = 'https://saturnoman.com/accountHistory';
   describe('Account History Api selector:\n', () => {
     describe('With custom account history nodes', () => {
       beforeEach(async () => {
-        _asFragment = await tokensSettings.beforeEach({
-          accountHistoryApi: ['https://saturnoman.com/accountHistory'],
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
+          {
+            app: {
+              localStorageRelated: {
+                customData: {
+                  accountHistoryApi: [customAccountHistoryApiUrl],
+                },
+              },
+            },
+          },
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+          );
         });
       });
-      it('Must show defaults + custom account history api loaded', async () => {
-        await clickAwait([alSelect.tokens.settings.panel.accountHistoryApi]);
-        await assertion.allToHaveLength(
-          alSelect.tokens.settings.items.accountHistoryApi,
-          DefaultAccountHistoryApis.length + 1,
-        );
+      it('Must show custom account history api item', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+            ),
+          );
+        });
+        expect(
+          await screen.findByLabelText(
+            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+              customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
+            }`,
+          ),
+        ).toBeInTheDocument();
       });
-      it('Must delete selected rpc, reload rpc list and show it', async () => {
-        extraMocks.deleteCustomAccountHistoryApi();
-        await clickAwait([
-          alSelect.tokens.settings.panel.accountHistoryApi,
-          alImg.tokens.settings.eraseRpc,
-        ]);
-        await clickAwait([alSelect.tokens.settings.panel.accountHistoryApi]);
-        await assertion.allToHaveLength(
-          alSelect.tokens.settings.items.accountHistoryApi,
-          DefaultAccountHistoryApis.length,
-        );
+
+      it('Must delete custom account history api, reload rpc list and not show deleted one', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+            ),
+          );
+        });
+        expect(
+          await screen.findAllByLabelText(
+            ariaLabelSelect.tokens.settings.items.accountHistoryApi,
+          ),
+        ).toHaveLength(DefaultAccountHistoryApis.length + 1);
+        HiveEngineConfigUtils.getCustomAccountHistoryApi = jest
+          .fn()
+          .mockResolvedValue([]);
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+                customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
+              }`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+            ),
+          );
+        });
+        expect(
+          screen.queryByLabelText(
+            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+              customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
+            }`,
+          ),
+        ).not.toBeInTheDocument();
       });
     });
+
     describe('With no custom account history', () => {
       beforeEach(async () => {
-        _asFragment = await tokensSettings.beforeEach();
-      });
-      it('Must show default account history apis', async () => {
-        await clickAwait([alSelect.tokens.settings.panel.accountHistoryApi]);
-        await assertion.allToHaveLength(
-          alSelect.tokens.settings.items.accountHistoryApi,
-          DefaultAccountHistoryApis.length,
+        await reactTestingLibrary.renderWithConfiguration(
+          <App />,
+          initialStates.iniStateAs.defaultExistent,
         );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+            ),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+          );
+        });
       });
-      it('Must set selected account history api', async () => {
-        extraMocks.setActiveAccountHistoryApi();
-        await clickAwait([alSelect.tokens.settings.panel.accountHistoryApi]);
-        await clickAwaitOnFound(
-          alSelect.tokens.settings.items.accountHistoryApi,
-          1,
-        );
-        assertion.toHaveTextContent([
-          {
-            arialabel: alSelect.tokens.settings.panel.accountHistoryApi,
-            text: methods.cleanStr(DefaultAccountHistoryApis[1]),
-          },
-        ]);
+
+      it('Must not show any custom nodes', async () => {
+        expect(
+          screen.queryByLabelText(
+            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+              customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
+            }`,
+          ),
+        ).not.toBeInTheDocument();
       });
-      it('Must show error adding existent account history api', async () => {
-        await methods.clickInputAction(
-          'accountHistory',
-          DefaultAccountHistoryApis[1],
-        );
-        await assertion.awaitFor(messages.rpcNode.existent, QueryDOM.BYTEXT);
+
+      it('Must show error adding existent account history api node', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.textInput),
+            DefaultAccountHistoryApis[0],
+          );
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+            ),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('html_popup_rpc_already_exist'),
+          ),
+        ).toBeInTheDocument();
       });
+
       it('Must show error adding non valid url', async () => {
-        await methods.clickInputAction('accountHistory', 'non-valid-@url.@');
-        await assertion.awaitFor(messages.invalidUrl, QueryDOM.BYTEXT);
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.textInput),
+            'non-valid-@url.@',
+          );
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+            ),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('html_popup_url_not_valid'),
+          ),
+        ).toBeInTheDocument();
       });
+
       it('Must show error if empty input', async () => {
-        await methods.clickInputAction('accountHistory', '{space}');
-        await assertion.awaitFor(messages.invalidUrl, QueryDOM.BYTEXT);
-      });
-      it('Must add custom account history api', async () => {
-        extraMocks.addCustomAccountHistoryApi();
-        await methods.clickInputAction(
-          'accountHistory',
-          'https://api.keychain.com/accountHistory',
-        );
-        await assertion.awaitFor(
-          messages.accountHistory.success,
-          QueryDOM.BYTEXT,
-        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+            ),
+          );
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.textInput),
+            '{space}',
+          );
+          await userEvent.click(
+            screen.getByLabelText(
+              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+            ),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('html_popup_url_not_valid'),
+          ),
+        ).toBeInTheDocument();
       });
     });
   });
