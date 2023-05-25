@@ -1,113 +1,270 @@
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
-import { screen, waitFor } from '@testing-library/react';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import TokensUtils from 'src/utils/tokens.utils';
-config.byDefault();
-const { methods, constants, extraMocks } = tokenOperation;
-const { message, title, leoToken, displayedCommon, displayedDelegating } =
-  constants;
-const { typeValues } = leoToken;
-const { balance } = typeValues;
 describe('token-operation Delegating tests:\n', () => {
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
+  const selectedToken = tokensUser.balances.find(
+    (token) => token.symbol === 'LEO',
+  )!;
   beforeEach(async () => {
-    await tokenOperation.beforeEach(<App />);
-    await clickAwait([alButton.token.action.delegate]);
-  });
-  const operationType = TokenOperationType.DELEGATE;
-  it('Must load operation as delegate', () => {
-    assertion.getByLabelText(alComponent.tokensOperationPage);
-    assertion.getManyByText([title(operationType)]);
-  });
-  it('Must display delegate info and inputs elements', () => {
-    assertion.getManyByText(leoToken.screenInfo.delegate);
-    assertion.getByText([
-      { arialabelOrText: alInput.amount, query: QueryDOM.BYLABEL },
-      { arialabelOrText: alInput.username, query: QueryDOM.BYLABEL },
-    ]);
-  });
-  it('Must show confirmation page', async () => {
-    extraMocks.doesAccountExist(true);
-    await methods.userInteraction(balance.min, operationType, false, true);
-    assertion.getByLabelText(alComponent.confirmationPage);
-    assertion.getManyByText([
-      message.confirmation(operationType),
-      ...displayedCommon,
-      ...displayedDelegating,
-    ]);
-  });
-  it('Must go back from confirmation when cancelling', async () => {
-    extraMocks.doesAccountExist(true);
-    await methods.userInteraction(balance.min, operationType, false, true);
-    assertion.getByLabelText(alComponent.confirmationPage);
-    await clickAwait([alButton.dialog.cancel]);
-    assertion.queryByText('Confirm', false);
-    assertion.getByLabelText(alComponent.tokensOperationPage);
-  });
-  it('Must show error if unexistent account', async () => {
-    extraMocks.doesAccountExist(false);
-    await methods.userInteraction(balance.min, operationType);
-    await assertion.awaitFor(message.error.noSuchAccount, QueryDOM.BYTEXT);
-  });
-  it('Must show error if not enough balance', async () => {
-    extraMocks.doesAccountExist(true);
-    await methods.userInteraction(balance.exceeded, operationType, false, true);
-    await assertion.awaitFor(message.error.notEnoughBalance, QueryDOM.BYTEXT);
-  });
-  it('Must show loading delegating transaction', async () => {
-    extraMocks.doesAccountExist(true);
-    TokensUtils.delegateToken = jest.fn();
-    await methods.userInteraction(balance.min, operationType, true, true);
-    await waitFor(() => {
-      expect(
-        screen.getAllByText('Delegating token', { exact: false }).length,
-      ).toBeGreaterThan(1);
-    });
-  });
-  it('Must show error if delegating fails', async () => {
-    extraMocks.doesAccountExist(true);
-    //TODO check bellow & fix.
-    extraMocks.delegateToken({
-      confirmed: false,
-      broadcasted: false,
-      tx_id: 'tx_id',
-    });
-    extraMocks.tryConfirmTransaction('error');
-    await methods.userInteraction(balance.min, operationType, true, true);
-    await assertion.awaitFor(
-      message.error.transactionFailed(operationType),
-      QueryDOM.BYTEXT,
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            TokensUtils: {
+              getUserBalance: tokensUser.balances.filter(
+                (token) => token.symbol === 'LEO',
+              ),
+            },
+          },
+        },
+      },
     );
+    await act(async () => {
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+        ),
+      );
+    });
+    await act(async () => {
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelIcon.tokens.prefix.expandMore}${selectedToken.symbol}`,
+        ),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.token.action.delegate),
+      );
+    });
   });
+
+  it('Must show token operation page as delegate', async () => {
+    expect(
+      await screen.findByLabelText(`${Screen.TOKENS_OPERATION}-page`),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_token_delegate'),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if unexistent account', async () => {
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(false);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        'nonExistentUser',
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+    });
+    expect(
+      await screen.findByText(chrome.i18n.getMessage('popup_no_such_account')),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if not enough balance', async () => {
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        parseFloat(selectedToken.balance + 1).toString(),
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_power_up_down_error'),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show confirmation page', async () => {
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if delegating fails', async () => {
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    TokensUtils.delegateToken = jest.fn().mockResolvedValue({
+      broadcasted: false,
+      confirmed: false,
+      tx_id: 'tx_id',
+    } as HiveEngineTransactionStatus);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.dialog.confirm),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage(
+          `popup_html_${TokenOperationType.DELEGATE}_tokens_failed`,
+        ),
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('Must show timeout error', async () => {
-    extraMocks.doesAccountExist(true);
-    extraMocks.delegateToken(undefined, new Error('Network timeout.'));
-    extraMocks.tryConfirmTransaction('timeOut');
-    await methods.userInteraction(balance.min, operationType, true, true);
-    await assertion.awaitFor('Network timeout.', QueryDOM.BYTEXT);
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    TokensUtils.delegateToken = jest.fn().mockResolvedValue({
+      broadcasted: true,
+      confirmed: false,
+      tx_id: 'tx_id',
+    } as HiveEngineTransactionStatus);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.dialog.confirm),
+      );
+    });
+    expect(
+      await screen.findByText(chrome.i18n.getMessage('popup_token_timeout')),
+    ).toBeInTheDocument();
   });
+
+  it('Must catch error and show message', async () => {
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    TokensUtils.delegateToken = jest
+      .fn()
+      .mockRejectedValue(new Error('error!!'));
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.dialog.confirm),
+      );
+    });
+    expect(await screen.findByText('error!!')).toBeInTheDocument();
+  });
+
   it('Must delegate and show message', async () => {
-    extraMocks.doesAccountExist(true);
-    //TODO check bellow & fix.
-    extraMocks.delegateToken({
+    AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
+    TokensUtils.delegateToken = jest.fn().mockResolvedValue({
       confirmed: true,
       broadcasted: true,
-      tx_id: 'tx_id',
+      tx_id: 'id',
+    } as HiveEngineTransactionStatus);
+    FavoriteUserUtils.saveFavoriteUser = jest.fn();
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.username),
+        mk.user.two,
+      );
+      await userEvent.type(
+        screen.getByLabelText(ariaLabelInput.amount),
+        '1.000',
+      );
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+        ),
+      );
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.dialog.confirm),
+      );
     });
-    extraMocks.tryConfirmTransaction('confirmed');
-    await methods.userInteraction(balance.min, operationType, true, true);
-    await assertion.awaitFor(
-      message.operationConfirmed(operationType),
-      QueryDOM.BYTEXT,
-    );
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage(
+          `popup_html_${TokenOperationType.DELEGATE}_tokens_success`,
+        ),
+      ),
+    ).toBeInTheDocument();
   });
 });

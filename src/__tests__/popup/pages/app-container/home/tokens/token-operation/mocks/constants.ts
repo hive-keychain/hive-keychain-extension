@@ -6,6 +6,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+//TODO delete file after refactoring token-operation related tests
 
 const operationResult = {
   confirmed: { confirmed: true, error: null },

@@ -19,7 +19,7 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 import { PreFixTokens } from 'src/__tests__/utils-for-testing/types/tokens-types';
-
+//TODO delete file after refactoring token-operation related tests
 const operationResult = {
   confirmed: { confirmed: true, error: null },
   error: { confirmed: true, error: 'error_token_transaction' },
@@ -99,10 +99,10 @@ const methods = {
 const extraMocks = tokenOperationExtraMocks.mocks;
 
 export default {
-  beforeEach,
-  methods,
-  constants,
-  extraMocks,
-  leoTokenData,
-  operationResult,
+  // beforeEach,
+  // methods,
+  // constants,
+  // extraMocks,
+  // leoTokenData,
+  // operationResult,
 };
