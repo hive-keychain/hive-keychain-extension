@@ -3118,19 +3118,27 @@
     "description": "swap token auto refresh"
   },
   "swap_status_started": {
-    "message": "Started",
+    "message": "In progress",
     "description": "swap status"
   },
-  "swap_status_finished": {
-    "message": "Finished",
+  "swap_status_completed": {
+    "message": "Completed",
     "description": "swap status"
   },
   "swap_status_pending": {
     "message": "Pending",
     "description": "swap status"
   },
-  "swap_status_canceled": {
+  "swap_status_canceled_due_to_error": {
     "message": "Canceled",
+    "description": "swap status"
+  },
+  "swap_status_returned": {
+    "message": "Returned",
+    "description": "swap status"
+  },
+  "swap_status_refunded": {
+    "message": "Refunded",
     "description": "swap status"
   },
   "swap_copied_to_clipboard": {
@@ -3148,5 +3156,21 @@
   "swap_under_maintenance": {
     "message": "Keychain Swap is under maintenance, try again later",
     "description": "Keychain swap under maintenance"
+  },
+  "swap_start_end_token_should_be_different": {
+    "message": "Start and end token should be differents",
+    "description": "Start and end tokens should be differents"
+  },
+  "swap_min_slippage_error": {
+    "message": "Slippage should be at least $1%",
+    "description": "Minimum slippage error"
+  },
+  "swap_caption": {
+    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate",
+    "description": "Caption"
+  },
+  "swap_fee": {
+    "message": "Fee",
+    "description": "Swap Fee"
   }
 }

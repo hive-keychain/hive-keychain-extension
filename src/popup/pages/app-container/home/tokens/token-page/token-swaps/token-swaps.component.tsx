@@ -1,5 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { SwapStep } from '@interfaces/swap-token.interface';
+import { SwapConfig, SwapStep } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
@@ -46,10 +46,11 @@ const TokenSwaps = ({
   addToLoadingList,
   removeFromLoadingList,
 }: PropsFromRedux) => {
+  const [config, setConfig] = useState<SwapConfig>({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingEstimate, setLoadingEstimate] = useState(false);
-  const [slipperage, setSlipperage] = useState(5);
+  const [slippage, setSlippage] = useState(5);
   const [amount, setAmount] = useState<string>('');
 
   const [startToken, setStartToken] = useState<SelectOption>();
@@ -100,9 +101,14 @@ const TokenSwaps = ({
   }, []);
 
   const init = async () => {
-    const isUnderMaintenance = await SwapTokenUtils.isUnderMaintenance();
-    setUnderMaintenance(isUnderMaintenance);
-    if (!isUnderMaintenance) {
+    const serverStatus = await SwapTokenUtils.getServerStatus();
+    setUnderMaintenance(serverStatus.isMaintenanceOn);
+
+    const swapConfig = await SwapTokenUtils.getConfig();
+    setConfig(swapConfig);
+    setSlippage(swapConfig.slippage.default);
+
+    if (!serverStatus.isMaintenanceOn) {
       initTokenSelectOptions();
     } else {
       setLoading(false);
@@ -179,9 +185,19 @@ const TokenSwaps = ({
         };
       }),
     ];
-    setStartToken(list[0]);
+
+    const lastUsed = await SwapTokenUtils.getLastUsed();
+    setStartToken(
+      lastUsed.from
+        ? list.find((t) => t.value.symbol === lastUsed.from.symbol)
+        : list[0],
+    );
     setStartTokenListOptions(list);
-    setEndToken(undefined);
+    setEndToken(
+      lastUsed.to
+        ? list.find((t) => t.value.symbol === lastUsed.to.symbol)
+        : undefined,
+    );
     setEndTokenListOptions(endList);
     setLoading(false);
   };
@@ -192,12 +208,16 @@ const TokenSwaps = ({
     endToken: SelectOption,
   ) => {
     setLoadingEstimate(true);
+    if (startToken === endToken) {
+      setErrorMessage('swap_start_end_token_should_be_different');
+      return;
+    }
+
     const result: SwapStep[] = await SwapTokenUtils.getEstimate(
       startToken?.value.symbol,
       endToken?.value.symbol,
       amount,
     );
-    console.log(result, startToken, endToken, amount);
     setEstimate(result);
     if (result.length) {
       const precision = await TokensUtils.getTokenPrecision(
@@ -214,6 +234,16 @@ const TokenSwaps = ({
   };
 
   const processSwap = async () => {
+    // if (slippage < config.slippage.min) {
+    //   setErrorMessage('swap_min_slippage_error', [
+    //     config.slippage.min.toString(),
+    //   ]);
+    //   return;
+    // }
+    if (startToken?.value.symbol === endToken?.value.symbol) {
+      setErrorMessage('swap_start_end_token_should_be_different');
+      return;
+    }
     if (!amount || amount.length === 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
@@ -227,7 +257,7 @@ const TokenSwaps = ({
 
     const estimateId = await SwapTokenUtils.saveEstimate(
       estimate!,
-      slipperage,
+      slippage,
       startToken?.value.symbol,
       endToken?.value.symbol,
       parseFloat(amount),
@@ -257,7 +287,7 @@ const TokenSwaps = ({
       },
       {
         label: 'html_popup_swap_swap_slipperage',
-        value: `${slipperage}% (for each step)`,
+        value: `${slippage}% (for each step)`,
       },
     ];
 
@@ -292,6 +322,7 @@ const TokenSwaps = ({
           if (success) {
             goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
             setSuccessMessage('html_popup_swap_sending_token_successful');
+            SwapTokenUtils.saveLastUsed(startToken?.value, endToken?.value);
           } else {
             setErrorMessage('html_popup_swap_error_sending_token', [
               Config.swaps.swapAccount,
@@ -314,7 +345,7 @@ const TokenSwaps = ({
       startToken: startToken,
       endToken: endToken,
       amount: amount,
-      slipperage: slipperage,
+      slipperage: slippage,
     };
   };
 
@@ -329,10 +360,10 @@ const TokenSwaps = ({
       {!loading && !underMaintenance && (
         <>
           <div className="caption">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-            feugiat ligula a neque gravida dignissim. Nulla fermentum magna eu
-            mi interdum rutrum. Proin cursus gravida dictum. Curabitur quis
-            consequat enim.
+            {chrome.i18n.getMessage('swap_caption')}
+          </div>
+          <div className="fee">
+            {chrome.i18n.getMessage('swap_fee')}: {config.fee.amount}%
           </div>
           <div className="top-row">
             <div className="countdown">
@@ -431,8 +462,8 @@ const TokenSwaps = ({
                     type={InputType.NUMBER}
                     min={5}
                     step={1}
-                    value={slipperage}
-                    onChange={setSlipperage}
+                    value={slippage}
+                    onChange={setSlippage}
                     label="html_popup_swaps_slipperage"
                     placeholder="html_popup_swaps_slipperage"
                     tooltip="html_popup_swaps_slippage_definition"

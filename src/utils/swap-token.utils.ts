@@ -1,11 +1,13 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Swap, SwapStep } from '@interfaces/swap-token.interface';
+import { Swap, SwapConfig, SwapStep } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { BaseCurrencies } from 'src/utils/currency.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 
@@ -53,7 +55,6 @@ const getEstimate = async (
     );
 
     if (res.error) {
-      console.log(res.error);
       return [];
     }
 
@@ -122,7 +123,6 @@ const processSwap = async (
 const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
   const res = await KeychainSwapApi.get(`token-swap/history/${username}`);
   if (res.error) {
-    console.log(res.error);
     return [];
   }
   const swaps = [];
@@ -134,9 +134,12 @@ const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
     swaps.push({
       ...s,
       amount: Number(s.amount).toFixed(precisionStartToken),
-      estimatedFinalAmount: Number(
-        s.steps[s.steps.length - 1].estimate,
-      ).toFixed(precisionEndToken),
+      estimatedFinalAmount:
+        s.steps.length !== 0
+          ? Number(s.steps[s.steps.length - 1].estimate).toFixed(
+              precisionEndToken,
+            )
+          : '...',
     });
   }
   return swaps;
@@ -146,8 +149,28 @@ const cancelSwap = async (swapId: string) => {
   await KeychainSwapApi.post(`token-swap/${swapId}/cancel`, {});
 };
 
-const isUnderMaintenance = async () => {
-  return await KeychainSwapApi.get(`maintenance/status`);
+const getServerStatus = async () => {
+  const res = await KeychainSwapApi.get(`server/status`);
+  return res.result;
+};
+
+const getConfig = async (): Promise<SwapConfig> => {
+  const res = await KeychainSwapApi.get(`token-swap/public-config`);
+  return res.result;
+};
+
+const saveLastUsed = async (from: string, to: string) => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.SWAP_LAST_USED_TOKENS,
+    { from, to },
+  );
+};
+const getLastUsed = async () => {
+  const lastUsed = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.SWAP_LAST_USED_TOKENS,
+  );
+  if (!lastUsed) return { from: null, to: null };
+  else return lastUsed;
 };
 
 export const SwapTokenUtils = {
@@ -158,5 +181,8 @@ export const SwapTokenUtils = {
   saveEstimate,
   retrieveSwapHistory,
   cancelSwap,
-  isUnderMaintenance,
+  getServerStatus,
+  getConfig,
+  saveLastUsed,
+  getLastUsed,
 };

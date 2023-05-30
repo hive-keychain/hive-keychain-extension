@@ -22,10 +22,16 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     switch (status) {
       case SwapStatus.PENDING:
         return chrome.i18n.getMessage('swap_status_pending');
-      case SwapStatus.CANCELED:
-        return chrome.i18n.getMessage('swap_status_canceled');
-      case SwapStatus.FINISHED:
-        return chrome.i18n.getMessage('swap_status_finished');
+      case SwapStatus.COMPLETED:
+        return chrome.i18n.getMessage('swap_status_completed');
+      case SwapStatus.CANCELED_DUE_TO_ERROR:
+        return chrome.i18n.getMessage('swap_status_canceled_due_to_error');
+      case SwapStatus.REFUNDED_CANNOT_COMPLETE:
+        return chrome.i18n.getMessage('swap_status_refunded');
+      case SwapStatus.FUNDS_RETURNED:
+        return chrome.i18n.getMessage('swap_status_returned');
+      case SwapStatus.REFUNDED_SLIPPAGE:
+        return chrome.i18n.getMessage('swap_status_refunded');
       case SwapStatus.STARTED:
         return chrome.i18n.getMessage('swap_status_started');
     }
@@ -41,7 +47,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         return Icons.SUCCESS;
       case 'pending':
         return Icons.PENDING;
-      case 'canceled':
+      case 'failed':
         return Icons.CANCEL;
       default:
         return Icons.PENDING;
@@ -58,52 +64,53 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
 
   return (
     <div className={`history-item`}>
-      <Icon
-        name={Icons.EXPAND_MORE}
-        additionalClassName="expand-panel"
-        onClick={() => setIsOpen(!isOpen)}
-      />
       <div className="history-item-information">
-        <div className="top-row">
-          <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
-            {getShortenedId(swap.id)}
-          </div>
-          <div className={`chip ${swap.status}`}>
-            {getStatusMessage(swap.status)}
-          </div>
-        </div>
+        <Icon
+          name={Icons.EXPAND_MORE}
+          additionalClassName={`expand-panel ${
+            swap.history.length === 0 ? 'hidden' : ''
+          }`}
+          onClick={() => setIsOpen(!isOpen)}
+        />
         <div className="swap-details">
           <div className="from-to">
             {swap.amount} {swap.startToken} {'=>'} {swap.estimatedFinalAmount}{' '}
             {swap.endToken}
           </div>
-        </div>
-        {isOpen && (
-          <div className="history">
-            {swap.history.map((step) => (
-              <div className="step">
-                <div className="step-number">{step.stepNumber}</div>
-                <div className="details">
-                  <div>
-                    {step.amountStartToken} {step.startToken} {'=>'}{' '}
-                    {step.amountEndToken ? step.amountEndToken : '...'}{' '}
-                    {step.endToken}
-                  </div>
-                  <div
-                    className="go-to-tx"
-                    onClick={() => goToTx(step.transactionId)}>
-                    See transaction
-                  </div>
-                </div>
-                <Icon
-                  name={getStepIcon(step.status)}
-                  additionalClassName={`step-status ${step.status}`}
-                />
-              </div>
-            ))}
+          <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
+            {getShortenedId(swap.id)}
           </div>
-        )}
+        </div>
+        <div className={`chip ${swap.status}`}>
+          {getStatusMessage(swap.status)}
+        </div>
       </div>
+
+      {isOpen && swap.history.length !== 0 && (
+        <div className="history">
+          {swap.history.map((step) => (
+            <div className="step" key={swap.id + '' + step.stepNumber}>
+              <div className="step-number">{step.stepNumber}</div>
+              <div className="details">
+                <div className="description">
+                  {step.amountStartToken} {step.startToken} {'=>'}{' '}
+                  {step.amountEndToken ? step.amountEndToken : '...'}{' '}
+                  {step.endToken}
+                </div>
+                <div
+                  className="go-to-tx"
+                  onClick={() => goToTx(step.transactionId)}>
+                  See transaction
+                </div>
+              </div>
+              <Icon
+                name={getStepIcon(step.status)}
+                additionalClassName={`step-status ${step.status}`}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

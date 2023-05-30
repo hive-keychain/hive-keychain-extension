@@ -20,8 +20,11 @@ export enum SwapStepType {
 export enum SwapStatus {
   PENDING = 'PENDING',
   STARTED = 'STARTED',
-  CANCELED = 'CANCELED',
-  FINISHED = 'FINISHED',
+  CANCELED_DUE_TO_ERROR = 'CANCELED_DUE_TO_ERROR',
+  REFUNDED_SLIPPAGE = 'REFUND_SLIPPAGE',
+  REFUNDED_CANNOT_COMPLETE = 'REFUNDED_CANNOT_COMPLETE',
+  COMPLETED = 'COMPLETED',
+  FUNDS_RETURNED = 'FUNDS_RETURNED',
 }
 
 export interface Swap {
@@ -68,4 +71,20 @@ export enum Provider {
   HIVE_ENGINE = 'HIVE_ENGINE',
   LIQUIDITY_POOL = 'LIQUIDITY_POOL',
   HIVE_ENGINE_INTERNAL_MARKET = 'HIVE_ENGINE_INTERNAL_MARKET',
+}
+
+export interface SwapConfig {
+  account: string;
+  fee: SwapFeeConfig;
+  slippage: SwapSlippageConfig;
+}
+
+interface SwapFeeConfig {
+  account: string;
+  amount: number;
+}
+
+interface SwapSlippageConfig {
+  min: number;
+  default: number;
 }

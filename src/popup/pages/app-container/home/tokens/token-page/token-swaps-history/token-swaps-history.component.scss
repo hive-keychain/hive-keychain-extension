@@ -1,7 +1,8 @@
 @import '../../../../../../variable.scss';
 
 .token-swaps-history {
-  @include pageLayoutRowGap;
+  display: flex;
+  flex-direction: column;
 
   .refresh-panel {
     display: flex;
