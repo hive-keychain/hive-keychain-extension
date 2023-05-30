@@ -3,7 +3,6 @@
 .history-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
   min-height: 50px;
   padding: 16px 16px;
   row-gap: 12px;
@@ -61,6 +60,10 @@
         color: black;
       }
     }
+  }
+  .fee-paid {
+    font-size: 15px;
+    margin-left: 32px;
   }
   .history {
     width: 100%;

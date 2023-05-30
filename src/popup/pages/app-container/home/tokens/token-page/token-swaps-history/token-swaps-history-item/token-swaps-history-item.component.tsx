@@ -74,8 +74,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         />
         <div className="swap-details">
           <div className="from-to">
-            {swap.amount} {swap.startToken} {'=>'} {swap.estimatedFinalAmount}{' '}
-            {swap.endToken}
+            {swap.amount} {swap.startToken} {'=>'}{' '}
+            {swap.received ?? swap.estimatedFinalAmount} {swap.endToken}
           </div>
           <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
             {getShortenedId(swap.id)}
@@ -87,29 +87,36 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
       </div>
 
       {isOpen && swap.history.length !== 0 && (
-        <div className="history">
-          {swap.history.map((step) => (
-            <div className="step" key={swap.id + '' + step.stepNumber}>
-              <div className="step-number">{step.stepNumber}</div>
-              <div className="details">
-                <div className="description">
-                  {step.amountStartToken} {step.startToken} {'=>'}{' '}
-                  {step.amountEndToken ? step.amountEndToken : '...'}{' '}
-                  {step.endToken}
-                </div>
-                <div
-                  className="go-to-tx"
-                  onClick={() => goToTx(step.transactionId)}>
-                  See transaction
-                </div>
-              </div>
-              <Icon
-                name={getStepIcon(step.status)}
-                additionalClassName={`step-status ${step.status}`}
-              />
+        <>
+          {!!swap.fee && (
+            <div className="fee-paid">
+              {chrome.i18n.getMessage('swap_fee')} : {swap.fee} {swap.endToken}
             </div>
-          ))}
-        </div>
+          )}
+          <div className="history">
+            {swap.history.map((step) => (
+              <div className="step" key={swap.id + '' + step.stepNumber}>
+                <div className="step-number">{step.stepNumber}</div>
+                <div className="details">
+                  <div className="description">
+                    {step.amountStartToken} {step.startToken} {'=>'}{' '}
+                    {step.amountEndToken ? step.amountEndToken : '...'}{' '}
+                    {step.endToken}
+                  </div>
+                  <div
+                    className="go-to-tx"
+                    onClick={() => goToTx(step.transactionId)}>
+                    See transaction
+                  </div>
+                </div>
+                <Icon
+                  name={getStepIcon(step.status)}
+                  additionalClassName={`step-status ${step.status}`}
+                />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

@@ -38,6 +38,8 @@ export interface Swap {
   status: SwapStatus;
   steps: Step[];
   history: HistoryStep[];
+  received: string;
+  fee: string;
 }
 
 export interface Step {
