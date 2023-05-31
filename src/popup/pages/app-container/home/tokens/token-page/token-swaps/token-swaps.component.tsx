@@ -254,15 +254,20 @@ const TokenSwaps = ({
         startToken?.label!,
       ]);
     }
-
-    const estimateId = await SwapTokenUtils.saveEstimate(
-      estimate!,
-      slippage,
-      startToken?.value.symbol,
-      endToken?.value.symbol,
-      parseFloat(amount),
-      activeAccount.name!,
-    );
+    let estimateId: string;
+    try {
+      estimateId = await SwapTokenUtils.saveEstimate(
+        estimate!,
+        slippage,
+        startToken?.value.symbol,
+        endToken?.value.symbol,
+        parseFloat(amount),
+        activeAccount.name!,
+      );
+    } catch (err: any) {
+      setErrorMessage(err.reason.template, err.reason.params);
+      return;
+    }
 
     const expectedAmount = estimate![estimate!.length - 1].estimate;
 

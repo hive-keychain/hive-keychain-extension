@@ -5,7 +5,6 @@ import { Swap, SwapConfig, SwapStep } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
-import { KeychainError } from 'src/keychain-error';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -79,7 +78,7 @@ const saveEstimate = async (
     username,
   });
   if (response.error) {
-    throw new KeychainError(response.error);
+    throw response.error;
   } else {
     return response.result.estimateId;
   }
