@@ -3172,5 +3172,13 @@
   "swap_fee": {
     "message": "Fee",
     "description": "Swap Fee"
+  },
+  "swap_last_update": {
+    "message": "Last update: $1",
+    "description": "swap last update"
+  },
+  "swap_see_transaction": {
+    "message": "See transaction",
+    "description": "swap see transaction"
   }
 }

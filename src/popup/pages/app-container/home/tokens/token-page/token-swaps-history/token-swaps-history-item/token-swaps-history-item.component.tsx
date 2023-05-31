@@ -2,8 +2,10 @@ import { Swap, SwapStatus } from '@interfaces/swap-token.interface';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import moment from 'moment';
+import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon from 'src/common-ui/icon/icon.component';
 import './token-swaps-history-item.component.scss';
 
@@ -81,9 +83,17 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
             {getShortenedId(swap.id)}
           </div>
         </div>
-        <div className={`chip ${swap.status}`}>
-          {getStatusMessage(swap.status)}
-        </div>
+        <CustomTooltip
+          position="left"
+          delayShow={0}
+          skipTranslation
+          message={chrome.i18n.getMessage('swap_last_update', [
+            moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
+          ])}>
+          <div className={`chip ${swap.status}`}>
+            {getStatusMessage(swap.status)}
+          </div>
+        </CustomTooltip>
       </div>
 
       {isOpen && swap.history.length !== 0 && (
@@ -106,7 +116,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                   <div
                     className="go-to-tx"
                     onClick={() => goToTx(step.transactionId)}>
-                    See transaction
+                    {chrome.i18n.getMessage('swap_see_transaction')}
                   </div>
                 </div>
                 <Icon

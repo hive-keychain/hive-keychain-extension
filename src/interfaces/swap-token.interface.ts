@@ -40,6 +40,7 @@ export interface Swap {
   history: HistoryStep[];
   received: string;
   fee: string;
+  updatedAt: Date;
 }
 
 export interface Step {
