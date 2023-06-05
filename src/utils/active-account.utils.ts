@@ -22,10 +22,26 @@ const getActiveAccountNameFromLocalStorage = async () => {
   return account && account.length ? account : undefined;
 };
 
+const removeAuthorizedAccount = (
+  activeAccount: ActiveAccount,
+  role: 'active' | 'posting',
+  authorizedAccountName: string,
+): ActiveAccount => {
+  const updatedActiveAccount = { ...activeAccount };
+  updatedActiveAccount.account[role] = {
+    ...updatedActiveAccount.account[role],
+    account_auths: updatedActiveAccount.account[role].account_auths.filter(
+      (auth) => auth[0] !== authorizedAccountName,
+    ),
+  };
+  return updatedActiveAccount;
+};
+
 const ActiveAccountUtils = {
   isEmpty,
   saveActiveAccountNameInLocalStorage,
   getActiveAccountNameFromLocalStorage,
+  removeAuthorizedAccount,
 };
 
 export default ActiveAccountUtils;

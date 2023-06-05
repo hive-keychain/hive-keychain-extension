@@ -1,3 +1,4 @@
+import { Currency } from '@interfaces/bittrex.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -17,6 +18,7 @@ interface TokenItemProps {
   tokenInfo: Token;
   market: TokenMarket[];
   ariaLabel?: string;
+  hive: Currency;
 }
 
 const TokenItem = ({
@@ -25,6 +27,7 @@ const TokenItem = ({
   market,
   ariaLabel,
   navigateToWithParams,
+  hive,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
 
@@ -145,12 +148,17 @@ const TokenItem = ({
               {TokensUtils.getHiveEngineTokenValue(
                 tokenBalance,
                 market,
+                hive,
               ).toFixed(2)}{' '}
-              (${TokensUtils.getHiveEngineTokenPrice(tokenBalance, market)}
-              /unit)
+              ($
+              {(
+                TokensUtils.getHiveEngineTokenPrice(tokenBalance, market) *
+                hive?.usd!
+              ).toFixed(2)}
+              /{chrome.i18n.getMessage('token').toLowerCase()})
             </div>
             <div>
-              {chrome.i18n.getMessage('dialog_balance')} :{' '}
+              {chrome.i18n.getMessage('liquid_balance')} :{' '}
               {FormatUtils.trimUselessZero(
                 parseFloat(tokenBalance.balance),
                 tokenInfo.precision,
@@ -255,6 +263,7 @@ const TokenItem = ({
 const mapStateToProps = (state: RootState) => {
   return {
     tokens: state.tokens,
+    hive: state.currencyPrices.hive,
   };
 };
 

@@ -51,6 +51,7 @@ export enum Icons {
   LOGOUT = 'logout',
   MAINTENANCE = 'engineering',
   MANAGE_ACCOUNTS = 'manage_accounts',
+  MANAGE_AUTHORITIES = 'supervisor_account',
   MENU = 'menu',
   MORE_VERT = 'more_vert',
   OPEN_IN_NEW = 'open_in_new',

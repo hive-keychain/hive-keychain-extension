@@ -38,7 +38,7 @@ const voteForKeychainProposal = async (username: string, activeKey: Key) => {
     [
       ProposalUtils.getUpdateProposalVoteOperation(
         [Config.KEYCHAIN_PROPOSAL],
-        false,
+        true,
         username,
       ),
     ],
@@ -199,8 +199,7 @@ const getProposalList = async (
 };
 
 const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
-  let dailyBudget = await ProposalUtils.getProposalDailyBudget();
-
+  let dailyBudget = +(await ProposalUtils.getProposalDailyBudget());
   const proposals = (
     await HiveTxUtils.getData('condenser_api.list_proposals', [
       [-1],
@@ -213,7 +212,8 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
     const dailyPay = Asset.fromString(proposal.daily_pay);
     let fundedOption = FundedOption.NOT_FUNDED;
     if (dailyBudget > 0) {
-      if (dailyBudget - dailyPay.amount / 1000 >= 0) {
+      dailyBudget -= dailyPay.amount;
+      if (dailyBudget >= 0) {
         fundedOption = FundedOption.TOTALLY_FUNDED;
       } else {
         fundedOption = FundedOption.PARTIALLY_FUNDED;
@@ -236,6 +236,7 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
 
   const voteDifference =
     keychainProposal.totalVotes - returnProposal.totalVotes;
+
   return voteDifference < Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
 };
 
