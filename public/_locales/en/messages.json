@@ -3161,6 +3161,10 @@
     "message": "Start and end token should be differents",
     "description": "Start and end tokens should be differents"
   },
+  "swap_not_enough_volume_error": {
+    "message": "Operation impossible at the moment, not enough volume",
+    "description": "Operation impossible because not enough volume"
+  },
   "swap_min_slippage_error": {
     "message": "Slippage should be at least $1%",
     "description": "Minimum slippage error"

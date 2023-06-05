@@ -54,7 +54,7 @@ const getEstimate = async (
     );
 
     if (res.error) {
-      return [];
+      throw res.error;
     }
 
     return res.result;

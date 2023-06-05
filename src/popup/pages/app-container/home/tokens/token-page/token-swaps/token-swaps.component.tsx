@@ -80,8 +80,8 @@ const TokenSwaps = ({
             setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
           }
         },
-        1000,
-        {} as ThrottleSettings,
+        2000,
+        { leading: false } as ThrottleSettings,
       ),
     [],
   );
@@ -207,39 +207,45 @@ const TokenSwaps = ({
     startToken: SelectOption,
     endToken: SelectOption,
   ) => {
-    setLoadingEstimate(true);
     if (startToken === endToken) {
       setErrorMessage('swap_start_end_token_should_be_different');
       return;
     }
 
-    const result: SwapStep[] = await SwapTokenUtils.getEstimate(
-      startToken?.value.symbol,
-      endToken?.value.symbol,
-      amount,
-    );
-    setEstimate(result);
-    if (result.length) {
-      const precision = await TokensUtils.getTokenPrecision(
-        result[result.length - 1].endToken,
+    try {
+      setLoadingEstimate(true);
+      const result: SwapStep[] = await SwapTokenUtils.getEstimate(
+        startToken?.value.symbol,
+        endToken?.value.symbol,
+        amount,
       );
-      const value = Number(result[result.length - 1].estimate).toFixed(
-        precision,
-      );
-      setEstimateValue(value);
-    } else {
-      setEstimateValue(undefined);
+      setEstimate(result);
+      if (result.length) {
+        const precision = await TokensUtils.getTokenPrecision(
+          result[result.length - 1].endToken,
+        );
+        const value = Number(result[result.length - 1].estimate).toFixed(
+          precision,
+        );
+        setEstimateValue(value);
+      } else {
+        setEstimateValue(undefined);
+      }
+    } catch (err: any) {
+      setEstimate(undefined);
+      setErrorMessage(err.reason.template, err.reason.params);
+    } finally {
+      setLoadingEstimate(false);
     }
-    setLoadingEstimate(false);
   };
 
   const processSwap = async () => {
-    // if (slippage < config.slippage.min) {
-    //   setErrorMessage('swap_min_slippage_error', [
-    //     config.slippage.min.toString(),
-    //   ]);
-    //   return;
-    // }
+    if (slippage < config.slippage.min) {
+      setErrorMessage('swap_min_slippage_error', [
+        config.slippage.min.toString(),
+      ]);
+      return;
+    }
     if (startToken?.value.symbol === endToken?.value.symbol) {
       setErrorMessage('swap_start_end_token_should_be_different');
       return;
@@ -253,6 +259,7 @@ const TokenSwaps = ({
       setErrorMessage('hive_engine_overdraw_balance_error', [
         startToken?.label!,
       ]);
+      return;
     }
     let estimateId: string;
     try {
