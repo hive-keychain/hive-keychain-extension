@@ -64,6 +64,7 @@ export enum Icons {
   SAVE = 'save',
   SAVINGS = 'savings',
   SEARCH = 'search',
+  SERVER_UNAVAILABLE = 'cloud_off',
   SETTINGS = 'settings',
   SEND = 'send',
   SHOW_CHART = 'show_chart',

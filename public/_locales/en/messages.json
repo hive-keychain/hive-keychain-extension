@@ -3268,5 +3268,13 @@
   "swap_no_estimate_error": {
     "message": "You need an estimate to be able to process",
     "description": "No estimate error"
+  },
+  "swap_server_unavailable": {
+    "message": "Swap server is currently unavailable, please try again later",
+    "description": "Swap server not responding error"
+  },
+  "service_unavailable_message": {
+    "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
+    "description": "General service unavailable page message"
   }
 }

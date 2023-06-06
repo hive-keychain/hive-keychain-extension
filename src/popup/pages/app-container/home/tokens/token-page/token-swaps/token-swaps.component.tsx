@@ -29,9 +29,11 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import CustomSelect, {
   SelectOption,
 } from 'src/common-ui/select/custom-select.component';
+import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-swaps.component.scss';
@@ -71,6 +73,8 @@ const TokenSwaps = ({
   const [isAdvancedParametersOpen, setIsAdvancedParametersOpen] =
     useState(false);
 
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+
   const throttledRefresh = useMemo(
     () =>
       throttle(
@@ -101,16 +105,22 @@ const TokenSwaps = ({
   }, []);
 
   const init = async () => {
-    const serverStatus = await SwapTokenUtils.getServerStatus();
-    setUnderMaintenance(serverStatus.isMaintenanceOn);
+    try {
+      const serverStatus = await SwapTokenUtils.getServerStatus();
+      setUnderMaintenance(serverStatus.isMaintenanceOn);
 
-    const swapConfig = await SwapTokenUtils.getConfig();
-    setConfig(swapConfig);
-    setSlippage(swapConfig.slippage.default);
+      const swapConfig = await SwapTokenUtils.getConfig();
+      setConfig(swapConfig);
+      setSlippage(swapConfig.slippage.default);
 
-    if (!serverStatus.isMaintenanceOn) {
-      initTokenSelectOptions();
-    } else {
+      if (!serverStatus.isMaintenanceOn) {
+        initTokenSelectOptions();
+      }
+    } catch (err: any) {
+      Logger.error(err);
+      setErrorMessage(err.reason.template, err.reason.params);
+      setServiceUnavailable(true);
+    } finally {
       setLoading(false);
     }
   };
@@ -375,7 +385,7 @@ const TokenSwaps = ({
 
   return (
     <div className="token-swaps" aria-label="token-swaps">
-      {!loading && !underMaintenance && (
+      {!loading && !underMaintenance && !serviceUnavailable && (
         <>
           <div className="caption">
             {chrome.i18n.getMessage('swap_caption')}
@@ -509,6 +519,7 @@ const TokenSwaps = ({
           </div>
         </div>
       )}
+      {serviceUnavailable && <ServiceUnavailablePage />}
     </div>
   );
 };
