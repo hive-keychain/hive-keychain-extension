@@ -3264,5 +3264,9 @@
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
     "description": "Need more RC"
+  },
+  "swap_no_estimate_error": {
+    "message": "You need an estimate to be able to process",
+    "description": "No estimate error"
   }
 }

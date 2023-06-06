@@ -80,7 +80,7 @@ const TokenSwaps = ({
             setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
           }
         },
-        2000,
+        1000,
         { leading: false } as ThrottleSettings,
       ),
     [],
@@ -214,6 +214,8 @@ const TokenSwaps = ({
 
     try {
       setLoadingEstimate(true);
+      setEstimate(undefined);
+      setEstimateValue(undefined);
       const result: SwapStep[] = await SwapTokenUtils.getEstimate(
         startToken?.value.symbol,
         endToken?.value.symbol,
@@ -240,6 +242,10 @@ const TokenSwaps = ({
   };
 
   const processSwap = async () => {
+    if (!estimate) {
+      setErrorMessage('swap_no_estimate_error');
+      return;
+    }
     if (slippage < config.slippage.min) {
       setErrorMessage('swap_min_slippage_error', [
         config.slippage.min.toString(),
@@ -418,6 +424,7 @@ const TokenSwaps = ({
                   label="popup_html_transfer_amount"
                   placeholder="popup_html_transfer_amount"
                   min={0}
+                  onSetToMaxClicked={() => setAmount(startToken?.value.balance)}
                 />
               </div>
               <span className="available">
