@@ -1,6 +1,5 @@
 import App from '@popup/App';
 import React from 'react';
-import FormatUtils from 'src/utils/format.utils';
 import tokenItem from 'src/__tests__/popup/pages/app-container/home/tokens/token-item/mocks/token-item';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -11,10 +10,12 @@ import {
   clickAwait,
   clickAwaitOnFound,
 } from 'src/__tests__/utils-for-testing/setups/events';
+import FormatUtils from 'src/utils/format.utils';
 config.byDefault();
 const { methods, constants } = tokenItem;
 const { userToken, toFind, buttonsIcons } = constants;
 const { data, screenInfo } = userToken;
+//TODO keep working bellow....
 describe('token-item.component tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
