@@ -25,4 +25,9 @@ export const ActionButtonList: ActionButton[] = [
     importedIcon: true,
     nextScreen: Screen.TOKENS_PAGE,
   },
+  {
+    label: 'popup_html_token_swaps',
+    icon: Icons.SWAPS,
+    nextScreen: Screen.TOKEN_SWAP_PAGE,
+  },
 ];

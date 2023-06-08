@@ -72,6 +72,7 @@ export enum Icons {
   SUCCESS = 'check_circle',
   SUPPORT = 'contact_support',
   SWAP = 'swap_vert',
+  SWAPS = 'currency_exchange',
   TIMELAPSE = 'timelapse',
   TOKENS = 'generating_tokens',
   TWITTER = 'twitter.svg',

@@ -14,6 +14,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -47,6 +48,7 @@ const TokenSwaps = ({
   goBackToThenNavigate,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [config, setConfig] = useState<SwapConfig>({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
@@ -95,13 +97,14 @@ const TokenSwaps = ({
   }, [amount, endToken, startToken]);
 
   useEffect(() => {
+    init();
+    setTitleContainerProperties({
+      title: 'popup_html_token_swaps',
+      isBackButtonEnabled: true,
+    });
     return () => {
       throttledRefresh.cancel();
     };
-  }, []);
-
-  useEffect(() => {
-    init();
   }, []);
 
   const init = async () => {
@@ -536,6 +539,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   goBackToThenNavigate,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
