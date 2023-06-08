@@ -7,7 +7,7 @@ import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -126,7 +126,7 @@ const TokenItem = ({
       </div>
       {tokenInfo && (
         <div
-          aria-label="token-info-expandable-panel"
+          aria-label={`token-info-expandable-panel-${tokenBalance.symbol}`}
           className={
             isExpandablePanelOpen
               ? 'expandable-panel opened'
@@ -134,7 +134,7 @@ const TokenItem = ({
           }>
           <div className="token-info">
             <div
-              aria-label="token-info-go-to-website"
+              aria-label={`token-info-go-to-website-${tokenBalance.symbol}`}
               className="token-description"
               onClick={goToTokenWebsite}>
               <div className="token-name-issuer">
@@ -185,7 +185,7 @@ const TokenItem = ({
               )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label="button-go-to-incoming-delegations"
+                aria-label={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
@@ -200,7 +200,7 @@ const TokenItem = ({
             )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label="button-go-to-outgoing-delegations"
+                aria-label={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
                 <div>
@@ -230,7 +230,7 @@ const TokenItem = ({
               <div className="button-panel">
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label="button-token-stake"
+                    aria-label={`button-token-stake-${tokenBalance.symbol}`}
                     className="action-button stake"
                     onClick={() => stake()}>
                     {chrome.i18n.getMessage('popup_html_token_stake')}
@@ -238,7 +238,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label="button-token-unstake"
+                    aria-label={`button-token-unstake-${tokenBalance.symbol}`}
                     className="action-button unstake"
                     onClick={() => unstake()}>
                     {chrome.i18n.getMessage('popup_html_token_unstake')}
@@ -246,7 +246,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.delegationEnabled && (
                   <div
-                    aria-label="button-token-delegate"
+                    aria-label={`button-token-delegate-${tokenBalance.symbol}`}
                     className="action-button delegate"
                     onClick={() => delegate()}>
                     {chrome.i18n.getMessage('popup_html_token_delegate')}

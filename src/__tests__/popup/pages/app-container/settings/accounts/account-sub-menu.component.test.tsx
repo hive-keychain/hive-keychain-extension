@@ -11,6 +11,9 @@ import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-labe
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
 import AccountUtils from 'src/utils/account.utils';
+//TODO after refactoring all test, ensure all works, change aria-labels to test
+// in the component/html ele => data-testid="settings-accounts-page"
+//  i.e: testing will look like -> expect(screen.getByTestId('settings-accounts-page')).toBeInTheDocument();
 describe('account-sub-menu.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -31,12 +34,6 @@ describe('account-sub-menu.component tests:\n', () => {
   });
 
   it('Must show sub account menu page', async () => {
-    //TODO after refactoring all test, ensure all works, change aria-labels to test
-    //TODO just for testing remove
-    // in the component/html ele => data-testid="settings-accounts-page"
-    //end
-    // expect(screen.getByTestId('settings-accounts-page')).toBeInTheDocument();
-    //end test
     expect(
       screen.getByLabelText(`${Screen.SETTINGS_ACCOUNTS}-page`),
     ).toBeInTheDocument();

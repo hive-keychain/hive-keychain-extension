@@ -56,6 +56,17 @@ const ariaLabelDiv = {
         gotoWebSite: 'token-info-go-to-website',
         expandablePanel: 'token-info-expandable-panel',
       },
+      prefixes: {
+        gotoWebSite: 'token-info-go-to-website-',
+        expandablePanel: 'token-info-expandable-panel-',
+        incomingDelegations: 'button-go-to-incoming-delegations-',
+        outgoingDelegations: 'button-go-to-outgoing-delegations-',
+        action: {
+          stake: 'button-token-stake-',
+          delegate: 'button-token-delegate-',
+          unstake: 'button-token-unstake-',
+        },
+      },
     },
     list: {
       preFix: 'token-list-item-',
