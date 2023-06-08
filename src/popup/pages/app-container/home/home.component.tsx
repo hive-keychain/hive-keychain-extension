@@ -111,18 +111,18 @@ const Home = ({
     );
     let foundWrongKey: WrongKeysOnUser;
     try {
-      let no_key_check: WrongKeysOnUser =
+      let noKeyCheck: WrongKeysOnUser =
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
-      if (!no_key_check) no_key_check = { [localAccounts[0].name!]: [] };
+      if (!noKeyCheck) noKeyCheck = { [localAccounts[0].name!]: [] };
 
       for (let i = 0; i < extendedAccountsList.length; i++) {
         const accountName = localAccounts[i].name!;
         const keys = localAccounts[i].keys;
         foundWrongKey = { [accountName]: [] };
-        if (!no_key_check.hasOwnProperty(accountName)) {
-          no_key_check = { ...no_key_check, [accountName]: [] };
+        if (!noKeyCheck.hasOwnProperty(accountName)) {
+          noKeyCheck = { ...noKeyCheck, [accountName]: [] };
         }
         for (const [key, value] of Object.entries(keys)) {
           foundWrongKey = KeysUtils.checkWrongKeyOnAccount(
@@ -131,7 +131,7 @@ const Home = ({
             accountName,
             extendedAccountsList[i],
             foundWrongKey,
-            !!no_key_check[accountName].find(
+            !!noKeyCheck[accountName].find(
               (keyName: string) => keyName === key.split('Pubkey')[0],
             ),
           );
