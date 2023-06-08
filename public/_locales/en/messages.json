@@ -3140,5 +3140,13 @@
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
     "description": "Need more RC"
+  },
+  "tx_missing_active_auth": {
+    "message": "Active key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Active key incorrect"
+  },
+  "tx_missing_posting_auth": {
+    "message": "Posting key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Posting key incorrect"
   }
 }

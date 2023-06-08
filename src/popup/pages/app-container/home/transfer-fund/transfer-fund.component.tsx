@@ -21,7 +21,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -299,7 +299,7 @@ const TransferFunds = ({
           }
         } catch (err: any) {
           Logger.error(err);
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, err.messageParams);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }

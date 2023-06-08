@@ -108,7 +108,17 @@ const AccountKeysListItem = ({
   return (
     <div className="account-keys-list-item">
       <div className="top-panel">
-        <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
+        <div className="key-name">
+          <span>{chrome.i18n.getMessage(keyName)} </span>
+          {isWrongKey && (
+            <CustomTooltip
+              message="popup_html_wrong_key_tooltip_text"
+              position={'bottom'}
+              additionalClassContent="tool-tip-custom">
+              <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+            </CustomTooltip>
+          )}
+        </div>
         {publicKey && privateKey && canDelete && (
           <Icon
             ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
@@ -149,20 +159,9 @@ const AccountKeysListItem = ({
                   : privateKey}
               </div>
               <div
-                className={`public-key key-field ${
-                  isWrongKey ? 'wrong-key' : ''
-                }`}
+                className={`public-key key-field`}
                 onClick={() => copyToClipboard(publicKey)}>
-                {isWrongKey ? (
-                  <CustomTooltip
-                    message="popup_html_wrong_key_tooltip_text"
-                    position={'top'}
-                    additionalClassContent="tool-tip-custom">
-                    <>{publicKey}</>
-                  </CustomTooltip>
-                ) : (
-                  publicKey
-                )}
+                {publicKey}
               </div>
             </>
           )}

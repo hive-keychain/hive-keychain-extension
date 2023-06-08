@@ -57,9 +57,9 @@ const AccountKeysList = ({
     return (
       wrongKeysFound &&
       wrongKeysFound[activeAccount.name!] &&
-      wrongKeysFound[activeAccount.name!].findIndex(
+      !!wrongKeysFound[activeAccount.name!].find(
         (keyFound) => keyFound === keyType,
-      ) !== -1
+      )
     );
   };
 
