@@ -103,7 +103,6 @@ const App = ({
 
   useEffect(() => {
     initHasStoredAccounts();
-    console.log(navigationStack);
     const found = navigationStack.find(
       (navigation) =>
         navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||

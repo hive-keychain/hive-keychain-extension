@@ -108,8 +108,8 @@ const AccountKeysListItem = ({
   return (
     <div className="account-keys-list-item">
       <div className="top-panel">
-        <div className="key-name">
-          <span>{chrome.i18n.getMessage(keyName)} </span>
+        <div className="key-name-container">
+          <span className="key-name">{chrome.i18n.getMessage(keyName)} </span>
           {isWrongKey && (
             <CustomTooltip
               message="popup_html_wrong_key_tooltip_text"
