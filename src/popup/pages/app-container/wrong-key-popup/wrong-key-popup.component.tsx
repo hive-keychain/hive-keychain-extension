@@ -4,7 +4,7 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -28,15 +28,12 @@ const WrongKeyPopup = ({
   loadActiveAccount,
   accounts,
 }: Props & PropsType) => {
-  const [accountFound, setaccountFound] = useState<string>();
-  const [wrongKeysFound, setWrongKeysFound] = useState<string[]>();
-
-  useEffect(() => {
-    if (displayWrongKeyPopup) {
-      setaccountFound(Object.keys(displayWrongKeyPopup)[0]);
-      setWrongKeysFound(Object.values(displayWrongKeyPopup)[0] as string[]);
-    }
-  }, []);
+  const [accountFound, setaccountFound] = useState(
+    Object.keys(displayWrongKeyPopup)[0],
+  );
+  const [wrongKeysFound, setWrongKeysFound] = useState<string[]>(
+    Object.values(displayWrongKeyPopup)[0],
+  );
 
   const skipKeyCheckOnAccount = async () => {
     let prevNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
@@ -69,7 +66,7 @@ const WrongKeyPopup = ({
     navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS);
   };
 
-  return accountFound && wrongKeysFound ? (
+  return (
     <div className="wrong-key-popup">
       <div className="overlay"></div>
       <div className="wrong-key-popup-container">
@@ -103,7 +100,7 @@ const WrongKeyPopup = ({
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
