@@ -30,7 +30,13 @@ describe('account-sub-menu.component tests:\n', () => {
     });
   });
 
-  it('Must show sub account menu page', () => {
+  it('Must show sub account menu page', async () => {
+    //TODO after refactoring all test, ensure all works, change aria-labels to test
+    //TODO just for testing remove
+    // in the component/html ele => data-testid="settings-accounts-page"
+    //end
+    // expect(screen.getByTestId('settings-accounts-page')).toBeInTheDocument();
+    //end test
     expect(
       screen.getByLabelText(`${Screen.SETTINGS_ACCOUNTS}-page`),
     ).toBeInTheDocument();

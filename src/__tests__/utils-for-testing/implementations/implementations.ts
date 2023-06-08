@@ -52,8 +52,10 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
         ? customData.customWalletHistoryFilters
         : DEFAULT_FILTER;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
+      //TODO add customData here
       return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
+      //TODO add customData here
       return { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
       return hasKeys(customData)
@@ -66,6 +68,7 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
       return hasKeys(customData) ? customData.customRpcList : [];
     case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
+      //TODO add customData here
       return true;
     case LocalStorageKeyEnum.RPC_LIST:
       return hasKeys(customData) ? customData.customsRpcs : [];

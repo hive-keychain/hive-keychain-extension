@@ -1,7 +1,8 @@
 import { RootState } from '@popup/store';
 import { waitFor } from '@testing-library/react';
 import { ReactElement } from 'react';
-import loadingValuesConfiguration, {
+import {
+  LoadingValuesConfiguration,
   TestsAppLoadingValues,
   TestsConfigureModules,
 } from 'src/__tests__/utils-for-testing/loading-values-configuration/loading-values-configuration';
@@ -16,6 +17,9 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
  *  2. app: All values needed when loading the app that will affect the state & app behaviour.
  * @see Important: ->> If no params, the function will load default values on app state.
  */
+//TODO
+//  CTRL + SHift + F (global search)
+// change to export just renderWithConfiguration + replace everywhere.
 const renderWithConfiguration = async (
   reactComponent: ReactElement,
   initialState: RootState,
@@ -24,13 +28,13 @@ const renderWithConfiguration = async (
     app?: TestsAppLoadingValues;
   },
 ) => {
-  loadingValuesConfiguration.set(params);
+  LoadingValuesConfiguration.set(params);
   customRender(reactComponent, { initialState: initialState });
   //Necessary line bellow. It will wait for promises/timers to execute and render after all async processes.
   //Reference: https://github.com/jestjs/jest/issues/2157#issuecomment-279171856
   await waitFor(() => {});
 };
-
+//
 const reactTestingLibrary = { renderWithConfiguration };
 
 export default reactTestingLibrary;

@@ -565,6 +565,4 @@ const set = (params?: {
   //////////
 };
 
-const loadingValuesConfiguration = { set };
-
-export default loadingValuesConfiguration;
+export const LoadingValuesConfiguration = { set };
