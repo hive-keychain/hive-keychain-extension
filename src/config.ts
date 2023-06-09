@@ -38,6 +38,10 @@ const Config = {
   swaps: {
     autoRefreshEveryXSec: Number(process.env.DEV_SWAP_AUTO_REFRESH) ?? 30,
     swapAccount: process.env.DEV_SWAP_ACCOUNT || '...',
+    baseURL:
+      process.env.KEYCHAIN_SWAP_API_DEV === 'true'
+        ? 'http://localhost:5050'
+        : 'https://swap.hive-keychain.com',
   },
 };
 

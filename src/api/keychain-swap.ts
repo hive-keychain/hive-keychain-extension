@@ -1,10 +1,8 @@
 import { BaseApi } from '@api/base';
+import Config from 'src/config';
 
 const buildUrl = (url: string) => {
-  const baseURL =
-    process.env.KEYCHAIN_SWAP_API_DEV === 'true'
-      ? 'http://localhost:5050'
-      : 'to fill'; // TODO fill when ready
+  const baseURL = Config.swaps.baseURL;
   return `${baseURL}/${url}`;
 };
 
