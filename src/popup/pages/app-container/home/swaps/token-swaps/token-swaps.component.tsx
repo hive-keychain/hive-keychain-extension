@@ -389,146 +389,154 @@ const TokenSwaps = ({
     setStartToken(endToken);
     setEndToken(tmp);
   };
-
-  return (
-    <div className="token-swaps" aria-label="token-swaps">
-      {!loading && !underMaintenance && !serviceUnavailable && (
-        <>
-          <div className="caption">
-            {chrome.i18n.getMessage('swap_caption')}
-          </div>
-          <div className="fee">
-            {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
-          </div>
-          <div className="top-row">
-            <div className="countdown">
-              {!!autoRefreshCountdown && (
-                <>
-                  {<span>Auto refresh in {autoRefreshCountdown} sec</span>}
-                  <Icon
-                    name={Icons.REFRESH}
-                    onClick={() =>
-                      calculateEstimate(amount, startToken!, endToken!)
-                    }
-                    rotate={loadingEstimate}
-                  />
-                </>
-              )}
+  if (loading)
+    return (
+      <div className="rotating-logo-wrapper">
+        <RotatingLogoComponent />
+      </div>
+    );
+  else
+    return (
+      <div className="token-swaps" aria-label="token-swaps">
+        {!loading && !underMaintenance && !serviceUnavailable && (
+          <>
+            <div className="caption">
+              {chrome.i18n.getMessage('swap_caption')}
             </div>
-
-            <Icon
-              name={Icons.HISTORY}
-              type={IconType.OUTLINED}
-              onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
-            />
-          </div>
-
-          <div className="form">
-            <div className="start-token">
-              <div className="inputs">
-                {startTokenListOptions.length > 0 && (
-                  <CustomSelect
-                    selectedValue={startToken}
-                    options={startTokenListOptions}
-                    skipLabelTranslation
-                    setSelectedValue={setStartToken}
-                  />
+            <div className="fee">
+              {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
+            </div>
+            <div className="top-row">
+              <div className="countdown">
+                {!!autoRefreshCountdown && (
+                  <>
+                    {<span>Auto refresh in {autoRefreshCountdown} sec</span>}
+                    <Icon
+                      name={Icons.REFRESH}
+                      onClick={() =>
+                        calculateEstimate(amount, startToken!, endToken!)
+                      }
+                      rotate={loadingEstimate}
+                    />
+                  </>
                 )}
-                <InputComponent
-                  type={InputType.NUMBER}
-                  value={amount}
-                  onChange={setAmount}
-                  label="popup_html_transfer_amount"
-                  placeholder="popup_html_transfer_amount"
-                  min={0}
-                  onSetToMaxClicked={() => setAmount(startToken?.value.balance)}
-                />
               </div>
-              <span className="available">
-                {chrome.i18n.getMessage('popup_html_available')} :{' '}
-                {startToken?.value.balance}
-              </span>
+
+              <Icon
+                name={Icons.HISTORY}
+                type={IconType.OUTLINED}
+                onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
+              />
             </div>
-            <Icon
-              type={IconType.OUTLINED}
-              name={Icons.SWAP}
-              onClick={swapStartAndEnd}
-              additionalClassName="swap-icon"
-            />
-            <div className="end-token">
-              {endTokenListOptions.length > 0 && (
-                <div>
-                  <CustomSelect
-                    selectedValue={endToken}
-                    options={endTokenListOptions}
-                    skipLabelTranslation
-                    setSelectedValue={setEndToken}
-                    filterable
-                  />
-                  {estimate && estimate.length > 0 && (
-                    <div className="final-value">
-                      {chrome.i18n.getMessage('html_popup_swaps_final_price', [
-                        estimateValue!,
-                        endToken?.label!,
-                      ])}
-                    </div>
+
+            <div className="form">
+              <div className="start-token">
+                <div className="inputs">
+                  {startTokenListOptions.length > 0 && (
+                    <CustomSelect
+                      selectedValue={startToken}
+                      options={startTokenListOptions}
+                      skipLabelTranslation
+                      setSelectedValue={setStartToken}
+                    />
                   )}
-                </div>
-              )}
-            </div>
-            <div className="advanced-parameters">
-              <div
-                className="title-panel"
-                onClick={() =>
-                  setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
-                }>
-                <div className="title">
-                  {chrome.i18n.getMessage('swap_advanced_parameters')}
-                </div>
-                <Icon
-                  name={Icons.ARROW_DROPDOWN}
-                  onClick={() =>
-                    setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
-                  }
-                />
-              </div>
-              {isAdvancedParametersOpen && (
-                <div className="advanced-parameters-container">
                   <InputComponent
                     type={InputType.NUMBER}
-                    min={5}
-                    step={1}
-                    value={slippage}
-                    onChange={setSlippage}
-                    label="html_popup_swaps_slipperage"
-                    placeholder="html_popup_swaps_slipperage"
-                    tooltip="html_popup_swaps_slippage_definition"
+                    value={amount}
+                    onChange={setAmount}
+                    label="popup_html_transfer_amount"
+                    placeholder="popup_html_transfer_amount"
+                    min={0}
+                    onSetToMaxClicked={() =>
+                      setAmount(startToken?.value.balance)
+                    }
                   />
                 </div>
-              )}
+                <span className="available">
+                  {chrome.i18n.getMessage('popup_html_available')} :{' '}
+                  {startToken?.value.balance}
+                </span>
+              </div>
+              <Icon
+                type={IconType.OUTLINED}
+                name={Icons.SWAP}
+                onClick={swapStartAndEnd}
+                additionalClassName="swap-icon"
+              />
+              <div className="end-token">
+                {endTokenListOptions.length > 0 && (
+                  <div>
+                    <CustomSelect
+                      selectedValue={endToken}
+                      options={endTokenListOptions}
+                      skipLabelTranslation
+                      setSelectedValue={setEndToken}
+                      filterable
+                    />
+                    {estimate && estimate.length > 0 && (
+                      <div className="final-value">
+                        {chrome.i18n.getMessage(
+                          'html_popup_swaps_final_price',
+                          [estimateValue!, endToken?.label!],
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="advanced-parameters">
+                <div
+                  className="title-panel"
+                  onClick={() =>
+                    setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                  }>
+                  <div className="title">
+                    {chrome.i18n.getMessage('swap_advanced_parameters')}
+                  </div>
+                  <Icon
+                    name={Icons.ARROW_DROPDOWN}
+                    onClick={() =>
+                      setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                    }
+                  />
+                </div>
+                {isAdvancedParametersOpen && (
+                  <div className="advanced-parameters-container">
+                    <InputComponent
+                      type={InputType.NUMBER}
+                      min={5}
+                      step={1}
+                      value={slippage}
+                      onChange={setSlippage}
+                      label="html_popup_swaps_slipperage"
+                      placeholder="html_popup_swaps_slipperage"
+                      tooltip="html_popup_swaps_slippage_definition"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <OperationButtonComponent
+              ariaLabel="operation-process-button"
+              requiredKey={KeychainKeyTypesLC.active}
+              onClick={processSwap}
+              label={'html_popup_swaps_process_swap'}
+            />
+          </>
+        )}
+
+        {underMaintenance && (
+          <div className="maintenance-mode">
+            <Icon name={Icons.MAINTENANCE} />
+            <div className="text">
+              {chrome.i18n.getMessage('swap_under_maintenance')}
             </div>
           </div>
-
-          <OperationButtonComponent
-            ariaLabel="operation-process-button"
-            requiredKey={KeychainKeyTypesLC.active}
-            onClick={processSwap}
-            label={'html_popup_swaps_process_swap'}
-          />
-        </>
-      )}
-      {loading && <RotatingLogoComponent />}
-      {underMaintenance && (
-        <div className="maintenance-mode">
-          <Icon name={Icons.MAINTENANCE} />
-          <div className="text">
-            {chrome.i18n.getMessage('swap_under_maintenance')}
-          </div>
-        </div>
-      )}
-      {serviceUnavailable && <ServiceUnavailablePage />}
-    </div>
-  );
+        )}
+        {serviceUnavailable && <ServiceUnavailablePage />}
+      </div>
+    );
 };
 
 const mapStateToProps = (state: RootState) => {
