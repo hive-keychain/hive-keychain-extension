@@ -33,6 +33,7 @@ import CustomSelect, {
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
@@ -247,7 +248,7 @@ const TokenSwaps = ({
           100;
         const finalValue = Number(value - fee).toFixed(precision);
         setEstimate(result);
-        setEstimateValue(finalValue);
+        setEstimateValue(FormatUtils.withCommas(finalValue));
       } else {
         setEstimateValue(undefined);
       }
@@ -314,11 +315,11 @@ const TokenSwaps = ({
       { label: 'html_popup_swap_swap_id', value: estimateId },
       {
         label: 'html_popup_swap_swap_amount',
-        value: `${Number(amount).toFixed(startTokenPrecision)} ${
-          startToken?.value.symbol
-        } => ${expectedAmount.toFixed(endTokenPrecision)} ${
-          endToken?.value.symbol
-        }`,
+        value: `${FormatUtils.withCommas(
+          Number(amount).toFixed(startTokenPrecision),
+        )} ${startToken?.value.symbol} => ${FormatUtils.withCommas(
+          expectedAmount.toFixed(endTokenPrecision),
+        )} ${endToken?.value.symbol}`,
       },
       {
         label: 'html_popup_swap_swap_slipperage',
@@ -454,7 +455,7 @@ const TokenSwaps = ({
                 </div>
                 <span className="available">
                   {chrome.i18n.getMessage('popup_html_available')} :{' '}
-                  {startToken?.value.balance}
+                  {FormatUtils.withCommas(startToken?.value.balance)}
                 </span>
               </div>
               <Icon

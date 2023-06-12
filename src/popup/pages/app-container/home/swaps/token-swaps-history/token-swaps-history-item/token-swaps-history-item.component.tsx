@@ -7,6 +7,7 @@ import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon from 'src/common-ui/icon/icon.component';
+import FormatUtils from 'src/utils/format.utils';
 import './token-swaps-history-item.component.scss';
 
 interface Props {
@@ -63,7 +64,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
       url: url,
     });
   };
-
   return (
     <div className={`history-item`}>
       <div className="history-item-information">
@@ -76,8 +76,12 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         />
         <div className="swap-details">
           <div className="from-to">
-            {swap.amount} {swap.startToken} {'=>'}{' '}
-            {swap.received ?? swap.estimatedFinalAmount} {swap.endToken}
+            {FormatUtils.withCommas(swap.amount)} {swap.startToken} {'=>'}{' '}
+            {swap.received ??
+              (swap.estimatedFinalAmount === '...'
+                ? swap.estimatedFinalAmount
+                : FormatUtils.withCommas(swap.estimatedFinalAmount))}{' '}
+            {swap.endToken}
           </div>
           <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
             {getShortenedId(swap.id)}
@@ -109,8 +113,11 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                 <div className="step-number">{step.stepNumber}</div>
                 <div className="details">
                   <div className="description">
-                    {step.amountStartToken} {step.startToken} {'=>'}{' '}
-                    {step.amountEndToken ? step.amountEndToken : '...'}{' '}
+                    {FormatUtils.withCommas(step.amountStartToken + '')}{' '}
+                    {step.startToken} {'=>'}{' '}
+                    {step.amountEndToken
+                      ? FormatUtils.withCommas(step.amountEndToken + '')
+                      : '...'}{' '}
                     {step.endToken}
                   </div>
                   <div
