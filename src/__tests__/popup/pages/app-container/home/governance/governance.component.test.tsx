@@ -1,34 +1,60 @@
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import governance from 'src/__tests__/popup/pages/app-container/home/governance/mocks/governance';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alTab from 'src/__tests__/utils-for-testing/aria-labels/al-tab';
-import { QueryDOM, Tab } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import ariaLabelTab from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tab';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import witness from 'src/__tests__/utils-for-testing/data/witness';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+
 describe('governance.component tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    await governance.beforeEach(<App />);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(
+        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+      );
+    });
   });
-  governance.methods.afterEach;
-  it('Must load governance page', () => {
-    assertion.getByLabelText(alComponent.governancePage);
+
+  it('Must load governance page & witness tab by default', async () => {
+    expect(
+      await screen.findByLabelText(`${Screen.GOVERNANCE_PAGE}-page`),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findAllByLabelText(ariaLabelDiv.rankingItem),
+    ).toHaveLength(witness.ranking.length);
   });
-  it('Must load witness tab by default', () => {
-    assertion.getByText([
-      { arialabelOrText: alTab.witness, query: QueryDOM.BYLABEL },
-      { arialabelOrText: alDiv.ranking, query: QueryDOM.BYLABEL },
-    ]);
-  });
-  it('Must load proposal tab', async () => {
-    await governance.methods.gotoTab(Tab.PROPOSAL);
-    assertion.getByLabelText(alTab.proposal);
-  });
+
   it('Must load proxy tab', async () => {
-    await governance.methods.gotoTab(Tab.PROXY);
-    assertion.getByLabelText(alTab.proxy);
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('tab')[1]);
+    });
+    expect(
+      await screen.findByLabelText(ariaLabelTab.proxy),
+    ).toBeInTheDocument();
+  });
+
+  it('Must load proposal tab', async () => {
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('tab')[2]);
+    });
+    expect(
+      await screen.findByLabelText(ariaLabelTab.proposal),
+    ).toBeInTheDocument();
   });
 });

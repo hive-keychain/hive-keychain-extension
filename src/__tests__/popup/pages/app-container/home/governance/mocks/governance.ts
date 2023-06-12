@@ -1,7 +1,5 @@
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
-import ProposalUtils from 'src/utils/proposal.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -20,7 +18,9 @@ import {
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
-
+import ProposalUtils from 'src/utils/proposal.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
+//TODO delete file after finishing governance related tests
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
