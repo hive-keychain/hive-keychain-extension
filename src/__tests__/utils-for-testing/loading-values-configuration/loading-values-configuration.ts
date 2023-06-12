@@ -106,6 +106,7 @@ export interface TestsAppLoadingValues {
       hasStoredAccounts?: boolean;
       getAccountsFromLocalStorage?: LocalAccount[];
       getAccountValue?: string | 0;
+      getPowerDown?: string[];
     };
     MkUtils?: { getMkFromLocalStorage?: string };
     HiveUtils?: {
@@ -358,6 +359,11 @@ const set = (params?: {
     .fn()
     .mockReturnValue(
       params?.app?.accountsRelated?.AccountUtils?.getAccountValue ?? '100000',
+    );
+  AccountUtils.getPowerDown = jest
+    .fn()
+    .mockReturnValue(
+      params?.app?.accountsRelated?.AccountUtils?.getPowerDown ?? [],
     );
   MkUtils.getMkFromLocalStorage = jest
     .fn()
