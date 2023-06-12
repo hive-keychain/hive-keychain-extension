@@ -211,7 +211,7 @@ const TokenSwaps = ({
     setEndToken(
       lastUsed.to
         ? list.find((t) => t.value.symbol === lastUsed.to.symbol)
-        : undefined,
+        : list[1],
     );
     setEndTokenListOptions(endList);
   };
