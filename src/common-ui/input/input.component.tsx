@@ -32,7 +32,7 @@ interface InputProps {
   onSetToMaxClicked?(): any;
 }
 
-const InputComponent = (props: InputProps) => {
+const InputComponent = React.forwardRef((props: InputProps, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -80,6 +80,7 @@ const InputComponent = (props: InputProps) => {
         } ${isFocused ? 'focused' : ''} `}>
         <input
           aria-label={props.ariaLabel}
+          ref={ref as any}
           className={`${props.hasError ? 'has-error' : ''} ${
             props.onSetToMaxClicked ? 'has-max-button' : ''
           }`}
@@ -162,6 +163,6 @@ const InputComponent = (props: InputProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default InputComponent;

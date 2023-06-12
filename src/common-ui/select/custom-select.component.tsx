@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import 'react-tabs/style/react-tabs.scss';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -31,7 +31,7 @@ const CustomSelect = ({
   const updateSelectedValue = (newValue: any) => {
     setSelectedValue(newValue);
   };
-
+  const ref = useRef<HTMLInputElement>(null);
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [query, setQuery] = useState('');
 
@@ -80,6 +80,9 @@ const CustomSelect = ({
     state,
     methods,
   }: SelectRenderer<SelectOption>) => {
+    setTimeout(() => {
+      ref.current?.focus();
+    }, 200);
     return (
       <div className="custom-dropdown">
         {filterable && (
@@ -88,6 +91,7 @@ const CustomSelect = ({
             value={query}
             placeholder={''}
             type={InputType.TEXT}
+            ref={ref}
           />
         )}
         {filteredOptions.map((option) => {

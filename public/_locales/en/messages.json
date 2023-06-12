@@ -3270,7 +3270,7 @@
     "description": "No estimate error"
   },
   "swap_server_unavailable": {
-    "message": "Swap server is currently unavailable, please try again later",
+    "message": "The swap server is currently unavailable, please try again later",
     "description": "Swap server not responding error"
   },
   "service_unavailable_message": {

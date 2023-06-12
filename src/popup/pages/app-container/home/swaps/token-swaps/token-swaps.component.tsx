@@ -439,13 +439,14 @@ const TokenSwaps = ({
                       options={startTokenListOptions}
                       skipLabelTranslation
                       setSelectedValue={setStartToken}
+                      filterable
                     />
                   )}
                   <InputComponent
                     type={InputType.NUMBER}
                     value={amount}
                     onChange={setAmount}
-                    label="popup_html_transfer_amount"
+                    // label="popup_html_transfer_amount"
                     placeholder="popup_html_transfer_amount"
                     min={0}
                     onSetToMaxClicked={() =>
