@@ -155,6 +155,7 @@ const getServerStatus = async () => {
 
 const getConfig = async (): Promise<SwapConfig> => {
   const res = await KeychainSwapApi.get(`token-swap/public-config`);
+  console.log(res);
   return res.result;
 };
 

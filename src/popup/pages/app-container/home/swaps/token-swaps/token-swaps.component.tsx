@@ -50,7 +50,7 @@ const TokenSwaps = ({
   removeFromLoadingList,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [config, setConfig] = useState<SwapConfig>({} as SwapConfig);
+  const [swapConfig, setSwapConfig] = useState<SwapConfig>({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingEstimate, setLoadingEstimate] = useState(false);
@@ -109,15 +109,17 @@ const TokenSwaps = ({
 
   const init = async () => {
     try {
+      setLoading(true);
       const serverStatus = await SwapTokenUtils.getServerStatus();
       setUnderMaintenance(serverStatus.isMaintenanceOn);
 
-      const swapConfig = await SwapTokenUtils.getConfig();
-      setConfig(swapConfig);
-      setSlippage(swapConfig.slippage.default);
+      const res = await SwapTokenUtils.getConfig();
+      console.log(res);
+      setSwapConfig(res);
+      setSlippage(res.slippage.default);
 
       if (!serverStatus.isMaintenanceOn) {
-        initTokenSelectOptions();
+        await initTokenSelectOptions();
       }
     } catch (err: any) {
       Logger.error(err);
@@ -212,7 +214,6 @@ const TokenSwaps = ({
         : undefined,
     );
     setEndTokenListOptions(endList);
-    setLoading(false);
   };
 
   const calculateEstimate = async (
@@ -234,19 +235,24 @@ const TokenSwaps = ({
         endToken?.value.symbol,
         amount,
       );
-      setEstimate(result);
+
       if (result.length) {
         const precision = await TokensUtils.getTokenPrecision(
           result[result.length - 1].endToken,
         );
-        const value = Number(result[result.length - 1].estimate).toFixed(
-          precision,
-        );
-        setEstimateValue(value);
+        console.log(swapConfig); //TODO find out why this is undefined
+        const value = Number(result[result.length - 1].estimate);
+        const fee =
+          (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
+          100;
+        const finalValue = Number(value - fee).toFixed(precision);
+        setEstimate(result);
+        setEstimateValue(finalValue);
       } else {
         setEstimateValue(undefined);
       }
     } catch (err: any) {
+      console.log(err);
       setEstimate(undefined);
       setErrorMessage(err.reason.template, err.reason.params);
     } finally {
@@ -259,9 +265,9 @@ const TokenSwaps = ({
       setErrorMessage('swap_no_estimate_error');
       return;
     }
-    if (slippage < config.slippage.min) {
+    if (slippage < swapConfig.slippage.min) {
       setErrorMessage('swap_min_slippage_error', [
-        config.slippage.min.toString(),
+        swapConfig.slippage.min.toString(),
       ]);
       return;
     }
@@ -394,7 +400,7 @@ const TokenSwaps = ({
             {chrome.i18n.getMessage('swap_caption')}
           </div>
           <div className="fee">
-            {chrome.i18n.getMessage('swap_fee')}: {config.fee.amount}%
+            {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
           </div>
           <div className="top-row">
             <div className="countdown">
