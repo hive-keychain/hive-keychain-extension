@@ -1,108 +1,613 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
 import App from '@popup/App';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import savings from 'src/__tests__/popup/pages/app-container/home/savings/mocks/savings';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
+
 describe('savings.component tests:\n', () => {
-  const { methods, constants } = savings;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+  });
   describe('HIVE:\n', () => {
-    const currency = 'HIVE';
-    beforeEach(async () => {
-      await savings.beforeEach(<App />, constants.toHiveSavings);
-    });
-    it('Must show saving and liquid balances', () => {
-      assertion.getManyByText(constants.balances.HIVE);
-    });
     describe('withdraw:\n', () => {
+      const hiveSavingsBalance = parseFloat(
+        accounts.extended.savings_balance.toString().split(' HIVE')[0],
+      );
       beforeEach(async () => {
-        await methods.clickToWithdraw();
+        await act(async () => {
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.arrow.hive),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.selector,
+            ),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.withdraw,
+            ),
+          );
+        });
       });
-      it('Must show withdraw message', () => {
-        assertion.getOneByText(constants.texts.withdraw);
+
+      it('Must show withdraw message', async () => {
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_text'),
+            { exact: true },
+          ),
+        ).toBeInTheDocument();
       });
-      it('Must set input to max', async () => {
-        await clickAwait([alButton.setToMax]);
-        assertion.toHaveValue(alInput.amount, 10000);
+
+      it('Must set input to max & load HIVE withdraw confirmation text', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.setToMax),
+          );
+        });
+        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
+          hiveSavingsBalance,
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_confirm_savings_withdraw', [
+              'HIVE',
+            ]),
+          ),
+        ).toBeInTheDocument();
       });
-      it('Must load HBD withdraw page when selected', async () => {
-        await methods.dropOpAssert('hbd', constants.balances.HBD);
+
+      it('Must show error if not enough balance', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            String(hiveSavingsBalance + 1),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          ),
+        ).toBeInTheDocument();
       });
-      //TODO fix cases bellow!
-      // commonCasesWithdraws.showConfirmation();
-      // commonCasesWithdraws.notEnoughBalance();
-      // commonCasesWithdraws.fail(currency);
-      // commonCasesWithdraws.success(currency);
+
+      it('Must show error if operation fails', async () => {
+        SavingsUtils.withdraw = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: false,
+        } as TransactionResult);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_fail', ['HIVE']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show success message in HIVE', async () => {
+        SavingsUtils.withdraw = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest.fn();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_success', ['10 HIVE']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error in HIVE withdraw', async () => {
+        SavingsUtils.withdraw = jest
+          .fn()
+          .mockRejectedValue(new Error('Error withdraw'));
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(await screen.findByText('Error withdraw')).toBeInTheDocument();
+      });
     });
+
     describe('deposit:\n', () => {
+      const hiveBalance = parseFloat(
+        accounts.extended.balance.toString().split(' HIVE')[0],
+      );
       beforeEach(async () => {
-        await methods.clickToDeposit();
+        await act(async () => {
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.arrow.hive),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.selector,
+            ),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.deposit,
+            ),
+          );
+        });
       });
-      it('Must load HIVE deposit page when selected', async () => {
-        await methods.dropOpAssert('hive', constants.balances.HIVE);
+
+      it('Must show deposit HIVE button', async () => {
+        expect(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.savings.submit,
+          ),
+        ).toHaveTextContent('Deposit HIVE');
       });
-      it('Must display deposit button', () => {
-        assertion.toHaveTextContent([
-          {
-            arialabel: alButton.operation.savings.submit,
-            text: constants.buttonDeposit(currency),
-          },
-        ]);
+
+      it('Must set input to max & load HIVE deposit confirmation text', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.setToMax),
+          );
+        });
+        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
+          hiveBalance,
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_confirm_savings_deposit', [
+              'HIVE',
+            ]),
+          ),
+        ).toBeInTheDocument();
       });
-      //TODO fix test cases bellow!
-      // commonCasesDeposits.showConfirmation();
-      // commonCasesDeposits.notEnoughBalance();
-      // commonCasesDeposits.fail(currency);
-      // commonCasesDeposits.success(currency);
+
+      it('Must show error if not enough balance', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            String(hiveBalance + 1),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error if operation fails', async () => {
+        SavingsUtils.deposit = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: false,
+        } as TransactionResult);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_deposit_fail', ['HIVE']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show success message in HIVE deposit', async () => {
+        SavingsUtils.deposit = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest.fn();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_deposit_success', ['10 HIVE']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error in HIVE desposit', async () => {
+        SavingsUtils.deposit = jest
+          .fn()
+          .mockRejectedValue(new Error('Error deposit'));
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(await screen.findByText('Error deposit')).toBeInTheDocument();
+      });
     });
   });
+
   describe('HBD:\n', () => {
-    const currency = 'HBD';
-    beforeEach(async () => {
-      await savings.beforeEach(<App />, constants.toHbdSavings);
-    });
-    it('Must load saving and liquid', () => {
-      assertion.getManyByText(constants.balances.HBD);
-    });
     describe('withdraw:\n', () => {
+      const hbdSavingsBalance = parseFloat(
+        accounts.extended.savings_hbd_balance.toString().split(' HBD')[0],
+      );
       beforeEach(async () => {
-        await methods.clickToWithdraw();
+        await act(async () => {
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.arrow.hbd),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.selector,
+            ),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.withdraw,
+            ),
+          );
+        });
       });
-      it('Must show withdraw message', () => {
-        assertion.getOneByText(constants.texts.withdraw);
+
+      it('Must show withdraw message', async () => {
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_text'),
+            { exact: true },
+          ),
+        ).toBeInTheDocument();
       });
-      //TODO fix cases bellow!
-      // commonCasesWithdraws.showConfirmation();
-      // commonCasesWithdraws.notEnoughBalance();
-      // commonCasesWithdraws.fail(currency);
-      // commonCasesWithdraws.success(currency);
+
+      it('Must set input to max & load HBD withdraw confirmation text', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.setToMax),
+          );
+        });
+        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
+          hbdSavingsBalance,
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_confirm_savings_withdraw', [
+              'HBD',
+            ]),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error if not enough balance', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            String(hbdSavingsBalance + 1),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error if operation fails', async () => {
+        SavingsUtils.withdraw = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: false,
+        } as TransactionResult);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_fail', ['HBD']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show success message in HBD', async () => {
+        SavingsUtils.withdraw = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest.fn();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_withdraw_success', ['10 HBD']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error in HBD withdraw', async () => {
+        SavingsUtils.withdraw = jest
+          .fn()
+          .mockRejectedValue(new Error('Error withdraw HBD'));
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText('Error withdraw HBD'),
+        ).toBeInTheDocument();
+      });
     });
+
     describe('deposit:\n', () => {
+      const hbdBalance = parseFloat(
+        accounts.extended.hbd_balance.toString().split(' HBD')[0],
+      );
       beforeEach(async () => {
-        await methods.clickToDeposit();
+        await act(async () => {
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.arrow.hbd),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.selector,
+            ),
+          );
+          await userEvent.click(
+            await screen.findByLabelText(
+              ariaLabelDropdown.select.savings.operation.deposit,
+            ),
+          );
+        });
       });
-      it('Must show deposit message', () => {
-        assertion.getOneByText(constants.texts.depositHBD);
+
+      it('Must show deposit HBD button', async () => {
+        expect(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.savings.submit,
+          ),
+        ).toHaveTextContent('Deposit HBD');
       });
-      //TODO fix cases bellow!
-      // commonCasesDeposits.showConfirmation();
-      // commonCasesDeposits.notEnoughBalance();
-      // commonCasesDeposits.fail(currency);
-      // commonCasesDeposits.success(currency);
-    });
-  });
-  describe('Handling no active key\n:', () => {
-    beforeEach(async () => {
-      await savings.beforeEach(<App />, constants.toHiveSavings, true);
-    });
-    it('Must show error if no active password', async () => {
-      await methods.typeNClick({ amount: '100' });
-      await assertion.awaitFor(constants.missingKey, QueryDOM.BYTEXT);
+
+      it('Must set input to max & load HBD deposit confirmation text', async () => {
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.setToMax),
+          );
+        });
+        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
+          hbdBalance,
+        );
+        await act(async () => {
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_confirm_savings_deposit', [
+              'HBD',
+            ]),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error if not enough HBD balance', async () => {
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            String(hbdBalance + 1),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error if HBD operation fails', async () => {
+        SavingsUtils.deposit = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: false,
+        } as TransactionResult);
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_deposit_fail', ['HBD']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show success message in HBD deposit', async () => {
+        SavingsUtils.deposit = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        FavoriteUserUtils.saveFavoriteUser = jest.fn();
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText(
+            chrome.i18n.getMessage('popup_html_deposit_success', ['10 HBD']),
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must show error in HBD desposit', async () => {
+        SavingsUtils.deposit = jest
+          .fn()
+          .mockRejectedValue(new Error('Error deposit HBD'));
+        await act(async () => {
+          await userEvent.type(
+            screen.getByLabelText(ariaLabelInput.amount),
+            '10',
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+          );
+          await userEvent.click(
+            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          );
+        });
+        expect(
+          await screen.findByText('Error deposit HBD'),
+        ).toBeInTheDocument();
+      });
     });
   });
 });

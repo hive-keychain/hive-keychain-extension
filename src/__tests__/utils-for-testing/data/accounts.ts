@@ -15,7 +15,7 @@ const extended = {
   received_vesting_shares: new Asset(20000, 'VESTS'),
   balance: new Asset(1000, 'HIVE'),
   hbd_balance: new Asset(1000, 'HBD'),
-  savings_balance: new Asset(10000, 'HBD'),
+  savings_balance: new Asset(10000, 'HIVE'),
   savings_hbd_balance: new Asset(10000, 'HBD'),
   vesting_shares: new Asset(10000, 'VESTS'),
   proxy: '',
