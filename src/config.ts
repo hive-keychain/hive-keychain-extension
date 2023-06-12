@@ -36,7 +36,7 @@ const Config = {
     expirationTimeInMinutes: 10,
   },
   swaps: {
-    autoRefreshEveryXSec: Number(process.env.DEV_SWAP_AUTO_REFRESH) ?? 30,
+    autoRefreshEveryXSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),
     swapAccount: process.env.DEV_SWAP_ACCOUNT || 'keychain.swap',
     baseURL:
       process.env.KEYCHAIN_SWAP_API_DEV === 'true'
