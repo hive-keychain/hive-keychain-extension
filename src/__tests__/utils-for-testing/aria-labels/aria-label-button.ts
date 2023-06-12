@@ -76,6 +76,7 @@ const ariaLabelButton = {
       stake: 'button-token-stake',
       unstake: 'button-token-unstake',
       delegate: 'button-token-delegate',
+      preFix: 'button-token-',
     },
     delegations: {
       goto: {

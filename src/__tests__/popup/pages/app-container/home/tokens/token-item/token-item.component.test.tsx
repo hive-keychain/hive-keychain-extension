@@ -1,64 +1,96 @@
 import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import tokenItem from 'src/__tests__/popup/pages/app-container/home/tokens/token-item/mocks/token-item';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  clickAwait,
-  clickAwaitOnFound,
-} from 'src/__tests__/utils-for-testing/setups/events';
-import FormatUtils from 'src/utils/format.utils';
-config.byDefault();
-const { methods, constants } = tokenItem;
-const { userToken, toFind, buttonsIcons } = constants;
-const { data, screenInfo } = userToken;
-//TODO keep working bellow....
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+
 describe('token-item.component tests:\n', () => {
-  methods.afterEach;
+  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
+  const selectedToken = tokensUser.balances.find(
+    (token) => token.symbol === 'LEO',
+  )!;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    await tokenItem.beforeEach(<App />);
-  });
-  it('Must show a list of token items', async () => {
-    await assertion.allToHaveLength(alDiv.token.user.item, data.length);
-  });
-  it('Must show tokens information', () => {
-    data.tokens.forEach((token) => {
-      assertion.getManyByText([
-        FormatUtils.withCommas(token.balance, 3),
-        token.symbol,
-      ]);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            TokensUtils: {
+              getUserBalance: [selectedToken],
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(
+        screen.getByLabelText(
+          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+        ),
+      );
     });
   });
-  it('Must show token options buttons', () => {
-    data.tokens.forEach((token) => {
-      assertion.getByText([
-        {
-          arialabelOrText: methods.selectPreFix(token.symbol, 'history'),
-          query: QueryDOM.BYLABEL,
-        },
-        {
-          arialabelOrText: methods.selectPreFix(token.symbol, 'send'),
-          query: QueryDOM.BYLABEL,
-        },
-        {
-          arialabelOrText: methods.selectPreFix(token.symbol, 'expandMore'),
-          query: QueryDOM.BYLABEL,
-        },
-      ]);
-    });
+
+  it('Must show only one token', async () => {
+    expect(
+      await screen.findAllByLabelText(ariaLabelDiv.token.user.item),
+    ).toHaveLength(1);
   });
+
+  it('Must show LEO token information & action tokens buttons', async () => {
+    expect(
+      await screen.findByText(selectedToken.balance, { exact: true }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(
+        ariaLabelButton.token.action.preFix + `stake-` + selectedToken.symbol,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(
+        ariaLabelButton.token.action.preFix + 'unstake-' + selectedToken.symbol,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(
+        ariaLabelButton.token.action.preFix +
+          'delegate-' +
+          selectedToken.symbol,
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('Must open a new window to visit token url', async () => {
-    await clickAwaitOnFound(alDiv.token.user.tokenInfo.gotoWebSite, 0);
-    expect(methods.spyOnTabs()).toBeCalledTimes(1);
-  });
-  it('Must navigate to each page', async () => {
-    for (let i = 0; i < buttonsIcons.length; i++) {
-      await clickAwait([buttonsIcons[i]]);
-      assertion.getByLabelText(toFind.ariaLabels.pages[i]);
-      await clickAwait([alIcon.arrowBack]);
-    }
+    const sCreateTab = jest.spyOn(chrome.tabs, 'create');
+    const leoUrlData = JSON.parse(
+      tokensList.alltokens.filter(
+        (token) => token.symbol === selectedToken.symbol,
+      )[0].metadata,
+    ).url;
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByLabelText(
+          ariaLabelDiv.token.user.prefixes.gotoWebSite + selectedToken.symbol,
+        ),
+      );
+    });
+    expect(sCreateTab).toHaveBeenCalledTimes(1);
+    expect(sCreateTab).toHaveBeenCalledWith({ url: leoUrlData });
+    sCreateTab.mockRestore();
   });
 });
