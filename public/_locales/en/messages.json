@@ -3130,7 +3130,7 @@
     "description": "Confirm token swap"
   },
   "html_popup_swap_token_confirm_message": {
-    "message": "You are about to use Keychain to swap token. blablablabla",
+    "message": "You are about to initiate a token swap using Keychain. You can track its status from the swap history screen.",
     "description": "confirm token swap message"
   },
   "html_popup_swap_swap_id": {
@@ -3146,7 +3146,7 @@
     "description": "token swap"
   },
   "html_popup_swap_swap_amount": {
-    "message": "Amount",
+    "message": "Swap Estimation",
     "description": "token swap"
   },
   "html_popup_swap_swap_expected_amount": {
@@ -3154,15 +3154,15 @@
     "description": "token swap"
   },
   "html_popup_swap_swap_slipperage": {
-    "message": "Slipperage",
+    "message": "Slippage",
     "description": "token swap"
   },
   "html_popup_swap_sending_token_to_swap_account": {
-    "message": "Send $1 to @$2",
+    "message": "Sending $1 to @$2",
     "description": "token swap"
   },
   "html_popup_swap_sending_token_successful": {
-    "message": "You successfully sent your tokens to Keychain. Thank you for trusting us!",
+    "message": "Your swap is on the way! Thank you for using our service!",
     "description": "token swap"
   },
   "html_popup_swap_error_sending_token": {

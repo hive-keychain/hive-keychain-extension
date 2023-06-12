@@ -312,8 +312,6 @@ const TokenSwaps = ({
 
     const fields = [
       { label: 'html_popup_swap_swap_id', value: estimateId },
-      { label: 'html_popup_swap_swap_from', value: startToken?.value.symbol },
-      { label: 'html_popup_swap_swap_to', value: endToken?.value.symbol },
       {
         label: 'html_popup_swap_swap_amount',
         value: `${Number(amount).toFixed(startTokenPrecision)} ${
