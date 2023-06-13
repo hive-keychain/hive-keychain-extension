@@ -9,6 +9,7 @@ import './input.component.scss';
 interface InputProps {
   value: any;
   logo?: Icons | string;
+  rightIcon?: JSX.Element;
   label?: string;
   placeholder: string;
   type: InputType;
@@ -106,6 +107,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           }}
           onFocus={() => handleOnFocus()}
           onBlur={() => handleOnBlur()}
+          disabled={props.disabled}
         />
         {props.type === InputType.PASSWORD && !isPasswordDisplay && (
           <Icon
@@ -123,14 +125,14 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
+          !props.disabled &&
           props.value &&
           props.value.length > 0 && (
             <Icon
               ariaLabel="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
-              type={IconType.OUTLINED}
-              additionalClassName="input-img erase"></Icon>
+              additionalClassName="input-img"></Icon>
           )}
         {isFocused && props.autocompleteValues && (
           <AutocompleteBox
@@ -152,6 +154,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
             type={IconType.OUTLINED}
             additionalClassName="input-img"></Icon>
         )}
+        {props.rightIcon}
         {props.onSetToMaxClicked && (
           <span
             aria-label="set-to-max-button"

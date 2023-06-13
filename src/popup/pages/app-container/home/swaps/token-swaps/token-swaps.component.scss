@@ -49,17 +49,19 @@
   .fee {
     font-size: 16px;
   }
-
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    font-size: 13px;
+  }
   .top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    .countdown {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
+    margin-bottom: 25px;
+    margin-top: 10px;
   }
 
   .form {
@@ -67,9 +69,11 @@
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-    .start-token {
+    .start-token,
+    .end-token {
       display: flex;
       flex-direction: column;
+      height: 70px;
       .inputs {
         display: grid;
         align-items: flex-end;
@@ -91,7 +95,7 @@
     }
 
     .advanced-parameters {
-      margin-top: 16px;
+      margin-top: 5px;
       font-size: 18px;
       .title-panel {
         display: flex;

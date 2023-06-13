@@ -133,14 +133,21 @@ $autoCompleteItemHeight: 30px;
       }
     }
 
-    .set-to-max-button {
+    .set-to-max-button,
+    .right {
       position: absolute;
       right: 8px;
       // bottom: 14px;
       bottom: 8px;
-      font-size: 16px;
       cursor: pointer;
       user-select: none;
+    }
+
+    .set-to-max-button {
+      font-size: 16px;
+    }
+    .right {
+      font-size: $input-logo-size;
     }
 
     .hint {

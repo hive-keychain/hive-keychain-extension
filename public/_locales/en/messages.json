@@ -3276,5 +3276,9 @@
   "service_unavailable_message": {
     "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
     "description": "General service unavailable page message"
+  },
+  "swap_autorefresh": {
+    "message": "Refreshing in $1s",
+    "description": "Swap autorefresh"
   }
 }

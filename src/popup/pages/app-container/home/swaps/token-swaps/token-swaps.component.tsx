@@ -51,7 +51,7 @@ const TokenSwaps = ({
   removeFromLoadingList,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [swapConfig, setSwapConfig] = useState<SwapConfig>({} as SwapConfig);
+  const [swapConfig, setSwapConfig] = useState({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingEstimate, setLoadingEstimate] = useState(false);
@@ -78,20 +78,19 @@ const TokenSwaps = ({
 
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
 
-  const throttledRefresh = useMemo(
-    () =>
-      throttle(
-        (newAmount, newEndToken, newStartToken) => {
-          if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
-            calculateEstimate(newAmount, newStartToken, newEndToken);
-            setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
-          }
-        },
-        1000,
-        { leading: false } as ThrottleSettings,
-      ),
-    [],
-  );
+  const throttledRefresh = useMemo(() => {
+    console.log('refresh here');
+    return throttle(
+      (newAmount, newEndToken, newStartToken) => {
+        if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
+          calculateEstimate(newAmount, newStartToken, newEndToken);
+          setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+        }
+      },
+      1000,
+      { leading: false } as ThrottleSettings,
+    );
+  }, []);
 
   useEffect(() => {
     throttledRefresh(amount, endToken, startToken);
@@ -115,8 +114,9 @@ const TokenSwaps = ({
       setUnderMaintenance(serverStatus.isMaintenanceOn);
 
       const res = await SwapTokenUtils.getConfig();
-      console.log(res);
+      console.log('swapcondifg', res);
       setSwapConfig(res);
+      console.log(swapConfig);
       setSlippage(res.slippage.default);
 
       if (!serverStatus.isMaintenanceOn) {
@@ -142,13 +142,9 @@ const TokenSwaps = ({
       return;
     }
 
-    const intervalId = setInterval(() => {
+    setTimeout(() => {
       setAutoRefreshCountdown(autoRefreshCountdown! - 1);
     }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
   }, [autoRefreshCountdown]);
 
   const initTokenSelectOptions = async () => {
@@ -209,11 +205,10 @@ const TokenSwaps = ({
         : list[0],
     );
     setStartTokenListOptions(list);
-    setEndToken(
-      lastUsed.to
-        ? list.find((t) => t.value.symbol === lastUsed.to.symbol)
-        : list[1],
-    );
+    const endTokenToSet = lastUsed.to
+      ? endList.find((t) => t.value.symbol === lastUsed.to.symbol)
+      : endList[1];
+    setEndToken(endTokenToSet);
     setEndTokenListOptions(endList);
   };
 
@@ -241,10 +236,12 @@ const TokenSwaps = ({
         const precision = await TokensUtils.getTokenPrecision(
           result[result.length - 1].endToken,
         );
-        console.log(swapConfig); //TODO find out why this is undefined
+        console.log(result);
+        console.log(slippage);
+        console.log(JSON.stringify(swapConfig)); //TODO find out why this is undefined
         const value = Number(result[result.length - 1].estimate);
-        const fee =
-          (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
+        const fee = 0;
+        (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
           100;
         const finalValue = Number(value - fee).toFixed(precision);
         setEstimate(result);
@@ -390,6 +387,7 @@ const TokenSwaps = ({
     setStartToken(endToken);
     setEndToken(tmp);
   };
+
   if (loading)
     return (
       <div className="rotating-logo-wrapper">
@@ -404,25 +402,11 @@ const TokenSwaps = ({
             <div className="caption">
               {chrome.i18n.getMessage('swap_caption')}
             </div>
-            <div className="fee">
-              {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
-            </div>
-            <div className="top-row">
-              <div className="countdown">
-                {!!autoRefreshCountdown && (
-                  <>
-                    {<span>Auto refresh in {autoRefreshCountdown} sec</span>}
-                    <Icon
-                      name={Icons.REFRESH}
-                      onClick={() =>
-                        calculateEstimate(amount, startToken!, endToken!)
-                      }
-                      rotate={loadingEstimate}
-                    />
-                  </>
-                )}
-              </div>
 
+            <div className="top-row">
+              <div className="fee">
+                {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
+              </div>
               <Icon
                 name={Icons.HISTORY}
                 type={IconType.OUTLINED}
@@ -466,8 +450,8 @@ const TokenSwaps = ({
                 additionalClassName="swap-icon"
               />
               <div className="end-token">
-                {endTokenListOptions.length > 0 && (
-                  <div>
+                <div className="inputs">
+                  {endTokenListOptions.length > 0 && (
                     <CustomSelect
                       selectedValue={endToken}
                       options={endTokenListOptions}
@@ -475,16 +459,42 @@ const TokenSwaps = ({
                       setSelectedValue={setEndToken}
                       filterable
                     />
-                    {estimate && estimate.length > 0 && (
-                      <div className="final-value">
-                        {chrome.i18n.getMessage(
-                          'html_popup_swaps_final_price',
-                          [estimateValue!, endToken?.label!],
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
+                  )}
+                  <InputComponent
+                    type={InputType.NUMBER}
+                    value={estimate && estimate.length > 0 ? estimateValue : ''}
+                    disabled
+                    onChange={() => {}}
+                    placeholder="popup_html_transfer_amount"
+                    rightIcon={
+                      autoRefreshCountdown ? (
+                        <Icon
+                          name={Icons.REFRESH}
+                          type={IconType.OUTLINED}
+                          onClick={() => {
+                            calculateEstimate(amount, startToken!, endToken!);
+                          }}
+                          rotate={loadingEstimate}
+                          additionalClassName="right"
+                        />
+                      ) : undefined
+                    }
+                  />
+                </div>
+                <div className="countdown">
+                  {!!autoRefreshCountdown && (
+                    <>
+                      {
+                        <span>
+                          {chrome.i18n.getMessage(
+                            'swap_autorefresh',
+                            autoRefreshCountdown + '',
+                          )}
+                        </span>
+                      }
+                    </>
+                  )}
+                </div>
               </div>
               <div className="advanced-parameters">
                 <div
