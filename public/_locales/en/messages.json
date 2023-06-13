@@ -2821,7 +2821,7 @@
     "description": "Error while confirming transaction on hive engine"
   },
   "hive_engine_overdraw_balance_error": {
-    "message": "Your $1 balance is insufficiant",
+    "message": "Your $1 balance is insufficient",
     "description": "Error if trying to send too much of a token"
   },
   "hive_engine_not_existing_token_error": {
@@ -3058,7 +3058,7 @@
     "description": "Token swaps : Slippage"
   },
   "html_popup_swaps_process_swap": {
-    "message": "Process swap",
+    "message": "Swap",
     "description": "Token swaps : process"
   },
   "html_popup_swaps_final_price": {
@@ -3066,7 +3066,7 @@
     "description": "Token swaps : process"
   },
   "html_popup_swaps_slippage_definition": {
-    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu vulputate ex. Phasellus venenatis aliquam magna id cursus. Nunc pulvinar molestie nisi et vehicula. Donec odio est, sollicitudin eu lectus ac, ultricies gravida nulla. Phasellus ullamcorper posuere porttitor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas imperdiet.",
+    "message": "At each step of the swap, we check if the final result is superior to the estimation minus the slippage. If not, the swap is canceled and the funds are returned. Note that some swaps require several operations and your funds can be returned in a different token.",
     "description": "Token swaps : process"
   },
   "local": {
@@ -3182,11 +3182,11 @@
     "description": "General word"
   },
   "html_popup_token_swaps_history": {
-    "message": "Swaps history",
+    "message": "Swap History",
     "description": "token swap history"
   },
   "swap_refresh_countdown": {
-    "message": "Auto refresh in $1 sec",
+    "message": "Refreshing in $1s",
     "description": "swap token auto refresh"
   },
   "swap_status_started": {
@@ -3222,27 +3222,27 @@
     "description": "Swap advanced parameters"
   },
   "swap_no_history": {
-    "message": "Your history is empty",
+    "message": "Your swap history is empty",
     "description": "History swap empty"
   },
   "swap_under_maintenance": {
-    "message": "Keychain Swap is under maintenance, try again later",
+    "message": "Keychain Swap is under maintenance, please try again later",
     "description": "Keychain swap under maintenance"
   },
   "swap_start_end_token_should_be_different": {
-    "message": "Start and end token should be differents",
+    "message": "Please choose two different tokens",
     "description": "Start and end tokens should be differents"
   },
   "swap_not_enough_volume_error": {
-    "message": "Operation impossible at the moment, not enough volume",
+    "message": "There is not enough volume on this token pair to perform this swap",
     "description": "Operation impossible because not enough volume"
   },
   "swap_min_slippage_error": {
-    "message": "Slippage should be at least $1%",
+    "message": "The slippage should be at least $1%",
     "description": "Minimum slippage error"
   },
   "swap_caption": {
-    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate",
+    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate.",
     "description": "Caption"
   },
   "swap_fee": {
