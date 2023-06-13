@@ -246,7 +246,7 @@ const TokenSwaps = ({
           100;
         const finalValue = Number(value - fee).toFixed(precision);
         setEstimate(result);
-        setEstimateValue(FormatUtils.withCommas(finalValue));
+        setEstimateValue(finalValue);
       } else {
         setEstimateValue(undefined);
       }
@@ -464,7 +464,9 @@ const TokenSwaps = ({
                     message={
                       estimateValue
                         ? `≈ $${FormatUtils.withCommas(
-                            +estimateValue * price.hive.usd! + '',
+                            Number.parseFloat(estimateValue) * price.hive.usd! +
+                              '',
+                            2,
                           )}`
                         : ''
                     }
@@ -473,7 +475,9 @@ const TokenSwaps = ({
                     <InputComponent
                       type={InputType.TEXT}
                       value={
-                        estimate && estimate.length > 0 ? estimateValue : ''
+                        estimateValue
+                          ? FormatUtils.withCommas(estimateValue!)
+                          : ''
                       }
                       disabled
                       onChange={() => {}}
