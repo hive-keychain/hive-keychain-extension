@@ -12,6 +12,15 @@ const ariaLabelDiv = {
     name: 'proxy-name',
   },
   proposal: {
+    prefixes: {
+      itemSpanGotoLink: 'proposal-item-span-go-to-link-',
+      itemIconExpandable: 'proposal-item-icon-expandable-',
+      itemImageGotoCreator: 'proposal-item-image-go-to-creator-',
+      itemSpanGotoCreator: 'proposal-item-span-go-to-creator-',
+      itemIconVoteUnvote: 'proposal-item-icon-vote-unvote-',
+      itemExtraInfoFunded: 'proposal-item-extra-info-funded-',
+      itemPanelExpandable: 'proposal-item-panel-expandable-',
+    },
     item: {
       prefix: 'proposal-item-expandable-',
       spanGoToLink: 'proposal-item-span-go-to-link',
@@ -19,6 +28,7 @@ const ariaLabelDiv = {
       imageGoToCreator: 'proposal-item-image-go-to-creator',
       spanGoToCreator: 'proposal-item-span-go-to-creator',
       iconVoteUnvote: 'proposal-item-icon-vote-unvote',
+      proposalItem: 'proposal-item-expandable',
     },
     extraInfo: {
       value: 'proposal-item-extra-info-value',

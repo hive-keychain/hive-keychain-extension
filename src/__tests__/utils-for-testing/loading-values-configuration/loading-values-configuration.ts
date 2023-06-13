@@ -9,6 +9,7 @@ import { RC } from '@interfaces/active-account.interface';
 import { Conversion } from '@interfaces/conversion.interface';
 import { RewardFund } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Proposal } from '@interfaces/proposal.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
@@ -145,6 +146,7 @@ export interface TestsAppLoadingValues {
       hasVotedForProposal?: boolean;
       voteForKeychainProposal?: boolean;
       isRequestingProposalVotes?: boolean;
+      getProposalList?: Proposal[];
     };
   };
   googleAnalytics?: {
@@ -481,6 +483,11 @@ const set = (params?: {
     .fn()
     .mockResolvedValue(
       params?.app?.proposal?.ProposalUtils?.isRequestingProposalVotes ?? false,
+    );
+  ProposalUtils.getProposalList = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.proposal?.ProposalUtils?.getProposalList ?? [],
     );
   //////////
 

@@ -11,7 +11,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -89,20 +89,20 @@ const ProposalItem = ({
 
   return (
     <div
-      aria-label={`proposal-item-expandable-${proposal.id}`}
+      aria-label={`proposal-item-expandable`}
       className={`proposal-item`}
       key={proposal.proposalId}
       onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
       <div className="title">
         <div>
           <span
-            aria-label="proposal-item-span-go-to-link"
+            aria-label={`proposal-item-span-go-to-link-${proposal.creator}`}
             onClick={() => goTo(proposal.link)}>
             #{proposal.id} - {proposal.subject}
           </span>
         </div>
         <Icon
-          ariaLabel="proposal-item-icon-expandable"
+          ariaLabel={`proposal-item-icon-expandable-${proposal.creator}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
           additionalClassName={`more ${
@@ -114,7 +114,7 @@ const ProposalItem = ({
         <div className="left-panel">
           <div className="creator">
             <img
-              aria-label="proposal-item-image-go-to-creator"
+              aria-label={`proposal-item-image-go-to-creator-${proposal.creator}`}
               onClick={() => goToCreator(proposal.creator)}
               src={`https://images.hive.blog/u/${proposal.creator}/avatar`}
               onError={(e: any) => {
@@ -123,7 +123,7 @@ const ProposalItem = ({
               }}
             />
             <span
-              aria-label="proposal-item-span-go-to-creator"
+              aria-label={`proposal-item-span-go-to-creator-${proposal.creator}`}
               onClick={() => goToCreator(proposal.creator)}>
               {chrome.i18n.getMessage('popup_html_proposal_by', [
                 proposal.creator,
@@ -133,7 +133,7 @@ const ProposalItem = ({
         </div>
         <div className="nb-votes">
           <Icon
-            ariaLabel="proposal-item-icon-vote-unvote"
+            ariaLabel={`proposal-item-icon-vote-unvote-${proposal.creator}`}
             onClick={() => toggleSupport(proposal)}
             additionalClassName={
               (proposal.voted ? 'voted' : 'not-voted') +
@@ -155,6 +155,7 @@ const ProposalItem = ({
       </div>
       {isExpandablePanelOpened && (
         <div
+          aria-label={`proposal-item-panel-expandable-${proposal.creator}`}
           className={
             isExpandablePanelOpened
               ? 'expandable-panel opened'
@@ -195,7 +196,7 @@ const ProposalItem = ({
             </div>
           </CustomTooltip>
           <div
-            aria-label="proposal-item-extra-info-funded"
+            aria-label={`proposal-item-extra-info-funded-${proposal.creator}`}
             className={`funded-chip ${proposal.funded}`}>
             {chrome.i18n.getMessage(
               `popup_html_proposal_funded_option_${proposal.funded}`,
