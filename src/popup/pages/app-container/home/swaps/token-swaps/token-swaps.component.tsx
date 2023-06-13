@@ -79,7 +79,6 @@ const TokenSwaps = ({
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
 
   const throttledRefresh = useMemo(() => {
-    console.log('refresh here');
     return throttle(
       (newAmount, newEndToken, newStartToken, swapConfig) => {
         if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
@@ -114,9 +113,7 @@ const TokenSwaps = ({
       setUnderMaintenance(serverStatus.isMaintenanceOn);
 
       const res = await SwapTokenUtils.getConfig();
-      console.log('swapcondifg', res);
       setSwapConfig(res);
-      console.log(swapConfig);
       setSlippage(res.slippage.default);
 
       if (!serverStatus.isMaintenanceOn) {
@@ -248,7 +245,6 @@ const TokenSwaps = ({
         setEstimateValue(undefined);
       }
     } catch (err: any) {
-      console.log(err);
       setEstimate(undefined);
       setErrorMessage(err.reason.template, err.reason.params);
     } finally {
