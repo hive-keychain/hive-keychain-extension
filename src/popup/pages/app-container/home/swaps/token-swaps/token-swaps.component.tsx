@@ -139,9 +139,13 @@ const TokenSwaps = ({
       return;
     }
 
-    setTimeout(() => {
+    const a = setTimeout(() => {
       setAutoRefreshCountdown(autoRefreshCountdown! - 1);
     }, 1000);
+
+    return () => {
+      clearTimeout(a);
+    };
   }, [autoRefreshCountdown]);
 
   const initTokenSelectOptions = async () => {
@@ -455,7 +459,7 @@ const TokenSwaps = ({
                     />
                   )}
                   <InputComponent
-                    type={InputType.NUMBER}
+                    type={InputType.TEXT}
                     value={estimate && estimate.length > 0 ? estimateValue : ''}
                     disabled
                     onChange={() => {}}
