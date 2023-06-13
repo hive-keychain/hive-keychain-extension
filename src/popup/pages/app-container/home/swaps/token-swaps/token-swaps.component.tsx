@@ -81,9 +81,9 @@ const TokenSwaps = ({
   const throttledRefresh = useMemo(() => {
     console.log('refresh here');
     return throttle(
-      (newAmount, newEndToken, newStartToken) => {
+      (newAmount, newEndToken, newStartToken, swapConfig) => {
         if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
-          calculateEstimate(newAmount, newStartToken, newEndToken);
+          calculateEstimate(newAmount, newStartToken, newEndToken, swapConfig);
           setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
         }
       },
@@ -93,8 +93,8 @@ const TokenSwaps = ({
   }, []);
 
   useEffect(() => {
-    throttledRefresh(amount, endToken, startToken);
-  }, [amount, endToken, startToken]);
+    throttledRefresh(amount, endToken, startToken, swapConfig);
+  }, [amount, endToken, startToken, swapConfig]);
 
   useEffect(() => {
     init();
@@ -137,7 +137,7 @@ const TokenSwaps = ({
     }
 
     if (autoRefreshCountdown === 0 && startToken && endToken) {
-      calculateEstimate(amount, startToken, endToken);
+      calculateEstimate(amount, startToken, endToken, swapConfig);
       setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
       return;
     }
@@ -216,6 +216,7 @@ const TokenSwaps = ({
     amount: string,
     startToken: SelectOption,
     endToken: SelectOption,
+    swapConfig: SwapConfig,
   ) => {
     if (startToken === endToken) {
       setErrorMessage('swap_start_end_token_should_be_different');
@@ -236,9 +237,6 @@ const TokenSwaps = ({
         const precision = await TokensUtils.getTokenPrecision(
           result[result.length - 1].endToken,
         );
-        console.log(result);
-        console.log(slippage);
-        console.log(JSON.stringify(swapConfig)); //TODO find out why this is undefined
         const value = Number(result[result.length - 1].estimate);
         const fee = 0;
         (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
@@ -472,7 +470,12 @@ const TokenSwaps = ({
                           name={Icons.REFRESH}
                           type={IconType.OUTLINED}
                           onClick={() => {
-                            calculateEstimate(amount, startToken!, endToken!);
+                            calculateEstimate(
+                              amount,
+                              startToken!,
+                              endToken!,
+                              swapConfig!,
+                            );
                           }}
                           rotate={loadingEstimate}
                           additionalClassName="right"
