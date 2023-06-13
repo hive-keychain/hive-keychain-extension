@@ -23,6 +23,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -50,6 +51,7 @@ const TokenSwaps = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  price,
 }: PropsFromRedux) => {
   const [swapConfig, setSwapConfig] = useState({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
@@ -458,31 +460,44 @@ const TokenSwaps = ({
                       filterable
                     />
                   )}
-                  <InputComponent
-                    type={InputType.TEXT}
-                    value={estimate && estimate.length > 0 ? estimateValue : ''}
-                    disabled
-                    onChange={() => {}}
-                    placeholder="popup_html_transfer_amount"
-                    rightIcon={
-                      autoRefreshCountdown ? (
-                        <Icon
-                          name={Icons.REFRESH}
-                          type={IconType.OUTLINED}
-                          onClick={() => {
-                            calculateEstimate(
-                              amount,
-                              startToken!,
-                              endToken!,
-                              swapConfig!,
-                            );
-                          }}
-                          rotate={loadingEstimate}
-                          additionalClassName="right"
-                        />
-                      ) : undefined
+                  <CustomTooltip
+                    message={
+                      estimateValue
+                        ? `≈ $${FormatUtils.withCommas(
+                            +estimateValue * price.hive.usd! + '',
+                          )}`
+                        : ''
                     }
-                  />
+                    position={'top'}
+                    skipTranslation>
+                    <InputComponent
+                      type={InputType.TEXT}
+                      value={
+                        estimate && estimate.length > 0 ? estimateValue : ''
+                      }
+                      disabled
+                      onChange={() => {}}
+                      placeholder="popup_html_transfer_amount"
+                      rightIcon={
+                        autoRefreshCountdown ? (
+                          <Icon
+                            name={Icons.REFRESH}
+                            type={IconType.OUTLINED}
+                            onClick={() => {
+                              calculateEstimate(
+                                amount,
+                                startToken!,
+                                endToken!,
+                                swapConfig!,
+                              );
+                            }}
+                            rotate={loadingEstimate}
+                            additionalClassName="right"
+                          />
+                        ) : undefined
+                      }
+                    />
+                  </CustomTooltip>
                 </div>
                 <div className="countdown">
                   {!!autoRefreshCountdown && (
@@ -555,7 +570,7 @@ const TokenSwaps = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.activeAccount, price: state.currencyPrices };
 };
 
 const connector = connect(mapStateToProps, {
