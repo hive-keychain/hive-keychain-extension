@@ -83,7 +83,7 @@ const TokenSwaps = ({
       (newAmount, newEndToken, newStartToken, swapConfig) => {
         if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
           calculateEstimate(newAmount, newStartToken, newEndToken, swapConfig);
-          setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+          setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
         }
       },
       1000,
@@ -135,7 +135,7 @@ const TokenSwaps = ({
 
     if (autoRefreshCountdown === 0 && startToken && endToken) {
       calculateEstimate(amount, startToken, endToken, swapConfig);
-      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+      setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
       return;
     }
 

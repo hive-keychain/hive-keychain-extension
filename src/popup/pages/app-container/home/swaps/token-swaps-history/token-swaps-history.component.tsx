@@ -38,7 +38,7 @@ const TokenSwapsHistory = ({
 
     if (autoRefreshCountdown === 0) {
       initSwapHistory();
-      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+      setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
       return;
     }
 
@@ -61,7 +61,7 @@ const TokenSwapsHistory = ({
       activeAccount.name!,
     );
     setHistory(result);
-    setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+    setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
     setLoading(false);
   };
 
