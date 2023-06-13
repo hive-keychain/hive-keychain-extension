@@ -13,7 +13,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -134,7 +134,7 @@ const WitnessTab = ({
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
-        if (success) {
+        if (success && success.confirmed) {
           setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
         } else {
           setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
@@ -158,7 +158,7 @@ const WitnessTab = ({
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
-        if (success) {
+        if (success && success.confirmed) {
           setSuccessMessage('popup_success_wit', [`${witness.name}`]);
         } else {
           setErrorMessage('popup_error_wit', [`${witness.name}`]);
@@ -198,7 +198,7 @@ const WitnessTab = ({
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
             <Icon
-              ariaLabel={'link-to-witness-page'}
+              ariaLabel={`link-to-witness-page-${witness.name}`}
               onClick={() => chrome.tabs.create({ url: witness.url })}
               name={Icons.OPEN_IN_NEW}
               type={IconType.OUTLINED}
@@ -206,7 +206,7 @@ const WitnessTab = ({
           )}
         </div>
         <Icon
-          ariaLabel="witness-voting-icon"
+          ariaLabel={`witness-voting-icon-${witness.name}`}
           additionalClassName={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +

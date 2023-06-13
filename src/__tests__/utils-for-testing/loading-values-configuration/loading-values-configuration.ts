@@ -461,7 +461,7 @@ const set = (params?: {
   ProxyUtils.findUserProxy = jest
     .fn()
     .mockResolvedValue(
-      params?.app?.accountsRelated?.ProxyUtils?.findUserProxy ?? '',
+      params?.app?.accountsRelated?.ProxyUtils?.findUserProxy ?? null,
     );
   /////////////
 

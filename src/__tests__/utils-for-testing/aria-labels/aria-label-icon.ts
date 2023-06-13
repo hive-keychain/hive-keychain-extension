@@ -3,7 +3,9 @@ const ariaLabelIcon = {
   refreshHome: 'top-bar-refresh-icon',
   witness: {
     linkToPage: 'link-to-witness-page',
+    linkToPagePrefix: 'link-to-witness-page-',
     voting: 'witness-voting-icon',
+    votingPrefix: 'witness-voting-icon-',
   },
   input: {
     clear: 'input-clear',
