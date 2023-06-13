@@ -209,7 +209,7 @@ const Delegations = ({
               ' VESTS',
             activeAccount.keys.active!,
           );
-          if (success) {
+          if (success && success.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_delegation_successful');
@@ -246,7 +246,7 @@ const Delegations = ({
             '0.000000 VESTS',
             activeAccount.keys.active!,
           );
-          if (success) {
+          if (success && success.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_cancel_delegation_successful');
@@ -296,7 +296,7 @@ const Delegations = ({
                 type={IconType.OUTLINED}
                 tooltipMessage={incomingError}></Icon>
             )}
-            <span>
+            <span aria-label="delegations-span-total-incoming">
               + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
               {currencyLabels.hp}
             </span>
@@ -309,7 +309,7 @@ const Delegations = ({
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
-          <div className="value">
+          <div aria-label="total-outgoing-value" className="value">
             - {FormatUtils.withCommas(totalOutgoing.toString())}{' '}
             {currencyLabels.hp}
           </div>

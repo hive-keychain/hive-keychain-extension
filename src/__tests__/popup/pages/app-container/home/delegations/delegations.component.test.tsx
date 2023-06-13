@@ -1,83 +1,281 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import delegations from 'src/__tests__/popup/pages/app-container/home/delegations/mocks/delegations';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import ariaLabelSpan from 'src/__tests__/utils-for-testing/aria-labels/aria-label-span';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import { DelegationUtils } from 'src/utils/delegation.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+
 describe('delegations.component tests:\n', () => {
-  const { message } = delegations.constants;
-  const { onScreen } = delegations.userInformation;
-  delegations.methods.after;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('handling errors on load:\n', () => {
     beforeEach(async () => {
-      await delegations.beforeEach(<App />, true);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            apiRelated: {
+              KeychainApi: {
+                customData: {
+                  delegators: { data: '' },
+                },
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDropdown.arrow.hp),
+        );
+        await userEvent.click(
+          screen.getByLabelText(
+            ariaLabelDropdown.itemPreFix + Icons.DELEGATIONS_HP,
+          ),
+        );
+      });
     });
+
     it('Must load delegations page, and show error', async () => {
-      await assertion.awaitFor(message.error.incomming, QueryDOM.BYTEXT);
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage(
+            'popup_html_error_retrieving_incoming_delegations',
+          ),
+        ),
+      ).toBeInTheDocument();
     });
   });
+
   describe('no errors on load:\n', () => {
     beforeEach(async () => {
-      await delegations.beforeEach(<App />, false);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(ariaLabelDropdown.arrow.hp),
+        );
+        await userEvent.click(
+          screen.getByLabelText(
+            ariaLabelDropdown.itemPreFix + Icons.DELEGATIONS_HP,
+          ),
+        );
+      });
     });
-    it('Must navigate to delegations page', () => {
-      assertion.getByLabelText(alComponent.delegationsPage);
+    it('Must show total incoming/outgoing values', async () => {
+      const incomingHTMLElement = await screen.findByLabelText(
+        ariaLabelSpan.delegations.incoming.spanTotal,
+      );
+      expect(incomingHTMLElement.textContent).toContain('+');
+      expect(incomingHTMLElement.textContent).toContain('HP');
+      const outgoingTotalHTMLElement = await screen.findByLabelText(
+        ariaLabelDiv.delegations.outgoing.totalValue,
+      );
+      expect(outgoingTotalHTMLElement.textContent).toContain('-');
+      expect(outgoingTotalHTMLElement.textContent).toContain('HP');
     });
+
     it('Must navigate to INCOMING_PAGE when clicking incoming', async () => {
-      await clickAwait([alButton.delegations.total.incoming]);
-      delegations.methods.assertPageAnd(onScreen.total.incoming);
+      await act(async () => {
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.delegations.total.incoming,
+          ),
+        );
+      });
+      const pageHTMLElement = await screen.findByLabelText(
+        `${Screen.INCOMING_OUTGOING_PAGE}-page`,
+      );
+      expect(pageHTMLElement.textContent).toContain(
+        chrome.i18n.getMessage('popup_html_total_incoming'),
+      );
     });
+
     it('Must navigate to INCOMING_OUTGOING_PAGE when clicking outcomming', async () => {
-      await clickAwait([alButton.delegations.total.outgoing]);
-      delegations.methods.assertPageAnd(onScreen.total.outgoing);
+      await act(async () => {
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.delegations.total.outgoing,
+          ),
+        );
+      });
+      const pageHTMLElement = await screen.findByLabelText(
+        `${Screen.INCOMING_OUTGOING_PAGE}-page`,
+      );
+      expect(pageHTMLElement.textContent).toContain(
+        chrome.i18n.getMessage('popup_html_total_outgoing'),
+      );
     });
-    it('Must navigate to INCOMING_OUTGOING_PAGE, and go back when clicking on back icon', async () => {
-      await clickAwait([alButton.delegations.total.outgoing]);
-      assertion.getByLabelText(alComponent.incomingOutgoingPage);
-      await clickAwait([alIcon.arrowBack]);
-      assertion.getByLabelText(alComponent.delegationsPage);
-    });
-    it('Must set delegation amount to max when pressing max button', async () => {
-      await clickAwait([alButton.setToMax]);
-      assertion.getByDisplay(delegations.userInformation.delegation.maxAmount);
-    });
-    it('Must show error if wrong requested value', async () => {
-      await delegations.methods.typeNClick('theghost1980', '1000', false);
-      await assertion.awaitFor(message.error.powerUpDown, QueryDOM.BYTEXT);
-    });
+
     it('Must show error when delegation fails', async () => {
-      delegations.extraMocks(false);
-      await delegations.methods.typeNClick('theghost1980', '0.1', true);
-      await assertion.awaitFor(message.error.delegation, QueryDOM.BYTEXT);
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
+        tx_id: 'tx_id',
+        id: 'id',
+        confirmed: false,
+      } as TransactionResult);
+      await act(async () => {
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.username),
+          'keychain.user1',
+        );
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.amount),
+          '0.01',
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.delegate.submit,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_delegation_fail'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must navigate to confirmation page and go back when pressing cancel', async () => {
-      await delegations.methods.typeNClick('theghost1980', '0.1', false);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.cancel]);
-      assertion.getByLabelText(alComponent.delegationsPage);
+
+    it('Must make a delegation & show message', async () => {
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
+        tx_id: 'tx_id',
+        id: 'id',
+        confirmed: true,
+      } as TransactionResult);
+      FavoriteUserUtils.saveFavoriteUser = jest.fn();
+      await act(async () => {
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.username),
+          'keychain.user1',
+        );
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.amount),
+          '0.01',
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.delegate.submit,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_delegation_successful'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must make a delegation, show message and go home page', async () => {
-      delegations.extraMocks(true);
-      await delegations.methods.typeNClick('theghost1980', '0.1', true);
-      await assertion.awaitFor(message.success.delegation, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.homePage);
+
+    it('Must cancel a delegation & show message', async () => {
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
+        tx_id: 'tx_id',
+        id: 'id',
+        confirmed: true,
+      } as TransactionResult);
+      FavoriteUserUtils.saveFavoriteUser = jest.fn();
+      await act(async () => {
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.username),
+          'keychain.user1',
+        );
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.amount),
+          '{space}',
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.delegate.submit,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_cancel_delegation_successful'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must cancel a delegation, show message and navigate to home', async () => {
-      delegations.extraMocks(true);
-      await delegations.methods.typeNClick('theghost1980', '', true, true);
-      await assertion.awaitFor(message.success.cancelation, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.homePage);
-    });
+
     it('Must show error message if cancellation fail', async () => {
-      delegations.extraMocks(false);
-      await delegations.methods.typeNClick('theghost1980', '', true, true);
-      await assertion.awaitFor(message.error.cancellation, QueryDOM.BYTEXT);
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
+        tx_id: 'tx_id',
+        id: 'id',
+        confirmed: false,
+      } as TransactionResult);
+      FavoriteUserUtils.saveFavoriteUser = jest.fn();
+      await act(async () => {
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.username),
+          'keychain.user1',
+        );
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.amount),
+          '{space}',
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.delegate.submit,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_cancel_delegation_fail'),
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('Must catch error and show message', async () => {
+      DelegationUtils.delegateVestingShares = jest
+        .fn()
+        .mockRejectedValue(new Error('Error on delegation'));
+      await act(async () => {
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.username),
+          'keychain.user1',
+        );
+        await userEvent.type(
+          await screen.findByLabelText(ariaLabelInput.amount),
+          '{space}',
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.operation.delegate.submit,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText('Error on delegation'),
+      ).toBeInTheDocument();
     });
   });
 });

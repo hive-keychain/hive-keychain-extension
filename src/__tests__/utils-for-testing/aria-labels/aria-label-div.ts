@@ -105,6 +105,11 @@ const ariaLabelDiv = {
   authorizedOperations: {
     item: 'whitelisted-operation-item',
   },
+  delegations: {
+    outgoing: {
+      totalValue: 'total-outgoing-value',
+    },
+  },
 };
 
 export default ariaLabelDiv;
