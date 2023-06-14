@@ -385,9 +385,16 @@ const TokenSwaps = ({
   };
 
   const swapStartAndEnd = () => {
-    const tmp = startToken;
-    setStartToken(endToken);
-    setEndToken(tmp);
+    const option = startTokenListOptions.find(
+      (option) => option.value.symbol === endToken?.value.symbol,
+    );
+    if (option) {
+      const tmp = startToken;
+      setStartToken(option);
+      setEndToken(tmp);
+    } else {
+      setErrorMessage('swap_cannot_switch_tokens', endToken?.value.symbol);
+    }
   };
 
   if (loading)

@@ -3284,5 +3284,9 @@
   "swap_transfer_not_sent": {
     "message": "Transfer not sent",
     "description": "When transfer not sent, swap status"
+  },
+  "swap_cannot_switch_tokens": {
+    "message": "Cannot switch tokens because you don't have any $1",
+    "description": "When trying to switch tokens (invert start and end)"
   }
 }
