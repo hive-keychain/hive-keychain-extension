@@ -1,4 +1,3 @@
-import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -11,6 +10,8 @@ import {
   actPendingTimers,
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
+import AccountUtils from 'src/utils/account.utils';
+//TODO delete file after refactoring add-account sections
 
 const extraMocks = {
   getAccount: () => {

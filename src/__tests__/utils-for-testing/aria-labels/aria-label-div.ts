@@ -110,6 +110,9 @@ const ariaLabelDiv = {
       totalValue: 'total-outgoing-value',
     },
   },
+  selectKeys: {
+    captionPage: 'select-keys-page-caption',
+  },
 };
 
 export default ariaLabelDiv;

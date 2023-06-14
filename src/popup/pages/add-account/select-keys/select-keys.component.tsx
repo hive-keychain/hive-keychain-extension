@@ -58,6 +58,7 @@ const SelectKeys = ({
       className="select-keys-page"
       aria-label={`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`}>
       <div
+        aria-label="select-keys-page-caption"
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_import_success'),
