@@ -76,12 +76,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         />
         <div className="swap-details">
           <div className="from-to">
-            {FormatUtils.withCommas(swap.amount)} {swap.startToken} {'=>'}{' '}
-            {swap.received ??
-              (swap.estimatedFinalAmount === '...'
-                ? swap.estimatedFinalAmount
-                : FormatUtils.withCommas(swap.estimatedFinalAmount))}{' '}
-            {swap.endToken}
+            {swap.amount} {swap.startToken} {'=>'}{' '}
+            {swap.received ?? swap.estimatedFinalAmount} {swap.endToken}
           </div>
           <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
             {getShortenedId(swap.id)}
@@ -113,10 +109,18 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                 <div className="step-number">{step.stepNumber}</div>
                 <div className="details">
                   <div className="description">
-                    {FormatUtils.withCommas(step.amountStartToken + '')}{' '}
+                    {FormatUtils.withCommas(
+                      step.amountStartToken + '',
+                      3,
+                      true,
+                    )}{' '}
                     {step.startToken} {'=>'}{' '}
                     {step.amountEndToken
-                      ? FormatUtils.withCommas(step.amountEndToken + '')
+                      ? FormatUtils.withCommas(
+                          step.amountEndToken + '',
+                          3,
+                          true,
+                        )
                       : '...'}{' '}
                     {step.endToken}
                   </div>
