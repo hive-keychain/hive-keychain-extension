@@ -17,6 +17,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
 import AccountUtils from 'src/utils/account.utils';
+
 describe('token-operation No Active key tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -72,7 +73,12 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to delegate', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.token.action.delegate),
+        screen.getByLabelText(
+          ariaLabelButton.token.action.preFix +
+            TokenOperationType.DELEGATE +
+            '-' +
+            selectedToken.symbol,
+        ),
       );
     });
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
@@ -103,7 +109,12 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to unstake', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.token.action.unstake),
+        screen.getByLabelText(
+          ariaLabelButton.token.action.preFix +
+            TokenOperationType.UNSTAKE +
+            '-' +
+            selectedToken.symbol,
+        ),
       );
     });
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
@@ -130,7 +141,12 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to stake', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.token.action.stake),
+        screen.getByLabelText(
+          ariaLabelButton.token.action.preFix +
+            TokenOperationType.STAKE +
+            '-' +
+            selectedToken.symbol,
+        ),
       );
     });
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
