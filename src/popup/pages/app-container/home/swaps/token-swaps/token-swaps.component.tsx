@@ -299,8 +299,6 @@ const TokenSwaps = ({
       return;
     }
 
-    const expectedAmount = estimate![estimate!.length - 1].estimate;
-
     const startTokenPrecision = await TokensUtils.getTokenPrecision(
       startToken?.value.symbol,
     );
@@ -315,7 +313,7 @@ const TokenSwaps = ({
         value: `${FormatUtils.withCommas(
           Number(amount).toFixed(startTokenPrecision),
         )} ${startToken?.value.symbol} => ${FormatUtils.withCommas(
-          expectedAmount.toFixed(endTokenPrecision),
+          estimateValue!.toString(),
         )} ${endToken?.value.symbol}`,
       },
       {

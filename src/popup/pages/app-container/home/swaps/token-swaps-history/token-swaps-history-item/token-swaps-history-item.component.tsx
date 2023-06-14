@@ -21,10 +21,15 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     navigator.clipboard.writeText(id.toString());
     setInfoMessage('swap_copied_to_clipboard');
   };
-  const getStatusMessage = (status: Swap['status']) => {
+  const getStatusMessage = (
+    status: Swap['status'],
+    transferInitiated: boolean,
+  ) => {
     switch (status) {
       case SwapStatus.PENDING:
-        return chrome.i18n.getMessage('swap_status_pending');
+        return transferInitiated
+          ? chrome.i18n.getMessage('swap_status_pending')
+          : chrome.i18n.getMessage('swap_transfer_not_sent');
       case SwapStatus.COMPLETED:
         return chrome.i18n.getMessage('swap_status_completed');
       case SwapStatus.CANCELED_DUE_TO_ERROR:
@@ -76,8 +81,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         />
         <div className="swap-details">
           <div className="from-to">
-            {swap.amount} {swap.startToken} {'=>'}{' '}
-            {swap.received ?? swap.estimatedFinalAmount} {swap.endToken}
+            {swap.amount} {swap.startToken} {'=>'} {swap.finalAmount}{' '}
+            {swap.endToken}
           </div>
           <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
             {getShortenedId(swap.id)}
@@ -91,7 +96,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
             moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
           ])}>
           <div className={`chip ${swap.status}`}>
-            {getStatusMessage(swap.status)}
+            {getStatusMessage(swap.status, swap.transferInitiated)}
           </div>
         </CustomTooltip>
       </div>

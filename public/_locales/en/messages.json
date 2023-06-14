@@ -3280,5 +3280,9 @@
   "swap_autorefresh": {
     "message": "Refreshing in $1s",
     "description": "Swap autorefresh"
+  },
+  "swap_transfer_not_sent": {
+    "message": "Transfer not sent",
+    "description": "When transfer not sent, swap status"
   }
 }
