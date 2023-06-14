@@ -167,7 +167,7 @@ const TokenSwaps = ({
         imgBackup = '/assets/images/hive-engine.svg';
       } else {
         img =
-          token.symbol === BaseCurrencies.HIVE
+          token.symbol === BaseCurrencies.HIVE.toUpperCase()
             ? `/assets/images/${Icons.HIVE}`
             : `/assets/images/${Icons.HBD}`;
       }
