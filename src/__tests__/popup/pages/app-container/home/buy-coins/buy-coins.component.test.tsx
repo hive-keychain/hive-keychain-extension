@@ -1,56 +1,77 @@
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
-import { act, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alSwitches from 'src/__tests__/utils-for-testing/aria-labels/al-switches';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelSwitch from 'src/__tests__/utils-for-testing/aria-labels/aria-label-switch';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
-config.byDefault();
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+
 describe('buy-coins.component tests:\n', () => {
-  beforeEach(async () => {
-    jest.useFakeTimers('legacy');
-    act(() => {
-      jest.advanceTimersByTime(4300);
-    });
-    mockPreset.setOrDefault({});
-    customRender(<App />, {
-      initialState: initialStates.iniStateAs.defaultExistent,
-    });
-    await assertion.awaitMk(mk.user.one);
-  });
+  const actionButtonIconBuy = ActionButtonList.find(
+    (actionButton) => actionButton.icon === Icons.BUY,
+  )!.icon;
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must show the list of exchanges for hive', async () => {
-    await clickAwait([alButton.actionBtn.buy]);
-    const linksFound = screen.getAllByRole('link');
-    let index = 0;
-    BuyCoinsListItem(BuyCoinType.BUY_HIVE, userData.one.username).list.map(
-      (listItem) => {
-        expect(linksFound[index]).toHaveAttribute('href', listItem.link);
-        index += 1;
-      },
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
     );
   });
-  it('Must show the list of exchanges for hbd', async () => {
-    await clickAwait([alButton.actionBtn.buy, alSwitches.buyCoins.buyCoins]);
-    const linksFound = screen.getAllByRole('link');
-    let index = 0;
-    BuyCoinsListItem(BuyCoinType.BUY_HDB, userData.one.username).list.map(
-      (listItem) => {
-        expect(linksFound[index]).toHaveAttribute('href', listItem.link);
-        index += 1;
-      },
-    );
+
+  it('Must show the buy coins page & list of exchanges for hive', async () => {
+    const BuyCoinListHIVE = BuyCoinsListItem(
+      BuyCoinType.BUY_HIVE,
+      mk.user.one,
+    ).list;
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByLabelText(
+          ariaLabelButton.actionBtn.preFix + actionButtonIconBuy,
+        ),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.BUY_COINS_PAGE}-page`),
+    ).toBeInTheDocument();
+    const linksFound = await screen.findAllByRole('link');
+    for (let i = 0; i < BuyCoinListHIVE.length; i++) {
+      expect(linksFound[i]).toHaveAttribute('href', BuyCoinListHIVE[i].link);
+    }
+  });
+
+  it('Must show the buy coins page & list of exchanges for HBD', async () => {
+    const BuyCoinListHBD = BuyCoinsListItem(
+      BuyCoinType.BUY_HDB,
+      mk.user.one,
+    ).list;
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByLabelText(
+          ariaLabelButton.actionBtn.preFix + actionButtonIconBuy,
+        ),
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelSwitch.buyCoins.buyCoins),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.BUY_COINS_PAGE}-page`),
+    ).toBeInTheDocument();
+    const linksFound = await screen.findAllByRole('link');
+    for (let i = 0; i < BuyCoinListHBD.length; i++) {
+      expect(linksFound[i]).toHaveAttribute('href', BuyCoinListHBD[i].link);
+    }
   });
 });
