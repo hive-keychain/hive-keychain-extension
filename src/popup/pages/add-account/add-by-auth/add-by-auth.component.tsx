@@ -30,7 +30,7 @@ const AddByAuth = ({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   const submitForm = async (): Promise<void> => {
     if (
@@ -52,7 +52,6 @@ const AddByAuth = ({
         navigateTo(Screen.SETTINGS_MAIN_PAGE);
       }
     } catch (err: any) {
-      //TODO add type
       setErrorMessage(err.message, err.messageParams);
     }
   };
