@@ -347,9 +347,13 @@ const TokenSwaps = ({
           );
 
           if (success) {
-            goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
+            await SwapTokenUtils.saveLastUsed(
+              startToken?.value,
+              endToken?.value,
+            );
+            await SwapTokenUtils.setAsInitiated(estimateId);
             setSuccessMessage('html_popup_swap_sending_token_successful');
-            SwapTokenUtils.saveLastUsed(startToken?.value, endToken?.value);
+            goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
           } else {
             setErrorMessage('html_popup_swap_error_sending_token', [
               Config.swaps.swapAccount,

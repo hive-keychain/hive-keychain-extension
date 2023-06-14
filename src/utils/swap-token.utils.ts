@@ -7,6 +7,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 
@@ -155,7 +156,6 @@ const getServerStatus = async () => {
 
 const getConfig = async (): Promise<SwapConfig> => {
   const res = await KeychainSwapApi.get(`token-swap/public-config`);
-  console.log(res);
   return res.result;
 };
 
@@ -173,6 +173,13 @@ const getLastUsed = async () => {
   else return lastUsed;
 };
 
+const setAsInitiated = async (swapId: Swap['id']) => {
+  const res = await KeychainSwapApi.post(`token-swap/${swapId}/confirm`, {});
+  if (!res.result) {
+    Logger.error(`Couldn't set as initiated`);
+  }
+};
+
 export const SwapTokenUtils = {
   getSwapTokenStartList,
   getSwapTokenEndList,
@@ -185,4 +192,5 @@ export const SwapTokenUtils = {
   getConfig,
   saveLastUsed,
   getLastUsed,
+  setAsInitiated,
 };
