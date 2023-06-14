@@ -241,8 +241,8 @@ const TokenSwaps = ({
           result[result.length - 1].endToken,
         );
         const value = Number(result[result.length - 1].estimate);
-        const fee = 0;
-        (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
+        const fee =
+          (Number(result[result.length - 1].estimate) * swapConfig.fee.amount) /
           100;
         const finalValue = Number(value - fee).toFixed(precision);
         setEstimate(result);
@@ -493,6 +493,9 @@ const TokenSwaps = ({
                                 startToken!,
                                 endToken!,
                                 swapConfig!,
+                              );
+                              setAutoRefreshCountdown(
+                                Config.swaps.autoRefreshPeriodSec,
                               );
                             }}
                             rotate={loadingEstimate}
