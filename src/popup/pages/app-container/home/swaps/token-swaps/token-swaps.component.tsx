@@ -442,7 +442,9 @@ const TokenSwaps = ({
                 </div>
                 <span className="available">
                   {chrome.i18n.getMessage('popup_html_available')} :{' '}
-                  {FormatUtils.withCommas(startToken?.value.balance)}
+                  {startToken?.value.balance
+                    ? FormatUtils.withCommas(startToken?.value.balance)
+                    : ''}
                 </span>
               </div>
               <Icon
