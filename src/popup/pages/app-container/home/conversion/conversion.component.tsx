@@ -131,7 +131,7 @@ const Conversion = ({
             activeAccount.keys.active!,
           );
 
-          if (success) {
+          if (success && success?.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);
             setSuccessMessage(
               conversionType === ConversionType.CONVERT_HBD_TO_HIVE
