@@ -31,7 +31,7 @@ const AddByKeys = ({
       isBackButtonEnabled: true,
       isCloseButtonDisabled: localAccounts.length === 0,
     });
-  });
+  }, []);
 
   const submitForm = async (): Promise<void> => {
     if (

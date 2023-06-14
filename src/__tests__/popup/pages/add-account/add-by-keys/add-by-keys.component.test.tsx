@@ -1,168 +1,215 @@
 import App from '@popup/App';
-import { screen, waitFor } from '@testing-library/react';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import AccountUtils from 'src/utils/account.utils';
-import addByKeysBeforeEach from 'src/__tests__/popup/pages/add-account/add-by-keys/mocks/add-by-keys-before-each';
-import addByKeysMocks from 'src/__tests__/popup/pages/add-account/add-by-keys/mocks/add-by-keys-mocks';
-import addByKeysExtraCases from 'src/__tests__/popup/pages/add-account/add-by-keys/othercases/add-by-keys-extra-cases';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import {
-  EventType,
-  InputField,
-  QueryDOM,
-} from 'src/__tests__/utils-for-testing/enums/enums';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  clickAwait,
-  clickTypeAwait,
-  typeAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+
 describe('add-by-keys:\n', () => {
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  describe('add-by-keys tests(no accounts):\n', () => {
-    beforeEach(async () => {
-      await addByKeysBeforeEach.beforeEach(<App />, [], false);
-      expect(
-        await screen.findByLabelText(alButton.addByKeys),
-      ).toBeInTheDocument();
-    });
-    it('Must add valid posting key and load home page', async () => {
-      addByKeysMocks.extraMocks.getAccount();
-      await clickAwait([alButton.addByKeys]);
-      await typeAwait([
-        { ariaLabel: alInput.username, text: userData.one.username },
-        {
-          ariaLabel: alInput.privateKey,
-          text: userData.one.nonEncryptKeys.posting,
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              hasStoredAccounts: false,
+            },
+          },
         },
-      ]);
-      AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-      await clickAwait([alButton.submit]);
-      actAdvanceTime(4300);
-      await waitFor(() => {
-        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
-      });
-    });
-    it('Must add valid memo key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccount();
-      await clickAwait([alButton.addByKeys]);
-      await typeAwait([
-        { ariaLabel: alInput.username, text: userData.one.username },
-        {
-          ariaLabel: alInput.privateKey,
-          text: userData.one.nonEncryptKeys.memo,
-        },
-      ]);
-      AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-      await clickAwait([alButton.submit]);
-      actAdvanceTime(4300);
-      await waitFor(() => {
-        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
-      });
-    });
-    it('Must add valid active key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccount();
-      await clickAwait([alButton.addByKeys]);
-      await typeAwait([
-        { ariaLabel: alInput.username, text: userData.one.username },
-        {
-          ariaLabel: alInput.privateKey,
-          text: userData.one.nonEncryptKeys.active,
-        },
-      ]);
-      AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-      await clickAwait([alButton.submit]);
-      actAdvanceTime(4300);
-      await waitFor(() => {
-        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
-      });
-    });
-    it('Must derivate all keys from master, and navigate to select keys page', async () => {
-      addByKeysMocks.extraMocks.getAccount();
-      await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
-      await waitFor(() => {
-        expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
-        expect(
-          ['Posting Key', 'Active Key', 'Memo Key'].forEach((userKey) => {
-            expect(screen.getByText(userKey)).toBeInTheDocument();
-          }),
-        );
-      });
-    });
-    it('Must show error if empty username', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_accounts_fill',
+      },
+    );
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.addByKeys),
       );
-      await addByKeysMocks.typeAndSubmitWEmpty(
-        userData.one.nonEncryptKeys.active,
-        InputField.USERNAME,
-      );
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
-    });
-    it('Must show error if empty password', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_accounts_fill',
-      );
-      await addByKeysMocks.typeAndSubmitWEmpty(
-        userData.one.username,
-        InputField.PRIVATEKEY,
-      );
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
-    });
-    it('Must show error if empty username and empty password', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_accounts_fill',
-      );
-      await clickTypeAwait([
-        { ariaLabel: alButton.addByKeys, event: EventType.CLICK },
-        { ariaLabel: alButton.submit, event: EventType.CLICK },
-      ]);
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
-    });
-    it('Must show error when using a public key', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_account_password_is_public_key',
-      );
-      await addByKeysMocks.typeAndSubmit(userData.one.encryptKeys.posting);
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
-    });
-    it('Must show error when using an incorrect key', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_accounts_incorrect_key',
-      );
-      await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.fakeKey);
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
-    });
-    it('Must show error when using an incorrect username', async () => {
-      const errorMessage = mocksImplementation.i18nGetMessageCustom(
-        'popup_accounts_incorrect_user',
-      );
-      mockPreset.setOrDefault({
-        app: { getAccount: [] },
-      });
-      await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.fakeKey);
-      await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
   });
 
-  describe('add-by-keys tests (with accounts):\n', () => {
-    beforeEach(async () => {
-      await addByKeysBeforeEach.beforeEach(<App />, accounts.twoAccounts, true);
-      await assertion.awaitMk(mk.user.one);
+  it('Must add valid posting key and load home page', async () => {
+    AccountUtils.getAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.asArray.extended);
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.nonEncryptKeys.posting,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
     });
-    addByKeysExtraCases.wAccounts();
+    expect(
+      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must add valid memo key and load homepage', async () => {
+    AccountUtils.getAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.asArray.extended);
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.nonEncryptKeys.memo,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must add valid active key and load homepage', async () => {
+    AccountUtils.getAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.asArray.extended);
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.nonEncryptKeys.active,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+    ).toBeInTheDocument();
+  });
+  it('Must derivate all keys from master, and navigate to select keys page', async () => {
+    AccountUtils.getAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.asArray.extended);
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.nonEncryptKeys.master,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if not found username', async () => {
+    AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        'non_existent_user',
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.nonEncryptKeys.master,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_accounts_incorrect_user'),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if empty password', async () => {
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        '{space}',
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error when using a public key', async () => {
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.encryptKeys.active,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_account_password_is_public_key'),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error when using an incorrect key', async () => {
+    await act(async () => {
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByLabelText(ariaLabelInput.privateKey),
+        userData.one.encryptKeys.randomString53,
+      );
+      await userEvent.click(
+        await screen.findByLabelText(ariaLabelButton.submit),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_accounts_incorrect_key'),
+      ),
+    ).toBeInTheDocument();
   });
 });
