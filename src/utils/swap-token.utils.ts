@@ -6,6 +6,7 @@ import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -133,13 +134,14 @@ const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
     const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
     swaps.push({
       ...s,
-      amount: Number(s.amount).toFixed(precisionStartToken),
-      estimatedFinalAmount:
-        s.steps.length !== 0
-          ? Number(s.steps[s.steps.length - 1].estimate).toFixed(
-              precisionEndToken,
-            )
-          : '...',
+      amount: FormatUtils.withCommas(
+        Number(s.amount).toString(),
+        precisionStartToken,
+      ),
+      finalAmount: FormatUtils.withCommas(
+        Number(s.received ?? s.expectedAmountAfterFee).toString(),
+        precisionEndToken,
+      ),
     });
   }
   return swaps;

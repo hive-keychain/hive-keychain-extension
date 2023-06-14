@@ -54,6 +54,7 @@ export enum Icons {
   MANAGE_AUTHORITIES = 'supervisor_account',
   MENU = 'menu',
   MORE_VERT = 'more_vert',
+  NOT_SENT = 'cancel_schedule_send',
   OPEN_IN_NEW = 'open_in_new',
   PASSWORD = 'password',
   PENDING = 'pending',

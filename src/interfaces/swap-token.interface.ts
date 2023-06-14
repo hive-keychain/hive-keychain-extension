@@ -38,9 +38,14 @@ export interface Swap {
   status: SwapStatus;
   steps: Step[];
   history: HistoryStep[];
-  received: string;
+  received: number;
   fee: string;
   updatedAt: Date;
+  createdAt: Date;
+  expectedAmountAfterFee: number;
+  expectedAmountBeforeFee: number;
+  transferInitiated: boolean;
+  finalAmount: string;
 }
 
 export interface Step {
