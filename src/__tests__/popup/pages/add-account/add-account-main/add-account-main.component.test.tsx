@@ -1,73 +1,102 @@
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import mk from 'src/__tests__/utils-for-testing/data/mk';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  userEventPendingTimers,
-} from 'src/__tests__/utils-for-testing/setups/events';
-import renders from 'src/__tests__/utils-for-testing/setups/renders';
-config.adjustSetTimeOutValues({ hideLoaderAfterMs: 0 });
-config.useChrome();
-jest.setTimeout(10000);
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
 
 describe('add-account-main.component tests:\n', () => {
-  beforeEach(() => {
-    mockPreset.setOrDefault({
-      app: { hasStoredAccounts: false },
-    });
-    jest.useFakeTimers('legacy');
-    actAdvanceTime(4300);
-  });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
 
-  it('Must navigate to add-by-keys', async () => {
-    renders.wInitialState(<App />, initialStates.iniState);
-    await act(async () => {
-      await userEventPendingTimers.click(
-        await screen.findByLabelText(alButton.addByKeys),
+  describe('No Accounts cases: ', () => {
+    beforeEach(async () => {
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                hasStoredAccounts: false,
+              },
+            },
+          },
+        },
       );
     });
-    await waitFor(() => {
+
+    it('Must show add account main page', async () => {
       expect(
-        screen.getByLabelText(alComponent.addByKeysPage),
+        await screen.findByLabelText(
+          `${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('Must navigate to add-by-keys', async () => {
+      await act(async () => {
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.addByKeys),
+        );
+      });
+      expect(
+        await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`),
       ).toBeInTheDocument();
     });
   });
-  it('Must navigate to add-by-auth', async () => {
-    mockPreset.setOrDefault({
-      app: { hasStoredAccounts: true },
-    });
-    renders.wInitialState(<App />, {
-      ...initialStates.iniState,
-      accounts: accounts.twoAccounts,
-    });
-    expect(await screen.findByText(mk.user.one)).toBeInTheDocument();
-    await act(async () => {
-      await userEventPendingTimers.click(screen.getByLabelText(alButton.menu));
-      await userEventPendingTimers.click(
-        screen.getByLabelText(alButton.menuSettingsPeople),
+
+  describe('Accounts cases', () => {
+    beforeEach(async () => {
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        {
+          ...initialStates.iniStateAs.defaultExistent,
+          accounts: accounts.twoAccounts,
+        },
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                hasStoredAccounts: true,
+              },
+            },
+          },
+        },
       );
-      await userEventPendingTimers.click(
-        screen.getByLabelText(alButton.menuSettingsPersonAdd),
-      );
-      await userEventPendingTimers.click(
-        screen.getByLabelText(alButton.addByAuth),
-      );
+      await act(async () => {
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.menu),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.menuPreFix + Icons.ACCOUNTS,
+          ),
+        );
+        await userEvent.click(
+          await screen.findByLabelText(
+            ariaLabelButton.menuPreFix + Icons.ADD_ACCOUNT,
+          ),
+        );
+      });
     });
-    await waitFor(() => {
+
+    it('Must navigate to add-by-auth', async () => {
+      await act(async () => {
+        await userEvent.click(
+          await screen.findByLabelText(ariaLabelButton.addByAuth),
+        );
+      });
       expect(
-        screen.getByLabelText(alComponent.addByAuthPage),
+        await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`),
       ).toBeInTheDocument();
     });
   });
