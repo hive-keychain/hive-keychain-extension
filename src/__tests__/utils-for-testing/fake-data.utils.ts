@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+//TODO delete file after refactoring
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import moment from 'moment';
@@ -2138,8 +2139,8 @@ const bittrexResultArray = [
 ];
 
 const utilsT = {
-  dataUserExtended,
-  cedricDataSample,
+  // dataUserExtended,
+  // cedricDataSample,
   dynamicPropertiesObj,
   fakeQuentinAccResponseWithAuth,
   fakeQuentinAccResponseWithNoAuth,
@@ -2152,7 +2153,7 @@ const utilsT = {
   fakeResponseHavingTokenBalances,
   fakeIncommingDelegations,
   fakeOutgoingDelegations,
-  votingPowerArrayTest,
+  // votingPowerArrayTest,
   fakeHbdConversionsResponse,
   fakeHiveConversionsResponse,
   fakeGetDelegatorsResponse,

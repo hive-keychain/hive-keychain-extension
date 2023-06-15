@@ -1,6 +1,6 @@
 import { Keys } from '@interfaces/keys.interface';
-
 require('dotenv').config();
+
 const one = {
   username: process.env._TEST_USERNAME || 'error, please check',
   encryptKeys: {

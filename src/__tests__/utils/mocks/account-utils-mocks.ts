@@ -2,10 +2,11 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import AccountUtils from 'src/utils/account.utils';
-import Logger from 'src/utils/logger.utils';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import AccountUtils from 'src/utils/account.utils';
+import Logger from 'src/utils/logger.utils';
 
 const constants = {
   userData: { ...utilsT.userData },
@@ -19,7 +20,7 @@ const constants = {
   } as Keys,
   activeAccountData: {
     account: {
-      ...utilsT.dataUserExtended,
+      ...accounts.extended,
       owner_challenged: false,
       active_challenged: false,
       last_owner_proved: '',
