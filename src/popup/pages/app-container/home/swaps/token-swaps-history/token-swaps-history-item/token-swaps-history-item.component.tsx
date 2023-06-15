@@ -63,7 +63,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
   };
 
   const goToTx = (txId: string) => {
-    let url: string = `https://www.hiveblocks.com/tx/${txId}`;
+    let url: string = `https://hiveblocks.com/tx/${txId}`;
 
     chrome.tabs.create({
       url: url,

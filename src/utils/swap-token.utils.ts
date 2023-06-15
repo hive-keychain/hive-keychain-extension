@@ -128,25 +128,20 @@ const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
   }
   const swaps = [];
   for (const s of res.result) {
-    const precisionStartToken = await TokensUtils.getTokenPrecision(
-      s.startToken,
-    );
-    const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
+    // const precisionStartToken = await TokensUtils.getTokenPrecision(
+    //   s.startToken,
+    // );
+    // const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
     swaps.push({
       ...s,
-      amount: FormatUtils.withCommas(
-        Number(s.amount).toString(),
-        precisionStartToken,
-      ),
+      amount: FormatUtils.withCommas(Number(s.amount).toString(), 3, true),
       received:
         s.received &&
-        FormatUtils.withCommas(
-          Number(s.received).toString(),
-          precisionEndToken,
-        ),
+        FormatUtils.withCommas(Number(s.received).toString(), 3, true),
       finalAmount: FormatUtils.withCommas(
         Number(s.received ?? s.expectedAmountAfterFee).toString(),
-        precisionEndToken,
+        3,
+        true,
       ),
     });
   }
