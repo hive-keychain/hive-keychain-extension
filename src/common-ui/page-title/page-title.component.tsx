@@ -6,7 +6,7 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.scss';
@@ -17,6 +17,8 @@ export interface PageTitleProps {
   skipTitleTranslation?: boolean;
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
+  onCloseAdditional?: () => void;
+  onBackAdditional?: () => void;
 }
 
 const PageTitle = ({
@@ -25,17 +27,24 @@ const PageTitle = ({
   skipTitleTranslation,
   isBackButtonEnabled,
   isCloseButtonDisabled,
+  onBackAdditional,
+  onCloseAdditional,
   goBack,
   navigateTo,
   canGoBack,
   resetNav,
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
+    if (onBackAdditional) onBackAdditional();
     if (isBackButtonEnabled) {
       goBack();
     }
   };
   const handleCloseButtonClick = (): void => {
+    if (onCloseAdditional) {
+      onCloseAdditional();
+    }
+
     resetNav();
     navigateTo(Screen.HOME_PAGE, true);
   };

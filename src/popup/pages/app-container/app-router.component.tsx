@@ -183,6 +183,8 @@ const AppRouter = ({
           titleParams={titleProperties.titleParams}
           skipTitleTranslation={titleProperties.skipTitleTranslation}
           isBackButtonEnabled={titleProperties.isBackButtonEnabled}
+          onBackAdditional={titleProperties.onBackAdditional}
+          onCloseAdditional={titleProperties.onCloseAdditional}
           isCloseButtonDisabled={
             titleProperties.isCloseButtonDisabled
           }></PageTitleComponent>
