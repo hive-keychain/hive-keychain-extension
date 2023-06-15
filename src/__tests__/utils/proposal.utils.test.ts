@@ -1,22 +1,61 @@
+import { Asset } from '@hiveio/dhive';
 import { FundedOption } from '@interfaces/proposal.interface';
+import moment from 'moment';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import proposalUtilsMocks from 'src/__tests__/utils/mocks/proposal.utils-mocks';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
+
 describe('proposal.utils tests:\n', () => {
-  const { mocks, methods, constants } = proposalUtilsMocks;
-  methods.afterEach;
-  methods.beforeEach;
+  const constants = {
+    withKeyChainProposal: {
+      proposals: [
+        ...proposal.fakeProposalListResponseHiveTx.proposals,
+        proposal.fakeProposalKeyChainHiveTx,
+      ],
+    },
+    expectedResultProposalWithkeyChain: [
+      ...proposal.expectedResultProposal,
+      {
+        id: 216,
+        creator: 'keychain',
+        receiver: 'keychain',
+        startDate: moment('2022-05-15T00:00:00'),
+        endDate: moment('2023-05-15T00:00:00'),
+        dailyPay: Asset.fromString('390.000 HBD'),
+        subject: 'Hive Keychain development',
+        totalVotes: '33.43M HP',
+        link: 'https://peakd.com/proposals/216',
+        proposalId: 216,
+        voted: true,
+        funded: 'totally_funded',
+      },
+    ],
+  };
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
+  beforeEach(async () => {
+    await HiveTxUtils.setRpc(rpc.fake);
+  });
   describe('hasVotedForProposal tests:\n', () => {
     test('Must return true if voted', async () => {
-      mocks.hiveTxUtils.getData(proposal.fakeVotedAccountResponse);
+      jest
+        .spyOn(HiveTxUtils, 'getData')
+        .mockResolvedValue(proposal.fakeVotedAccountResponse);
       const result = await ProposalUtils.hasVotedForProposal('theghost1980');
       expect(result).toBe(true);
     });
 
     test('Must return true if voted on specified proposalId', async () => {
-      mocks.hiveTxUtils.getData(proposal.fakeVotedAccountResponse);
+      jest
+        .spyOn(HiveTxUtils, 'getData')
+        .mockResolvedValue(proposal.fakeVotedAccountResponse);
+
       const result = await ProposalUtils.hasVotedForProposal(
         'theghost1980',
         proposal.fakeListProposalVotesResponse[0].id,
@@ -25,7 +64,10 @@ describe('proposal.utils tests:\n', () => {
     });
 
     test('Must return false if not voted', async () => {
-      mocks.hiveTxUtils.getData(proposal.fakeVotedAccountResponse);
+      jest
+        .spyOn(HiveTxUtils, 'getData')
+        .mockResolvedValue(proposal.fakeVotedAccountResponse);
+
       const result = await ProposalUtils.hasVotedForProposal('no_voted_acount');
       expect(result).toBe(false);
     });
@@ -33,7 +75,9 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
-      mocks.getProposalDailyBudget(proposal.fakeDailyBudgetResponse);
+      jest
+        .spyOn(ProposalUtils, 'getProposalDailyBudget')
+        .mockResolvedValue(proposal.fakeDailyBudgetResponse);
       mocksImplementation.hiveTxUtils.getData({
         listProposals: proposal.fakeProposalListResponseHiveTx.proposals,
         listProposalVotes: proposal.fakeListProposalVotesResponse,
@@ -46,7 +90,9 @@ describe('proposal.utils tests:\n', () => {
     });
 
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
-      mocks.getProposalDailyBudget(proposal.fakeDailyBudgetResponse);
+      jest
+        .spyOn(ProposalUtils, 'getProposalDailyBudget')
+        .mockResolvedValue(proposal.fakeDailyBudgetResponse);
       mocksImplementation.hiveTxUtils.getData({
         listProposals: constants.withKeyChainProposal.proposals,
         listProposalVotes: proposal.fakeListProposalVotesResponse,
@@ -79,33 +125,4 @@ describe('proposal.utils tests:\n', () => {
       );
     });
   });
-  //TODO check & fix cases bellow
-  // describe('isRequestingProposalVotes cases:\n', () => {
-  //   it('Must return true', async () => {
-  //     mocks.getProposalDailyBudget(0.01);
-  //     mocks.hiveTxUtils.getData(constants.withKeyChainProposal.proposals);
-  //     mocks.store.getState({
-  //       globalProperties: { global: dynamic.globalProperties },
-  //     });
-  //     expect(
-  //       await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
-  //     ).toBe(true);
-  //   });
-
-  //   //TODO check & fix!
-  //   // it('Must return true with one partially_funded proposal', async () => {
-  //   //   const cloneResponse = objects.clone(
-  //   //     constants.withKeyChainProposal.proposals,
-  //   //   ) as any;
-  //   //   cloneResponse[0].daily_pay = '1000000000 HBD';
-  //   //   mocks.getProposalDailyBudget(10000);
-  //   //   mocks.hiveTxUtils.getData(cloneResponse);
-  //   //   mocks.store.getState({
-  //   //     globalProperties: { global: dynamic.globalProperties },
-  //   //   });
-  //   //   expect(
-  //   //     await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
-  //   //   ).toBe(true);
-  //   // });
-  // });
 });
