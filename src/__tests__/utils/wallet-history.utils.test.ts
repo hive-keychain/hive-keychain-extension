@@ -12,10 +12,14 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('wallet-history.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('filterTransfer tests:\n', () => {
     let fakeTransfer = {
       from: 'workerjab1',
@@ -23,7 +27,7 @@ describe('wallet-history.utils tests:\n', () => {
       amount: '0.001 HIVE',
       memo: 'Not encrypted Memo',
     } as Transfer;
-    const activeAccountName = utilsT.userData.username;
+    const activeAccountName = userData.one.username;
     test('Passing a string contained on field memo, must return true', () => {
       expect(
         WalletHistoryUtils.filterTransfer(
