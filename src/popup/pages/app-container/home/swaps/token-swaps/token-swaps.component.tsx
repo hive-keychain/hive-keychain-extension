@@ -238,6 +238,9 @@ const TokenSwaps = ({
         startToken?.value.symbol,
         endToken?.value.symbol,
         amount,
+        () => {
+          setAutoRefreshCountdown(null);
+        },
       );
 
       if (result.length) {

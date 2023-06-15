@@ -49,6 +49,7 @@ const getEstimate = async (
   startToken: string,
   endToken: string,
   amount: string,
+  handleErrors: () => void,
 ) => {
   if (startToken && endToken && amount.length && parseFloat(amount) > 0) {
     const res = await KeychainSwapApi.get(
@@ -56,6 +57,7 @@ const getEstimate = async (
     );
 
     if (res.error) {
+      handleErrors();
       throw res.error;
     }
 
