@@ -241,13 +241,13 @@ const getSendTokenTransaction = (
 };
 
 const getHiveEngineTokenPrice = (
-  balance: TokenBalance,
+  { symbol }: Partial<TokenBalance>,
   market: TokenMarket[],
 ) => {
-  const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  const tokenMarket = market.find((t) => t.symbol === symbol);
   const price = tokenMarket
     ? parseFloat(tokenMarket.lastPrice)
-    : balance.symbol === 'SWAP.HIVE'
+    : symbol === 'SWAP.HIVE'
     ? 1
     : 0;
   return price;

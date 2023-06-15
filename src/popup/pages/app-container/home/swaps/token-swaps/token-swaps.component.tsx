@@ -15,6 +15,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { loadTokensMarket } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -51,7 +52,9 @@ const TokenSwaps = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadTokensMarket,
   price,
+  tokenMarket,
 }: PropsFromRedux) => {
   const [swapConfig, setSwapConfig] = useState({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
@@ -110,6 +113,7 @@ const TokenSwaps = ({
 
   const init = async () => {
     try {
+      if (!tokenMarket.length) loadTokensMarket();
       setLoading(true);
       const serverStatus = await SwapTokenUtils.getServerStatus();
       setUnderMaintenance(serverStatus.isMaintenanceOn);
@@ -397,6 +401,33 @@ const TokenSwaps = ({
     }
   };
 
+  const getTokenUSDPrice = (
+    estimateValue: string | undefined,
+    symbol: string,
+  ) => {
+    if (!estimateValue) return '';
+    else {
+      let tokenPrice;
+      if (symbol === BaseCurrencies.HIVE.toUpperCase()) {
+        tokenPrice = price.hive.usd!;
+      } else if (symbol === BaseCurrencies.HBD.toUpperCase()) {
+        tokenPrice = price.hive_dollar.usd!;
+      } else {
+        tokenPrice =
+          TokensUtils.getHiveEngineTokenPrice(
+            {
+              symbol,
+            },
+            tokenMarket,
+          ) * price.hive.usd!;
+      }
+      return `≈ $${FormatUtils.withCommas(
+        Number.parseFloat(estimateValue) * tokenPrice + '',
+        2,
+      )}`;
+    }
+  };
+
   if (loading)
     return (
       <div className="rotating-logo-wrapper">
@@ -472,15 +503,10 @@ const TokenSwaps = ({
                     />
                   )}
                   <CustomTooltip
-                    message={
-                      estimateValue
-                        ? `≈ $${FormatUtils.withCommas(
-                            Number.parseFloat(estimateValue) * price.hive.usd! +
-                              '',
-                            2,
-                          )}`
-                        : ''
-                    }
+                    message={getTokenUSDPrice(
+                      estimateValue,
+                      endToken?.value.symbol,
+                    )}
                     position={'top'}
                     skipTranslation>
                     <InputComponent
@@ -588,7 +614,11 @@ const TokenSwaps = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, price: state.currencyPrices };
+  return {
+    activeAccount: state.activeAccount,
+    price: state.currencyPrices,
+    tokenMarket: state.tokenMarket,
+  };
 };
 
 const connector = connect(mapStateToProps, {
@@ -600,6 +630,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   goBackToThenNavigate,
   setTitleContainerProperties,
+  loadTokensMarket,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
