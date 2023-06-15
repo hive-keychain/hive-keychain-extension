@@ -132,7 +132,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
               ariaLabel="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
-              additionalClassName="input-img"></Icon>
+              additionalClassName="input-img erase"></Icon>
           )}
         {isFocused && props.autocompleteValues && (
           <AutocompleteBox
