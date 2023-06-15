@@ -1,8 +1,11 @@
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-const chrome = require('chrome-mock');
-global.chrome = chrome;
+
 describe('autolock.utils tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   test('when called with a message must set sendMessage to the chrome.runtime', async () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
