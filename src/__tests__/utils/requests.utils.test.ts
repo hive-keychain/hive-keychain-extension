@@ -10,6 +10,10 @@ import {
 } from 'src/utils/requests.utils';
 
 describe('requests.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('anonymous_requests tests:\n', () => {
     test('Should contain each of the requests defined bellow', () => {
       const showEachRequestIteration = false;
