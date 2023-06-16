@@ -1,7 +1,12 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Swap, SwapConfig, SwapStep } from '@interfaces/swap-token.interface';
+import {
+  Swap,
+  SwapConfig,
+  SwapStatus,
+  SwapStep,
+} from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
@@ -134,6 +139,7 @@ const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
     //   s.startToken,
     // );
     // const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
+    if (s.status === SwapStatus.PENDING && !s.transferInitiated) continue;
     swaps.push({
       ...s,
       amount: FormatUtils.withCommas(Number(s.amount).toString(), 3, true),
