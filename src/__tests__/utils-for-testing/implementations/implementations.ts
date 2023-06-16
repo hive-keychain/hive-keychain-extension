@@ -28,14 +28,7 @@ const hasKeys = (obj: {}) => {
  * If debug needed, just uncomment the console.log after the default case.
  */
 const getValuefromLS = async (...args: any[]): Promise<any> => {
-  //TODO bellow check if there is better way to handle
-  //  custom data???
-
-  //testing new block bellow
-  // let customData: CustomDataFromLocalStorage =
-  //   dataMocks.customDataFromLocalStorage;
   let customData: CustomDataFromLocalStorage = args[1] ?? {};
-  //end testing block
   // console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
