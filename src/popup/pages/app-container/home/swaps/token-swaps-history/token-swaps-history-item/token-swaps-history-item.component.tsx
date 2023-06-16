@@ -115,9 +115,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
           delayShow={0}
           skipTranslation
           message={getTooltipMessage(swap)}>
-          {/* <div className={`chip ${swap.status}`}>
-            {getStatusMessage(swap.status, swap.transferInitiated)}
-          </div> */}
           <Icon name={getStatusIcon(swap.status)} />
         </CustomTooltip>
       </div>
@@ -147,11 +144,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                         : '...'}{' '}
                       {step.endToken}
                     </div>
-                    {/* <div
-                    className="go-to-tx"
-                    onClick={() => goToTx(step.transactionId)}>
-                    {chrome.i18n.getMessage('swap_see_transaction')}
-                  </div> */}
                   </div>
                   <Icon
                     name={getStepIcon(step.status)}

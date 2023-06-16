@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import Icon from 'src/common-ui/icon/icon.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import Config from 'src/config';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 import './token-swaps-history.component.scss';
@@ -21,6 +22,7 @@ const TokenSwapsHistory = ({
   const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
     number | null
   >(null);
+  const [shouldRefresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const TokenSwapsHistory = ({
     }
 
     if (autoRefreshCountdown === 0) {
-      initSwapHistory();
+      refresh();
       setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
       return;
     }
@@ -52,18 +54,27 @@ const TokenSwapsHistory = ({
   }, [autoRefreshCountdown]);
 
   const initSwapHistory = async () => {
+    setLoading(true);
     await refresh();
+    setLoading(false);
   };
 
   const refresh = async () => {
-    setLoading(true);
+    setRefresh(true);
     const result = await SwapTokenUtils.retrieveSwapHistory(
       activeAccount.name!,
     );
     setHistory(result);
     setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
-    setLoading(false);
+    setRefresh(false);
   };
+
+  if (loading)
+    return (
+      <div className="rotating-logo-wrapper">
+        <RotatingLogoComponent />
+      </div>
+    );
 
   return (
     <div className="token-swaps-history">
@@ -73,7 +84,11 @@ const TokenSwapsHistory = ({
             {chrome.i18n.getMessage('swap_refresh_countdown', [
               autoRefreshCountdown?.toString(),
             ])}
-            <Icon name={Icons.REFRESH} onClick={refresh} rotate={loading} />
+            <Icon
+              name={Icons.REFRESH}
+              onClick={refresh}
+              rotate={shouldRefresh}
+            />
           </>
         )}
         {autoRefreshCountdown && <span></span>}
