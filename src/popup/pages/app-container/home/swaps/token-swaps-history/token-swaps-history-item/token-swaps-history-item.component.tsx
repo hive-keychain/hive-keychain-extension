@@ -74,19 +74,21 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
       <div className="history-item-information">
         <Icon
           name={Icons.EXPAND_MORE}
-          additionalClassName={`expand-panel ${
-            swap.history.length === 0 ? 'hidden' : ''
-          }`}
+          additionalClassName={`expand-panel`}
           onClick={() => setIsOpen(!isOpen)}
         />
         <div className="swap-details">
           <div className="from-to">
-            {swap.amount} {swap.startToken} <Icon name={Icons.ARROW_RIGHT} />{' '}
-            {swap.status !== SwapStatus.COMPLETED ? '' : '≈'} {swap.finalAmount}{' '}
-            {swap.endToken}
-          </div>
-          <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
-            {getShortenedId(swap.id)}
+            {swap.amount} {swap.startToken}{' '}
+            <Icon name={Icons.ARROW_DOWNWARDS} />{' '}
+            <span>
+              {swap.status === SwapStatus.COMPLETED ? (
+                ''
+              ) : (
+                <span className="approximate">~</span>
+              )}{' '}
+              {swap.finalAmount} {swap.endToken}
+            </span>
           </div>
         </div>
         <CustomTooltip
@@ -102,13 +104,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         </CustomTooltip>
       </div>
 
-      {isOpen && swap.history.length !== 0 && (
+      {isOpen && (
         <>
-          {!!swap.fee && (
-            <div className="fee-paid">
-              {chrome.i18n.getMessage('swap_fee')} : {swap.fee} {swap.endToken}
-            </div>
-          )}
           <div className="history">
             {swap.history.map((step) => (
               <div className="step" key={swap.id + '' + step.stepNumber}>
@@ -142,6 +139,22 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                 />
               </div>
             ))}
+            {!!swap.fee && (
+              <div className="step">
+                <div className="step-number">
+                  {chrome.i18n.getMessage('swap_fee')}
+                </div>
+                <div className="description">
+                  {swap.fee} {swap.endToken}
+                </div>
+              </div>
+            )}
+            <div className="step">
+              <div className="step-number">ID</div>
+              <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
+                {getShortenedId(swap.id)}
+              </div>
+            </div>
           </div>
         </>
       )}

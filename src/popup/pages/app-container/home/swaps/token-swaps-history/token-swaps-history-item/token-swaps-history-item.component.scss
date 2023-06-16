@@ -22,13 +22,14 @@
     width: 100%;
     .swap-details {
       flex: 1;
-      .id {
-        font-size: 14px;
-        cursor: pointer;
-        font-style: italic;
+      .approximate {
+        vertical-align: -30%;
       }
       .from-to {
         font-size: 16px;
+        display: inline-flex;
+        flex-direction: column;
+        text-align: center;
       }
     }
     .chip {
@@ -69,6 +70,11 @@
     display: flex;
     flex-direction: column;
     row-gap: 12px;
+    .id {
+      font-size: 14px;
+      cursor: pointer;
+      font-style: italic;
+    }
     .step {
       display: flex;
       align-items: center;
