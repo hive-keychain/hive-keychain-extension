@@ -41,6 +41,8 @@ const ConfirmationPage = ({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
       isBackButtonEnabled: false,
+      onBackAdditional: handleClickOnCancel,
+      onCloseAdditional: handleClickOnCancel,
     });
   });
   const hasField = fields && fields.length !== 0;
