@@ -1,52 +1,51 @@
-//TODO re-do all tests bellow with new patterns + remove export + remove fake case
-export {};
+import LocalStorageModule from '@background/local-storage.module';
+import { Rpc } from '@interfaces/rpc.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+
 describe('local-storage.module tests:\n', () => {
-  it.skip('skipped', () => {});
-  it('Must pass', () => {});
-  // const { constants, spies, methods, mocks } = localStorageModuleMocks;
-  // const { autoLockDefault, noConfirm } = constants;
-  // methods.afterEach;
-  // it('Must call Logger', async () => {
-  //   mocks.getValueFromLocalStorage({ customStorageVersion: '1.0' });
-  //   await LocalStorageModule.checkAndUpdateLocalStorage();
-  //   expect(spies.logger.info).toBeCalledWith(
-  //     'Already has updated local storage',
-  //   );
-  // });
-  // it('Must save all values in Local Storage', async () => {
-  //   mocks.saveValueInLocalStorage;
-  //   mocks.getValueFromLocalStorage({
-  //     customAutolock: JSON.stringify(autoLockDefault),
-  //     customRpcList: JSON.stringify(DefaultRpcs),
-  //     customCurrentRpc: DefaultRpcs[1],
-  //     customAuthorizedOP: JSON.stringify(noConfirm),
-  //   });
-  //   await LocalStorageModule.checkAndUpdateLocalStorage();
-  //   expect(spies.saveValueInLocalStorage.mock.calls).toEqual([
-  //     [LocalStorageKeyEnum.AUTOLOCK, autoLockDefault],
-  //     [LocalStorageKeyEnum.CURRENT_RPC, DefaultRpcs[1]],
-  //     [LocalStorageKeyEnum.SWITCH_RPC_AUTO, false],
-  //     [LocalStorageKeyEnum.NO_CONFIRM, noConfirm],
-  //     [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION, 2],
-  //   ]);
-  // });
-  // it('Must save SWITCH_RPC_AUTO as true an change current rpc', async () => {
-  //   mocks.saveValueInLocalStorage;
-  //   mocks.getValueFromLocalStorage({
-  //     customAutolock: JSON.stringify(autoLockDefault),
-  //     customRpcList: JSON.stringify(DefaultRpcs),
-  //     customAuthorizedOP: JSON.stringify(noConfirm),
-  //   });
-  //   await LocalStorageModule.checkAndUpdateLocalStorage();
-  //   expect(spies.saveValueInLocalStorage.mock.calls).toEqual([
-  //     [LocalStorageKeyEnum.AUTOLOCK, autoLockDefault],
-  //     [LocalStorageKeyEnum.SWITCH_RPC_AUTO, true],
-  //     [
-  //       LocalStorageKeyEnum.CURRENT_RPC,
-  //       { ...DefaultRpcs[0], uri: 'https://api.hive.blog' },
-  //     ],
-  //     [LocalStorageKeyEnum.NO_CONFIRM, noConfirm],
-  //     [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION, 2],
-  //   ]);
-  // });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it('Must execute switch cases', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((...args: any[]) =>
+        mocksImplementation.getValuefromLS(args[0], {
+          customStorageVersion: 2,
+          customCurrentRpc: {
+            uri: 'https://hived.privex.io/',
+          } as Rpc,
+        } as CustomDataFromLocalStorage),
+      );
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+    expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
+      1,
+      LocalStorageKeyEnum.CURRENT_RPC,
+      {
+        testnet: false,
+        uri: 'https://api.hive.blog',
+      },
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
+      2,
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      3,
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
+      3,
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      4,
+    );
+  });
 });

@@ -131,7 +131,7 @@ export interface CustomDataFromLocalStorage {
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;
-  customStorageVersion?: string;
+  customStorageVersion?: string | number;
   customCurrentRpc?: Rpc;
   customMK?: string;
   customAccounts?: string;
