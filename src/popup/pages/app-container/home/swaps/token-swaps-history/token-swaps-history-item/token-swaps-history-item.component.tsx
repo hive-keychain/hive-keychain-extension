@@ -63,7 +63,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
   };
 
   const goToTx = (txId: string) => {
-    let url: string = `https://www.hiveblocks.com/tx/${txId}`;
+    let url: string = `https://hiveblocks.com/tx/${txId}`;
 
     chrome.tabs.create({
       url: url,
@@ -81,7 +81,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         />
         <div className="swap-details">
           <div className="from-to">
-            {swap.amount} {swap.startToken} {'=>'} {swap.finalAmount}{' '}
+            {swap.amount} {swap.startToken} <Icon name={Icons.ARROW_RIGHT} />{' '}
+            {swap.status !== SwapStatus.COMPLETED ? '' : '≈'} {swap.finalAmount}{' '}
             {swap.endToken}
           </div>
           <div className="id" onClick={() => copyIdToCliplboard(swap.id)}>
