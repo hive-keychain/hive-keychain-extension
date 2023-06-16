@@ -5,10 +5,6 @@ import Logger from 'src/utils/logger.utils';
 
 describe('autolock.module tests:\n', () => {
   const constants = {
-    loggerMsg: (autoLock: Autolock) =>
-      `hive-keychain: setting up ${autoLock.type} listener ${
-        autoLock.type === AutoLockType.IDLE_LOCK ? `(${autoLock.mn}mn)` : ''
-      }`,
     autoLock: {
       deviceLock: { type: AutoLockType.DEVICE_LOCK, mn: 10 } as Autolock,
       idleLock: { type: AutoLockType.IDLE_LOCK, mn: 60 } as Autolock,
