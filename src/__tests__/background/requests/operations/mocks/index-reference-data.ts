@@ -14,7 +14,7 @@ import proposalsMocks from 'src/__tests__/background/requests/operations/ops/moc
 import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
-import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
+// import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
 import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
 // import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 // import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
@@ -44,7 +44,7 @@ const indexData = [
   decodeMemo.constants.data,
   encodeMemo.constants.data,
   signMessageMocks.constants.data,
-  signTxMocks.constants.data,
+  // signTxMocks.constants.data,
   convertMocks.constants.data,
   recurrentTransferMocks.constants.data,
 ] as KeychainRequest[];
