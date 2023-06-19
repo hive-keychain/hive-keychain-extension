@@ -1,31 +1,88 @@
+import MkModule from '@background/mk.module';
 import { performOperation } from '@background/requests/operations';
-import { KeychainRequestTypes } from '@interfaces/keychain.interface';
+import { RequestsHandler } from '@background/requests/request-handler';
+import {
+  KeychainRequest,
+  KeychainRequestTypes,
+  RequestAddAccount,
+  RequestAddAccountKeys,
+  RequestId,
+} from '@interfaces/keychain.interface';
+import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import conversions from 'src/__tests__/utils-for-testing/data/conversions';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import AccountUtils from 'src/utils/account.utils';
+import { ConversionUtils } from 'src/utils/conversion.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import Logger from 'src/utils/logger.utils';
+import * as PreferencesUtils from 'src/utils/preferences.utils';
+
 describe('index tests:\n', () => {
-  const { methods, constants, spies, mocks } = indexMocks;
-  const { requestHandler, _data } = constants;
-  methods.afterEach;
-  methods.beforeEach;
+  const data = {
+    domain: 'domain',
+    username: mk.user.one,
+    type: KeychainRequestTypes.addAccount,
+    keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
+    request_id: 1,
+  } as RequestAddAccount & RequestId;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+  beforeEach(() => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+    chrome.i18n.getMessage = jest
+      .fn()
+      .mockImplementation(mocksImplementation.i18nGetMessageCustom);
+    AccountUtils.getAccountsFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(accounts.twoAccounts);
+    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    AccountUtils.getExtendedAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.extended);
+  });
+
   it('Must call logger', async () => {
-    await performOperation(requestHandler, _data[1], 0, 'domain', false);
-    expect(spies.logger.info).toBeCalledWith('-- PERFORMING TRANSACTION --');
-    expect(spies.logger.log).toBeCalledWith(_data[1]);
+    const sLoggerInfo = jest.spyOn(Logger, 'info');
+    const sLoggerLog = jest.spyOn(Logger, 'log');
+    const requestHandler = new RequestsHandler();
+    requestHandler.data.rpc = DefaultRpcs[1];
+    const keychainRequestGeneric = keychainRequest.getWithAllGenericData();
+    keychainRequestGeneric.type = KeychainRequestTypes.transfer;
+    await performOperation(
+      requestHandler,
+      keychainRequestGeneric,
+      0,
+      'domain',
+      false,
+    );
+    expect(sLoggerInfo).toBeCalledWith('-- PERFORMING TRANSACTION --');
+    expect(sLoggerLog).toBeCalledWith(keychainRequestGeneric);
   });
 
   it('Must return error if no key on handler', async () => {
-    mocks.getExtendedAccount(accounts.extended);
-    const data = _data.filter(
-      (dat) => dat.type === KeychainRequestTypes.transfer,
-    )[0];
+    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
+    const requestHandler = new RequestsHandler();
+    const cloneData = objects.clone(data) as KeychainRequest;
+    cloneData.type = KeychainRequestTypes.transfer;
     const error = new Error('html_popup_error_while_signing_transaction');
-    requestHandler.data.request_id = data.request_id;
-    await performOperation(requestHandler, data, 0, 'domain', false);
-    const { request_id, ...datas } = data;
-    expect(spies.sendMessage).toBeCalledWith({
+    requestHandler.data.rpc = DefaultRpcs[1];
+    await performOperation(requestHandler, cloneData, 0, 'domain', false);
+    const { request_id, ...datas } = cloneData;
+    expect(sSendMessage).toBeCalledWith(0, {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
@@ -33,7 +90,7 @@ describe('index tests:\n', () => {
         result: undefined,
         publicKey: undefined,
         data: datas,
-        message: mocksImplementation.i18nGetMessageCustom(
+        message: chrome.i18n.getMessage(
           'html_popup_error_while_signing_transaction',
         ),
         request_id: request_id,
@@ -41,46 +98,65 @@ describe('index tests:\n', () => {
     });
   });
 
-  it('Must call addToWhitelist,reset and removeWindow', async () => {
-    const data = _data[1];
+  it('Must call addToWhitelist, reset and removeWindow', async () => {
+    const sAddToWhitelist = jest.spyOn(PreferencesUtils, 'addToWhitelist');
+    const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
+    const requestHandler = new RequestsHandler();
+    const sReset = jest.spyOn(requestHandler, 'reset');
+    const cloneData = objects.clone(data) as KeychainRequest;
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     requestHandler.data.windowId = 1;
-    await performOperation(requestHandler, data, 0, 'domain', true);
-    expect(spies.addToWhitelist).toBeCalledWith(
-      data.username!,
+    requestHandler.data.rpc = DefaultRpcs[1];
+    await performOperation(requestHandler, cloneData, 0, 'domain', true);
+    expect(sAddToWhitelist).toBeCalledWith(
+      cloneData.username!,
       'domain',
-      data.type,
+      cloneData.type,
     );
-    expect(spies.removeWindow).toBeCalledWith(requestHandler.data.windowId);
-    expect(spies.reset).toBeCalledWith(false);
+    expect(sRemoveWindow).toBeCalledWith(requestHandler.data.windowId);
+    expect(sReset).toBeCalledWith(false);
   });
-  //TODO bellow check & fix!
-  // it('Must call each type of request', async () => {
-  //   const mHiveTxSendOp = jest
-  //     .spyOn(HiveTxUtils, 'sendOperation')
-  //     .mockResolvedValue(transactionConfirmationSuccess);
-  //   mocks.getExtendedAccount(accounts.extended);
-  //   const fakeArrayResponse = [
-  //     utilsT.fakeHbdConversionsResponse,
-  //     utilsT.fakeHiveConversionsResponse,
-  //   ];
-  //   ConversionUtils.getConversionRequests = jest
-  //     .fn()
-  //     .mockResolvedValueOnce(fakeArrayResponse);
-  //   ConversionUtils.sendConvert = jest.fn().mockResolvedValue(true);
-  //   for (let i = 0; i < _data.length; i++) {
-  //     const tab = 0;
-  //     requestHandler.data.rpc = DefaultRpcs[0];
-  //     requestHandler.data.key = userData.one.nonEncryptKeys.active;
-  //     requestHandler.data.accounts = accounts.twoAccounts;
-  //     await performOperation(requestHandler, _data[i], tab, 'domain', false);
-  //     expect(spies.tabsSendMessage.mock.calls[0][0]).toBe(tab);
-  //     const callingArg: any = spies.tabsSendMessage.mock.calls[0][1];
-  //     const { msg } = callingArg;
-  //     const { data } = msg;
-  //     expect(data.type).toBe(_data[i].type);
-  //     spies.tabsSendMessage.mockClear();
-  //   }
-  //   mHiveTxSendOp.mockClear();
-  // });
+
+  it('Must call each type of request', async () => {
+    jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue({
+      confirmed: true,
+      tx_id: '45dfd45ds54ds65f4sd5',
+      id: 'id',
+    });
+    ConversionUtils.getConversionRequests = jest
+      .fn()
+      .mockResolvedValue([
+        conversions.fakeHbdConversionsResponse,
+        conversions.fakeHiveConversionsResponse,
+      ]);
+    ConversionUtils.sendConvert = jest.fn().mockResolvedValue(true);
+    DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
+      .fn()
+      .mockResolvedValue(dynamic.globalProperties);
+
+    const RequestTypeList = Object.keys(KeychainRequestTypes).filter(
+      (requestType) => requestType !== 'signedCall',
+    );
+
+    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
+
+    for (let i = 0; i < RequestTypeList.length; i++) {
+      const keychainRequestGeneric = keychainRequest.getWithAllGenericData();
+      const requestHandler = new RequestsHandler();
+      requestHandler.data.key = userData.one.nonEncryptKeys.active;
+      requestHandler.data.rpc = DefaultRpcs[1];
+      keychainRequestGeneric.type = RequestTypeList[i] as KeychainRequestTypes;
+      await performOperation(
+        requestHandler,
+        keychainRequestGeneric,
+        0,
+        'domain',
+        false,
+      );
+      expect(JSON.stringify(sSendMessage.mock.calls[0][1])).toContain(
+        RequestTypeList[i],
+      );
+      sSendMessage.mockReset();
+    }
+  });
 });

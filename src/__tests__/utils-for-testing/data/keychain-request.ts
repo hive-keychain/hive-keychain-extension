@@ -1,9 +1,11 @@
 import { RequestsHandler } from '@background/requests/request-handler';
+import { AuthorityType, Operation, Transaction } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
   KeychainRequest,
   KeychainRequestData,
   KeychainRequestTypes,
+  RequestAddAccountKeys,
   RequestDecode,
   RequestId,
   RequestPost,
@@ -11,6 +13,9 @@ import {
 } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import operation from 'src/__tests__/utils-for-testing/data/operation';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 
 const requestHandler = new RequestsHandler();
 
@@ -75,4 +80,81 @@ const postData = {
   request_id: 1,
 } as RequestPost & RequestId;
 
-export default { noValues, data, decodeData, postData, requestHandler };
+const getWithAllGenericData = () => {
+  const authType = {
+    weight_threshold: 1,
+    account_auths: [],
+    key_auths: [],
+  } as AuthorityType;
+  const cloneData = objects.clone(data) as any;
+  cloneData.message = '';
+  cloneData.method = KeychainKeyTypes.active;
+  cloneData.keys = userData.one.nonEncryptKeys as RequestAddAccountKeys;
+  cloneData.id = '1';
+  cloneData.json = JSON.stringify({
+    command: 'send_tokens',
+    amount: 1,
+  });
+  cloneData.display_msg = 'display_msg';
+  cloneData.permlink = 'https://link.hive';
+  cloneData.author = 'theghost1980';
+  cloneData.weight = 100;
+  cloneData.to = 'theghost1980';
+  cloneData.amount = '0.001';
+  cloneData.collaterized = false;
+  cloneData.memo = '';
+  cloneData.enforce = false;
+  cloneData.currency = 'HIVE';
+  cloneData.title = 'title';
+  cloneData.body = 'body_stringyfied';
+  cloneData.parent_perm = 'https://hive.com/perm-link/';
+  cloneData.parent_username = 'theghost1980';
+  cloneData.json_metadata = 'metadata_stringyfied';
+  cloneData.permlink = 'https://hive.com/perm-link-1/';
+  cloneData.comment_options = '';
+  cloneData.extensions = '';
+  cloneData.role = KeychainKeyTypes.posting;
+  cloneData.authorizedUsername = 'theghost1980';
+  cloneData.authorizedKey = userData.one.encryptKeys.posting;
+  cloneData.operations = operation.array.filter((op) => op['0'] === 'transfer');
+  cloneData.new_account = 'new_account';
+  cloneData.owner = JSON.stringify(authType);
+  cloneData.active = JSON.stringify(authType);
+  cloneData.posting = JSON.stringify(authType);
+  cloneData.memo = JSON.stringify(authType);
+  cloneData.receiver = 'keychain';
+  cloneData.subject = 'Create a keychain coin';
+  cloneData.start = '21/12/2022';
+  cloneData.end = '21/12/2024';
+  cloneData.daily_pay = '300 HBD';
+  cloneData.delegatee = 'theghost1980';
+  cloneData.unit = 'HP';
+  cloneData.hive_power = '0.001';
+  cloneData.hive = '0.001';
+  cloneData.proxy = '';
+  cloneData.recurrence = 2;
+  cloneData.executions = 2;
+  cloneData.title = 'title';
+  cloneData.tx = {
+    ref_block_num: 1000,
+    ref_block_prefix: 1,
+    expiration: '12/12/2023',
+    operations: [] as Operation[],
+    extensions: [],
+  } as Transaction;
+  cloneData.enforce = false;
+  cloneData.proposal_ids = [1];
+  cloneData.approve = true;
+  cloneData.witness = 'keychain';
+
+  return cloneData;
+};
+
+export default {
+  noValues,
+  data,
+  decodeData,
+  postData,
+  requestHandler,
+  getWithAllGenericData,
+};
