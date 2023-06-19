@@ -17,13 +17,13 @@ import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/moc
 import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
 import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
-import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
-import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
-
+// import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
+// import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
+//TODO remove file after refactoring bg tests section
 const indexData = [
   addAccountMocks.constants.data,
   customJsonMocks.constants.data,
-  voteMocks.constants.data,
+  // voteMocks.constants.data,
   transferMocks.constants.data,
   postMocks.constants.data,
   authority.constants.data.addAccountAuthority,
@@ -33,7 +33,7 @@ const indexData = [
   broadcast.constants.data,
   createClaimedAccount.constants.data,
   delegationMocks.constants.data,
-  witnessVoteMocks.constants.data,
+  // witnessVoteMocks.constants.data,
   proxyMocks.constants.data,
   powerMocks.constants.data.powerUp,
   powerMocks.constants.data.powerDown,
