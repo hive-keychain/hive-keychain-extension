@@ -341,7 +341,7 @@ const TokenSwaps = ({
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
           ),
-          [startToken?.value.symbol, Config.swaps.swapAccount],
+          [startToken?.value.symbol, swapConfig.account],
         );
         try {
           let success;
@@ -351,6 +351,7 @@ const TokenSwaps = ({
             startToken?.value.symbol,
             parseFloat(amount),
             activeAccount,
+            swapConfig.account,
           );
 
           removeFromLoadingList(
@@ -367,7 +368,7 @@ const TokenSwaps = ({
             goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
           } else {
             setErrorMessage('html_popup_swap_error_sending_token', [
-              Config.swaps.swapAccount,
+              swapConfig.account,
             ]);
           }
         } catch (err: any) {

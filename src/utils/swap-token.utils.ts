@@ -9,7 +9,6 @@ import {
 } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -98,6 +97,7 @@ const processSwap = async (
   startToken: string,
   amount: number,
   activeAccount: ActiveAccount,
+  swapAccount: string,
 ) => {
   if (
     startToken === BaseCurrencies.HBD.toUpperCase() ||
@@ -105,7 +105,7 @@ const processSwap = async (
   ) {
     const status = await TransferUtils.sendTransfer(
       activeAccount.name!,
-      Config.swaps.swapAccount,
+      swapAccount,
       `${amount.toFixed(3)} ${startToken}`,
       estimateId,
       false,
@@ -118,7 +118,7 @@ const processSwap = async (
     const tokenInfo = await TokensUtils.getTokenInfo(startToken);
     const status = await TokensUtils.sendToken(
       startToken,
-      Config.swaps.swapAccount,
+      swapAccount,
       `${amount.toFixed(tokenInfo.precision)}`,
       estimateId,
       activeAccount.keys.active!,

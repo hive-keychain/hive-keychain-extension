@@ -38,7 +38,6 @@ const Config = {
   swaps: {
     autoRefreshPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),
     autoRefreshHistoryPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 10),
-    swapAccount: process.env.DEV_SWAP_ACCOUNT || 'keychain.swap',
     baseURL:
       process.env.KEYCHAIN_SWAP_API_DEV === 'true'
         ? 'http://localhost:5050'
