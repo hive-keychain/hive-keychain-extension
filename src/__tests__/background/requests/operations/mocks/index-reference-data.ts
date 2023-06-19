@@ -16,7 +16,7 @@ import recurrentTransferMocks from 'src/__tests__/background/requests/operations
 import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
 import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
 import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
-import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
+// import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 // import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
 // import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
 //TODO remove file after refactoring bg tests section
@@ -24,7 +24,7 @@ const indexData = [
   addAccountMocks.constants.data,
   customJsonMocks.constants.data,
   // voteMocks.constants.data,
-  transferMocks.constants.data,
+  // transferMocks.constants.data,
   postMocks.constants.data,
   authority.constants.data.addAccountAuthority,
   authority.constants.data.removeAccountAuthority,
