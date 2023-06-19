@@ -112,24 +112,25 @@ const TokenSwaps = ({
   }, []);
 
   const init = async () => {
+    let tokenInitialization;
     try {
       if (!tokenMarket.length) loadTokensMarket();
       setLoading(true);
-      const serverStatus = await SwapTokenUtils.getServerStatus();
-      setUnderMaintenance(serverStatus.isMaintenanceOn);
+      tokenInitialization = initTokenSelectOptions();
+      const [serverStatus, res] = await Promise.all([
+        SwapTokenUtils.getServerStatus(),
+        SwapTokenUtils.getConfig(),
+      ]);
 
-      const res = await SwapTokenUtils.getConfig();
+      setUnderMaintenance(serverStatus.isMaintenanceOn);
       setSwapConfig(res);
       setSlippage(res.slippage.default);
-
-      if (!serverStatus.isMaintenanceOn) {
-        await initTokenSelectOptions();
-      }
     } catch (err: any) {
       Logger.error(err);
       setErrorMessage(err.reason.template, err.reason.params);
       setServiceUnavailable(true);
     } finally {
+      await tokenInitialization;
       setLoading(false);
     }
   };
@@ -155,10 +156,10 @@ const TokenSwaps = ({
   }, [autoRefreshCountdown]);
 
   const initTokenSelectOptions = async () => {
-    const startList = await SwapTokenUtils.getSwapTokenStartList(
-      activeAccount.account,
-    );
-    const allTokens = await TokensUtils.getAllTokens();
+    const [startList, allTokens] = await Promise.all([
+      SwapTokenUtils.getSwapTokenStartList(activeAccount.account),
+      TokensUtils.getAllTokens(),
+    ]);
     let list = startList.map((token) => {
       const tokenInfo = allTokens.find((t) => t.symbol === token.symbol);
       let img = '';
