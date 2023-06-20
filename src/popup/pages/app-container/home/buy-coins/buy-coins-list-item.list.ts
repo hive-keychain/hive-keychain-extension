@@ -105,9 +105,9 @@ export const BuyCoinsListItem = (
             description: 'html_popup_blocktrades_description',
           },
         ],
-        exchanges: exchanges.filter((exchange) => {
-          exchange.acceptedCoins?.includes('HIVE');
-        }),
+        exchanges: exchanges.filter((exchange) =>
+          exchange.acceptedCoins?.includes('HIVE'),
+        ),
       };
     case BuyCoinType.BUY_HDB:
       return {
@@ -119,9 +119,9 @@ export const BuyCoinsListItem = (
             description: 'html_popup_blocktrades_description',
           },
         ],
-        exchanges: exchanges.filter((exchange) => {
-          exchange.acceptedCoins?.includes('HBD');
-        }),
+        exchanges: exchanges.filter((exchange) =>
+          exchange.acceptedCoins?.includes('HBD'),
+        ),
       };
   }
 };
