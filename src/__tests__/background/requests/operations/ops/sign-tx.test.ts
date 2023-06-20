@@ -34,7 +34,7 @@ describe('sign-tx tests:\n', () => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
-    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
+    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
     chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
