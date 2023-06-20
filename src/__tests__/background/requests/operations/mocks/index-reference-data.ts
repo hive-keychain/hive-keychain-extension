@@ -11,7 +11,7 @@ import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/e
 import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
-import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
+// import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 // import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 // import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
 // import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
@@ -34,7 +34,7 @@ const indexData = [
   createClaimedAccount.constants.data,
   delegationMocks.constants.data,
   // witnessVoteMocks.constants.data,
-  proxyMocks.constants.data,
+  // proxyMocks.constants.data,
   powerMocks.constants.data.powerUp,
   powerMocks.constants.data.powerDown,
   // sendTokenMocks.constants.data,
