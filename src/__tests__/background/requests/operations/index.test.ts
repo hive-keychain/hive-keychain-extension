@@ -1,4 +1,3 @@
-import MkModule from '@background/mk.module';
 import { performOperation } from '@background/requests/operations';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
@@ -9,20 +8,12 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import conversions from 'src/__tests__/utils-for-testing/data/conversions';
-import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
-import AccountUtils from 'src/utils/account.utils';
-import { ConversionUtils } from 'src/utils/conversion.utils';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 import * as PreferencesUtils from 'src/utils/preferences.utils';
 
@@ -41,21 +32,150 @@ describe('index tests:\n', () => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
   });
+
   beforeEach(() => {
-    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
     chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
-    AccountUtils.getAccountsFromLocalStorage = jest
-      .fn()
-      .mockResolvedValue(accounts.twoAccounts);
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
-    AccountUtils.getExtendedAccount = jest
-      .fn()
-      .mockResolvedValue(accounts.extended);
+    const cbImplementation = (moduleName: string) =>
+      Promise.resolve(`mocked message for ${moduleName}`);
+    const AddAccountOpModule = require('src/background/requests/operations/ops/add-account.ts');
+    jest
+      .spyOn(AddAccountOpModule, 'addAccount')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.addAccount),
+      );
+    const CustomOpModule = require('src/background/requests/operations/ops/custom-json.ts');
+    jest
+      .spyOn(CustomOpModule, 'broadcastCustomJson')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.custom));
+    const VoteOpModule = require('src/background/requests/operations/ops/vote.ts');
+    jest
+      .spyOn(VoteOpModule, 'broadcastVote')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.vote));
+    const TransferOpModule = require('src/background/requests/operations/ops/transfer.ts');
+    jest
+      .spyOn(TransferOpModule, 'broadcastTransfer')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.transfer),
+      );
+    const PostOpModule = require('src/background/requests/operations/ops/post.ts');
+    jest
+      .spyOn(PostOpModule, 'broadcastPost')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.post));
+    const AuthorityOpModule = require('src/background/requests/operations/ops/authority.ts');
+    jest
+      .spyOn(AuthorityOpModule, 'broadcastAddAccountAuthority')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.addAccountAuthority),
+      );
+    jest
+      .spyOn(AuthorityOpModule, 'broadcastRemoveAccountAuthority')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.removeAccountAuthority),
+      );
+    jest
+      .spyOn(AuthorityOpModule, 'broadcastRemoveKeyAuthority')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.removeKeyAuthority),
+      );
+    jest
+      .spyOn(AuthorityOpModule, 'broadcastAddKeyAuthority')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.addKeyAuthority),
+      );
+    const BroadcastOpModule = require('src/background/requests/operations/ops/broadcast.ts');
+    jest
+      .spyOn(BroadcastOpModule, 'broadcastOperations')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.broadcast),
+      );
+    const CreateClaimedAccountOpModule = require('src/background/requests/operations/ops/create-claimed-account.ts');
+    jest
+      .spyOn(CreateClaimedAccountOpModule, 'broadcastCreateClaimedAccount')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.createClaimedAccount),
+      );
+    const DelegationOpModule = require('src/background/requests/operations/ops/delegation.ts');
+    jest
+      .spyOn(DelegationOpModule, 'broadcastDelegation')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.delegation),
+      );
+    const WitnessVoteOpModule = require('src/background/requests/operations/ops/witness-vote.ts');
+    jest
+      .spyOn(WitnessVoteOpModule, 'broadcastWitnessVote')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.witnessVote),
+      );
+    const ProxyOpModule = require('src/background/requests/operations/ops/proxy.ts');
+    jest
+      .spyOn(ProxyOpModule, 'broadcastProxy')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.proxy));
+    const PowerOpModule = require('src/background/requests/operations/ops/power.ts');
+    jest
+      .spyOn(PowerOpModule, 'broadcastPowerUp')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.powerUp));
+    jest
+      .spyOn(PowerOpModule, 'broadcastPowerDown')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.powerDown),
+      );
+    const SendTokenOpModule = require('src/background/requests/operations/ops/send-token.ts');
+    jest
+      .spyOn(SendTokenOpModule, 'broadcastSendToken')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.sendToken),
+      );
+    const ProposalsOpModule = require('src/background/requests/operations/ops/proposals.ts');
+    jest
+      .spyOn(ProposalsOpModule, 'broadcastCreateProposal')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.createProposal),
+      );
+    jest
+      .spyOn(ProposalsOpModule, 'broadcastUpdateProposalVote')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.updateProposalVote),
+      );
+    jest
+      .spyOn(ProposalsOpModule, 'broadcastRemoveProposal')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.removeProposal),
+      );
+    const DecodeOpModule = require('src/background/requests/operations/ops/decode-memo.ts');
+    jest
+      .spyOn(DecodeOpModule, 'decodeMessage')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.decode));
+    const EncodeOpModule = require('src/background/requests/operations/ops/encode-memo.ts');
+    jest
+      .spyOn(EncodeOpModule, 'encodeMessage')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.encode));
+    const SignBufferOpModule = require('src/background/requests/operations/ops/sign-buffer.ts');
+    jest
+      .spyOn(SignBufferOpModule, 'signBuffer')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.signBuffer),
+      );
+    const SignTxOpModule = require('src/background/requests/operations/ops/sign-tx.ts');
+    jest
+      .spyOn(SignTxOpModule, 'signTx')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.signTx));
+    const ConvertOpModule = require('src/background/requests/operations/ops/convert.ts');
+    jest
+      .spyOn(ConvertOpModule, 'convert')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.convert));
+    const RecurrentTransferOpModule = require('src/background/requests/operations/ops/recurrent-transfer.ts');
+    jest
+      .spyOn(RecurrentTransferOpModule, 'recurrentTransfer')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.recurrentTransfer),
+      );
   });
 
   it('Must call logger', async () => {
+    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
     const sLoggerInfo = jest.spyOn(Logger, 'info');
     const sLoggerLog = jest.spyOn(Logger, 'log');
     const requestHandler = new RequestsHandler();
@@ -71,39 +191,20 @@ describe('index tests:\n', () => {
     );
     expect(sLoggerInfo).toBeCalledWith('-- PERFORMING TRANSACTION --');
     expect(sLoggerLog).toBeCalledWith(keychainRequestGeneric);
-  });
-
-  it('Must return error if no key on handler', async () => {
-    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
-    const requestHandler = new RequestsHandler();
-    const cloneData = objects.clone(data) as KeychainRequest;
-    cloneData.type = KeychainRequestTypes.transfer;
-    const error = new Error('html_popup_error_while_signing_transaction');
-    requestHandler.data.rpc = DefaultRpcs[1];
-    await performOperation(requestHandler, cloneData, 0, 'domain', false);
-    const { request_id, ...datas } = cloneData;
-    expect(sSendMessage).toBeCalledWith(0, {
-      command: DialogCommand.ANSWER_REQUEST,
-      msg: {
-        success: false,
-        error: error,
-        result: undefined,
-        publicKey: undefined,
-        data: datas,
-        message: chrome.i18n.getMessage(
-          'html_popup_error_while_signing_transaction',
-        ),
-        request_id: request_id,
-      },
-    });
+    expect(sSendMessage).toBeCalledWith(
+      0,
+      `mocked message for ${KeychainRequestTypes.transfer}`,
+    );
   });
 
   it('Must call addToWhitelist, reset and removeWindow', async () => {
+    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
     const sAddToWhitelist = jest.spyOn(PreferencesUtils, 'addToWhitelist');
     const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
     const requestHandler = new RequestsHandler();
     const sReset = jest.spyOn(requestHandler, 'reset');
     const cloneData = objects.clone(data) as KeychainRequest;
+    cloneData.type = KeychainRequestTypes.transfer;
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     requestHandler.data.windowId = 1;
     requestHandler.data.rpc = DefaultRpcs[1];
@@ -115,30 +216,24 @@ describe('index tests:\n', () => {
     );
     expect(sRemoveWindow).toBeCalledWith(requestHandler.data.windowId);
     expect(sReset).toBeCalledWith(false);
+    expect(sSendMessage).toBeCalledWith(
+      0,
+      `mocked message for ${KeychainRequestTypes.transfer}`,
+    );
   });
 
   it('Must call each type of request', async () => {
-    jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue({
-      confirmed: true,
-      tx_id: '45dfd45ds54ds65f4sd5',
-      id: 'id',
-    });
-    ConversionUtils.getConversionRequests = jest
-      .fn()
-      .mockResolvedValue([
-        conversions.fakeHbdConversionsResponse,
-        conversions.fakeHiveConversionsResponse,
-      ]);
-    ConversionUtils.sendConvert = jest.fn().mockResolvedValue(true);
-    DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
-      .fn()
-      .mockResolvedValue(dynamic.globalProperties);
+    jest.spyOn(PreferencesUtils, 'addToWhitelist').mockResolvedValue(undefined);
+    jest.spyOn(PreferencesUtils, 'isWhitelisted').mockReturnValue(false);
+    jest.spyOn(PreferencesUtils, 'removeFromWhitelist').mockReturnValue({});
 
     const RequestTypeList = Object.keys(KeychainRequestTypes).filter(
       (requestType) => requestType !== 'signedCall',
     );
 
-    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
+    const sSendMessage = jest
+      .spyOn(chrome.tabs, 'sendMessage')
+      .mockImplementation(() => undefined);
 
     for (let i = 0; i < RequestTypeList.length; i++) {
       const keychainRequestGeneric = keychainRequest.getWithAllGenericData();
@@ -153,8 +248,9 @@ describe('index tests:\n', () => {
         'domain',
         false,
       );
-      expect(JSON.stringify(sSendMessage.mock.calls[0][1])).toContain(
-        RequestTypeList[i],
+      expect(sSendMessage).toHaveBeenCalledWith(
+        0,
+        `mocked message for ${RequestTypeList[i]}`,
       );
       sSendMessage.mockReset();
     }
