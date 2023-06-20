@@ -1,7 +1,6 @@
 import { performOperation } from '@background/requests/operations';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
-  KeychainRequest,
   KeychainRequestTypes,
   RequestAddAccount,
   RequestAddAccountKeys,
@@ -11,7 +10,6 @@ import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import Logger from 'src/utils/logger.utils';
@@ -26,18 +24,64 @@ describe('index tests:\n', () => {
     request_id: 1,
   } as RequestAddAccount & RequestId;
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  afterAll(() => {
     jest.resetModules();
     jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
     jest.resetAllMocks();
   });
 
   beforeEach(() => {
-    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
+    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
     chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
+  });
+
+  it('Must call logger, addToWhitelist, reset and removeWindow', async () => {
+    const cbImplementation = (moduleName: string) =>
+      Promise.resolve(`mocked message for ${moduleName}`);
+    const AddAccountOpModule = require('src/background/requests/operations/ops/add-account.ts');
+    jest
+      .spyOn(AddAccountOpModule, 'addAccount')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.addAccount),
+      );
+    const sSendMessage = jest
+      .spyOn(chrome.tabs, 'sendMessage')
+      .mockImplementation(() => undefined);
+    const sLoggerInfo = jest.spyOn(Logger, 'info');
+    const sLoggerLog = jest.spyOn(Logger, 'log');
+    const sAddToWhitelist = jest
+      .spyOn(PreferencesUtils, 'addToWhitelist')
+      .mockResolvedValue(undefined);
+    const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
+    const requestHandler = new RequestsHandler();
+    const sReset = jest.spyOn(requestHandler, 'reset');
+    requestHandler.data.rpc = DefaultRpcs[1];
+    requestHandler.data.windowId = 1;
+    await performOperation(requestHandler, data, 0, 'domain', true);
+    expect(sLoggerInfo).toBeCalledWith('-- PERFORMING TRANSACTION --');
+    expect(sLoggerLog).toBeCalledWith(data);
+    expect(sSendMessage).toBeCalledWith(
+      0,
+      `mocked message for ${KeychainRequestTypes.addAccount}`,
+    );
+    expect(sAddToWhitelist).toBeCalledWith(data.username!, 'domain', data.type);
+    expect(sRemoveWindow).toBeCalledWith(requestHandler.data.windowId);
+    expect(sReset).toBeCalledWith(false);
+  });
+
+  it('Must call each type of request', async () => {
+    jest.spyOn(PreferencesUtils, 'addToWhitelist').mockResolvedValue(undefined);
+    jest.spyOn(PreferencesUtils, 'isWhitelisted').mockReturnValue(false);
+    jest.spyOn(PreferencesUtils, 'removeFromWhitelist').mockReturnValue({});
+    //by passing all background/requests/operations/ops
+    //mock all operations as they will execute on each unit test
     const cbImplementation = (moduleName: string) =>
       Promise.resolve(`mocked message for ${moduleName}`);
     const AddAccountOpModule = require('src/background/requests/operations/ops/add-account.ts');
@@ -148,6 +192,12 @@ describe('index tests:\n', () => {
     jest
       .spyOn(DecodeOpModule, 'decodeMessage')
       .mockImplementation(() => cbImplementation(KeychainRequestTypes.decode));
+
+    const DecodeHiveModule = require('@hiveio/hive-js/lib/auth/memo');
+    jest
+      .spyOn(DecodeHiveModule, 'decode')
+      .mockImplementation(() => cbImplementation(KeychainRequestTypes.decode));
+
     const EncodeOpModule = require('src/background/requests/operations/ops/encode-memo.ts');
     jest
       .spyOn(EncodeOpModule, 'encodeMessage')
@@ -172,60 +222,6 @@ describe('index tests:\n', () => {
       .mockImplementation(() =>
         cbImplementation(KeychainRequestTypes.recurrentTransfer),
       );
-  });
-
-  it('Must call logger', async () => {
-    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
-    const sLoggerInfo = jest.spyOn(Logger, 'info');
-    const sLoggerLog = jest.spyOn(Logger, 'log');
-    const requestHandler = new RequestsHandler();
-    requestHandler.data.rpc = DefaultRpcs[1];
-    const keychainRequestGeneric = keychainRequest.getWithAllGenericData();
-    keychainRequestGeneric.type = KeychainRequestTypes.transfer;
-    await performOperation(
-      requestHandler,
-      keychainRequestGeneric,
-      0,
-      'domain',
-      false,
-    );
-    expect(sLoggerInfo).toBeCalledWith('-- PERFORMING TRANSACTION --');
-    expect(sLoggerLog).toBeCalledWith(keychainRequestGeneric);
-    expect(sSendMessage).toBeCalledWith(
-      0,
-      `mocked message for ${KeychainRequestTypes.transfer}`,
-    );
-  });
-
-  it('Must call addToWhitelist, reset and removeWindow', async () => {
-    const sSendMessage = jest.spyOn(chrome.tabs, 'sendMessage');
-    const sAddToWhitelist = jest.spyOn(PreferencesUtils, 'addToWhitelist');
-    const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
-    const requestHandler = new RequestsHandler();
-    const sReset = jest.spyOn(requestHandler, 'reset');
-    const cloneData = objects.clone(data) as KeychainRequest;
-    cloneData.type = KeychainRequestTypes.transfer;
-    requestHandler.data.key = userData.one.nonEncryptKeys.active;
-    requestHandler.data.windowId = 1;
-    requestHandler.data.rpc = DefaultRpcs[1];
-    await performOperation(requestHandler, cloneData, 0, 'domain', true);
-    expect(sAddToWhitelist).toBeCalledWith(
-      cloneData.username!,
-      'domain',
-      cloneData.type,
-    );
-    expect(sRemoveWindow).toBeCalledWith(requestHandler.data.windowId);
-    expect(sReset).toBeCalledWith(false);
-    expect(sSendMessage).toBeCalledWith(
-      0,
-      `mocked message for ${KeychainRequestTypes.transfer}`,
-    );
-  });
-
-  it('Must call each type of request', async () => {
-    jest.spyOn(PreferencesUtils, 'addToWhitelist').mockResolvedValue(undefined);
-    jest.spyOn(PreferencesUtils, 'isWhitelisted').mockReturnValue(false);
-    jest.spyOn(PreferencesUtils, 'removeFromWhitelist').mockReturnValue({});
 
     const RequestTypeList = Object.keys(KeychainRequestTypes).filter(
       (requestType) => requestType !== 'signedCall',
