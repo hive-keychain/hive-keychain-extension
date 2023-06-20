@@ -3,7 +3,7 @@ import addAccountMocks from 'src/__tests__/background/requests/operations/ops/mo
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
 import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
-import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
+// import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 // import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mocks/custom-json-mocks';
 // import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
 // import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
@@ -31,7 +31,7 @@ const indexData = [
   authority.constants.data.addKeyAuthority,
   authority.constants.data.removeKeyAuthority,
   broadcast.constants.data,
-  createClaimedAccount.constants.data,
+  // createClaimedAccount.constants.data,
   // delegationMocks.constants.data,
   // witnessVoteMocks.constants.data,
   // proxyMocks.constants.data,
