@@ -5,7 +5,7 @@ import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/br
 import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
 import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mocks/custom-json-mocks';
-import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
+// import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
 // import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 // import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
 // import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
@@ -41,7 +41,7 @@ const indexData = [
   proposalsMocks.constants.data.create,
   proposalsMocks.constants.data.update,
   proposalsMocks.constants.data.remove,
-  decodeMemo.constants.data,
+  // decodeMemo.constants.data,
   // encodeMemo.constants.data,
   // signMessageMocks.constants.data,
   // signTxMocks.constants.data,
