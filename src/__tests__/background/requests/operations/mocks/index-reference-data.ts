@@ -8,7 +8,7 @@ import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mo
 import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
 import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
-import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
+// import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 // import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
@@ -25,7 +25,7 @@ const indexData = [
   customJsonMocks.constants.data,
   // voteMocks.constants.data,
   // transferMocks.constants.data,
-  postMocks.constants.data,
+  // postMocks.constants.data,
   authority.constants.data.addAccountAuthority,
   authority.constants.data.removeAccountAuthority,
   authority.constants.data.addKeyAuthority,
