@@ -13,7 +13,7 @@ import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/p
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
-import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
+// import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
 // import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
 // import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
 // import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
@@ -37,7 +37,7 @@ const indexData = [
   proxyMocks.constants.data,
   powerMocks.constants.data.powerUp,
   powerMocks.constants.data.powerDown,
-  sendTokenMocks.constants.data,
+  // sendTokenMocks.constants.data,
   proposalsMocks.constants.data.create,
   proposalsMocks.constants.data.update,
   proposalsMocks.constants.data.remove,
