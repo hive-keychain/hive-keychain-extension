@@ -4,7 +4,7 @@ import authority from 'src/__tests__/background/requests/operations/ops/mocks/au
 import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
 import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
 import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
-import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mocks/custom-json-mocks';
+// import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mocks/custom-json-mocks';
 // import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
 // import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 // import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
@@ -22,7 +22,7 @@ import proposalsMocks from 'src/__tests__/background/requests/operations/ops/moc
 //TODO remove file after refactoring bg tests section
 const indexData = [
   addAccountMocks.constants.data,
-  customJsonMocks.constants.data,
+  // customJsonMocks.constants.data,
   // voteMocks.constants.data,
   // transferMocks.constants.data,
   // postMocks.constants.data,
