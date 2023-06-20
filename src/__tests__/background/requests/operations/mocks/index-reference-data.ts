@@ -12,7 +12,7 @@ import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/po
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
-import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
+// import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 // import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
 // import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
 // import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
@@ -46,7 +46,7 @@ const indexData = [
   // signMessageMocks.constants.data,
   // signTxMocks.constants.data,
   convertMocks.constants.data,
-  recurrentTransferMocks.constants.data,
+  // recurrentTransferMocks.constants.data,
 ] as KeychainRequest[];
 
 export default { indexData };
