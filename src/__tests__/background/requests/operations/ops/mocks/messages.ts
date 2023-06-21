@@ -5,7 +5,7 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
-
+//TODO delete file after refactoring completed
 export default {
   error: {
     hasAuthority: (
