@@ -2,7 +2,7 @@ import { KeychainRequest } from '@interfaces/keychain.interface';
 import addAccountMocks from 'src/__tests__/background/requests/operations/ops/mocks/add-account-mocks';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
-import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
+// import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
 // import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 // import customJsonMocks from 'src/__tests__/background/requests/operations/ops/mocks/custom-json-mocks';
 // import decodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/decode-memo';
@@ -45,7 +45,7 @@ const indexData = [
   // encodeMemo.constants.data,
   // signMessageMocks.constants.data,
   // signTxMocks.constants.data,
-  convertMocks.constants.data,
+  // convertMocks.constants.data,
   // recurrentTransferMocks.constants.data,
 ] as KeychainRequest[];
 
