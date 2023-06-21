@@ -9,7 +9,7 @@ import authority from 'src/__tests__/background/requests/operations/ops/mocks/au
 // import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 // import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
 // import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
-import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
+// import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 // import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 // import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 // import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
@@ -35,8 +35,8 @@ const indexData = [
   // delegationMocks.constants.data,
   // witnessVoteMocks.constants.data,
   // proxyMocks.constants.data,
-  powerMocks.constants.data.powerUp,
-  powerMocks.constants.data.powerDown,
+  // powerMocks.constants.data.powerUp,
+  // powerMocks.constants.data.powerDown,
   // sendTokenMocks.constants.data,
   // proposalsMocks.constants.data.create,
   // proposalsMocks.constants.data.update,
