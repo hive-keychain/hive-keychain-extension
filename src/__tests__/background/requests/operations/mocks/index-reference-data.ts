@@ -1,5 +1,5 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
-import addAccountMocks from 'src/__tests__/background/requests/operations/ops/mocks/add-account-mocks';
+// import addAccountMocks from 'src/__tests__/background/requests/operations/ops/mocks/add-account-mocks';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 // import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
 // import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
@@ -10,7 +10,7 @@ import authority from 'src/__tests__/background/requests/operations/ops/mocks/au
 // import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
 // import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
-import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
+// import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 // import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 // import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 // import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
@@ -21,7 +21,7 @@ import proposalsMocks from 'src/__tests__/background/requests/operations/ops/moc
 // import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
 //TODO remove file after refactoring bg tests section
 const indexData = [
-  addAccountMocks.constants.data,
+  // addAccountMocks.constants.data,
   // customJsonMocks.constants.data,
   // voteMocks.constants.data,
   // transferMocks.constants.data,
@@ -38,9 +38,9 @@ const indexData = [
   powerMocks.constants.data.powerUp,
   powerMocks.constants.data.powerDown,
   // sendTokenMocks.constants.data,
-  proposalsMocks.constants.data.create,
-  proposalsMocks.constants.data.update,
-  proposalsMocks.constants.data.remove,
+  // proposalsMocks.constants.data.create,
+  // proposalsMocks.constants.data.update,
+  // proposalsMocks.constants.data.remove,
   // decodeMemo.constants.data,
   // encodeMemo.constants.data,
   // signMessageMocks.constants.data,
