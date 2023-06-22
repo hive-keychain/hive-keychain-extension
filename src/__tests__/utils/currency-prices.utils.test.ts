@@ -1,7 +1,6 @@
 import { KeychainApi } from '@api/keychain';
 import bittrexData from 'src/__tests__/utils-for-testing/data/bittrex-data/bittrex-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 
 describe('currency-prices-utils tests', () => {
@@ -9,6 +8,7 @@ describe('currency-prices-utils tests', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
+
   describe('getPrices tests:\n', () => {
     test('Must get prices from Hive API', async () => {
       const mockedApiReply = {
@@ -16,11 +16,12 @@ describe('currency-prices-utils tests', () => {
         hive: { usd: 0.638871, usd_24h_change: -13.100842677149227 },
         hive_dollar: { usd: 0.972868, usd_24h_change: -0.6982597522799386 },
       };
-      mockPreset.setOrDefault({
-        keyChainApiGet: {
-          currenciesPrices: mockedApiReply,
-        },
-      });
+      KeychainApi.get = jest.fn().mockResolvedValueOnce(mockedApiReply);
+      // mockPreset.setOrDefault({
+      //   keyChainApiGet: {
+      //     currenciesPrices: mockedApiReply,
+      //   },
+      // });
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply);
     });

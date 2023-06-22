@@ -10,15 +10,17 @@ import {
   initialStateWAccountsWActiveAccountStore,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import config from 'src/__tests__/utils-for-testing/setups/config';
 import * as accountActions from 'src/popup/actions/account.actions';
 import AccountUtils from 'src/utils/account.utils';
-config.byDefault();
-afterEach(() => {
-  jest.clearAllMocks();
-});
+
 describe('account.actions tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   describe('retrieveAccounts tests:\n', () => {
     test('With no accounts returned from local storage', async () => {
       let fakeStore = getFakeStore(initialEmptyStateStore);
@@ -50,6 +52,7 @@ describe('account.actions tests:\n', () => {
       spyGetAccountsFromLocalStorage.mockRestore();
     });
   });
+
   describe('addAccount tests:\n', () => {
     test('Must add the new account', async () => {
       let fakeStore = getFakeStore(initialEmptyStateStore);
@@ -61,6 +64,7 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual([account]);
     });
   });
+
   describe('resetAccount tests:\n', () => {
     test('Must delete accounts', async () => {
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
@@ -68,6 +72,7 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual([]);
     });
   });
+
   describe('setAccounts tests:\n', () => {
     test('Must set accounts', async () => {
       const accounts = [
@@ -79,6 +84,7 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual(accounts);
     });
   });
+
   describe('addKey tests:\n', () => {
     const activePrivateKey =
       '5AAR76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM';
@@ -111,6 +117,7 @@ describe('account.actions tests:\n', () => {
       );
     });
   });
+
   describe('removeKey tests:\n', () => {
     const fakeExtendedAccountResponse = [
       {
@@ -130,24 +137,22 @@ describe('account.actions tests:\n', () => {
       jest
         .spyOn(AccountUtils, 'deleteKey')
         .mockReturnValueOnce(initialStateWOneKey.accounts);
-      mockPreset.setOrDefault({
-        app: {
-          getAccount: fakeExtendedAccountResponse,
-          getRCMana: {
-            current_mana: 99,
-            received_delegated_rc: 0,
-            max_mana: 100,
-            max_rc: 100,
-            delegated_rc: 0,
-            percentage: 100,
-            //TODO check bellow & fix.
-            rc_manabar: {
-              current_mana: '12321000',
-              last_update_time: 12311224,
-            },
-          },
+      jest
+        .spyOn(AccountUtils, 'getAccount')
+        .mockResolvedValueOnce(fakeExtendedAccountResponse);
+      jest.spyOn(AccountUtils, 'getRCMana').mockResolvedValueOnce({
+        current_mana: 99,
+        received_delegated_rc: 0,
+        max_mana: 100,
+        max_rc: 100,
+        delegated_rc: 0,
+        percentage: 100,
+        rc_manabar: {
+          current_mana: '12321000',
+          last_update_time: 12311224,
         },
       });
+
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
       expect(fakeStore.getState().accounts).toEqual(
         initialStateWOneKey.accounts,
