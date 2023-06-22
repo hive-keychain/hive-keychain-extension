@@ -1,6 +1,6 @@
 import App from '@popup/App';
 import '@testing-library/jest-dom';
-import { act, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
@@ -8,7 +8,6 @@ import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-labe
 import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
-import { cleanup } from 'src/__tests__/utils-for-testing/setups/render';
 import AccountUtils from 'src/utils/account.utils';
 import MkUtils from 'src/utils/mk.utils';
 describe('reset-password.component tests:\n', () => {

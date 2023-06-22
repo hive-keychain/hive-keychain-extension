@@ -2,7 +2,7 @@ import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import App from '@popup/App';
 import '@testing-library/jest-dom';
-import { act, cleanup } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
@@ -11,9 +11,9 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
-import { screen } from 'src/__tests__/utils-for-testing/setups/render';
 import Config from 'src/config';
 import ProposalUtils from 'src/utils/proposal.utils';
+
 describe('proposal-voting-section.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
