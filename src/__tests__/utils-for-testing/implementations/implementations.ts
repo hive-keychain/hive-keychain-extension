@@ -25,7 +25,7 @@ const hasKeys = (obj: {}) => {
  * @param args[0] Is always used for the LocalStorageKeyEnum.
  * @param customData Used to pass custom readed value from LS. To use, assign dataMocks.customDataFromLocalStorage
  * @returns Null if not found or not mocked yet.
- * If debug needed, just uncomment the console.log after the default case.
+ * If debug needed, just uncomment the console.log
  */
 const getValuefromLS = async (...args: any[]): Promise<any> => {
   let customData: CustomDataFromLocalStorage = args[1] ?? {};
@@ -45,8 +45,9 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
         ? customData.customWalletHistoryFilters
         : DEFAULT_FILTER;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
-      //TODO add customData here
-      return { 'keychain.tests': true };
+      return hasKeys(customData)
+        ? customData.customHideSuggestionProxy
+        : { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
       //TODO add customData here
       return { 'keychain.tests': ['one1', 'two2', 'three3'] };

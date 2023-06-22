@@ -136,6 +136,7 @@ export interface CustomDataFromLocalStorage {
   customMK?: string;
   customAccounts?: string;
   customWalletHistoryFilters?: WalletHistoryFilter;
+  customHideSuggestionProxy?: { [key: string]: boolean };
   customHiddenTokenList?: string[];
 }
 
