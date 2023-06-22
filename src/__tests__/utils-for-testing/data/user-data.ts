@@ -23,9 +23,13 @@ const one = {
 
 const two = {
   username: 'workerjab2',
+  // keys: {
+  //   posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
+  //   postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
+  // } as Keys,
   keys: {
-    posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
-    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
+    posting: process.env._TEST_USER2_POSTING || 'error, please check',
+    postingPubkey: process.env._TEST_USER2_POSTING_PUB || 'error, please check',
   } as Keys,
 };
 
