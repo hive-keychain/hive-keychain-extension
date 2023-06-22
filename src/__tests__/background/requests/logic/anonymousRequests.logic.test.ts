@@ -6,8 +6,6 @@ import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-reque
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 
 describe('anonymousRequests.logic tests:\n', () => {
-  // const { constants, spies, callback, methods } = anonymousRequestsLogic;
-  // methods.afterEach;
   const account_candidates = {
     empty: [],
     two: ['one', 'two'],
