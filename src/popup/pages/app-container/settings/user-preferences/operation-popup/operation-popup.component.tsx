@@ -9,7 +9,7 @@ const OperationPopup = ({}: PropsFromRedux) => {
   return (
     <div
       className="operation-popup-page"
-      aria-label={`${Screen.SETTINGS_OPERATION_POPUP}-page`}>
+      data-testid={`${Screen.SETTINGS_OPERATION_POPUP}-page`}>
       <PageTitleComponent
         title="popup_html_operation_popup"
         isBackButtonEnabled={true}

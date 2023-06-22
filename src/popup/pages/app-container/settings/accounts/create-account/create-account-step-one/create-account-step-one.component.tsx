@@ -133,7 +133,7 @@ const CreateAccountStepOne = ({
         />
         <div
           className="selected-account-name"
-          aria-label="selected-account-name">
+          data-testid="selected-account-name">
           {selectProps.props.values[0].label}
         </div>
       </div>
@@ -142,7 +142,7 @@ const CreateAccountStepOne = ({
   const customItemRender = (selectProps: SelectItemRenderer<SelectOption>) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.value}`}
+        data-testid={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectProps.props.values[0]?.label === selectProps.item.value
             ? 'selected'
@@ -200,7 +200,7 @@ const CreateAccountStepOne = ({
 
   return (
     <div
-      aria-label={`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`}
+      data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`}
       className="create-account-step-one">
       {selectedAccount && accountOptions && (
         <Select

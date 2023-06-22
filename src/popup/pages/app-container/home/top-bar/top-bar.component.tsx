@@ -13,7 +13,7 @@ import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -118,26 +118,26 @@ const TopBar = ({
         className={rotateLogo ? 'rotate' : ''}
         src="/assets/images/keychain_icon_small.png"
         onClick={refresh}
-        aria-label="top-bar-refresh-icon"
+        data-testid="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
 
       {hasRewardToClaim && (
         <Icon
-          ariaLabel="reward-claim-icon"
+          dataTestId="reward-claim-icon"
           name={Icons.CLAIM}
           onClick={() => claim()}
           additionalClassName="button claim-button"
           type={IconType.STROKED}></Icon>
       )}
       <Icon
-        ariaLabel="log-out-button"
+        dataTestId="log-out-button"
         name={Icons.LOGOUT}
         onClick={() => lockPopup()}
         additionalClassName="button lock-button"
         type={IconType.STROKED}></Icon>
       <Icon
-        ariaLabel="clickable-settings"
+        dataTestId="clickable-settings"
         name={Icons.MENU}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         additionalClassName="button settings-button"

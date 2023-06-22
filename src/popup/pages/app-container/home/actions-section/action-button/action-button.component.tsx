@@ -16,7 +16,7 @@ const ActionButton = ({
 }: PropsType) => {
   return (
     <div
-      aria-label={`action-button-${icon}`}
+      data-testid={`action-button-${icon}`}
       className="action-button"
       onClick={() => navigateToWithParams(nextScreen, nextScreenParams)}>
       <div className="icon-container">

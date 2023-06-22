@@ -25,7 +25,7 @@ describe('witness-voting-section.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       });
     });
 
@@ -48,7 +48,7 @@ describe('witness-voting-section.component tests:\n', () => {
         .mockResolvedValue(undefined);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -64,7 +64,7 @@ describe('witness-voting-section.component tests:\n', () => {
         .mockRejectedValue(new Error('Error trying to vote for witness'));
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -92,13 +92,13 @@ describe('witness-voting-section.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       });
     });
     it('Must show error if no witness votes left', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -132,13 +132,13 @@ describe('witness-voting-section.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       });
     });
     it('Must show error trying to vote', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(

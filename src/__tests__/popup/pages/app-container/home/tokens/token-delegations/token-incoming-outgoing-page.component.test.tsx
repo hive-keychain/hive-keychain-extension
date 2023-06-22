@@ -44,7 +44,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
@@ -54,14 +54,14 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
   it('Must show outgoing delegations page & show cooldown disclaimer', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdDiv.token.user.prefixes.outgoingDelegations +
             selectedToken.symbol,
         ),
       );
     });
     expect(
-      await screen.findByLabelText(`${Screen.TOKENS_DELEGATIONS}-page`),
+      await screen.findByTestId(`${Screen.TOKENS_DELEGATIONS}-page`),
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
@@ -77,7 +77,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
   it('Must load incoming delegation page', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdDiv.token.user.prefixes.incomingDelegations +
             selectedToken.symbol,
         ),

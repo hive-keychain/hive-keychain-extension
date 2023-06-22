@@ -12,6 +12,7 @@ import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-te
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('tokens.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -29,15 +30,13 @@ describe('tokens.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.actionBtn.preFix + tokenIconName,
-          ),
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
         );
       });
     });
     it('Must show tokens page & disclaimer message', async () => {
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_PAGE}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -48,27 +47,27 @@ describe('tokens.component tests:\n', () => {
 
     it('Must show user tokens', async () => {
       expect(
-        await screen.findAllByLabelText(dataTestIdDiv.token.user.item),
+        await screen.findAllByTestId(dataTestIdDiv.token.user.item),
       ).toHaveLength(tokensUser.balances.length);
     });
 
     it('Must show filter box and settings', async () => {
       expect(
-        await screen.findByLabelText(dataTestIdInput.filter.token),
+        await screen.findByTestId(dataTestIdInput.filter.token),
       ).toBeInTheDocument();
       expect(
-        await screen.findByLabelText(dataTestIdIcon.tokens.openFilter),
+        await screen.findByTestId(dataTestIdIcon.tokens.openFilter),
       ).toBeInTheDocument();
     });
 
     it('Must set filter box value & display one result', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.token),
+          screen.getByTestId(dataTestIdInput.filter.token),
           'LEO',
         );
       });
-      const tokenItemHTMLElement = await screen.findAllByLabelText(
+      const tokenItemHTMLElement = await screen.findAllByTestId(
         dataTestIdDiv.token.user.item,
       );
       expect(tokenItemHTMLElement).toHaveLength(1);
@@ -78,7 +77,7 @@ describe('tokens.component tests:\n', () => {
     it('Must display no tokens found message', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.token),
+          screen.getByTestId(dataTestIdInput.filter.token),
           'KEYCHAIN',
         );
       });
@@ -90,17 +89,17 @@ describe('tokens.component tests:\n', () => {
     it('Must show tokens settings page & go back to tokens page', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
+          screen.getByTestId(dataTestIdIcon.tokens.settings.open),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_SETTINGS}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_SETTINGS}-page`),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_PAGE}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
       ).toBeInTheDocument();
     });
   });
@@ -122,9 +121,7 @@ describe('tokens.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.actionBtn.preFix + tokenIconName,
-          ),
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
         );
       });
     });
@@ -154,16 +151,14 @@ describe('tokens.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.actionBtn.preFix + tokenIconName,
-          ),
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
         );
       });
     });
 
     it('Must not show hidden token', () => {
       expect(
-        screen.queryByLabelText(`${dataTestIdDiv.token.user.symbolPreFix}LEO`),
+        screen.queryByTestId(`${dataTestIdDiv.token.user.symbolPreFix}LEO`),
       ).not.toBeInTheDocument();
     });
   });

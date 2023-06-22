@@ -66,7 +66,7 @@ const AddByKeys = ({
 
   return (
     <div
-      aria-label={`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`}
+      data-testid={`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`}
       className="add-by-keys-page">
       <div
         className="caption"
@@ -75,7 +75,7 @@ const AddByKeys = ({
         }}></div>
       <div className="form-container">
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           value={username}
           onChange={setUsername}
           logo={Icons.AT}
@@ -84,7 +84,7 @@ const AddByKeys = ({
           onEnterPress={submitForm}
         />
         <InputComponent
-          ariaLabel="input-private-key"
+          dataTestId="input-private-key"
           value={privateKey}
           onChange={setPrivateKey}
           logo={Icons.KEY}
@@ -93,7 +93,7 @@ const AddByKeys = ({
           onEnterPress={submitForm}
         />
         <ButtonComponent
-          ariaLabel="submit-button"
+          dataTestId="submit-button"
           label={'popup_html_submit'}
           onClick={submitForm}
           fixToBottom

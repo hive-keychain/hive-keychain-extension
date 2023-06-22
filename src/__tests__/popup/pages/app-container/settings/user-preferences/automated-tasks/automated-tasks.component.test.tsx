@@ -60,14 +60,12 @@ describe('automated-tasks.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdButton.menuPreFix + Icons.PREFERENCES,
-            ),
+            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdButton.menuPreFix + Icons.AUTOMATED_TASKS,
             ),
           );
@@ -75,7 +73,7 @@ describe('automated-tasks.component tests:\n', () => {
       });
       it('Must load component and show messages', () => {
         expect(
-          screen.getByLabelText(`${Screen.SETTINGS_AUTOMATED_TASKS}-page`),
+          screen.getByTestId(`${Screen.SETTINGS_AUTOMATED_TASKS}-page`),
         ).toBeInTheDocument();
         expect(
           screen.getByText(
@@ -102,7 +100,7 @@ describe('automated-tasks.component tests:\n', () => {
           });
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdCheckbox.automatedTasks.checkbox.claim.accounts,
             ),
           );
@@ -118,7 +116,7 @@ describe('automated-tasks.component tests:\n', () => {
           });
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdCheckbox.automatedTasks.checkbox.claim.accounts,
             ),
           );

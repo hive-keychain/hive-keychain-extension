@@ -174,7 +174,7 @@ const Conversion = ({
   return (
     <div
       className="conversion-page"
-      aria-label={`${Screen.CONVERSION_PAGE}-page`}>
+      data-testid={`${Screen.CONVERSION_PAGE}-page`}>
       {totalPending > 0 && (
         <SummaryPanelComponent
           top={available}
@@ -198,7 +198,7 @@ const Conversion = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -211,7 +211,7 @@ const Conversion = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="submit-button"
+        dataTestId="submit-button"
         label={title}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}

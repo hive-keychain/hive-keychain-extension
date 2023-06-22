@@ -43,14 +43,12 @@ describe('add-key.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );
       await userEvent.click(
-        screen.getByLabelText(
-          dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-        ),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS),
       );
     });
   });
@@ -62,14 +60,14 @@ describe('add-key.component tests:\n', () => {
   it('Must show add keys page and message', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
+        screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
       );
     });
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_ADD_KEY}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_ADD_KEY}-page`),
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText(dataTestIdParagraph.add.keyPage.introduction),
+      screen.getByTestId(dataTestIdParagraph.add.keyPage.introduction),
     ).toHaveTextContent(
       manipulateStrings.removeHtmlTags(
         chrome.i18n.getMessage('popup_html_add_key_text', ['Active']),
@@ -81,10 +79,10 @@ describe('add-key.component tests:\n', () => {
     it('Must show error if empty active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
+          screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.privateKey),
+          screen.getByTestId(dataTestIdInput.privateKey),
           '{enter}',
         );
       });
@@ -95,10 +93,10 @@ describe('add-key.component tests:\n', () => {
     it('Must add active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
+          screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.privateKey),
+          screen.getByTestId(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.active}{enter}`,
         );
       });
@@ -110,10 +108,10 @@ describe('add-key.component tests:\n', () => {
     it('Must add memo key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'memo'),
+          screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'memo'),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.privateKey),
+          screen.getByTestId(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.memo}{enter}`,
         );
       });
@@ -126,10 +124,10 @@ describe('add-key.component tests:\n', () => {
       it('Must add memo keys using master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'memo'),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'memo'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}{enter}`,
           );
         });
@@ -141,12 +139,10 @@ describe('add-key.component tests:\n', () => {
       it('Must add active key using master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdIcon.keys.list.preFix.add + 'active',
-            ),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}{enter}`,
           );
         });
@@ -161,15 +157,13 @@ describe('add-key.component tests:\n', () => {
     it('Must show error if empty key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
+          screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.privateKey),
+          screen.getByTestId(dataTestIdInput.privateKey),
           '{space}',
         );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.importKeys),
-        );
+        await userEvent.click(screen.getByTestId(dataTestIdButton.importKeys));
       });
       expect(
         await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
@@ -179,15 +173,13 @@ describe('add-key.component tests:\n', () => {
     it('Must add active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
+          screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.privateKey),
+          screen.getByTestId(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.active}`,
         );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.importKeys),
-        );
+        await userEvent.click(screen.getByTestId(dataTestIdButton.importKeys));
       });
       expect(
         await screen.findByText(userData.one.encryptKeys.active),
@@ -198,16 +190,14 @@ describe('add-key.component tests:\n', () => {
       it('Must add memo key using master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdIcon.keys.list.preFix.add + 'active',
-            ),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}`,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.importKeys),
+            screen.getByTestId(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -220,16 +210,14 @@ describe('add-key.component tests:\n', () => {
       it('Must show error if using active public key', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdIcon.keys.list.preFix.add + 'active',
-            ),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.encryptKeys.active}`,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.importKeys),
+            screen.getByTestId(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -242,16 +230,14 @@ describe('add-key.component tests:\n', () => {
         AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdIcon.keys.list.preFix.add + 'active',
-            ),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.active}`,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.importKeys),
+            screen.getByTestId(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -263,16 +249,14 @@ describe('add-key.component tests:\n', () => {
       it('Must show error if not valid master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdIcon.keys.list.preFix.add + 'active',
-            ),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.privateKey),
+            screen.getByTestId(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.randomStringKey51}`,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.importKeys),
+            screen.getByTestId(dataTestIdButton.importKeys),
           );
         });
         expect(

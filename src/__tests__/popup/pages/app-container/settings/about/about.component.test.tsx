@@ -20,17 +20,17 @@ describe('about.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
     });
   });
   it('Must show about message', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.INFO),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.INFO),
       );
     });
     expect(
-      screen.getByLabelText(`${Icons.INFO}-page-content`).textContent,
+      screen.getByTestId(`${Icons.INFO}-page-content`).textContent,
     ).toMatch(
       manipulateStrings.removeHtmlTags(
         chrome.i18n.getMessage('popup_html_about_text'),

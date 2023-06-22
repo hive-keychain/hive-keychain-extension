@@ -25,30 +25,28 @@ describe('rpc-nodes.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.RPC),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
 
     it('Must show rpc_nodes page', () => {
-      expect(screen.getByLabelText(`${Screen.SETTINGS_RPC_NODES}-page`));
+      expect(screen.getByTestId(`${Screen.SETTINGS_RPC_NODES}-page`));
     });
 
     it('Must show add rpc button', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdCheckbox.rpcNodes.select.automaticMode,
-          ),
+          screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.automaticMode),
         );
       });
       expect(
-        screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+        screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
       ).toBeInTheDocument();
     });
   });
@@ -71,12 +69,12 @@ describe('rpc-nodes.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.RPC),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -84,26 +82,24 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must hide add rpc button', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdCheckbox.rpcNodes.select.automaticMode,
-          ),
+          screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.automaticMode),
         );
       });
       expect(
-        screen.queryByLabelText(dataTestIdButton.rpcNodes.addRpc),
+        screen.queryByTestId(dataTestIdButton.rpcNodes.addRpc),
       ).not.toBeInTheDocument();
     });
 
     it('Must show error if empty uri', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+          screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
+          screen.getByTestId(dataTestIdInput.rpcNodes.uri),
           '{space}',
         );
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -116,13 +112,13 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must show error if invalid uri', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+          screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
+          screen.getByTestId(dataTestIdInput.rpcNodes.uri),
           'www.www.rpcNode',
         );
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -135,18 +131,16 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must show error if empty node chain Id', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+          screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
+          screen.getByTestId(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdCheckbox.rpcNodes.select.addTesnetNode,
-          ),
+          screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.addTesnetNode),
         );
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -159,15 +153,15 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must add new rpc and show it in list', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+          screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
+          screen.getByTestId(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.save));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdSelect.rpcNode.selected),
+          screen.getByTestId(dataTestIdSelect.rpcNode.selected),
         );
       });
       expect(
@@ -181,22 +175,22 @@ describe('rpc-nodes.component tests:\n', () => {
       const sSetRpc = jest.spyOn(HiveTxUtils, 'setRpc');
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
+          screen.getByTestId(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
+          screen.getByTestId(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdCheckbox.rpcNodes.select.setAsActive),
+          screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.save));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdSelect.rpcNode.selected),
+          screen.getByTestId(dataTestIdSelect.rpcNode.selected),
         );
       });
       expect(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdSelect.rpcNode.selectItem.preFix +
             'https://saturno.hive.com/rpc',
         ),

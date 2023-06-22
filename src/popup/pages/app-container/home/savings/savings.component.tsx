@@ -282,7 +282,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label="select-currency-savings"
+        data-testid="select-currency-savings"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -294,7 +294,7 @@ const SavingsPage = ({
   const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
     return (
       <div
-        aria-label="select-operation-type"
+        data-testid="select-operation-type"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -308,7 +308,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label={`select-operation-${selectProps.item.label}`}
+        data-testid={`select-operation-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedSavingOperationType === selectProps.item.value
             ? 'selected'
@@ -327,7 +327,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.label}`}
+        data-testid={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedCurrency === selectProps.item.value ? 'selected' : ''
         }`}
@@ -361,7 +361,7 @@ const SavingsPage = ({
   };
 
   return (
-    <div className="savings-page" aria-label={`${Screen.SAVINGS_PAGE}-page`}>
+    <div className="savings-page" data-testid={`${Screen.SAVINGS_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={liquid}
         bottomRight={currency}
@@ -388,7 +388,7 @@ const SavingsPage = ({
 
       {
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_transfer_to"
@@ -400,7 +400,7 @@ const SavingsPage = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -420,7 +420,7 @@ const SavingsPage = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="submit-savings"
+        dataTestId="submit-savings"
         requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW

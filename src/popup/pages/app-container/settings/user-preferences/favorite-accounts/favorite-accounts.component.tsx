@@ -104,7 +104,7 @@ const FavoriteAccounts = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.label}`}
+        data-testid={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -177,7 +177,7 @@ const FavoriteAccounts = ({
 
   return (
     <div
-      aria-label={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
+      data-testid={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
       className="favorite-accounts-page">
       <div className="intro padding">
         {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}

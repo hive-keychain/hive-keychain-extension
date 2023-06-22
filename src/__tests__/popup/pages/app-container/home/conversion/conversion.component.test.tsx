@@ -29,17 +29,17 @@ describe('conversion.component tests:\n', () => {
     beforeEach(async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hive),
+          screen.getByTestId(dataTestIdDropdown.arrow.hive),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.CONVERT),
+          screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.CONVERT),
         );
       });
     });
 
     it('Must show conversions page & show HIVE intro', async () => {
       expect(
-        await screen.findByLabelText(`${Screen.CONVERSION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONVERSION_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -56,10 +56,10 @@ describe('conversion.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
       });
       expect(
@@ -72,7 +72,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -90,13 +90,13 @@ describe('conversion.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -112,13 +112,13 @@ describe('conversion.component tests:\n', () => {
         .mockRejectedValue(new Error('Error HIVE to HBD'));
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(await screen.findByText('Error HIVE to HBD')).toBeInTheDocument();
@@ -128,18 +128,16 @@ describe('conversion.component tests:\n', () => {
   describe('HBD to HIVE:\n', () => {
     beforeEach(async () => {
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdDropdown.arrow.hbd));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hbd),
-        );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.CONVERT),
+          screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.CONVERT),
         );
       });
     });
 
     it('Must show conversions page & show HBD intro', async () => {
       expect(
-        await screen.findByLabelText(`${Screen.CONVERSION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONVERSION_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -156,10 +154,10 @@ describe('conversion.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
       });
       expect(
@@ -172,7 +170,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -190,13 +188,13 @@ describe('conversion.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -212,13 +210,13 @@ describe('conversion.component tests:\n', () => {
         .mockRejectedValue(new Error('Error HBD to HIVE'));
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.setToMax),
+          await screen.findByTestId(dataTestIdButton.setToMax),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.submit),
+          await screen.findByTestId(dataTestIdButton.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(await screen.findByText('Error HBD to HIVE')).toBeInTheDocument();

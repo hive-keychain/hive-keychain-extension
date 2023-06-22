@@ -120,7 +120,7 @@ const Home = ({
   return (
     <div className={'home-page'}>
       {activeRpc && activeRpc.uri !== 'NULL' && (
-        <div aria-label={`${Screen.HOME_PAGE}-page`}>
+        <div data-testid={`${Screen.HOME_PAGE}-page`}>
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />

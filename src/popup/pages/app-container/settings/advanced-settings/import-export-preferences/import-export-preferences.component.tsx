@@ -9,7 +9,7 @@ import './import-export-preferences.component.scss';
 const ImportExportPreferences = ({}: PropsFromRedux) => {
   return (
     <div
-      aria-label={`${Screen.SETTINGS_IMPORT_EXPORT}-page`}
+      data-testid={`${Screen.SETTINGS_IMPORT_EXPORT}-page`}
       className="import-export-preferences-page">
       <MenuComponent
         title="popup_html_import_export_settings"

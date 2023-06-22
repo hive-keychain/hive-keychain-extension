@@ -22,7 +22,7 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
   return (
     <div
       className="settings-main-page"
-      aria-label={`${Screen.SETTINGS_MAIN_PAGE}-page`}>
+      data-testid={`${Screen.SETTINGS_MAIN_PAGE}-page`}>
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}

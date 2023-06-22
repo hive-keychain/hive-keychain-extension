@@ -24,19 +24,19 @@ describe('governance.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
       );
     });
   });
 
   it('Must load governance page & witness tab by default', async () => {
     expect(
-      await screen.findByLabelText(`${Screen.GOVERNANCE_PAGE}-page`),
+      await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`),
     ).toBeInTheDocument();
     expect(
-      await screen.findAllByLabelText(dataTestIdDiv.rankingItem),
+      await screen.findAllByTestId(dataTestIdDiv.rankingItem),
     ).toHaveLength(witness.ranking.length);
   });
 
@@ -44,9 +44,7 @@ describe('governance.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(screen.getAllByRole('tab')[1]);
     });
-    expect(
-      await screen.findByLabelText(dataTestIdTab.proxy),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId(dataTestIdTab.proxy)).toBeInTheDocument();
   });
 
   it('Must load proposal tab', async () => {
@@ -54,7 +52,7 @@ describe('governance.component tests:\n', () => {
       await userEvent.click(screen.getAllByRole('tab')[2]);
     });
     expect(
-      await screen.findByLabelText(dataTestIdTab.proposal),
+      await screen.findByTestId(dataTestIdTab.proposal),
     ).toBeInTheDocument();
   });
 });

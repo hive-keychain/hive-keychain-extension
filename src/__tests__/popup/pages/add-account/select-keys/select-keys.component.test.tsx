@@ -38,54 +38,48 @@ describe('select-keys.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.addByKeys),
+        await screen.findByTestId(dataTestIdButton.addByKeys),
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdCheckbox.selectKeys.import.activeKey,
         ),
       );
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdCheckbox.selectKeys.import.postingkey,
         ),
       );
       await userEvent.click(
-        await screen.findByLabelText(
-          dataTestIdCheckbox.selectKeys.import.memoKey,
-        ),
+        await screen.findByTestId(dataTestIdCheckbox.selectKeys.import.memoKey),
       );
     });
   });
 
   it('Must load the select keys page & caption', async () => {
     expect(
-      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
     ).toBeInTheDocument();
     expect(
-      (await screen.findByLabelText(dataTestIdDiv.selectKeys.captionPage))
+      (await screen.findByTestId(dataTestIdDiv.selectKeys.captionPage))
         .innerHTML,
     ).toBe(chrome.i18n.getMessage('popup_html_import_success'));
   });
 
   it('Must show error as no key selected', async () => {
     await act(async () => {
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.save),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -98,13 +92,11 @@ describe('select-keys.component tests:\n', () => {
     const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdCheckbox.selectKeys.import.activeKey,
         ),
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.save),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       active: userData.one.nonEncryptKeys.active,
@@ -116,13 +108,11 @@ describe('select-keys.component tests:\n', () => {
     const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdCheckbox.selectKeys.import.postingkey,
         ),
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.save),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       posting: userData.one.nonEncryptKeys.posting,
@@ -134,13 +124,9 @@ describe('select-keys.component tests:\n', () => {
     const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
-          dataTestIdCheckbox.selectKeys.import.memoKey,
-        ),
+        await screen.findByTestId(dataTestIdCheckbox.selectKeys.import.memoKey),
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.save),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       memo: userData.one.nonEncryptKeys.memo,

@@ -33,18 +33,18 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.arrow.hive),
+            await screen.findByTestId(dataTestIdDropdown.arrow.hive),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.span.savings),
+            await screen.findByTestId(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.withdraw,
             ),
           );
@@ -62,16 +62,14 @@ describe('savings.component tests:\n', () => {
 
       it('Must set input to max & load HIVE withdraw confirmation text', async () => {
         await act(async () => {
-          await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.setToMax),
-          );
+          await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
         });
-        expect(
-          await screen.findByLabelText(dataTestIdInput.amount),
-        ).toHaveValue(hiveSavingsBalance);
+        expect(await screen.findByTestId(dataTestIdInput.amount)).toHaveValue(
+          hiveSavingsBalance,
+        );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -86,11 +84,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             String(hiveSavingsBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -108,14 +106,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -134,14 +132,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -157,14 +155,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error withdraw'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Error withdraw')).toBeInTheDocument();
@@ -178,18 +176,18 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.arrow.hive),
+            await screen.findByTestId(dataTestIdDropdown.arrow.hive),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.span.savings),
+            await screen.findByTestId(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.deposit,
             ),
           );
@@ -198,24 +196,20 @@ describe('savings.component tests:\n', () => {
 
       it('Must show deposit HIVE button', async () => {
         expect(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.savings.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.savings.submit),
         ).toHaveTextContent('Deposit HIVE');
       });
 
       it('Must set input to max & load HIVE deposit confirmation text', async () => {
         await act(async () => {
-          await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.setToMax),
-          );
+          await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
         });
-        expect(
-          await screen.findByLabelText(dataTestIdInput.amount),
-        ).toHaveValue(hiveBalance);
+        expect(await screen.findByTestId(dataTestIdInput.amount)).toHaveValue(
+          hiveBalance,
+        );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -230,11 +224,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             String(hiveBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -252,14 +246,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -278,14 +272,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -301,14 +295,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error deposit'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Error deposit')).toBeInTheDocument();
@@ -324,18 +318,18 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.arrow.hbd),
+            await screen.findByTestId(dataTestIdDropdown.arrow.hbd),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.span.savings),
+            await screen.findByTestId(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.withdraw,
             ),
           );
@@ -353,16 +347,14 @@ describe('savings.component tests:\n', () => {
 
       it('Must set input to max & load HBD withdraw confirmation text', async () => {
         await act(async () => {
-          await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.setToMax),
-          );
+          await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
         });
-        expect(
-          await screen.findByLabelText(dataTestIdInput.amount),
-        ).toHaveValue(hbdSavingsBalance);
+        expect(await screen.findByTestId(dataTestIdInput.amount)).toHaveValue(
+          hbdSavingsBalance,
+        );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -377,11 +369,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             String(hbdSavingsBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -399,14 +391,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -425,14 +417,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -448,14 +440,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error withdraw HBD'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -471,18 +463,18 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.arrow.hbd),
+            await screen.findByTestId(dataTestIdDropdown.arrow.hbd),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdDropdown.span.savings),
+            await screen.findByTestId(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
-            await screen.findByLabelText(
+            await screen.findByTestId(
               dataTestIdDropdown.select.savings.operation.deposit,
             ),
           );
@@ -491,24 +483,20 @@ describe('savings.component tests:\n', () => {
 
       it('Must show deposit HBD button', async () => {
         expect(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.savings.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.savings.submit),
         ).toHaveTextContent('Deposit HBD');
       });
 
       it('Must set input to max & load HBD deposit confirmation text', async () => {
         await act(async () => {
-          await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.setToMax),
-          );
+          await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
         });
-        expect(
-          await screen.findByLabelText(dataTestIdInput.amount),
-        ).toHaveValue(hbdBalance);
+        expect(await screen.findByTestId(dataTestIdInput.amount)).toHaveValue(
+          hbdBalance,
+        );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -523,11 +511,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough HBD balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             String(hbdBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -545,14 +533,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -571,14 +559,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -594,14 +582,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error deposit HBD'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
+            screen.getByTestId(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.confirm),
+            screen.getByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(

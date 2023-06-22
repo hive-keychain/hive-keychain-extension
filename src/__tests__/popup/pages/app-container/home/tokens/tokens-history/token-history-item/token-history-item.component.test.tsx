@@ -33,7 +33,7 @@ describe('token-history-item.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
@@ -43,19 +43,15 @@ describe('token-history-item.component tests:\n', () => {
     const memoDivAriaLabel = `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}-memo-panel-${selectedHistoryTransaction._id}`;
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
         ),
       );
     });
-    expect(screen.getByLabelText(memoDivAriaLabel).classList).toContain(
-      'closed',
-    );
+    expect(screen.getByTestId(memoDivAriaLabel).classList).toContain('closed');
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(memoDivAriaLabel));
+      await userEvent.click(screen.getByTestId(memoDivAriaLabel));
     });
-    expect(screen.getByLabelText(memoDivAriaLabel).classList).toContain(
-      'opened',
-    );
+    expect(screen.getByTestId(memoDivAriaLabel).classList).toContain('opened');
   });
 });

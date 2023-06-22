@@ -20,7 +20,7 @@ const ManageAccountAuthorities = ({
   return (
     <div
       className="settings-manage-account-authorities"
-      aria-label={`${Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES}-page`}>
+      data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES}-page`}>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_manage_accounts_authorities_text')}
       </div>

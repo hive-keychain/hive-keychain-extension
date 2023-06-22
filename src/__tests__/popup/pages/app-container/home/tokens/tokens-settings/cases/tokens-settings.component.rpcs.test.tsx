@@ -42,28 +42,26 @@ describe('tokens-settings.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
+            screen.getByTestId(dataTestIdIcon.tokens.settings.open),
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdSelect.tokens.settings.panel.rpcNode,
-            ),
+            screen.getByTestId(dataTestIdSelect.tokens.settings.panel.rpcNode),
           );
         });
       });
       it('Must display total of rpc items & find custom rpc', async () => {
         expect(
-          await screen.findAllByLabelText(
+          await screen.findAllByTestId(
             dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(rpcFullList.length);
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
@@ -73,27 +71,25 @@ describe('tokens-settings.component tests:\n', () => {
 
       it('Must delete custom rpc, reload rpc list and not show deleted one', async () => {
         expect(
-          await screen.findAllByLabelText(
+          await screen.findAllByTestId(
             dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(rpcFullList.length);
         HiveEngineConfigUtils.getCustomRpcs = jest.fn().mockResolvedValue([]);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
                 customRpc.replace('https://', '').split('/')[0]
               }`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdSelect.tokens.settings.panel.rpcNode,
-            ),
+            screen.getByTestId(dataTestIdSelect.tokens.settings.panel.rpcNode),
           );
         });
         expect(
-          screen.queryByLabelText(
+          screen.queryByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
@@ -110,29 +106,27 @@ describe('tokens-settings.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
+            screen.getByTestId(dataTestIdIcon.tokens.settings.open),
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdSelect.tokens.settings.panel.rpcNode,
-            ),
+            screen.getByTestId(dataTestIdSelect.tokens.settings.panel.rpcNode),
           );
         });
       });
 
       it('Must display total of default rpc items & not find custom rpc', async () => {
         expect(
-          await screen.findAllByLabelText(
+          await screen.findAllByTestId(
             dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(DefaultHiveEngineRpcs.length);
         expect(
-          screen.queryByLabelText(
+          screen.queryByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
@@ -143,16 +137,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error adding existent rpc', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             DefaultHiveEngineRpcs[0],
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );
@@ -167,16 +161,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error adding non valid url rpc', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             'non-valid-@url.@',
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );
@@ -191,16 +185,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error if empty input', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             '{space}',
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );

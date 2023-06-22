@@ -40,11 +40,9 @@ describe('delegations.component tests:\n', () => {
         },
       );
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdDropdown.arrow.hp));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hp),
-        );
-        await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.itemPreFix + Icons.DELEGATIONS_HP,
           ),
         );
@@ -69,23 +67,21 @@ describe('delegations.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdDropdown.arrow.hp));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hp),
-        );
-        await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.itemPreFix + Icons.DELEGATIONS_HP,
           ),
         );
       });
     });
     it('Must show total incoming/outgoing values', async () => {
-      const incomingHTMLElement = await screen.findByLabelText(
+      const incomingHTMLElement = await screen.findByTestId(
         dataTestIdSpan.delegations.incoming.spanTotal,
       );
       expect(incomingHTMLElement.textContent).toContain('+');
       expect(incomingHTMLElement.textContent).toContain('HP');
-      const outgoingTotalHTMLElement = await screen.findByLabelText(
+      const outgoingTotalHTMLElement = await screen.findByTestId(
         dataTestIdDiv.delegations.outgoing.totalValue,
       );
       expect(outgoingTotalHTMLElement.textContent).toContain('-');
@@ -95,12 +91,12 @@ describe('delegations.component tests:\n', () => {
     it('Must navigate to INCOMING_PAGE when clicking incoming', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdButton.delegations.total.incoming,
           ),
         );
       });
-      const pageHTMLElement = await screen.findByLabelText(
+      const pageHTMLElement = await screen.findByTestId(
         `${Screen.INCOMING_OUTGOING_PAGE}-page`,
       );
       expect(pageHTMLElement.textContent).toContain(
@@ -111,12 +107,12 @@ describe('delegations.component tests:\n', () => {
     it('Must navigate to INCOMING_OUTGOING_PAGE when clicking outcomming', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdButton.delegations.total.outgoing,
           ),
         );
       });
-      const pageHTMLElement = await screen.findByLabelText(
+      const pageHTMLElement = await screen.findByTestId(
         `${Screen.INCOMING_OUTGOING_PAGE}-page`,
       );
       expect(pageHTMLElement.textContent).toContain(
@@ -132,20 +128,18 @@ describe('delegations.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.username),
+          await screen.findByTestId(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.amount),
+          await screen.findByTestId(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.delegate.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -164,20 +158,18 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.username),
+          await screen.findByTestId(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.amount),
+          await screen.findByTestId(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.delegate.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -196,20 +188,18 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.username),
+          await screen.findByTestId(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.amount),
+          await screen.findByTestId(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.delegate.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -228,20 +218,18 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.username),
+          await screen.findByTestId(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.amount),
+          await screen.findByTestId(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.delegate.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -257,20 +245,18 @@ describe('delegations.component tests:\n', () => {
         .mockRejectedValue(new Error('Error on delegation'));
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.username),
+          await screen.findByTestId(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(dataTestIdInput.amount),
+          await screen.findByTestId(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          await screen.findByLabelText(
-            dataTestIdButton.operation.delegate.submit,
-          ),
+          await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
         );
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(

@@ -33,20 +33,20 @@ describe('estimated-account-value-section.component tests:\n', () => {
     });
     it('Must display the estimated account value', async () => {
       expect(
-        await screen.findByLabelText(dataTestIdDiv.estimatedAccountValue),
+        await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
       ).toHaveTextContent(`$ ${accountValue} USD`);
     });
 
     it('Must display custom tooltip on mouse enter', async () => {
       await act(async () => {
         await userEvent.hover(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdToolTip.custom.estimatedValueSection,
           ),
         );
       });
       expect(
-        (await screen.findByLabelText(dataTestIdToolTip.content)).innerHTML,
+        (await screen.findByTestId(dataTestIdToolTip.content)).innerHTML,
       ).toEqual(chrome.i18n.getMessage('popup_html_estimation_info_text'));
     });
   });
@@ -69,7 +69,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     });
     it('Must display ... when account value not received', async () => {
       expect(
-        await screen.findByLabelText(dataTestIdDiv.estimatedAccountValue),
+        await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
       ).toHaveTextContent('...');
     });
   });

@@ -23,18 +23,18 @@ describe('clear-all-data.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.CLEAR),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.CLEAR),
       );
     });
   });
   it('Must show page and message', () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -46,12 +46,10 @@ describe('clear-all-data.component tests:\n', () => {
 
   it('Must go back when pressing cancel', async () => {
     await act(async () => {
-      await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.dialog.cancel),
-      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.dialog.cancel));
     });
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
     ).toBeInTheDocument();
   });
 
@@ -66,9 +64,9 @@ describe('clear-all-data.component tests:\n', () => {
 
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.dialog.confirm),
+        screen.getByTestId(dataTestIdButton.dialog.confirm),
       );
     });
-    expect(await screen.findByLabelText('signup-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('signup-page')).toBeInTheDocument();
   });
 });

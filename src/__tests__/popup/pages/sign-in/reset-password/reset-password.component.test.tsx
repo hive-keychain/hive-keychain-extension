@@ -41,30 +41,26 @@ describe('reset-password.component tests:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(false);
 
     await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdLink.resetPassword));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdLink.resetPassword),
-      );
-      await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.confirmResetPassword),
+        screen.getByTestId(dataTestIdButton.confirmResetPassword),
       );
     });
     screen.debug();
-    expect(await screen.findByLabelText('signup-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('signup-page')).toBeInTheDocument();
   });
   it('Must cancel and return to previous window', async () => {
     await act(async () => {
-      await userEvent.click(
-        screen.getByLabelText(dataTestIdLink.resetPassword),
-      );
+      await userEvent.click(screen.getByTestId(dataTestIdLink.resetPassword));
     });
     expect(
-      await screen.findByLabelText(dataTestIdButton.confirmResetPassword),
+      await screen.findByTestId(dataTestIdButton.confirmResetPassword),
     ).toBeInTheDocument();
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+      await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
     });
     expect(
-      screen.queryByLabelText(dataTestIdButton.confirmResetPassword),
+      screen.queryByTestId(dataTestIdButton.confirmResetPassword),
     ).not.toBeInTheDocument();
   });
 });

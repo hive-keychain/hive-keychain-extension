@@ -42,7 +42,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
 
   it('Must show proxy suggestion & display message', async () => {
     expect(
-      await screen.findByLabelText(dataTestIdPopup.proxySuggestion.component),
+      await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
@@ -58,7 +58,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
       .mockRejectedValue(new Error('Error setting proxy'));
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
@@ -75,7 +75,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
     } as TransactionResult);
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
@@ -92,7 +92,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
     ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(null);
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
@@ -107,11 +107,11 @@ describe.skip('Proxy suggestion tests:\n', () => {
   it('Must close suggestion after clicking close', async () => {
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.panel.close),
+        await screen.findByTestId(dataTestIdButton.panel.close),
       );
     });
     expect(
-      await screen.findByLabelText(dataTestIdPopup.proxySuggestion.component),
+      await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
     ).toHaveClass('proxy-suggestion hide');
   });
 });

@@ -6,7 +6,7 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.scss';
@@ -44,7 +44,7 @@ const PageTitle = ({
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
         <Icon
-          ariaLabel="arrow-back-icon"
+          dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
           name={Icons.BACK}
           type={IconType.OUTLINED}
@@ -57,7 +57,7 @@ const PageTitle = ({
       </div>
       {!isCloseButtonDisabled && (
         <Icon
-          ariaLabel="icon-close-page"
+          dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
           name={Icons.CLOSE}
           type={IconType.OUTLINED}

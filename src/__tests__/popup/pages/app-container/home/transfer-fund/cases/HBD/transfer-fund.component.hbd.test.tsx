@@ -25,22 +25,23 @@ describe('transfer-fund.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${
                 dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
+            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
       it('Must show transfer fund page with hbd as selected currency', async () => {
         expect(
-          await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
+          await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`),
         ).toBeInTheDocument();
         expect(
+          //bellow the only element using an actual aria-label.
           await screen.findByLabelText(dataTestIdSelect.accountSelector),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hbd);
       });

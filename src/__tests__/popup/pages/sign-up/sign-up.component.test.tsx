@@ -35,17 +35,17 @@ describe('sign-up.component tests:\n', () => {
   afterEach(() => cleanup());
 
   it('Must show sign up component', async () => {
-    expect(screen.getByLabelText('signup-page')).toBeInTheDocument();
+    expect(screen.getByTestId('signup-page')).toBeInTheDocument();
   });
 
   it('Must show error message when using different passwords and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '@1qEWqw!!',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '@1qEWqw!{enter}',
       );
     });
@@ -60,14 +60,14 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when using different passwords and clicking button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '@1qEWqw!!',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '@1qEWqw!',
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
       await screen.findByText(
@@ -80,11 +80,11 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when invalid password and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '1qEWqw',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '1qEWqw{enter}',
       );
     });
@@ -98,14 +98,14 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when invalid password and clicking button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '1qEWqw',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '1qEWqw',
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
       await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
@@ -117,33 +117,33 @@ describe('sign-up.component tests:\n', () => {
   it('Must navigate to add_keys_page with valid password and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '1qEWqw23',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '1qEWqw23{enter}',
       );
     });
     expect(
-      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
     ).toBeInTheDocument();
   });
 
   it('Must navigate to add_keys_page with valid password and click button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         '1qEWqw23',
       );
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.confirmation),
+        screen.getByTestId(dataTestIdInput.confirmation),
         '1qEWqw23',
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
-      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
     ).toBeInTheDocument();
   });
 });

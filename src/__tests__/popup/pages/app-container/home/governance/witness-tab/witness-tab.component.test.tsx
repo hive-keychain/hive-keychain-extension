@@ -47,31 +47,28 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
       });
     });
     it('Must display only active witnesses', async () => {
       expect(
-        await screen.findAllByLabelText(dataTestIdDiv.rankingItem),
+        await screen.findAllByTestId(dataTestIdDiv.rankingItem),
       ).toHaveLength(witness.rankingWInactive.length - 1);
     });
 
     it('Must display more information message', async () => {
       expect(
-        (await screen.findByLabelText(dataTestIdLink.linkToArcange))
-          .textContent,
+        (await screen.findByTestId(dataTestIdLink.linkToArcange)).textContent,
       ).toContain(chrome.i18n.getMessage('html_popup_link_to_witness_website'));
     });
 
     it('Must open link about more information', async () => {
       const sTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdLink.linkToArcange),
-        );
+        await userEvent.click(screen.getByTestId(dataTestIdLink.linkToArcange));
       });
       expect(sTabs).toHaveBeenCalledWith({ url: witness.arcangeLink });
       sTabs.mockRestore();
@@ -80,13 +77,11 @@ describe('witness tab:\n', () => {
     it('Must display no witnesses when typying a non existing witness on filter box', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.ranking),
+          screen.getByTestId(dataTestIdInput.filter.ranking),
           'nonExistent',
         );
       });
-      expect(screen.queryAllByLabelText(dataTestIdDiv.rankingItem).length).toBe(
-        0,
-      );
+      expect(screen.queryAllByTestId(dataTestIdDiv.rankingItem).length).toBe(0);
     });
 
     it('Must display 1 witness when typying blocktrades on filter box', async () => {
@@ -95,11 +90,11 @@ describe('witness tab:\n', () => {
       )[0].name;
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.ranking),
+          screen.getByTestId(dataTestIdInput.filter.ranking),
           blocktradesWitnessName,
         );
       });
-      const rankingHTMLElements = screen.queryAllByLabelText(
+      const rankingHTMLElements = screen.queryAllByTestId(
         dataTestIdDiv.rankingItem,
       );
       expect(rankingHTMLElements).toHaveLength(1);
@@ -114,7 +109,7 @@ describe('witness tab:\n', () => {
       )[0].name;
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdSwitch.panel.witness.hideInactive),
+          screen.getByTestId(dataTestIdSwitch.panel.witness.hideInactive),
         );
       });
       expect(
@@ -125,7 +120,7 @@ describe('witness tab:\n', () => {
     it('Must show only voted witnesses when checking on voted only', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdSwitch.panel.witness.votedOnly),
+          screen.getByTestId(dataTestIdSwitch.panel.witness.votedOnly),
         );
       });
       for (let i = 0; i < accounts.extended.witness_votes.length; i++) {
@@ -135,7 +130,7 @@ describe('witness tab:\n', () => {
         ).toBeInTheDocument();
       }
       expect(
-        (await screen.findAllByLabelText(dataTestIdDiv.rankingItem)).length,
+        (await screen.findAllByTestId(dataTestIdDiv.rankingItem)).length,
       ).toBe(accounts.extended.witness_votes.length);
     });
 
@@ -144,7 +139,7 @@ describe('witness tab:\n', () => {
       const sTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdIcon.witness.linkToPagePrefix + firstWitness.name,
           ),
         );
@@ -167,7 +162,7 @@ describe('witness tab:\n', () => {
       const selectedWitness = accounts.extended.witness_votes[0];
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
@@ -193,7 +188,7 @@ describe('witness tab:\n', () => {
       const selectedWitness = accounts.extended.witness_votes[0];
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
@@ -217,7 +212,7 @@ describe('witness tab:\n', () => {
       const selectedWitness = accounts.extended.witness_votes[0];
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
@@ -241,7 +236,7 @@ describe('witness tab:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdIcon.witness.votingPrefix + selectedWitnessNameToVote,
           ),
         );
@@ -279,9 +274,9 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
       });
     });

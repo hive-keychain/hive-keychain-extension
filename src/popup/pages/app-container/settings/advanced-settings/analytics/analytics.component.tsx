@@ -50,10 +50,10 @@ const Analytics = ({
 
   return (
     <div
-      aria-label={`${Screen.SETTINGS_ANALYTICS}-page`}
+      data-testid={`${Screen.SETTINGS_ANALYTICS}-page`}
       className="analytics-settings-page">
       <CheckboxComponent
-        ariaLabel={`checkbox-allow-ga`}
+        dataTestId={`checkbox-allow-ga`}
         title="popup_html_analytics_allow_ga"
         hint="popup_html_analytics_message"
         checked={allowGoogleAnalytics}
@@ -62,7 +62,7 @@ const Analytics = ({
         }}></CheckboxComponent>
 
       <ButtonComponent
-        ariaLabel="button-save"
+        dataTestId="button-save"
         label={'popup_html_save'}
         onClick={() => save()}
         fixToBottom

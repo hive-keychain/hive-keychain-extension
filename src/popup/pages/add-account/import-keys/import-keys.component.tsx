@@ -8,7 +8,7 @@ const ImportKeys = ({}: PropsFromRedux) => {
   return (
     <div
       className="import-keys-page"
-      aria-label={`${Screen.ACCOUNT_PAGE_IMPORT_KEYS}-page`}>
+      data-testid={`${Screen.ACCOUNT_PAGE_IMPORT_KEYS}-page`}>
       Import keys
     </div>
   );

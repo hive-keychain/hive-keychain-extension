@@ -22,20 +22,18 @@ describe('import-export-preferences.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(
-          dataTestIdButton.menuPreFix + Icons.IMPORT_EXPORT,
-        ),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.IMPORT_EXPORT),
       );
     });
   });
   it('Must load import-export page and show info', () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_IMPORT_EXPORT}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_IMPORT_EXPORT}-page`),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -49,7 +47,7 @@ describe('import-export-preferences.component tests:\n', () => {
     const sImportSettings = jest.spyOn(SettingsUtils, 'importSettings');
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.IMPORT),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.IMPORT),
       );
     });
     expect(sImportSettings).toHaveBeenCalledTimes(1);
@@ -69,7 +67,7 @@ describe('import-export-preferences.component tests:\n', () => {
       .mockResolvedValueOnce(null);
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.EXPORT),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.EXPORT),
       );
     });
     expect(sExportSettings).toHaveBeenCalledTimes(1);

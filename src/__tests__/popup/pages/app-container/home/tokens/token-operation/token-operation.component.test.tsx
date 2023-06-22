@@ -35,14 +35,14 @@ describe('token-operation.component tests', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdIcon.tokens.prefix.expandMore + selectedToken.symbol,
         ),
       );
@@ -52,17 +52,17 @@ describe('token-operation.component tests', () => {
     it('Must load operation as unstake', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_OPERATION}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_OPERATION}-page`),
       ).toBeInTheDocument();
       expect(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.tokens.preFix + 'unstake',
         ),
       ).toBeInTheDocument();
@@ -72,34 +72,34 @@ describe('token-operation.component tests', () => {
       AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.cancel),
+          screen.getByTestId(dataTestIdButton.dialog.cancel),
         );
       });
       expect(
-        screen.queryByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        screen.queryByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).not.toBeInTheDocument();
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_OPERATION}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_OPERATION}-page`),
       ).toBeInTheDocument();
     });
 
@@ -107,17 +107,17 @@ describe('token-operation.component tests', () => {
       AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           (parseFloat(selectedToken.balance) + 1).toString(),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
@@ -139,22 +139,22 @@ describe('token-operation.component tests', () => {
       } as HiveEngineTransactionStatus);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -173,22 +173,22 @@ describe('token-operation.component tests', () => {
       } as HiveEngineTransactionStatus);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -206,22 +206,22 @@ describe('token-operation.component tests', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -236,17 +236,17 @@ describe('token-operation.component tests', () => {
     it('Must load operation as delegate', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.delegate +
               selectedToken.symbol,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_OPERATION}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_OPERATION}-page`),
       ).toBeInTheDocument();
       expect(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.tokens.preFix + 'delegate',
         ),
       ).toBeInTheDocument();
@@ -262,22 +262,22 @@ describe('token-operation.component tests', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.delegate +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'delegate',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -292,17 +292,17 @@ describe('token-operation.component tests', () => {
     it('Must load operation as stake', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.stake +
               selectedToken.symbol,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.TOKENS_OPERATION}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_OPERATION}-page`),
       ).toBeInTheDocument();
       expect(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.operation.tokens.preFix + 'stake',
         ),
       ).toBeInTheDocument();
@@ -318,22 +318,22 @@ describe('token-operation.component tests', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.token.user.prefixes.action.stake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.operation.tokens.preFix + 'stake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(

@@ -35,17 +35,17 @@ describe('power-up-down.component tests:\n', () => {
     beforeEach(async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hive),
+          screen.getByTestId(dataTestIdDropdown.arrow.hive),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.span.powerUp),
+          screen.getByTestId(dataTestIdDropdown.span.powerUp),
         );
       });
     });
 
     it('Must show power up/down page & user info', async () => {
       expect(
-        await screen.findByLabelText(`${Screen.POWER_UP_PAGE}-page`),
+        await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -57,11 +57,11 @@ describe('power-up-down.component tests:\n', () => {
     it('Must show error if empty input', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
@@ -74,11 +74,11 @@ describe('power-up-down.component tests:\n', () => {
     it('Must show error if not enough balance', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           (parseFloat(hiveBalance.toString().split(' HIVE')[0]) + 1).toString(),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
@@ -90,18 +90,18 @@ describe('power-up-down.component tests:\n', () => {
 
     it('Must set value to  max & show confirmation page', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.setToMax));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
       });
-      expect(screen.getByLabelText(dataTestIdInput.amount)).toHaveValue(
+      expect(screen.getByTestId(dataTestIdInput.amount)).toHaveValue(
         parseFloat(hiveBalance.toString().split(' HIVE')[0]),
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
     });
 
@@ -112,15 +112,12 @@ describe('power-up-down.component tests:\n', () => {
         confirmed: false,
       } as TransactionResult);
       await act(async () => {
-        await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
-          '1',
+        await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1');
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
-        );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -140,15 +137,12 @@ describe('power-up-down.component tests:\n', () => {
       } as TransactionResult);
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
-        await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
-          '1',
+        await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1');
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
-        );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -165,15 +159,12 @@ describe('power-up-down.component tests:\n', () => {
         .fn()
         .mockRejectedValue(new Error('Error power up'));
       await act(async () => {
-        await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
-          '1',
+        await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1');
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
-        );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(await screen.findByText('Error power up')).toBeInTheDocument();
@@ -199,18 +190,16 @@ describe('power-up-down.component tests:\n', () => {
     ).toFixed(3);
     beforeEach(async () => {
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdDropdown.arrow.hp));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.arrow.hp),
-        );
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdDropdown.span.powerDown),
+          screen.getByTestId(dataTestIdDropdown.span.powerDown),
         );
       });
     });
 
     it('Must show power up/down page & user info', async () => {
       expect(
-        await screen.findByLabelText(`${Screen.POWER_UP_PAGE}-page`),
+        await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -222,11 +211,11 @@ describe('power-up-down.component tests:\n', () => {
     it('Must show error if empty input', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
@@ -239,11 +228,11 @@ describe('power-up-down.component tests:\n', () => {
     it('Must show error if not enough balance', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           parseFloat(hpBalance + 1).toString(),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
@@ -255,18 +244,18 @@ describe('power-up-down.component tests:\n', () => {
 
     it('Must set value to  max & show confirmation page', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.setToMax));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
       });
-      expect(screen.getByLabelText(dataTestIdInput.amount)).toHaveValue(
+      expect(screen.getByTestId(dataTestIdInput.amount)).toHaveValue(
         Number(hpBalance),
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
     });
 
@@ -278,14 +267,14 @@ describe('power-up-down.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -306,14 +295,14 @@ describe('power-up-down.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -331,14 +320,14 @@ describe('power-up-down.component tests:\n', () => {
         .mockRejectedValue(new Error('Error power down'));
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.amount),
+          screen.getByTestId(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.powerUpDown.submit),
+          screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(await screen.findByText('Error power down')).toBeInTheDocument();

@@ -39,7 +39,7 @@ describe('token-item.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
@@ -48,7 +48,7 @@ describe('token-item.component tests:\n', () => {
 
   it('Must show only one token', async () => {
     expect(
-      await screen.findAllByLabelText(dataTestIdDiv.token.user.item),
+      await screen.findAllByTestId(dataTestIdDiv.token.user.item),
     ).toHaveLength(1);
   });
 
@@ -57,19 +57,19 @@ describe('token-item.component tests:\n', () => {
       await screen.findByText(selectedToken.balance, { exact: true }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(
+      await screen.findByTestId(
         dataTestIdButton.token.action.preFix + `stake-` + selectedToken.symbol,
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(
+      await screen.findByTestId(
         dataTestIdButton.token.action.preFix +
           'unstake-' +
           selectedToken.symbol,
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(
+      await screen.findByTestId(
         dataTestIdButton.token.action.preFix +
           'delegate-' +
           selectedToken.symbol,
@@ -86,7 +86,7 @@ describe('token-item.component tests:\n', () => {
     ).url;
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.token.user.prefixes.gotoWebSite + selectedToken.symbol,
         ),
       );

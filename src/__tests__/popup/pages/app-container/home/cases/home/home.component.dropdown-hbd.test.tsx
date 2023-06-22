@@ -12,6 +12,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import CurrencyUtils from 'src/utils/currency.utils';
+
 describe('home.component dropdown hbd tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -29,7 +30,7 @@ describe('home.component dropdown hbd tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdDropdown.arrow.preFix +
             CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase(),
         ),
@@ -46,7 +47,7 @@ describe('home.component dropdown hbd tests:\n', () => {
     for (let i = 0; i < HBDDropdownMenuItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.walletInfo.preFix + HBDDropdownMenuItems[i].icon,
           ),
         );
@@ -56,19 +57,19 @@ describe('home.component dropdown hbd tests:\n', () => {
         HBDDropdownMenuItems[i].icon === Icons.ARROW_UPWARDS
       ) {
         expect(
-          await screen.findByLabelText(`${Screen.POWER_UP_PAGE}-page`),
+          await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
         ).toBeInTheDocument();
       } else {
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${HBDDropdownMenuItems[i].nextScreen}-page`,
           ),
         ).toBeInTheDocument();
       }
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.arrow.preFix +
               CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase(),
           ),

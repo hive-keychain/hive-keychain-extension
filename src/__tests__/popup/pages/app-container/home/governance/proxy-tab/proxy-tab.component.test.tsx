@@ -38,9 +38,9 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
           );
           await userEvent.click(screen.getAllByRole('tab')[1]);
         });
@@ -65,13 +65,11 @@ describe('proxy-tab.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdButton.operation.proxy.tab.setAsProxy,
-            ),
+            screen.getByTestId(dataTestIdButton.operation.proxy.tab.setAsProxy),
           );
         });
         expect(
@@ -85,13 +83,11 @@ describe('proxy-tab.component tests:\n', () => {
         ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(null);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdButton.operation.proxy.tab.setAsProxy,
-            ),
+            screen.getByTestId(dataTestIdButton.operation.proxy.tab.setAsProxy),
           );
         });
         expect(
@@ -109,13 +105,11 @@ describe('proxy-tab.component tests:\n', () => {
           );
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
-            screen.getByLabelText(
-              dataTestIdButton.operation.proxy.tab.setAsProxy,
-            ),
+            screen.getByTestId(dataTestIdButton.operation.proxy.tab.setAsProxy),
           );
         });
         expect(
@@ -146,9 +140,9 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
           );
           await userEvent.click(screen.getAllByRole('tab')[1]);
         });
@@ -194,9 +188,9 @@ describe('proxy-tab.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
         await userEvent.click(screen.getAllByRole('tab')[1]);
       });
@@ -205,13 +199,11 @@ describe('proxy-tab.component tests:\n', () => {
     it('Must show error trying to set proxy', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.username),
+          screen.getByTestId(dataTestIdInput.username),
           'keychain',
         );
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.operation.proxy.tab.setAsProxy,
-          ),
+          screen.getByTestId(dataTestIdButton.operation.proxy.tab.setAsProxy),
         );
       });
       expect(

@@ -78,7 +78,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   if (!ready) return null;
   else
     return (
-      <div aria-label="whats-new-popup" className="whats-new">
+      <div data-testid="whats-new-popup" className="whats-new">
         <div className="overlay"></div>
         <div className="whats-new-container">
           <div className="whats-new-title">
@@ -103,7 +103,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
                     {feature.extraInformation}
                   </div>
                   <a
-                    aria-label="link-whats-new-read-more"
+                    data-testid="link-whats-new-read-more"
                     className="read-more-link"
                     onClick={() => handleOnClick(content, feature)}>
                     {feature.overrideReadMoreLabel ??
@@ -124,7 +124,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             )}
             {pageIndex === content.features[locale].length - 1 && (
               <ButtonComponent
-                ariaLabel="button-last-page"
+                dataTestId="button-last-page"
                 type={ButtonType.STROKED}
                 label="popup_html_whats_new_got_it"
                 onClick={() => finish()}
@@ -132,7 +132,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             )}
             {pageIndex < content.features[locale].length - 1 && (
               <ButtonComponent
-                ariaLabel="button-next-page"
+                dataTestId="button-next-page"
                 type={ButtonType.STROKED}
                 label="popup_html_whats_new_next"
                 onClick={() => next()}

@@ -51,9 +51,9 @@ const AddKey = ({
   return (
     <div
       className="add-key-page"
-      aria-label={`${Screen.SETTINGS_ADD_KEY}-page`}>
+      data-testid={`${Screen.SETTINGS_ADD_KEY}-page`}>
       <p
-        aria-label="add-key-page-paragraph-introduction"
+        data-testid="add-key-page-paragraph-introduction"
         className="introduction"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_add_key_text', [
@@ -62,7 +62,7 @@ const AddKey = ({
         }}></p>
 
       <InputComponent
-        ariaLabel="input-private-key"
+        dataTestId="input-private-key"
         type={InputType.PASSWORD}
         logo={Icons.KEY}
         placeholder="popup_html_private_key"
@@ -78,7 +78,7 @@ const AddKey = ({
       )}
 
       <ButtonComponent
-        ariaLabel="import-keys-button"
+        dataTestId="import-keys-button"
         label="popup_html_import_key"
         onClick={importKey}
         fixToBottom

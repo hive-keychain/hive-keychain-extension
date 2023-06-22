@@ -80,7 +80,7 @@ const IncomingOutgoingPage = ({
   return (
     <div
       className="incoming-outgoing-page"
-      aria-label={`${Screen.INCOMING_OUTGOING_PAGE}-page`}>
+      data-testid={`${Screen.INCOMING_OUTGOING_PAGE}-page`}>
       {delegationType === DelegationType.OUTGOING &&
         totalPendingOutgoingUndelegation > 0 && (
           <div className="pending-disclaimer">

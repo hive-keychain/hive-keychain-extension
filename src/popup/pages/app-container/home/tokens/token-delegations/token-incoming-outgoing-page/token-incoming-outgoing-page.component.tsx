@@ -74,7 +74,7 @@ const TokenIncomingOutgoingPage = ({
 
   return (
     <div
-      aria-label={`${Screen.TOKENS_DELEGATIONS}-page`}
+      data-testid={`${Screen.TOKENS_DELEGATIONS}-page`}
       className="token-incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (

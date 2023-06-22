@@ -33,7 +33,7 @@ describe('sign-in.component.tsx tests:\n', () => {
     MkUtils.login = jest.fn().mockResolvedValue(false);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         'incorrect_password{enter}',
       );
     });
@@ -48,10 +48,10 @@ describe('sign-in.component.tsx tests:\n', () => {
     MkUtils.login = jest.fn().mockResolvedValue(false);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         'incorrect_password',
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.login));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.login));
     });
     expect(
       await screen.findByText(chrome.i18n.getMessage('wrong_password'), {
@@ -64,12 +64,12 @@ describe('sign-in.component.tsx tests:\n', () => {
     MkUtils.login = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         'correct_password{enter}',
       );
     });
     expect(
-      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 
@@ -77,13 +77,13 @@ describe('sign-in.component.tsx tests:\n', () => {
     MkUtils.login = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.password),
+        screen.getByTestId(dataTestIdInput.password),
         'correct_password',
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.login));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.login));
     });
     expect(
-      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 });

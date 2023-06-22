@@ -15,9 +15,9 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   }, []);
 
   return (
-    <div aria-label={`${Screen.SETTINGS_ABOUT}-page`} className="about-page">
+    <div data-testid={`${Screen.SETTINGS_ABOUT}-page`} className="about-page">
       <div
-        aria-label={`${Icons.INFO}-page-content`}
+        data-testid={`${Icons.INFO}-page-content`}
         className="content"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_about_text'),

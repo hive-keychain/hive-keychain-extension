@@ -216,7 +216,7 @@ const CreateAccountStepTwo = ({
   return (
     <div
       className="create-account-step-two"
-      aria-label={`${Screen.CREATE_ACCOUNT_PAGE_STEP_TWO}-page`}>
+      data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_TWO}-page`}>
       {keysTextVersion.length > 0 && (
         <>
           <div

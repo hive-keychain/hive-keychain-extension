@@ -36,20 +36,18 @@ describe('add-account-main.component tests:\n', () => {
 
     it('Must show add account main page', async () => {
       expect(
-        await screen.findByLabelText(
-          `${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`,
-        ),
+        await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
       ).toBeInTheDocument();
     });
 
     it('Must navigate to add-by-keys', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.addByKeys),
+          await screen.findByTestId(dataTestIdButton.addByKeys),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`),
+        await screen.findByTestId(`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`),
       ).toBeInTheDocument();
     });
   });
@@ -73,16 +71,14 @@ describe('add-account-main.component tests:\n', () => {
         },
       );
       await act(async () => {
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.menu),
-        );
-        await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdButton.menuPreFix + Icons.ACCOUNTS,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             dataTestIdButton.menuPreFix + Icons.ADD_ACCOUNT,
           ),
         );
@@ -92,11 +88,11 @@ describe('add-account-main.component tests:\n', () => {
     it('Must navigate to add-by-auth', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(dataTestIdButton.addByAuth),
+          await screen.findByTestId(dataTestIdButton.addByAuth),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`),
+        await screen.findByTestId(`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`),
       ).toBeInTheDocument();
     });
   });

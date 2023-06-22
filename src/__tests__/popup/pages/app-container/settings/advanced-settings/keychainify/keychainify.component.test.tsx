@@ -32,18 +32,18 @@ describe('keychainify.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.LINK),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.LINK),
       );
     });
   });
   it('Must load component and match show intro message', () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_KEYCHAINIFY}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_KEYCHAINIFY}-page`),
     ).toBeInTheDocument();
     expect(
       screen.getByText(chrome.i18n.getMessage('popup_html_keychainify_text'), {
@@ -59,7 +59,7 @@ describe('keychainify.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdCheckbox.keychainify.checkbox),
+        screen.getByTestId(dataTestIdCheckbox.keychainify.checkbox),
       );
     });
     expect(sSaveValueInLocalStorage.mock.lastCall[0]).toBe(

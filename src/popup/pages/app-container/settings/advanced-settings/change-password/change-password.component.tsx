@@ -58,14 +58,14 @@ const ChangePassword = ({
 
   return (
     <div
-      aria-label={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
+      data-testid={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
       className="change-password-page">
       <div className="caption">
         {chrome.i18n.getMessage('popup_html_change_password_text')}
       </div>
 
       <InputComponent
-        ariaLabel="input-old-password"
+        dataTestId="input-old-password"
         value={oldPassword}
         onChange={setOldPassword}
         logo={Icons.PASSWORD}
@@ -75,7 +75,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
-        ariaLabel="input-new-password"
+        dataTestId="input-new-password"
         value={newPassword}
         onChange={setNewPassword}
         logo={Icons.PASSWORD}
@@ -85,7 +85,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
-        ariaLabel="input-new-password-confirmation"
+        dataTestId="input-new-password-confirmation"
         value={newPasswordConfirm}
         onChange={setNewPasswordConfirm}
         logo={Icons.PASSWORD}
@@ -96,7 +96,7 @@ const ChangePassword = ({
       />
 
       <ButtonComponent
-        ariaLabel="submit-button"
+        dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitMk}
         fixToBottom

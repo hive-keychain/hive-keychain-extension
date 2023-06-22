@@ -30,9 +30,7 @@ describe('whats-new.component tests:\n', () => {
       );
     });
     it('Must not show whats new component', () => {
-      expect(
-        screen.queryByLabelText('whats-new-popup'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId('whats-new-popup')).not.toBeInTheDocument();
     });
   });
   describe('Different app versions:\n', () => {
@@ -98,9 +96,7 @@ describe('whats-new.component tests:\n', () => {
       act(() => {
         imageOnloadCallBack();
       });
-      expect(
-        await screen.findByLabelText('whats-new-popup'),
-      ).toBeInTheDocument();
+      expect(await screen.findByTestId('whats-new-popup')).toBeInTheDocument();
     });
 
     it('Must open whats new, url link', async () => {
@@ -109,7 +105,7 @@ describe('whats-new.component tests:\n', () => {
       });
       await act(async () => {
         await userEvent.click(
-          screen.getAllByLabelText(dataTestIdLink.whatsNew.link.readMore)[0],
+          screen.getAllByTestId(dataTestIdLink.whatsNew.link.readMore)[0],
         );
       });
       expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
@@ -126,23 +122,21 @@ describe('whats-new.component tests:\n', () => {
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
+          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
+          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
+          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.whatsNew.button.lastPage),
+          screen.getByTestId(dataTestIdButton.whatsNew.button.lastPage),
         );
       });
-      expect(
-        screen.queryByLabelText('whats-new-popup'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId('whats-new-popup')).not.toBeInTheDocument();
     });
   });
 });

@@ -11,9 +11,7 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
-//TODO after refactoring all test, ensure all works, change aria-labels to test
-// in the component/html ele => data-testid="settings-accounts-page"
-//  i.e: testing will look like -> expect(screen.getByTestId('settings-accounts-page')).toBeInTheDocument();
+
 describe('account-sub-menu.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -26,23 +24,23 @@ describe('account-sub-menu.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );
     });
   });
 
   it('Must show sub account menu page', async () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_ACCOUNTS}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_ACCOUNTS}-page`),
     ).toBeInTheDocument();
   });
 
   it('Must show sub menu items', () => {
     for (let i = 0; i < AccountSubMenuItems.length; i++) {
       expect(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.menuPreFix + AccountSubMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
@@ -54,20 +52,18 @@ describe('account-sub-menu.component tests:\n', () => {
       if (AccountSubMenuItems[i].nextScreen) {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdButton.menuPreFix + AccountSubMenuItems[i].icon,
             ),
           );
         });
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${AccountSubMenuItems[i].nextScreen}-page`,
           ),
         ).toBeInTheDocument();
         await act(async () => {
-          await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.arrowBack),
-          );
+          await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
         });
       }
     }
@@ -81,7 +77,7 @@ describe('account-sub-menu.component tests:\n', () => {
       .mockImplementation((...args) => Promise.resolve(undefined));
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.EXPORT),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.EXPORT),
       );
     });
     expect(sDownloadAccounts).toHaveBeenCalledTimes(1);

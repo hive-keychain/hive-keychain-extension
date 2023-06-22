@@ -24,6 +24,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -47,33 +48,25 @@ describe('home.component tests:\n', () => {
   });
 
   it('Must show home page', () => {
-    expect(
-      screen.getByLabelText(`${Screen.HOME_PAGE}-page`),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId(`${Screen.HOME_PAGE}-page`)).toBeInTheDocument();
   });
 
   it('Must show user related information & labels', () => {
     //TopBarComponent
-    expect(
-      screen.getByLabelText(dataTestIdIcon.refreshHome),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(dataTestIdButton.logOut)).toBeInTheDocument();
-    expect(screen.getByLabelText(dataTestIdButton.menu)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdIcon.refreshHome)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdButton.logOut)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdButton.menu)).toBeInTheDocument();
 
     //SelectAccountSectionComponent
-    const selectedAccountHTMLElement = screen.getByLabelText(
+    const selectedAccountHTMLElement = screen.getByTestId(
       dataTestIdDiv.selectedAccount,
     );
     expect(selectedAccountHTMLElement).toBeInTheDocument();
     expect(selectedAccountHTMLElement).toHaveTextContent(mk.user.one);
 
     //ResourcesSectionComponent
-    expect(
-      screen.getByLabelText(dataTestIdDiv.resources.vm),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(dataTestIdDiv.resources.rc),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdDiv.resources.vm)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdDiv.resources.rc)).toBeInTheDocument();
 
     //EstimatedAccountValueSectionComponent
     expect(
@@ -81,7 +74,7 @@ describe('home.component tests:\n', () => {
         exact: true,
       }),
     ).toBeInTheDocument();
-    const estimatedValueHTMLElement = screen.getByLabelText(
+    const estimatedValueHTMLElement = screen.getByTestId(
       dataTestIdDiv.estimatedAccountValue,
     );
     expect(estimatedValueHTMLElement).toBeInTheDocument();
@@ -96,19 +89,19 @@ describe('home.component tests:\n', () => {
 
     //WalletInfoSectionComponent
     expect(
-      screen.getByLabelText(
+      screen.getByTestId(
         dataTestIdDropdown.arrow.preFix +
           CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
       ),
     ).toBeDefined();
     expect(
-      screen.getByLabelText(
+      screen.getByTestId(
         dataTestIdDropdown.arrow.preFix +
           CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
       ),
     ).toBeDefined();
     expect(
-      screen.getByLabelText(
+      screen.getByTestId(
         dataTestIdDropdown.arrow.preFix +
           CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase(),
       ),
@@ -118,7 +111,7 @@ describe('home.component tests:\n', () => {
   it('Must show action buttons labels', () => {
     for (let i = 0; i < ActionButtonList.length; i++) {
       expect(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
         ),
       ).toBeInTheDocument();
@@ -134,13 +127,11 @@ describe('home.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.hover(
-        screen.getByLabelText(dataTestIdToolTip.custom.resources.votingMana),
+        screen.getByTestId(dataTestIdToolTip.custom.resources.votingMana),
       );
     });
     expect(
-      await screen.findByLabelText(
-        dataTestIdToolTip.custom.resources.votingMana,
-      ),
+      await screen.findByTestId(dataTestIdToolTip.custom.resources.votingMana),
     ).toBeInTheDocument();
     expect(
       await screen.findByText(manaReadyInText, { exact: true }),
@@ -153,14 +144,10 @@ describe('home.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.hover(
-        screen.getByLabelText(
-          dataTestIdToolTip.custom.resources.resourceCredits,
-        ),
+        screen.getByTestId(dataTestIdToolTip.custom.resources.resourceCredits),
       );
     });
-    const rcHTMLElement = await screen.findByLabelText(
-      dataTestIdToolTip.content,
-    );
+    const rcHTMLElement = await screen.findByTestId(dataTestIdToolTip.content);
     expect(rcHTMLElement).toBeInTheDocument();
     expect(rcHTMLElement).toHaveTextContent(resourceReadyInValue);
   });
@@ -173,17 +160,16 @@ describe('home.component tests:\n', () => {
       } as ExtendedAccount,
     ]);
     await act(async () => {
+      //bellow the only element using an actual aria-label.
       await userEvent.click(
         screen.getByLabelText(dataTestIdSelect.accountSelector),
       );
       await userEvent.click(
-        screen.getByLabelText(
-          dataTestIdSelect.itemSelectorPreFix + mk.user.two,
-        ),
+        screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
       );
     });
     expect(
-      await screen.findByLabelText(dataTestIdDiv.selectedAccount),
+      await screen.findByTestId(dataTestIdDiv.selectedAccount),
     ).toHaveTextContent(mk.user.two);
   });
 
@@ -193,7 +179,7 @@ describe('home.component tests:\n', () => {
       .fn()
       .mockReturnValue(formattedEstimatedAccountValue);
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdIcon.refreshHome));
+      await userEvent.click(screen.getByTestId(dataTestIdIcon.refreshHome));
     });
     expect(
       await screen.findByText(`$ ${formattedEstimatedAccountValue} USD`, {
@@ -204,8 +190,8 @@ describe('home.component tests:\n', () => {
 
   it('Must log out user when clicking on log out', async () => {
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.logOut));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.logOut));
     });
-    expect(await screen.findByLabelText('sign-in-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('sign-in-page')).toBeInTheDocument();
   });
 });

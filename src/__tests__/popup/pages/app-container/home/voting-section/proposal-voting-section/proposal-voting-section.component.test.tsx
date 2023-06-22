@@ -53,10 +53,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
+          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
+          screen.getByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -65,7 +65,7 @@ describe('proposal-voting-section.component tests:\n', () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.queryByLabelText(dataTestIdDiv.proposalVotingSection)?.className,
+        screen.queryByTestId(dataTestIdDiv.proposalVotingSection)?.className,
       ).toContain('hide');
     });
 
@@ -73,10 +73,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
+          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
+          screen.getByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -90,10 +90,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       const sChromeTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
+          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.readProposal),
+          screen.getByTestId(dataTestIdButton.readProposal),
         );
       });
       expect(sChromeTabs).toHaveBeenCalledWith({
@@ -127,10 +127,10 @@ describe('proposal-voting-section.component tests:\n', () => {
     it('Must show error trying to vote proposal', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
+          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
+          screen.getByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(

@@ -56,14 +56,14 @@ describe('token-operation No Active key tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdIcon.tokens.prefix.expandMore}${selectedToken.symbol}`,
         ),
       );
@@ -73,7 +73,7 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to delegate', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.token.action.preFix +
             TokenOperationType.DELEGATE +
             '-' +
@@ -84,15 +84,12 @@ describe('token-operation No Active key tests:\n', () => {
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.username),
+        screen.getByTestId(dataTestIdInput.username),
         mk.user.two,
       );
-      await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.amount),
-        '1.000',
-      );
+      await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1.000');
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
         ),
       );
@@ -109,7 +106,7 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to unstake', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.token.action.preFix +
             TokenOperationType.UNSTAKE +
             '-' +
@@ -119,12 +116,9 @@ describe('token-operation No Active key tests:\n', () => {
     });
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
-      await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.amount),
-        '1.000',
-      );
+      await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1.000');
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.UNSTAKE}`,
         ),
       );
@@ -141,7 +135,7 @@ describe('token-operation No Active key tests:\n', () => {
   it('Must show error trying to stake', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.token.action.preFix +
             TokenOperationType.STAKE +
             '-' +
@@ -151,12 +145,9 @@ describe('token-operation No Active key tests:\n', () => {
     });
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
-      await userEvent.type(
-        screen.getByLabelText(dataTestIdInput.amount),
-        '1.000',
-      );
+      await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1.000');
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.STAKE}`,
         ),
       );

@@ -8,7 +8,7 @@ import { MenuComponent } from 'src/common-ui/menu/menu.component';
 const AccountSubMenu = ({}: PropsFromRedux) => {
   return (
     <div
-      aria-label={`${Screen.SETTINGS_ACCOUNTS}-page`}
+      data-testid={`${Screen.SETTINGS_ACCOUNTS}-page`}
       className="settings-account-sub-menu-page">
       <MenuComponent
         title="popup_html_accounts"

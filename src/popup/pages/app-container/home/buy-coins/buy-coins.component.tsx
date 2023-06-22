@@ -40,9 +40,9 @@ const BuyCoins = ({
   return (
     <div
       className="buy-coins-page"
-      aria-label={`${Screen.BUY_COINS_PAGE}-page`}>
+      data-testid={`${Screen.BUY_COINS_PAGE}-page`}>
       <SwitchComponent
-        ariaLabel="buy-coins"
+        dataTestId="buy-coins"
         onChange={changeSelectedCurrency}
         selectedValue={selectedCurrency}
         leftValue={BuyCoinType.BUY_HIVE}

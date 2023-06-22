@@ -254,7 +254,7 @@ const PowerUpDown = ({
   };
 
   return (
-    <div className="power-up-page" aria-label={`${Screen.POWER_UP_PAGE}-page`}>
+    <div className="power-up-page" data-testid={`${Screen.POWER_UP_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={available}
         bottomRight={
@@ -278,7 +278,7 @@ const PowerUpDown = ({
         powerDownInfo[1] !== '0' &&
         powerDownInfo[0] !== powerDownInfo[1] && (
           <CustomTooltip
-            ariaLabel="custom-tool-tip-next-power-down"
+            dataTestId="custom-tool-tip-next-power-down"
             message={chrome.i18n.getMessage('popup_next_powerdown', [
               powerDownInfo[2].split('T').join(', '),
             ])}
@@ -299,7 +299,7 @@ const PowerUpDown = ({
 
       {powerType === PowerType.POWER_UP && (
         <InputComponent
-          ariaLabel="input-receiver"
+          dataTestId="input-receiver"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_receiver"
@@ -311,7 +311,7 @@ const PowerUpDown = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -324,7 +324,7 @@ const PowerUpDown = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="submit-power-up-down"
+        dataTestId="submit-power-up-down"
         requiredKey={KeychainKeyTypesLC.active}
         label={title}
         onClick={() => handleButtonClick()}

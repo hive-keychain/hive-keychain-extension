@@ -26,7 +26,7 @@ const PendingSavingsWithdrawal = ({
   return (
     <div
       className="pending-savings-withdrawal-page"
-      aria-label={`${Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE}-page`}>
+      data-testid={`${Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE}-page`}>
       <div className="pending-disclaimer">
         {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
           currency,

@@ -144,7 +144,7 @@ const AccountKeysList = ({
       </div>
 
       <ButtonComponent
-        ariaLabel="button-toogle-qr-code"
+        dataTestId="button-toogle-qr-code"
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
         onClick={() => toggleQRCode()}
       />
@@ -152,7 +152,7 @@ const AccountKeysList = ({
         <>
           <div ref={qrCodeRef}></div>
           <QRCode
-            aria-label="qrcode"
+            data-testid="qrcode"
             className="qrcode"
             value={`keychain://add_account=${AccountUtils.generateQRCode(
               account!,
@@ -163,7 +163,7 @@ const AccountKeysList = ({
 
       {accounts.length > 1 && (
         <ButtonComponent
-          ariaLabel="button-delete-account"
+          dataTestId="button-delete-account"
           label="popup_html_delete_account"
           type={ButtonType.IMPORTANT}
           onClick={() => deleteAccount()}

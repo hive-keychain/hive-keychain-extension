@@ -29,7 +29,7 @@ describe('home.component dropdown hp tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdDropdown.arrow.preFix +
             CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
         ),
@@ -45,7 +45,7 @@ describe('home.component dropdown hp tests:\n', () => {
     for (let i = 0; i < HpDropdownMenuItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.walletInfo.preFix + HpDropdownMenuItems[i].icon,
           ),
         );
@@ -55,19 +55,19 @@ describe('home.component dropdown hp tests:\n', () => {
         HpDropdownMenuItems[i].icon === Icons.ARROW_UPWARDS
       ) {
         expect(
-          await screen.findByLabelText(`${Screen.POWER_UP_PAGE}-page`),
+          await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
         ).toBeInTheDocument();
       } else {
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${HpDropdownMenuItems[i].nextScreen}-page`,
           ),
         ).toBeInTheDocument();
       }
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.arrow.preFix +
               CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
           ),

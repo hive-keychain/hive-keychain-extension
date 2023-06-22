@@ -29,7 +29,7 @@ describe('home.component dropdown hive tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdDropdown.arrow.preFix +
             CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
         ),
@@ -46,7 +46,7 @@ describe('home.component dropdown hive tests:\n', () => {
     for (let i = 0; i < HiveDropdownMenuItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.walletInfo.preFix +
               HiveDropdownMenuItems[i].icon,
           ),
@@ -57,19 +57,19 @@ describe('home.component dropdown hive tests:\n', () => {
         HiveDropdownMenuItems[i].icon === Icons.ARROW_UPWARDS
       ) {
         expect(
-          await screen.findByLabelText(`${Screen.POWER_UP_PAGE}-page`),
+          await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
         ).toBeInTheDocument();
       } else {
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${HiveDropdownMenuItems[i].nextScreen}-page`,
           ),
         ).toBeInTheDocument();
       }
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDropdown.arrow.preFix +
               CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
           ),

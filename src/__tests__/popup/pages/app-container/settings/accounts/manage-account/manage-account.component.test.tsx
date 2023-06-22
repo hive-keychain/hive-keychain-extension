@@ -31,12 +31,12 @@ describe('manage-account.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
@@ -44,7 +44,7 @@ describe('manage-account.component tests:\n', () => {
     });
     it('Must display manage-account page', () => {
       expect(
-        screen.getByLabelText(`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`),
+        screen.getByTestId(`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`),
       ).toBeInTheDocument();
     });
 
@@ -57,16 +57,15 @@ describe('manage-account.component tests:\n', () => {
       ]);
       await act(async () => {
         await userEvent.click(
+          //bellow the only element using an actual aria-label.
           screen.getByLabelText(dataTestIdSelect.accountSelector),
         );
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdSelect.itemSelectorPreFix + mk.user.two,
-          ),
+          screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
         );
       });
       expect(
-        await screen.findByLabelText(dataTestIdDiv.selectedAccount),
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
       ).toHaveTextContent(mk.user.two);
     });
 
@@ -74,28 +73,28 @@ describe('manage-account.component tests:\n', () => {
       Element.prototype.scrollIntoView = jest.fn();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.qrCode.toogle),
+          screen.getByTestId(dataTestIdButton.qrCode.toogle),
         );
       });
       expect(
-        await screen.findByLabelText(dataTestIdSvg.qrcode),
+        await screen.findByTestId(dataTestIdSvg.qrcode),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.qrCode.toogle),
+          screen.getByTestId(dataTestIdButton.qrCode.toogle),
         );
       });
       expect(
-        screen.queryByLabelText(dataTestIdSvg.qrcode),
+        screen.queryByTestId(dataTestIdSvg.qrcode),
       ).not.toBeInTheDocument();
     });
 
     it('Must close page and go home', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
       });
       expect(
-        await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
     });
   });
@@ -121,12 +120,12 @@ describe('manage-account.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
@@ -134,7 +133,7 @@ describe('manage-account.component tests:\n', () => {
     });
     it('Must not show remove posting key', () => {
       expect(
-        screen.queryByLabelText(
+        screen.queryByTestId(
           dataTestIdIcon.keys.list.preFix.remove + 'posting',
         ),
       ).not.toBeInTheDocument();

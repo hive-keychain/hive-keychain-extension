@@ -9,7 +9,7 @@ import './user-preferences.component.scss';
 const UserPreferencesPage = ({}: PropsFromRedux) => {
   return (
     <div
-      aria-label={`${Screen.SETTINGS_USER_PREFERENCES}-page`}
+      data-testid={`${Screen.SETTINGS_USER_PREFERENCES}-page`}
       className="user-preferences-page">
       <MenuComponent
         title="popup_html_user_preferences"

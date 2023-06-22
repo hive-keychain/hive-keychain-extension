@@ -37,13 +37,13 @@ describe('buy-coins.component tests:\n', () => {
     ).list;
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
         ),
       );
     });
     expect(
-      await screen.findByLabelText(`${Screen.BUY_COINS_PAGE}-page`),
+      await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
     ).toBeInTheDocument();
     const linksFound = await screen.findAllByRole('link');
     for (let i = 0; i < BuyCoinListHIVE.length; i++) {
@@ -58,16 +58,16 @@ describe('buy-coins.component tests:\n', () => {
     ).list;
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
         ),
       );
       await userEvent.click(
-        await screen.findByLabelText(dataTestIdSwitch.buyCoins.buyCoins),
+        await screen.findByTestId(dataTestIdSwitch.buyCoins.buyCoins),
       );
     });
     expect(
-      await screen.findByLabelText(`${Screen.BUY_COINS_PAGE}-page`),
+      await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
     ).toBeInTheDocument();
     const linksFound = await screen.findAllByRole('link');
     for (let i = 0; i < BuyCoinListHBD.length; i++) {

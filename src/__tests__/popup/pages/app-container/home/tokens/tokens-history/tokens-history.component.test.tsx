@@ -33,7 +33,7 @@ describe('tokens-history.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
           ),
         );
@@ -42,13 +42,13 @@ describe('tokens-history.component tests:\n', () => {
     it('Must show LEO token history', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
           ),
         );
       });
       expect(
-        screen.getAllByLabelText(
+        screen.getAllByTestId(
           `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}`,
         ),
       ).toHaveLength(tokenHistory.leoToken.length);
@@ -57,17 +57,17 @@ describe('tokens-history.component tests:\n', () => {
     it('Must show one result when searching', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filterBox),
+          screen.getByTestId(dataTestIdInput.filterBox),
           OperationsHiveEngine.TOKEN_UNDELEGATE_DONE,
         );
       });
       expect(
-        await screen.findAllByLabelText(
+        await screen.findAllByTestId(
           `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}`,
         ),
       ).toHaveLength(1);
@@ -76,17 +76,17 @@ describe('tokens-history.component tests:\n', () => {
     it('Must show no results when searching', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filterBox),
+          screen.getByTestId(dataTestIdInput.filterBox),
           'not_found-this',
         );
       });
       expect(
-        screen.queryAllByLabelText(
+        screen.queryAllByTestId(
           `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}`,
         ),
       ).toHaveLength(0);
@@ -110,7 +110,7 @@ describe('tokens-history.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
           ),
         );
@@ -119,13 +119,13 @@ describe('tokens-history.component tests:\n', () => {
     it('Must show no transactions on selected token', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
           ),
         );
       });
       expect(
-        screen.queryAllByLabelText(
+        screen.queryAllByTestId(
           `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}`,
         ),
       ).toHaveLength(0);

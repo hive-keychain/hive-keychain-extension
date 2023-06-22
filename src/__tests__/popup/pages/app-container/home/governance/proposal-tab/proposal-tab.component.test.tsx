@@ -55,9 +55,9 @@ describe('Proposal tab:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
       );
       await userEvent.click(screen.getAllByRole('tab')[2]);
     });
@@ -65,24 +65,24 @@ describe('Proposal tab:\n', () => {
 
   it('Must show actual proposal tab & proposal list', async () => {
     expect(
-      await screen.findByLabelText(dataTestIdTab.proposal),
+      await screen.findByTestId(dataTestIdTab.proposal),
     ).toBeInTheDocument();
     expect(
-      await screen.findAllByLabelText(dataTestIdDiv.proposal.item.proposalItem),
+      await screen.findAllByTestId(dataTestIdDiv.proposal.item.proposalItem),
     ).toHaveLength(proposalList.length);
   });
 
   it('Must show proposal details when clicking on dropdown icon', async () => {
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemIconExpandable +
             proposalList[0].creator,
         ),
       );
     });
     expect(
-      await screen.findByLabelText(
+      await screen.findByTestId(
         dataTestIdDiv.proposal.prefixes.itemPanelExpandable +
           proposalList[0].creator,
       ),
@@ -94,7 +94,7 @@ describe('Proposal tab:\n', () => {
     const sTabs = jest.spyOn(chrome.tabs, 'create');
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemImageGotoCreator +
             selectedProposal.creator,
         ),
@@ -111,7 +111,7 @@ describe('Proposal tab:\n', () => {
     const sTabs = jest.spyOn(chrome.tabs, 'create');
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemSpanGotoLink +
             selectedProposal.creator,
         ),
@@ -132,7 +132,7 @@ describe('Proposal tab:\n', () => {
     const selectedProposal = proposalList[0];
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal.creator,
         ),
@@ -154,7 +154,7 @@ describe('Proposal tab:\n', () => {
     const selectedProposal = proposalList.find((proposal) => proposal.voted);
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal!.creator,
         ),
@@ -172,7 +172,7 @@ describe('Proposal tab:\n', () => {
     const selectedProposal = proposalList.find((proposal) => proposal.voted);
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal!.creator,
         ),
@@ -190,7 +190,7 @@ describe('Proposal tab:\n', () => {
     const selectedProposal = proposalList[0];
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal.creator,
         ),

@@ -9,7 +9,7 @@ import './advanced-settings.component.scss';
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (
     <div
-      aria-label={`${Screen.SETTINGS_ADVANCED}-page`}
+      data-testid={`${Screen.SETTINGS_ADVANCED}-page`}
       className="advanced-settings-page">
       <MenuComponent
         title="popup_html_advanced_settings"

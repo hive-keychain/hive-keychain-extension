@@ -31,7 +31,7 @@ const walletInfoSectionItem = ({
   };
 
   return (
-    <div className="wallet-info-row" aria-label={`wallet-info-section-row`}>
+    <div className="wallet-info-row" data-testid={`wallet-info-section-row`}>
       <div className="value">
         <div className="balance">
           {FormatUtils.formatCurrencyValue(mainValue)}
@@ -61,7 +61,7 @@ const walletInfoSectionItem = ({
         )}
       </div>
       <img
-        aria-label={`dropdown-arrow-${mainValueLabel.toLowerCase()}`}
+        data-testid={`dropdown-arrow-${mainValueLabel.toLowerCase()}`}
         className="dropdown-arrow"
         src="/assets/images/uparrow.png"
         onClick={toggleDropdown}

@@ -74,7 +74,7 @@ const AddAccountMain = ({
   return (
     <div
       className="add-account-page"
-      aria-label={`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`}>
+      data-testid={`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`}>
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -83,25 +83,25 @@ const AddAccountMain = ({
 
       <div className="button-container">
         <ButtonComponent
-          ariaLabel="add-by-keys-button"
+          dataTestId="add-by-keys-button"
           label={'popup_html_add_by_keys'}
           onClick={handleAddByKeys}
         />
         {accounts.length > 0 && (
           <ButtonComponent
-            ariaLabel="add-by-auth-button"
+            dataTestId="add-by-auth-button"
             label={'popup_html_add_by_auth'}
             onClick={handleAddByAuth}
           />
         )}
         <ButtonComponent
-          ariaLabel="import-keys-button"
+          dataTestId="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
         />
         {isLedgerSupported && (
           <ButtonComponent
-            ariaLabel="import-keys-button"
+            dataTestId="import-keys-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
           />

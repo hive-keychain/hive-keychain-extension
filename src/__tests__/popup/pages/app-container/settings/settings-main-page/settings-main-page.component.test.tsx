@@ -21,13 +21,13 @@ describe('settings-main-page.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
     });
   });
   it('Must show all menu items', () => {
     for (let i = 0; i < SettingsMenuItems.length; i++) {
       expect(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.menuPreFix + SettingsMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
@@ -40,23 +40,23 @@ describe('settings-main-page.component tests:\n', () => {
     for (let i = 0; i < filteredCopyItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + filteredCopyItems[i].icon,
           ),
         );
       });
       expect(
-        screen.getByLabelText(filteredCopyItems[i].nextScreen + '-page'),
+        screen.getByTestId(filteredCopyItems[i].nextScreen + '-page'),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
     }
   });
   it('Must open a new window when clicking support', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SUPPORT),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SUPPORT),
       );
     });
     expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledTimes(1);

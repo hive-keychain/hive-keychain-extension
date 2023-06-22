@@ -23,14 +23,12 @@ describe('authorized-operations.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.menuPreFix + Icons.PREFERENCES,
-          ),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.AUTHORIZED_OPERATIONS,
           ),
         );
@@ -38,7 +36,7 @@ describe('authorized-operations.component tests:\n', () => {
     });
     it('Must load component and show no whitelisted operations', () => {
       expect(
-        screen.getByLabelText(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
+        screen.getByTestId(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
       ).toBeInTheDocument();
       expect(
         screen.getByText(chrome.i18n.getMessage('popup_html_no_pref'), {
@@ -74,14 +72,12 @@ describe('authorized-operations.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.menuPreFix + Icons.PREFERENCES,
-          ),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.AUTHORIZED_OPERATIONS,
           ),
         );
@@ -89,11 +85,10 @@ describe('authorized-operations.component tests:\n', () => {
     });
     it('Must load component and show info', async () => {
       expect(
-        screen.getByLabelText(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
+        screen.getByTestId(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
       ).toBeInTheDocument();
       expect(
-        screen.getAllByLabelText(dataTestIdDiv.authorizedOperations.item)
-          .length,
+        screen.getAllByTestId(dataTestIdDiv.authorizedOperations.item).length,
       ).toBe(4);
     });
 
@@ -102,9 +97,9 @@ describe('authorized-operations.component tests:\n', () => {
       const ariaLabel =
         dataTestIdIcon.authorizedOperations.icon.delete.preFix + toDelete;
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabel));
+        await userEvent.click(screen.getByTestId(ariaLabel));
       });
-      expect(screen.queryByLabelText(ariaLabel)).not.toBeInTheDocument();
+      expect(screen.queryByTestId(ariaLabel)).not.toBeInTheDocument();
     });
   });
 });

@@ -41,25 +41,25 @@ describe('tokens-settings.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
+            screen.getByTestId(dataTestIdIcon.tokens.settings.open),
           );
         });
       });
       it('Must show custom account history api item', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
-          await screen.findByLabelText(
+          await screen.findByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
@@ -70,13 +70,13 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must delete custom account history api, reload rpc list and not show deleted one', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
-          await screen.findAllByLabelText(
+          await screen.findAllByTestId(
             dataTestIdSelect.tokens.settings.items.accountHistoryApi,
           ),
         ).toHaveLength(DefaultAccountHistoryApis.length + 1);
@@ -85,20 +85,20 @@ describe('tokens-settings.component tests:\n', () => {
           .mockResolvedValue([]);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
                 customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
               }`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
-          screen.queryByLabelText(
+          screen.queryByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
@@ -115,19 +115,19 @@ describe('tokens-settings.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
+            screen.getByTestId(dataTestIdIcon.tokens.settings.open),
           );
         });
       });
 
       it('Must not show any custom nodes', () => {
         expect(
-          screen.queryByLabelText(
+          screen.queryByTestId(
             `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
@@ -138,16 +138,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error adding existent account history api node', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             DefaultAccountHistoryApis[0],
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );
@@ -162,16 +162,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error adding non valid url', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             'non-valid-@url.@',
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );
@@ -186,16 +186,16 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must show error if empty input', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.textInput),
+            screen.getByTestId(dataTestIdInput.textInput),
             '{space}',
           );
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );

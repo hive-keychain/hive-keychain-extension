@@ -38,21 +38,22 @@ describe('transfer-fund.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${
                 dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
+            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
       it('Must show transfer fund page with hive currency selected', async () => {
         expect(
-          await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
+          await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`),
         ).toBeInTheDocument();
+        //bellow the only element using an actual aria-label.
         expect(
           await screen.findByLabelText(dataTestIdSelect.accountSelector),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hive);
@@ -61,11 +62,11 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no amount when transferring', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -78,11 +79,11 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no receiverUsername', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -95,15 +96,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if empty receiverUsername', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             '{space}',
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -116,15 +117,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if negative amount', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '-1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -137,15 +138,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '1000000000000',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -158,18 +159,18 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no frequency, when selecting recurrent', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
+            screen.getByTestId(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -184,22 +185,22 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no iteration', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
+            screen.getByTestId(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.recurrent.frecuency),
+            screen.getByTestId(dataTestIdInput.recurrent.frecuency),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -214,21 +215,21 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show memo warning when transferring to an exchange account', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             exchanges.filter((exchange) =>
               exchange.acceptedCoins.includes('HIVE'),
             )[0].username,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
-          const warningDivHTMLElement = await screen.findByLabelText(
+          const warningDivHTMLElement = await screen.findByTestId(
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
@@ -240,19 +241,19 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show phishing warning', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             phishing.accounts[0],
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
-          const warningDivHTMLElement = await screen.findByLabelText(
+          const warningDivHTMLElement = await screen.findByTestId(
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
@@ -266,30 +267,30 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must return to transfer page after clicking cancel confirmation', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
           expect(
-            await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+            await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
           ).toBeInTheDocument();
         });
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.dialog.cancel),
+            screen.getByTestId(dataTestIdButton.dialog.cancel),
           );
         });
         await waitFor(async () => {
           expect(
-            await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
+            await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`),
           ).toBeInTheDocument();
         });
       });
@@ -298,24 +299,24 @@ describe('transfer-fund.component tests:\n', () => {
         const memoField = '#Private Message';
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.memoOptional),
+            screen.getByTestId(dataTestIdInput.memoOptional),
             memoField,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
           expect(
-            await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+            await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
           ).toBeInTheDocument();
           expect(
             await screen.findByText(
@@ -336,18 +337,18 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+            await screen.findByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -371,21 +372,18 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
-          await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
-            '0',
+          await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '0');
+          await userEvent.click(
+            screen.getByTestId(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
-          );
-          await userEvent.click(
-            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+            await screen.findByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -409,29 +407,29 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
+            screen.getByTestId(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.recurrent.frecuency),
+            screen.getByTestId(dataTestIdInput.recurrent.frecuency),
             '10',
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.recurrent.iterations),
+            screen.getByTestId(dataTestIdInput.recurrent.iterations),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+            await screen.findByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -450,18 +448,18 @@ describe('transfer-fund.component tests:\n', () => {
         TransferUtils.sendTransfer = jest.fn().mockResolvedValue(null);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+            await screen.findByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -477,18 +475,18 @@ describe('transfer-fund.component tests:\n', () => {
           .mockRejectedValue(new Error('Failed to sign'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
+            await screen.findByTestId(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Failed to sign')).toBeInTheDocument();
@@ -517,14 +515,14 @@ describe('transfer-fund.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${
                 dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
+            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
@@ -532,19 +530,19 @@ describe('transfer-fund.component tests:\n', () => {
         const memoField = '#Private Message';
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.memoOptional),
+            screen.getByTestId(dataTestIdInput.memoOptional),
             memoField,
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -577,29 +575,29 @@ describe('transfer-fund.component tests:\n', () => {
         );
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${
                 dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
+            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
       it('Must show error making a transfer', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.username),
+            screen.getByTestId(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(dataTestIdInput.amount),
+            screen.getByTestId(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
+            screen.getByTestId(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(

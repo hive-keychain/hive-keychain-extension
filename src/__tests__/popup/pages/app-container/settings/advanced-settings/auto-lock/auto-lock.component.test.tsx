@@ -23,29 +23,29 @@ describe('auto-lock.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.AUTO_LOCK),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.AUTO_LOCK),
       );
     });
   });
   it('Must show autolock page', () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_AUTO_LOCK}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_AUTO_LOCK}-page`),
     ).toBeInTheDocument();
   });
 
   it('Must set autolock to DEFAULT, show message and goback to advanced menu', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEFAULT,
         ),
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -53,18 +53,18 @@ describe('auto-lock.component tests:\n', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
     ).toBeInTheDocument();
   });
 
   it('Must set autolock to Device_lock, show message and goback to advanced menu', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEVICE_LOCK,
         ),
       );
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -72,19 +72,19 @@ describe('auto-lock.component tests:\n', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
     ).toBeInTheDocument();
   });
 
   it('Must set autolock to Idle_Lock, show message and goback to advanced menu', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK,
         ),
       );
-      await userEvent.type(screen.getByLabelText(dataTestIdInput.amount), '10');
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
+      await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '10');
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -92,7 +92,7 @@ describe('auto-lock.component tests:\n', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
     ).toBeInTheDocument();
   });
 });

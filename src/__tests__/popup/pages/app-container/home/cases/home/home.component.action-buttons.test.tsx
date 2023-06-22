@@ -9,6 +9,7 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -34,16 +35,16 @@ describe('home.component action-buttons tests:\n', () => {
     for (let i = 0; i < ActionButtonList.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${ActionButtonList[i].nextScreen}-page`),
+        await screen.findByTestId(`${ActionButtonList[i].nextScreen}-page`),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
     }
   });

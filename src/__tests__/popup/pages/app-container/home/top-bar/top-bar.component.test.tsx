@@ -37,7 +37,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must show claim button', async () => {
       expect(
-        await screen.findByLabelText(dataTestIdIcon.reward),
+        await screen.findByTestId(dataTestIdIcon.reward),
       ).toBeInTheDocument();
     });
 
@@ -58,7 +58,7 @@ describe('top-bar.component tests:/n', () => {
       ];
       RewardsUtils.claimRewards = jest.fn().mockResolvedValue(true);
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.reward));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.reward));
       });
       expect(
         await screen.findByText(
@@ -80,7 +80,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must not show claim button', () => {
       expect(
-        screen.queryByLabelText(dataTestIdIcon.reward),
+        screen.queryByTestId(dataTestIdIcon.reward),
       ).not.toBeInTheDocument();
     });
   });
@@ -112,7 +112,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must show error when trying to claim', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.reward));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.reward));
       });
       expect(
         await screen.findByText(

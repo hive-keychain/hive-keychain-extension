@@ -52,7 +52,7 @@ const ConfirmationPage = ({
   return (
     <div
       className="confirmation-page"
-      aria-label={`${Screen.CONFIRMATION_PAGE}-page`}>
+      data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
       <div className="confirmation-top">
         <div
           className="introduction"
@@ -61,7 +61,7 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div aria-label="warning-message" className="warning-message">
+          <div data-testid="warning-message" className="warning-message">
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
@@ -83,11 +83,11 @@ const ConfirmationPage = ({
 
       <div className="bottom-panel">
         <ButtonComponent
-          ariaLabel="dialog_cancel-button"
+          dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
-          ariaLabel="dialog_confirm-button"
+          dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={handleClickOnConfirm}
           type={ButtonType.RAISED}></ButtonComponent>

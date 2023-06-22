@@ -25,9 +25,7 @@ describe('wallet-history.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.actionBtn.preFix + Icons.HISTORY,
-          ),
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
         );
       });
     });
@@ -66,15 +64,13 @@ describe('wallet-history.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.actionBtn.preFix + Icons.HISTORY,
-          ),
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
         );
       });
     });
     it('Must show transaction list', async () => {
       await waitFor(async () => {
-        const historyItemHTMLElementList = await screen.findAllByLabelText(
+        const historyItemHTMLElementList = await screen.findAllByTestId(
           dataTestIdDiv.wallet.history.item,
         );
         expect(historyItemHTMLElementList).toHaveLength(
@@ -86,38 +82,38 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show available all filters', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
       });
       Object.keys(DEFAULT_FILTER.selectedTransactionTypes).map(
         (filterOperationType) => {
           expect(
-            screen.getByLabelText(
+            screen.getByTestId(
               `${dataTestIdDiv.wallet.history.filterSelector.preFix}${filterOperationType}`,
             ),
           ).toBeInTheDocument();
         },
       );
       expect(
-        screen.getByLabelText(dataTestIdDiv.wallet.history.byIncoming),
+        screen.getByTestId(dataTestIdDiv.wallet.history.byIncoming),
       ).toBeInTheDocument();
       expect(
-        screen.getByLabelText(dataTestIdDiv.wallet.history.byOutgoing),
+        screen.getByTestId(dataTestIdDiv.wallet.history.byOutgoing),
       ).toBeInTheDocument();
     });
 
     it('Must set search box filter value & display try clear message', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.walletHistory),
+          screen.getByTestId(dataTestIdInput.filter.walletHistory),
           'one op',
         );
       });
       expect(
-        await screen.findByLabelText(dataTestIdInput.filter.walletHistory),
+        await screen.findByTestId(dataTestIdInput.filter.walletHistory),
       ).toHaveValue('one op');
       expect(
         await screen.findByText(
@@ -131,15 +127,15 @@ describe('wallet-history.component tests:\n', () => {
     it('Must filter by an specific value and display 1 transaction', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
-          screen.getByLabelText(dataTestIdInput.filter.walletHistory),
+          screen.getByTestId(dataTestIdInput.filter.walletHistory),
           'unique memo',
         );
       });
       expect(
-        await screen.findAllByLabelText(dataTestIdDiv.wallet.history.item),
+        await screen.findAllByTestId(dataTestIdDiv.wallet.history.item),
       ).toHaveLength(1);
     });
   });

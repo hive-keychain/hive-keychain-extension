@@ -32,16 +32,16 @@ describe('advanced-settings.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
     });
   });
 
   it('Must show advanced settings page', () => {
     expect(
-      screen.getByLabelText(`${Screen.SETTINGS_ADVANCED}-page`),
+      screen.getByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
     ).toBeInTheDocument();
   });
 
@@ -49,7 +49,7 @@ describe('advanced-settings.component tests:\n', () => {
     const advanceMenuItems = getAdvancedSettingsMenuItems(true);
     for (let i = 0; i < advanceMenuItems.length; i++) {
       expect(
-        screen.getByLabelText(
+        screen.getByTestId(
           dataTestIdButton.menuPreFix + advanceMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
@@ -61,14 +61,12 @@ describe('advanced-settings.component tests:\n', () => {
     for (let i = 0; i < menuItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
-            dataTestIdButton.menuPreFix + menuItems[i].icon,
-          ),
+          screen.getByTestId(dataTestIdButton.menuPreFix + menuItems[i].icon),
         );
       });
-      expect(screen.getByLabelText(`${menuItems[i].nextScreen}-page`));
+      expect(screen.getByTestId(`${menuItems[i].nextScreen}-page`));
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
     }
   });
@@ -81,9 +79,7 @@ describe('advanced-settings.component tests:\n', () => {
     )[0];
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(
-          dataTestIdButton.menuPreFix + ledgerMenuItem.icon,
-        ),
+        screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
       );
     });
     expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({

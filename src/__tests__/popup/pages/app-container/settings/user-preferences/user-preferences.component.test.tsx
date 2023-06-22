@@ -17,9 +17,9 @@ describe('user-preferences.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
       );
     });
   });
@@ -30,7 +30,7 @@ describe('user-preferences.component tests:\n', () => {
   });
   it('Must load each menu items', () => {
     UserPreferencesMenuItems.forEach((item) => {
-      expect(screen.getByLabelText(dataTestIdButton.menuPreFix + item.icon));
+      expect(screen.getByTestId(dataTestIdButton.menuPreFix + item.icon));
     });
   });
   it('Must open each menu item', async () => {
@@ -42,11 +42,11 @@ describe('user-preferences.component tests:\n', () => {
         dataTestIdButton.menuPreFix + UserPreferencesMenuItems[i].icon;
       const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(menuButtonAriaLabel));
+        await userEvent.click(screen.getByTestId(menuButtonAriaLabel));
       });
-      expect(await screen.findByLabelText(pageAriaLabel)).toBeInTheDocument();
+      expect(await screen.findByTestId(pageAriaLabel)).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
     }
   });

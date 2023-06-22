@@ -35,7 +35,7 @@ describe('add-by-keys:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.addByKeys),
+        await screen.findByTestId(dataTestIdButton.addByKeys),
       );
     });
   });
@@ -47,19 +47,17 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.posting,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 
@@ -70,19 +68,17 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.memo,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
 
@@ -93,19 +89,17 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.active,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
     ).toBeInTheDocument();
   });
   it('Must derivate all keys from master, and navigate to select keys page', async () => {
@@ -114,19 +108,17 @@ describe('add-by-keys:\n', () => {
       .mockResolvedValue(accounts.asArray.extended);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
     ).toBeInTheDocument();
   });
 
@@ -134,16 +126,14 @@ describe('add-by-keys:\n', () => {
     AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         'non_existent_user',
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
       await screen.findByText(
@@ -155,16 +145,14 @@ describe('add-by-keys:\n', () => {
   it('Must show error if empty password', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         '{space}',
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
       await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
@@ -174,16 +162,14 @@ describe('add-by-keys:\n', () => {
   it('Must show error when using a public key', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.encryptKeys.active,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
       await screen.findByText(
@@ -195,16 +181,14 @@ describe('add-by-keys:\n', () => {
   it('Must show error when using an incorrect key', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.username),
+        await screen.findByTestId(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(dataTestIdInput.privateKey),
+        await screen.findByTestId(dataTestIdInput.privateKey),
         userData.one.encryptKeys.randomString53,
       );
-      await userEvent.click(
-        await screen.findByLabelText(dataTestIdButton.submit),
-      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
       await screen.findByText(

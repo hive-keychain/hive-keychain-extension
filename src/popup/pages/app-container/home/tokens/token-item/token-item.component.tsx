@@ -76,9 +76,9 @@ const TokenItem = ({
   };
 
   return (
-    <div aria-label={ariaLabel} className="token-item">
+    <div data-testid={ariaLabel} className="token-item">
       <div
-        aria-label={`token-user-symbol-${tokenBalance.symbol}`}
+        data-testid={`token-user-symbol-${tokenBalance.symbol}`}
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
         <img
@@ -97,7 +97,7 @@ const TokenItem = ({
           </div>
         </div>
         <Icon
-          ariaLabel={`icon-token-history-${tokenBalance.symbol}`}
+          dataTestId={`icon-token-history-${tokenBalance.symbol}`}
           name={Icons.HISTORY}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
@@ -105,7 +105,7 @@ const TokenItem = ({
           additionalClassName="history"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          ariaLabel={`icon-send-history-${tokenBalance.symbol}`}
+          dataTestId={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_TRANSFER, {
@@ -116,7 +116,7 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          ariaLabel={`icon-expand-more-${tokenBalance.symbol}`}
+          dataTestId={`icon-expand-more-${tokenBalance.symbol}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
@@ -126,7 +126,7 @@ const TokenItem = ({
       </div>
       {tokenInfo && (
         <div
-          aria-label={`token-info-expandable-panel-${tokenBalance.symbol}`}
+          data-testid={`token-info-expandable-panel-${tokenBalance.symbol}`}
           className={
             isExpandablePanelOpen
               ? 'expandable-panel opened'
@@ -134,7 +134,7 @@ const TokenItem = ({
           }>
           <div className="token-info">
             <div
-              aria-label={`token-info-go-to-website-${tokenBalance.symbol}`}
+              data-testid={`token-info-go-to-website-${tokenBalance.symbol}`}
               className="token-description"
               onClick={goToTokenWebsite}>
               <div className="token-name-issuer">
@@ -185,7 +185,7 @@ const TokenItem = ({
               )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
+                data-testid={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
@@ -200,7 +200,7 @@ const TokenItem = ({
             )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
+                data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
                 <div>
@@ -230,7 +230,7 @@ const TokenItem = ({
               <div className="button-panel">
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label={`button-token-stake-${tokenBalance.symbol}`}
+                    data-testid={`button-token-stake-${tokenBalance.symbol}`}
                     className="action-button stake"
                     onClick={() => stake()}>
                     {chrome.i18n.getMessage('popup_html_token_stake')}
@@ -238,7 +238,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label={`button-token-unstake-${tokenBalance.symbol}`}
+                    data-testid={`button-token-unstake-${tokenBalance.symbol}`}
                     className="action-button unstake"
                     onClick={() => unstake()}>
                     {chrome.i18n.getMessage('popup_html_token_unstake')}
@@ -246,7 +246,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.delegationEnabled && (
                   <div
-                    aria-label={`button-token-delegate-${tokenBalance.symbol}`}
+                    data-testid={`button-token-delegate-${tokenBalance.symbol}`}
                     className="action-button delegate"
                     onClick={() => delegate()}>
                     {chrome.i18n.getMessage('popup_html_token_delegate')}

@@ -72,7 +72,7 @@ const WitnessVotingSection = ({
       </div>
       {voteForAccount && (
         <OperationButtonComponent
-          ariaLabel="vote-for-stoodkev-witness"
+          dataTestId="vote-for-stoodkev-witness"
           labelParams={[`@${voteForAccount}`]}
           onClick={() => {
             handleVoteForWitnessClicked(voteForAccount!);

@@ -23,10 +23,10 @@ const PendingConversionPage = ({
   return (
     <div
       className="pending-conversion-page"
-      aria-label={`${Screen.PENDING_CONVERSION_PAGE}-page`}>
+      data-testid={`${Screen.PENDING_CONVERSION_PAGE}-page`}>
       {navParams.pendingConversions.map((pendingConversion: Conversion) => (
         <CustomTooltip
-          ariaLabel="tooltip-timesteamp-pending-conversion"
+          dataTestId="tooltip-timesteamp-pending-conversion"
           position="bottom"
           key={pendingConversion.id}
           message={chrome.i18n.getMessage(

@@ -58,7 +58,7 @@ describe('wallet-info-section.component tests:\n', () => {
       const delegationAmountSubValueFormatted = FormatUtils.formatCurrencyValue(
         FormatUtils.toHP(delegationVestingShares, dynamic.globalProperties),
       );
-      const infoSectionRowListHTMLElements = await screen.findAllByLabelText(
+      const infoSectionRowListHTMLElements = await screen.findAllByTestId(
         'wallet-info-section-row',
       );
       expect(infoSectionRowListHTMLElements).toHaveLength(3);
@@ -109,7 +109,7 @@ describe('wallet-info-section.component tests:\n', () => {
         );
       });
       it('Must show 3 info section rows with zero values', async () => {
-        const infoSectionRowListHTMLElements = await screen.findAllByLabelText(
+        const infoSectionRowListHTMLElements = await screen.findAllByTestId(
           'wallet-info-section-row',
         );
         expect(infoSectionRowListHTMLElements).toHaveLength(3);

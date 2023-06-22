@@ -394,9 +394,9 @@ const WalletHistory = ({
   return (
     <div
       className="wallet-history-page"
-      aria-label={`${Screen.WALLET_HISTORY_PAGE}-page`}>
+      data-testid={`${Screen.WALLET_HISTORY_PAGE}-page`}>
       <div
-        aria-label="wallet-history-filter-panel"
+        data-testid="wallet-history-filter-panel"
         className={
           'filter-panel ' + (isFilterOpened ? 'filter-opened' : 'filter-closed')
         }>
@@ -407,14 +407,14 @@ const WalletHistory = ({
         <div className="filters">
           <div className="search-panel">
             <InputComponent
-              ariaLabel="input-filter-box"
+              dataTestId="input-filter-box"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filter.filterValue}
               onChange={updateFilterValue}
             />
             <div
-              aria-label="clear-filters"
+              data-testid="clear-filters"
               className={'filter-button'}
               onClick={() => clearFilters()}>
               {chrome.i18n.getMessage(`popup_html_clear_filters`)}
@@ -426,7 +426,7 @@ const WalletHistory = ({
                 Object.keys(filter.selectedTransactionTypes).map(
                   (filterOperationType) => (
                     <div
-                      aria-label={`filter-selector-${filterOperationType}`}
+                      data-testid={`filter-selector-${filterOperationType}`}
                       key={filterOperationType}
                       className={
                         'filter-button ' +
@@ -445,7 +445,7 @@ const WalletHistory = ({
             <div className="vertical-divider"></div>
             <div className="in-out-panel">
               <div
-                aria-label="filter-by-incoming"
+                data-testid="filter-by-incoming"
                 className={
                   'filter-button ' +
                   (filter.inSelected ? 'selected' : 'not-selected')
@@ -454,7 +454,7 @@ const WalletHistory = ({
                 {chrome.i18n.getMessage(`popup_html_filter_in`)}
               </div>
               <div
-                aria-label="filter-by-outgoing"
+                data-testid="filter-by-outgoing"
                 className={
                   'filter-button ' +
                   (filter.outSelected ? 'selected' : 'not-selected')
@@ -468,7 +468,7 @@ const WalletHistory = ({
       </div>
 
       <div
-        aria-label="wallet-item-list"
+        data-testid="wallet-item-list"
         ref={walletItemList}
         className="wallet-item-list"
         onScroll={handleScroll}>

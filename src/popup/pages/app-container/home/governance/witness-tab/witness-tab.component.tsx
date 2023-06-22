@@ -175,7 +175,7 @@ const WitnessTab = ({
   const renderWitnessItem = (witness: Witness) => {
     return (
       <div
-        aria-label="ranking-item"
+        data-testid="ranking-item"
         className="ranking-item"
         key={witness.name}>
         <div className="rank">
@@ -198,7 +198,7 @@ const WitnessTab = ({
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
             <Icon
-              ariaLabel={`link-to-witness-page-${witness.name}`}
+              dataTestId={`link-to-witness-page-${witness.name}`}
               onClick={() => chrome.tabs.create({ url: witness.url })}
               name={Icons.OPEN_IN_NEW}
               type={IconType.OUTLINED}
@@ -206,7 +206,7 @@ const WitnessTab = ({
           )}
         </div>
         <Icon
-          ariaLabel={`witness-voting-icon-${witness.name}`}
+          dataTestId={`witness-voting-icon-${witness.name}`}
           additionalClassName={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
@@ -230,7 +230,7 @@ const WitnessTab = ({
   };
 
   return (
-    <div aria-label="witness-tab" className="witness-tab">
+    <div data-testid="witness-tab" className="witness-tab">
       {!usingProxy && (
         <div className="remaining-votes">
           {chrome.i18n.getMessage('popup_html_witness_remaining', [
@@ -247,7 +247,7 @@ const WitnessTab = ({
       )}
 
       <div
-        aria-label="link-to-arcange"
+        data-testid="link-to-arcange"
         onClick={() =>
           chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
         }
@@ -266,7 +266,7 @@ const WitnessTab = ({
         <div className="ranking-container">
           <div className="ranking-filter">
             <InputComponent
-              ariaLabel="input-ranking-filter"
+              dataTestId="input-ranking-filter"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filterValue}
@@ -274,14 +274,14 @@ const WitnessTab = ({
             />
             <div className="switches-panel">
               <CheckboxComponent
-                ariaLabel="switches-panel-witness-voted_only"
+                dataTestId="switches-panel-witness-voted_only"
                 title="html_popup_witness_display_voted_only"
                 checked={displayVotedOnly}
                 onChange={() => {
                   setDisplayVotedOnly(!displayVotedOnly);
                 }}></CheckboxComponent>
               <CheckboxComponent
-                ariaLabel="switches-panel-witness-hide_inactive"
+                dataTestId="switches-panel-witness-hide_inactive"
                 title="html_popup_witness_hide_inactive"
                 checked={hideNonActive}
                 onChange={() => {
@@ -290,7 +290,7 @@ const WitnessTab = ({
             </div>
           </div>
 
-          <div aria-label="ranking" className="ranking">
+          <div data-testid="ranking" className="ranking">
             <FlatList
               list={filteredRanking}
               renderItem={renderWitnessItem}
@@ -298,7 +298,7 @@ const WitnessTab = ({
               renderWhenEmpty={() => {
                 return (
                   hasError && (
-                    <div aria-label="error-witness" className="error-witness">
+                    <div data-testid="error-witness" className="error-witness">
                       <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
                       <span>
                         {chrome.i18n.getMessage(

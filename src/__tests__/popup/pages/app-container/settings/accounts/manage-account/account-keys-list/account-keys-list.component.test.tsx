@@ -41,12 +41,12 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
@@ -55,7 +55,7 @@ describe('account-keys-list.component tests:\n', () => {
     it('Must show selected private key when clicking to show', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
@@ -74,12 +74,12 @@ describe('account-keys-list.component tests:\n', () => {
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
@@ -93,17 +93,17 @@ describe('account-keys-list.component tests:\n', () => {
     it('Must show confirmation page when removing key and go back', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdIcon.keys.list.preFix.remove + 'posting',
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.cancel),
+          screen.getByTestId(dataTestIdButton.dialog.cancel),
         );
       });
     });
@@ -111,19 +111,19 @@ describe('account-keys-list.component tests:\n', () => {
     it('Must show confirmation to remove account and go back when cancelling', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.accounts.manage.delete),
+          screen.getByTestId(dataTestIdButton.accounts.manage.delete),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.cancel),
+          screen.getByTestId(dataTestIdButton.dialog.cancel),
         );
       });
       expect(
-        screen.queryByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        screen.queryByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).not.toBeInTheDocument();
     });
 
@@ -139,14 +139,14 @@ describe('account-keys-list.component tests:\n', () => {
         .mockReturnValue([accounts.local.two] as LocalAccount[]);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.accounts.manage.delete),
+          screen.getByTestId(dataTestIdButton.accounts.manage.delete),
         );
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
       expect(await screen.findByText(mk.user.two)).toBeInTheDocument();
     });
@@ -171,12 +171,12 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
@@ -184,38 +184,36 @@ describe('account-keys-list.component tests:\n', () => {
     });
     it('Must remove active key', async () => {
       expect(
-        screen.queryByLabelText(
-          dataTestIdIcon.keys.list.preFix.add + 'posting',
-        ),
+        screen.queryByTestId(dataTestIdIcon.keys.list.preFix.add + 'posting'),
       ).not.toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdIcon.keys.list.preFix.remove + 'posting',
           ),
         );
       });
       expect(
-        await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.dialog.confirm),
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(
+        await screen.findByTestId(
           dataTestIdIcon.keys.list.preFix.add + 'posting',
         ),
       ).toBeInTheDocument();
@@ -247,12 +245,12 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
-          screen.getByLabelText(
+          screen.getByTestId(
             dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
@@ -278,11 +276,11 @@ describe('account-keys-list.component tests:\n', () => {
       ]);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(dataTestIdDiv.keys.list.usingAuthorized),
+          screen.getByTestId(dataTestIdDiv.keys.list.usingAuthorized),
         );
       });
       expect(
-        await screen.findByLabelText(dataTestIdDiv.selectedAccount),
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
       ).toHaveTextContent(mk.user.two);
     });
   });
