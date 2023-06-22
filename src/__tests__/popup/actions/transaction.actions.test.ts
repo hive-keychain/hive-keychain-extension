@@ -1,13 +1,13 @@
 import * as transactionActions from '@popup/actions/transaction.actions';
-import TransactionUtils from 'src/utils/transaction.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialStateWAccountsWActiveAccountStore } from 'src/__tests__/utils-for-testing/initial-states';
+import TransactionUtils from 'src/utils/transaction.utils';
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
 describe('transaction.actions tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   const transaction = {
     trx_id: '0000000000000000000000000000000000999999',
     block: 64467698,
@@ -50,7 +50,7 @@ describe('transaction.actions tests:\n', () => {
         .mockResolvedValueOnce(fakeResponse);
       const fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(
-        transactionActions.initAccountTransactions(utilsT.userData.username),
+        transactionActions.initAccountTransactions(userData.one.username),
       );
       expect(fakeStore.getState().transactions).toEqual({
         list: fakeResponse,
@@ -67,10 +67,7 @@ describe('transaction.actions tests:\n', () => {
         .mockResolvedValueOnce(fakeResponse);
       const fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(
-        transactionActions.fetchAccountTransactions(
-          utilsT.secondAccountOnState.name,
-          -1,
-        ),
+        transactionActions.fetchAccountTransactions(userData.two.username, -1),
       );
       expect(fakeStore.getState().transactions).toEqual({
         list: fakeResponse[0],
