@@ -17,11 +17,6 @@ describe('currency-prices-utils tests', () => {
         hive_dollar: { usd: 0.972868, usd_24h_change: -0.6982597522799386 },
       };
       KeychainApi.get = jest.fn().mockResolvedValueOnce(mockedApiReply);
-      // mockPreset.setOrDefault({
-      //   keyChainApiGet: {
-      //     currenciesPrices: mockedApiReply,
-      //   },
-      // });
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply);
     });
