@@ -6,8 +6,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -30,7 +30,7 @@ describe('home.component dropdown hp tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelDropdown.arrow.preFix +
+          dataTestIdDropdown.arrow.preFix +
             CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
         ),
       );
@@ -46,7 +46,7 @@ describe('home.component dropdown hp tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDropdown.walletInfo.preFix + HpDropdownMenuItems[i].icon,
+            dataTestIdDropdown.walletInfo.preFix + HpDropdownMenuItems[i].icon,
           ),
         );
       });
@@ -65,10 +65,10 @@ describe('home.component dropdown hp tests:\n', () => {
         ).toBeInTheDocument();
       }
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.closePage));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDropdown.arrow.preFix +
+            dataTestIdDropdown.arrow.preFix +
               CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
           ),
         );

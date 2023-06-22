@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
@@ -23,12 +23,12 @@ describe('clear-all-data.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.CLEAR),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.CLEAR),
       );
     });
   });
@@ -47,7 +47,7 @@ describe('clear-all-data.component tests:\n', () => {
   it('Must go back when pressing cancel', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.dialog.cancel),
+        screen.getByLabelText(dataTestIdButton.dialog.cancel),
       );
     });
     expect(
@@ -66,7 +66,7 @@ describe('clear-all-data.component tests:\n', () => {
 
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.dialog.confirm),
+        screen.getByLabelText(dataTestIdButton.dialog.confirm),
       );
     });
     expect(await screen.findByLabelText('signup-page')).toBeInTheDocument();

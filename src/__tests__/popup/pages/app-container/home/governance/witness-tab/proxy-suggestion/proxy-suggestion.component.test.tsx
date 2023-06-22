@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelPopup from 'src/__tests__/utils-for-testing/aria-labels/aria-label-popup';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdPopup from 'src/__tests__/utils-for-testing/data-testid/data-testid-popup';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -42,7 +42,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
 
   it('Must show proxy suggestion & display message', async () => {
     expect(
-      await screen.findByLabelText(ariaLabelPopup.proxySuggestion.component),
+      await screen.findByLabelText(dataTestIdPopup.proxySuggestion.component),
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
@@ -59,7 +59,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.operation.proxySuggestion.ok,
+          dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
     });
@@ -76,7 +76,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.operation.proxySuggestion.ok,
+          dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
     });
@@ -93,7 +93,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.operation.proxySuggestion.ok,
+          dataTestIdButton.operation.proxySuggestion.ok,
         ),
       );
     });
@@ -107,11 +107,11 @@ describe.skip('Proxy suggestion tests:\n', () => {
   it('Must close suggestion after clicking close', async () => {
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.panel.close),
+        await screen.findByLabelText(dataTestIdButton.panel.close),
       );
     });
     expect(
-      await screen.findByLabelText(ariaLabelPopup.proxySuggestion.component),
+      await screen.findByLabelText(dataTestIdPopup.proxySuggestion.component),
     ).toHaveClass('proxy-suggestion hide');
   });
 });

@@ -1,4 +1,4 @@
-const ariaLabelIcon = {
+const dataTestIdIcon = {
   arrowBack: 'arrow-back-icon',
   refreshHome: 'top-bar-refresh-icon',
   witness: {
@@ -55,4 +55,4 @@ const ariaLabelIcon = {
   governance: 'hive-brands.svg',
 };
 
-export default ariaLabelIcon;
+export default dataTestIdIcon;

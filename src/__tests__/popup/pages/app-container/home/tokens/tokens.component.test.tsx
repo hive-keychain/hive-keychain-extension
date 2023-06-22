@@ -5,10 +5,10 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -30,7 +30,7 @@ describe('tokens.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + tokenIconName,
+            dataTestIdButton.actionBtn.preFix + tokenIconName,
           ),
         );
       });
@@ -48,28 +48,28 @@ describe('tokens.component tests:\n', () => {
 
     it('Must show user tokens', async () => {
       expect(
-        await screen.findAllByLabelText(ariaLabelDiv.token.user.item),
+        await screen.findAllByLabelText(dataTestIdDiv.token.user.item),
       ).toHaveLength(tokensUser.balances.length);
     });
 
     it('Must show filter box and settings', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelInput.filter.token),
+        await screen.findByLabelText(dataTestIdInput.filter.token),
       ).toBeInTheDocument();
       expect(
-        await screen.findByLabelText(ariaLabelIcon.tokens.openFilter),
+        await screen.findByLabelText(dataTestIdIcon.tokens.openFilter),
       ).toBeInTheDocument();
     });
 
     it('Must set filter box value & display one result', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.token),
+          screen.getByLabelText(dataTestIdInput.filter.token),
           'LEO',
         );
       });
       const tokenItemHTMLElement = await screen.findAllByLabelText(
-        ariaLabelDiv.token.user.item,
+        dataTestIdDiv.token.user.item,
       );
       expect(tokenItemHTMLElement).toHaveLength(1);
       expect(tokenItemHTMLElement[0].textContent).toContain('LEO');
@@ -78,7 +78,7 @@ describe('tokens.component tests:\n', () => {
     it('Must display no tokens found message', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.token),
+          screen.getByLabelText(dataTestIdInput.filter.token),
           'KEYCHAIN',
         );
       });
@@ -90,14 +90,14 @@ describe('tokens.component tests:\n', () => {
     it('Must show tokens settings page & go back to tokens page', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+          screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
         );
       });
       expect(
         await screen.findByLabelText(`${Screen.TOKENS_SETTINGS}-page`),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
       });
       expect(
         await screen.findByLabelText(`${Screen.TOKENS_PAGE}-page`),
@@ -123,7 +123,7 @@ describe('tokens.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + tokenIconName,
+            dataTestIdButton.actionBtn.preFix + tokenIconName,
           ),
         );
       });
@@ -155,7 +155,7 @@ describe('tokens.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + tokenIconName,
+            dataTestIdButton.actionBtn.preFix + tokenIconName,
           ),
         );
       });
@@ -163,7 +163,7 @@ describe('tokens.component tests:\n', () => {
 
     it('Must not show hidden token', () => {
       expect(
-        screen.queryByLabelText(`${ariaLabelDiv.token.user.symbolPreFix}LEO`),
+        screen.queryByLabelText(`${dataTestIdDiv.token.user.symbolPreFix}LEO`),
       ).not.toBeInTheDocument();
     });
   });

@@ -8,9 +8,9 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelTab from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tab';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-testid-tab';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -55,9 +55,9 @@ describe('Proposal tab:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
       );
       await userEvent.click(screen.getAllByRole('tab')[2]);
     });
@@ -65,10 +65,10 @@ describe('Proposal tab:\n', () => {
 
   it('Must show actual proposal tab & proposal list', async () => {
     expect(
-      await screen.findByLabelText(ariaLabelTab.proposal),
+      await screen.findByLabelText(dataTestIdTab.proposal),
     ).toBeInTheDocument();
     expect(
-      await screen.findAllByLabelText(ariaLabelDiv.proposal.item.proposalItem),
+      await screen.findAllByLabelText(dataTestIdDiv.proposal.item.proposalItem),
     ).toHaveLength(proposalList.length);
   });
 
@@ -76,14 +76,14 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemIconExpandable +
+          dataTestIdDiv.proposal.prefixes.itemIconExpandable +
             proposalList[0].creator,
         ),
       );
     });
     expect(
       await screen.findByLabelText(
-        ariaLabelDiv.proposal.prefixes.itemPanelExpandable +
+        dataTestIdDiv.proposal.prefixes.itemPanelExpandable +
           proposalList[0].creator,
       ),
     ).toHaveClass('expandable-panel opened');
@@ -95,7 +95,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemImageGotoCreator +
+          dataTestIdDiv.proposal.prefixes.itemImageGotoCreator +
             selectedProposal.creator,
         ),
       );
@@ -112,7 +112,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemSpanGotoLink +
+          dataTestIdDiv.proposal.prefixes.itemSpanGotoLink +
             selectedProposal.creator,
         ),
       );
@@ -133,7 +133,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemIconVoteUnvote +
+          dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal.creator,
         ),
       );
@@ -155,7 +155,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemIconVoteUnvote +
+          dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal!.creator,
         ),
       );
@@ -173,7 +173,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemIconVoteUnvote +
+          dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal!.creator,
         ),
       );
@@ -191,7 +191,7 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.proposal.prefixes.itemIconVoteUnvote +
+          dataTestIdDiv.proposal.prefixes.itemIconVoteUnvote +
             selectedProposal.creator,
         ),
       );

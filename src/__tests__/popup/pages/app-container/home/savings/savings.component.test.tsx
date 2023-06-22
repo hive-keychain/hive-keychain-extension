@@ -4,9 +4,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -33,19 +33,19 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.arrow.hive),
+            await screen.findByLabelText(dataTestIdDropdown.arrow.hive),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+            await screen.findByLabelText(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.selector,
+              dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.withdraw,
+              dataTestIdDropdown.select.savings.operation.withdraw,
             ),
           );
         });
@@ -63,15 +63,15 @@ describe('savings.component tests:\n', () => {
       it('Must set input to max & load HIVE withdraw confirmation text', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.setToMax),
+            screen.getByLabelText(dataTestIdButton.setToMax),
           );
         });
-        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
-          hiveSavingsBalance,
-        );
+        expect(
+          await screen.findByLabelText(dataTestIdInput.amount),
+        ).toHaveValue(hiveSavingsBalance);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -86,11 +86,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             String(hiveSavingsBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -108,14 +108,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -134,14 +134,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -157,14 +157,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error withdraw'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Error withdraw')).toBeInTheDocument();
@@ -178,19 +178,19 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.arrow.hive),
+            await screen.findByLabelText(dataTestIdDropdown.arrow.hive),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+            await screen.findByLabelText(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.selector,
+              dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.deposit,
+              dataTestIdDropdown.select.savings.operation.deposit,
             ),
           );
         });
@@ -199,7 +199,7 @@ describe('savings.component tests:\n', () => {
       it('Must show deposit HIVE button', async () => {
         expect(
           await screen.findByLabelText(
-            ariaLabelButton.operation.savings.submit,
+            dataTestIdButton.operation.savings.submit,
           ),
         ).toHaveTextContent('Deposit HIVE');
       });
@@ -207,15 +207,15 @@ describe('savings.component tests:\n', () => {
       it('Must set input to max & load HIVE deposit confirmation text', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.setToMax),
+            screen.getByLabelText(dataTestIdButton.setToMax),
           );
         });
-        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
-          hiveBalance,
-        );
+        expect(
+          await screen.findByLabelText(dataTestIdInput.amount),
+        ).toHaveValue(hiveBalance);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -230,11 +230,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             String(hiveBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -252,14 +252,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -278,14 +278,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -301,14 +301,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error deposit'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Error deposit')).toBeInTheDocument();
@@ -324,19 +324,19 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.arrow.hbd),
+            await screen.findByLabelText(dataTestIdDropdown.arrow.hbd),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+            await screen.findByLabelText(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.selector,
+              dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.withdraw,
+              dataTestIdDropdown.select.savings.operation.withdraw,
             ),
           );
         });
@@ -354,15 +354,15 @@ describe('savings.component tests:\n', () => {
       it('Must set input to max & load HBD withdraw confirmation text', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.setToMax),
+            screen.getByLabelText(dataTestIdButton.setToMax),
           );
         });
-        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
-          hbdSavingsBalance,
-        );
+        expect(
+          await screen.findByLabelText(dataTestIdInput.amount),
+        ).toHaveValue(hbdSavingsBalance);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -377,11 +377,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             String(hbdSavingsBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -399,14 +399,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -425,14 +425,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -448,14 +448,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error withdraw HBD'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -471,19 +471,19 @@ describe('savings.component tests:\n', () => {
       beforeEach(async () => {
         await act(async () => {
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.arrow.hbd),
+            await screen.findByLabelText(dataTestIdDropdown.arrow.hbd),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelDropdown.span.savings),
+            await screen.findByLabelText(dataTestIdDropdown.span.savings),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.selector,
+              dataTestIdDropdown.select.savings.operation.selector,
             ),
           );
           await userEvent.click(
             await screen.findByLabelText(
-              ariaLabelDropdown.select.savings.operation.deposit,
+              dataTestIdDropdown.select.savings.operation.deposit,
             ),
           );
         });
@@ -492,7 +492,7 @@ describe('savings.component tests:\n', () => {
       it('Must show deposit HBD button', async () => {
         expect(
           await screen.findByLabelText(
-            ariaLabelButton.operation.savings.submit,
+            dataTestIdButton.operation.savings.submit,
           ),
         ).toHaveTextContent('Deposit HBD');
       });
@@ -500,15 +500,15 @@ describe('savings.component tests:\n', () => {
       it('Must set input to max & load HBD deposit confirmation text', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.setToMax),
+            screen.getByLabelText(dataTestIdButton.setToMax),
           );
         });
-        expect(await screen.findByLabelText(ariaLabelInput.amount)).toHaveValue(
-          hbdBalance,
-        );
+        expect(
+          await screen.findByLabelText(dataTestIdInput.amount),
+        ).toHaveValue(hbdBalance);
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -523,11 +523,11 @@ describe('savings.component tests:\n', () => {
       it('Must show error if not enough HBD balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             String(hbdBalance + 1),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
         });
         expect(
@@ -545,14 +545,14 @@ describe('savings.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -571,14 +571,14 @@ describe('savings.component tests:\n', () => {
         FavoriteUserUtils.saveFavoriteUser = jest.fn();
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -594,14 +594,14 @@ describe('savings.component tests:\n', () => {
           .mockRejectedValue(new Error('Error deposit HBD'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.savings.submit),
+            screen.getByLabelText(dataTestIdButton.operation.savings.submit),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.confirm),
+            screen.getByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(

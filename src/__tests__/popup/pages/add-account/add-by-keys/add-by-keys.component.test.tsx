@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -35,7 +35,7 @@ describe('add-by-keys:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.addByKeys),
+        await screen.findByLabelText(dataTestIdButton.addByKeys),
       );
     });
   });
@@ -47,15 +47,15 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.posting,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -70,15 +70,15 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.memo,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -93,15 +93,15 @@ describe('add-by-keys:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.active,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -114,15 +114,15 @@ describe('add-by-keys:\n', () => {
       .mockResolvedValue(accounts.asArray.extended);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -134,15 +134,15 @@ describe('add-by-keys:\n', () => {
     AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'non_existent_user',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -155,15 +155,15 @@ describe('add-by-keys:\n', () => {
   it('Must show error if empty password', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         '{space}',
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -174,15 +174,15 @@ describe('add-by-keys:\n', () => {
   it('Must show error when using a public key', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.encryptKeys.active,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -195,15 +195,15 @@ describe('add-by-keys:\n', () => {
   it('Must show error when using an incorrect key', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.encryptKeys.randomString53,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(

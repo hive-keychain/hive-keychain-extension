@@ -1,6 +1,6 @@
 import { Icons } from '@popup/icons.enum';
 
-const ariaLabelComponent = {
+const dataTestIdComponent = {
   settingsMainPage: 'settings-main-page-component',
   homePage: 'home-page-component',
   selectPage: 'select-keys-page',
@@ -58,4 +58,4 @@ const ariaLabelComponent = {
   whatsNew: 'whats-new-component',
 };
 
-export default ariaLabelComponent;
+export default dataTestIdComponent;

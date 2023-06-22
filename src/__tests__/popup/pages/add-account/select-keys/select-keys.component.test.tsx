@@ -4,10 +4,10 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -38,34 +38,34 @@ describe('select-keys.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.addByKeys),
+        await screen.findByLabelText(dataTestIdButton.addByKeys),
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.privateKey),
+        await screen.findByLabelText(dataTestIdInput.privateKey),
         userData.one.nonEncryptKeys.master,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.activeKey,
+          dataTestIdCheckbox.selectKeys.import.activeKey,
         ),
       );
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.postingkey,
+          dataTestIdCheckbox.selectKeys.import.postingkey,
         ),
       );
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.memoKey,
+          dataTestIdCheckbox.selectKeys.import.memoKey,
         ),
       );
     });
@@ -76,14 +76,16 @@ describe('select-keys.component tests:\n', () => {
       await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
     ).toBeInTheDocument();
     expect(
-      (await screen.findByLabelText(ariaLabelDiv.selectKeys.captionPage))
+      (await screen.findByLabelText(dataTestIdDiv.selectKeys.captionPage))
         .innerHTML,
     ).toBe(chrome.i18n.getMessage('popup_html_import_success'));
   });
 
   it('Must show error as no key selected', async () => {
     await act(async () => {
-      await userEvent.click(await screen.findByLabelText(ariaLabelButton.save));
+      await userEvent.click(
+        await screen.findByLabelText(dataTestIdButton.save),
+      );
     });
     expect(
       await screen.findByText(
@@ -97,10 +99,12 @@ describe('select-keys.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.activeKey,
+          dataTestIdCheckbox.selectKeys.import.activeKey,
         ),
       );
-      await userEvent.click(await screen.findByLabelText(ariaLabelButton.save));
+      await userEvent.click(
+        await screen.findByLabelText(dataTestIdButton.save),
+      );
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       active: userData.one.nonEncryptKeys.active,
@@ -113,10 +117,12 @@ describe('select-keys.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.postingkey,
+          dataTestIdCheckbox.selectKeys.import.postingkey,
         ),
       );
-      await userEvent.click(await screen.findByLabelText(ariaLabelButton.save));
+      await userEvent.click(
+        await screen.findByLabelText(dataTestIdButton.save),
+      );
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       posting: userData.one.nonEncryptKeys.posting,
@@ -129,10 +135,12 @@ describe('select-keys.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          arialabelCheckbox.selectKeys.import.memoKey,
+          dataTestIdCheckbox.selectKeys.import.memoKey,
         ),
       );
-      await userEvent.click(await screen.findByLabelText(ariaLabelButton.save));
+      await userEvent.click(
+        await screen.findByLabelText(dataTestIdButton.save),
+      );
     });
     expect(sHasKeys).toHaveBeenCalledWith({
       memo: userData.one.nonEncryptKeys.memo,

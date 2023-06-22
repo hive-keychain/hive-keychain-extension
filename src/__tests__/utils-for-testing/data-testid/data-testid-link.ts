@@ -1,4 +1,4 @@
-const ariaLabelLink = {
+const dataTestIdLink = {
   resetPassword: 'reset-password-link',
   linkToArcange: 'link-to-arcange',
   whatsNew: {
@@ -8,4 +8,4 @@ const ariaLabelLink = {
   },
 };
 
-export default ariaLabelLink;
+export default dataTestIdLink;

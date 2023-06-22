@@ -6,8 +6,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -39,19 +39,21 @@ describe('add-by-auth tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(await screen.findByLabelText(ariaLabelButton.menu));
+      await userEvent.click(
+        await screen.findByLabelText(dataTestIdButton.menu),
+      );
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.menuPreFix + Icons.ACCOUNTS,
+          dataTestIdButton.menuPreFix + Icons.ACCOUNTS,
         ),
       );
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.menuPreFix + Icons.ADD_ACCOUNT,
+          dataTestIdButton.menuPreFix + Icons.ADD_ACCOUNT,
         ),
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.addByAuth),
+        await screen.findByLabelText(dataTestIdButton.addByAuth),
       );
     });
   });
@@ -65,15 +67,15 @@ describe('add-by-auth tests:\n', () => {
   it('Must show error trying to add existing account', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         mk.user.one,
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         mk.user.two,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -86,15 +88,15 @@ describe('add-by-auth tests:\n', () => {
   it('Must show error if empty username', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         '{space}',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         mk.user.two,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -105,15 +107,15 @@ describe('add-by-auth tests:\n', () => {
   it('Must show error if empty authorized account', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'aggroed',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         '{space}',
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -124,15 +126,15 @@ describe('add-by-auth tests:\n', () => {
   it('Must show error if account not present in local accounts', async () => {
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'aggroed',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         'theghost1980',
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -146,15 +148,15 @@ describe('add-by-auth tests:\n', () => {
     AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'notFoundInHive',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         mk.user.one,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -172,15 +174,15 @@ describe('add-by-auth tests:\n', () => {
     AccountUtils.getAccount = jest.fn().mockResolvedValue(cloneExtendedAccount);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'theghost1980',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         mk.user.one,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(
@@ -201,15 +203,15 @@ describe('add-by-auth tests:\n', () => {
     AccountUtils.getAccount = jest.fn().mockResolvedValue(cloneExtendedAccount);
     await act(async () => {
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.username),
+        await screen.findByLabelText(dataTestIdInput.username),
         'theghost1980',
       );
       await userEvent.type(
-        await screen.findByLabelText(ariaLabelInput.authorizedAccount),
+        await screen.findByLabelText(dataTestIdInput.authorizedAccount),
         mk.user.one,
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelButton.submit),
+        await screen.findByLabelText(dataTestIdButton.submit),
       );
     });
     expect(

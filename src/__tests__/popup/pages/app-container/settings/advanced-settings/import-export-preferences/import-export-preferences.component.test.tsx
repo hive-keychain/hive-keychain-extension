@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -22,12 +22,14 @@ describe('import-export-preferences.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.IMPORT_EXPORT),
+        screen.getByLabelText(
+          dataTestIdButton.menuPreFix + Icons.IMPORT_EXPORT,
+        ),
       );
     });
   });
@@ -47,7 +49,7 @@ describe('import-export-preferences.component tests:\n', () => {
     const sImportSettings = jest.spyOn(SettingsUtils, 'importSettings');
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.IMPORT),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.IMPORT),
       );
     });
     expect(sImportSettings).toHaveBeenCalledTimes(1);
@@ -67,7 +69,7 @@ describe('import-export-preferences.component tests:\n', () => {
       .mockResolvedValueOnce(null);
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.EXPORT),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.EXPORT),
       );
     });
     expect(sExportSettings).toHaveBeenCalledTimes(1);

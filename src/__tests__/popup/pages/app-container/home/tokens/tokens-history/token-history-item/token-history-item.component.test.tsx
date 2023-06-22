@@ -4,9 +4,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
@@ -34,17 +34,17 @@ describe('token-history-item.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
   });
   it('Must open memo when clicked on selected history item', async () => {
-    const memoDivAriaLabel = `${ariaLabelDiv.token.list.item.history.preFix}${selectedToken.symbol}-memo-panel-${selectedHistoryTransaction._id}`;
+    const memoDivAriaLabel = `${dataTestIdDiv.token.list.item.history.preFix}${selectedToken.symbol}-memo-panel-${selectedHistoryTransaction._id}`;
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          `${ariaLabelIcon.tokens.prefix.history}${selectedToken.symbol}`,
+          `${dataTestIdIcon.tokens.prefix.history}${selectedToken.symbol}`,
         ),
       );
     });

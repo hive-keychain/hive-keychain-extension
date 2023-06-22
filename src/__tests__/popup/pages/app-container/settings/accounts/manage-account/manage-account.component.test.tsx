@@ -7,11 +7,11 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
-import ariaLabelSvg from 'src/__tests__/utils-for-testing/aria-labels/aria-label-svg';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
+import dataTestIdSvg from 'src/__tests__/utils-for-testing/data-testid/data-testid-svg';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -31,13 +31,13 @@ describe('manage-account.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
@@ -57,16 +57,16 @@ describe('manage-account.component tests:\n', () => {
       ]);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelSelect.accountSelector),
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelSelect.itemSelectorPreFix + mk.user.two,
+            dataTestIdSelect.itemSelectorPreFix + mk.user.two,
           ),
         );
       });
       expect(
-        await screen.findByLabelText(ariaLabelDiv.selectedAccount),
+        await screen.findByLabelText(dataTestIdDiv.selectedAccount),
       ).toHaveTextContent(mk.user.two);
     });
 
@@ -74,25 +74,25 @@ describe('manage-account.component tests:\n', () => {
       Element.prototype.scrollIntoView = jest.fn();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.qrCode.toogle),
+          screen.getByLabelText(dataTestIdButton.qrCode.toogle),
         );
       });
       expect(
-        await screen.findByLabelText(ariaLabelSvg.qrcode),
+        await screen.findByLabelText(dataTestIdSvg.qrcode),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.qrCode.toogle),
+          screen.getByLabelText(dataTestIdButton.qrCode.toogle),
         );
       });
       expect(
-        screen.queryByLabelText(ariaLabelSvg.qrcode),
+        screen.queryByLabelText(dataTestIdSvg.qrcode),
       ).not.toBeInTheDocument();
     });
 
     it('Must close page and go home', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.closePage));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
       });
       expect(
         await screen.findByLabelText(`${Screen.HOME_PAGE}-page`),
@@ -121,13 +121,13 @@ describe('manage-account.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
@@ -135,7 +135,7 @@ describe('manage-account.component tests:\n', () => {
     it('Must not show remove posting key', () => {
       expect(
         screen.queryByLabelText(
-          ariaLabelIcon.keys.list.preFix.remove + 'posting',
+          dataTestIdIcon.keys.list.preFix.remove + 'posting',
         ),
       ).not.toBeInTheDocument();
     });

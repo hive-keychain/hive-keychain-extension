@@ -5,10 +5,10 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
@@ -25,12 +25,12 @@ describe('rpc-nodes.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.RPC),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -43,12 +43,12 @@ describe('rpc-nodes.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            arialabelCheckbox.rpcNodes.select.automaticMode,
+            dataTestIdCheckbox.rpcNodes.select.automaticMode,
           ),
         );
       });
       expect(
-        screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+        screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
       ).toBeInTheDocument();
     });
   });
@@ -71,12 +71,12 @@ describe('rpc-nodes.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.RPC),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -85,25 +85,25 @@ describe('rpc-nodes.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            arialabelCheckbox.rpcNodes.select.automaticMode,
+            dataTestIdCheckbox.rpcNodes.select.automaticMode,
           ),
         );
       });
       expect(
-        screen.queryByLabelText(ariaLabelButton.rpcNodes.addRpc),
+        screen.queryByLabelText(dataTestIdButton.rpcNodes.addRpc),
       ).not.toBeInTheDocument();
     });
 
     it('Must show error if empty uri', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.rpcNodes.uri),
+          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
           '{space}',
         );
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -116,13 +116,13 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must show error if invalid uri', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.rpcNodes.uri),
+          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
           'www.www.rpcNode',
         );
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -135,18 +135,18 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must show error if empty node chain Id', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.rpcNodes.uri),
+          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(
           screen.getByLabelText(
-            arialabelCheckbox.rpcNodes.select.addTesnetNode,
+            dataTestIdCheckbox.rpcNodes.select.addTesnetNode,
           ),
         );
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
       });
       expect(
         await screen.findByText(
@@ -159,15 +159,15 @@ describe('rpc-nodes.component tests:\n', () => {
     it('Must add new rpc and show it in list', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.rpcNodes.uri),
+          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelSelect.rpcNode.selected),
+          screen.getByLabelText(dataTestIdSelect.rpcNode.selected),
         );
       });
       expect(
@@ -181,23 +181,23 @@ describe('rpc-nodes.component tests:\n', () => {
       const sSetRpc = jest.spyOn(HiveTxUtils, 'setRpc');
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.rpcNodes.addRpc),
+          screen.getByLabelText(dataTestIdButton.rpcNodes.addRpc),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.rpcNodes.uri),
+          screen.getByLabelText(dataTestIdInput.rpcNodes.uri),
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(
-          screen.getByLabelText(arialabelCheckbox.rpcNodes.select.setAsActive),
+          screen.getByLabelText(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelSelect.rpcNode.selected),
+          screen.getByLabelText(dataTestIdSelect.rpcNode.selected),
         );
       });
       expect(
         screen.getByLabelText(
-          ariaLabelSelect.rpcNode.selectItem.preFix +
+          dataTestIdSelect.rpcNode.selectItem.preFix +
             'https://saturno.hive.com/rpc',
         ),
       ).toBeInTheDocument();

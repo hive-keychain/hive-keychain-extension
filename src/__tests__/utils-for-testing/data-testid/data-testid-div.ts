@@ -1,4 +1,4 @@
-const ariaLabelDiv = {
+const dataTestIdDiv = {
   selectedAccount: 'selected-account-name',
   estimatedAccountValue: 'estimated-account-div-value',
   error: {
@@ -115,4 +115,4 @@ const ariaLabelDiv = {
   },
 };
 
-export default ariaLabelDiv;
+export default dataTestIdDiv;

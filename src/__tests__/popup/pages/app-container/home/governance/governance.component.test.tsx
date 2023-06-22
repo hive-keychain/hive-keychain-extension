@@ -5,9 +5,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelTab from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tab';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-testid-tab';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -24,9 +24,9 @@ describe('governance.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
       );
     });
   });
@@ -36,7 +36,7 @@ describe('governance.component tests:\n', () => {
       await screen.findByLabelText(`${Screen.GOVERNANCE_PAGE}-page`),
     ).toBeInTheDocument();
     expect(
-      await screen.findAllByLabelText(ariaLabelDiv.rankingItem),
+      await screen.findAllByLabelText(dataTestIdDiv.rankingItem),
     ).toHaveLength(witness.ranking.length);
   });
 
@@ -45,7 +45,7 @@ describe('governance.component tests:\n', () => {
       await userEvent.click(screen.getAllByRole('tab')[1]);
     });
     expect(
-      await screen.findByLabelText(ariaLabelTab.proxy),
+      await screen.findByLabelText(dataTestIdTab.proxy),
     ).toBeInTheDocument();
   });
 
@@ -54,7 +54,7 @@ describe('governance.component tests:\n', () => {
       await userEvent.click(screen.getAllByRole('tab')[2]);
     });
     expect(
-      await screen.findByLabelText(ariaLabelTab.proposal),
+      await screen.findByLabelText(dataTestIdTab.proposal),
     ).toBeInTheDocument();
   });
 });

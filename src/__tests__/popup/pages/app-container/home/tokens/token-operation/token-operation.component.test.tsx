@@ -6,10 +6,10 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -36,14 +36,14 @@ describe('token-operation.component tests', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelIcon.tokens.prefix.expandMore + selectedToken.symbol,
+          dataTestIdIcon.tokens.prefix.expandMore + selectedToken.symbol,
         ),
       );
     });
@@ -53,7 +53,7 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
@@ -63,7 +63,7 @@ describe('token-operation.component tests', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByLabelText(
-          ariaLabelButton.operation.tokens.preFix + 'unstake',
+          dataTestIdButton.operation.tokens.preFix + 'unstake',
         ),
       ).toBeInTheDocument();
     });
@@ -73,17 +73,17 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'unstake',
+            dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
       });
@@ -92,7 +92,7 @@ describe('token-operation.component tests', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.cancel),
+          screen.getByLabelText(dataTestIdButton.dialog.cancel),
         );
       });
       expect(
@@ -108,17 +108,17 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           (parseFloat(selectedToken.balance) + 1).toString(),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'unstake',
+            dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
       });
@@ -140,21 +140,21 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'unstake',
+            dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -174,21 +174,21 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'unstake',
+            dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -207,21 +207,21 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.unstake +
+            dataTestIdDiv.token.user.prefixes.action.unstake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'unstake',
+            dataTestIdButton.operation.tokens.preFix + 'unstake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -237,7 +237,7 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.delegate +
+            dataTestIdDiv.token.user.prefixes.action.delegate +
               selectedToken.symbol,
           ),
         );
@@ -247,7 +247,7 @@ describe('token-operation.component tests', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByLabelText(
-          ariaLabelButton.operation.tokens.preFix + 'delegate',
+          dataTestIdButton.operation.tokens.preFix + 'delegate',
         ),
       ).toBeInTheDocument();
     });
@@ -263,21 +263,21 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.delegate +
+            dataTestIdDiv.token.user.prefixes.action.delegate +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'delegate',
+            dataTestIdButton.operation.tokens.preFix + 'delegate',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -293,7 +293,7 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.stake +
+            dataTestIdDiv.token.user.prefixes.action.stake +
               selectedToken.symbol,
           ),
         );
@@ -303,7 +303,7 @@ describe('token-operation.component tests', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByLabelText(
-          ariaLabelButton.operation.tokens.preFix + 'stake',
+          dataTestIdButton.operation.tokens.preFix + 'stake',
         ),
       ).toBeInTheDocument();
     });
@@ -319,21 +319,21 @@ describe('token-operation.component tests', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.token.user.prefixes.action.stake +
+            dataTestIdDiv.token.user.prefixes.action.stake +
               selectedToken.symbol,
           ),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '0.100',
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.operation.tokens.preFix + 'stake',
+            dataTestIdButton.operation.tokens.preFix + 'stake',
           ),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(

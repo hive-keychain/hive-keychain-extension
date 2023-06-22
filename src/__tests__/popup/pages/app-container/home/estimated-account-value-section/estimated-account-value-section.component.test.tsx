@@ -3,8 +3,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelToolTip from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tool-tip';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 
@@ -33,7 +33,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     });
     it('Must display the estimated account value', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelDiv.estimatedAccountValue),
+        await screen.findByLabelText(dataTestIdDiv.estimatedAccountValue),
       ).toHaveTextContent(`$ ${accountValue} USD`);
     });
 
@@ -41,12 +41,12 @@ describe('estimated-account-value-section.component tests:\n', () => {
       await act(async () => {
         await userEvent.hover(
           await screen.findByLabelText(
-            ariaLabelToolTip.custom.estimatedValueSection,
+            dataTestIdToolTip.custom.estimatedValueSection,
           ),
         );
       });
       expect(
-        (await screen.findByLabelText(ariaLabelToolTip.content)).innerHTML,
+        (await screen.findByLabelText(dataTestIdToolTip.content)).innerHTML,
       ).toEqual(chrome.i18n.getMessage('popup_html_estimation_info_text'));
     });
   });
@@ -69,7 +69,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     });
     it('Must display ... when account value not received', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelDiv.estimatedAccountValue),
+        await screen.findByLabelText(dataTestIdDiv.estimatedAccountValue),
       ).toHaveTextContent('...');
     });
   });

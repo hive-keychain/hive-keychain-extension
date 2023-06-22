@@ -3,9 +3,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-testid-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
@@ -41,9 +41,11 @@ describe('reset-password.component tests:\n', () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(false);
 
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelLink.resetPassword));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.confirmResetPassword),
+        screen.getByLabelText(dataTestIdLink.resetPassword),
+      );
+      await userEvent.click(
+        screen.getByLabelText(dataTestIdButton.confirmResetPassword),
       );
     });
     screen.debug();
@@ -51,16 +53,18 @@ describe('reset-password.component tests:\n', () => {
   });
   it('Must cancel and return to previous window', async () => {
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelLink.resetPassword));
+      await userEvent.click(
+        screen.getByLabelText(dataTestIdLink.resetPassword),
+      );
     });
     expect(
-      await screen.findByLabelText(ariaLabelButton.confirmResetPassword),
+      await screen.findByLabelText(dataTestIdButton.confirmResetPassword),
     ).toBeInTheDocument();
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+      await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
     });
     expect(
-      screen.queryByLabelText(ariaLabelButton.confirmResetPassword),
+      screen.queryByLabelText(dataTestIdButton.confirmResetPassword),
     ).not.toBeInTheDocument();
   });
 });

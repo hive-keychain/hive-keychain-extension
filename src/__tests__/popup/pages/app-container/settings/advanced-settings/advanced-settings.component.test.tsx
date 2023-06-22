@@ -7,8 +7,8 @@ import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('advanced-settings.component tests:\n', () => {
@@ -32,9 +32,9 @@ describe('advanced-settings.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
     });
   });
@@ -50,7 +50,7 @@ describe('advanced-settings.component tests:\n', () => {
     for (let i = 0; i < advanceMenuItems.length; i++) {
       expect(
         screen.getByLabelText(
-          ariaLabelButton.menuPreFix + advanceMenuItems[i].icon,
+          dataTestIdButton.menuPreFix + advanceMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
     }
@@ -61,12 +61,14 @@ describe('advanced-settings.component tests:\n', () => {
     for (let i = 0; i < menuItems.length; i++) {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + menuItems[i].icon),
+          screen.getByLabelText(
+            dataTestIdButton.menuPreFix + menuItems[i].icon,
+          ),
         );
       });
       expect(screen.getByLabelText(`${menuItems[i].nextScreen}-page`));
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
       });
     }
   });
@@ -79,7 +81,9 @@ describe('advanced-settings.component tests:\n', () => {
     )[0];
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + ledgerMenuItem.icon),
+        screen.getByLabelText(
+          dataTestIdButton.menuPreFix + ledgerMenuItem.icon,
+        ),
       );
     });
     expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({

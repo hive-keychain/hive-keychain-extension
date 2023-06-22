@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import CurrencyUtils from 'src/utils/currency.utils';
@@ -27,12 +27,12 @@ describe('transfer-fund.component tests:\n', () => {
           await userEvent.click(
             screen.getByLabelText(
               `${
-                ariaLabelDropdown.arrow.preFix
+                dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
@@ -41,7 +41,7 @@ describe('transfer-fund.component tests:\n', () => {
           await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
         ).toBeInTheDocument();
         expect(
-          await screen.findByLabelText(ariaLabelSelect.accountSelector),
+          await screen.findByLabelText(dataTestIdSelect.accountSelector),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hbd);
       });
     });

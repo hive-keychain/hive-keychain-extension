@@ -7,8 +7,8 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -38,9 +38,9 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+            screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
           );
           await userEvent.click(screen.getAllByRole('tab')[1]);
         });
@@ -65,12 +65,12 @@ describe('proxy-tab.component tests:\n', () => {
         } as TransactionResult);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.operation.proxy.tab.setAsProxy,
+              dataTestIdButton.operation.proxy.tab.setAsProxy,
             ),
           );
         });
@@ -85,12 +85,12 @@ describe('proxy-tab.component tests:\n', () => {
         ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(null);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.operation.proxy.tab.setAsProxy,
+              dataTestIdButton.operation.proxy.tab.setAsProxy,
             ),
           );
         });
@@ -109,12 +109,12 @@ describe('proxy-tab.component tests:\n', () => {
           );
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             'keychain',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.operation.proxy.tab.setAsProxy,
+              dataTestIdButton.operation.proxy.tab.setAsProxy,
             ),
           );
         });
@@ -146,9 +146,9 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+            screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
           );
           await userEvent.click(screen.getAllByRole('tab')[1]);
         });
@@ -194,9 +194,9 @@ describe('proxy-tab.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
         await userEvent.click(screen.getAllByRole('tab')[1]);
       });
@@ -205,11 +205,13 @@ describe('proxy-tab.component tests:\n', () => {
     it('Must show error trying to set proxy', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           'keychain',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.proxy.tab.setAsProxy),
+          screen.getByLabelText(
+            dataTestIdButton.operation.proxy.tab.setAsProxy,
+          ),
         );
       });
       expect(

@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -25,7 +25,7 @@ describe('witness-voting-section.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       });
     });
 
@@ -48,7 +48,7 @@ describe('witness-voting-section.component tests:\n', () => {
         .mockResolvedValue(undefined);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteStoodkevWitness),
+          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -64,7 +64,7 @@ describe('witness-voting-section.component tests:\n', () => {
         .mockRejectedValue(new Error('Error trying to vote for witness'));
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteStoodkevWitness),
+          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -92,13 +92,13 @@ describe('witness-voting-section.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       });
     });
     it('Must show error if no witness votes left', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteStoodkevWitness),
+          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(
@@ -132,13 +132,13 @@ describe('witness-voting-section.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       });
     });
     it('Must show error trying to vote', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteStoodkevWitness),
+          screen.getByLabelText(dataTestIdButton.operation.voteStoodkevWitness),
         );
       });
       expect(

@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -37,7 +37,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must show claim button', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelIcon.reward),
+        await screen.findByLabelText(dataTestIdIcon.reward),
       ).toBeInTheDocument();
     });
 
@@ -58,7 +58,7 @@ describe('top-bar.component tests:/n', () => {
       ];
       RewardsUtils.claimRewards = jest.fn().mockResolvedValue(true);
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.reward));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.reward));
       });
       expect(
         await screen.findByText(
@@ -80,7 +80,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must not show claim button', () => {
       expect(
-        screen.queryByLabelText(ariaLabelIcon.reward),
+        screen.queryByLabelText(dataTestIdIcon.reward),
       ).not.toBeInTheDocument();
     });
   });
@@ -112,7 +112,7 @@ describe('top-bar.component tests:/n', () => {
 
     it('Must show error when trying to claim', async () => {
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.reward));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.reward));
       });
       expect(
         await screen.findByText(

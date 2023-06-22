@@ -1,4 +1,4 @@
-const ariaLabelParagraph = {
+const dataTestIdParagraph = {
   add: {
     keyPage: {
       introduction: 'add-key-page-paragraph-introduction',
@@ -6,4 +6,4 @@ const ariaLabelParagraph = {
   },
 };
 
-export default ariaLabelParagraph;
+export default dataTestIdParagraph;

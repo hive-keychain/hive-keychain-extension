@@ -11,6 +11,6 @@ const buyCoins = {
   buyCoins: 'switch-buy-coins',
 };
 
-const ariaLabelSwitch = { witness, panel, buyCoins };
+const dataTestIdSwitch = { witness, panel, buyCoins };
 
-export default ariaLabelSwitch;
+export default dataTestIdSwitch;

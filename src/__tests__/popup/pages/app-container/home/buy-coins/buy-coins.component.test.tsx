@@ -8,8 +8,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelSwitch from 'src/__tests__/utils-for-testing/aria-labels/aria-label-switch';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdSwitch from 'src/__tests__/utils-for-testing/data-testid/data-testid-switch';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -38,7 +38,7 @@ describe('buy-coins.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.actionBtn.preFix + actionButtonIconBuy,
+          dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
         ),
       );
     });
@@ -59,11 +59,11 @@ describe('buy-coins.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelButton.actionBtn.preFix + actionButtonIconBuy,
+          dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
         ),
       );
       await userEvent.click(
-        await screen.findByLabelText(ariaLabelSwitch.buyCoins.buyCoins),
+        await screen.findByLabelText(dataTestIdSwitch.buyCoins.buyCoins),
       );
     });
     expect(

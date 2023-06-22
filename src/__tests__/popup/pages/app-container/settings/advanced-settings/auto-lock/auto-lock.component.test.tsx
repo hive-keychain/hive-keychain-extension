@@ -6,9 +6,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('auto-lock.component tests:\n', () => {
@@ -23,12 +23,12 @@ describe('auto-lock.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.AUTO_LOCK),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.AUTO_LOCK),
       );
     });
   });
@@ -42,10 +42,10 @@ describe('auto-lock.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          arialabelCheckbox.autoLock.preFix + AutoLockType.DEFAULT,
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEFAULT,
         ),
       );
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -61,10 +61,10 @@ describe('auto-lock.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          arialabelCheckbox.autoLock.preFix + AutoLockType.DEVICE_LOCK,
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEVICE_LOCK,
         ),
       );
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(
@@ -80,11 +80,11 @@ describe('auto-lock.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          arialabelCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK,
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK,
         ),
       );
-      await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '10');
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.save));
+      await userEvent.type(screen.getByLabelText(dataTestIdInput.amount), '10');
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.save));
     });
     expect(
       await screen.findByText(

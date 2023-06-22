@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('settings-main-page.component tests:\n', () => {
@@ -21,14 +21,14 @@ describe('settings-main-page.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
     });
   });
   it('Must show all menu items', () => {
     for (let i = 0; i < SettingsMenuItems.length; i++) {
       expect(
         screen.getByLabelText(
-          ariaLabelButton.menuPreFix + SettingsMenuItems[i].icon,
+          dataTestIdButton.menuPreFix + SettingsMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
     }
@@ -41,7 +41,7 @@ describe('settings-main-page.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + filteredCopyItems[i].icon,
+            dataTestIdButton.menuPreFix + filteredCopyItems[i].icon,
           ),
         );
       });
@@ -49,14 +49,14 @@ describe('settings-main-page.component tests:\n', () => {
         screen.getByLabelText(filteredCopyItems[i].nextScreen + '-page'),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
       });
     }
   });
   it('Must open a new window when clicking support', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SUPPORT),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SUPPORT),
       );
     });
     expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledTimes(1);

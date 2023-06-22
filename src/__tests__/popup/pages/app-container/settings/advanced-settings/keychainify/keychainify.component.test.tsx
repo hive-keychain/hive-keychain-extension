@@ -6,8 +6,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -32,12 +32,12 @@ describe('keychainify.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.SETTINGS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.LINK),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.LINK),
       );
     });
   });
@@ -59,7 +59,7 @@ describe('keychainify.component tests:\n', () => {
     );
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(arialabelCheckbox.keychainify.checkbox),
+        screen.getByLabelText(dataTestIdCheckbox.keychainify.checkbox),
       );
     });
     expect(sSaveValueInLocalStorage.mock.lastCall[0]).toBe(

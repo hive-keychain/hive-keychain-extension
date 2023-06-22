@@ -6,8 +6,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
@@ -26,9 +26,9 @@ describe('account-sub-menu.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );
     });
   });
@@ -43,7 +43,7 @@ describe('account-sub-menu.component tests:\n', () => {
     for (let i = 0; i < AccountSubMenuItems.length; i++) {
       expect(
         screen.getByLabelText(
-          ariaLabelButton.menuPreFix + AccountSubMenuItems[i].icon,
+          dataTestIdButton.menuPreFix + AccountSubMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
     }
@@ -55,7 +55,7 @@ describe('account-sub-menu.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.menuPreFix + AccountSubMenuItems[i].icon,
+              dataTestIdButton.menuPreFix + AccountSubMenuItems[i].icon,
             ),
           );
         });
@@ -65,7 +65,9 @@ describe('account-sub-menu.component tests:\n', () => {
           ),
         ).toBeInTheDocument();
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+          await userEvent.click(
+            screen.getByLabelText(dataTestIdIcon.arrowBack),
+          );
         });
       }
     }
@@ -79,7 +81,7 @@ describe('account-sub-menu.component tests:\n', () => {
       .mockImplementation((...args) => Promise.resolve(undefined));
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.EXPORT),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.EXPORT),
       );
     });
     expect(sDownloadAccounts).toHaveBeenCalledTimes(1);

@@ -8,12 +8,12 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -40,12 +40,12 @@ describe('transfer-fund.component tests:\n', () => {
           await userEvent.click(
             screen.getByLabelText(
               `${
-                ariaLabelDropdown.arrow.preFix
+                dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
@@ -54,18 +54,18 @@ describe('transfer-fund.component tests:\n', () => {
           await screen.findByLabelText(`${Screen.TRANSFER_FUND_PAGE}-page`),
         ).toBeInTheDocument();
         expect(
-          await screen.findByLabelText(ariaLabelSelect.accountSelector),
+          await screen.findByLabelText(dataTestIdSelect.accountSelector),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hive);
       });
 
       it('Must show error if no amount when transferring', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -78,11 +78,11 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no receiverUsername', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -95,15 +95,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if empty receiverUsername', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             '{space}',
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -116,15 +116,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if negative amount', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '-1.000',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -137,15 +137,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if not enough balance', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '1000000000000',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -158,18 +158,18 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no frequency, when selecting recurrent', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -184,22 +184,22 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show error if no iteration', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.recurrent.frecuency),
+            screen.getByLabelText(dataTestIdInput.recurrent.frecuency),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -214,22 +214,22 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show memo warning when transferring to an exchange account', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             exchanges.filter((exchange) =>
               exchange.acceptedCoins.includes('HIVE'),
             )[0].username,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
           const warningDivHTMLElement = await screen.findByLabelText(
-            ariaLabelDiv.warning.message,
+            dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
             chrome.i18n.getMessage('popup_warning_exchange_memo'),
@@ -240,20 +240,20 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must show phishing warning', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             phishing.accounts[0],
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
           const warningDivHTMLElement = await screen.findByLabelText(
-            ariaLabelDiv.warning.message,
+            dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
             chrome.i18n.getMessage('popup_warning_phishing', [
@@ -266,15 +266,15 @@ describe('transfer-fund.component tests:\n', () => {
       it('Must return to transfer page after clicking cancel confirmation', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
@@ -284,7 +284,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.dialog.cancel),
+            screen.getByLabelText(dataTestIdButton.dialog.cancel),
           );
         });
         await waitFor(async () => {
@@ -298,19 +298,19 @@ describe('transfer-fund.component tests:\n', () => {
         const memoField = '#Private Message';
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.memoOptional),
+            screen.getByLabelText(dataTestIdInput.memoOptional),
             memoField,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         await waitFor(async () => {
@@ -336,18 +336,18 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -371,21 +371,21 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0',
           );
           await userEvent.click(
-            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -409,29 +409,29 @@ describe('transfer-fund.component tests:\n', () => {
           .mockResolvedValue(undefined);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(arialabelCheckbox.transfer.recurrent),
+            screen.getByLabelText(dataTestIdCheckbox.transfer.recurrent),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.recurrent.frecuency),
+            screen.getByLabelText(dataTestIdInput.recurrent.frecuency),
             '10',
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.recurrent.iterations),
+            screen.getByLabelText(dataTestIdInput.recurrent.iterations),
             '10',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -450,18 +450,18 @@ describe('transfer-fund.component tests:\n', () => {
         TransferUtils.sendTransfer = jest.fn().mockResolvedValue(null);
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(
@@ -477,18 +477,18 @@ describe('transfer-fund.component tests:\n', () => {
           .mockRejectedValue(new Error('Failed to sign'));
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
           await userEvent.click(
-            await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+            await screen.findByLabelText(dataTestIdButton.dialog.confirm),
           );
         });
         expect(await screen.findByText('Failed to sign')).toBeInTheDocument();
@@ -519,12 +519,12 @@ describe('transfer-fund.component tests:\n', () => {
           await userEvent.click(
             screen.getByLabelText(
               `${
-                ariaLabelDropdown.arrow.preFix
+                dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
@@ -532,19 +532,19 @@ describe('transfer-fund.component tests:\n', () => {
         const memoField = '#Private Message';
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.memoOptional),
+            screen.getByLabelText(dataTestIdInput.memoOptional),
             memoField,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(
@@ -579,27 +579,27 @@ describe('transfer-fund.component tests:\n', () => {
           await userEvent.click(
             screen.getByLabelText(
               `${
-                ariaLabelDropdown.arrow.preFix
+                dataTestIdDropdown.arrow.preFix
               }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelDropdown.itemPreFix + Icons.SEND),
+            screen.getByLabelText(dataTestIdDropdown.itemPreFix + Icons.SEND),
           );
         });
       });
       it('Must show error making a transfer', async () => {
         await act(async () => {
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.username),
+            screen.getByLabelText(dataTestIdInput.username),
             mk.user.two,
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.amount),
+            screen.getByLabelText(dataTestIdInput.amount),
             '0.001',
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.operation.transfer.send),
+            screen.getByLabelText(dataTestIdButton.operation.transfer.send),
           );
         });
         expect(

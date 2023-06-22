@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -17,9 +17,9 @@ describe('user-preferences.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.PREFERENCES),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
       );
     });
   });
@@ -30,7 +30,7 @@ describe('user-preferences.component tests:\n', () => {
   });
   it('Must load each menu items', () => {
     UserPreferencesMenuItems.forEach((item) => {
-      expect(screen.getByLabelText(ariaLabelButton.menuPreFix + item.icon));
+      expect(screen.getByLabelText(dataTestIdButton.menuPreFix + item.icon));
     });
   });
   it('Must open each menu item', async () => {
@@ -39,14 +39,14 @@ describe('user-preferences.component tests:\n', () => {
       .mockResolvedValue([]);
     for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
       const menuButtonAriaLabel =
-        ariaLabelButton.menuPreFix + UserPreferencesMenuItems[i].icon;
+        dataTestIdButton.menuPreFix + UserPreferencesMenuItems[i].icon;
       const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
       await act(async () => {
         await userEvent.click(screen.getByLabelText(menuButtonAriaLabel));
       });
       expect(await screen.findByLabelText(pageAriaLabel)).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
       });
     }
   });

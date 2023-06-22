@@ -1,4 +1,4 @@
-const ariaLabelDropdown = {
+const dataTestIdDropdown = {
   arrow: {
     hive: 'dropdown-arrow-hive',
     hbd: 'dropdown-arrow-hbd',
@@ -33,4 +33,4 @@ const ariaLabelDropdown = {
   },
 };
 
-export default ariaLabelDropdown;
+export default dataTestIdDropdown;

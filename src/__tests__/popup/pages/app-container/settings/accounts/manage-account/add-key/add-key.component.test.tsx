@@ -6,10 +6,10 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelParagraph from 'src/__tests__/utils-for-testing/aria-labels/aria-label-paragraph';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdParagraph from 'src/__tests__/utils-for-testing/data-testid/data-testid-paragraph';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -43,13 +43,13 @@ describe('add-key.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+        screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
         ),
       );
     });
@@ -62,14 +62,14 @@ describe('add-key.component tests:\n', () => {
   it('Must show add keys page and message', async () => {
     await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+        screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
       );
     });
     expect(
       screen.getByLabelText(`${Screen.SETTINGS_ADD_KEY}-page`),
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText(ariaLabelParagraph.add.keyPage.introduction),
+      screen.getByLabelText(dataTestIdParagraph.add.keyPage.introduction),
     ).toHaveTextContent(
       manipulateStrings.removeHtmlTags(
         chrome.i18n.getMessage('popup_html_add_key_text', ['Active']),
@@ -81,10 +81,10 @@ describe('add-key.component tests:\n', () => {
     it('Must show error if empty active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.privateKey),
+          screen.getByLabelText(dataTestIdInput.privateKey),
           '{enter}',
         );
       });
@@ -95,10 +95,10 @@ describe('add-key.component tests:\n', () => {
     it('Must add active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.privateKey),
+          screen.getByLabelText(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.active}{enter}`,
         );
       });
@@ -110,10 +110,10 @@ describe('add-key.component tests:\n', () => {
     it('Must add memo key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'memo'),
+          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'memo'),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.privateKey),
+          screen.getByLabelText(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.memo}{enter}`,
         );
       });
@@ -126,10 +126,10 @@ describe('add-key.component tests:\n', () => {
       it('Must add memo keys using master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'memo'),
+            screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'memo'),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}{enter}`,
           );
         });
@@ -142,11 +142,11 @@ describe('add-key.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.keys.list.preFix.add + 'active',
+              dataTestIdIcon.keys.list.preFix.add + 'active',
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}{enter}`,
           );
         });
@@ -161,14 +161,14 @@ describe('add-key.component tests:\n', () => {
     it('Must show error if empty key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.privateKey),
+          screen.getByLabelText(dataTestIdInput.privateKey),
           '{space}',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.importKeys),
+          screen.getByLabelText(dataTestIdButton.importKeys),
         );
       });
       expect(
@@ -179,14 +179,14 @@ describe('add-key.component tests:\n', () => {
     it('Must add active key', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelIcon.keys.list.preFix.add + 'active'),
+          screen.getByLabelText(dataTestIdIcon.keys.list.preFix.add + 'active'),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.privateKey),
+          screen.getByLabelText(dataTestIdInput.privateKey),
           `${userData.one.nonEncryptKeys.active}`,
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.importKeys),
+          screen.getByLabelText(dataTestIdButton.importKeys),
         );
       });
       expect(
@@ -199,15 +199,15 @@ describe('add-key.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.keys.list.preFix.add + 'active',
+              dataTestIdIcon.keys.list.preFix.add + 'active',
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.master}`,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.importKeys),
+            screen.getByLabelText(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -221,15 +221,15 @@ describe('add-key.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.keys.list.preFix.add + 'active',
+              dataTestIdIcon.keys.list.preFix.add + 'active',
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.encryptKeys.active}`,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.importKeys),
+            screen.getByLabelText(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -243,15 +243,15 @@ describe('add-key.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.keys.list.preFix.add + 'active',
+              dataTestIdIcon.keys.list.preFix.add + 'active',
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.active}`,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.importKeys),
+            screen.getByLabelText(dataTestIdButton.importKeys),
           );
         });
         expect(
@@ -264,15 +264,15 @@ describe('add-key.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.keys.list.preFix.add + 'active',
+              dataTestIdIcon.keys.list.preFix.add + 'active',
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.privateKey),
+            screen.getByLabelText(dataTestIdInput.privateKey),
             `${userData.one.nonEncryptKeys.randomStringKey51}`,
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelButton.importKeys),
+            screen.getByLabelText(dataTestIdButton.importKeys),
           );
         });
         expect(

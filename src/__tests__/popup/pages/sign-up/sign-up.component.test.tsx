@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 
@@ -41,11 +41,11 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when using different passwords and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '@1qEWqw!!',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '@1qEWqw!{enter}',
       );
     });
@@ -60,14 +60,14 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when using different passwords and clicking button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '@1qEWqw!!',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '@1qEWqw!',
       );
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.signUp));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
     });
     expect(
       await screen.findByText(
@@ -80,11 +80,11 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when invalid password and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '1qEWqw',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '1qEWqw{enter}',
       );
     });
@@ -98,14 +98,14 @@ describe('sign-up.component tests:\n', () => {
   it('Must show error message when invalid password and clicking button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '1qEWqw',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '1qEWqw',
       );
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.signUp));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
     });
     expect(
       await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
@@ -117,11 +117,11 @@ describe('sign-up.component tests:\n', () => {
   it('Must navigate to add_keys_page with valid password and pressing enter', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '1qEWqw23',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '1qEWqw23{enter}',
       );
     });
@@ -133,14 +133,14 @@ describe('sign-up.component tests:\n', () => {
   it('Must navigate to add_keys_page with valid password and click button', async () => {
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.password),
+        screen.getByLabelText(dataTestIdInput.password),
         '1qEWqw23',
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.confirmation),
+        screen.getByLabelText(dataTestIdInput.confirmation),
         '1qEWqw23',
       );
-      await userEvent.click(screen.getByLabelText(ariaLabelButton.signUp));
+      await userEvent.click(screen.getByLabelText(dataTestIdButton.signUp));
     });
     expect(
       await screen.findByLabelText(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),

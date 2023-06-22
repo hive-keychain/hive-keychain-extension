@@ -6,8 +6,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelToolTip from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tool-tip';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
@@ -37,14 +37,14 @@ describe('resources-section.component tests:\n', () => {
     });
     it('Must show mana and resource credits, labels & values', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelDiv.resources.vm),
+        await screen.findByLabelText(dataTestIdDiv.resources.vm),
       ).toHaveTextContent(
         `${Icons.ARROW_UP}${chrome.i18n.getMessage(
           'popup_html_vm',
         )}1.00 % (1.00 $)`,
       );
       expect(
-        await screen.findByLabelText(ariaLabelDiv.resources.rc),
+        await screen.findByLabelText(dataTestIdDiv.resources.rc),
       ).toHaveTextContent(
         `${Icons.RC}${chrome.i18n.getMessage('popup_html_rc')}100.00 %`,
       );
@@ -52,19 +52,23 @@ describe('resources-section.component tests:\n', () => {
 
     it('Must show tool tip when hover on mana', async () => {
       await act(async () => {
-        await userEvent.hover(screen.getByLabelText(ariaLabelDiv.resources.vm));
+        await userEvent.hover(
+          screen.getByLabelText(dataTestIdDiv.resources.vm),
+        );
       });
       expect(
-        await screen.findByLabelText(ariaLabelToolTip.content),
+        await screen.findByLabelText(dataTestIdToolTip.content),
       ).toHaveTextContent(HiveUtils.getTimeBeforeFull(mana!));
     });
 
     it('Must show tool tip when hover on credits', async () => {
       await act(async () => {
-        await userEvent.hover(screen.getByLabelText(ariaLabelDiv.resources.rc));
+        await userEvent.hover(
+          screen.getByLabelText(dataTestIdDiv.resources.rc),
+        );
       });
       expect(
-        await screen.findByLabelText(ariaLabelToolTip.content),
+        await screen.findByLabelText(dataTestIdToolTip.content),
       ).toHaveTextContent(HiveUtils.getTimeBeforeFull(fake_RC.rc.percentage));
     });
   });
@@ -102,12 +106,12 @@ describe('resources-section.component tests:\n', () => {
     });
     it('Must show -- as mana and credits 0', async () => {
       expect(
-        await screen.findByLabelText(ariaLabelDiv.resources.vm),
+        await screen.findByLabelText(dataTestIdDiv.resources.vm),
       ).toHaveTextContent(
         `${Icons.ARROW_UP}${chrome.i18n.getMessage('popup_html_vm')}--`,
       );
       expect(
-        await screen.findByLabelText(ariaLabelDiv.resources.rc),
+        await screen.findByLabelText(dataTestIdDiv.resources.rc),
       ).toHaveTextContent(
         `${Icons.RC}${chrome.i18n.getMessage('popup_html_rc')}0.00 %`,
       );
@@ -115,10 +119,12 @@ describe('resources-section.component tests:\n', () => {
 
     it('Must show no hp tool tip when hover on mana', async () => {
       await act(async () => {
-        await userEvent.hover(screen.getByLabelText(ariaLabelDiv.resources.vm));
+        await userEvent.hover(
+          screen.getByLabelText(dataTestIdDiv.resources.vm),
+        );
       });
       expect(
-        await screen.findByLabelText(ariaLabelToolTip.content),
+        await screen.findByLabelText(dataTestIdToolTip.content),
       ).toHaveTextContent(chrome.i18n.getMessage('html_popup_voting_no_hp'));
     });
   });

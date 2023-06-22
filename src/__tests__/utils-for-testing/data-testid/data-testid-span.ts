@@ -4,8 +4,8 @@ const delegations = {
   },
 };
 
-const ariaLabelSpan = {
+const dataTestIdSpan = {
   delegations,
 };
 
-export default ariaLabelSpan;
+export default dataTestIdSpan;

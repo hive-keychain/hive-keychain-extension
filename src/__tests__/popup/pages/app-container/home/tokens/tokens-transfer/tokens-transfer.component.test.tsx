@@ -7,9 +7,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
@@ -42,13 +42,13 @@ describe('tokens-transfer.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + actionButtonTokenIconName,
+            dataTestIdButton.actionBtn.preFix + actionButtonTokenIconName,
           ),
         );
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(`${ariaLabelIcon.tokens.prefix.send}LEO`),
+          screen.getByLabelText(`${dataTestIdIcon.tokens.prefix.send}LEO`),
         );
       });
     });
@@ -65,9 +65,14 @@ describe('tokens-transfer.component tests:\n', () => {
 
     it('Must show error message if empty receiverUsername', async () => {
       await act(async () => {
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
+        );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
@@ -78,15 +83,17 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must show error message if empty amount', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
@@ -97,15 +104,17 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must show error if negative amount', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           '-1',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
@@ -119,12 +128,17 @@ describe('tokens-transfer.component tests:\n', () => {
       AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(false);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           'nonExistentUser',
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
+        );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
@@ -137,15 +151,17 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must show error if not enough balance', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           'nonExistentUser',
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.amount),
+          screen.getByLabelText(dataTestIdInput.amount),
           selectedToken.balance + 1,
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
@@ -159,19 +175,24 @@ describe('tokens-transfer.component tests:\n', () => {
       AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
+        );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
         );
       });
       expect(
         await screen.findByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.closePage));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.closePage));
       });
       expect(
         screen.queryByLabelText(`${Screen.CONFIRMATION_PAGE}-page`),
@@ -190,15 +211,20 @@ describe('tokens-transfer.component tests:\n', () => {
       } as HiveEngineTransactionStatus);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
-        await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
+        );
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -215,15 +241,20 @@ describe('tokens-transfer.component tests:\n', () => {
       } as HiveEngineTransactionStatus);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
-        await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
+        );
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -240,15 +271,20 @@ describe('tokens-transfer.component tests:\n', () => {
         .mockRejectedValue(new Error('Rejection error!'));
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
-        await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
+        );
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(await screen.findByText('Rejection error!')).toBeInTheDocument();
@@ -269,15 +305,20 @@ describe('tokens-transfer.component tests:\n', () => {
         .mockResolvedValue(undefined);
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.username),
+          screen.getByLabelText(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(screen.getByLabelText(ariaLabelInput.amount), '1');
-        await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.tokens.transfer.send),
+        await userEvent.type(
+          screen.getByLabelText(dataTestIdInput.amount),
+          '1',
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(
+            dataTestIdButton.operation.tokens.transfer.send,
+          ),
+        );
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(

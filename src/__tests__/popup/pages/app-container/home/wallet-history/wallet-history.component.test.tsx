@@ -5,9 +5,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import walletHistory from 'src/__tests__/utils-for-testing/data/history/transactions/wallet-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -26,7 +26,7 @@ describe('wallet-history.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + Icons.HISTORY,
+            dataTestIdButton.actionBtn.preFix + Icons.HISTORY,
           ),
         );
       });
@@ -67,7 +67,7 @@ describe('wallet-history.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + Icons.HISTORY,
+            dataTestIdButton.actionBtn.preFix + Icons.HISTORY,
           ),
         );
       });
@@ -75,7 +75,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show transaction list', async () => {
       await waitFor(async () => {
         const historyItemHTMLElementList = await screen.findAllByLabelText(
-          ariaLabelDiv.wallet.history.item,
+          dataTestIdDiv.wallet.history.item,
         );
         expect(historyItemHTMLElementList).toHaveLength(
           walletHistory.rawAllTypes.length,
@@ -86,38 +86,38 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show available all filters', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.wallet.history.filterPanel),
+          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
         );
       });
       Object.keys(DEFAULT_FILTER.selectedTransactionTypes).map(
         (filterOperationType) => {
           expect(
             screen.getByLabelText(
-              `${ariaLabelDiv.wallet.history.filterSelector.preFix}${filterOperationType}`,
+              `${dataTestIdDiv.wallet.history.filterSelector.preFix}${filterOperationType}`,
             ),
           ).toBeInTheDocument();
         },
       );
       expect(
-        screen.getByLabelText(ariaLabelDiv.wallet.history.byIncoming),
+        screen.getByLabelText(dataTestIdDiv.wallet.history.byIncoming),
       ).toBeInTheDocument();
       expect(
-        screen.getByLabelText(ariaLabelDiv.wallet.history.byOutgoing),
+        screen.getByLabelText(dataTestIdDiv.wallet.history.byOutgoing),
       ).toBeInTheDocument();
     });
 
     it('Must set search box filter value & display try clear message', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.wallet.history.filterPanel),
+          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.walletHistory),
+          screen.getByLabelText(dataTestIdInput.filter.walletHistory),
           'one op',
         );
       });
       expect(
-        await screen.findByLabelText(ariaLabelInput.filter.walletHistory),
+        await screen.findByLabelText(dataTestIdInput.filter.walletHistory),
       ).toHaveValue('one op');
       expect(
         await screen.findByText(
@@ -131,15 +131,15 @@ describe('wallet-history.component tests:\n', () => {
     it('Must filter by an specific value and display 1 transaction', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.wallet.history.filterPanel),
+          screen.getByLabelText(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.walletHistory),
+          screen.getByLabelText(dataTestIdInput.filter.walletHistory),
           'unique memo',
         );
       });
       expect(
-        await screen.findAllByLabelText(ariaLabelDiv.wallet.history.item),
+        await screen.findAllByLabelText(dataTestIdDiv.wallet.history.item),
       ).toHaveLength(1);
     });
   });

@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -53,10 +53,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -65,7 +65,7 @@ describe('proposal-voting-section.component tests:\n', () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.queryByLabelText(ariaLabelDiv.proposalVotingSection)?.className,
+        screen.queryByLabelText(dataTestIdDiv.proposalVotingSection)?.className,
       ).toContain('hide');
     });
 
@@ -73,10 +73,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -90,10 +90,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       const sChromeTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.readProposal),
+          screen.getByLabelText(dataTestIdButton.readProposal),
         );
       });
       expect(sChromeTabs).toHaveBeenCalledWith({
@@ -127,10 +127,10 @@ describe('proposal-voting-section.component tests:\n', () => {
     it('Must show error trying to vote proposal', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.proposalVotingSection),
+          screen.getByLabelText(dataTestIdDiv.proposalVotingSection),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.operation.voteProposal),
+          screen.getByLabelText(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(

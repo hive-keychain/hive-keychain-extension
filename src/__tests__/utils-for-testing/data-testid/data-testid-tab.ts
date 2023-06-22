@@ -1,7 +1,7 @@
-const ariaLabelTab = {
+const dataTestIdTab = {
   witness: 'witness-tab',
   proposal: 'proposal-tab',
   proxy: 'proxy-tab',
 };
 
-export default ariaLabelTab;
+export default dataTestIdTab;

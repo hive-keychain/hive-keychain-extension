@@ -1,4 +1,4 @@
-const arialabelCheckbox = {
+const dataTestIdCheckbox = {
   selectKeys: {
     import: {
       postingkey: 'checkbox-import-posting-key',
@@ -45,4 +45,4 @@ const arialabelCheckbox = {
   },
 };
 
-export default arialabelCheckbox;
+export default dataTestIdCheckbox;

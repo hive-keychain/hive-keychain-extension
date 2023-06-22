@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -35,7 +35,7 @@ describe('home.component action-buttons tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.actionBtn.preFix + ActionButtonList[i].icon,
+            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
           ),
         );
       });
@@ -43,7 +43,7 @@ describe('home.component action-buttons tests:\n', () => {
         await screen.findByLabelText(`${ActionButtonList[i].nextScreen}-page`),
       ).toBeInTheDocument();
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelIcon.arrowBack));
+        await userEvent.click(screen.getByLabelText(dataTestIdIcon.arrowBack));
       });
     }
   });

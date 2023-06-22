@@ -7,9 +7,9 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -41,13 +41,13 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
@@ -56,7 +56,7 @@ describe('account-keys-list.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.keys.list.preFix.clickeableKey + 'posting',
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
       });
@@ -75,12 +75,12 @@ describe('account-keys-list.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.keys.list.preFix.clickeableKey + 'posting',
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDiv.keys.list.preFix.clickeableKey + 'posting',
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
       });
@@ -94,7 +94,7 @@ describe('account-keys-list.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelIcon.keys.list.preFix.remove + 'posting',
+            dataTestIdIcon.keys.list.preFix.remove + 'posting',
           ),
         );
       });
@@ -103,7 +103,7 @@ describe('account-keys-list.component tests:\n', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.cancel),
+          screen.getByLabelText(dataTestIdButton.dialog.cancel),
         );
       });
     });
@@ -111,7 +111,7 @@ describe('account-keys-list.component tests:\n', () => {
     it('Must show confirmation to remove account and go back when cancelling', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.accounts.manage.delete),
+          screen.getByLabelText(dataTestIdButton.accounts.manage.delete),
         );
       });
       expect(
@@ -119,7 +119,7 @@ describe('account-keys-list.component tests:\n', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.cancel),
+          screen.getByLabelText(dataTestIdButton.dialog.cancel),
         );
       });
       expect(
@@ -139,10 +139,10 @@ describe('account-keys-list.component tests:\n', () => {
         .mockReturnValue([accounts.local.two] as LocalAccount[]);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.accounts.manage.delete),
+          screen.getByLabelText(dataTestIdButton.accounts.manage.delete),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -171,25 +171,27 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
     });
     it('Must remove active key', async () => {
       expect(
-        screen.queryByLabelText(ariaLabelIcon.keys.list.preFix.add + 'posting'),
+        screen.queryByLabelText(
+          dataTestIdIcon.keys.list.preFix.add + 'posting',
+        ),
       ).not.toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelIcon.keys.list.preFix.remove + 'posting',
+            dataTestIdIcon.keys.list.preFix.remove + 'posting',
           ),
         );
       });
@@ -198,23 +200,23 @@ describe('account-keys-list.component tests:\n', () => {
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.dialog.confirm),
+          screen.getByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
       expect(
         await screen.findByLabelText(
-          ariaLabelIcon.keys.list.preFix.add + 'posting',
+          dataTestIdIcon.keys.list.preFix.add + 'posting',
         ),
       ).toBeInTheDocument();
     });
@@ -245,13 +247,13 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.ACCOUNTS),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
           ),
         );
       });
@@ -276,11 +278,11 @@ describe('account-keys-list.component tests:\n', () => {
       ]);
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDiv.keys.list.usingAuthorized),
+          screen.getByLabelText(dataTestIdDiv.keys.list.usingAuthorized),
         );
       });
       expect(
-        await screen.findByLabelText(ariaLabelDiv.selectedAccount),
+        await screen.findByLabelText(dataTestIdDiv.selectedAccount),
       ).toHaveTextContent(mk.user.two);
     });
   });

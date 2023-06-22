@@ -3,8 +3,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-testid-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import versionLog from 'src/__tests__/utils-for-testing/data/version-log';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
@@ -109,7 +109,7 @@ describe('whats-new.component tests:\n', () => {
       });
       await act(async () => {
         await userEvent.click(
-          screen.getAllByLabelText(ariaLabelLink.whatsNew.link.readMore)[0],
+          screen.getAllByLabelText(dataTestIdLink.whatsNew.link.readMore)[0],
         );
       });
       expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
@@ -126,18 +126,18 @@ describe('whats-new.component tests:\n', () => {
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.whatsNew.button.nextPage),
+          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.whatsNew.button.nextPage),
+          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.whatsNew.button.nextPage),
+          screen.getByLabelText(dataTestIdButton.whatsNew.button.nextPage),
         );
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.whatsNew.button.lastPage),
+          screen.getByLabelText(dataTestIdButton.whatsNew.button.lastPage),
         );
       });
       expect(

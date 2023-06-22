@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
@@ -40,7 +40,7 @@ describe('token-item.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
@@ -48,7 +48,7 @@ describe('token-item.component tests:\n', () => {
 
   it('Must show only one token', async () => {
     expect(
-      await screen.findAllByLabelText(ariaLabelDiv.token.user.item),
+      await screen.findAllByLabelText(dataTestIdDiv.token.user.item),
     ).toHaveLength(1);
   });
 
@@ -58,17 +58,19 @@ describe('token-item.component tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByLabelText(
-        ariaLabelButton.token.action.preFix + `stake-` + selectedToken.symbol,
+        dataTestIdButton.token.action.preFix + `stake-` + selectedToken.symbol,
       ),
     ).toBeInTheDocument();
     expect(
       await screen.findByLabelText(
-        ariaLabelButton.token.action.preFix + 'unstake-' + selectedToken.symbol,
+        dataTestIdButton.token.action.preFix +
+          'unstake-' +
+          selectedToken.symbol,
       ),
     ).toBeInTheDocument();
     expect(
       await screen.findByLabelText(
-        ariaLabelButton.token.action.preFix +
+        dataTestIdButton.token.action.preFix +
           'delegate-' +
           selectedToken.symbol,
       ),
@@ -85,7 +87,7 @@ describe('token-item.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         await screen.findByLabelText(
-          ariaLabelDiv.token.user.prefixes.gotoWebSite + selectedToken.symbol,
+          dataTestIdDiv.token.user.prefixes.gotoWebSite + selectedToken.symbol,
         ),
       );
     });

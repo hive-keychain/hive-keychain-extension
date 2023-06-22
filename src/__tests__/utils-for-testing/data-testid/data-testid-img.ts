@@ -1,4 +1,4 @@
-const ariaLabelImg = {
+const dataTestIdImg = {
   tokens: {
     settings: {
       eraseRpc: 'erase-rpc-img',
@@ -10,4 +10,4 @@ const ariaLabelImg = {
   },
 };
 
-export default ariaLabelImg;
+export default dataTestIdImg;

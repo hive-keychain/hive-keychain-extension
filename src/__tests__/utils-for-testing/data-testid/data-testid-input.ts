@@ -1,4 +1,4 @@
-const ariaLabelInput = {
+const dataTestIdInput = {
   password: 'password-input',
   confirmation: 'password-input-confirmation',
   username: 'input-username',
@@ -30,4 +30,4 @@ const ariaLabelInput = {
   },
 };
 
-export default ariaLabelInput;
+export default dataTestIdInput;

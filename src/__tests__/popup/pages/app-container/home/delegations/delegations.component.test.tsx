@@ -6,11 +6,11 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelSpan from 'src/__tests__/utils-for-testing/aria-labels/aria-label-span';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdSpan from 'src/__tests__/utils-for-testing/data-testid/data-testid-span';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { DelegationUtils } from 'src/utils/delegation.utils';
@@ -41,11 +41,11 @@ describe('delegations.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDropdown.arrow.hp),
+          screen.getByLabelText(dataTestIdDropdown.arrow.hp),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDropdown.itemPreFix + Icons.DELEGATIONS_HP,
+            dataTestIdDropdown.itemPreFix + Icons.DELEGATIONS_HP,
           ),
         );
       });
@@ -70,23 +70,23 @@ describe('delegations.component tests:\n', () => {
       );
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelDropdown.arrow.hp),
+          screen.getByLabelText(dataTestIdDropdown.arrow.hp),
         );
         await userEvent.click(
           screen.getByLabelText(
-            ariaLabelDropdown.itemPreFix + Icons.DELEGATIONS_HP,
+            dataTestIdDropdown.itemPreFix + Icons.DELEGATIONS_HP,
           ),
         );
       });
     });
     it('Must show total incoming/outgoing values', async () => {
       const incomingHTMLElement = await screen.findByLabelText(
-        ariaLabelSpan.delegations.incoming.spanTotal,
+        dataTestIdSpan.delegations.incoming.spanTotal,
       );
       expect(incomingHTMLElement.textContent).toContain('+');
       expect(incomingHTMLElement.textContent).toContain('HP');
       const outgoingTotalHTMLElement = await screen.findByLabelText(
-        ariaLabelDiv.delegations.outgoing.totalValue,
+        dataTestIdDiv.delegations.outgoing.totalValue,
       );
       expect(outgoingTotalHTMLElement.textContent).toContain('-');
       expect(outgoingTotalHTMLElement.textContent).toContain('HP');
@@ -96,7 +96,7 @@ describe('delegations.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.delegations.total.incoming,
+            dataTestIdButton.delegations.total.incoming,
           ),
         );
       });
@@ -112,7 +112,7 @@ describe('delegations.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.delegations.total.outgoing,
+            dataTestIdButton.delegations.total.outgoing,
           ),
         );
       });
@@ -132,20 +132,20 @@ describe('delegations.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.username),
+          await screen.findByLabelText(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.amount),
+          await screen.findByLabelText(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.operation.delegate.submit,
+            dataTestIdButton.operation.delegate.submit,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -164,20 +164,20 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.username),
+          await screen.findByLabelText(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.amount),
+          await screen.findByLabelText(dataTestIdInput.amount),
           '0.01',
         );
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.operation.delegate.submit,
+            dataTestIdButton.operation.delegate.submit,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -196,20 +196,20 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.username),
+          await screen.findByLabelText(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.amount),
+          await screen.findByLabelText(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.operation.delegate.submit,
+            dataTestIdButton.operation.delegate.submit,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -228,20 +228,20 @@ describe('delegations.component tests:\n', () => {
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.username),
+          await screen.findByLabelText(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.amount),
+          await screen.findByLabelText(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.operation.delegate.submit,
+            dataTestIdButton.operation.delegate.submit,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(
@@ -257,20 +257,20 @@ describe('delegations.component tests:\n', () => {
         .mockRejectedValue(new Error('Error on delegation'));
       await act(async () => {
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.username),
+          await screen.findByLabelText(dataTestIdInput.username),
           'keychain.user1',
         );
         await userEvent.type(
-          await screen.findByLabelText(ariaLabelInput.amount),
+          await screen.findByLabelText(dataTestIdInput.amount),
           '{space}',
         );
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelButton.operation.delegate.submit,
+            dataTestIdButton.operation.delegate.submit,
           ),
         );
         await userEvent.click(
-          await screen.findByLabelText(ariaLabelButton.dialog.confirm),
+          await screen.findByLabelText(dataTestIdButton.dialog.confirm),
         );
       });
       expect(

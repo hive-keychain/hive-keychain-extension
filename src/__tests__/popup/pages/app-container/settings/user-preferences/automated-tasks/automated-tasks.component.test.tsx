@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
@@ -60,15 +60,15 @@ describe('automated-tasks.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+          await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.menuPreFix + Icons.PREFERENCES,
+              dataTestIdButton.menuPreFix + Icons.PREFERENCES,
             ),
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelButton.menuPreFix + Icons.AUTOMATED_TASKS,
+              dataTestIdButton.menuPreFix + Icons.AUTOMATED_TASKS,
             ),
           );
         });
@@ -103,7 +103,7 @@ describe('automated-tasks.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              arialabelCheckbox.automatedTasks.checkbox.claim.accounts,
+              dataTestIdCheckbox.automatedTasks.checkbox.claim.accounts,
             ),
           );
         });
@@ -119,7 +119,7 @@ describe('automated-tasks.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              arialabelCheckbox.automatedTasks.checkbox.claim.accounts,
+              dataTestIdCheckbox.automatedTasks.checkbox.claim.accounts,
             ),
           );
         });

@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
@@ -45,7 +45,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
@@ -55,7 +55,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelDiv.token.user.prefixes.outgoingDelegations +
+          dataTestIdDiv.token.user.prefixes.outgoingDelegations +
             selectedToken.symbol,
         ),
       );
@@ -78,7 +78,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelDiv.token.user.prefixes.incomingDelegations +
+          dataTestIdDiv.token.user.prefixes.incomingDelegations +
             selectedToken.symbol,
         ),
       );

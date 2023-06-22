@@ -1,4 +1,4 @@
-const ariaLabelToolTip = {
+const dataTestIdToolTip = {
   custom: {
     resources: {
       votingMana: 'custom-tool-tip-popup_html_vm',
@@ -14,4 +14,4 @@ const ariaLabelToolTip = {
   content: 'tooltip-content',
 };
 
-export default ariaLabelToolTip;
+export default dataTestIdToolTip;

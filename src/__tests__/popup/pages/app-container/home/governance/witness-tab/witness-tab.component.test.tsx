@@ -5,12 +5,12 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label-div';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelLink from 'src/__tests__/utils-for-testing/aria-labels/aria-label-link';
-import ariaLabelSwitch from 'src/__tests__/utils-for-testing/aria-labels/aria-label-switch';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-testid-link';
+import dataTestIdSwitch from 'src/__tests__/utils-for-testing/data-testid/data-testid-switch';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
@@ -47,21 +47,22 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
       });
     });
     it('Must display only active witnesses', async () => {
       expect(
-        await screen.findAllByLabelText(ariaLabelDiv.rankingItem),
+        await screen.findAllByLabelText(dataTestIdDiv.rankingItem),
       ).toHaveLength(witness.rankingWInactive.length - 1);
     });
 
     it('Must display more information message', async () => {
       expect(
-        (await screen.findByLabelText(ariaLabelLink.linkToArcange)).textContent,
+        (await screen.findByLabelText(dataTestIdLink.linkToArcange))
+          .textContent,
       ).toContain(chrome.i18n.getMessage('html_popup_link_to_witness_website'));
     });
 
@@ -69,7 +70,7 @@ describe('witness tab:\n', () => {
       const sTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelLink.linkToArcange),
+          screen.getByLabelText(dataTestIdLink.linkToArcange),
         );
       });
       expect(sTabs).toHaveBeenCalledWith({ url: witness.arcangeLink });
@@ -79,11 +80,11 @@ describe('witness tab:\n', () => {
     it('Must display no witnesses when typying a non existing witness on filter box', async () => {
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.ranking),
+          screen.getByLabelText(dataTestIdInput.filter.ranking),
           'nonExistent',
         );
       });
-      expect(screen.queryAllByLabelText(ariaLabelDiv.rankingItem).length).toBe(
+      expect(screen.queryAllByLabelText(dataTestIdDiv.rankingItem).length).toBe(
         0,
       );
     });
@@ -94,12 +95,12 @@ describe('witness tab:\n', () => {
       )[0].name;
       await act(async () => {
         await userEvent.type(
-          screen.getByLabelText(ariaLabelInput.filter.ranking),
+          screen.getByLabelText(dataTestIdInput.filter.ranking),
           blocktradesWitnessName,
         );
       });
       const rankingHTMLElements = screen.queryAllByLabelText(
-        ariaLabelDiv.rankingItem,
+        dataTestIdDiv.rankingItem,
       );
       expect(rankingHTMLElements).toHaveLength(1);
       expect(rankingHTMLElements[0].textContent).toContain(
@@ -113,7 +114,7 @@ describe('witness tab:\n', () => {
       )[0].name;
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelSwitch.panel.witness.hideInactive),
+          screen.getByLabelText(dataTestIdSwitch.panel.witness.hideInactive),
         );
       });
       expect(
@@ -124,7 +125,7 @@ describe('witness tab:\n', () => {
     it('Must show only voted witnesses when checking on voted only', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByLabelText(ariaLabelSwitch.panel.witness.votedOnly),
+          screen.getByLabelText(dataTestIdSwitch.panel.witness.votedOnly),
         );
       });
       for (let i = 0; i < accounts.extended.witness_votes.length; i++) {
@@ -134,7 +135,7 @@ describe('witness tab:\n', () => {
         ).toBeInTheDocument();
       }
       expect(
-        (await screen.findAllByLabelText(ariaLabelDiv.rankingItem)).length,
+        (await screen.findAllByLabelText(dataTestIdDiv.rankingItem)).length,
       ).toBe(accounts.extended.witness_votes.length);
     });
 
@@ -144,7 +145,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelIcon.witness.linkToPagePrefix + firstWitness.name,
+            dataTestIdIcon.witness.linkToPagePrefix + firstWitness.name,
           ),
         );
       });
@@ -167,7 +168,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelIcon.witness.votingPrefix + selectedWitness,
+            dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
       });
@@ -193,7 +194,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelIcon.witness.votingPrefix + selectedWitness,
+            dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
       });
@@ -217,7 +218,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelIcon.witness.votingPrefix + selectedWitness,
+            dataTestIdIcon.witness.votingPrefix + selectedWitness,
           ),
         );
       });
@@ -241,7 +242,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(
           await screen.findByLabelText(
-            ariaLabelIcon.witness.votingPrefix + selectedWitnessNameToVote,
+            dataTestIdIcon.witness.votingPrefix + selectedWitnessNameToVote,
           ),
         );
       });
@@ -278,9 +279,9 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByLabelText(ariaLabelButton.menu));
+        await userEvent.click(screen.getByLabelText(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByLabelText(ariaLabelButton.menuPreFix + Icons.HIVE),
+          screen.getByLabelText(dataTestIdButton.menuPreFix + Icons.HIVE),
         );
       });
     });

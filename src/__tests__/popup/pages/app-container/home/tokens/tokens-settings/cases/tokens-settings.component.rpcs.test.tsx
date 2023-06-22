@@ -5,11 +5,11 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelImg from 'src/__tests__/utils-for-testing/aria-labels/aria-label-img';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdImg from 'src/__tests__/utils-for-testing/data-testid/data-testid-img';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
@@ -43,15 +43,15 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+              `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.rpcNode,
+              dataTestIdSelect.tokens.settings.panel.rpcNode,
             ),
           );
         });
@@ -59,12 +59,12 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must display total of rpc items & find custom rpc', async () => {
         expect(
           await screen.findAllByLabelText(
-            ariaLabelSelect.tokens.settings.items.rpcNode,
+            dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(rpcFullList.length);
         expect(
           await screen.findByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -74,27 +74,27 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must delete custom rpc, reload rpc list and not show deleted one', async () => {
         expect(
           await screen.findAllByLabelText(
-            ariaLabelSelect.tokens.settings.items.rpcNode,
+            dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(rpcFullList.length);
         HiveEngineConfigUtils.getCustomRpcs = jest.fn().mockResolvedValue([]);
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+              `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
                 customRpc.replace('https://', '').split('/')[0]
               }`,
             ),
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.rpcNode,
+              dataTestIdSelect.tokens.settings.panel.rpcNode,
             ),
           );
         });
         expect(
           screen.queryByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -111,15 +111,15 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+              `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.rpcNode,
+              dataTestIdSelect.tokens.settings.panel.rpcNode,
             ),
           );
         });
@@ -128,12 +128,12 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must display total of default rpc items & not find custom rpc', async () => {
         expect(
           await screen.findAllByLabelText(
-            ariaLabelSelect.tokens.settings.items.rpcNode,
+            dataTestIdSelect.tokens.settings.items.rpcNode,
           ),
         ).toHaveLength(DefaultHiveEngineRpcs.length);
         expect(
           screen.queryByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customRpc.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -144,16 +144,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.add,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             DefaultHiveEngineRpcs[0],
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.save,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );
         });
@@ -168,16 +168,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.add,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             'non-valid-@url.@',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.save,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );
         });
@@ -192,16 +192,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.add,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             '{space}',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.rpcNode.save,
+              dataTestIdIcon.tokens.settings.actions.rpcNode.save,
             ),
           );
         });

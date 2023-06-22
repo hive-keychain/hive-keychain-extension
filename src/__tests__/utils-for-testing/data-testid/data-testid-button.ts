@@ -1,4 +1,4 @@
-const ariaLabelButton = {
+const dataTestIdButton = {
   login: 'login-button',
   submit: 'submit-button',
   addByKeys: 'add-by-keys-button',
@@ -104,4 +104,4 @@ const ariaLabelButton = {
   },
 };
 
-export default ariaLabelButton;
+export default dataTestIdButton;

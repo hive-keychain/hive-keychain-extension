@@ -5,11 +5,11 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelImg from 'src/__tests__/utils-for-testing/aria-labels/aria-label-img';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
-import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdImg from 'src/__tests__/utils-for-testing/data-testid/data-testid-img';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
@@ -42,11 +42,11 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+              `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
           );
         });
       });
@@ -54,13 +54,13 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+              dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
           await screen.findByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -71,13 +71,13 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+              dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
           await screen.findAllByLabelText(
-            ariaLabelSelect.tokens.settings.items.accountHistoryApi,
+            dataTestIdSelect.tokens.settings.items.accountHistoryApi,
           ),
         ).toHaveLength(DefaultAccountHistoryApis.length + 1);
         HiveEngineConfigUtils.getCustomAccountHistoryApi = jest
@@ -86,20 +86,20 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+              `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
                 customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
               }`,
             ),
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelSelect.tokens.settings.panel.accountHistoryApi,
+              dataTestIdSelect.tokens.settings.panel.accountHistoryApi,
             ),
           );
         });
         expect(
           screen.queryByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -116,11 +116,11 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+              `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
             ),
           );
           await userEvent.click(
-            screen.getByLabelText(ariaLabelIcon.tokens.settings.open),
+            screen.getByLabelText(dataTestIdIcon.tokens.settings.open),
           );
         });
       });
@@ -128,7 +128,7 @@ describe('tokens-settings.component tests:\n', () => {
       it('Must not show any custom nodes', () => {
         expect(
           screen.queryByLabelText(
-            `${ariaLabelImg.tokens.settings.eraseRpcPreFix}${
+            `${dataTestIdImg.tokens.settings.eraseRpcPreFix}${
               customAccountHistoryApiUrl.replace('https://', '').split('/')[0]
             }`,
           ),
@@ -139,16 +139,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             DefaultAccountHistoryApis[0],
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );
         });
@@ -163,16 +163,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             'non-valid-@url.@',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );
         });
@@ -187,16 +187,16 @@ describe('tokens-settings.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.add,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.add,
             ),
           );
           await userEvent.type(
-            screen.getByLabelText(ariaLabelInput.textInput),
+            screen.getByLabelText(dataTestIdInput.textInput),
             '{space}',
           );
           await userEvent.click(
             screen.getByLabelText(
-              ariaLabelIcon.tokens.settings.actions.accountHistory.save,
+              dataTestIdIcon.tokens.settings.actions.accountHistory.save,
             ),
           );
         });

@@ -1,4 +1,4 @@
-const ariaLabelSelect = {
+const dataTestIdSelect = {
   accountSelector: 'Dropdown select',
   itemSelectorPreFix: 'select-account-item-',
   tokens: {
@@ -22,4 +22,4 @@ const ariaLabelSelect = {
   },
 };
 
-export default ariaLabelSelect;
+export default dataTestIdSelect;

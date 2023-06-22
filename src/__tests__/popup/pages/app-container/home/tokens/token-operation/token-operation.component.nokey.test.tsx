@@ -7,9 +7,9 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React from 'react';
-import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
-import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
-import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -57,14 +57,14 @@ describe('token-operation No Active key tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
         ),
       );
     });
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelIcon.tokens.prefix.expandMore}${selectedToken.symbol}`,
+          `${dataTestIdIcon.tokens.prefix.expandMore}${selectedToken.symbol}`,
         ),
       );
     });
@@ -74,7 +74,7 @@ describe('token-operation No Active key tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelButton.token.action.preFix +
+          dataTestIdButton.token.action.preFix +
             TokenOperationType.DELEGATE +
             '-' +
             selectedToken.symbol,
@@ -84,16 +84,16 @@ describe('token-operation No Active key tests:\n', () => {
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.username),
+        screen.getByLabelText(dataTestIdInput.username),
         mk.user.two,
       );
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.amount),
+        screen.getByLabelText(dataTestIdInput.amount),
         '1.000',
       );
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
+          `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.DELEGATE}`,
         ),
       );
     });
@@ -110,7 +110,7 @@ describe('token-operation No Active key tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelButton.token.action.preFix +
+          dataTestIdButton.token.action.preFix +
             TokenOperationType.UNSTAKE +
             '-' +
             selectedToken.symbol,
@@ -120,12 +120,12 @@ describe('token-operation No Active key tests:\n', () => {
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.amount),
+        screen.getByLabelText(dataTestIdInput.amount),
         '1.000',
       );
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.UNSTAKE}`,
+          `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.UNSTAKE}`,
         ),
       );
     });
@@ -142,7 +142,7 @@ describe('token-operation No Active key tests:\n', () => {
     await act(async () => {
       await userEvent.click(
         screen.getByLabelText(
-          ariaLabelButton.token.action.preFix +
+          dataTestIdButton.token.action.preFix +
             TokenOperationType.STAKE +
             '-' +
             selectedToken.symbol,
@@ -152,12 +152,12 @@ describe('token-operation No Active key tests:\n', () => {
     AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
-        screen.getByLabelText(ariaLabelInput.amount),
+        screen.getByLabelText(dataTestIdInput.amount),
         '1.000',
       );
       await userEvent.click(
         screen.getByLabelText(
-          `${ariaLabelButton.operation.tokens.preFix}${TokenOperationType.STAKE}`,
+          `${dataTestIdButton.operation.tokens.preFix}${TokenOperationType.STAKE}`,
         ),
       );
     });
