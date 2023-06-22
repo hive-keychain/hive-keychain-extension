@@ -12,7 +12,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { PowerUtils } from 'src/utils/power.utils';

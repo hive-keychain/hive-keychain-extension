@@ -8,7 +8,7 @@ import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-la
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(

@@ -12,7 +12,7 @@ import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-la
 import ariaLabelSwitch from 'src/__tests__/utils-for-testing/aria-labels/aria-label-switch';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 
 describe('buy-coins.component tests:\n', () => {
   const actionButtonIconBuy = ActionButtonList.find(

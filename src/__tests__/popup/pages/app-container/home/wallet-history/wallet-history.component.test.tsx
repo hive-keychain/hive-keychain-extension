@@ -10,7 +10,7 @@ import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label
 import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import walletHistory from 'src/__tests__/utils-for-testing/data/history/transactions/wallet-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('wallet-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

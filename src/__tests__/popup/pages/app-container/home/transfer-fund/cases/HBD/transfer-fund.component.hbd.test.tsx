@@ -8,7 +8,7 @@ import React from 'react';
 import ariaLabelDropdown from 'src/__tests__/utils-for-testing/aria-labels/aria-label-dropdown';
 import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import CurrencyUtils from 'src/utils/currency.utils';
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {

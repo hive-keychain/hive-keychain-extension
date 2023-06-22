@@ -8,7 +8,7 @@ import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('automated-tasks.component tests:\n', () => {

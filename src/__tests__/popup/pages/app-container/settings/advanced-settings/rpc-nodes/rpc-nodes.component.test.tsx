@@ -10,7 +10,7 @@ import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-
 import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import ariaLabelSelect from 'src/__tests__/utils-for-testing/aria-labels/aria-label-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 describe('rpc-nodes.component tests:\n', () => {
   afterEach(() => {

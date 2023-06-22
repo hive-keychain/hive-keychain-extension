@@ -10,7 +10,7 @@ import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label
 import ariaLabelTab from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tab';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 
 describe('governance.component tests:\n', () => {
   afterEach(() => {

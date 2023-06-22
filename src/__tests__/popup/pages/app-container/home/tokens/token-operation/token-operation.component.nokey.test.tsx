@@ -15,7 +15,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 
 describe('token-operation No Active key tests:\n', () => {

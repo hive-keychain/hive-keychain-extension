@@ -12,7 +12,7 @@ import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-lab
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('tokens-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

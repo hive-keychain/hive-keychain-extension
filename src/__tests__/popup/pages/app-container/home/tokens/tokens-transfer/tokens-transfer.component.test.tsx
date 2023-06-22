@@ -14,7 +14,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import TokensUtils from 'src/utils/tokens.utils';

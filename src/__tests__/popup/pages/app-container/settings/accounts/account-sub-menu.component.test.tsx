@@ -9,7 +9,7 @@ import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 //TODO after refactoring all test, ensure all works, change aria-labels to test
 // in the component/html ele => data-testid="settings-accounts-page"

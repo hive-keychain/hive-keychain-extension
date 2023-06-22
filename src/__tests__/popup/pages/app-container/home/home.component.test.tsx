@@ -19,7 +19,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';

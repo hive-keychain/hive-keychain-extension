@@ -10,7 +10,7 @@ import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-la
 import arialabelCheckbox from 'src/__tests__/utils-for-testing/aria-labels/aria-label-checkbox';
 import ariaLabelInput from 'src/__tests__/utils-for-testing/aria-labels/aria-label-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('auto-lock.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

@@ -11,7 +11,7 @@ import ariaLabelToolTip from 'src/__tests__/utils-for-testing/aria-labels/aria-l
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import HiveUtils from 'src/utils/hive.utils';
 
 describe('resources-section.component tests:\n', () => {

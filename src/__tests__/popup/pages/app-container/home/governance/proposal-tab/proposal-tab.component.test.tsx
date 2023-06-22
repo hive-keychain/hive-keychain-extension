@@ -13,7 +13,7 @@ import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label
 import ariaLabelTab from 'src/__tests__/utils-for-testing/aria-labels/aria-label-tab';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import ProposalUtils from 'src/utils/proposal.utils';
 
 describe('Proposal tab:\n', () => {

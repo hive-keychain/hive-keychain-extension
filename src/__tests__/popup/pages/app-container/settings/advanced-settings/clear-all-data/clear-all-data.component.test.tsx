@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-label-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import MkUtils from 'src/utils/mk.utils';

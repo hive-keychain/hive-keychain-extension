@@ -12,7 +12,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { KeysUtils } from 'src/utils/keys.utils';
 
 describe('select-keys.component tests:\n', () => {

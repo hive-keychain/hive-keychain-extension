@@ -15,7 +15,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import AccountUtils from 'src/utils/account.utils';
 describe('add-key.component tests:\n', () => {
   afterEach(() => {

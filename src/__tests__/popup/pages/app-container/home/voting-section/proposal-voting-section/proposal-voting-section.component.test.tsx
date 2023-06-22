@@ -10,7 +10,7 @@ import ariaLabelDiv from 'src/__tests__/utils-for-testing/aria-labels/aria-label
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
 import ProposalUtils from 'src/utils/proposal.utils';
 
