@@ -65,8 +65,6 @@ export interface TestsConfigureModules {
   jestTimeOut?: number;
 }
 
-//TODO ask cedric if default loading values are needed?
-
 export interface TestsAppLoadingValues {
   chrome?: {
     i18n?: {
@@ -181,7 +179,7 @@ export interface TestsAppLoadingValues {
   apiRelated?: {
     KeychainApi?: {
       get?: jest.Mock;
-      customData?: KeyChainApiGetCustomData; //TODO think if you need to keep using interface file or just define it here.
+      customData?: KeyChainApiGetCustomData;
     };
   };
   localStorageRelated?: {
@@ -212,12 +210,6 @@ const set = (params?: {
   //////////////
   //Jest/Global Modules configuration used prior loading the app.
 
-  //TODO Check after refactoring all tests: right now we have configured
-  //  Object.assign(global, require('jest-chrome')); in -> jest.setup.js
-  //TODO check if still needed? if not to remove
-  // const chrome = require('chrome-mock');
-  // global.chrome = chrome;
-
   jest.setTimeout(params?.modules?.jestTimeOut ?? 10000);
   //////////////
 
@@ -228,7 +220,7 @@ const set = (params?: {
     .mockImplementation(
       params?.app?.chrome?.i18n?.getMessageImplementation ??
         mocksImplementation.i18nGetMessageCustom,
-    ); //TODO change, as default for now
+    );
   chrome.runtime.sendMessage =
     params?.app?.chrome?.runtime?.sendMessage ?? jest.fn();
   chrome.tabs.create = params?.app?.chrome?.tabs?.create ?? jest.fn();
@@ -238,20 +230,6 @@ const set = (params?: {
 
   ////////
   //LocalStorate related
-
-  //Old way
-  //Assigning customData
-  // if (params?.app?.localStorageRelated?.customData) {
-  //   //TODO important to maybe change later on.
-  //   //  right now this file(dataMocks.customDataFromLocalStorage) it is being
-  //   //  accessed from the implementation.
-  //   //  possible idea: why not moving all implementations here into separate function so we can handle/update/control all in one file???
-  //   dataMocks.customDataFromLocalStorage =
-  //     params?.app?.localStorageRelated?.customData;
-  // }
-  //end Old way
-
-  //new way testing just added as arg[1];
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(
@@ -266,10 +244,8 @@ const set = (params?: {
             ),
           ),
     );
-  //LocalStorage on App init //TODO do we need to implement this one as well?
-  //TODO check if bellow is really needed or not, if yes, add into app as localStorageOnInit.
-  LocalStorageUtils.saveValueInLocalStorage = jest.fn(); //no impl
-  LocalStorageUtils.removeFromLocalStorage = jest.fn(); //no impl
+  LocalStorageUtils.saveValueInLocalStorage = jest.fn();
+  LocalStorageUtils.removeFromLocalStorage = jest.fn();
   LocalStorageUtils.getMultipleValueFromLocalStorage = jest
     .fn()
     .mockResolvedValue(
@@ -413,10 +389,12 @@ const set = (params?: {
       params?.app?.accountsRelated?.TokensUtils?.getIncomingDelegations ??
         tokensUser.incomingDelegations,
     );
-  TokensUtils.getOutgoingDelegations = jest.fn().mockResolvedValue(
-    params?.app?.accountsRelated?.TokensUtils?.getOutgoingDelegations ??
-      tokensUser.outcomingDelegations, //TODO rename data const as outgoinDelegations.
-  );
+  TokensUtils.getOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.accountsRelated?.TokensUtils?.getOutgoingDelegations ??
+        tokensUser.outcomingDelegations,
+    );
   TokensUtils.getAllTokens = jest
     .fn()
     .mockResolvedValue(

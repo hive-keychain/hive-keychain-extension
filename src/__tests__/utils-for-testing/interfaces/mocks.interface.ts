@@ -79,9 +79,9 @@ export interface MocksChromeRunTime {
 }
 
 export interface MocksGoogleAnalytics {
-  initializeGoogleAnalytics?: string; //To be used for now as 'bypass' to just mock without impl.
+  initializeGoogleAnalytics?: string;
 }
-//TODO implement as dataMocks/CustomDataFromLocalStorage, when coding tests for survey.
+
 export interface MocksSurvey {
   byPassing: boolean;
 }
