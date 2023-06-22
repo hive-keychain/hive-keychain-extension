@@ -2,13 +2,13 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
+import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
   KeychainRequestTypes,
   RequestId,
   RequestSendToken,
 } from 'hive-keychain-commons';
-import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
 describe('operations.utils tests:\n', () => {
@@ -32,7 +32,11 @@ describe('operations.utils tests:\n', () => {
     it('Must return an answerRequest with success', () => {
       const result = createMessage(
         undefined,
-        transactionConfirmationSuccess,
+        {
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult,
         datas,
         chrome.i18n.getMessage('bgd_ops_transfer_success', [
           datas.amount,
@@ -48,7 +52,11 @@ describe('operations.utils tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
-          result: transactionConfirmationSuccess,
+          result: {
+            tx_id: 'tx_id',
+            id: 'id',
+            confirmed: true,
+          } as TransactionResult,
           data: data,
           message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
             datas.amount,
