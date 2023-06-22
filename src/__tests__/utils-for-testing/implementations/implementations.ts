@@ -24,7 +24,7 @@ const hasKeys = (obj: {}) => {
  * @param args
  * @param args[0] Is always used for the LocalStorageKeyEnum.
  * @param customData Used to pass custom readed value from LS. To use, assign dataMocks.customDataFromLocalStorage
- * @returns Null if not found or not mocked yet.
+ * @returns Undefined if not found or not mocked yet. Enable console.log in default case, to see which key is not being mocked.
  * If debug needed, just uncomment the console.log
  */
 const getValuefromLS = async (...args: any[]): Promise<any> => {
@@ -32,53 +32,72 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
   // console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customAutolock')
         ? customData.customAutolock
         : {
             type: AutoLockType.DEFAULT,
             mn: 1,
           };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return hasKeys(customData) ? customData.customSwitchAuto : true;
+      return customData.hasOwnProperty('customSwitchAuto')
+        ? customData.customSwitchAuto
+        : true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customWalletHistoryFilters')
         ? customData.customWalletHistoryFilters
         : DEFAULT_FILTER;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customHideSuggestionProxy')
         ? customData.customHideSuggestionProxy
         : { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customFavoriteUsers')
         ? customData.customFavoriteUsers
         : { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customlastVersionSeen')
         ? customData.customlastVersionSeen
         : manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
-      return hasKeys(customData) ? customData.customHiddenTokenList : [];
+      return customData.hasOwnProperty('customHiddenTokenList')
+        ? customData.customHiddenTokenList
+        : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
-      return hasKeys(customData) ? customData.accountHistoryApi : [];
+      return customData.hasOwnProperty('accountHistoryApi')
+        ? customData.accountHistoryApi
+        : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
-      return hasKeys(customData) ? customData.customRpcList : [];
+      return customData.hasOwnProperty('customRpcList')
+        ? customData.customRpcList
+        : [];
     case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
-      //TODO add customData here
-      return true;
+      return customData.hasOwnProperty('customKeychainifyEnabled')
+        ? customData.customKeychainifyEnabled
+        : true;
     case LocalStorageKeyEnum.RPC_LIST:
-      return hasKeys(customData) ? customData.customsRpcs : [];
+      return customData.hasOwnProperty('customsRpcs')
+        ? customData.customsRpcs
+        : [];
     case LocalStorageKeyEnum.NO_CONFIRM:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customAuthorizedOP')
         ? customData.customAuthorizedOP
         : ({} as NoConfirm);
     case LocalStorageKeyEnum.LOCAL_STORAGE_VERSION:
-      return hasKeys(customData) ? customData.customStorageVersion : undefined;
+      return customData.hasOwnProperty('customStorageVersion')
+        ? customData.customStorageVersion
+        : undefined;
     case LocalStorageKeyEnum.CURRENT_RPC:
-      return hasKeys(customData) ? customData.customCurrentRpc : undefined;
+      return customData.hasOwnProperty('customCurrentRpc')
+        ? customData.customCurrentRpc
+        : undefined;
     case LocalStorageKeyEnum.__MK:
-      return hasKeys(customData) ? customData.customMK : undefined;
+      return customData.hasOwnProperty('customMK')
+        ? customData.customMK
+        : undefined;
     case LocalStorageKeyEnum.ACCOUNTS:
-      return hasKeys(customData) ? customData.customAccounts : undefined;
+      return customData.hasOwnProperty('customAccounts')
+        ? customData.customAccounts
+        : undefined;
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
