@@ -8,6 +8,7 @@ import {
 import {
   setErrorMessage,
   setSuccessMessage,
+  setWarningMessage,
 } from '@popup/actions/message.actions';
 import {
   goBackToThenNavigate,
@@ -53,9 +54,11 @@ const TokenSwaps = ({
   removeFromLoadingList,
   setTitleContainerProperties,
   loadTokensMarket,
+  setWarningMessage,
   price,
   tokenMarket,
 }: PropsFromRedux) => {
+  const [layerTwoDelayed, setLayerTwoDelayed] = useState(false);
   const [swapConfig, setSwapConfig] = useState({} as SwapConfig);
   const [underMaintenance, setUnderMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -117,14 +120,22 @@ const TokenSwaps = ({
       if (!tokenMarket.length) loadTokensMarket();
       setLoading(true);
       tokenInitialization = initTokenSelectOptions();
-      const [serverStatus, res] = await Promise.all([
+      const [serverStatus, config] = await Promise.all([
         SwapTokenUtils.getServerStatus(),
         SwapTokenUtils.getConfig(),
       ]);
 
       setUnderMaintenance(serverStatus.isMaintenanceOn);
-      setSwapConfig(res);
-      setSlippage(res.slippage.default);
+      setSwapConfig(config);
+      if (
+        serverStatus.layerTwoDelayed &&
+        (!['HIVE', 'HBD'].includes(endToken?.value.symbol) ||
+          !['HIVE', 'HBD'].includes(startToken?.value.symbol))
+      ) {
+        setLayerTwoDelayed(true);
+        setWarningMessage('swap_layer_two_delayed');
+      }
+      setSlippage(config.slippage.default);
     } catch (err: any) {
       Logger.error(err);
       setErrorMessage(err.reason.template, err.reason.params);
@@ -636,6 +647,7 @@ const connector = connect(mapStateToProps, {
   goBackToThenNavigate,
   setTitleContainerProperties,
   loadTokensMarket,
+  setWarningMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -4,6 +4,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   Swap,
   SwapConfig,
+  SwapServerStatus,
   SwapStatus,
   SwapStep,
 } from '@interfaces/swap-token.interface';
@@ -160,7 +161,7 @@ const cancelSwap = async (swapId: string) => {
   await KeychainSwapApi.post(`token-swap/${swapId}/cancel`, {});
 };
 
-const getServerStatus = async () => {
+const getServerStatus = async (): Promise<SwapServerStatus> => {
   const res = await KeychainSwapApi.get(`server/status`);
   return res.result;
 };

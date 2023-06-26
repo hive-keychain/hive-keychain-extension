@@ -87,6 +87,12 @@ export interface SwapConfig {
   slippage: SwapSlippageConfig;
 }
 
+export interface SwapServerStatus {
+  isMaintenanceOn: boolean;
+  isServerStopped: boolean;
+  layerTwoDelayed: boolean;
+}
+
 interface SwapFeeConfig {
   account: string;
   amount: number;

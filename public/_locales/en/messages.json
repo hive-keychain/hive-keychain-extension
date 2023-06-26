@@ -3288,5 +3288,9 @@
   "swap_cannot_switch_tokens": {
     "message": "Cannot switch tokens because you don't have any $1",
     "description": "When trying to switch tokens (invert start and end)"
+  },
+  "swap_layer_two_delayed": {
+    "message": "Hive Engine is currently behind blocks. The swap might take longer than usual and has a bigger chance of aborting due to slippage.",
+    "description": "When layer two is delayed"
   }
 }
