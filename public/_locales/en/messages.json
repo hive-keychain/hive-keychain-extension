@@ -223,6 +223,10 @@
     "message": "Save",
     "description": "When using operation button to save data"
   },
+  "popup_html_authority_active": {
+    "message": "Active Authority",
+    "description": "on manage authorities list item"
+  },
   "popup_html_master": {
     "message": "Master Key",
     "description": "When adding an account via master key"
@@ -367,6 +371,10 @@
     "message": "Disable witness",
     "description": "on manage accounts"
   },
+  "popup_html_enable_witness": {
+    "message": "Enable witness",
+    "description": "on manage accounts"
+  },
   "popup_html_witness_rank_label": {
     "message": "rank",
     "description": "on my witness"
@@ -377,6 +385,10 @@
   },
   "popup_html_disable_witness_account_confirmation_message": {
     "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
+  },
+  "popup_html_enable_witness_account_confirmation_message": {
+    "message": "You are about to enable @$1 witness account. Please confirm to proceed.",
     "description": "on my witness"
   },
   "popup_html_show_qr": {
@@ -521,7 +533,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_witness_disabled_text": {
-    "message": "Witness account currently disabled!",
+    "message": "Witness currently disabled!",
     "description": "On My witness page"
   },
   "popup_html_witness_information_account_creation_fee_label": {
@@ -573,11 +585,11 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_week_label": {
-    "message": "Last week",
+    "message": "Last 7 days",
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_month_label": {
-    "message": "Last month",
+    "message": "Last 30 days",
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_year_label": {
@@ -1935,7 +1947,7 @@
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_global_information_updated_label": {
-    "message": "Updated",
+    "message": "Updated $1",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_global_information_version_label": {

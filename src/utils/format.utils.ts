@@ -1,8 +1,6 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import HiveUtils from 'src/utils/hive.utils';
 
 const withCommas = (nb: string, decimals = 3) => {
   const currency = nb.split(' ')[1];
@@ -22,6 +20,10 @@ const toHP = (vests: string, props?: DynamicGlobalProperties) =>
     ? (parseFloat(vests) * parseFloat(props.total_vesting_fund_hive + '')) /
       parseFloat(props.total_vesting_shares + '')
     : 0;
+
+const toFormattedHP = (vests: number, props?: DynamicGlobalProperties) => {
+  return `${toHP(vests.toString(), props).toFixed(3)} HP`;
+};
 
 const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
@@ -99,6 +101,11 @@ const fromNaiAndSymbol = (obj: any) => {
   )}`;
 };
 
+const getAmountFromNai = (obj: any) => {
+  const res = fromNaiAndSymbol(obj);
+  return Asset.fromString(res).amount;
+};
+
 const removeHtmlTags = (str: string) => {
   return str.replace(/<(?:.|\n)*?>/gm, '');
 };
@@ -117,28 +124,13 @@ const trimUselessZero = (number: number, precision: number) => {
 
 const getUSDFromVests = (
   vestAmount: Number,
-  decimals: number = 3,
   globalProperties: GlobalProperties,
-  currencyPrices: CurrencyPrices,
-) =>
-  (
-    FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
-    currencyPrices.hive.usd!
-  ).toFixed(decimals);
-
-const getVPInUSD = (
-  globalProperties: GlobalProperties,
-  activeAccount: ActiveAccount,
   currencyPrices: CurrencyPrices,
 ) => {
-  const manaValue = HiveUtils.getVotingDollarsPerAccount(
-    100,
-    globalProperties,
-    activeAccount.account,
-    true,
-  ) as string;
-  const votingHPInUSD = parseFloat(manaValue) / currencyPrices.hive.usd!;
-  return FormatUtils.withCommas(votingHPInUSD.toString(), 3);
+  return (
+    FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
+    currencyPrices.hive.usd!
+  ).toFixed(2);
 };
 
 const getOrdinalLabelTranslation = (active_rank: string) => {
@@ -158,18 +150,19 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
 const FormatUtils = {
   withCommas,
   toHP,
+  toFormattedHP,
   fromHP,
   formatCurrencyValue,
   nFormatter,
   hasMoreThanXDecimal,
   toNumber,
   getSymbol,
+  getAmountFromNai,
   fromNaiAndSymbol,
   removeHtmlTags,
   getValFromString,
   trimUselessZero,
   getUSDFromVests,
-  getVPInUSD,
   getOrdinalLabelTranslation,
 };
 

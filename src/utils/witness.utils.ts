@@ -1,12 +1,24 @@
+import { KeychainApi } from '@api/keychain';
 import {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
-import { WitnessProps } from '@hiveio/dhive/lib/utils';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key } from '@interfaces/keys.interface';
-import { Witness } from '@interfaces/witness.interface';
+import {
+  LastSigningKeys,
+  Witness,
+  WitnessInfo,
+  WitnessParamsForm,
+} from '@interfaces/witness.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import moment from 'moment';
+import Config from 'src/config';
+import FormatUtils from 'src/utils/format.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const WITNESS_DISABLED_KEY =
   'STM1111111111111111111111111111111114T1Anm';
@@ -88,32 +100,152 @@ const getUpdateWitnessTransaction = (
 
 const getWitnessAccountUpdateOperation = (
   witnessAccountName: string,
-  witnessUpdateProps: WitnessProps,
+  witnessParamsForm: WitnessParamsForm,
 ) => {
   return [
     'witness_update',
     {
       owner: witnessAccountName,
-      props: witnessUpdateProps,
-      block_signing_key: witnessUpdateProps.new_signing_key!,
-      url: witnessUpdateProps.url!,
-      fee: witnessUpdateProps.account_creation_fee!,
+      url: witnessParamsForm.url,
+      block_signing_key: witnessParamsForm.signingKey,
+      props: {
+        account_creation_fee: `${Number(
+          witnessParamsForm.accountCreationFee,
+        ).toFixed(3)} HIVE`,
+        maximum_block_size: Number(witnessParamsForm.maximumBlockSize),
+        hbd_interest_rate: Number(witnessParamsForm.hbdInterestRate) * 100,
+      },
+      fee: '0.000 HIVE',
     },
   ] as WitnessUpdateOperation;
 };
 
 const updateWitnessParameters = async (
   witnessAccountName: string,
+  witnessParamsForm: WitnessParamsForm,
   activeKey: Key,
-  witnessUpdateProps: WitnessProps,
 ) => {
   const witnessAccountUpdateOperation = getWitnessAccountUpdateOperation(
     witnessAccountName,
-    witnessUpdateProps,
+    witnessParamsForm,
   );
   return await HiveTxUtils.sendOperation(
     [witnessAccountUpdateOperation],
     activeKey,
+  );
+};
+
+const getWitnessInfo = async (
+  username: string,
+  globalProperties: GlobalProperties,
+  currencyPrices: CurrencyPrices,
+): Promise<WitnessInfo> => {
+  let resultFromAPI, resultFromBlockchain;
+  [resultFromAPI, resultFromBlockchain] = await Promise.all([
+    await KeychainApi.get(`hive/witness/${username}`),
+    await HiveTxUtils.getData('database_api.find_witnesses', {
+      owners: [username],
+    }),
+  ]);
+  resultFromBlockchain = resultFromBlockchain.witnesses[0];
+
+  const lastFeedUpdate = `${resultFromBlockchain.last_hbd_exchange_update}Z`;
+
+  const witnessInfo: WitnessInfo = {
+    username: resultFromBlockchain.owner,
+    votesCount: resultFromAPI.votes_count,
+    voteValueInHP: FormatUtils.nFormatter(
+      FormatUtils.toHP(
+        (Number(resultFromAPI.votes) / 1000000).toString(),
+        globalProperties.globals,
+      ),
+      3,
+    ),
+    blockMissed: resultFromBlockchain.total_missed,
+    lastBlock: resultFromBlockchain.last_confirmed_block_num,
+    lastBlockUrl: `https://hiveblocks.com/b/${resultFromBlockchain.last_confirmed_block_num}`,
+    priceFeed: FormatUtils.fromNaiAndSymbol(
+      resultFromBlockchain.hbd_exchange_rate.base,
+    ),
+    priceFeedUpdatedAt: moment(lastFeedUpdate),
+    priceFeedUpdatedAtWarning: wasUpdatedAfterThreshold(moment(lastFeedUpdate)),
+    signingKey: resultFromBlockchain.signing_key,
+    url: resultFromBlockchain.url,
+    version: resultFromBlockchain.running_version,
+    isDisabled: resultFromBlockchain.signing_key === WITNESS_DISABLED_KEY,
+    params: {
+      accountCreationFee: FormatUtils.getAmountFromNai(
+        resultFromBlockchain.props.account_creation_fee,
+      ),
+      accountCreationFeeFormatted: FormatUtils.fromNaiAndSymbol(
+        resultFromBlockchain.props.account_creation_fee,
+      ),
+      maximumBlockSize: resultFromBlockchain.props.maximum_block_size,
+      hbdInterestRate: resultFromBlockchain.props.hbd_interest_rate / 100,
+    },
+    rewards: {
+      lastMonthValue: resultFromAPI.lastMonthValue,
+      lastMonthInHP: FormatUtils.toFormattedHP(
+        resultFromAPI.lastMonthValue,
+        globalProperties.globals!,
+      ),
+      lastMonthInUSD: FormatUtils.getUSDFromVests(
+        resultFromAPI.lastMonthValue,
+        globalProperties,
+        currencyPrices,
+      ),
+      lastWeekValue: resultFromAPI.lastWeekValue,
+      lastWeekInHP: FormatUtils.toFormattedHP(
+        resultFromAPI.lastWeekValue,
+        globalProperties.globals!,
+      ),
+      lastWeekInUSD: FormatUtils.getUSDFromVests(
+        resultFromAPI.lastWeekValue,
+        globalProperties,
+        currencyPrices,
+      ),
+      lastYearValue: resultFromAPI.lastYearValue,
+      lastYearInHP: FormatUtils.toFormattedHP(
+        resultFromAPI.lastYearValue,
+        globalProperties.globals!,
+      ),
+      lastYearInUSD: FormatUtils.getUSDFromVests(
+        resultFromAPI.lastYearValue,
+        globalProperties,
+        currencyPrices,
+      ),
+    },
+  };
+  return witnessInfo;
+};
+const wasUpdatedAfterThreshold = (updatedAt: moment.Moment) => {
+  const now = moment.utc();
+  var duration = moment.duration(now.diff(updatedAt.utc()));
+  var hours = duration.asHours();
+
+  return hours > Config.witnesses.feedWarningLimitInHours;
+};
+
+const getLastSigningKeyForWitness = async (username: string) => {
+  const result: LastSigningKeys =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    );
+  return result ? result[username] : null;
+};
+
+const saveLastSigningKeyForWitness = async (username: string, key: string) => {
+  let result: LastSigningKeys =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    );
+  if (!result) {
+    result = {};
+  }
+  result[username] = key;
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    result,
   );
 };
 
@@ -125,6 +257,10 @@ const WitnessUtils = {
   updateWitnessVote,
   getUpdateWitnessTransaction,
   updateWitnessParameters,
+  getWitnessInfo,
+  wasUpdatedAfterThreshold,
+  getLastSigningKeyForWitness,
+  saveLastSigningKeyForWitness,
 };
 
 export default WitnessUtils;

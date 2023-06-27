@@ -14,12 +14,18 @@
 
   .error-witness {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     padding: 12px;
     flex: 1;
     align-items: center;
+    justify-content: center;
     row-gap: 0px !important;
     text-align: center;
     font-size: 16px;
+    row-gap: 16px;
+
+    .icon-component {
+      @include icon-size(70px);
+    }
   }
 }
