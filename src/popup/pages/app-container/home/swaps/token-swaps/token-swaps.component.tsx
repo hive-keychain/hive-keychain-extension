@@ -205,16 +205,18 @@ const TokenSwaps = ({
         label: BaseCurrencies.HBD.toUpperCase(),
         img: `/assets/images/${Icons.HBD}`,
       },
-      ...allTokens.map((token: Token) => {
-        let img = '';
-        img = token.metadata.icon ?? '/assets/images/hive-engine.svg';
-        return {
-          value: token,
-          label: token.symbol,
-          img: img,
-          imgBackup: '/assets/images/hive-engine.svg',
-        };
-      }),
+      ...allTokens
+        .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
+        .map((token: Token) => {
+          let img = '';
+          img = token.metadata.icon ?? '/assets/images/hive-engine.svg';
+          return {
+            value: token,
+            label: token.symbol,
+            img: img,
+            imgBackup: '/assets/images/hive-engine.svg',
+          };
+        }),
     ];
 
     const lastUsed = await SwapTokenUtils.getLastUsed();
