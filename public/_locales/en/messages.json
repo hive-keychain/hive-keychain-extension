@@ -3292,5 +3292,9 @@
   "swap_layer_two_delayed": {
     "message": "Hive Engine is currently behind blocks. The swap might take longer than usual and has a bigger chance of aborting due to slippage.",
     "description": "When layer two is delayed"
+  },
+  "swap_min_hive_value_error": {
+    "message": "Minimum value should be equivalent to 1 HIVE (currently $1 HIVE)",
+    "description": "When equilavent hive value is too small"
   }
 }
