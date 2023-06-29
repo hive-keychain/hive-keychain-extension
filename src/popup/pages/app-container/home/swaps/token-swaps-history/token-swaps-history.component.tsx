@@ -1,9 +1,9 @@
-import { Swap } from '@interfaces/swap-token.interface';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { TokenSwapsHistoryItemComponent } from '@popup/pages/app-container/home/swaps/token-swaps-history/token-swaps-history-item/token-swaps-history-item.component';
 import { RootState } from '@popup/store';
+import { ISwap } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -18,7 +18,7 @@ const TokenSwapsHistory = ({
   setTitleContainerProperties,
   setInfoMessage,
 }: PropsFromRedux) => {
-  const [history, setHistory] = useState<Swap[]>([]);
+  const [history, setHistory] = useState<ISwap[]>([]);
   const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
     number | null
   >(null);

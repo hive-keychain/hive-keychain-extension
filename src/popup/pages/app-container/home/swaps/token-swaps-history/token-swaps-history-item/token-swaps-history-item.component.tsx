@@ -1,7 +1,7 @@
-import { Swap, SwapStatus } from '@interfaces/swap-token.interface';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';
 import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -11,7 +11,7 @@ import FormatUtils from 'src/utils/format.utils';
 import './token-swaps-history-item.component.scss';
 
 interface Props {
-  swap: Swap;
+  swap: ISwap;
 }
 
 const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
@@ -22,7 +22,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     setInfoMessage('swap_copied_to_clipboard');
   };
   const getStatusMessage = (
-    status: Swap['status'],
+    status: ISwap['status'],
     transferInitiated: boolean,
   ) => {
     switch (status) {
@@ -34,8 +34,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
         return chrome.i18n.getMessage('swap_status_completed');
       case SwapStatus.CANCELED_DUE_TO_ERROR:
         return chrome.i18n.getMessage('swap_status_canceled_due_to_error');
-      case SwapStatus.REFUNDED_CANNOT_COMPLETE:
-        return chrome.i18n.getMessage('swap_status_refunded');
       case SwapStatus.FUNDS_RETURNED:
         return chrome.i18n.getMessage('swap_status_returned');
       case SwapStatus.REFUNDED_SLIPPAGE:
@@ -45,7 +43,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     }
   };
 
-  const getStatusIcon = (status: Swap['status']) => {
+  const getStatusIcon = (status: ISwap['status']) => {
     switch (status) {
       case SwapStatus.PENDING:
       case SwapStatus.STARTED:
@@ -53,7 +51,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
       case SwapStatus.COMPLETED:
         return Icons.SUCCESS;
       case SwapStatus.CANCELED_DUE_TO_ERROR:
-      case SwapStatus.REFUNDED_CANNOT_COMPLETE:
       case SwapStatus.FUNDS_RETURNED:
       case SwapStatus.REFUNDED_SLIPPAGE:
         return Icons.ERROR;
@@ -77,7 +74,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     }
   };
 
-  function getTooltipMessage(swap: Swap) {
+  function getTooltipMessage(swap: ISwap) {
     return `${getStatusMessage(swap.status, swap.transferInitiated)}
       <br/> ${
         [SwapStatus.PENDING, SwapStatus.STARTED].includes(swap.status)
@@ -106,7 +103,13 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
               ) : (
                 <span className="approximate">~</span>
               )}{' '}
-              {swap.finalAmount} {swap.endToken}
+              {swap.received ??
+                FormatUtils.withCommas(
+                  Number(swap.expectedAmountAfterFee).toString(),
+                  3,
+                  true,
+                )}{' '}
+              {swap.endToken}
             </span>
           </div>
         </div>

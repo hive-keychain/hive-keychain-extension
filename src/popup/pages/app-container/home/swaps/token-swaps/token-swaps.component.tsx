@@ -1,5 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { SwapConfig, SwapStep } from '@interfaces/swap-token.interface';
+import { SwapConfig } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
@@ -20,6 +20,7 @@ import { loadTokensMarket } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
+import { IStep } from 'hive-keychain-commons';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -74,7 +75,7 @@ const TokenSwaps = ({
   const [endTokenListOptions, setEndTokenListOptions] = useState<
     SelectOption[]
   >([]);
-  const [estimate, setEstimate] = useState<SwapStep[]>();
+  const [estimate, setEstimate] = useState<IStep[]>();
   const [estimateValue, setEstimateValue] = useState<string | undefined>();
 
   const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
@@ -248,7 +249,7 @@ const TokenSwaps = ({
       setLoadingEstimate(true);
       setEstimate(undefined);
       setEstimateValue(undefined);
-      const result: SwapStep[] = await SwapTokenUtils.getEstimate(
+      const result: IStep[] = await SwapTokenUtils.getEstimate(
         startToken?.value.symbol,
         endToken?.value.symbol,
         amount,

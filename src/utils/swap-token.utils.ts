@@ -1,15 +1,10 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import {
-  Swap,
-  SwapConfig,
-  SwapServerStatus,
-  SwapStatus,
-  SwapStep,
-} from '@interfaces/swap-token.interface';
+import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { IStep, ISwap, SwapStatus } from 'hive-keychain-commons';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -71,7 +66,7 @@ const getEstimate = async (
 };
 
 const saveEstimate = async (
-  steps: SwapStep[],
+  steps: IStep[],
   slipperage: number,
   startToken: string,
   endToken: string,
@@ -129,7 +124,7 @@ const processSwap = async (
   }
 };
 
-const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
+const retrieveSwapHistory = async (username: string): Promise<ISwap[]> => {
   const res = await KeychainSwapApi.get(`token-swap/history/${username}`);
   if (res.error) {
     return [];
@@ -185,7 +180,7 @@ const getLastUsed = async () => {
   else return lastUsed;
 };
 
-const setAsInitiated = async (swapId: Swap['id']) => {
+const setAsInitiated = async (swapId: ISwap['id']) => {
   const res = await KeychainSwapApi.post(`token-swap/${swapId}/confirm`, {});
   if (!res.result) {
     Logger.error(`Couldn't set as initiated`);
