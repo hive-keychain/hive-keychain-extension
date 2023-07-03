@@ -2,13 +2,12 @@ import {
   RecurrentTransferOperation,
   Transaction,
   TransferOperation,
-  cryptoUtils,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
+import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 
 const getTransferWarning = (
   account: string,
@@ -26,7 +25,8 @@ const getTransferWarning = (
   if (exchangeWarning) return exchangeWarning;
 
   const privateKeyInMemoWarning = getPrivateKeysMemoValidationWarning(memo);
-  if (privateKeyInMemoWarning) return privateKeyInMemoWarning;
+  if (privateKeyInMemoWarning)
+    return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
 
   if (phisingAccounts.includes(account)) {
     return chrome.i18n.getMessage('popup_warning_phishing', [account]);
@@ -178,25 +178,6 @@ const getTransferTransaction = (
   }
 };
 
-const getPrivateKeysMemoValidationWarning = (memo: string) => {
-  let memoTemp: string = memo.startsWith('#')
-    ? memo.substring(1, memo.length)
-    : memo;
-  let found: RegExpMatchArray | null;
-  found = memoTemp.match(/[\w\d]{51,52}/g);
-  if (found) {
-    for (const word of found) {
-      if (cryptoUtils.isWif(word) && word.length === 51) {
-        if (KeysUtils.getPublicKeyFromPrivateKeyString(word))
-          return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
-      } else if (word.startsWith('P') && word.length === 52) {
-        return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
-      }
-    }
-  }
-  return null;
-};
-
 const TransferUtils = {
   getExchangeValidationWarning,
   getTransferFromToSavingsValidationWarning,
@@ -204,7 +185,6 @@ const TransferUtils = {
   getTransferOperation,
   getRecurrentTransferOperation,
   getTransferTransaction,
-  getPrivateKeysMemoValidationWarning,
   getTransferWarning,
 };
 
