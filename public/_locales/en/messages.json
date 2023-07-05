@@ -1340,7 +1340,7 @@
     "description": "When trying to transfer to a blacklisted account"
   },
   "popup_warning_private_key_in_memo": {
-    "message": "Please do not send any sentitive information about your keys in a memo.",
+    "message": "Sending a private key as memo is a huge security risk.",
     "description": "When trying to use memo with a private key"
   },
   "popup_warning_exchange_deposit": {
