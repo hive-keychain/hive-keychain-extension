@@ -7,7 +7,7 @@ import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -183,38 +183,41 @@ const TokenItem = ({
                   )}
                 </div>
               )}
-            {tokenInfo.delegationEnabled && (
-              <div
-                aria-label="button-go-to-incoming-delegations"
-                className="delegation-line"
-                onClick={goToIncomingDelegations}>
-                {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
-                {FormatUtils.trimUselessZero(
-                  parseFloat(tokenBalance.delegationsIn),
-                  tokenInfo.precision,
-                )}
-                {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
-                )}
-              </div>
-            )}
-            {tokenInfo.delegationEnabled && (
-              <div
-                aria-label="button-go-to-outgoing-delegations"
-                className="delegation-line"
-                onClick={goToOutgoingDelegations}>
-                <div>
-                  {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
+            {tokenInfo.delegationEnabled &&
+              parseFloat(tokenBalance.delegationsIn) > 0 && (
+                <div
+                  aria-label="button-go-to-incoming-delegations"
+                  className="delegation-line"
+                  onClick={goToIncomingDelegations}>
+                  {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
                   {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.delegationsOut),
+                    parseFloat(tokenBalance.delegationsIn),
                     tokenInfo.precision,
                   )}
+                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  )}
                 </div>
-                {parseFloat(tokenBalance.delegationsOut) > 0 && (
-                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
-                )}
-              </div>
-            )}
+              )}
+            {tokenInfo.delegationEnabled &&
+              parseFloat(tokenBalance.delegationsOut) > 0 && (
+                <div
+                  aria-label="button-go-to-outgoing-delegations"
+                  className="delegation-line"
+                  onClick={goToOutgoingDelegations}>
+                  <div>
+                    {chrome.i18n.getMessage('popup_html_token_delegation_out')}{' '}
+                    :{' '}
+                    {FormatUtils.trimUselessZero(
+                      parseFloat(tokenBalance.delegationsOut),
+                      tokenInfo.precision,
+                    )}
+                  </div>
+                  {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  )}
+                </div>
+              )}
             {tokenInfo.delegationEnabled &&
               parseFloat(tokenBalance.pendingUndelegations) > 0 && (
                 <div>
