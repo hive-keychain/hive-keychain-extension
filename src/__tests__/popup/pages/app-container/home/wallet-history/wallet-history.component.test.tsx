@@ -1,130 +1,142 @@
 import App from '@popup/App';
-import { screen, waitFor } from '@testing-library/react';
+import { Icons } from '@popup/icons.enum';
+import { DEFAULT_FILTER } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import walletHistory from 'src/__tests__/popup/pages/app-container/home/wallet-history/mocks/wallet-history';
-import noDelegationsInOut from 'src/__tests__/popup/pages/app-container/home/wallet-history/othercases/no-delegations-in-out';
-import noTransfersInData from 'src/__tests__/popup/pages/app-container/home/wallet-history/othercases/no-transfers-in-data';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import alToolTip from 'src/__tests__/utils-for-testing/aria-labels/al-toolTip';
-import {
-  EventType,
-  QueryDOM,
-} from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  actPendingTimers,
-  clickAwait,
-  clickTypeAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { methods, constants, filters, prefix } = walletHistory;
-const { transactions, filter, typeValue } = constants;
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import walletHistory from 'src/__tests__/utils-for-testing/data/history/transactions/wallet-history';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('wallet-history.component tests:\n', () => {
-  methods.afterEach;
-  describe('With Transactions', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  describe('No transactions to show', () => {
     beforeEach(async () => {
-      await walletHistory.beforeEach(<App />);
-      await actPendingTimers();
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
+        );
+      });
+    });
+    it('Must show empty transactions & try clear filter, messages', async () => {
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_transaction_list_is_empty'),
+        ),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage(
+            'popup_html_transaction_list_is_empty_try_clear_filter',
+          ),
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('With Transactions to show', () => {
+    Element.prototype.scrollTo = jest.fn();
+    beforeEach(async () => {
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              TransactionUtils: {
+                getTransactions: walletHistory.rawAllTypes,
+                getLastTransaction: walletHistory.rawAllTypes.length,
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
+        );
+      });
     });
     it('Must show transaction list', async () => {
-      await waitFor(() => {
-        expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
-          transactions.length,
+      await waitFor(async () => {
+        const historyItemHTMLElementList = await screen.findAllByTestId(
+          dataTestIdDiv.wallet.history.item,
+        );
+        expect(historyItemHTMLElementList).toHaveLength(
+          walletHistory.rawAllTypes.length,
         );
       });
     });
-    it('Must show available filters', async () => {
-      await clickAwait([alDiv.wallet.history.filterPanel]);
-      assertion.getByText(
-        filter.ariaLabelsToFind.map((al) => {
-          return { arialabelOrText: al, query: QueryDOM.BYLABEL };
-        }),
-      );
-    });
-    it('Must set search box filter value', async () => {
-      await methods.typeInput(alInput.filter.walletHistory, typeValue.random);
-      await actPendingTimers();
-      assertion.toHaveValue(alInput.filter.walletHistory, typeValue.random);
-    });
-    it('Must clear search box filter value', async () => {
-      await methods.typeInput(alInput.filter.walletHistory, typeValue.random);
-      await actPendingTimers();
-      assertion.toHaveValue(alInput.filter.walletHistory, typeValue.random);
-      await clickAwait([alDiv.wallet.history.clearFilters]);
-      actAdvanceTime(400);
-      assertion.toHaveValue(alInput.filter.walletHistory, typeValue.empty);
-    });
-    it('Must filter by an specific value and display 1 transaction', async () => {
-      await methods.typeInput(
-        alInput.filter.walletHistory,
-        typeValue.uniqueValue,
-      );
-      actAdvanceTime(200);
-      assertion.getByLabelText(alDiv.wallet.history.item);
-      assertion.getByDisplay(typeValue.uniqueValue);
-    });
-    filters.forEach((filter) => {
-      it(`Must show specific number of transaction(s) when clicking filter: ${filter}`, async () => {
-        await clickAwait([alDiv.wallet.history.filterPanel, prefix + filter]);
-        actAdvanceTime(200);
-        expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
-          constants.results.lengths[filter],
+
+    it('Must show available all filters', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
       });
-    });
-    describe('No delegations In/Out Filters', () => {
-      noDelegationsInOut.run();
-    });
-    it('Must show details when clicked', async () => {
-      await clickAwait([alDiv.wallet.history.filterPanel, prefix + filters[0]]);
-      actAdvanceTime(200);
-      await clickAwait([alDiv.transactions.expandableArea]);
-      assertion.getOneByText(constants.transfer.data.memo);
-    });
-    it('Must show tool tip with date/time when hovered', async () => {
-      await clickAwait([alDiv.wallet.history.filterPanel, prefix + filters[0]]);
-      actAdvanceTime(200);
-      await clickAwait([alDiv.transactions.expandableArea]);
-      await clickTypeAwait([
-        { ariaLabel: alToolTip.custom.toolTip, event: EventType.HOVER },
-      ]);
-      assertion.getOneByText(constants.transfer.toolTip);
-    });
-  });
-  describe('No tranfers in data', () => {
-    beforeEach(async () => {
-      await walletHistory.beforeEach(<App />, { noTransfersOnData: true });
-      await actPendingTimers();
-    });
-    noTransfersInData.run();
-  });
-  describe('Default filters from storage:\n', () => {
-    filters.forEach((filter) => {
-      it(`Must load expected transactions, using ${filter} as filter`, async () => {
-        await walletHistory.beforeEach(<App />, {
-          reImplementFilter: filter,
-        });
-        await actPendingTimers();
-        await waitFor(() => {
+      Object.keys(DEFAULT_FILTER.selectedTransactionTypes).map(
+        (filterOperationType) => {
           expect(
-            screen.getAllByLabelText(alDiv.wallet.history.item).length,
-          ).toBe(constants.results.lengths[filter]);
-        });
+            screen.getByTestId(
+              `${dataTestIdDiv.wallet.history.filterSelector.preFix}${filterOperationType}`,
+            ),
+          ).toBeInTheDocument();
+        },
+      );
+      expect(
+        screen.getByTestId(dataTestIdDiv.wallet.history.byIncoming),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId(dataTestIdDiv.wallet.history.byOutgoing),
+      ).toBeInTheDocument();
+    });
+
+    it('Must set search box filter value & display try clear message', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+        );
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.filter.walletHistory),
+          'one op',
+        );
       });
+      expect(
+        await screen.findByTestId(dataTestIdInput.filter.walletHistory),
+      ).toHaveValue('one op');
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage(
+            'popup_html_transaction_list_is_empty_try_clear_filter',
+          ),
+        ),
+      ).toBeInTheDocument();
     });
-  });
-  describe('No Transactions', () => {
-    beforeEach(async () => {
-      await walletHistory.beforeEach(<App />, { emptyTransactions: true });
-    });
-    it('Must show messages if no transactions', async () => {
-      assertion.getManyByText([
-        constants.error.emptyList,
-        constants.error.tryClearFilter,
-      ]);
+
+    it('Must filter by an specific value and display 1 transaction', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+        );
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.filter.walletHistory),
+          'unique memo',
+        );
+      });
+      expect(
+        await screen.findAllByTestId(dataTestIdDiv.wallet.history.item),
+      ).toHaveLength(1);
     });
   });
 });

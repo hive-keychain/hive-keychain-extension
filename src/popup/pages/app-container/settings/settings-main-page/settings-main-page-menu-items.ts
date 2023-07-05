@@ -20,7 +20,7 @@ const SettingsMenuItems: MenuItem[] = [
   },
   {
     label: 'popup_html_governance',
-    icon: 'hive-brands.svg',
+    icon: Icons.HIVE,
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,
   },

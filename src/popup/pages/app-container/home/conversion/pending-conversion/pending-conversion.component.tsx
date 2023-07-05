@@ -1,6 +1,7 @@
 import { Conversion } from '@interfaces/conversion.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -22,10 +23,10 @@ const PendingConversionPage = ({
   return (
     <div
       className="pending-conversion-page"
-      aria-label="pending-conversion-page">
+      data-testid={`${Screen.PENDING_CONVERSION_PAGE}-page`}>
       {navParams.pendingConversions.map((pendingConversion: Conversion) => (
         <CustomTooltip
-          ariaLabel="tooltip-timesteamp-pending-conversion"
+          dataTestId="tooltip-timesteamp-pending-conversion"
           position="bottom"
           key={pendingConversion.id}
           message={chrome.i18n.getMessage(

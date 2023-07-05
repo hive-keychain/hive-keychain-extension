@@ -1,78 +1,165 @@
 import App from '@popup/App';
-import { screen } from '@testing-library/react';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import tokens from 'src/__tests__/popup/pages/app-container/home/tokens/mocks/tokens';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { methods, constants } = tokens;
-const { messages, data, typeValue } = constants;
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('tokens.component tests:\n', () => {
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+  const tokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
   describe('User has tokens:\n', () => {
     beforeEach(async () => {
-      await tokens.beforeEach(<App />);
-    });
-    it('Must show disclaimer message', () => {
-      assertion.getOneByText(messages.tokens.disclaimer);
-    });
-    it('Must show user tokens', async () => {
-      await assertion.allToHaveLength(
-        alDiv.token.user.item,
-        data.userTokens.length,
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
       );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
+        );
+      });
     });
-    it('Must show filter box and settings', () => {
-      assertion.getByLabelText(alInput.filter.token);
-      assertion.getByLabelText(alIcon.tokens.settings.open);
-    });
-    it('Must set filter box value', async () => {
-      await methods.typeOnFilter(typeValue.token.keyChain);
+    it('Must show tokens page & disclaimer message', async () => {
       expect(
-        screen.getByDisplayValue(typeValue.token.keyChain),
+        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_view_tokens_balance'),
+        ),
       ).toBeInTheDocument();
     });
-    it('Must display one token', async () => {
-      await methods.typeOnFilter(data.userTokens.leoToken.symbol);
-      assertion.getByLabelText(alDiv.token.user.item);
-      assertion.getOneByText(data.userTokens.leoToken.balance);
+
+    it('Must show user tokens', async () => {
+      expect(
+        await screen.findAllByTestId(dataTestIdDiv.token.user.item),
+      ).toHaveLength(tokensUser.balances.length);
     });
-    it('Must display no value found', async () => {
-      await methods.typeOnFilter(typeValue.token.keyChain);
-      assertion.getOneByText(messages.tokens.noTokens);
+
+    it('Must show filter box and settings', async () => {
+      expect(
+        await screen.findByTestId(dataTestIdInput.filter.token),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByTestId(dataTestIdIcon.tokens.openFilter),
+      ).toBeInTheDocument();
     });
-    it('Must show navigate to tokens settings', async () => {
-      await clickAwait([alIcon.tokens.settings.open]);
-      assertion.getByLabelText(alComponent.tokensSettings);
+
+    it('Must set filter box value & display one result', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.filter.token),
+          'LEO',
+        );
+      });
+      const tokenItemHTMLElement = await screen.findAllByTestId(
+        dataTestIdDiv.token.user.item,
+      );
+      expect(tokenItemHTMLElement).toHaveLength(1);
+      expect(tokenItemHTMLElement[0].textContent).toContain('LEO');
     });
-    it('Must show navigate to tokens settings and go back', async () => {
-      await clickAwait([alIcon.tokens.settings.open]);
-      assertion.getByLabelText(alComponent.tokensSettings);
-      await clickAwait([alIcon.arrowBack]);
-      assertion.queryByLabel(alComponent.tokensSettings, false);
-      assertion.getByLabelText(alComponent.userTokens);
+
+    it('Must display no tokens found message', async () => {
+      await act(async () => {
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.filter.token),
+          'KEYCHAIN',
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_no_tokens')),
+      ).toBeInTheDocument();
+    });
+
+    it('Must show tokens settings page & go back to tokens page', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdIcon.tokens.settings.open),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.TOKENS_SETTINGS}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
+      });
+      expect(
+        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
+      ).toBeInTheDocument();
     });
   });
+
   describe('User has no tokens', () => {
     beforeEach(async () => {
-      await tokens.beforeEach(<App />, { noUserTokens: true });
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              TokensUtils: {
+                getUserBalance: [],
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
+        );
+      });
     });
-    it('Must show no tokens message', () => {
-      assertion.getOneByText(messages.tokens.noTokens);
+    it('Must show no tokens message', async () => {
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_html_tokens_no_tokens'),
+        ),
+      ).toBeInTheDocument();
     });
   });
+
   describe('Having hidden tokens:\n', () => {
     beforeEach(async () => {
-      await tokens.beforeEach(<App />, { reImplementGetLS: true });
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            localStorageRelated: {
+              customData: {
+                customHiddenTokenList: ['LEO'],
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
+        );
+      });
     });
-    it('Must not show hidden tokens', () => {
-      assertion.getByLabelText(alDiv.token.user.item);
-      assertion.getOneByText(data.userTokens.palToken.symbol);
+
+    it('Must not show hidden token', () => {
+      expect(
+        screen.queryByTestId(`${dataTestIdDiv.token.user.symbolPreFix}LEO`),
+      ).not.toBeInTheDocument();
     });
   });
 });

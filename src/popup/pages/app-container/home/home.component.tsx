@@ -19,6 +19,7 @@ import {
 } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -177,9 +178,9 @@ const Home = ({
   };
 
   return (
-    <div className="home-page">
+    <div className={'home-page'}>
       {activeRpc && activeRpc.uri !== 'NULL' && (
-        <div aria-label="home-page-component">
+        <div data-testid={`${Screen.HOME_PAGE}-page`}>
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />

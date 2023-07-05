@@ -2,9 +2,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import * as activeAccountActions from 'src/popup/actions/active-account.actions';
-import AccountUtils from 'src/utils/account.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
   initialEmptyStateStore,
@@ -12,15 +10,16 @@ import {
   initialStateNoKeys,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
-afterEach(() => {
-  jest.clearAllMocks();
-});
+import * as activeAccountActions from 'src/popup/actions/active-account.actions';
+import AccountUtils from 'src/utils/account.utils';
+
 describe('active-account.actions tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   const fakeExtendedAccountResponse = [
     {
-      name: utilsT.secondAccountOnState.name,
+      name: userData.two.username,
       reputation: 100,
     } as ExtendedAccount,
   ];
@@ -45,8 +44,8 @@ describe('active-account.actions tests:\n', () => {
       await sleep(delay);
       expect(fakeStore.getState().activeAccount).toEqual({
         account: fakeExtendedAccountResponse[0],
-        keys: utilsT.secondAccountOnState.keys,
-        name: utilsT.secondAccountOnState.name,
+        keys: userData.two.keys,
+        name: userData.two.username,
         rc: fakeManaBarResponse,
       });
     });
@@ -73,8 +72,8 @@ describe('active-account.actions tests:\n', () => {
   describe('refreshKeys tests:\n', () => {
     test('Must set keys on activeAccount', async () => {
       const localAccount = {
-        name: utilsT.secondAccountOnState.name,
-        keys: utilsT.secondAccountOnState.keys,
+        name: userData.two.username,
+        keys: userData.two.keys,
       } as LocalAccount;
       const fakeStore = getFakeStore(initialStateNoKeys);
       await fakeStore.dispatch<any>(
@@ -101,12 +100,15 @@ describe('active-account.actions tests:\n', () => {
 
       let fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        activeAccountActions.loadActiveAccount(utilsT.secondAccountOnState),
+        activeAccountActions.loadActiveAccount({
+          ...userData.two,
+          name: userData.two.username,
+        }),
       );
       expect(fakeStore.getState().activeAccount).toEqual({
         account: fakeExtendedAccountResponse[0],
-        keys: utilsT.secondAccountOnState.keys,
-        name: utilsT.secondAccountOnState.name,
+        keys: userData.two.keys,
+        name: userData.two.username,
         rc: fakeManaBarResponse,
       });
     });
@@ -120,14 +122,14 @@ describe('active-account.actions tests:\n', () => {
 
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
-        activeAccountActions.getAccountRC(utilsT.secondAccountOnState.name),
+        activeAccountActions.getAccountRC(userData.two.username),
       );
       expect(fakeStore.getState().activeAccount).toEqual({
         account: {
-          name: utilsT.secondAccountOnState.name,
+          name: userData.two.username,
         },
-        keys: utilsT.secondAccountOnState.keys,
-        name: utilsT.secondAccountOnState.name,
+        keys: userData.two.keys,
+        name: userData.two.username,
         rc: fakeManaBarResponse,
       });
     });

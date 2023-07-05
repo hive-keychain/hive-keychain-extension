@@ -3,6 +3,7 @@ import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/s
 import { AccountKeysListComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { WrongKeysOnUser } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -50,7 +51,7 @@ const ManageAccount = ({
 
   return (
     <div
-      aria-label="settings-manage-account"
+      data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`}
       className="settings-manage-account">
       <SelectAccountSectionComponent />
       <AccountKeysListComponent wrongKeysFound={wrongKeysFound} />

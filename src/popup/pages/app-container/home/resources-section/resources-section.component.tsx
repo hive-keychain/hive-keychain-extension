@@ -2,7 +2,7 @@ import { Icons } from '@popup/icons.enum';
 import { ResourceItemComponent } from '@popup/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import HiveUtils from 'src/utils/hive.utils';
 import './resources-section.component.scss';
 

@@ -9,9 +9,8 @@ interface TooltipProps {
   message?: string;
   messageParams?: any;
   skipTranslation?: boolean;
-  ariaLabel?: string;
-  additionalClassContainer?: string;
-  additionalClassContent?: string;
+  dataTestId?: string;
+  additionalClassName?: string;
 }
 
 export const CustomTooltip = ({
@@ -21,9 +20,8 @@ export const CustomTooltip = ({
   messageParams,
   skipTranslation,
   children,
-  ariaLabel,
-  additionalClassContainer,
-  additionalClassContent,
+  dataTestId,
+  additionalClassName,
 }: TooltipProps) => {
   const [isOpen, setOpen] = useState(false);
   let timeout: NodeJS.Timeout;
@@ -44,17 +42,15 @@ export const CustomTooltip = ({
 
   return (
     <div
-      aria-label={ariaLabel}
-      className={`tooltip-container ${additionalClassContainer}`}
+      data-testid={dataTestId}
+      className={`tooltip-container ${additionalClassName}`}
       onMouseEnter={show}
       onMouseLeave={hide}>
       <div className="tooltip-anchor">{children}</div>
       {isOpen && message && (
         <div
-          aria-label="tooltip-content"
-          className={`tooltip ${
-            position ? position : 'top'
-          } ${additionalClassContent}`}
+          data-testid="tooltip-content"
+          className={`tooltip ${position ? position : 'top'}`}
           dangerouslySetInnerHTML={{
             __html: skipTranslation
               ? message

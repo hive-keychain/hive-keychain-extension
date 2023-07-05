@@ -235,7 +235,9 @@ const TokensOperation = ({
   };
 
   return (
-    <div aria-label="tokens-operation-page" className="transfer-tokens-page">
+    <div
+      data-testid={`${Screen.TOKENS_OPERATION}-page`}
+      className="transfer-tokens-page">
       <SummaryPanelComponent
         bottom={balance}
         bottomRight={symbol}
@@ -254,7 +256,7 @@ const TokensOperation = ({
         )}
       {operationType === TokenOperationType.DELEGATE && (
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_username"
@@ -266,7 +268,7 @@ const TokensOperation = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -278,7 +280,7 @@ const TokensOperation = ({
         <div className="symbol">{symbol}</div>
       </div>
       <OperationButtonComponent
-        ariaLabel={`token-button-operation-${operationType}`}
+        dataTestId={`token-button-operation-${operationType}`}
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}

@@ -5,10 +5,10 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
 describe('rpc.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   describe('getFullList tests:\n', () => {
     test('Must return a valid object', () => {
       const result = RpcUtils.getFullList();

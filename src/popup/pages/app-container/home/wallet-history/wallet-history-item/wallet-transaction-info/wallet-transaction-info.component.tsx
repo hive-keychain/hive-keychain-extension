@@ -38,7 +38,7 @@ import { TransferTransactionComponent } from '@popup/pages/app-container/home/wa
 import { WithdrawSavingsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/withdraw-savings-transaction/withdraw-savings-transaction.component';
 import { RootState } from '@popup/store';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import './wallet-transaction-info.component.scss';
 

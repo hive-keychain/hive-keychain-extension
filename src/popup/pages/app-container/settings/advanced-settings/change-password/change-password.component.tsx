@@ -8,7 +8,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -57,13 +57,15 @@ const ChangePassword = ({
   };
 
   return (
-    <div aria-label="change-password-page" className="change-password-page">
+    <div
+      data-testid={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
+      className="change-password-page">
       <div className="caption">
         {chrome.i18n.getMessage('popup_html_change_password_text')}
       </div>
 
       <InputComponent
-        ariaLabel="input-old-password"
+        dataTestId="input-old-password"
         value={oldPassword}
         onChange={setOldPassword}
         logo={Icons.PASSWORD}
@@ -73,7 +75,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
-        ariaLabel="input-new-password"
+        dataTestId="input-new-password"
         value={newPassword}
         onChange={setNewPassword}
         logo={Icons.PASSWORD}
@@ -83,7 +85,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
-        ariaLabel="input-new-password-confirmation"
+        dataTestId="input-new-password-confirmation"
         value={newPasswordConfirm}
         onChange={setNewPasswordConfirm}
         logo={Icons.PASSWORD}
@@ -94,7 +96,7 @@ const ChangePassword = ({
       />
 
       <ButtonComponent
-        ariaLabel="submit-button"
+        dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitMk}
         fixToBottom

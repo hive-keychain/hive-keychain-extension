@@ -69,6 +69,12 @@ const AccountKeysListItem = ({
     }
   };
 
+  const removePopupTagForAriaLabel = (keyName: string) => {
+    return keyName.includes('popup_html_')
+      ? keyName.split('popup_html_')[1]
+      : keyName;
+  };
+
   const handleClickOnRemoveKey = () => {
     const keyTypeLabel = chrome.i18n.getMessage(keyType.toLowerCase());
 
@@ -114,14 +120,16 @@ const AccountKeysListItem = ({
             <CustomTooltip
               message="popup_html_wrong_key_tooltip_text"
               position={'bottom'}
-              additionalClassContent="tool-tip-custom">
+              additionalClassName="tool-tip-custom">
               <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
             </CustomTooltip>
           )}
         </div>
         {publicKey && privateKey && canDelete && (
           <Icon
-            ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
+            dataTestId={`icon-remove-key-${removePopupTagForAriaLabel(
+              keyName,
+            )}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
             type={IconType.OUTLINED}
@@ -131,7 +139,7 @@ const AccountKeysListItem = ({
 
       {!privateKey && !publicKey && (
         <Icon
-          ariaLabel={`icon-add-key-${chrome.i18n.getMessage(keyName)}`}
+          dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
           type={IconType.OUTLINED}
@@ -143,7 +151,7 @@ const AccountKeysListItem = ({
           {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
-                aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
+                data-testid={`clickeable-account-key-${removePopupTagForAriaLabel(
                   keyName,
                 )}`}
                 className={`private-key key-field ${
@@ -167,7 +175,7 @@ const AccountKeysListItem = ({
           )}
           {isAuthorizedAccount && publicKey && (
             <div
-              aria-label="using-authorized-account"
+              data-testid="using-authorized-account"
               className="using-authorized-account"
               onClick={() => goToAccount(publicKey)}>
               {chrome.i18n.getMessage('html_popup_using_authorized_account', [
@@ -178,7 +186,7 @@ const AccountKeysListItem = ({
           {isUsingLedger && privateKey && (
             <>
               <div
-                aria-label="using-authorized-account"
+                data-testid="using-authorized-account"
                 className="using-authorized-account">
                 {chrome.i18n.getMessage('html_popup_using_ledger')}
               </div>

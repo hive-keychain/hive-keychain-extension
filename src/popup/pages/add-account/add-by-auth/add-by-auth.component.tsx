@@ -30,7 +30,7 @@ const AddByAuth = ({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   const submitForm = async (): Promise<void> => {
     if (
@@ -57,14 +57,16 @@ const AddByAuth = ({
   };
 
   return (
-    <div aria-label="add-by-auth-page" className="add-by-auth-page">
+    <div
+      data-testid={`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`}
+      className="add-by-auth-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_auth_text'),
         }}></div>
       <InputComponent
-        ariaLabel="input-username"
+        dataTestId="input-username"
         value={username}
         onChange={setUsername}
         logo={Icons.AT}
@@ -73,7 +75,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <InputComponent
-        ariaLabel="input-authorized-account"
+        dataTestId="input-authorized-account"
         value={authorizedAccount}
         onChange={setAuthorizedAccount}
         logo={Icons.AT}
@@ -82,7 +84,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <ButtonComponent
-        ariaLabel="submit-button"
+        dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitForm}
         fixToBottom

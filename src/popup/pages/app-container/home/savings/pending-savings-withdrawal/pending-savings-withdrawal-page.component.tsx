@@ -2,6 +2,7 @@ import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { PendingSavingsWithdrawalItemComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './pending-savings-withdrawal-page.component.scss';
@@ -25,7 +26,7 @@ const PendingSavingsWithdrawal = ({
   return (
     <div
       className="pending-savings-withdrawal-page"
-      aria-label="pending-savings-withdrawal-page">
+      data-testid={`${Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE}-page`}>
       <div className="pending-disclaimer">
         {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
           currency,

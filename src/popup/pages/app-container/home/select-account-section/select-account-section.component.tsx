@@ -60,7 +60,7 @@ const SelectAccountSection = ({
         />
         <div
           className="selected-account-name"
-          aria-label="selected-account-name">
+          data-testid="selected-account-name">
           {selectedLocalAccount}
         </div>
       </div>
@@ -71,7 +71,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.value}`}
+        data-testid={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}

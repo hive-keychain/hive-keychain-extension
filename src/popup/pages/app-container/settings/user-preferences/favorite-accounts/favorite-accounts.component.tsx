@@ -11,6 +11,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { FavoriteAccountsListComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -102,7 +103,7 @@ const FavoriteAccounts = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.label}`}
+        data-testid={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -174,7 +175,9 @@ const FavoriteAccounts = ({
   };
 
   return (
-    <div aria-label="favorite-accounts-page" className="favorite-accounts-page">
+    <div
+      data-testid={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
+      className="favorite-accounts-page">
       <div className="intro padding">
         {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
       </div>

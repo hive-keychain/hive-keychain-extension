@@ -281,7 +281,7 @@ const App = ({
       );
     }
     // else if (displayProxySuggestion) {
-    //    Uncomment if need to
+    //   //  Uncomment if need to
     //   return <ProxySuggestionComponent />;
     // }
     else if (displayChangeRpcPopup && activeRpc && switchToRpc) {

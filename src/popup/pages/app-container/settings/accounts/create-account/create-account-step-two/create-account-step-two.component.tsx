@@ -14,7 +14,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import {
@@ -214,7 +214,9 @@ const CreateAccountStepTwo = ({
   };
 
   return (
-    <div className="create-account-step-two">
+    <div
+      className="create-account-step-two"
+      data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_TWO}-page`}>
       {keysTextVersion.length > 0 && (
         <>
           <div

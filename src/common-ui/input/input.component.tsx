@@ -23,7 +23,7 @@ interface InputProps {
   translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
   disabled?: boolean;
   onChange: (value: any) => void;
   onEnterPress?(): any;
@@ -66,7 +66,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          aria-label={props.ariaLabel}
+          data-testid={props.dataTestId}
           className={`${props.hasError ? 'has-error' : ''} ${
             props.onSetToMaxClicked ? 'has-max-button' : ''
           }`}
@@ -112,7 +112,7 @@ const InputComponent = (props: InputProps) => {
           props.value &&
           props.value.length > 0 && (
             <Icon
-              ariaLabel="input-clear"
+              dataTestId="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}
@@ -140,7 +140,7 @@ const InputComponent = (props: InputProps) => {
         )}
         {props.onSetToMaxClicked && (
           <span
-            aria-label="set-to-max-button"
+            data-testid="set-to-max-button"
             className="set-to-max-button"
             onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}

@@ -4,8 +4,9 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { loadTokens } from '@popup/actions/token.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -69,16 +70,16 @@ const TokensFilter = ({
   }, [tokens, filterValue]);
 
   return (
-    <div aria-label="tokens-filter" className="tokens-filter">
+    <div data-testid={`${Screen.TOKENS_FILTER}-page`} className="tokens-filter">
       <div
-        aria-label="tokens-filter-disclaimer"
+        data-testid="tokens-filter-disclaimer"
         className="disclaimer"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_tokens_settings_text'),
         }}></div>
 
       <InputComponent
-        ariaLabel="input-filter-box"
+        dataTestId="input-filter-box"
         type={InputType.TEXT}
         placeholder="popup_html_search"
         value={filterValue}
@@ -88,18 +89,18 @@ const TokensFilter = ({
       <div className="tokens-list">
         {filteredTokens.map((token) => (
           <div
-            aria-label={`token-list-item-${token.symbol}`}
+            data-testid={`token-list-item-${token.symbol}`}
             className="token"
             key={token.symbol}>
             <CheckboxComponent
-              ariaLabel={`checkbox-select-token-${token.symbol}`}
-              extraAriaLabelOnInput={`checkbox-checked-${token.symbol}`}
+              dataTestId={`checkbox-select-token-${token.symbol}`}
+              extraDataTestIdOnInput={`checkbox-checked-${token.symbol}`}
               checked={!hiddenTokens.includes(token.symbol)}
               onChange={() => {
                 toggleHiddenToken(token.symbol);
               }}></CheckboxComponent>
             <div
-              aria-label="token-list-item-description"
+              data-testid="token-list-item-description"
               className="description">
               <div className="name">{token.name}</div>
               <div className="detail">

@@ -1,58 +1,66 @@
 import App from '@popup/App';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import alLink from 'src/__tests__/utils-for-testing/aria-labels/al-link';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-testid-link';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
-config.byDefault();
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+import MkUtils from 'src/utils/mk.utils';
 describe('reset-password.component tests:\n', () => {
   beforeEach(async () => {
-    mockPreset.setOrDefault({
-      app: {
-        getActiveAccountNameFromLocalStorage: mk.empty,
-        getMkFromLocalStorage: mk.empty,
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.emptyState,
+      {
+        app: {
+          accountsRelated: {
+            MkUtils: {
+              getMkFromLocalStorage: '',
+            },
+            ActiveAccountUtils: {
+              getActiveAccountNameFromLocalStorage: '',
+            },
+          },
+        },
       },
-    });
-    jest.useFakeTimers('legacy');
-    actAdvanceTime(4300);
-    customRender(<App />, {
-      initialState: initialStates.iniStateAs.emptyState,
-    });
-    await assertion.awaitFind(alLink.resetPassword);
+    );
   });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
   it('Must clear all user data and navigate to sign up page', async () => {
-    mockPreset.setOrDefault({
-      app: {
-        getAccount: [],
-        getAccountsFromLocalStorage: [],
-        getMkFromLocalStorage: '',
-        getActiveAccountNameFromLocalStorage: '',
-        hasStoredAccounts: false,
-      },
+    AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
+    AccountUtils.getAccountsFromLocalStorage = jest.fn().mockResolvedValue([]);
+    MkUtils.getMkFromLocalStorage = jest.fn().mockResolvedValue('');
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(false);
+
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdLink.resetPassword));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.confirmResetPassword),
+      );
     });
-    await clickAwait([alLink.resetPassword, alButton.confirmResetPassword]);
-    await assertion.awaitFor(alComponent.signUp, QueryDOM.BYLABEL);
+    screen.debug();
+    expect(await screen.findByTestId('signup-page')).toBeInTheDocument();
   });
   it('Must cancel and return to previous window', async () => {
-    await clickAwait([alLink.resetPassword]);
-    assertion.queryByLabel(alButton.confirmResetPassword);
-    await clickAwait([alIcon.arrowBack]);
-    assertion.queryByLabel(alButton.confirmResetPassword, false);
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdLink.resetPassword));
+    });
+    expect(
+      await screen.findByTestId(dataTestIdButton.confirmResetPassword),
+    ).toBeInTheDocument();
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
+    });
+    expect(
+      screen.queryByTestId(dataTestIdButton.confirmResetPassword),
+    ).not.toBeInTheDocument();
   });
 });

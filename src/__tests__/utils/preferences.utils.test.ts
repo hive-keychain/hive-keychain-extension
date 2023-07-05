@@ -6,23 +6,20 @@ import {
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   addToWhitelist,
   isWhitelisted,
   removeFromWhitelist,
 } from 'src/utils/preferences.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
-const chrome = require('chrome-mock');
-global.chrome = chrome;
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
 describe('preferences.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   describe('addToWhitelist tests:\n', () => {
-    const username = utilsT.userData.username;
+    const username = userData.one.username;
     const domain = 'domain';
     const type = 'type';
     let mockGetValueFromLocalStorage: jest.Mock;
@@ -98,6 +95,7 @@ describe('preferences.utils tests:\n', () => {
       });
     });
   });
+
   describe('isWhitelisted tests:\n', () => {
     test('Passing empty values must return false', () => {
       const arr = {} as NoConfirm;
@@ -110,7 +108,7 @@ describe('preferences.utils tests:\n', () => {
     test('Passing valid values and no testnet property, must return value within the arr(true)', () => {
       const data = {
         type: KeychainRequestTypes.decode,
-        username: utilsT.userData.username,
+        username: userData.one.username,
         method: KeychainKeyTypes.posting,
       } as KeychainRequest;
       const domain = 'domain';
@@ -124,7 +122,7 @@ describe('preferences.utils tests:\n', () => {
     test('Passing valid values and no testnet property, must return value within the arr(false)', () => {
       const data = {
         type: KeychainRequestTypes.decode,
-        username: utilsT.userData.username,
+        username: userData.one.username,
         method: KeychainKeyTypes.posting,
       } as KeychainRequest;
       const domain = 'domain';
@@ -138,7 +136,7 @@ describe('preferences.utils tests:\n', () => {
     test('Passing bad written data in arr, must cause an error and return false', () => {
       const data = {
         type: KeychainRequestTypes.decode,
-        username: utilsT.userData.username,
+        username: userData.one.username,
         method: KeychainKeyTypes.posting,
       } as KeychainRequest;
       const domain = 'domain';
@@ -163,7 +161,7 @@ describe('preferences.utils tests:\n', () => {
       } as NoConfirm;
       const result = removeFromWhitelist(
         arr,
-        utilsT.userData.username,
+        userData.one.username,
         domain,
         'decode',
       );
@@ -184,7 +182,7 @@ describe('preferences.utils tests:\n', () => {
       } as NoConfirm;
       const result = removeFromWhitelist(
         arr,
-        utilsT.userData.username,
+        userData.one.username,
         domain,
         'decode',
       );

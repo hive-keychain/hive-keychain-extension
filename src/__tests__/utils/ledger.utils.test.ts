@@ -1,25 +1,31 @@
 import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { KeyType } from '@interfaces/keys.interface';
-import { LedgerKeyType, LedgerUtils } from 'src/utils/ledger.utils';
+import Transport from '@ledgerhq/hw-transport';
+import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import ledgerUtilsMocks from 'src/__tests__/utils/mocks/ledger.utils-mocks';
+import { LedgerKeyType, LedgerUtils } from 'src/utils/ledger.utils';
 
 describe('ledger.utils.ts tests:\n', () => {
-  const { mocks, methods } = ledgerUtilsMocks;
-  const { constants } = ledgerUtilsMocks;
-  methods.afterEach;
+  const constants = {
+    t: new Transport(),
+    ledgerHiveApp: {} as LedgerHiveApp,
+  };
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('init cases:\n', () => {
     it('Must return true', async () => {
-      mocks.transportWebUsb.isSupported(true);
-      mocks.transportWebUsb.create(constants.t);
-      mocks.transportWebUsb.list(['testdevice']);
+      TransportWebUsb.isSupported = jest.fn().mockResolvedValue(true);
+      TransportWebUsb.create = jest.fn().mockResolvedValue(constants.t);
+      TransportWebUsb.list = jest.fn().mockResolvedValue(['testdevice']);
       expect(await LedgerUtils.init(true)).toBe(true);
     });
 
     it('Must throw error', async () => {
-      mocks.transportWebUsb.isSupported(false);
-      mocks.transportWebUsb.create(constants.t);
+      TransportWebUsb.isSupported = jest.fn().mockResolvedValue(false);
+      TransportWebUsb.create = jest.fn().mockResolvedValue(constants.t);
       try {
         await LedgerUtils.init(true);
       } catch (error) {
@@ -30,7 +36,7 @@ describe('ledger.utils.ts tests:\n', () => {
 
   describe('getKeyForAccount cases:\n', () => {
     it('Must return active key', async () => {
-      mocks.LedgerUtils.getKeysForAccount({
+      LedgerUtils.getKeysForAccount = jest.fn().mockResolvedValue({
         active: userData.one.nonEncryptKeys.active,
         activePubkey: userData.one.encryptKeys.active,
       });
@@ -43,7 +49,7 @@ describe('ledger.utils.ts tests:\n', () => {
     });
 
     it('Must return posting key', async () => {
-      mocks.LedgerUtils.getKeysForAccount({
+      LedgerUtils.getKeysForAccount = jest.fn().mockResolvedValue({
         posting: userData.one.nonEncryptKeys.posting,
         postingPubkey: userData.one.encryptKeys.posting,
       });
@@ -56,7 +62,7 @@ describe('ledger.utils.ts tests:\n', () => {
     });
 
     it('Must return memo key', async () => {
-      mocks.LedgerUtils.getKeysForAccount({
+      LedgerUtils.getKeysForAccount = jest.fn().mockResolvedValue({
         memo: userData.one.nonEncryptKeys.memo,
         memoPubkey: userData.one.encryptKeys.memo,
       });
@@ -69,7 +75,7 @@ describe('ledger.utils.ts tests:\n', () => {
     });
 
     it('Must return {} if no keys', async () => {
-      mocks.LedgerUtils.getKeysForAccount(undefined);
+      LedgerUtils.getKeysForAccount = jest.fn().mockResolvedValue(undefined);
       expect(
         await LedgerUtils.getKeyForAccount(KeyType.MEMO, mk.user.one),
       ).toEqual({});
@@ -86,8 +92,8 @@ describe('ledger.utils.ts tests:\n', () => {
 
   describe('Name of the group', () => {
     it('Must return ledger instance', async () => {
-      mocks.transportWebUsb.isSupported(true);
-      mocks.transportWebUsb.create(constants.t);
+      TransportWebUsb.isSupported = jest.fn().mockResolvedValue(true);
+      TransportWebUsb.create = jest.fn().mockResolvedValue(constants.t);
       expect(await LedgerUtils.getLedgerInstance()).toBeInstanceOf(
         LedgerHiveApp,
       );

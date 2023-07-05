@@ -4,7 +4,7 @@ import {
 } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
@@ -40,7 +40,7 @@ const AnalyticsPopup = ({
 
   return (
     <div
-      aria-label="analytics-popup"
+      data-testid="analytics-popup"
       className={`analytics-popup 
         `}>
       <div className="overlay"></div>

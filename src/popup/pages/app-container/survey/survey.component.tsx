@@ -37,7 +37,7 @@ const Survey = ({ survey }: Props) => {
   if (!ready) return null;
   else
     return (
-      <div aria-label="survey-component" className="survey">
+      <div data-testid="survey-component" className="survey">
         <div className="overlay"></div>
         <div className="survey-container">
           <div className="survey-title">{survey.title}</div>
@@ -58,7 +58,7 @@ const Survey = ({ survey }: Props) => {
               onClick={() => noThanks()}
             />
             <ButtonComponent
-              ariaLabel="help-us-page"
+              dataTestId="help-us-page"
               type={ButtonType.STROKED}
               label="popup_html_survey_help_us"
               onClick={() => helpUs()}
