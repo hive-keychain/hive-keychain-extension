@@ -1,4 +1,3 @@
-import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -19,7 +18,6 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import AccountUtils from 'src/utils/account.utils';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
@@ -29,25 +27,29 @@ import './witness-tab.component.scss';
 
 const MAX_WITNESS_VOTE = 30;
 
+interface WitnessTabProps {
+  ranking: Witness[];
+  hasError: boolean;
+}
+
 const WitnessTab = ({
+  ranking,
+  hasError,
   activeAccount,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
-}: PropsFromRedux) => {
+}: PropsFromRedux & WitnessTabProps) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
   const [remainingVotes, setRemainingVotes] = useState<string | number>('...');
-  const [ranking, setRanking] = useState<Witness[]>([]);
   const [filteredRanking, setFilteredRanking] = useState<Witness[]>([]);
   const [filterValue, setFilterValue] = useState('');
   const [votedWitnesses, setVotedWitnesses] = useState<string[]>([]);
 
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
-  const [hasError, setHasError] = useState(false);
-  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     init();
@@ -61,7 +63,6 @@ const WitnessTab = ({
     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
 
     setUsingProxy(proxy !== null);
-    initWitnessRanking();
     if (proxy) {
       initProxyVotes(proxy);
     } else {
@@ -96,25 +97,6 @@ const WitnessTab = ({
   const initProxyVotes = async (proxy: string) => {
     const hiveAccounts = await AccountUtils.getAccount(proxy);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
-  };
-
-  const initWitnessRanking = async () => {
-    setLoading(true);
-    let requestResult;
-    try {
-      requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
-      if (!!requestResult && requestResult !== '') {
-        const ranking = requestResult;
-        setRanking(ranking);
-        setFilteredRanking(ranking);
-      } else {
-        throw new Error('Witness-ranks data error');
-      }
-    } catch (err) {
-      setErrorMessage('popup_html_error_retrieving_witness_ranking');
-      setHasError(true);
-    }
-    setLoading(false);
   };
 
   const handleVotedButtonClick = async (witness: Witness) => {
@@ -262,68 +244,55 @@ const WitnessTab = ({
         </a>
       </div>
 
-      {!isLoading && (
-        <div className="ranking-container">
-          <div className="ranking-filter">
-            <InputComponent
-              dataTestId="input-ranking-filter"
-              type={InputType.TEXT}
-              placeholder="popup_html_search"
-              value={filterValue}
-              onChange={setFilterValue}
-            />
-            <div className="switches-panel">
-              <CheckboxComponent
-                dataTestId="switches-panel-witness-voted_only"
-                title="html_popup_witness_display_voted_only"
-                checked={displayVotedOnly}
-                onChange={() => {
-                  setDisplayVotedOnly(!displayVotedOnly);
-                }}></CheckboxComponent>
-              <CheckboxComponent
-                dataTestId="switches-panel-witness-hide_inactive"
-                title="html_popup_witness_hide_inactive"
-                checked={hideNonActive}
-                onChange={() => {
-                  setHideNonActive(!hideNonActive);
-                }}></CheckboxComponent>
-            </div>
-          </div>
-
-          <div data-testid="ranking" className="ranking">
-            <FlatList
-              list={filteredRanking}
-              renderItem={renderWitnessItem}
-              renderOnScroll
-              renderWhenEmpty={() => {
-                return (
-                  hasError && (
-                    <div data-testid="error-witness" className="error-witness">
-                      <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
-                      <span>
-                        {chrome.i18n.getMessage(
-                          'popup_html_error_retrieving_witness_ranking',
-                        )}
-                      </span>
-                    </div>
-                  )
-                );
-              }}
-            />
+      <div className="ranking-container">
+        <div className="ranking-filter">
+          <InputComponent
+            dataTestId="input-ranking-filter"
+            type={InputType.TEXT}
+            placeholder="popup_html_search"
+            value={filterValue}
+            onChange={setFilterValue}
+          />
+          <div className="switches-panel">
+            <CheckboxComponent
+              dataTestId="switches-panel-witness-voted_only"
+              title="html_popup_witness_display_voted_only"
+              checked={displayVotedOnly}
+              onChange={() => {
+                setDisplayVotedOnly(!displayVotedOnly);
+              }}></CheckboxComponent>
+            <CheckboxComponent
+              dataTestId="switches-panel-witness-hide_inactive"
+              title="html_popup_witness_hide_inactive"
+              checked={hideNonActive}
+              onChange={() => {
+                setHideNonActive(!hideNonActive);
+              }}></CheckboxComponent>
           </div>
         </div>
-      )}
 
-      {isLoading && (
-        <div
-          style={{
-            height: '300px',
-            display: 'flex',
-            justifyContent: 'center',
-          }}>
-          <RotatingLogoComponent></RotatingLogoComponent>
+        <div aria-label="ranking" className="ranking">
+          <FlatList
+            list={filteredRanking}
+            renderItem={renderWitnessItem}
+            renderOnScroll
+            renderWhenEmpty={() => {
+              return (
+                hasError && (
+                  <div aria-label="error-witness" className="error-witness">
+                    <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_error_retrieving_witness_ranking',
+                      )}
+                    </span>
+                  </div>
+                )
+              );
+            }}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 };

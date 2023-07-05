@@ -35,6 +35,9 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
   },
+  witnesses: {
+    feedWarningLimitInHours: 5,
+  },
 };
 
 export default Config;

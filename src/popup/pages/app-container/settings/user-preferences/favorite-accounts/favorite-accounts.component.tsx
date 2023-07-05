@@ -1,5 +1,9 @@
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import {
+  FavoriteUserItems,
+  FavoriteUserList,
+  FavoriteUserListName,
+} from '@interfaces/favorite-user.interface';
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
@@ -14,12 +18,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import {
-  FavoriteAccounts,
-  FavoriteUserList,
-  FavoriteUserListName,
-  FavoriteUserUtils,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './favorite-accounts.component.scss';
 

@@ -1,4 +1,6 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { GlobalProperties } from '@interfaces/global-properties.interface';
 
 const withCommas = (nb: string, decimals = 3) => {
   const currency = nb.split(' ')[1];
@@ -18,6 +20,10 @@ const toHP = (vests: string, props?: DynamicGlobalProperties) =>
     ? (parseFloat(vests) * parseFloat(props.total_vesting_fund_hive + '')) /
       parseFloat(props.total_vesting_shares + '')
     : 0;
+
+const toFormattedHP = (vests: number, props?: DynamicGlobalProperties) => {
+  return `${toHP(vests.toString(), props).toFixed(3)} HP`;
+};
 
 const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
@@ -95,6 +101,11 @@ const fromNaiAndSymbol = (obj: any) => {
   )}`;
 };
 
+const getAmountFromNai = (obj: any) => {
+  const res = fromNaiAndSymbol(obj);
+  return Asset.fromString(res).amount;
+};
+
 const removeHtmlTags = (str: string) => {
   return str.replace(/<(?:.|\n)*?>/gm, '');
 };
@@ -111,19 +122,48 @@ const trimUselessZero = (number: number, precision: number) => {
   else return FormatUtils.withCommas(parseFloat(n).toFixed(3));
 };
 
+const getUSDFromVests = (
+  vestAmount: Number,
+  globalProperties: GlobalProperties,
+  currencyPrices: CurrencyPrices,
+) => {
+  return (
+    FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
+    currencyPrices.hive.usd!
+  ).toFixed(2);
+};
+
+const getOrdinalLabelTranslation = (active_rank: string) => {
+  const result = parseFloat(active_rank) % 10;
+  switch (result) {
+    case 1:
+      return 'html_popup_witness_ranking_ordinal_st_label';
+    case 2:
+      return 'html_popup_witness_ranking_ordinal_nd_label';
+    case 3:
+      return 'html_popup_witness_ranking_ordinal_rd_label';
+    default:
+      return 'html_popup_witness_ranking_ordinal_th_label';
+  }
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
+  toFormattedHP,
   fromHP,
   formatCurrencyValue,
   nFormatter,
   hasMoreThanXDecimal,
   toNumber,
   getSymbol,
+  getAmountFromNai,
   fromNaiAndSymbol,
   removeHtmlTags,
   getValFromString,
   trimUselessZero,
+  getUSDFromVests,
+  getOrdinalLabelTranslation,
 };
 
 export default FormatUtils;

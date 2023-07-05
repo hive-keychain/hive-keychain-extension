@@ -68,7 +68,9 @@ const TokensOperation = ({
   let balance: number | string;
   switch (operationType) {
     case TokenOperationType.UNSTAKE:
-      balance = tokenBalance.stake;
+      balance =
+        parseFloat(tokenBalance.stake) -
+        parseFloat(tokenBalance.pendingUnstake);
       break;
     case TokenOperationType.STAKE:
       balance = tokenBalance.balance;
@@ -118,6 +120,11 @@ const TokensOperation = ({
   const handleClickOnSend = async () => {
     if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
       setErrorMessage('popup_no_such_account');
+      return;
+    }
+
+    if (parseFloat(amount.toString()) <= 0) {
+      setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
@@ -189,7 +196,6 @@ const TokensOperation = ({
           if (tokenOperationResult && tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList(`popup_html_${operationType}_tokens`);
-
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(
@@ -202,14 +208,14 @@ const TokensOperation = ({
               setErrorMessage('popup_token_timeout');
             }
           } else {
-            removeFromLoadingList('html_popup_transfer_token_operation');
+            removeFromLoadingList(`popup_html_${operationType}_tokens`);
             setErrorMessage(`popup_html_${operationType}_tokens_failed`);
           }
         } catch (err: any) {
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, [err]);
         } finally {
           removeFromLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
+          removeFromLoadingList(`popup_html_${operationType}_tokens`);
         }
       },
     });

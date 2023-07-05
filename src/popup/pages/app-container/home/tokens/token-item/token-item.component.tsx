@@ -206,15 +206,34 @@ const TokenItem = ({
                 <div>
                   {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
                   {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.delegationsOut),
+                    parseFloat(tokenBalance.delegationsIn),
                     tokenInfo.precision,
                   )}
+                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  )}
                 </div>
-                {parseFloat(tokenBalance.delegationsOut) > 0 && (
-                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
-                )}
               </div>
             )}
+            {tokenInfo.delegationEnabled &&
+              parseFloat(tokenBalance.delegationsOut) > 0 && (
+                <div
+                  aria-label="button-go-to-outgoing-delegations"
+                  className="delegation-line"
+                  onClick={goToOutgoingDelegations}>
+                  <div>
+                    {chrome.i18n.getMessage('popup_html_token_delegation_out')}{' '}
+                    :{' '}
+                    {FormatUtils.trimUselessZero(
+                      parseFloat(tokenBalance.delegationsOut),
+                      tokenInfo.precision,
+                    )}
+                  </div>
+                  {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  )}
+                </div>
+              )}
             {tokenInfo.delegationEnabled &&
               parseFloat(tokenBalance.pendingUndelegations) > 0 && (
                 <div>

@@ -74,7 +74,9 @@ const ConfirmationPage = ({
                 <div className="label">
                   {chrome.i18n.getMessage(field.label)}
                 </div>
-                <div className="value">{field.value}</div>
+                <div className={`value ${field.valueClassName ?? ''}`}>
+                  {field.value}
+                </div>
               </div>
             ))}
           </div>
