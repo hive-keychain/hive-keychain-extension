@@ -294,7 +294,7 @@ const TransferFunds = ({
           }
         } catch (err: any) {
           Logger.error(err);
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, err.messageParams);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }

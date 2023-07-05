@@ -455,6 +455,10 @@
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
   },
+  "popup_html_wrong_key_tooltip_text": {
+    "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
+    "description": "after hoover on red wrong key -> manage accounts -> account keys list item"
+  },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",
     "description": "on change password"
@@ -2728,6 +2732,14 @@
     "message": "Governance renewal",
     "description": "Governance expiration renewal popup"
   },
+  "html_popup_wrong_key_title": {
+    "message": "Wrong key$1 found",
+    "description": "Wrong key popup"
+  },
+  "html_popup_wrong_key_introduction": {
+    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "description": "Governance expiration renewal popup"
+  },
   "html_popup_governance_renewal_introduction": {
     "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
     "description": "Governance expiration renewal popup"
@@ -2803,6 +2815,14 @@
   "popup_html_analytics_save": {
     "message": "Save",
     "description": "accept button on analytics popup"
+  },
+  "popup_html_wrong_key_popup_replace": {
+    "message": "Replace",
+    "description": "replace key button on wrong key popup"
+  },
+  "popup_html_wrong_key_popup_do_nothing": {
+    "message": "Do nothing",
+    "description": "do nothing button on wrong key popup"
   },
   "popup_html_analytics_accept_to_share": {
     "message": "I agree to share usage data with Keychain",
@@ -3265,5 +3285,13 @@
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
     "description": "Need more RC"
+  },
+  "tx_missing_active_auth": {
+    "message": "Active key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Active key incorrect"
+  },
+  "tx_missing_posting_auth": {
+    "message": "Posting key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Posting key incorrect"
   }
 }

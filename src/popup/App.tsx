@@ -106,7 +106,6 @@ const App = ({
     const found = navigationStack.find(
       (navigation) =>
         navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
-        navigation.currentPage === Screen.SETTINGS_MANAGE_ACCOUNTS ||
         navigation.currentPage === Screen.SIGN_IN_PAGE,
     );
     if (
@@ -117,7 +116,9 @@ const App = ({
       if (accounts.length > 0) {
         initActiveAccount(accounts);
       }
-      if (!appStatus.processingDecryptAccount) selectComponent(mk, accounts);
+      if (!appStatus.processingDecryptAccount) {
+        selectComponent(mk, accounts);
+      }
     }
   }, [
     isAppReady,
