@@ -15,6 +15,11 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { AddAccountRouterComponent } from '@popup/pages/add-account/add-account-router/add-account-router.component';
+import { AppRouterComponent } from '@popup/pages/app-container/app-router.component';
+import { MessageContainerComponent } from '@popup/pages/message-container/message-container.component';
+import { SignInRouterComponent } from '@popup/pages/sign-in/sign-in-router.component';
+import { SignUpComponent } from '@popup/pages/sign-up/sign-up.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -34,14 +39,9 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
-import './App.scss';
-import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
-import { AppRouterComponent } from './pages/app-container/app-router.component';
-import { MessageContainerComponent } from './pages/message-container/message-container.component';
-import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component';
-import { SignUpComponent } from './pages/sign-up/sign-up.component';
+import './hive-app.component.scss';
 
-const App = ({
+const HiveApp = ({
   mk,
   accounts,
   activeAccountUsername,
@@ -361,4 +361,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(App);
+export const HiveAppComponent = connector(HiveApp);

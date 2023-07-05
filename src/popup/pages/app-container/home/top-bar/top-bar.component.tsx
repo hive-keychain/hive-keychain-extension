@@ -13,8 +13,12 @@ import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import {
+  Chain,
+  useChainContext,
+} from 'src/multichain-container/multichain.context';
 import { Screen } from 'src/reference-data/screen.enum';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -36,6 +40,8 @@ const TopBar = ({
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
+
+  const { setChain } = useChainContext();
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -121,7 +127,12 @@ const TopBar = ({
         aria-label="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
-
+      <Icon
+        ariaLabel="reward-claim-icon"
+        name={Icons.LINK}
+        onClick={() => setChain(Chain.EVM)}
+        additionalClassName="button claim-button"
+        type={IconType.STROKED}></Icon>
       {hasRewardToClaim && (
         <Icon
           ariaLabel="reward-claim-icon"
