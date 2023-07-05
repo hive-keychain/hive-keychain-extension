@@ -21,7 +21,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -201,18 +201,13 @@ const TransferFunds = ({
       fields = [fields[0], fields[1]];
     }
 
-    let warningMessage = await TransferUtils.getExchangeValidationWarning(
+    let warningMessage = await TransferUtils.getTransferWarning(
       receiverUsername,
       currencyLabels[selectedCurrency],
-      memo.length > 0,
+      memo,
+      phishing,
       isRecurrent,
     );
-
-    if (phishing.includes(receiverUsername)) {
-      warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        receiverUsername,
-      ]);
-    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(

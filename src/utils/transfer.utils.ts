@@ -6,7 +6,34 @@ import {
 import { Key } from '@interfaces/keys.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
+import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+
+const getTransferWarning = (
+  account: string,
+  currency: string,
+  memo: any,
+  phisingAccounts: any,
+  isRecurrent?: boolean,
+) => {
+  const exchangeWarning = getExchangeValidationWarning(
+    account,
+    currency,
+    memo.length > 0,
+    isRecurrent,
+  );
+  if (exchangeWarning) return exchangeWarning;
+
+  const privateKeyInMemoWarning = getPrivateKeysMemoValidationWarning(memo);
+  if (privateKeyInMemoWarning)
+    return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+
+  if (phisingAccounts.includes(account)) {
+    return chrome.i18n.getMessage('popup_warning_phishing', [account]);
+  }
+
+  return null;
+};
 
 const getTransferFromToSavingsValidationWarning = (
   account: string,
@@ -25,10 +52,10 @@ const getTransferFromToSavingsValidationWarning = (
   }
 };
 
-const getExchangeValidationWarning = async (
+const getExchangeValidationWarning = (
   account: string,
   currency: string,
-  hasMemo: any,
+  hasMemo: boolean,
   isRecurrent?: boolean,
 ) => {
   const exchange = exchanges.find((exchange) => exchange.username === account);
@@ -101,6 +128,7 @@ const getTransferOperation = (
     },
   ] as TransferOperation;
 };
+
 const getRecurrentTransferOperation = (
   sender: string,
   receiver: string,
@@ -157,6 +185,7 @@ const TransferUtils = {
   getTransferOperation,
   getRecurrentTransferOperation,
   getTransferTransaction,
+  getTransferWarning,
 };
 
 export default TransferUtils;
