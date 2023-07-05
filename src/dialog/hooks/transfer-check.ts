@@ -15,20 +15,22 @@ export const useTransferCheck = (
   const [header, setHeader] = useState<string | undefined>(undefined);
   useEffect(() => {
     getPhishingAccounts().then((accs: string[]) => {
-      TransferUtils.getExchangeValidationWarning(
-        data.to,
-        data.type === 'transfer'
-          ? CurrencyUtils.getCurrencyLabels(rpc.testnet)[
-              data.currency.toLowerCase() as BaseCurrencies
-            ]
-          : data.currency,
-        data.memo.length > 0,
-      ).then((res: string | null) => {
-        if (accs.includes(data.to)) {
-          res = chrome.i18n.getMessage('popup_warning_phishing', [data.to]);
-        }
-        setHeader(res ? res : undefined);
-      });
+      let warning;
+      if (accs.includes(data.to)) {
+        warning = chrome.i18n.getMessage('popup_warning_phishing', [data.to]);
+      } else {
+        warning = TransferUtils.getTransferWarning(
+          data.to,
+          data.type === 'transfer'
+            ? CurrencyUtils.getCurrencyLabels(rpc.testnet)[
+                data.currency.toLowerCase() as BaseCurrencies
+              ]
+            : data.currency,
+          data.memo,
+          accs,
+        );
+      }
+      setHeader(warning ? warning : undefined);
     });
   }, []);
   return header;

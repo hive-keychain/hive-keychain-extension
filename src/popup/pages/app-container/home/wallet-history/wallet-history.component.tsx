@@ -23,7 +23,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';

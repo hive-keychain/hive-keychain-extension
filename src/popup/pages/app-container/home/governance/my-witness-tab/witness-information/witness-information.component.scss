@@ -1,0 +1,73 @@
+@import '../../../../../../variable.scss';
+
+.witness-information {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0px 16px;
+  font-size: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .witness-disabled {
+    @include icon-size(40px);
+    color: $red-dark;
+  }
+
+  .top-panel {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 16px;
+  }
+
+  .witness-profile-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .witness-profile {
+      display: flex;
+      justify-content: flex-start;
+      padding: 16px 8px;
+    }
+
+    .info-container {
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      padding-left: 8px;
+    }
+
+    .witness-name {
+      font-weight: bold;
+    }
+
+    .witness-ranking {
+      display: flex;
+      flex-direction: row;
+      font-style: italic;
+    }
+  }
+
+  img {
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+  }
+
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 8px;
+  }
+
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+  }
+}
