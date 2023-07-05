@@ -1,12 +1,12 @@
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
+import {
+  FavoriteUserList,
+  FavoriteUserListName,
+} from '@interfaces/favorite-user.interface';
 import { FavoriteAccountsItemComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  FavoriteUserList,
-  FavoriteUserListName,
-} from 'src/utils/favorite-user.utils';
 import './favorite-accounts-list.component.scss';
 
 interface FavoriteAccountsListProps {
