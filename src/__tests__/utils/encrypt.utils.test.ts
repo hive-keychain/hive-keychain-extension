@@ -1,14 +1,16 @@
 import MkModule from '@background/mk.module';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import CryptoJS from 'crypto-js';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import Logger from 'src/utils/logger.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
 describe('encrypt.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
   describe('encryptJson tests:\n', () => {
     test('Passing both parameters as empty, and password as empty must return a 152 length string', () => {
       const content = { list: '' };
@@ -23,10 +25,10 @@ describe('encrypt.utils tests:\n', () => {
         .mockResolvedValueOnce('new key');
       const mk = await MkModule.getMk();
       const newAccount: LocalAccount = {
-        name: utilsT.userData.username,
+        name: userData.one.username,
         keys: {
-          active: utilsT.userData.encryptKeys.active,
-          posting: utilsT.userData.encryptKeys.posting,
+          active: userData.one.encryptKeys.active,
+          posting: userData.one.encryptKeys.posting,
         },
       };
       const content = { list: newAccount };
@@ -43,12 +45,12 @@ describe('encrypt.utils tests:\n', () => {
       const expectedDecodedObj = {
         list: [
           {
-            name: utilsT.userData.username,
+            name: userData.one.username,
             keys: {
-              active: utilsT.userData.nonEncryptKeys.active,
-              posting: utilsT.userData.nonEncryptKeys.posting,
-              activePubkey: utilsT.userData.encryptKeys.active,
-              postingPubkey: utilsT.userData.encryptKeys.posting,
+              active: userData.one.nonEncryptKeys.active,
+              posting: userData.one.nonEncryptKeys.posting,
+              activePubkey: userData.one.encryptKeys.active,
+              postingPubkey: userData.one.encryptKeys.posting,
             },
           },
         ],
@@ -112,9 +114,6 @@ describe('encrypt.utils tests:\n', () => {
   });
 
   describe('decryptToJsonWithoutMD5Check tests:\n', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
     test('Passing an empty message and an empty password must throw error as SyntaxError', () => {
       const spyLogger = jest.spyOn(Logger, 'error');
       const errorMessage = 'Error while decrypting';

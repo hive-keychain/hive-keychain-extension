@@ -2,6 +2,10 @@ import BrowserUtils from 'src/utils/browser.utils';
 const env = process.env;
 
 describe('sendResponse tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   test('While mocking the env variable IS_FIREFOX it must return resolvedMessage', async () => {
     process.env = {
       ...env,

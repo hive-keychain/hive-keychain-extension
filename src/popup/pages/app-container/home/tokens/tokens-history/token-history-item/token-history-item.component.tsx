@@ -24,13 +24,13 @@ import './token-history-item.component.scss';
 
 interface TokenHistoryItemProps {
   transaction: TokenTransaction;
-  ariaLabel?: string;
+  dataTestId?: string;
 }
 
 const TokenHistoryItem = ({
   transaction,
   activeAccountName,
-  ariaLabel,
+  dataTestId,
 }: PropsFromRedux) => {
   const [isMemoOpened, setIsMemoOpened] = useState(false);
 
@@ -198,7 +198,7 @@ const TokenHistoryItem = ({
   const label = getLabel();
   return label ? (
     <div
-      aria-label={ariaLabel}
+      data-testid={dataTestId}
       id={transaction._id}
       className={`token-history-item`}
       onClick={() => setIsMemoOpened(!isMemoOpened)}>
@@ -207,7 +207,7 @@ const TokenHistoryItem = ({
           <div className="top-row">
             <div className="top-icon-date">
               <Icon
-                ariaLabel="icon-open-new-window"
+                dataTestId="icon-open-new-window"
                 name={getIcon()}
                 type={IconType.OUTLINED}
                 onClick={openTransactionOnHiveblocks}
@@ -234,7 +234,7 @@ const TokenHistoryItem = ({
           <div className="bottom-row">{label}</div>
         </div>
         <div
-          aria-label={`${ariaLabel}-memo-panel-${transaction._id}`}
+          data-testid={`${dataTestId}-memo-panel-${transaction._id}`}
           className={isMemoOpened ? 'memo-panel opened' : 'memo-panel closed'}>
           {getMemo()}
         </div>

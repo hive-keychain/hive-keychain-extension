@@ -5,7 +5,7 @@ import { resetTitleContainerProperties } from '@popup/actions/title-container.ac
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -40,7 +40,7 @@ const SignUp = ({
   };
 
   return (
-    <div className="sign-up-page" aria-label="signup-page">
+    <div className="sign-up-page" data-testid="signup-page">
       <img src="/assets/images/keychain_logo.png" className="logo-white" />
       <p
         className="introduction"
@@ -54,7 +54,7 @@ const SignUp = ({
           logo={Icons.PASSWORD}
           placeholder="popup_html_new_password"
           type={InputType.PASSWORD}
-          ariaLabel="password-input"
+          dataTestId="password-input"
         />
         <InputComponent
           value={newPasswordConfirm}
@@ -63,13 +63,13 @@ const SignUp = ({
           placeholder="popup_html_confirm"
           type={InputType.PASSWORD}
           onEnterPress={submitMk}
-          ariaLabel="password-input-confirmation"
+          dataTestId="password-input-confirmation"
         />
       </div>
       <ButtonComponent
         label={'popup_html_submit'}
         onClick={submitMk}
-        ariaLabel="signup-button"
+        dataTestId="signup-button"
       />
     </div>
   );

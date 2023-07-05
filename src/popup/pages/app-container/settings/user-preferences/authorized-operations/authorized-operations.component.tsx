@@ -4,8 +4,9 @@ import { Icons } from '@popup/icons.enum';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -87,7 +88,7 @@ const AuthorizedOperations = ({
 
   return (
     <div
-      aria-label="authorized-operations-page"
+      data-testid={`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`}
       className="authorized-operations-page">
       <div
         className="introduction"
@@ -100,14 +101,14 @@ const AuthorizedOperations = ({
       {websites && Object.keys(websites).length > 0 && (
         <div className="search-panel">
           <InputComponent
-            ariaLabel="input-filter-box"
+            dataTestId="input-filter-box"
             type={InputType.TEXT}
             placeholder="popup_html_search"
             value={filterValue}
             onChange={(value) => setFilterValue(value)}
           />
           <div
-            aria-label="clear-filters"
+            data-testid="clear-filters"
             className={'filter-button'}
             onClick={() => setFilterValue('')}>
             {chrome.i18n.getMessage(`popup_html_clear_filters`)}
@@ -126,7 +127,7 @@ const AuthorizedOperations = ({
                 return (
                   websites[website][operation] && (
                     <div
-                      aria-label={'whitelisted-operation-item'}
+                      data-testid={'whitelisted-operation-item'}
                       className="operation"
                       key={operation}>
                       <div className="operation-name">
@@ -138,7 +139,7 @@ const AuthorizedOperations = ({
                         )}
                       </div>
                       <Icon
-                        ariaLabel={`icon-delete-authorized-${operation}-${website}`}
+                        dataTestId={`icon-delete-authorized-${operation}-${website}`}
                         onClick={() =>
                           handleEraseButtonClick(website, operation)
                         }

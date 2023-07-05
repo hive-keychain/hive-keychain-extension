@@ -1,55 +1,51 @@
 import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actRunAllTimers,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {
-    home.extraMocks.getLastTransaction();
-    await home.beforeEach(<App />, accounts.twoAccounts);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getAccountsFromLocalStorage: accounts.twoAccounts,
+            },
+          },
+        },
+      },
+    );
   });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
   it('Must open each page on each action button', async () => {
-    /**
-     * Note: add or remove more actions buttons & ariaLabels page when needed here.
-     */
-    const actionButtonLabelPage = [
-      {
-        ariaLabel: alButton.actionBtn.send,
-        pageComponent: alComponent.transfersFundsPage,
-      },
-      {
-        ariaLabel: alButton.actionBtn.history,
-        pageComponent: alComponent.walletItemList,
-      },
-      {
-        ariaLabel: alButton.actionBtn.buy,
-        pageComponent: alComponent.buyCoinsPage,
-      },
-      {
-        ariaLabel: alButton.actionBtn.send,
-        pageComponent: alComponent.transfersFundsPage,
-      },
-    ];
-    for (let i = 0; i < actionButtonLabelPage.length; i++) {
-      const { ariaLabel, pageComponent } = actionButtonLabelPage[i];
-      await clickAwait([ariaLabel]);
-      actRunAllTimers();
-      assertion.getByLabelText(pageComponent);
-      await clickAwait([alIcon.arrowBack]);
+    for (let i = 0; i < ActionButtonList.length; i++) {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
+          ),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${ActionButtonList[i].nextScreen}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
+      });
     }
   });
 });

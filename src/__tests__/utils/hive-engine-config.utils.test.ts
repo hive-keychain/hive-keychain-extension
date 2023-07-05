@@ -5,11 +5,14 @@ import {
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import hiveEngineConfigUtilsMocks from 'src/__tests__/utils/mocks/hive-engine-config.utils-mocks';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('hive-engine-config.utils.ts tests:/n', () => {
-  const { spies, mocks, methods } = hiveEngineConfigUtilsMocks;
-  methods.afterAll;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
   describe('getApi cases:\n', () => {
     it('Must get Rpc address', () => {
       expect(HiveEngineConfigUtils.getApi()).toBe(
@@ -49,9 +52,14 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
   describe('addCustomRpc cases: \n', () => {
     it('Must add custom rpc to list', async () => {
       const customRpcApi = 'https://saturnoman.com/api';
-      mocks.getValueFromLocalStorage([]);
+      const sSaveInLocalStorage = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue([]);
       await HiveEngineConfigUtils.addCustomRpc(customRpcApi);
-      expect(spies.saveValueInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toBeCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
         [customRpcApi],
       );
@@ -60,9 +68,14 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
 
   describe('deleteCustomRpc cases:\n', () => {
     it('Must delete rpc', async () => {
-      mocks.getValueFromLocalStorage(['found']);
+      const sSaveInLocalStorage = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(['found']);
       expect(await HiveEngineConfigUtils.deleteCustomRpc('found')).toEqual([]);
-      expect(spies.saveValueInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toBeCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
         [],
       );
@@ -71,7 +84,9 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
 
   describe('getCustomRpcs cases:\n', () => {
     it('Must return list', async () => {
-      mocks.getValueFromLocalStorage(['rpc1', 'rpc2']);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(['rpc1', 'rpc2']);
       expect(await HiveEngineConfigUtils.getCustomRpcs()).toEqual([
         'rpc1',
         'rpc2',
@@ -79,14 +94,18 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
     });
 
     it('Must return empty list', async () => {
-      mocks.getValueFromLocalStorage(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(undefined);
       expect(await HiveEngineConfigUtils.getCustomRpcs()).toEqual([]);
     });
   });
 
   describe('getCustomAccountHistoryApi cases:\n', () => {
     it('Must return history api list', async () => {
-      mocks.getValueFromLocalStorage(['historyapi1', 'historyapi2']);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(['historyapi1', 'historyapi2']);
       expect(await HiveEngineConfigUtils.getCustomAccountHistoryApi()).toEqual([
         'historyapi1',
         'historyapi2',
@@ -94,7 +113,9 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
     });
 
     it('Must return empty api list', async () => {
-      mocks.getValueFromLocalStorage(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(undefined);
       expect(await HiveEngineConfigUtils.getCustomAccountHistoryApi()).toEqual(
         [],
       );
@@ -104,9 +125,14 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
   describe('addCustomAccountHistoryApi cases: \n', () => {
     it('Must add custom history rpc to list', async () => {
       const customRpcApi = 'https://saturnoman.com/historyapi';
-      mocks.getValueFromLocalStorage([]);
+      const sSaveInLocalStorage = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue([]);
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(customRpcApi);
-      expect(spies.saveValueInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toBeCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
         [customRpcApi],
       );
@@ -115,11 +141,16 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
 
   describe('deleteCustomAccountHistoryApi cases:\n', () => {
     it('Must delete custom history rpc', async () => {
-      mocks.getValueFromLocalStorage(['foundhistory', 'to_delete']);
+      const sSaveInLocalStorage = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(['foundhistory', 'to_delete']);
       expect(
         await HiveEngineConfigUtils.deleteCustomAccountHistoryApi('to_delete'),
       ).toEqual(['foundhistory']);
-      expect(spies.saveValueInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toBeCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
         ['foundhistory'],
       );
@@ -161,8 +192,11 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
         mainnet: 'mainnet',
         accountHistoryApi: 'history',
       } as HiveEngineConfig;
+      const sSaveInLocalStorage = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
       await HiveEngineConfigUtils.saveConfigInStorage(configHE);
-      expect(spies.saveValueInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toBeCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
         configHE,
       );

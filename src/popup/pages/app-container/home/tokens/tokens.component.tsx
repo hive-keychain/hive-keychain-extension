@@ -19,7 +19,7 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -84,7 +84,7 @@ const Tokens = ({
   }, [userTokens, market, filterValue]);
 
   return (
-    <div className="tokens-page">
+    <div className="tokens-page" data-testid={`${Screen.TOKENS_PAGE}-page`}>
       <div
         className="disclaimer"
         dangerouslySetInnerHTML={{
@@ -95,7 +95,7 @@ const Tokens = ({
         {!userTokens.loading && (
           <>
             <InputComponent
-              ariaLabel="input-filter-box"
+              dataTestId="input-filter-box"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filterValue}
@@ -103,7 +103,7 @@ const Tokens = ({
             />
 
             <Icon
-              ariaLabel="open-tokens-filter"
+              dataTestId="open-tokens-filter"
               onClick={() => navigateTo(Screen.TOKENS_FILTER)}
               name={Icons.FILTER}
               type={IconType.OUTLINED}
@@ -111,7 +111,7 @@ const Tokens = ({
           </>
         )}
         <Icon
-          ariaLabel="tokens-settings-icon"
+          dataTestId="tokens-settings-icon"
           onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
           name={Icons.SETTINGS}
           type={IconType.OUTLINED}
@@ -120,7 +120,7 @@ const Tokens = ({
       {allTokens.length > 0 &&
         filteredTokenList &&
         filteredTokenList.length > 0 && (
-          <div className="my-tokens" aria-label="my-tokens">
+          <div className="my-tokens" data-testid="my-tokens">
             {filteredTokenList.map((token) => (
               <TokenItemComponent
                 ariaLabel="token-user-item"

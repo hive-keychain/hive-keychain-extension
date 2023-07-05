@@ -1,29 +1,72 @@
-import clearAllData from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/clear-all-data/mocks/clear-all-data';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
+import MkUtils from 'src/utils/mk.utils';
 describe('clear-all-data.component tests:\n', () => {
-  let _asFragment: () => {};
-  const { methods, extraMocks, constants } = clearAllData;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    _asFragment = await clearAllData.beforeEach();
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+      );
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.CLEAR),
+      );
+    });
   });
   it('Must show page and message', () => {
-    assertion.getByLabelText(alComponent.advanceSettings.clearAllData);
-    assertion.getOneByText(constants.message.intro);
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        chrome.i18n.getMessage('popup_html_clear_all_data_desc'),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
+
   it('Must go back when pressing cancel', async () => {
-    await clickAwait([alButton.dialog.cancel]);
-    assertion.getByLabelText(alComponent.settingsPage);
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.dialog.cancel));
+    });
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
   });
-  it('Must clear user data and go home', async () => {
-    extraMocks.remockAsNew();
-    await clickAwait([alButton.dialog.confirm]);
-    await assertion.awaitFor(alComponent.signUp, QueryDOM.BYLABEL);
+
+  it('Must clear user data and go to sign up page', async () => {
+    AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
+    AccountUtils.getAccountsFromLocalStorage = jest.fn().mockResolvedValue([]);
+    MkUtils.getMkFromLocalStorage = jest.fn().mockResolvedValue('');
+    ActiveAccountUtils.getActiveAccountNameFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue('');
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(false);
+
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.dialog.confirm),
+      );
+    });
+    expect(await screen.findByTestId('signup-page')).toBeInTheDocument();
   });
 });

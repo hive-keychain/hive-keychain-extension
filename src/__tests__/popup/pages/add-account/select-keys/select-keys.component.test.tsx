@@ -1,82 +1,136 @@
 import App from '@popup/App';
-import { screen, waitFor } from '@testing-library/react';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import addByKeysBeforeEach from 'src/__tests__/popup/pages/add-account/add-by-keys/mocks/add-by-keys-before-each';
-import addByKeysMocks from 'src/__tests__/popup/pages/add-account/add-by-keys/mocks/add-by-keys-mocks';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const deselectAll = async () => {
-  await clickAwait([
-    alCheckbox.selectKeys.import.activeKey,
-    alCheckbox.selectKeys.import.postingkey,
-    alCheckbox.selectKeys.import.memoKey,
-  ]);
-};
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { KeysUtils } from 'src/utils/keys.utils';
+
 describe('select-keys.component tests:\n', () => {
-  beforeEach(async () => {
-    await addByKeysBeforeEach.beforeEach(<App />, [], false);
-    await assertion.awaitFind(alButton.addByKeys);
-    addByKeysMocks.extraMocks.getAccount();
-    await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
-    await deselectAll();
-  });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must load the import keys page', async () => {
-    await waitFor(() => {
-      expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
-      expect(
-        ['Posting Key', 'Active Key', 'Memo Key'].forEach((userKey) => {
-          expect(screen.getByText(userKey)).toBeInTheDocument();
-        }),
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              hasStoredAccounts: false,
+              getAccount: accounts.asArray.extended,
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(dataTestIdButton.addByKeys),
+      );
+      await userEvent.type(
+        await screen.findByTestId(dataTestIdInput.username),
+        mk.user.one,
+      );
+      await userEvent.type(
+        await screen.findByTestId(dataTestIdInput.privateKey),
+        userData.one.nonEncryptKeys.master,
+      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
+    });
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdCheckbox.selectKeys.import.activeKey,
+        ),
+      );
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdCheckbox.selectKeys.import.postingkey,
+        ),
+      );
+      await userEvent.click(
+        await screen.findByTestId(dataTestIdCheckbox.selectKeys.import.memoKey),
       );
     });
   });
-  it('Must import the  selected active key', async () => {
-    await clickAwait([alCheckbox.selectKeys.import.activeKey, alButton.save]);
-    // await actPendingTimers();
-    const importSuccessFullMessage = mocksImplementation
-      .i18nGetMessageCustom('popup_html_import_success')
-      .split('<br>')[0];
-    await waitFor(() => {
-      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+
+  it('Must load the select keys page & caption', async () => {
+    expect(
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`),
+    ).toBeInTheDocument();
+    expect(
+      (await screen.findByTestId(dataTestIdDiv.selectKeys.captionPage))
+        .innerHTML,
+    ).toBe(chrome.i18n.getMessage('popup_html_import_success'));
+  });
+
+  it('Must show error as no key selected', async () => {
+    await act(async () => {
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_accounts_no_key_selected'),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must import the selected active key', async () => {
+    const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdCheckbox.selectKeys.import.activeKey,
+        ),
+      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
+    });
+    expect(sHasKeys).toHaveBeenCalledWith({
+      active: userData.one.nonEncryptKeys.active,
+      activePubkey: userData.one.encryptKeys.active,
     });
   });
+
   it('Must import the selected posting key', async () => {
-    await clickAwait([alCheckbox.selectKeys.import.postingkey, alButton.save]);
-    // await actPendingTimers();
-    const importSuccessFullMessage = mocksImplementation
-      .i18nGetMessageCustom('popup_html_import_success')
-      .split('<br>')[0];
-    await waitFor(() => {
-      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+    const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdCheckbox.selectKeys.import.postingkey,
+        ),
+      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
+    });
+    expect(sHasKeys).toHaveBeenCalledWith({
+      posting: userData.one.nonEncryptKeys.posting,
+      postingPubkey: userData.one.encryptKeys.posting,
     });
   });
+
   it('Must import the selected memo key', async () => {
-    await clickAwait([alCheckbox.selectKeys.import.memoKey, alButton.save]);
-    // await actPendingTimers();
-    const importSuccessFullMessage = mocksImplementation
-      .i18nGetMessageCustom('popup_html_import_success')
-      .split('<br>')[0];
-    await waitFor(() => {
-      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+    const sHasKeys = jest.spyOn(KeysUtils, 'hasKeys');
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(dataTestIdCheckbox.selectKeys.import.memoKey),
+      );
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
-  });
-  it('Must show error if no key selected', async () => {
-    const errorMessage = mocksImplementation.i18nGetMessageCustom(
-      'popup_accounts_no_key_selected',
-    );
-    await clickAwait([alButton.save]);
-    await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
+    expect(sHasKeys).toHaveBeenCalledWith({
+      memo: userData.one.nonEncryptKeys.memo,
+      memoPubkey: userData.one.encryptKeys.memo,
+    });
   });
 });

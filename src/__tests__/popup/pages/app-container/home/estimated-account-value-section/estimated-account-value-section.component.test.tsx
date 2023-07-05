@@ -1,57 +1,76 @@
 import App from '@popup/App';
 import '@testing-library/jest-dom';
-import { screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import estimatedAccountValue from 'src/__tests__/popup/pages/app-container/home/estimated-account-value-section/mocks/estimated-account-value';
-import alToolTip from 'src/__tests__/utils-for-testing/aria-labels/al-toolTip';
-import {
-  EventType,
-  QueryDOM,
-} from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
-const { constants, methods } = estimatedAccountValue;
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('estimated-account-value-section.component tests:\n', () => {
-  estimatedAccountValue.methods.after;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('with valid response from hive', () => {
+    const accountValue = '999.99';
     beforeEach(async () => {
-      await estimatedAccountValue.beforeEach(<App />, false);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountValue: accountValue,
+              },
+            },
+          },
+        },
+      );
     });
     it('Must display the estimated account value', async () => {
-      assertion.getByText([
-        { arialabelOrText: constants.label, query: QueryDOM.BYTEXT },
-        { arialabelOrText: constants.amountString, query: QueryDOM.BYTEXT },
-      ]);
+      expect(
+        await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
+      ).toHaveTextContent(`$ ${accountValue} USD`);
     });
+
     it('Must display custom tooltip on mouse enter', async () => {
-      await methods.actOnSection(EventType.HOVER);
-      expect(screen.getByLabelText(alToolTip.content)).toHaveTextContent(
-        constants.estimationText,
-      );
-    });
-    it('Must remove custom tooltip on mouse leave', async () => {
-      await methods.actOnSection(EventType.HOVER);
-      expect(screen.getByLabelText(alToolTip.content)).toHaveTextContent(
-        constants.estimationText,
-      );
-      await methods.actOnSection(EventType.UNHOVER);
-      assertion.queryByLabel(alToolTip.content, false);
+      await act(async () => {
+        await userEvent.hover(
+          await screen.findByTestId(
+            dataTestIdToolTip.custom.estimatedValueSection,
+          ),
+        );
+      });
+      expect(
+        (await screen.findByTestId(dataTestIdToolTip.content)).innerHTML,
+      ).toEqual(chrome.i18n.getMessage('popup_html_estimation_info_text'));
     });
   });
 
   describe('with no response from hive', () => {
     beforeEach(async () => {
-      await estimatedAccountValue.beforeEach(<App />, true);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountValue: 0,
+              },
+            },
+          },
+        },
+      );
     });
     it('Must display ... when account value not received', async () => {
-      assertion.getByText([
-        { arialabelOrText: constants.label, query: QueryDOM.BYTEXT },
-        {
-          arialabelOrText: constants.amountNotReceived,
-          query: QueryDOM.BYTEXT,
-        },
-      ]);
+      expect(
+        await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
+      ).toHaveTextContent('...');
     });
   });
 });

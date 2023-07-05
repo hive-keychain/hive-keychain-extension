@@ -124,7 +124,7 @@ const TopBar = ({
         className={rotateLogo ? 'rotate' : ''}
         src="/assets/images/keychain_icon_small.png"
         onClick={refresh}
-        aria-label="top-bar-refresh-icon"
+        data-testid="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
       <Icon
@@ -135,20 +135,20 @@ const TopBar = ({
         type={IconType.STROKED}></Icon>
       {hasRewardToClaim && (
         <Icon
-          ariaLabel="reward-claim-icon"
+          dataTestId="reward-claim-icon"
           name={Icons.CLAIM}
           onClick={() => claim()}
           additionalClassName="button claim-button"
           type={IconType.STROKED}></Icon>
       )}
       <Icon
-        ariaLabel="log-out-button"
+        dataTestId="log-out-button"
         name={Icons.LOGOUT}
         onClick={() => lockPopup()}
         additionalClassName="button lock-button"
         type={IconType.STROKED}></Icon>
       <Icon
-        ariaLabel="clickable-settings"
+        dataTestId="clickable-settings"
         name={Icons.MENU}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         additionalClassName="button settings-button"

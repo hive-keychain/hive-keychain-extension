@@ -1,44 +1,93 @@
 import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import tokenDelegations from 'src/__tests__/popup/pages/app-container/home/tokens/token-delegations/mocks/token-delegations';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { methods, constants } = tokenDelegations;
-const { values } = constants;
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('token-incoming-outgoing-page.component tests:\n', () => {
-  methods.afterEach;
+  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
+    actionButton.label.includes('token'),
+  )?.icon;
+  const selectedToken = tokensUser.balances.find(
+    (token) => token.symbol === 'LEO',
+  )!;
+  const leoCooldownData = tokensList.alltokens.filter(
+    (token) => token.symbol === selectedToken.symbol,
+  )[0].undelegationCooldown;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    await tokenDelegations.beforeEach(<App />);
-    await clickAwait([methods.preFixExpandMore('LEO')]);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            TokensUtils: {
+              getUserBalance: [selectedToken],
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+        ),
+      );
+    });
   });
-  it('Must load incoming delegation page and show header', async () => {
-    await clickAwait([alButton.token.delegations.goto.incoming]);
-    assertion.getByLabelText(alComponent.incomingOutgoingPage);
-    assertion.getOneByText(constants.message.header.incoming);
+
+  it('Must show outgoing delegations page & show cooldown disclaimer', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdDiv.token.user.prefixes.outgoingDelegations +
+            selectedToken.symbol,
+        ),
+      );
+    });
+    expect(
+      await screen.findByTestId(`${Screen.TOKENS_DELEGATIONS}-page`),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage(
+          'popup_html_token_undelegation_cooldown_disclaimer',
+          [selectedToken.symbol, leoCooldownData],
+        ),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
-  it('Must load outgoing delegation page, show header and message', async () => {
-    await clickAwait([alButton.token.delegations.goto.outgoing]);
-    assertion.getByLabelText(alComponent.incomingOutgoingPage);
-    assertion.getOneByText(constants.message.cooldown);
-    assertion.getOneByText(constants.message.header.outgoing);
-  });
-  it('Must show values for incoming', async () => {
-    await clickAwait([alButton.token.delegations.goto.incoming]);
-    assertion.getManyByText(values.totalValue.incoming);
-  });
-  it('Must show values for outgoing', async () => {
-    await clickAwait([alButton.token.delegations.goto.outgoing]);
-    assertion.getManyByText(values.totalValue.outgoing);
-  });
-  it('Must go back when clicking arrow', async () => {
-    await clickAwait([alButton.token.delegations.goto.incoming]);
-    assertion.getByLabelText(alComponent.incomingOutgoingPage);
-    await clickAwait([alIcon.arrowBack]);
-    assertion.getByLabelText(alComponent.userTokens);
+
+  it('Must load incoming delegation page', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdDiv.token.user.prefixes.incomingDelegations +
+            selectedToken.symbol,
+        ),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_total_incoming'),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
 });

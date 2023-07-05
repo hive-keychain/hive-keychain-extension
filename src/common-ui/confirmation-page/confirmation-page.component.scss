@@ -32,6 +32,10 @@
         }
         .value {
           font-size: 16px;
+
+          &.xs-font {
+            font-size: 11px;
+          }
         }
       }
     }

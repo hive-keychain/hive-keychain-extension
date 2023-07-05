@@ -8,6 +8,10 @@ import {
 import { TokenTransactionUtils } from 'src/utils/token-transaction.utils';
 
 describe('token-transaction.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('filterCurationReward tests:\n', () => {
     test('Passing a string(uppercase) contained in a permlink, must return true', () => {
       const curationTransaction = {

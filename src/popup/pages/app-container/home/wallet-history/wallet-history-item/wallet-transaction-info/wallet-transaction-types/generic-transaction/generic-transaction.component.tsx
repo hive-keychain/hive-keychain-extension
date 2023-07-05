@@ -3,7 +3,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -64,7 +64,7 @@ const GenericTransaction = ({
 
   return (
     <div
-      aria-label="transaction-expandable-area"
+      data-testid="transaction-expandable-area"
       className={`transaction ${
         expandableContent ? 'has-expandable-content' : ''
       }`}
@@ -73,12 +73,12 @@ const GenericTransaction = ({
       <div className="information-panel">
         <div className="top-row">
           <Icon
-            ariaLabel="icon-open-new-window"
+            dataTestId="icon-open-new-window"
             name={getIcon()}
             type={IconType.OUTLINED}
             onClick={openTransactionOnHiveblocks}></Icon>
           <CustomTooltip
-            ariaLabel="custom-tool-tip"
+            dataTestId="custom-tool-tip"
             message={moment(transaction.timestamp).format(
               'YYYY/MM/DD , hh:mm:ss a',
             )}
