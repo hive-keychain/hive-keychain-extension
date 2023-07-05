@@ -125,6 +125,7 @@ const Home = ({
           noKeyCheck = { ...noKeyCheck, [accountName]: [] };
         }
         for (const [key, value] of Object.entries(keys)) {
+          if (!value.length) continue;
           foundWrongKey = KeysUtils.checkWrongKeyOnAccount(
             key,
             value,
