@@ -1420,6 +1420,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_private_key_in_memo": {
+    "message": "Sending a private key as memo is a huge security risk.",
+    "description": "When trying to use memo with a private key"
+  },
   "popup_warning_exchange_deposit": {
     "message": "This exchange account does not accept $1 deposits.",
     "description": "When trying to transfer to an exchange that does not accept this currency."
