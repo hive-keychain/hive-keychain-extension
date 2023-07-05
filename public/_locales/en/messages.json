@@ -231,6 +231,46 @@
     "message": "Master Key",
     "description": "When adding an account via master key"
   },
+  "popup_html_authority_posting": {
+    "message": "Posting Authority",
+    "description": "on manage authorities list item"
+  },
+  "popup_html_owner": {
+    "message": "Owner Key",
+    "description": "When using owner key"
+  },
+  "popup_html_role": {
+    "message": "Role",
+    "description": "placeholder for entering role"
+  },
+  "popup_html_manage_account_authority_weight_label": {
+    "message": "Weight",
+    "description": "On Accounts > Manage Authorities"
+  },
+  "popup_html_manage_accounts_authorities_text": {
+    "message": "Accounts with granted authorities can perform operations on your behalf. Most of the time, these authorizations are tied to a dApp or game and only authorize the posting authority. We recommend giving such authorities only when necessary and when the recipient is trusted.",
+    "description": "Accounts > Manage Authorities"
+  },
+  "popup_html_confirm_remove_account_authority_message": {
+    "message": "Please confirm that you want to remove @$2's $1 authority on your account.",
+    "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
+  },
+  "popup_html_remove_account_authority": {
+    "message": "Remove authority",
+    "description": "while confirming remove account authority"
+  },
+  "html_popup_remove_authorized_account_operation": {
+    "message": "Removing authorized account",
+    "description": "remove authority operation"
+  },
+  "popup_html_remove_account_authority_successful": {
+    "message": "Successfully removed an account authority",
+    "description": "Success message remove account authority"
+  },
+  "popup_html_remove_account_authority_fail": {
+    "message": "Failed to remove an account authority",
+    "description": "Failed message remove account authority"
+  },
   "popup_html_memo": {
     "message": "Memo Key",
     "description": "When adding an account via master key"
@@ -687,6 +727,14 @@
   "popup_accounts_add_memo": {
     "message": "Add your private memo key to read this memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
+  },
+  "popup_html_manage_accounts_authorities": {
+    "message": "Manage authorities",
+    "description": "on settings page"
+  },
+  "popup_html_manage_no_accounts_authorities": {
+    "message": "No authority has been given to other accounts",
+    "description": "On Accounts > Manage Authorities"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
