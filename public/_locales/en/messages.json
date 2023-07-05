@@ -164,7 +164,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Witness",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -195,10 +195,6 @@
     "message": "Username",
     "description": "placeholder for entering username"
   },
-  "popup_html_role": {
-    "message": "Role",
-    "description": "placeholder for entering role"
-  },
   "popup_html_import_keys": {
     "message": "Import keys",
     "description": "Import all keys"
@@ -215,21 +211,17 @@
     "message": "Import successful! <br><br>Please select the Keys you wish to store with Hive Keychain:",
     "description": "When adding an account via master key"
   },
-  "popup_html_owner": {
-    "message": "Owner Key",
-    "description": "When using owner key"
-  },
   "popup_html_posting": {
     "message": "Posting Key",
     "description": "When adding an account via master key"
   },
-  "popup_html_authority_posting": {
-    "message": "Posting Authority",
-    "description": "on manage authorities list item"
-  },
   "popup_html_active": {
     "message": "Active Key",
     "description": "When adding an account via master key"
+  },
+  "popup_html_operation_button_save": {
+    "message": "Save",
+    "description": "When using operation button to save data"
   },
   "popup_html_authority_active": {
     "message": "Active Authority",
@@ -274,18 +266,6 @@
   "popup_html_manage_accounts": {
     "message": "Manage accounts",
     "description": "on settings page"
-  },
-  "popup_html_manage_accounts_authorities": {
-    "message": "Manage authorities",
-    "description": "on settings page"
-  },
-  "popup_html_manage_no_accounts_authorities": {
-    "message": "No authority has been given to other accounts",
-    "description": "On Accounts > Manage Authorities"
-  },
-  "popup_html_manage_account_authority_weight_label": {
-    "message": "Weight",
-    "description": "On Accounts > Manage Authorities"
   },
   "popup_html_change_password": {
     "message": "Change password",
@@ -387,9 +367,29 @@
     "message": "Remove from Keychain",
     "description": "on manage accounts"
   },
+  "popup_html_disable_witness": {
+    "message": "Disable witness",
+    "description": "on manage accounts"
+  },
+  "popup_html_enable_witness": {
+    "message": "Enable witness",
+    "description": "on manage accounts"
+  },
+  "popup_html_witness_rank_label": {
+    "message": "rank",
+    "description": "on my witness"
+  },
   "popup_html_delete_account_confirmation_message": {
     "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
+  },
+  "popup_html_disable_witness_account_confirmation_message": {
+    "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
+  },
+  "popup_html_enable_witness_account_confirmation_message": {
+    "message": "You are about to enable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
   },
   "popup_html_show_qr": {
     "message": "Show QR Code",
@@ -454,10 +454,6 @@
   "popup_html_copy_username_tooltip_text": {
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
-  },
-  "popup_html_weight_threshold_tooltip_text": {
-    "message": "Weight threshold of $1 key",
-    "description": "when hoovering the weight threshold in manage account authorities item"
   },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",
@@ -531,6 +527,79 @@
     "message": "Votes remaining: $1",
     "description": "On witness page"
   },
+
+  "popup_html_witness_information_signing_key_label": {
+    "message": "Signing key",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_witness_disabled_text": {
+    "message": "Witness currently disabled!",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_label": {
+    "message": "Account creation fee",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_fee_label": {
+    "message": "Fee",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_placeholder_text": {
+    "message": "I.e: 1.000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_block_size_placeholder_text": {
+    "message": "Size, example: 65536",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_maximum_block_size_label": {
+    "message": "Block size",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_label": {
+    "message": "Interest rate",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_placeholder_text": {
+    "message": "I.e: 2000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_base_label": {
+    "message": "Exchange rate base",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_quote_label": {
+    "message": "Exchange rate quote",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_url_label": {
+    "message": "Url",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_rewards_label": {
+    "message": "Rewards",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_time_frame_label": {
+    "message": "Time frame",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_week_label": {
+    "message": "Last 7 days",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_month_label": {
+    "message": "Last 30 days",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_year_label": {
+    "message": "Last year",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_all_time_label": {
+    "message": "All time",
+    "description": "On My witness page"
+  },
   "popup_html_tokens_available": {
     "message": "Tokens Available",
     "description": "On tokens page"
@@ -583,10 +652,6 @@
     "message": "You may delegate your Hive Power (HP) to another user. Click on the Outgoing amount to review or make changes.",
     "description": "Main page > Delegate"
   },
-  "popup_html_manage_accounts_authorities_text": {
-    "message": "Accounts with granted authorities can perform operations on your behalf. Most of the time, these authorizations are tied to a dApp or game and only authorize the posting authority. We recommend giving such authorities only when necessary and when the recipient is trusted.",
-    "description": "Accounts > Manage Authorities"
-  },
   "popup_html_incoming": {
     "message": "Incoming $1",
     "description": "Main page > Delegate. Incoming delegations ($1 is a variable, should be HP)"
@@ -603,6 +668,10 @@
     "message": "Total Outgoing",
     "description": "Main page > Delegate > Click on Outgoing"
   },
+  "popup_html_button_label_cancel": {
+    "message": "Cancel",
+    "description": "when using a cancel button"
+  },
   "popup_html_total_incoming": {
     "message": "Total Incoming",
     "description": "Main page > Delegate > Click on Incoming"
@@ -618,6 +687,10 @@
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
     "description": "If entered password is public key"
+  },
+  "popup_html_public_key_needed": {
+    "message": "Please enter a public key",
+    "description": "If entered is private key"
   },
   "popup_accounts_already_registered": {
     "message": "You already registered an account for @$1!",
@@ -760,12 +833,20 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Succesfully unvoted @$1 as a witness.",
-    "description": "on witness page when unvoting a witness"
+    "message": "Successfully updated witness account @$1.",
+    "description": "on witness when updating a witness"
+  },
+  "popup_success_witness_account_update": {
+    "message": "Successfully updated witness account.",
+    "description": "on my witness on success updating"
   },
   "popup_error_wit": {
     "message": "Error while voting for @$1 as a witness.",
     "description": "on witness page "
+  },
+  "popup_error_witness_account_update": {
+    "message": "Error while updating witness account @$1.",
+    "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
     "message": "Error while unvoting @$1 as a witness.",
@@ -1569,21 +1650,13 @@
     "message": "Please confirm that you want to cancel this delegation.",
     "description": "while confirming power up and down"
   },
-  "popup_html_confirm_remove_account_authority_message": {
-    "message": "Please confirm that you want to remove @$2's $1 authority on your account.",
-    "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
-  },
   "popup_html_confirm_cancel_withdraw_savings_message": {
     "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
     "description": "while confirming savings withdraw"
   },
   "popup_html_cancel_delegation": {
     "message": "Cancel delegation",
-    "description": "while confirming "
-  },
-  "popup_html_remove_account_authority": {
-    "message": "Remove authority",
-    "description": "while confirming remove account authority"
+    "description": "while confirming power up and down"
   },
   "popup_html_cancel_withdraw_savings": {
     "message": "Cancel Withdraw",
@@ -1726,8 +1799,16 @@
     "description": "Governance"
   },
   "popup_html_proposal": {
-    "message": "Proposal",
+    "message": "Proposals",
     "description": "Governance"
+  },
+  "popup_html_my_witness_page": {
+    "message": "My Witness",
+    "description": "Governance"
+  },
+  "popup_html_witness_page_expand_more_tooltip": {
+    "message": "Click to view full witness account information",
+    "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
     "message": "Only voted for",
@@ -1833,10 +1914,6 @@
     "message": "Canceling delegation",
     "description": "delegation operation"
   },
-  "html_popup_remove_authorized_account_operation": {
-    "message": "Removing authorized account",
-    "description": "remove authority operation"
-  },
   "html_popup_cancel_withdraw_savings_operation": {
     "message": "Canceling withdraw from savings",
     "description": "savings operation"
@@ -1848,6 +1925,66 @@
   "html_popup_unvote_witness_operation": {
     "message": "Unvoting a witness",
     "description": "unvote witness operation"
+  },
+  "html_popup_update_witness_operation": {
+    "message": "Updating witness account",
+    "description": "When updating witness account"
+  },
+  "html_popup_witness_information_info_label": {
+    "message": "Info",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_votes_label": {
+    "message": "Votes",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_vote_value_label": {
+    "message": "Vote value",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_global_information_votes_label": {
+    "message": "Amount of votes",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_blocks_missed_label": {
+    "message": "Blocks missed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_updated_label": {
+    "message": "Updated $1",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_version_label": {
+    "message": "Version",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_last_block_label": {
+    "message": "Last block",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_price_feed_label": {
+    "message": "Price feed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_st_label": {
+    "message": "st",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_nd_label": {
+    "message": "nd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_rd_label": {
+    "message": "rd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_th_label": {
+    "message": "th",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_information_params_label": {
+    "message": "Params",
+    "description": "When displaying my witness account"
   },
   "html_popup_confirm_transaction_operation": {
     "message": "Confirming transaction",
@@ -1925,10 +2062,6 @@
     "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
-  "popup_html_remove_account_authority_successful": {
-    "message": "Successfully removed an account authority",
-    "description": "Success message remove account authority"
-  },
   "popup_html_cancel_withdraw_savings_successful": {
     "message": "Successfully canceled a withdraw of $1 $2 from savings",
     "description": "Success message cancel withdraw"
@@ -1940,10 +2073,6 @@
   "popup_html_cancel_delegation_fail": {
     "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
-  },
-  "popup_html_remove_account_authority_fail": {
-    "message": "Failed to remove an account authority",
-    "description": "Failed message remove account authority"
   },
   "popup_html_delegation_successful": {
     "message": "Delegation successful",
@@ -2202,6 +2331,10 @@
   "popup_html_error_retrieving_witness_ranking": {
     "message": "An error occured while retrieving the witness ranking. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_error_retrieving_witness_information": {
+    "message": "An error occured while retrieving the witness account information. Please try again later.",
+    "description": "Error while retrieving witness information, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
@@ -2811,6 +2944,10 @@
   "html_popup_witness_already_voted": {
     "message": "You already voted for this witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
+  },
+  "html_popup_button_edit_label": {
+    "message": "Edit",
+    "description": "when using a button as to edit"
   },
   "html_popup_witness_not_voted": {
     "message": "You did not vote for this witness, you can't unvote it",

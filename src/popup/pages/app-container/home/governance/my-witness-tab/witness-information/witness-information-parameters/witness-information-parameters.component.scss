@@ -1,0 +1,22 @@
+@import '../../../../../../../variable.scss';
+
+.witness-information-parameters {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  .info-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    column-gap: 16px;
+    row-gap: 16px;
+  }
+
+  .label-title {
+    font-weight: bold;
+  }
+
+  .smaller-text {
+    font-size: 12px;
+  }
+}
