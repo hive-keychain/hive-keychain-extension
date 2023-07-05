@@ -1,5 +1,4 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -11,6 +10,7 @@ import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import { ConversionUtils } from 'src/utils/conversion.utils';
 
 describe('conversion.component tests:\n', () => {
@@ -21,7 +21,7 @@ describe('conversion.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
   });

@@ -128,7 +128,7 @@ const TopBar = ({
       />
       <div className="spacer"></div>
       <Icon
-        ariaLabel="reward-claim-icon"
+        dataTestId="reward-claim-icon"
         name={Icons.LINK}
         onClick={() => setChain(Chain.EVM)}
         additionalClassName="button claim-button"

@@ -1,5 +1,4 @@
 import { Asset } from '@hiveio/dhive';
-import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import React from 'react';
@@ -7,6 +6,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 describe('wallet-info-section.component tests:\n', () => {
@@ -18,7 +18,7 @@ describe('wallet-info-section.component tests:\n', () => {
     });
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
     });
@@ -86,7 +86,7 @@ describe('wallet-info-section.component tests:\n', () => {
     describe('0 as balances', () => {
       beforeEach(async () => {
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {

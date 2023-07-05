@@ -1,5 +1,4 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
-import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -10,6 +9,7 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 import { RewardsUtils } from 'src/utils/rewards.utils';
 describe('top-bar.component tests:/n', () => {
@@ -21,7 +21,7 @@ describe('top-bar.component tests:/n', () => {
   describe('Has rewards to claim:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {
@@ -73,7 +73,7 @@ describe('top-bar.component tests:/n', () => {
   describe('No rewards to claim:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
     });
@@ -93,7 +93,7 @@ describe('top-bar.component tests:/n', () => {
       delete cloneLocalAccounts[0].keys.posting;
       delete cloneLocalAccounts[0].keys.postingPubkey;
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -8,6 +7,7 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 describe('about.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -16,7 +16,7 @@ describe('about.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {

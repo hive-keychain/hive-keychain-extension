@@ -1,5 +1,4 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -13,6 +12,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import AccountUtils from 'src/utils/account.utils';
 
 describe('add-by-auth tests:\n', () => {
@@ -23,7 +23,7 @@ describe('add-by-auth tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       {
         ...initialStates.iniStateAs.defaultExistent,
         accounts: accounts.twoAccounts,

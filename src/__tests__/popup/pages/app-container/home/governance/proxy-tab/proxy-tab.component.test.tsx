@@ -1,6 +1,5 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -13,6 +12,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import ProxyUtils from 'src/utils/proxy.utils';
 
 describe('proxy-tab.component tests:\n', () => {
@@ -25,7 +25,7 @@ describe('proxy-tab.component tests:\n', () => {
     describe('empty proxy', () => {
       beforeEach(async () => {
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {
@@ -121,7 +121,7 @@ describe('proxy-tab.component tests:\n', () => {
     describe('Initial proxy', () => {
       beforeEach(async () => {
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {
@@ -174,7 +174,7 @@ describe('proxy-tab.component tests:\n', () => {
       delete cloneLocalAccounts[0].keys.active;
       delete cloneLocalAccounts[0].keys.activePubkey;
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

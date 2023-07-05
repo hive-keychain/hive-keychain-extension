@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,6 +7,7 @@ import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import versionLog from 'src/__tests__/utils-for-testing/data/version-log';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 describe('whats-new.component tests:\n', () => {
   /////////////
   //Reset Global Image object after tests done.
@@ -25,7 +25,7 @@ describe('whats-new.component tests:\n', () => {
   describe('Same app versions:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
     });
@@ -60,7 +60,7 @@ describe('whats-new.component tests:\n', () => {
     ////////
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

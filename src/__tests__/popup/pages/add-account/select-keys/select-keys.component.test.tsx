@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -13,6 +12,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import { KeysUtils } from 'src/utils/keys.utils';
 
 describe('select-keys.component tests:\n', () => {
@@ -23,7 +23,7 @@ describe('select-keys.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
       {
         app: {

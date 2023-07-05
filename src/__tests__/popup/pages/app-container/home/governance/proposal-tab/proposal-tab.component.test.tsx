@@ -1,7 +1,6 @@
 import { Asset } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { Proposal } from '@interfaces/proposal.interface';
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -14,6 +13,7 @@ import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-test
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import ProposalUtils from 'src/utils/proposal.utils';
 
 describe('Proposal tab:\n', () => {
@@ -42,7 +42,7 @@ describe('Proposal tab:\n', () => {
   ];
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
       {
         app: {

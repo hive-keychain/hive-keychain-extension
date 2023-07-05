@@ -1,5 +1,4 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import App from '@popup/App';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -13,6 +12,7 @@ import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { PowerUtils } from 'src/utils/power.utils';
@@ -25,7 +25,7 @@ describe('power-up-down.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
   });

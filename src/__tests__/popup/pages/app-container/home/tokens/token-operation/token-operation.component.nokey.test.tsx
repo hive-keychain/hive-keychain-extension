@@ -1,5 +1,4 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
-import App from '@popup/App';
 import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import '@testing-library/jest-dom';
@@ -16,6 +15,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import AccountUtils from 'src/utils/account.utils';
 
 describe('token-operation No Active key tests:\n', () => {
@@ -37,7 +37,7 @@ describe('token-operation No Active key tests:\n', () => {
     delete cloneLocalAccounts[0].keys.active;
     delete cloneLocalAccounts[0].keys.activePubkey;
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
       {
         app: {

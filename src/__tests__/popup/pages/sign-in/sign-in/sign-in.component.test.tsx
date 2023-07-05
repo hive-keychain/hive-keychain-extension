@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -8,11 +7,12 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import MkUtils from 'src/utils/mk.utils';
 describe('sign-in.component.tsx tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       { ...initialStates.iniStateAs.defaultExistent, mk: '' },
       {
         app: {

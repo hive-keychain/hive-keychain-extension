@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-type.enum';
@@ -13,6 +12,7 @@ import dataTestIdSwitch from 'src/__tests__/utils-for-testing/data-testid/data-t
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 
 describe('buy-coins.component tests:\n', () => {
   const actionButtonIconBuy = ActionButtonList.find(
@@ -25,7 +25,7 @@ describe('buy-coins.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
   });

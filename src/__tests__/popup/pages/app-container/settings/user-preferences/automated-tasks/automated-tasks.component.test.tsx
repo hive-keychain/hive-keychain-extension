@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -10,6 +9,7 @@ import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('automated-tasks.component tests:\n', () => {
   afterEach(() => {
@@ -21,7 +21,7 @@ describe('automated-tasks.component tests:\n', () => {
     describe('Max mana greater than freeAccount credits:\n', () => {
       beforeEach(async () => {
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {

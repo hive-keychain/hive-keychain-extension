@@ -1,5 +1,4 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -9,6 +8,7 @@ import dataTestIdPopup from 'src/__tests__/utils-for-testing/data-testid/data-te
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
 import ProxyUtils from 'src/utils/proxy.utils';
 
 //TODO testings: unskip if proxy-suggestion.component gets enabled.
@@ -21,7 +21,7 @@ describe.skip('Proxy suggestion tests:\n', () => {
 
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
       {
         app: {
