@@ -7,7 +7,7 @@ import {
   initialEmptyStateStore,
   initialStateJustTokens,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import * as tokenActions from 'src/popup/actions/token.actions';
+import * as tokenActions from 'src/popup/hive/actions/token.actions';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';

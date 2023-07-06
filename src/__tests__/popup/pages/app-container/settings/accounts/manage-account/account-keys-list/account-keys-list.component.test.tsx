@@ -1,6 +1,5 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -14,7 +13,8 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import AccountUtils from 'src/utils/account.utils';
 describe('account-keys-list.component tests:\n', () => {
   afterEach(() => {

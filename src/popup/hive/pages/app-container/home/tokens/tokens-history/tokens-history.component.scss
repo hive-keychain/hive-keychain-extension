@@ -1,0 +1,22 @@
+@import '/src/variable.scss';
+
+.tokens-history {
+  @include pageLayoutRowGap;
+  overflow: hidden;
+
+  .input-container {
+    padding: 0px 24px;
+    box-sizing: border-box;
+  }
+
+  .item-list {
+    overflow: auto;
+    .token-history-item {
+      background: $black-transparent;
+    }
+
+    .token-history-item:nth-child(even) {
+      background: $red-transparent;
+    }
+  }
+}

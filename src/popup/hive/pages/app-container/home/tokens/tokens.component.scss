@@ -1,0 +1,57 @@
+@import '/src/variable.scss';
+
+.tokens-page {
+  @include pageLayoutRowGap;
+  row-gap: 32px;
+  overflow: hidden;
+  flex: 1;
+  .disclaimer {
+    font-size: 18px;
+    padding: 0px 24px;
+  }
+
+  .top-bar-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 24px;
+    column-gap: 24px;
+    .custom-input {
+      flex: 1;
+    }
+  }
+
+  .settings,
+  .filter {
+    height: 24px;
+    width: 24px;
+    align-self: flex-end;
+  }
+
+  .my-tokens {
+    overflow: auto;
+    .token-item {
+      background: $red-transparent;
+      &:nth-child(even) {
+        background: $black-transparent;
+      }
+    }
+  }
+
+  .no-tokens {
+    font-size: 18px;
+    padding: 0px 24px;
+  }
+
+  .rotating-logo-container {
+    min-height: 100px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      height: 50px;
+      width: 50px;
+    }
+  }
+}

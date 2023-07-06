@@ -1,0 +1,8 @@
+@import '/src/variable.scss';
+
+.auto-lock-page {
+  @include pageLayoutRowGap;
+  row-gap: 24px;
+  padding: 0px 24px;
+  margin-top: 3px;
+}

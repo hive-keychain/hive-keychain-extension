@@ -1,5 +1,4 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -10,7 +9,8 @@ import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('auto-lock.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

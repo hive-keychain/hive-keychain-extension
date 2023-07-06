@@ -7,7 +7,7 @@ import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import versionLog from 'src/__tests__/utils-for-testing/data/version-log';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('whats-new.component tests:\n', () => {
   /////////////
   //Reset Global Image object after tests done.

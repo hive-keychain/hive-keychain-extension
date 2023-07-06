@@ -1,8 +1,8 @@
-import { Icons } from '@popup/icons.enum';
-import { LoadingOperation } from '@popup/reducers/loading.reducer';
 import React from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { LoadingOperation } from 'src/popup/hive/reducers/loading.reducer';
 import './loading.component.scss';
 
 type Props = {

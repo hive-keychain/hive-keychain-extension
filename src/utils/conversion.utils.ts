@@ -5,7 +5,7 @@ import {
 import { CollateralizedConversion } from '@interfaces/collaterelized-conversion.interface';
 import { Conversion } from '@interfaces/conversion.interface';
 import { Key } from '@interfaces/keys.interface';
-import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
+import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getConversionRequests = async (name: string): Promise<Conversion[]> => {

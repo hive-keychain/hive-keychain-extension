@@ -1,0 +1,64 @@
+@import '/src/variable.scss';
+
+.wrong-key-popup {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  .overlay {
+    height: 100%;
+    width: 100%;
+    opacity: 0.25;
+    background: white;
+    position: fixed;
+    margin: -36px;
+  }
+
+  .wrong-key-popup-container {
+    height: 40%;
+    overflow-y: scroll;
+    width: calc(100% - 72px);
+    background: $black;
+    border-radius: 8px;
+    border: white;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0px;
+    row-gap: 24px;
+
+    .title {
+      font-size: 20px;
+      text-align: center;
+      padding: 0px 16px;
+    }
+
+    .introduction {
+      font-size: 16px;
+      text-align: justify;
+      padding: 0px 16px;
+    }
+
+    .submit-button {
+      width: calc(100% - 72px);
+      height: 36px;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+    }
+    .fix-to-bottom {
+      position: fixed;
+      bottom: 174px;
+      left: 24px;
+      width: calc(100% - 48px);
+    }
+  }
+}

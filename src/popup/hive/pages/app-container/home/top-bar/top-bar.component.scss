@@ -1,0 +1,56 @@
+@import '/src/variable.scss';
+.top-bar {
+  height: 72px;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  user-select: none;
+
+  img {
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+
+    &.rotate {
+      animation: rotation 1s linear;
+    }
+  }
+
+  .claim-button {
+    margin-right: 32px;
+    background-color: $red-dark;
+    box-shadow: $red-dark;
+    height: 24px;
+    padding: 4px;
+    border-radius: 4px;
+
+    &:hover {
+      background: $red;
+    }
+  }
+  .button {
+    cursor: pointer;
+  }
+
+  .lock-button {
+    margin-right: 32px;
+  }
+
+  .settings-button {
+    font-size: 28px;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

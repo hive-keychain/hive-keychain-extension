@@ -1,5 +1,3 @@
-import { Icons } from '@popup/icons.enum';
-import getAdvancedSettingsMenuItems from '@popup/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -10,7 +8,9 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import getAdvancedSettingsMenuItems from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
 describe('advanced-settings.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

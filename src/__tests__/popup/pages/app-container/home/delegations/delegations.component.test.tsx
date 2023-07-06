@@ -1,5 +1,4 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -12,7 +11,8 @@ import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-te
 import dataTestIdSpan from 'src/__tests__/utils-for-testing/data-testid/data-testid-span';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 

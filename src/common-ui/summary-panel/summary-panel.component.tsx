@@ -1,6 +1,6 @@
-import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 import './summary-panel.component.scss';
 

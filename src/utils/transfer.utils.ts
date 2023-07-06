@@ -4,9 +4,9 @@ import {
   TransferOperation,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
-import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
-import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
+import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getTransferWarning = (

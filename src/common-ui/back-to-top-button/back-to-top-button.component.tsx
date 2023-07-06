@@ -1,6 +1,6 @@
-import { Icons } from '@popup/icons.enum';
 import React from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import './back-to-top-button.component.scss';
 
 interface BackToTopButtonProps {

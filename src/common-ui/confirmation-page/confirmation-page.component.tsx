@@ -1,6 +1,3 @@
-import { goBack } from '@popup/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -9,6 +6,9 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { goBack } from 'src/popup/hive/actions/navigation.actions';
+import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
+import { RootState } from 'src/popup/hive/store';
 import './confirmation-page.component.scss';
 
 export interface ConfirmationPageParams {

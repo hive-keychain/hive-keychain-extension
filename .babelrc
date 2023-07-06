@@ -15,6 +15,7 @@
       {
         "root": ["."],
         "alias": {
+          "@hiveapp": "./src/multichain-container/hive",
           "@popup": "./src/popup",
           "@background": "./src/background",
           "@interfaces": "./src/interfaces",

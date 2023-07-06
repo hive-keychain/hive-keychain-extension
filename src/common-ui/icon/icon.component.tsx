@@ -1,9 +1,9 @@
-import { Icons } from '@popup/icons.enum';
 import React from 'react';
 import {
   CustomTooltip,
   CustomTooltipPosition,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import './icon.component.scss';
 
 export enum IconType {

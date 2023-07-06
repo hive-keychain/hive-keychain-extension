@@ -1,0 +1,20 @@
+@import '/src/variable.scss';
+
+.about-page {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 1fr 28px;
+  padding: 0px 24px;
+  .content {
+    font-size: 16px;
+    text-align: justify;
+    a {
+      color: $red;
+      text-decoration: none;
+    }
+  }
+  .version {
+    text-align: center;
+    font-size: 14px;
+  }
+}

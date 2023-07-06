@@ -1,10 +1,10 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
+import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
+import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
+import { RootState } from 'src/popup/hive/store';
 import './menu.component.scss';
 
 interface MenuProps {

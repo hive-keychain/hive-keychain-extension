@@ -1,7 +1,7 @@
 import conversions from 'src/__tests__/utils-for-testing/data/conversions';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as convertionActions from 'src/popup/actions/conversion.actions';
+import * as convertionActions from 'src/popup/hive/actions/conversion.actions';
 import { ConversionUtils } from 'src/utils/conversion.utils';
 
 describe('conversion.actions tests:\n', () => {

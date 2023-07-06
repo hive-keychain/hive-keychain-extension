@@ -10,7 +10,7 @@ import {
   initialStateNoKeys,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import * as activeAccountActions from 'src/popup/actions/active-account.actions';
+import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 import AccountUtils from 'src/utils/account.utils';
 
 describe('active-account.actions tests:\n', () => {

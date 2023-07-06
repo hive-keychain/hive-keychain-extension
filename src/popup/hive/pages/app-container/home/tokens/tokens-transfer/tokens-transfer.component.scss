@@ -1,0 +1,79 @@
+@import '/src/variable.scss';
+
+.transfer-tokens-page {
+  @include pageLayoutRowGap;
+  row-gap: 32px;
+  padding: 0px 24px;
+
+  .disclaimer {
+    font-size: 18px;
+  }
+
+  .balance-panel {
+    margin: 0px -24px;
+    background-color: $grey-transparent;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 8px;
+    font-size: 20px;
+  }
+
+  .max {
+    align-self: flex-end;
+    text-transform: uppercase;
+    font-size: 14px;
+    float: right;
+    margin-top: 8px;
+    border-bottom: 2px dotted;
+    cursor: pointer;
+    &:hover {
+      color: $red;
+    }
+  }
+
+  .value-panel {
+    display: grid;
+    column-gap: 16px;
+    align-items: baseline;
+    grid-template-columns: 1fr auto;
+    .select-currency {
+      width: 100%;
+      height: $input-height;
+      box-sizing: border-box;
+      background: transparent;
+      opacity: 1;
+      padding-left: 66px;
+      font-size: $input-font-size;
+      color: white;
+      border-style: unset;
+      border-bottom: solid 1px $grey;
+      user-select: none;
+      &,
+      &:hover,
+      &:focus {
+        box-shadow: unset !important;
+      }
+      .react-dropdown-select-dropdown {
+        border: unset;
+        top: 50px;
+        left: 0px;
+        background-color: black;
+      }
+
+      .selected-currency {
+        min-width: 50px;
+        text-align: center;
+      }
+
+      .react-dropdown-select-dropdown-handle {
+        margin: -5px 0 0 5px;
+      }
+    }
+    .symbol {
+      @include fake-input;
+    }
+  }
+}

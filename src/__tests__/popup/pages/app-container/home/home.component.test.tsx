@@ -1,5 +1,4 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -19,7 +18,8 @@ import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';

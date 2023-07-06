@@ -11,7 +11,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import ProposalUtils from 'src/utils/proposal.utils';
 
 describe('proposal-voting-section.component tests:\n', () => {

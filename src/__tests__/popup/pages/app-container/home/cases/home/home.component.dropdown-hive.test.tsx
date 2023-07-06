@@ -1,5 +1,3 @@
-import { Icons } from '@popup/icons.enum';
-import { HiveDropdownMenuItems } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -10,7 +8,9 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { HiveDropdownMenuItems } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import CurrencyUtils from 'src/utils/currency.utils';
 describe('home.component dropdown hive tests:\n', () => {
   beforeEach(async () => {

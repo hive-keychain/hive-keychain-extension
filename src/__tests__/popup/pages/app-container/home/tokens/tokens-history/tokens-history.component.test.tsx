@@ -1,5 +1,4 @@
 import { OperationsHiveEngine } from '@interfaces/tokens.interface';
-import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +11,8 @@ import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transacti
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 describe('tokens-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

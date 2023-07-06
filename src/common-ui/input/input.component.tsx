@@ -1,8 +1,8 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
-import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
 import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 

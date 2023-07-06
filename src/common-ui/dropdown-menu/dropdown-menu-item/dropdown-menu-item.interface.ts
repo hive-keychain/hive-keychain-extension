@@ -1,4 +1,4 @@
-import { Icons } from '@popup/icons.enum';
+import { Icons } from 'src/common-ui/icons.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 
 export interface DropdownMenuItemInterface {

@@ -1,7 +1,7 @@
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as globalPropertiesActions from 'src/popup/actions/global-properties.actions';
+import * as globalPropertiesActions from 'src/popup/hive/actions/global-properties.actions';
 import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';

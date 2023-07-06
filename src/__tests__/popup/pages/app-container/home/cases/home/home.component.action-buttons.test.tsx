@@ -1,4 +1,3 @@
-import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,7 +7,8 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {

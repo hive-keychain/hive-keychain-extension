@@ -1,8 +1,8 @@
-import * as mkActions from '@popup/actions/mk.actions';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import * as mkActions from 'src/popup/hive/actions/mk.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('mk.actions tests:\n', () => {

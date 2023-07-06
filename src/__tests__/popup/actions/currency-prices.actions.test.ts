@@ -1,8 +1,8 @@
-import * as currencyPricesActions from 'src/popup/actions/currency-prices.actions';
-import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
-import Logger from 'src/utils/logger.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import * as currencyPricesActions from 'src/popup/hive/actions/currency-prices.actions';
+import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
+import Logger from 'src/utils/logger.utils';
 afterEach(() => {
   jest.clearAllMocks();
 });

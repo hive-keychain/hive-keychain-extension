@@ -10,8 +10,8 @@ import {
   FavoriteUserListName,
 } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface AutocompleteListOption {

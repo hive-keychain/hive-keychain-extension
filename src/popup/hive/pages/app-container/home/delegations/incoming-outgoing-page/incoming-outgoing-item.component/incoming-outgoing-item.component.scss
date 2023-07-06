@@ -1,0 +1,75 @@
+@import '/src/variable.scss';
+
+.delegation-row {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  padding: 12px 24px;
+  background-color: $red-transparent;
+  &:nth-child(even) {
+    background-color: $black-transparent;
+  }
+
+  .left-panel {
+    flex: 1;
+    .label {
+      max-width: 50%;
+    }
+  }
+
+  .right-panel {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+
+    .value {
+      display: flex;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .icon {
+      cursor: pointer;
+      display: none;
+      height: 16px;
+      width: 16px;
+      font-size: 16px;
+
+      &.cancel {
+        height: 14px;
+        width: 14px;
+        font-size: 14px;
+      }
+
+      &.always-displayed {
+        display: block;
+      }
+    }
+  }
+
+  .input-container {
+    width: 150px !important;
+    input {
+      height: 30px;
+      font-size: 18px;
+    }
+
+    .set-to-max-button {
+      bottom: 4px;
+    }
+  }
+
+  .pending-undelegation {
+    display: flex;
+    flex: 1;
+    .expiration-date {
+      flex: 1;
+    }
+  }
+
+  &:hover {
+    .icon {
+      display: block;
+    }
+  }
+}

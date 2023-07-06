@@ -1,0 +1,29 @@
+@import '/src/variable.scss';
+.create-account-step-two {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 24px;
+  row-gap: 16px;
+
+  .keys-display {
+    overflow: auto;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    max-height: 250px;
+    .key-name,
+    .username {
+      font-size: 16px;
+    }
+    .key-type {
+      font-size: 14px;
+    }
+  }
+
+  .button-panel {
+    display: flex;
+    column-gap: 16px;
+    margin-bottom: 24px;
+  }
+}

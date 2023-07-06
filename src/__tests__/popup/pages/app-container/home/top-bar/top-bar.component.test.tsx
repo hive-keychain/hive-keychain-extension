@@ -9,7 +9,7 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 import { RewardsUtils } from 'src/utils/rewards.utils';
 describe('top-bar.component tests:/n', () => {

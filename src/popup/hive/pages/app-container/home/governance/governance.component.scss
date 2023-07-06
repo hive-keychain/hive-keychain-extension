@@ -1,0 +1,58 @@
+@import '/src/variable.scss';
+
+.governance-page {
+  @include pageLayoutRowGap;
+  overflow: hidden;
+  height: 100%;
+  .disclaimer,
+  .remaining-votes {
+    font-size: 20px;
+  }
+  .react-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .react-tabs__tab-panel--selected {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+
+  .react-tabs__tab-list {
+    display: grid;
+    margin: 0 0 16px !important;
+
+    &.three-items {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    &.four-items {
+      grid-template-columns: auto auto auto auto;
+    }
+
+    .react-tabs__tab {
+      text-align: center;
+      font-size: 16px;
+      background: $black-transparent;
+      color: white;
+      user-select: none;
+    }
+
+    .react-tabs__tab--selected {
+      background: $red-dark;
+      border: unset;
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  .rotating-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
+}

@@ -1,13 +1,13 @@
+import React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import {
   goBack,
   navigateTo,
   resetNav,
-} from '@popup/actions/navigation.actions';
-import { Icons } from '@popup/icons.enum';
-import { RootState } from '@popup/store';
-import React from 'react';
-import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+} from 'src/popup/hive/actions/navigation.actions';
+import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.scss';
 

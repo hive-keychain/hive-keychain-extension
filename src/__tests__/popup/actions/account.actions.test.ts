@@ -1,7 +1,6 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { setErrorMessage } from '@popup/actions/message.actions';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
@@ -10,7 +9,8 @@ import {
   initialStateWAccountsWActiveAccountStore,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import * as accountActions from 'src/popup/actions/account.actions';
+import * as accountActions from 'src/popup/hive/actions/account.actions';
+import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import AccountUtils from 'src/utils/account.utils';
 
 describe('account.actions tests:\n', () => {

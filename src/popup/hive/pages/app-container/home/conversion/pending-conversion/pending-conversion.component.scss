@@ -1,0 +1,21 @@
+@import '/src/variable.scss';
+
+.pending-conversion-page {
+  .tooltip-container {
+    width: 100%;
+  }
+  .pending-undelegation {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    font-size: 18px;
+    padding: 12px 24px;
+    background-color: $red-transparent;
+    &:nth-child(even) {
+      background-color: $black-transparent;
+    }
+    .expiration-date {
+      flex: 1;
+    }
+  }
+}

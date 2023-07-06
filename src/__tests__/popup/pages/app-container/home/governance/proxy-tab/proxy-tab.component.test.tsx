@@ -1,6 +1,5 @@
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { Icons } from '@popup/icons.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +11,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/multichain-container/hive/hive-app.component';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import ProxyUtils from 'src/utils/proxy.utils';
 
 describe('proxy-tab.component tests:\n', () => {

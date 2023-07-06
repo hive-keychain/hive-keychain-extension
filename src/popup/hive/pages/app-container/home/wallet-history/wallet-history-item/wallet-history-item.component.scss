@@ -1,0 +1,8 @@
+@import '/src/variable.scss';
+
+.wallet-history-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+}

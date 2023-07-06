@@ -1,0 +1,21 @@
+@import '/src/variable.scss';
+
+.add-by-keys-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  padding: 0px 24px;
+
+  .caption {
+    @include caption;
+  }
+
+  .form-container {
+    @include pageLayoutRowGap;
+    row-gap: 32px;
+    margin-top: 16px;
+    .submit-button {
+      margin-top: 32px;
+    }
+  }
+}

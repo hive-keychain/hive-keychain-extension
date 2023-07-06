@@ -1,6 +1,6 @@
-import { SurveyData } from '@popup/pages/app-container/survey/survey.data';
-import { SurveyInfo } from '@popup/pages/app-container/survey/survey.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { SurveyData } from 'src/popup/hive/pages/app-container/survey/survey.data';
+import { SurveyInfo } from 'src/popup/hive/pages/app-container/survey/survey.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 
