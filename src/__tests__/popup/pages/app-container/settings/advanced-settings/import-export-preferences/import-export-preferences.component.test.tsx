@@ -1,3 +1,4 @@
+import SettingsUtils from '@hiveapp/utils/settings.utils';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -9,7 +10,6 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import SettingsUtils from 'src/utils/settings.utils';
 describe('import-export-preferences.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

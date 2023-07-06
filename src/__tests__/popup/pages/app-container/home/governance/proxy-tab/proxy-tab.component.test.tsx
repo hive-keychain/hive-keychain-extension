@@ -1,3 +1,4 @@
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import '@testing-library/jest-dom';
@@ -13,7 +14,6 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import ProxyUtils from 'src/utils/proxy.utils';
 
 describe('proxy-tab.component tests:\n', () => {
   afterEach(() => {

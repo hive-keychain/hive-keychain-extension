@@ -1,6 +1,6 @@
+import { ErrorUtils } from '@hiveapp/utils/error.utils';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { KeychainError } from 'src/keychain-error';
-import { ErrorUtils } from 'src/utils/error.utils';
 
 describe('error.utils.ts tests:\n', () => {
   enum BlockchainErrorType {

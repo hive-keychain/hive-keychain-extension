@@ -1,3 +1,5 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -18,8 +20,6 @@ import {
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './incoming-outgoing-item.component.scss';
 

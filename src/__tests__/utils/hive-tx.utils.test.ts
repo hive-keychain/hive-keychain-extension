@@ -1,5 +1,7 @@
 import { KeychainApi } from '@api/keychain';
 import Hive, { Settings } from '@engrave/ledger-app-hive';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import {
   AccountCreateOperation,
   Operation,
@@ -14,10 +16,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { KeychainError } from 'src/keychain-error';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 
 describe('hive-tx.utils.ts tests:\n', () => {
   const constants = {

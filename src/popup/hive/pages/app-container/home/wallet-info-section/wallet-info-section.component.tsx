@@ -1,3 +1,5 @@
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import React, { useEffect, useState } from 'react';
@@ -10,8 +12,6 @@ import {
 } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import { WalletInfoSectionItemComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import { RootState } from 'src/popup/hive/store';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
-import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section.component.scss';
 

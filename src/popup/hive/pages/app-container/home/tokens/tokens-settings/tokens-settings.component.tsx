@@ -1,3 +1,4 @@
+import { HiveEngineConfigUtils } from '@hiveapp/utils/hive-engine-config.utils';
 import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
@@ -26,7 +27,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { loadTokens } from 'src/popup/hive/actions/token.actions';
 import { RootState } from 'src/popup/hive/store';
 import ArrayUtils from 'src/utils/array.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import * as ValidUrl from 'valid-url';
 import './tokens-settings.component.scss';
 

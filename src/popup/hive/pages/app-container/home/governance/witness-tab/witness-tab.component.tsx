@@ -1,3 +1,7 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
+import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { Witness } from '@interfaces/witness.interface';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
@@ -18,10 +22,6 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
-import AccountUtils from 'src/utils/account.utils';
-import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
-import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
 import './witness-tab.component.scss';
 

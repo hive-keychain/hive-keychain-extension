@@ -1,3 +1,9 @@
+import TransactionUtils, {
+  HAS_IN_OUT_TRANSACTIONS,
+  NB_TRANSACTION_FETCHED,
+  TRANSFER_TYPE_TRANSACTIONS,
+} from '@hiveapp/utils/transaction.utils';
+import { WalletHistoryUtils } from '@hiveapp/utils/wallet-history.utils';
 import {
   ClaimReward,
   CollateralizedConvert,
@@ -32,12 +38,6 @@ import { WalletHistoryItemComponent } from 'src/popup/hive/pages/app-container/h
 import { RootState } from 'src/popup/hive/store';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import TransactionUtils, {
-  HAS_IN_OUT_TRANSACTIONS,
-  NB_TRANSACTION_FETCHED,
-  TRANSFER_TYPE_TRANSACTIONS,
-} from 'src/utils/transaction.utils';
-import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
 import './wallet-history.component.scss';
 
 type FilterTransactionTypes = {

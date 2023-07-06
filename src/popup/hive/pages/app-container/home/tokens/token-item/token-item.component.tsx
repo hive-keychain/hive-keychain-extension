@@ -1,3 +1,4 @@
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { Currency } from '@interfaces/bittrex.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { Screen } from '@reference-data/screen.enum';
@@ -10,7 +11,6 @@ import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegati
 import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
-import TokensUtils from 'src/utils/tokens.utils';
 import './token-item.component.scss';
 
 interface TokenItemProps {

@@ -1,3 +1,5 @@
+import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
@@ -8,9 +10,7 @@ import {
 } from 'src/interfaces/tokens.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { ActionPayload, AppThunk } from 'src/popup/hive/actions/interfaces';
-import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
-import TokensUtils from 'src/utils/tokens.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;

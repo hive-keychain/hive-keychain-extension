@@ -1,3 +1,4 @@
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -11,7 +12,6 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-suggestion.component.scss';
 
 const ProxySuggestion = ({

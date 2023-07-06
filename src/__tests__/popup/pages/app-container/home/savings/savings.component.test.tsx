@@ -1,3 +1,5 @@
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -10,8 +12,6 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import { SavingsUtils } from 'src/utils/savings.utils';
 
 describe('savings.component tests:\n', () => {
   afterEach(() => {

@@ -1,3 +1,6 @@
+import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
+import { BaseCurrencies } from '@hiveapp/utils/currency.utils';
+import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { PriceType } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
@@ -22,9 +25,6 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
-import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
-import { BaseCurrencies } from 'src/utils/currency.utils';
-import WitnessUtils from 'src/utils/witness.utils';
 import './edit-my-witness.component.scss';
 
 interface EditMyWitnessProps {

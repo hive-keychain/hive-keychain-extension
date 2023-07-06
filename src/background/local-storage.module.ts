@@ -1,10 +1,10 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 
 const CURRENT_LOCAL_STORAGE_VERSION = 4;
 const checkAndUpdateLocalStorage = async () => {

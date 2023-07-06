@@ -1,8 +1,8 @@
+import { HiveEngineConfigUtils } from '@hiveapp/utils/hive-engine-config.utils';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { AppThunk } from 'src/popup/hive/actions/interfaces';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const setHEActiveRpc = (rpc: string) => {

@@ -1,3 +1,4 @@
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -8,7 +9,6 @@ import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import { KeysUtils } from 'src/utils/keys.utils';
 import './select-keys.component.scss';
 
 const SelectKeys = ({

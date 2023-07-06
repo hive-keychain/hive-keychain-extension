@@ -1,3 +1,4 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import {
   RequestId,
   RequestRecurrentTransfer,
@@ -7,7 +8,6 @@ import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
-import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestRecurrentTransfer & RequestId;

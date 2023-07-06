@@ -1,3 +1,4 @@
+import { HiveEngineConfigUtils } from '@hiveapp/utils/hive-engine-config.utils';
 import { DefaultAccountHistoryApis } from '@interfaces/hive-engine-rpc.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -12,7 +13,6 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 describe('tokens-settings.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

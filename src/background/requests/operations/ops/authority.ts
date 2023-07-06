@@ -4,6 +4,9 @@ import {
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import {
   KeychainKeyTypesLC,
   RequestAddAccountAuthority,
@@ -14,9 +17,6 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import AccountUtils from 'src/utils/account.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastAddAccountAuthority = async (

@@ -1,6 +1,7 @@
 import MkModule from '@background/mk.module';
 import { addAccount } from '@background/requests/operations/ops/add-account';
 import { RequestsHandler } from '@background/requests/request-handler';
+import AccountUtils from '@hiveapp/utils/account.utils';
 import {
   KeychainRequestTypes,
   RequestAddAccount,
@@ -13,7 +14,6 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('add-account tests:\n', () => {
   const data = {

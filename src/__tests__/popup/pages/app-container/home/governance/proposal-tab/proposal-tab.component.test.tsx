@@ -1,3 +1,4 @@
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { Asset } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { Proposal } from '@interfaces/proposal.interface';
@@ -14,7 +15,6 @@ import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import ProposalUtils from 'src/utils/proposal.utils';
 
 describe('Proposal tab:\n', () => {
   afterEach(() => {

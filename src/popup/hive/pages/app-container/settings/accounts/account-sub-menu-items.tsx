@@ -1,8 +1,8 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { Icons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { store } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
 
 const AccountSubMenuItems: MenuItem[] = [
   {

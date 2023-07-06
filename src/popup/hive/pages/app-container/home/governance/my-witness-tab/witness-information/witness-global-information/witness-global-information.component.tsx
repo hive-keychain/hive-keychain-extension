@@ -1,3 +1,4 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { WitnessInfo } from '@interfaces/witness.interface';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -5,7 +6,6 @@ import 'react-tabs/style/react-tabs.scss';
 import { Icons } from 'src/common-ui/icons.enum';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 import { RootState } from 'src/popup/hive/store';
-import CurrencyUtils from 'src/utils/currency.utils';
 import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {

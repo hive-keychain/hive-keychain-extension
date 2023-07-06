@@ -1,3 +1,4 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -9,7 +10,6 @@ import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interf
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import { DEFAULT_FILTER } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
 import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
@@ -202,7 +202,7 @@ const hiveTxUtils = {
 
 /**
  * Note: for now this mock is related to
- * src/utils/currency-prices.utils.ts
+ * @hiveapp/utils/currency-prices.utils.ts
  * > getBittrexCurrency
  */
 const mockFetch = (data: any, status: number, reject?: boolean) => {

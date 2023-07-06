@@ -1,4 +1,6 @@
 import { KeychainApi } from '@api/keychain';
+import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
@@ -16,8 +18,6 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const WITNESS_DISABLED_KEY =

@@ -1,6 +1,6 @@
+import { getPhishingAccounts } from '@hiveapp/utils/phishing.utils';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { AppThunk } from 'src/popup/hive/actions/interfaces';
-import { getPhishingAccounts } from 'src/utils/phishing.utils';
 
 export const fetchPhishingAccounts = (): AppThunk => async (dispatch) => {
   dispatch({

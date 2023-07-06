@@ -1,3 +1,6 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   RcDelegation,
@@ -27,11 +30,8 @@ import {
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
 
 import './rc-delegations.component.scss';
 

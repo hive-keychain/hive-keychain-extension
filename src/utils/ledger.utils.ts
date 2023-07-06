@@ -1,11 +1,11 @@
 import LedgerHiveApp from '@engrave/ledger-app-hive';
+import { ErrorUtils } from '@hiveapp/utils/error.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { SignedTransaction, Transaction } from '@hiveio/dhive';
-import { Key, Keys, KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType, Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
-import { ErrorUtils } from 'src/utils/error.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 
 let hiveLedger: LedgerHiveApp;
 

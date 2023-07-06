@@ -1,5 +1,5 @@
-import { AccountCreationUtils } from 'src/utils/account-creation.utils';
-import AccountUtils from 'src/utils/account.utils';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
 
 describe('account-creation.utils.ts tests:/n', () => {
   afterEach(() => {

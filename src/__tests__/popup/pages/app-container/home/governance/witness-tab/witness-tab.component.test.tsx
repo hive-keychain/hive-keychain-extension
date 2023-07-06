@@ -1,3 +1,5 @@
+import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
+import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -15,8 +17,6 @@ import witness from 'src/__tests__/utils-for-testing/data/witness';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
-import WitnessUtils from 'src/utils/witness.utils';
 
 describe('witness tab:\n', () => {
   afterEach(() => {

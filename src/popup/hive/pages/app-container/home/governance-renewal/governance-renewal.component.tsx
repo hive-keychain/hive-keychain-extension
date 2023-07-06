@@ -1,3 +1,4 @@
+import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -7,7 +8,6 @@ import {
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
 import { RootState } from 'src/popup/hive/store';
-import { GovernanceUtils } from 'src/utils/governance.utils';
 import './governance-renewal.component.scss';
 
 interface GovernanceRenewalProps {

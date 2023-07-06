@@ -1,3 +1,4 @@
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -9,7 +10,6 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import ProxyUtils from 'src/utils/proxy.utils';
 
 //TODO testings: unskip if proxy-suggestion.component gets enabled.
 describe.skip('Proxy suggestion tests:\n', () => {

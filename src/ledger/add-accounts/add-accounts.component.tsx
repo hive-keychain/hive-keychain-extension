@@ -1,3 +1,8 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { ErrorUtils } from '@hiveapp/utils/error.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -7,14 +12,9 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import AccountUtils from 'src/utils/account.utils';
-import { ErrorUtils } from 'src/utils/error.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 import './add-accounts.component.scss';
 
 enum SynchronizeLedgerStep {

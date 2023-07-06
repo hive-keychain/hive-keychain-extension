@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import { AuthorityType } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
@@ -18,8 +20,6 @@ import {
   navigateToWithParams,
 } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
-import AccountUtils from 'src/utils/account.utils';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
 import './account-authorities-list-item.component.scss';
 
 export interface AuthoritiesListItemProps {

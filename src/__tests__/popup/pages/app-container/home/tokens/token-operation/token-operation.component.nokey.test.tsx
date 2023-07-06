@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -16,7 +17,6 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('token-operation No Active key tests:\n', () => {
   afterEach(() => {

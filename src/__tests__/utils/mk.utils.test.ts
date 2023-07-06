@@ -1,5 +1,5 @@
-import AccountUtils from 'src/utils/account.utils';
-import MkUtils from 'src/utils/mk.utils';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
 describe('mk.utils tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

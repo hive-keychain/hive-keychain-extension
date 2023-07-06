@@ -1,3 +1,4 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -13,7 +14,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import { RootState } from 'src/popup/hive/store';
-import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './incoming-outgoing-page.component.scss';
 

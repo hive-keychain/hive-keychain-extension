@@ -1,3 +1,4 @@
+import { WalletHistoryUtils } from '@hiveapp/utils/wallet-history.utils';
 import {
   ClaimReward,
   CollateralizedConvert,
@@ -13,7 +14,6 @@ import {
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
 
 describe('wallet-history.utils tests:\n', () => {
   afterEach(() => {

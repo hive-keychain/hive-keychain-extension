@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -11,7 +12,6 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('add-by-keys:\n', () => {
   afterEach(() => {

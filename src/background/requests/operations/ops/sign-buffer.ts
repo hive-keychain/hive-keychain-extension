@@ -1,12 +1,12 @@
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
-import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 

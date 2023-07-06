@@ -1,4 +1,21 @@
 import { KeychainApi } from '@api/keychain';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
+import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
+import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
+import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
+import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
+import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
+import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
+import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
+import RpcUtils from '@hiveapp/utils/rpc.utils';
+import { SurveyUtils } from '@hiveapp/utils/survey.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
+import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import {
   DynamicGlobalProperties,
   ExtendedAccount,
@@ -36,26 +53,9 @@ import {
   GetManifest,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
-import AccountUtils from 'src/utils/account.utils';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
-import { ConversionUtils } from 'src/utils/conversion.utils';
-import { DelegationUtils } from 'src/utils/delegation.utils';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
-import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
-import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
-import { RewardsUtils } from 'src/utils/rewards.utils';
-import RpcUtils from 'src/utils/rpc.utils';
-import { SurveyUtils } from 'src/utils/survey.utils';
-import TokensUtils from 'src/utils/tokens.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),

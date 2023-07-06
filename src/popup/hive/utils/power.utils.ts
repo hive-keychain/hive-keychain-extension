@@ -1,9 +1,9 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const powerUp = async (
   from: string,

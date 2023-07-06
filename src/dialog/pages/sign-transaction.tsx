@@ -1,4 +1,5 @@
 import HiveLedgerApp from '@engrave/ledger-app-hive';
+import { ErrorUtils } from '@hiveapp/utils/error.utils';
 import { Transaction } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -6,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { KeychainError } from 'src/keychain-error';
 import { LoadingOperation } from 'src/popup/hive/reducers/loading.reducer';
-import { ErrorUtils } from 'src/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './sign-transaction.scss';

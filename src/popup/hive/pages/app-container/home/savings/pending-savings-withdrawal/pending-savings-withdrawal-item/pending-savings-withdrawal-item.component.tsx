@@ -1,3 +1,4 @@
+import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import moment from 'moment';
 import React from 'react';
@@ -16,7 +17,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import { SavingsUtils } from 'src/utils/savings.utils';
 import './pending-savings-withdrawal-item.component.scss';
 
 interface PendingSavingsWithdrawalProps {

@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -19,8 +21,6 @@ import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions'
 import { AccountKeysListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
-import AccountUtils from 'src/utils/account.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list.component.scss';
 

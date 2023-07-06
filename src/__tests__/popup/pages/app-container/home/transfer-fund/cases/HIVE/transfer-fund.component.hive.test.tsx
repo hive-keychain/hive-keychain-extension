@@ -1,3 +1,6 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@reference-data/screen.enum';
@@ -20,9 +23,6 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

@@ -1,9 +1,9 @@
+import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { ActionPayload, AppThunk } from 'src/popup/hive/actions/interfaces';
 import { AppStatus } from 'src/popup/hive/reducers/app-status.reducer';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadGlobalProperties = (): AppThunk => async (dispatch) => {

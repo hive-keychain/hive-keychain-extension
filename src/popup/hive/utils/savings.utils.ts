@@ -1,3 +1,4 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   Asset,
   CancelTransferFromSavingsOperation,
@@ -6,7 +7,6 @@ import {
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Key } from '@interfaces/keys.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 
 /* istanbul ignore next */

@@ -1,3 +1,10 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
@@ -24,13 +31,6 @@ import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
-import TokensUtils from 'src/utils/tokens.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
 
 const TokensTransfer = ({

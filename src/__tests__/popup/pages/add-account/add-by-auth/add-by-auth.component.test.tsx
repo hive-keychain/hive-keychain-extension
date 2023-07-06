@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -13,7 +14,6 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('add-by-auth tests:\n', () => {
   afterEach(() => {

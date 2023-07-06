@@ -1,3 +1,4 @@
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -12,7 +13,6 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
 
 const ProposalVotingSection = ({

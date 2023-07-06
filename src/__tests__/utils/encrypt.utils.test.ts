@@ -1,8 +1,8 @@
 import MkModule from '@background/mk.module';
+import EncryptUtils from '@hiveapp/utils/encrypt.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import CryptoJS from 'crypto-js';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import EncryptUtils from 'src/utils/encrypt.utils';
 import Logger from 'src/utils/logger.utils';
 
 describe('encrypt.utils tests:\n', () => {

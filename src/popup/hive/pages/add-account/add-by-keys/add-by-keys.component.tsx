@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -11,8 +13,6 @@ import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions'
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import './add-by-keys.component.scss';
 
 const AddByKeys = ({

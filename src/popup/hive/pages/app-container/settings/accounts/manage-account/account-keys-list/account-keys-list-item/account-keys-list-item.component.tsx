@@ -1,3 +1,4 @@
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -15,7 +16,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list-item.component.scss';
 

@@ -1,5 +1,10 @@
 import { PrivateKey } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import {
+  AccountCreationType,
+  AccountCreationUtils,
+  GeneratedKeys,
+} from '@popup/hive/utils/account-creation.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -17,11 +22,6 @@ import {
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import {
-  AccountCreationType,
-  AccountCreationUtils,
-  GeneratedKeys,
-} from 'src/utils/account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 import './create-account-step-two.component.scss';

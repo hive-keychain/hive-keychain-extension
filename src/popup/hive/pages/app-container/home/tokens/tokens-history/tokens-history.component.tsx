@@ -1,3 +1,4 @@
+import { TokenTransactionUtils } from '@hiveapp/utils/token-transaction.utils';
 import {
   CommentCurationTransaction,
   CURATIONS_REWARDS_TYPES,
@@ -19,7 +20,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { RootState } from 'src/popup/hive/store';
-import { TokenTransactionUtils } from 'src/utils/token-transaction.utils';
 import './tokens-history.component.scss';
 
 const TokensHistory = ({

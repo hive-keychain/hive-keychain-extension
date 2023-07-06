@@ -1,3 +1,5 @@
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
+import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -20,9 +22,7 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import { Chain, useChainContext } from 'src/popup/multichain.context';
 import { Screen } from 'src/reference-data/screen.enum';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { RewardsUtils } from 'src/utils/rewards.utils';
 import './top-bar.component.scss';
 
 const TopBar = ({

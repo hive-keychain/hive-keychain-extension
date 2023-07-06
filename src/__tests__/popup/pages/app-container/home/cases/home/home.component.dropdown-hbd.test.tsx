@@ -1,3 +1,4 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -11,7 +12,6 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { HBDDropdownMenuItems } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
-import CurrencyUtils from 'src/utils/currency.utils';
 
 describe('home.component dropdown hbd tests:\n', () => {
   beforeEach(async () => {

@@ -1,14 +1,14 @@
 import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
+import CurrencyUtils, { BaseCurrencies } from '@hiveapp/utils/currency.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { ConversionUtils } from 'src/utils/conversion.utils';
-import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const convert = async (

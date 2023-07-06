@@ -1,3 +1,5 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import { DynamicGlobalProperties, utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
@@ -22,8 +24,6 @@ import {
 } from '@interfaces/transaction.interface';
 import { KeychainError } from 'src/keychain-error';
 import FormatUtils from 'src/utils/format.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const NB_TRANSACTION_FETCHED = 1000;

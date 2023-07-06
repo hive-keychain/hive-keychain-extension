@@ -1,14 +1,14 @@
 import ClaimModule from '@background/claim.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { Client } from '@hiveio/dhive';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import Config from 'src/config';
-import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { SavingsUtils } from 'src/utils/savings.utils';
 
 describe('claim.module tests:\n', () => {
   const initialMIN_RC_PCT = Config.claims.freeAccount.MIN_RC_PCT;

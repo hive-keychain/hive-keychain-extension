@@ -1,3 +1,8 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
+import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import { SurveyUtils } from '@hiveapp/utils/survey.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -23,13 +28,8 @@ import {
   WrongKeysOnUser,
 } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
-import AccountUtils from 'src/utils/account.utils';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { SurveyUtils } from 'src/utils/survey.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 import './home.component.scss';

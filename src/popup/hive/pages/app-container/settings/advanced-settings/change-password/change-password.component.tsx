@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -13,8 +15,6 @@ import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
-import MkUtils from 'src/utils/mk.utils';
 import './change-password.component.scss';
 
 const ChangePassword = ({

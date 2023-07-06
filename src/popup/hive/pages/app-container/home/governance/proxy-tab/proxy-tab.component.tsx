@@ -1,3 +1,5 @@
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -16,8 +18,6 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
-import { KeysUtils } from 'src/utils/keys.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-tab.component.scss';
 
 const ProxyTab = ({

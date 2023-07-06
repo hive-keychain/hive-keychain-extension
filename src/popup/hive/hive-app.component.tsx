@@ -1,3 +1,7 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
+import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -35,13 +39,9 @@ import { SignUpComponent } from 'src/popup/hive/pages/sign-up/sign-up.component'
 import { RootState } from 'src/popup/hive/store';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 import './hive-app.component.scss';
 
 const HiveApp = ({

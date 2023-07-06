@@ -1,3 +1,5 @@
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { Proposal } from '@interfaces/proposal.interface';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -15,8 +17,6 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 import './proposal-item.component.scss';
 
 interface ProposalItemProps {

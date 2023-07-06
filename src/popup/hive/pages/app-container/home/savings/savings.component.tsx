@@ -1,3 +1,7 @@
+import CurrencyUtils, { CurrencyLabels } from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import { SavingsUtils } from '@hiveapp/utils/savings.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
@@ -31,11 +35,7 @@ import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { SavingsUtils } from 'src/utils/savings.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
 
 const SavingsPage = ({

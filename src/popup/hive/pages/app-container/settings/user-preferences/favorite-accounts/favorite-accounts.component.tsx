@@ -1,3 +1,4 @@
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import {
   FavoriteUserItems,
@@ -18,7 +19,6 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { FavoriteAccountsListComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { RootState } from 'src/popup/hive/store';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './favorite-accounts.component.scss';
 

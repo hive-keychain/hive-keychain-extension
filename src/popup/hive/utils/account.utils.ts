@@ -1,3 +1,7 @@
+import EncryptUtils from '@hiveapp/utils/encrypt.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
 import {
   AccountUpdateOperation,
   Authority,
@@ -14,13 +18,9 @@ import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import MkUtils from 'src/utils/mk.utils';
-import LocalStorageUtils from './localStorage.utils';
 
 export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',

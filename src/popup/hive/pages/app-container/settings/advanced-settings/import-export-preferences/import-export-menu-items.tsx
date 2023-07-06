@@ -1,6 +1,6 @@
+import SettingsUtils from '@hiveapp/utils/settings.utils';
 import { Icons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import SettingsUtils from 'src/utils/settings.utils';
 
 const ImportExportSubMenuItems: MenuItem[] = [
   {

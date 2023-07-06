@@ -1,8 +1,8 @@
 import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import EncryptUtils from '@hiveapp/utils/encrypt.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedAccounts = async (fileContent: string) => {

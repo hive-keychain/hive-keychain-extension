@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import MkUtils from '@hiveapp/utils/mk.utils';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,8 +10,6 @@ import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import AccountUtils from 'src/utils/account.utils';
-import MkUtils from 'src/utils/mk.utils';
 describe('reset-password.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(

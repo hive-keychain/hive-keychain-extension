@@ -1,3 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   Asset,
   CreateProposalOperation,
@@ -9,9 +11,7 @@ import { Key } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
 import moment from 'moment';
 import Config from 'src/config';
-import AccountUtils from 'src/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const hasVotedForProposal = async (
   username: string,

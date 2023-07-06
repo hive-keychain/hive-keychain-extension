@@ -1,5 +1,7 @@
 import { KeychainApi } from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
+import { ErrorUtils } from '@hiveapp/utils/error.utils';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
@@ -18,8 +20,6 @@ import {
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { AsyncUtils } from 'src/utils/async.utils';
-import { ErrorUtils } from 'src/utils/error.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 

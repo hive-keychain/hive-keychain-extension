@@ -1,3 +1,7 @@
+import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
+import WitnessUtils, {
+  WITNESS_DISABLED_KEY,
+} from '@hiveapp/utils/witness.utils';
 import {
   Witness,
   WitnessInfo,
@@ -29,9 +33,7 @@ import {
 import { WitnessGlobalInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from 'src/popup/hive/store';
-import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import FormatUtils from 'src/utils/format.utils';
-import WitnessUtils, { WITNESS_DISABLED_KEY } from 'src/utils/witness.utils';
 import './witness-information.component.scss';
 
 interface WitnessInformationProps {

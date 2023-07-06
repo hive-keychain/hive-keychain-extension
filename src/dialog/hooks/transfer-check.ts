@@ -1,12 +1,12 @@
+import CurrencyUtils, { BaseCurrencies } from '@hiveapp/utils/currency.utils';
+import { getPhishingAccounts } from '@hiveapp/utils/phishing.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import {
   RequestSendToken,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { useEffect, useState } from 'react';
-import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
-import { getPhishingAccounts } from 'src/utils/phishing.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 
 export const useTransferCheck = (
   data: RequestTransfer | RequestSendToken,

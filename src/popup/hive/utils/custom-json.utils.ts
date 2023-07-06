@@ -1,7 +1,7 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { CustomJsonOperation } from '@hiveio/dhive';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import Config from 'src/config';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const send = async (
   json: any,

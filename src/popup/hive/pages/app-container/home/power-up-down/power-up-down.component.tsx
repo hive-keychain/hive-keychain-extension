@@ -1,3 +1,7 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import { PowerUtils } from '@hiveapp/utils/power.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -25,12 +29,8 @@ import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down
 import { RootState } from 'src/popup/hive/store';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { PowerUtils } from 'src/utils/power.utils';
 import './power-up-down.component.scss';
 
 const PowerUpDown = ({

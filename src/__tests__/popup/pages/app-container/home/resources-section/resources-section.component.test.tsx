@@ -1,3 +1,4 @@
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { RC } from '@interfaces/active-account.interface';
 import '@testing-library/jest-dom';
@@ -12,7 +13,6 @@ import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import HiveUtils from 'src/utils/hive.utils';
 
 describe('resources-section.component tests:\n', () => {
   afterEach(() => {

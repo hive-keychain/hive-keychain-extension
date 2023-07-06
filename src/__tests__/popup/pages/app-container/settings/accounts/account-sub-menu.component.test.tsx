@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -10,7 +11,6 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import AccountSubMenuItems from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu-items';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('account-sub-menu.component tests:\n', () => {
   afterEach(() => {

@@ -1,3 +1,4 @@
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,7 +7,6 @@ import { SelectAccountSectionComponent } from 'src/popup/hive/pages/app-containe
 import { AccountKeysListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
-import { KeysUtils } from 'src/utils/keys.utils';
 import './manage-account.component.scss';
 
 const ManageAccount = ({

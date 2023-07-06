@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -11,7 +12,6 @@ import {
 } from 'src/__tests__/utils-for-testing/initial-states';
 import * as accountActions from 'src/popup/hive/actions/account.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import AccountUtils from 'src/utils/account.utils';
 
 describe('account.actions tests:\n', () => {
   afterEach(() => {

@@ -1,12 +1,12 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
-import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
 
 const addToIgnoreRenewal = async (usernames: string[]) => {
   let ignored = await LocalStorageUtils.getValueFromLocalStorage(

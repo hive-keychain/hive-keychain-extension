@@ -1,3 +1,4 @@
+import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -11,7 +12,6 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { ConversionUtils } from 'src/utils/conversion.utils';
 
 describe('conversion.component tests:\n', () => {
   afterEach(() => {

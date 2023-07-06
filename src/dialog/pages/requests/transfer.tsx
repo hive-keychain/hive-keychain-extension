@@ -1,3 +1,4 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
@@ -6,7 +7,6 @@ import RequestBalance from 'src/dialog/components/request-balance/request-balanc
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
-import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestTransfer & RequestId;
