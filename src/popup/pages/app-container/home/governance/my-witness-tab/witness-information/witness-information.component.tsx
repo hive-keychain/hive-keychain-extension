@@ -222,7 +222,7 @@ const WitnessInformation = ({
                     witnessRanking?.active_rank!,
                   ),
                 )}{' '}
-                {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '}
+                {/* {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '} */}
                 {(witnessRanking?.active_rank as any).toString() !==
                   (witnessRanking?.rank as any).toString() && (
                   <div>
