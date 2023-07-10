@@ -73,3 +73,8 @@ export enum Icons {
   WARNING = 'warning',
   WITNESS_DISABLED = 'no_accounts',
 }
+
+export enum NewIcons {
+  VOTING_MANA = 'voting-mana',
+  RESOURCE_CREDITS = 'resource-credit',
+}

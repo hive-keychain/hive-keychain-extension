@@ -49,7 +49,7 @@ const walletInfoSectionItem = ({
           {/* {infoContent && (
             <Icon
               name={Icons.INFO}
-              type={IconType.OUTLINED}
+               
               tooltipMessage={infoContent}
               skipTooltipTranslation
             />

@@ -14,7 +14,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -240,7 +240,6 @@ const WitnessInformation = ({
         {witnessInfo.isDisabled && (
           <Icon
             additionalClassName="witness-disabled"
-            type={IconType.OUTLINED}
             name={Icons.WITNESS_DISABLED}
             tooltipMessage="popup_html_witness_information_witness_disabled_text"
             tooltipPosition="left"

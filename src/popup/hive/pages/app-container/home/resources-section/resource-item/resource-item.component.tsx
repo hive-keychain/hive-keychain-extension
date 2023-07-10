@@ -1,10 +1,10 @@
+import '@common-style/home/resources-section/resource-item.component.scss';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { RootState } from 'src/popup/hive/store';
-import './resource-item.component.scss';
 
 interface ResourceItemProps {
   icon: Icons | string;
@@ -13,6 +13,7 @@ interface ResourceItemProps {
   tooltipText: string;
   secondaryValue?: string;
   ariaLabel?: string;
+  additionalClass?: string;
 }
 
 const ResourceItem = ({
@@ -22,23 +23,26 @@ const ResourceItem = ({
   tooltipText,
   secondaryValue,
   ariaLabel,
+  additionalClass,
 }: PropsType) => {
   return (
     <CustomTooltip
       dataTestId={`custom-tool-tip-${label}`}
       message={tooltipText}
       skipTranslation>
-      <div data-testid={ariaLabel} className="resource-item">
-        <Icon
-          name={icon}
-          type={IconType.STROKED}
-          additionalClassName="icon"></Icon>
+      <div
+        data-testid={ariaLabel}
+        className={`resource-item ${additionalClass ?? ''}`}>
+        <Icon name={icon} additionalClassName="icon"></Icon>
         <div className="right-panel">
           <div className="top">
             <div className="label">{chrome.i18n.getMessage(label)}</div>
           </div>
           <div className="bottom">
-            {value} {secondaryValue && `(${secondaryValue})`}
+            {value}{' '}
+            {secondaryValue && (
+              <span className="secondary-value">{secondaryValue}</span>
+            )}
           </div>
         </div>
       </div>

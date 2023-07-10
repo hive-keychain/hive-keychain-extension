@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import './witness-info-data.component.scss';
 
@@ -38,7 +38,7 @@ export const WitnessInfoDataComponent = ({
         onClick={handleOnValueClick}>
         <>
           <span>{value}</span>
-          {valueIcon && <Icon type={IconType.OUTLINED} name={valueIcon} />}
+          {valueIcon && <Icon name={valueIcon} />}
         </>
       </div>
       {extraInfo && (

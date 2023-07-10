@@ -1,4 +1,4 @@
-@import '/src/variable.scss';
+@import '/src/common-style/variable.scss';
 @font-face {
   font-family: Futura;
   src: url('/assets/fonts/Futura-Boo.otf');
@@ -9,19 +9,11 @@
   height: 600px;
   font-family: Futura !important;
   font-weight: 400;
-  background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
-      padding-box,
-    linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
-      padding-box !important;
   color: white;
   box-sizing: border-box;
   overflow: auto;
   margin-left: calc(100vw - 100%);
   &.homepage {
-    background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
-        padding-box,
-      linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
-        padding-box !important;
   }
 
   .page-container {

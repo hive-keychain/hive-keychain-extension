@@ -17,7 +17,7 @@ import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { RootState } from 'src/popup/hive/store';
 import './token-history-item.component.scss';
@@ -209,7 +209,6 @@ const TokenHistoryItem = ({
               <Icon
                 dataTestId="icon-open-new-window"
                 name={getIcon()}
-                type={IconType.OUTLINED}
                 onClick={openTransactionOnHiveblocks}
                 additionalClassName="padding-right"></Icon>
               <CustomTooltip
@@ -226,7 +225,6 @@ const TokenHistoryItem = ({
               <Icon
                 name={Icons.EXPAND_MORE}
                 onClick={() => setIsMemoOpened(!isMemoOpened)}
-                type={IconType.OUTLINED}
                 additionalClassName={isMemoOpened ? 'open' : 'closed'}
               />
             )}

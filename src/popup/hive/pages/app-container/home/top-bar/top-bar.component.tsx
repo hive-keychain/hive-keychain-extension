@@ -2,7 +2,7 @@ import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
@@ -131,28 +131,24 @@ const TopBar = ({
         dataTestId="reward-claim-icon"
         name={Icons.LINK}
         onClick={() => setChain(Chain.EVM)}
-        additionalClassName="button claim-button"
-        type={IconType.STROKED}></Icon>
+        additionalClassName="button claim-button"></Icon>
       {hasRewardToClaim && (
         <Icon
           dataTestId="reward-claim-icon"
           name={Icons.CLAIM}
           onClick={() => claim()}
-          additionalClassName="button claim-button"
-          type={IconType.STROKED}></Icon>
+          additionalClassName="button claim-button"></Icon>
       )}
       <Icon
         dataTestId="log-out-button"
         name={Icons.LOGOUT}
         onClick={() => lockPopup()}
-        additionalClassName="button lock-button"
-        type={IconType.STROKED}></Icon>
+        additionalClassName="button lock-button"></Icon>
       <Icon
         dataTestId="clickable-settings"
         name={Icons.MENU}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
-        additionalClassName="button settings-button"
-        type={IconType.STROKED}></Icon>
+        additionalClassName="button settings-button"></Icon>
     </div>
   );
 };

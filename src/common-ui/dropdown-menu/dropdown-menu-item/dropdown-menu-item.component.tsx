@@ -1,7 +1,7 @@
 import React, { SyntheticEvent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
 import './dropdown-menu-item.component.scss';
@@ -26,12 +26,7 @@ const DropdownMenuItem = ({
       data-testid={`dropdown-menu-item-${icon}`}
       onClick={(event) => handleClickOnMenuItem(event)}>
       {importedIcon && <img className="icon" src={`/assets/images/${icon}`} />}
-      {!importedIcon && (
-        <Icon
-          name={icon}
-          type={IconType.STROKED}
-          additionalClassName="icon"></Icon>
-      )}
+      {!importedIcon && <Icon name={icon} additionalClassName="icon"></Icon>}
       <div className="label">{chrome.i18n.getMessage(label, labelParams)}</div>
     </div>
   );

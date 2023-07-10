@@ -1,3 +1,4 @@
+import '@common-style/home/home.component.scss';
 import AccountUtils from '@hiveapp/utils/account.utils';
 import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import { GovernanceUtils } from '@hiveapp/utils/governance.utils';

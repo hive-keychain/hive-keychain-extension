@@ -2,7 +2,7 @@ import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserListName } from '@interfaces/favorite-user.interface';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -91,7 +91,6 @@ const FavoriteAccountsItem = ({
             <Icon
               onClick={() => edit(favorite)}
               name={Icons.EDIT}
-              type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
@@ -99,7 +98,6 @@ const FavoriteAccountsItem = ({
             <Icon
               onClick={() => save()}
               name={Icons.SAVE}
-              type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
@@ -107,7 +105,6 @@ const FavoriteAccountsItem = ({
             <Icon
               onClick={() => cancel()}
               name={Icons.CLEAR}
-              type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
@@ -115,7 +112,6 @@ const FavoriteAccountsItem = ({
             <Icon
               onClick={() => handleDeleteFavorite(listName, favorite)}
               name={Icons.DELETE}
-              type={IconType.OUTLINED}
               additionalClassName="remove-button"
             />
           )}

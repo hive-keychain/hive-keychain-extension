@@ -2,7 +2,7 @@ import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { Witness } from '@interfaces/witness.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
@@ -72,7 +72,7 @@ const MyWitnessTab = ({
       )}
       {hasError && (
         <div aria-label="error-witness" className="error-witness">
-          <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+          <Icon name={Icons.ERROR}></Icon>
           <span>
             {chrome.i18n.getMessage(
               'popup_html_error_retrieving_witness_information',

@@ -5,7 +5,7 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -291,10 +291,7 @@ const Delegations = ({
               if (incomingError) setErrorMessage(incomingError);
             }}>
             {incomingError && (
-              <Icon
-                name={Icons.ERROR}
-                type={IconType.OUTLINED}
-                tooltipMessage={incomingError}></Icon>
+              <Icon name={Icons.ERROR} tooltipMessage={incomingError}></Icon>
             )}
             <span data-testid="delegations-span-total-incoming">
               + {FormatUtils.withCommas(totalIncoming.toString())}{' '}

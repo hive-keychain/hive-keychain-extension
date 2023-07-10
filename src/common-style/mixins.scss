@@ -1,0 +1,45 @@
+@import './variable.scss';
+
+@mixin pageLayout {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+@mixin pageLayoutRowGap {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}
+
+@mixin link {
+  color: white;
+  text-decoration: none;
+  border-bottom: white 2px dotted;
+  &:hover {
+    border-bottom: $red 2px dotted;
+    color: $red;
+  }
+}
+
+@mixin fake-input {
+  font-size: $input-font-size;
+  padding: 7px;
+  background: transparent;
+  border: unset;
+  border-bottom: $grey solid 1px !important;
+  cursor: not-allowed;
+  min-width: 50px;
+  flex: 1;
+  text-align: center;
+}
+
+@mixin caption {
+  font-size: $caption-font-size;
+}
+
+@mixin icon-size($size) {
+  height: $size;
+  width: $size;
+}

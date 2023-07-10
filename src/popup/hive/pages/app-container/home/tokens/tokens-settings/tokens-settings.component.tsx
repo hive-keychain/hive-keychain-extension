@@ -10,7 +10,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -232,7 +232,6 @@ const TokensSettings = ({
           <Icon
             dataTestId="icon-tokens-settings-add-rpc"
             name={Icons.ADD_CIRCLE}
-            type={IconType.OUTLINED}
             onClick={() => setIsNewRpcPanelOpened(true)}
           />
         </div>
@@ -249,7 +248,6 @@ const TokensSettings = ({
             <Icon
               dataTestId="icon-tokens-settings-save-rpc"
               name={Icons.SAVE}
-              type={IconType.OUTLINED}
               onClick={() => saveRpc()}
             />
           </div>
@@ -274,7 +272,6 @@ const TokensSettings = ({
           <Icon
             dataTestId="icon-tokens-settings-add-account-history"
             name={Icons.ADD_CIRCLE}
-            type={IconType.OUTLINED}
             onClick={() => setIsNewAccountHistoryPanelOpened(true)}
           />
         </div>
@@ -291,7 +288,6 @@ const TokensSettings = ({
             <Icon
               dataTestId="icon-tokens-settings-save-account-history"
               name={Icons.SAVE}
-              type={IconType.OUTLINED}
               onClick={() => saveAccountHistory()}
             />
           </div>

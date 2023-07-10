@@ -5,7 +5,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -90,7 +90,6 @@ const SelectAccountSection = ({
         <Icon
           additionalClassName="copy-username-button"
           name={Icons.COPY}
-          type={IconType.OUTLINED}
           onClick={($event) => {
             copyUsernameToClipboard($event, selectProps.item.label);
             selectProps.methods.dropDown('close');

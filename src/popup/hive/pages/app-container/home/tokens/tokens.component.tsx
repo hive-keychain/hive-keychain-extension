@@ -4,7 +4,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -106,7 +106,6 @@ const Tokens = ({
               dataTestId="open-tokens-filter"
               onClick={() => navigateTo(Screen.TOKENS_FILTER)}
               name={Icons.FILTER}
-              type={IconType.OUTLINED}
               additionalClassName="filter"></Icon>
           </>
         )}
@@ -114,7 +113,6 @@ const Tokens = ({
           dataTestId="tokens-settings-icon"
           onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
           name={Icons.SETTINGS}
-          type={IconType.OUTLINED}
           additionalClassName="settings"></Icon>
       </div>
       {allTokens.length > 0 &&

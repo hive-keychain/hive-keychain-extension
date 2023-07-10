@@ -4,7 +4,7 @@ import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
@@ -102,8 +102,7 @@ const TokenItem = ({
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
           }
-          additionalClassName="history"
-          type={IconType.OUTLINED}></Icon>
+          additionalClassName="history"></Icon>
         <Icon
           dataTestId={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
@@ -113,16 +112,14 @@ const TokenItem = ({
               tokenInfo,
             })
           }
-          additionalClassName="send"
-          type={IconType.OUTLINED}></Icon>
+          additionalClassName="send"></Icon>
         <Icon
           dataTestId={`icon-expand-more-${tokenBalance.symbol}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
             isExpandablePanelOpen ? 'opened' : 'closed'
-          }`}
-          type={IconType.OUTLINED}></Icon>
+          }`}></Icon>
       </div>
       {tokenInfo && (
         <div
@@ -194,7 +191,7 @@ const TokenItem = ({
                   tokenInfo.precision,
                 )}
                 {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  <Icon name={Icons.LIST} />
                 )}
               </div>
             )}
@@ -210,7 +207,7 @@ const TokenItem = ({
                     tokenInfo.precision,
                   )}
                   {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                    <Icon name={Icons.LIST} />
                   )}
                 </div>
               </div>
@@ -230,7 +227,7 @@ const TokenItem = ({
                     )}
                   </div>
                   {parseFloat(tokenBalance.delegationsOut) > 0 && (
-                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                    <Icon name={Icons.LIST} />
                   )}
                 </div>
               )}

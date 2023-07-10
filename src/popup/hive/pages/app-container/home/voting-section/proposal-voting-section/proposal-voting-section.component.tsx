@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import {
@@ -80,7 +80,6 @@ const ProposalVotingSection = ({
       } ${isOpen ? 'opened' : 'closed'}`}
       onClick={() => setIsOpen(!isOpen)}>
       <Icon
-        type={IconType.STROKED}
         additionalClassName="close"
         onClick={handleClose}
         name={Icons.CLOSE}></Icon>

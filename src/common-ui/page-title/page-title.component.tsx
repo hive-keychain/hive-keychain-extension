@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import {
   goBack,
@@ -47,7 +47,6 @@ const PageTitle = ({
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
           name={Icons.BACK}
-          type={IconType.OUTLINED}
           additionalClassName="icon-button"></Icon>
       )}
       <div className="title">
@@ -60,7 +59,6 @@ const PageTitle = ({
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
           name={Icons.CLOSE}
-          type={IconType.OUTLINED}
           additionalClassName="icon-button"></Icon>
       )}
     </div>

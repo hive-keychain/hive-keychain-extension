@@ -3,7 +3,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -121,7 +121,7 @@ const AccountKeysListItem = ({
               message="popup_html_wrong_key_tooltip_text"
               position={'bottom'}
               additionalClassName="tool-tip-custom">
-              <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+              <Icon name={Icons.ERROR} />
             </CustomTooltip>
           )}
         </div>
@@ -132,7 +132,6 @@ const AccountKeysListItem = ({
             )}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
-            type={IconType.OUTLINED}
             additionalClassName="remove-button"></Icon>
         )}
       </div>
@@ -142,7 +141,6 @@ const AccountKeysListItem = ({
           dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
-          type={IconType.OUTLINED}
           additionalClassName="add-key-icon"></Icon>
       )}
 

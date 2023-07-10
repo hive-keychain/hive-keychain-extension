@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -183,7 +183,6 @@ const WitnessTab = ({
               dataTestId={`link-to-witness-page-${witness.name}`}
               onClick={() => chrome.tabs.create({ url: witness.url })}
               name={Icons.OPEN_IN_NEW}
-              type={IconType.OUTLINED}
               additionalClassName="link-to-witness-page"></Icon>
           )}
         </div>
@@ -196,7 +195,6 @@ const WitnessTab = ({
             (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
           }
           name={Icons.ARROW_CIRCLE_UP}
-          type={IconType.OUTLINED}
           onClick={() => handleVotedButtonClick(witness)}
           tooltipPosition="left"
           tooltipMessage={
@@ -239,7 +237,6 @@ const WitnessTab = ({
           {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
           <Icon
             name={Icons.OPEN_IN_NEW}
-            type={IconType.OUTLINED}
             additionalClassName="outside-link"></Icon>
         </a>
       </div>
@@ -280,7 +277,7 @@ const WitnessTab = ({
               return (
                 hasError && (
                   <div aria-label="error-witness" className="error-witness">
-                    <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                    <Icon name={Icons.ERROR}></Icon>
                     <span>
                       {chrome.i18n.getMessage(
                         'popup_html_error_retrieving_witness_ranking',

@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import './back-to-top-button.component.scss';
 
@@ -16,7 +16,7 @@ export const BackToTopButton = (props: BackToTopButtonProps) => {
 
   return (
     <div className="back-to-top" onClick={scrollToTop}>
-      <Icon type={IconType.OUTLINED} name={Icons.ARROW_UPWARDS} />
+      <Icon name={Icons.ARROW_UPWARDS} />
     </div>
   );
 };

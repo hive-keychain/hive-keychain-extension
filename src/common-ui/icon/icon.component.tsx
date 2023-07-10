@@ -3,18 +3,12 @@ import {
   CustomTooltip,
   CustomTooltipPosition,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import './icon.component.scss';
-
-export enum IconType {
-  OUTLINED = '-outlined',
-  STROKED = '',
-}
 
 interface IconProps {
   onClick?: (params: any) => void;
-  name: Icons | string;
-  type: IconType;
+  name: Icons | string | NewIcons;
   additionalClassName?: string;
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
@@ -24,14 +18,16 @@ interface IconProps {
 
 const getIconTemplate = (props: IconProps) => {
   return (
-    <span
-      data-testid={props.dataTestId}
-      className={`icon-component material-icons${props.type} ${
-        props.additionalClassName ?? ''
-      } ${props.onClick ? 'clickable' : ''}`}
-      onClick={props.onClick}>
-      {props.name}
-    </span>
+    <div className={`icon-container`}>
+      <img
+        src={`assets/images/${props.name}.svg`}
+        data-testid={props.dataTestId}
+        className={`${props.additionalClassName ?? ''} ${
+          props.onClick ? 'clickable' : ''
+        }`}
+        onClick={props.onClick}
+      />
+    </div>
   );
 };
 

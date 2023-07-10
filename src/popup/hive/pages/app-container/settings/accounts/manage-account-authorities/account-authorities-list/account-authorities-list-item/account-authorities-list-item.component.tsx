@@ -4,7 +4,7 @@ import { AuthorityType } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import {
@@ -124,7 +124,6 @@ const AccountAuthoritiesListItem = ({
                       handleClickOnRemoveAccountAuth(accountAuth[0])
                     }
                     name={Icons.DELETE}
-                    type={IconType.OUTLINED}
                     additionalClassName="remove-button"
                   />
                 </div>

@@ -4,7 +4,7 @@ import React, { BaseSyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { RootState } from 'src/popup/hive/store';
 import './generic-transaction.component.scss';
@@ -75,7 +75,6 @@ const GenericTransaction = ({
           <Icon
             dataTestId="icon-open-new-window"
             name={getIcon()}
-            type={IconType.OUTLINED}
             onClick={openTransactionOnHiveblocks}></Icon>
           <CustomTooltip
             dataTestId="custom-tool-tip"
@@ -94,8 +93,7 @@ const GenericTransaction = ({
               onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
               additionalClassName={`more ${
                 isExpandablePanelOpened ? 'opened' : 'closed'
-              }`}
-              type={IconType.OUTLINED}></Icon>
+              }`}></Icon>
           )}
         </div>
         <div className="bottom-row">{detail}</div>

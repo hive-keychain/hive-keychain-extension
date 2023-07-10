@@ -1,10 +1,10 @@
+import '@common-style/home/resources-section/resource-section.component.scss';
 import HiveUtils from '@hiveapp/utils/hive.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { ResourceItemComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { RootState } from 'src/popup/hive/store';
-import './resources-section.component.scss';
 
 const ResourcesSection = ({
   activeAccount,
@@ -35,14 +35,14 @@ const ResourcesSection = ({
       const resources = activeAccount.rc.percentage;
 
       if (hasMana) {
-        setVotingMana(mana?.toFixed(2) + ' %');
-        setVotingValue(voting.toFixed(2) + ' $');
+        setVotingMana(mana?.toFixed(2)!);
+        setVotingValue(voting.toFixed(2) + '$');
       } else {
         setVotingMana('--');
         setVotingValue(null);
       }
 
-      setRc(resources.toFixed(2) + ' %');
+      setRc(resources.toFixed(2));
 
       setManaReadyIn(
         hasMana
@@ -60,15 +60,17 @@ const ResourcesSection = ({
         label={'popup_html_vm'}
         value={votingMana}
         secondaryValue={votingValue}
-        icon={Icons.ARROW_UP}
+        icon={NewIcons.VOTING_MANA}
         tooltipText={manaReadyIn}
+        additionalClass="blue"
       />
       <ResourceItemComponent
         ariaLabel="resource-item-resource-credits"
         label={'popup_html_rc'}
         value={rc}
-        icon={Icons.RC}
+        icon={NewIcons.RESOURCE_CREDITS}
         tooltipText={rcReadyIn}
+        additionalClass="red"
       />
     </div>
   );

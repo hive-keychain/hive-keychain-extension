@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -48,10 +48,7 @@ const Menu = ({
               <img className="icon" src={`/assets/images/${menuItem.icon}`} />
             )}
             {!menuItem.importedIcon && (
-              <Icon
-                name={menuItem.icon!}
-                type={IconType.OUTLINED}
-                additionalClassName="icon"></Icon>
+              <Icon name={menuItem.icon!} additionalClassName="icon"></Icon>
             )}
 
             <div className="menu-label">

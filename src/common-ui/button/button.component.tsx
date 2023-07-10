@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import './button.component.scss';
 
@@ -39,12 +39,7 @@ const ButtonComponent = (props: ButtonProps) => {
           ? props.label
           : chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
       </div>
-      {props.logo && (
-        <Icon
-          name={props.logo}
-          type={IconType.OUTLINED}
-          additionalClassName="logo"></Icon>
-      )}
+      {props.logo && <Icon name={props.logo} additionalClassName="logo"></Icon>}
     </button>
   );
 };

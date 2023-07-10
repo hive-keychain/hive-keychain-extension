@@ -1,7 +1,7 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
 import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
@@ -97,14 +97,12 @@ const InputComponent = (props: InputProps) => {
           <Icon
             onClick={() => setPasswordDisplayed(true)}
             name={Icons.VISIBLE}
-            type={IconType.OUTLINED}
             additionalClassName="input-img display-password"></Icon>
         )}
         {props.type === InputType.PASSWORD && isPasswordDisplay && (
           <Icon
             onClick={() => setPasswordDisplayed(false)}
             name={Icons.HIDDEN}
-            type={IconType.OUTLINED}
             additionalClassName="input-img display-password"></Icon>
         )}
         {props.type !== InputType.PASSWORD &&
@@ -115,7 +113,6 @@ const InputComponent = (props: InputProps) => {
               dataTestId="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
-              type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
         {isFocused && props.autocompleteValues && (
@@ -133,10 +130,7 @@ const InputComponent = (props: InputProps) => {
           </div>
         )}
         {props.logo && (
-          <Icon
-            name={props.logo}
-            type={IconType.OUTLINED}
-            additionalClassName="input-img"></Icon>
+          <Icon name={props.logo} additionalClassName="input-img"></Icon>
         )}
         {props.onSetToMaxClicked && (
           <span

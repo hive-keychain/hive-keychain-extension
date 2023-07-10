@@ -5,7 +5,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import {
   addToLoadingList,
@@ -107,8 +107,7 @@ const ProposalItem = ({
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
           additionalClassName={`more ${
             isExpandablePanelOpened ? 'opened' : 'closed'
-          }`}
-          type={IconType.OUTLINED}></Icon>
+          }`}></Icon>
       </div>
       <div className="additional-info">
         <div className="left-panel">
@@ -141,7 +140,6 @@ const ProposalItem = ({
               (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
             }
             name={Icons.ARROW_CIRCLE_UP}
-            type={IconType.OUTLINED}
             tooltipPosition="left"
             tooltipMessage={
               !activeAccount.keys.active
@@ -168,13 +166,13 @@ const ProposalItem = ({
             skipTranslation>
             <div className="extra-info">
               <div className="value">
-                <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
+                <Icon name={Icons.ARROW_CIRCLE_UP} />
                 <div data-testid="proposal-item-extra-info-value">
                   {proposal.totalVotes}
                 </div>
               </div>
               <div>
-                <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
+                <Icon name={Icons.TIMELAPSE} />
                 <div>
                   {chrome.i18n.getMessage('popup_html_days_remaining', [
                     FormatUtils.withCommas(
@@ -187,7 +185,7 @@ const ProposalItem = ({
                 </div>
               </div>
               <div>
-                <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
+                <Icon name={Icons.ATTACH_MONEY} />
                 <div>
                   {FormatUtils.withCommas(proposal.dailyPay.toString())}/
                   {chrome.i18n.getMessage('day')}

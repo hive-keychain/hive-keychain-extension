@@ -27,7 +27,7 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -482,7 +482,7 @@ const WalletHistory = ({
             } else {
               return (
                 <div className="empty-list">
-                  <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
+                  <Icon name={Icons.INBOX}></Icon>
                   <div className="labels">
                     <span>
                       {chrome.i18n.getMessage(
@@ -507,7 +507,7 @@ const WalletHistory = ({
               <span className="label">
                 {chrome.i18n.getMessage('popup_html_load_more')}
               </span>
-              <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
+              <Icon name={Icons.ADD_CIRCLE}></Icon>
             </div>
           )}
         {loading && (

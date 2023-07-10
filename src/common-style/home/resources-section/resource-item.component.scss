@@ -1,0 +1,60 @@
+@import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
+.resource-item {
+  display: flex;
+  width: 180px;
+  align-items: center;
+  column-gap: 6px;
+  border-radius: 15px;
+  padding-top: 10px;
+  padding-left: 12px;
+  padding-bottom: 10px;
+  &.blue {
+    background: $blue;
+  }
+  &.red {
+    background: $red;
+  }
+
+  cursor: help;
+  user-select: none;
+  .icon-container {
+    display: flex;
+    border-radius: 13px;
+    background: #ffffff2b;
+    padding: 7px;
+    .icon {
+      @include icon-size(24px);
+    }
+  }
+  .right-panel {
+    text-align: left;
+    color: #fff;
+    .top {
+      font-size: 14px;
+      opacity: 0.7;
+
+      .label {
+        font-size: 16px;
+      }
+    }
+    .bottom {
+      font-family: Josefin Sans;
+      font-size: 32.29px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      .secondary-value {
+        text-align: right;
+        font-family: Poppins;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 147%;
+      }
+    }
+  }
+  #tooltip {
+    max-width: 120px !important;
+  }
+}
