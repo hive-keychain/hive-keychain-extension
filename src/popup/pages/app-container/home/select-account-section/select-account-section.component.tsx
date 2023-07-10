@@ -8,7 +8,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import './select-account-section.component.scss';
@@ -60,7 +60,7 @@ const SelectAccountSection = ({
         />
         <div
           className="selected-account-name"
-          aria-label="selected-account-name">
+          data-testid="selected-account-name">
           {selectedLocalAccount}
         </div>
       </div>
@@ -71,7 +71,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.value}`}
+        data-testid={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}

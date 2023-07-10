@@ -18,7 +18,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -228,7 +228,9 @@ const TokensTransfer = ({
   };
 
   return (
-    <div aria-label="transfer-tokens-page" className="transfer-tokens-page">
+    <div
+      data-testid={`${Screen.TOKENS_TRANSFER}-page`}
+      className="transfer-tokens-page">
       <SummaryPanelComponent
         bottom={balance}
         bottomRight={symbol}
@@ -238,7 +240,7 @@ const TokensTransfer = ({
         {chrome.i18n.getMessage('popup_html_tokens_send_text')}
       </div>
       <InputComponent
-        ariaLabel="input-username"
+        dataTestId="input-username"
         type={InputType.TEXT}
         logo={Icons.AT}
         placeholder="popup_html_username"
@@ -249,7 +251,7 @@ const TokensTransfer = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -262,14 +264,14 @@ const TokensTransfer = ({
       </div>
 
       <InputComponent
-        ariaLabel="input-memo-optional"
+        dataTestId="input-memo-optional"
         type={InputType.TEXT}
         placeholder="popup_html_memo_optional"
         value={memo}
         onChange={setMemo}
       />
       <OperationButtonComponent
-        ariaLabel="button-send-tokens-transfer"
+        dataTestId="button-send-tokens-transfer"
         requiredKey={KeychainKeyTypesLC.active}
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}

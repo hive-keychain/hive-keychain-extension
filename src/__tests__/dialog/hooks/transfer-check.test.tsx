@@ -1,40 +1,57 @@
-import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
+import { KeychainApi } from '@api/keychain';
+import {
+  KeychainRequestTypes,
+  RequestId,
+  RequestTransfer,
+} from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import React from 'react';
-import Transfer from 'src/dialog/pages/requests/transfer';
-import transferCheckMocks from 'src/__tests__/dialog/hooks/mocks/transfer-check-mocks';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import config from 'src/__tests__/utils-for-testing/setups/config';
+import * as TransferCheckModule from 'src/dialog/hooks/transfer-check';
+import Transfer from 'src/dialog/pages/requests/transfer';
+
 describe('transfer-check.ts tests:\n', () => {
-  config.afterAllCleanAndResetMocks();
-  const { constants, methods, spies } = transferCheckMocks;
-  methods.afterEach;
+  const data = {
+    domain: 'domain',
+    type: KeychainRequestTypes.transfer,
+    username: mk.user.one,
+    to: 'theghost1980',
+    amount: '10.000',
+    memo: '',
+    currency: 'HIVE',
+  } as RequestTransfer & RequestId;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    cleanup();
+  });
   describe('useTransferCheck cases:\n', () => {
     it('Must call useTransferCheck without phishing warning', async () => {
-      methods.getPhishingAccounts([]);
-      render(
-        <Transfer
-          data={constants}
-          domain={'domain'}
-          tab={0}
-          rpc={DefaultRpcs[1]}
-        />,
+      const sUseTransferCheck = jest.spyOn(
+        TransferCheckModule,
+        'useTransferCheck',
       );
-      waitFor(() => {});
-      const { calls } = spies.useTransferCheck.mock;
-      expect(calls[0]).toEqual([{ ...constants }, DefaultRpcs[1]]);
-      screen.debug();
+      jest.spyOn(KeychainApi, 'get').mockResolvedValue([]);
+      render(
+        <Transfer data={data} domain={'domain'} tab={0} rpc={DefaultRpcs[1]} />,
+      );
+      expect(sUseTransferCheck).toHaveBeenLastCalledWith(
+        { ...data },
+        DefaultRpcs[1],
+      );
     });
 
     it('Must call useTransferCheck with a phishing warning', async () => {
-      chrome.i18n.getMessage = jest
-        .fn()
-        .mockImplementation(mocksImplementation.i18nGetMessageCustom);
-      methods.getPhishingAccounts(['bittrex']);
-      const clonedData = objects.clone(constants) as RequestTransfer &
-        RequestId;
+      const sUseTransferCheck = jest.spyOn(
+        TransferCheckModule,
+        'useTransferCheck',
+      );
+      jest.spyOn(KeychainApi, 'get').mockResolvedValue(['bittrex']);
+      const clonedData = objects.clone(data) as RequestTransfer & RequestId;
       clonedData.to = 'bittrex';
       clonedData.memo = 'Hi there bittrex!';
       render(
@@ -45,9 +62,10 @@ describe('transfer-check.ts tests:\n', () => {
           rpc={DefaultRpcs[1]}
         />,
       );
-      waitFor(() => {});
-      const { calls } = spies.useTransferCheck.mock;
-      expect(calls[0]).toEqual([{ ...clonedData }, DefaultRpcs[1]]);
+      expect(sUseTransferCheck).toHaveBeenLastCalledWith(
+        { ...clonedData },
+        DefaultRpcs[1],
+      );
     });
   });
 });

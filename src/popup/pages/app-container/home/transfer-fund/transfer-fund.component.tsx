@@ -21,7 +21,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -201,18 +201,13 @@ const TransferFunds = ({
       fields = [fields[0], fields[1]];
     }
 
-    let warningMessage = await TransferUtils.getExchangeValidationWarning(
+    let warningMessage = await TransferUtils.getTransferWarning(
       receiverUsername,
       currencyLabels[selectedCurrency],
-      memo.length > 0,
+      memo,
+      phishing,
       isRecurrent,
     );
-
-    if (phishing.includes(receiverUsername)) {
-      warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        receiverUsername,
-      ]);
-    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
@@ -299,7 +294,7 @@ const TransferFunds = ({
           }
         } catch (err: any) {
           Logger.error(err);
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, err.messageParams);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
@@ -337,7 +332,9 @@ const TransferFunds = ({
 
   return (
     <>
-      <div className="transfer-funds-page" aria-label="transfer-funds-page">
+      <div
+        className="transfer-funds-page"
+        data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
         <SummaryPanelComponent
           bottom={balance}
           bottomRight={currencyLabels[selectedCurrency]}
@@ -345,7 +342,7 @@ const TransferFunds = ({
         />
         <div className="form-container">
           <InputComponent
-            ariaLabel="input-username"
+            dataTestId="input-username"
             type={InputType.TEXT}
             logo={Icons.AT}
             placeholder="popup_html_username"
@@ -356,7 +353,7 @@ const TransferFunds = ({
           <div className="value-panel">
             <div className="value-input-panel">
               <InputComponent
-                ariaLabel="amount-input"
+                dataTestId="amount-input"
                 type={InputType.NUMBER}
                 placeholder="0.000"
                 skipPlaceholderTranslation={true}
@@ -377,14 +374,14 @@ const TransferFunds = ({
           </div>
 
           <InputComponent
-            ariaLabel="input-memo-optional"
+            dataTestId="input-memo-optional"
             type={InputType.TEXT}
             placeholder="popup_html_memo_optional"
             value={memo}
             onChange={setMemo}
           />
           <CheckboxComponent
-            ariaLabel="checkbox-transfer-recurrent"
+            dataTestId="checkbox-transfer-recurrent"
             title={
               parseFloat(amount) === 0
                 ? 'popup_html_cancel_recurrent_transfer'
@@ -395,7 +392,7 @@ const TransferFunds = ({
           {isRecurrent && parseFloat(amount) !== 0 && (
             <div className="recurrent-panel">
               <InputComponent
-                ariaLabel="input-recurrent-frecuency"
+                dataTestId="input-recurrent-frecuency"
                 type={InputType.NUMBER}
                 placeholder="popup_html_recurrent_transfer_frequency"
                 min={24}
@@ -405,7 +402,7 @@ const TransferFunds = ({
                 hint={'popup_html_recurrent_transfer_frequency_hint'}
               />
               <InputComponent
-                ariaLabel="input-recurrent-iterations"
+                dataTestId="input-recurrent-iterations"
                 type={InputType.NUMBER}
                 placeholder="popup_html_recurrent_transfer_iterations"
                 min={2}
@@ -417,7 +414,7 @@ const TransferFunds = ({
             </div>
           )}
           <OperationButtonComponent
-            ariaLabel="send-transfer"
+            dataTestId="send-transfer"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleClickOnSend}
             label={'popup_html_send_transfer'}

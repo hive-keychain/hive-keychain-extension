@@ -7,7 +7,7 @@ import { resetTitleContainerProperties } from '@popup/actions/title-container.ac
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -44,7 +44,7 @@ const SignIn = ({
   };
 
   return (
-    <div aria-label="sign-in-page" className="sign-in-page">
+    <div data-testid="sign-in-page" className="sign-in-page">
       <img src="/assets/images/keychain_logo.png" className="logo-white" />
       <p
         className="introduction"
@@ -59,18 +59,18 @@ const SignIn = ({
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
-        ariaLabel={'password-input'}
+        dataTestId={'password-input'}
       />
       <ButtonComponent
         label={'popup_html_signin'}
         logo={Icons.LOGIN}
         onClick={login}
-        ariaLabel={'login-button'}
+        dataTestId={'login-button'}
       />
       <div
         className="reset-password-link"
         onClick={goToForgetPassword}
-        aria-label="reset-password-link">
+        data-testid="reset-password-link">
         {chrome.i18n.getMessage('popup_html_forgot')}
       </div>
     </div>

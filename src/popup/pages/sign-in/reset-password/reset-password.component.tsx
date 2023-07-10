@@ -44,7 +44,7 @@ const ResetPasswordPage = ({
       </div>
 
       <ButtonComponent
-        ariaLabel="reset-password-confirm-button"
+        dataTestId="reset-password-confirm-button"
         label="popup_html_confirm"
         onClick={() => reset()}
         fixToBottom

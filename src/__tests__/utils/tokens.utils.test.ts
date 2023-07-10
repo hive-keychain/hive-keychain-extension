@@ -1,14 +1,27 @@
 import { TokenMarket } from '@interfaces/tokens.interface';
-import TokensUtils from 'src/utils/tokens.utils';
 import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-market';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import tokensUtilsMocks from 'src/__tests__/utils/mocks/tokens.utils-mocks';
+import TokensUtils from 'src/utils/tokens.utils';
+
 describe('tokens.utils tests:\n', () => {
-  config.byDefault();
-  const { constants, methods } = tokensUtilsMocks;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.resetModules();
+  });
+  const swapHiveBalance = {
+    _id: 13429,
+    account: userData.one.username,
+    symbol: 'SWAP.HIVE',
+    balance: '38.861',
+    stake: '1.060',
+    pendingUnstake: '0',
+    delegationsIn: '1',
+    delegationsOut: '1',
+    pendingUndelegations: '0',
+  };
   describe('getHiveEngineTokenValue tests;\n', () => {
     it('Must return token engine value', () => {
       expect(
@@ -33,7 +46,7 @@ describe('tokens.utils tests:\n', () => {
       const clonedTokenMarket = objects.clone(tokenMarket.all) as TokenMarket[];
       expect(
         TokensUtils.getHiveEngineTokenValue(
-          constants.swapHiveBalance,
+          swapHiveBalance,
           clonedTokenMarket.filter((tkn) => tkn.symbol !== 'SWAP.HIVE'),
         ),
       ).toBe(40.921);

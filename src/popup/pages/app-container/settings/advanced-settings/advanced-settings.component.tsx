@@ -1,4 +1,5 @@
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
@@ -7,7 +8,9 @@ import './advanced-settings.component.scss';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (
-    <div aria-label="advanced-settings-page" className="advanced-settings-page">
+    <div
+      data-testid={`${Screen.SETTINGS_ADVANCED}-page`}
+      className="advanced-settings-page">
       <MenuComponent
         title="popup_html_advanced_settings"
         isBackButtonEnable={true}

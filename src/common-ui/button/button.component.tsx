@@ -20,14 +20,14 @@ export interface ButtonProps {
   logo?: Icons | string;
   type?: ButtonType;
   fixToBottom?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
   additionalClass?: string;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
-      aria-label={props.ariaLabel}
+      data-testid={props.dataTestId}
       className={`submit-button ${
         props.type ? props.type : ButtonType.DEFAULT
       } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${

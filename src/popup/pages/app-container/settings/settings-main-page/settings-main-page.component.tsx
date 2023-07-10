@@ -1,6 +1,7 @@
 import { Icons } from '@popup/icons.enum';
 import { WitnessVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/witness-voting-section/witness-voting-section.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
@@ -21,7 +22,7 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
   return (
     <div
       className="settings-main-page"
-      aria-label="settings-main-page-component">
+      data-testid={`${Screen.SETTINGS_MAIN_PAGE}-page`}>
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}

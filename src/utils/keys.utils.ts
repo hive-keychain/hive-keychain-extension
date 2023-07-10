@@ -1,4 +1,6 @@
-import { Account, PrivateKey } from '@hiveio/dhive';
+import { Account, ExtendedAccount, PrivateKey } from '@hiveio/dhive';
+import { WrongKeysOnUser } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
@@ -127,6 +129,36 @@ const isExportable = (
   }
 };
 
+const checkWrongKeyOnAccount = (
+  key: string,
+  value: string,
+  accountName: string,
+  extendedAccount: ExtendedAccount,
+  foundWrongKey: WrongKeysOnUser,
+  skipKey?: boolean,
+) => {
+  if (!skipKey && key.includes('Pubkey') && !String(value).includes('@')) {
+    const keyType = key.split('Pubkey')[0];
+    if (
+      keyType === KeychainKeyTypesLC.active ||
+      keyType === KeychainKeyTypesLC.posting
+    ) {
+      if (
+        !extendedAccount[keyType].key_auths.find(
+          (keyAuth) => keyAuth[0] === value,
+        )
+      ) {
+        foundWrongKey[accountName].push(keyType);
+      }
+    } else if (keyType === KeychainKeyTypesLC.memo) {
+      if (extendedAccount['memo_key'] !== value) {
+        foundWrongKey[accountName].push(keyType);
+      }
+    }
+  }
+  return foundWrongKey;
+};
+
 export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
@@ -142,4 +174,5 @@ export const KeysUtils = {
   getKeyType,
   requireManualConfirmation,
   isExportable,
+  checkWrongKeyOnAccount,
 };

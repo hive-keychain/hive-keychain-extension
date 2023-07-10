@@ -12,8 +12,9 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { TokenIncomingOutgoingItemComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import FormatUtils from 'src/utils/format.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-incoming-outgoing-page.component.scss';
@@ -73,7 +74,7 @@ const TokenIncomingOutgoingPage = ({
 
   return (
     <div
-      aria-label="incoming-outgoing-page"
+      data-testid={`${Screen.TOKENS_DELEGATIONS}-page`}
       className="token-incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (

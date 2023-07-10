@@ -13,7 +13,7 @@ interface WalletHistoryItemProps {
 const WalletHistoryItem = ({ transaction, ariaLabel }: PropsFromRedux) => {
   return (
     <div
-      aria-label={ariaLabel}
+      data-testid={ariaLabel}
       id={`index-${transaction.index}`}
       className={`wallet-history-item`}>
       <WalletTransactionInfoComponent

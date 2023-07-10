@@ -2,8 +2,9 @@ import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { Keys } from 'src/interfaces/keys.interface';
@@ -53,15 +54,18 @@ const SelectKeys = ({
   };
 
   return (
-    <div className="select-keys-page" aria-label="select-keys-page">
+    <div
+      className="select-keys-page"
+      data-testid={`${Screen.ACCOUNT_PAGE_SELECT_KEYS}-page`}>
       <div
+        data-testid="select-keys-page-caption"
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_import_success'),
         }}></div>
 
       <CheckboxComponent
-        ariaLabel="checkbox-import-posting-key"
+        dataTestId="checkbox-import-posting-key"
         title="popup_html_posting"
         hint="popup_html_posting_info"
         checked={importPosting}
@@ -72,7 +76,7 @@ const SelectKeys = ({
         }
       />
       <CheckboxComponent
-        ariaLabel="checkbox-import-active-key"
+        dataTestId="checkbox-import-active-key"
         title="popup_html_active"
         hint="popup_html_active_info"
         checked={importActive}
@@ -83,7 +87,7 @@ const SelectKeys = ({
         }
       />
       <CheckboxComponent
-        ariaLabel="checkbox-import-memo-key"
+        dataTestId="checkbox-import-memo-key"
         title="popup_html_memo"
         hint="popup_html_memo_info"
         checked={importMemo}
@@ -94,7 +98,7 @@ const SelectKeys = ({
         }
       />
       <ButtonComponent
-        ariaLabel="button-save"
+        dataTestId="button-save"
         label="popup_html_save"
         onClick={() => importKeys()}
       />

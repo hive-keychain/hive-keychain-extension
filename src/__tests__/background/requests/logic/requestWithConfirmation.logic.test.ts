@@ -1,14 +1,31 @@
 import { requestWithConfirmation } from '@background/requests/logic';
-import requestWithConfirmationLogic from 'src/__tests__/background/requests/logic/mocks/requestWithConfirmation.logic';
+import { RequestsHandler } from '@background/requests/request-handler';
+import { DefaultRpcs } from '@reference-data/default-rpc.list';
+import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+
 describe('requestWithConfirmation.logic tests:\n', () => {
-  const { methods, constants, spies, callback } = requestWithConfirmationLogic;
-  const { request, tab, requestHandler, domain } = constants;
-  const { current_rpc } = constants;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   it('Must call createPopup with sendMessage callback', () => {
-    requestWithConfirmation(requestHandler, tab, request, domain, current_rpc);
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendMessage.toString(),
+    const sCreatePopup = jest
+      .spyOn(DialogLifeCycle, 'createPopup')
+      .mockImplementation(() => undefined);
+    const requestHandler = new RequestsHandler();
+    requestWithConfirmation(
+      requestHandler,
+      0,
+      keychainRequest.noValues.decode,
+      'domain',
+      DefaultRpcs[0],
+    );
+    expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
+      'chrome.runtime.sendMessage',
     );
   });
 });

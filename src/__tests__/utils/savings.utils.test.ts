@@ -1,14 +1,16 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import Logger from 'src/utils/logger.utils';
-import { SavingsUtils } from 'src/utils/savings.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import config from 'src/__tests__/utils-for-testing/setups/config';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import Logger from 'src/utils/logger.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
 
 describe('savings.utils.ts tests:\n', () => {
-  config.byDefault();
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('getRequestId cases:\n', () => {
     it('Must return next id to use', async () => {
       HiveTxUtils.getData = jest.fn().mockResolvedValue([

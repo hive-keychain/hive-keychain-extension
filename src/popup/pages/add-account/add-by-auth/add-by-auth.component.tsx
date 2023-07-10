@@ -6,7 +6,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -30,7 +30,7 @@ const AddByAuth = ({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   const submitForm = async (): Promise<void> => {
     if (
@@ -52,20 +52,21 @@ const AddByAuth = ({
         navigateTo(Screen.SETTINGS_MAIN_PAGE);
       }
     } catch (err: any) {
-      //TODO add type
       setErrorMessage(err.message, err.messageParams);
     }
   };
 
   return (
-    <div aria-label="add-by-auth-page" className="add-by-auth-page">
+    <div
+      data-testid={`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`}
+      className="add-by-auth-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_auth_text'),
         }}></div>
       <InputComponent
-        ariaLabel="input-username"
+        dataTestId="input-username"
         value={username}
         onChange={setUsername}
         logo={Icons.AT}
@@ -74,7 +75,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <InputComponent
-        ariaLabel="input-authorized-account"
+        dataTestId="input-authorized-account"
         value={authorizedAccount}
         onChange={setAuthorizedAccount}
         logo={Icons.AT}
@@ -83,7 +84,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <ButtonComponent
-        ariaLabel="submit-button"
+        dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitForm}
         fixToBottom
