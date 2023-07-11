@@ -74,7 +74,18 @@ export enum Icons {
   WITNESS_DISABLED = 'no_accounts',
 }
 
-export enum NewIcons {
-  VOTING_MANA = 'voting-mana',
-  RESOURCE_CREDITS = 'resource-credit',
-}
+import CLAIM_REWARDS from 'public/assets/images/claim-rewards.svg';
+import MENU from 'public/assets/images/menu.svg';
+import RESOURCE_CREDITS from 'public/assets/images/resource-credit.svg';
+import SELECT_ARROW_DOWN from 'public/assets/images/select-arrow-down.svg';
+import SELECT_ARROW_UP from 'public/assets/images/select-arrow-up.svg';
+import VOTING_MANA from 'public/assets/images/voting-mana.svg';
+
+export const NewIcons = {
+  CLAIM_REWARDS,
+  MENU,
+  RESOURCE_CREDITS,
+  SELECT_ARROW_DOWN,
+  SELECT_ARROW_UP,
+  VOTING_MANA,
+};

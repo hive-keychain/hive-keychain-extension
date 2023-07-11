@@ -7,6 +7,7 @@ import { store } from 'src/popup/hive/store';
 import { Chain, ChainContext } from 'src/popup/multichain.context';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import './multichain-container.scss';
 
 export const MultichainContainer = () => {
   const [chain, setChain] = useState<Chain>();

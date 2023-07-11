@@ -1,0 +1,10 @@
+@import '/src/common-style/variable.scss';
+
+.theme {
+  &.light {
+    background: $light-background;
+  }
+  &.dark {
+    background: $dark-background;
+  }
+}

@@ -5,8 +5,8 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
@@ -52,6 +52,7 @@ const SelectAccountSection = ({
           selectProps.methods.dropDown('close');
         }}>
         <img
+          className="user-picture"
           src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
           onError={(e: any) => {
             e.target.onError = null;
@@ -80,6 +81,7 @@ const SelectAccountSection = ({
           selectProps.methods.dropDown('close');
         }}>
         <img
+          className="user-picture"
           src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
           onError={(e: any) => {
             e.target.onError = null;
@@ -87,14 +89,10 @@ const SelectAccountSection = ({
           }}
         />
         <div className="account-name">{selectProps.item.label}</div>
-        <Icon
-          additionalClassName="copy-username-button"
-          name={Icons.COPY}
-          onClick={($event) => {
-            copyUsernameToClipboard($event, selectProps.item.label);
-            selectProps.methods.dropDown('close');
-          }}
-        />
+        {/* <SVGIcon
+          icon={CopySVG}
+          className="copy-username-button"
+        /> */}
       </div>
     );
   };
@@ -108,8 +106,23 @@ const SelectAccountSection = ({
     setInfoMessage('popup_html_text_copied', [username]);
   };
 
+  const customHandleRenderer = ({
+    props,
+    state,
+    methods,
+  }: SelectRenderer<LocalAccountListItem>) => {
+    return (
+      <SVGIcon
+        className="custom-select-handle"
+        icon={
+          state.dropdown ? NewIcons.SELECT_ARROW_UP : NewIcons.SELECT_ARROW_DOWN
+        }
+      />
+    );
+  };
+
   return (
-    <div>
+    <>
       {selectedLocalAccount && options && (
         <div className="select-account-section">
           <Select
@@ -119,10 +132,11 @@ const SelectAccountSection = ({
             contentRenderer={customLabelRender}
             itemRenderer={customItemRender}
             className="select-account-select"
+            dropdownHandleRenderer={customHandleRenderer}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

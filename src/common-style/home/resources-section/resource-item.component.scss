@@ -9,6 +9,7 @@
   padding-top: 10px;
   padding-left: 12px;
   padding-bottom: 10px;
+
   &.blue {
     background: $blue;
   }
@@ -18,14 +19,13 @@
 
   cursor: help;
   user-select: none;
-  .icon-container {
+  .icon {
     display: flex;
     border-radius: 13px;
     background: #ffffff2b;
     padding: 7px;
-    .icon {
-      @include icon-size(24px);
-    }
+    align-self: flex-start;
+    @include icon-size(24px);
   }
   .right-panel {
     text-align: left;

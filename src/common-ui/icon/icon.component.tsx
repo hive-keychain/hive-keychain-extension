@@ -3,22 +3,24 @@ import {
   CustomTooltip,
   CustomTooltipPosition,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { Icons } from 'src/common-ui/icons.enum';
 import './icon.component.scss';
 
 interface IconProps {
   onClick?: (params: any) => void;
-  name: Icons | string | NewIcons;
+  name: Icons | string;
   additionalClassName?: string;
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
   skipTooltipTranslation?: boolean;
   dataTestId?: string;
+  containerAdditionalClassname?: string;
 }
 
 const getIconTemplate = (props: IconProps) => {
   return (
-    <div className={`icon-container`}>
+    <div
+      className={`icon-container ${props.containerAdditionalClassname ?? ''}`}>
       <img
         src={`assets/images/${props.name}.svg`}
         data-testid={props.dataTestId}

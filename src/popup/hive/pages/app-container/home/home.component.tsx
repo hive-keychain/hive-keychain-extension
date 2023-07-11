@@ -16,7 +16,6 @@ import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';
 import { ResourcesSectionComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resources-section.component';
-import { SelectAccountSectionComponent } from 'src/popup/hive/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from 'src/popup/hive/pages/app-container/home/top-bar/top-bar.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { WalletInfoSectionComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section.component';
@@ -183,7 +182,6 @@ const Home = ({
       {activeRpc && activeRpc.uri !== 'NULL' && (
         <div data-testid={`${Screen.HOME_PAGE}-page`}>
           <TopBarComponent />
-          <SelectAccountSectionComponent />
           <ResourcesSectionComponent />
           <EstimatedAccountValueSectionComponent />
           <WalletInfoSectionComponent />

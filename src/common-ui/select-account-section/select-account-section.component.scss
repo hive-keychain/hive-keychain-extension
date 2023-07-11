@@ -1,24 +1,35 @@
 @import '/src/common-style/variable.scss';
 
+.css-wmy1p7-ReactDropdownSelect {
+  border: unset !important;
+}
+
 .select-account-select,
 .select-account-select:hover,
 .select-account-select:focus {
-  border: unset !important;
-  background: rgba(33, 37, 41, 0.68);
+  border: 1px solid white !important;
+  border-radius: 16px !important;
+  background: transparent;
 }
 .select-account-select {
   .react-dropdown-select-dropdown {
-    border: unset;
-    top: 72px;
-    background-color: black;
+    border: 1px solid white;
+    top: 50px;
+    background-color: white;
+    border-radius: 16px;
+  }
+  .user-picture {
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
   }
 }
 
 .selected-account-panel {
   display: flex;
   align-items: center;
-  column-gap: 16px;
-  padding: 12px 26px;
+  column-gap: 8px;
+  padding: 6px 6px;
   box-sizing: border-box;
   width: 100%;
 
@@ -31,34 +42,28 @@
       font-size: small;
     }
   }
-
-  img {
-    border-radius: 50%;
-    width: 46px;
-    height: 46px;
-  }
 }
 .selected-account-panel .selected-account-name,
 .select-account-item .account-name {
-  font-size: 18px;
+  font-family: Poppins;
+  font-size: 14.531px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
   user-select: none;
+  color: $dark-grey;
 }
 
 .select-account-item {
   display: flex;
   align-items: center;
   column-gap: 16px;
-  padding: 12px 26px;
+  padding: 12px 12px;
   box-sizing: border-box;
-  background: $black-transparent;
+  border-bottom: 1px solid $grey;
 
   .copy-username-button {
     display: none;
-  }
-
-  &:hover,
-  &.selected {
-    background: $red-dark;
   }
 
   &:hover {
@@ -68,13 +73,17 @@
     }
   }
 
-  img {
-    border-radius: 50%;
-    width: 46px;
-    height: 46px;
-  }
-
   .account-name {
     flex: 1;
+  }
+
+  .react-dropdown-select-dropdown-handle {
+    width: 24px !important;
+    margin-top: 2px;
+    .custom-select-handle {
+      height: 10px;
+      width: 10px;
+      vertical-align: middle;
+    }
   }
 }

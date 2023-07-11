@@ -2,8 +2,9 @@ import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
 import {
@@ -14,21 +15,14 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { forgetMk } from 'src/popup/hive/actions/mk.actions';
-import {
-  navigateTo,
-  resetNav,
-} from 'src/popup/hive/actions/navigation.actions';
+import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
-import { Chain, useChainContext } from 'src/popup/multichain.context';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 import './top-bar.component.scss';
 
 const TopBar = ({
-  forgetMk,
   navigateTo,
-  resetNav,
   refreshActiveAccount,
   activeAccount,
   globalProperties,
@@ -40,8 +34,6 @@ const TopBar = ({
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
-
-  const { setChain } = useChainContext();
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -65,11 +57,6 @@ const TopBar = ({
     refreshActiveAccount();
     loadGlobalProperties();
     setTimeout(() => setRotateLogo(false), 1000);
-  };
-
-  const lockPopup = (): void => {
-    resetNav();
-    forgetMk();
   };
 
   const claim = async (): Promise<void> => {
@@ -120,35 +107,31 @@ const TopBar = ({
 
   return (
     <div className="top-bar">
+      <div className="settings-button-container">
+        <SVGIcon
+          dataTestId="clickable-settings"
+          icon={NewIcons.MENU}
+          onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
+          className="button settings-button"
+        />
+      </div>
       <img
-        className={rotateLogo ? 'rotate' : ''}
-        src="/assets/images/keychain_icon_small.png"
+        className={`logo ${rotateLogo ? 'rotate' : ''}`}
+        src="/assets/images/logo-keychain-small.svg"
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
-      <Icon
-        dataTestId="reward-claim-icon"
-        name={Icons.LINK}
-        onClick={() => setChain(Chain.EVM)}
-        additionalClassName="button claim-button"></Icon>
       {hasRewardToClaim && (
-        <Icon
+        <SVGIcon
+          icon={NewIcons.CLAIM_REWARDS}
           dataTestId="reward-claim-icon"
-          name={Icons.CLAIM}
+          className="claim-button"
           onClick={() => claim()}
-          additionalClassName="button claim-button"></Icon>
+        />
       )}
-      <Icon
-        dataTestId="log-out-button"
-        name={Icons.LOGOUT}
-        onClick={() => lockPopup()}
-        additionalClassName="button lock-button"></Icon>
-      <Icon
-        dataTestId="clickable-settings"
-        name={Icons.MENU}
-        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
-        additionalClassName="button settings-button"></Icon>
+
+      <SelectAccountSectionComponent />
     </div>
   );
 };
@@ -161,9 +144,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  forgetMk,
   navigateTo,
-  resetNav,
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
