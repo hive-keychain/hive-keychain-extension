@@ -1,89 +1,95 @@
 @import '/src/common-style/variable.scss';
 
-.css-wmy1p7-ReactDropdownSelect {
-  border: unset !important;
-}
+.select-account-section {
+  .select-account-select {
+    border: unset !important;
+    border: 1px solid white !important;
+    border-radius: 16px !important;
+    background: transparent;
 
-.select-account-select,
-.select-account-select:hover,
-.select-account-select:focus {
-  border: 1px solid white !important;
-  border-radius: 16px !important;
-  background: transparent;
-}
-.select-account-select {
-  .react-dropdown-select-dropdown {
-    border: 1px solid white;
-    top: 50px;
-    background-color: white;
-    border-radius: 16px;
-  }
-  .user-picture {
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-  }
-}
-
-.selected-account-panel {
-  display: flex;
-  align-items: center;
-  column-gap: 8px;
-  padding: 6px 6px;
-  box-sizing: border-box;
-  width: 100%;
-
-  .copy-username-button {
-    display: none;
-  }
-  &:hover {
-    .copy-username-button {
-      display: block;
-      font-size: small;
+    &:hover,
+    &:focus {
+      border: 1px solid white !important;
+      border-radius: 16px !important;
+      background: transparent;
     }
-  }
-}
-.selected-account-panel .selected-account-name,
-.select-account-item .account-name {
-  font-family: Poppins;
-  font-size: 14.531px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  user-select: none;
-  color: $dark-grey;
-}
 
-.select-account-item {
-  display: flex;
-  align-items: center;
-  column-gap: 16px;
-  padding: 12px 12px;
-  box-sizing: border-box;
-  border-bottom: 1px solid $grey;
+    .react-dropdown-select-content {
+      .selected-account-panel {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        padding: 6px 6px;
+        box-sizing: border-box;
+        width: 100%;
 
-  .copy-username-button {
-    display: none;
-  }
-
-  &:hover {
-    .copy-username-button {
-      display: block;
-      font-size: medium;
+        .copy-username-button {
+          display: none;
+        }
+        &:hover {
+          .copy-username-button {
+            display: block;
+            font-size: small;
+          }
+        }
+      }
     }
-  }
 
-  .account-name {
-    flex: 1;
-  }
-
-  .react-dropdown-select-dropdown-handle {
-    width: 24px !important;
-    margin-top: 2px;
-    .custom-select-handle {
-      height: 10px;
-      width: 10px;
+    .react-dropdown-select-dropdown-handle {
+      width: 24px !important;
+      margin-top: 2px;
       vertical-align: middle;
+      margin-left: unset !important;
+      .custom-select-handle {
+        height: 10px;
+        width: 10px;
+      }
+    }
+
+    .react-dropdown-select-dropdown {
+      border: 1px solid white;
+      top: 50px;
+      background-color: white;
+      border-radius: 16px;
+      .select-account-item {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        padding: 10px 6px;
+        box-sizing: border-box;
+        border-bottom: 1px solid $grey;
+
+        .copy-username-button {
+          display: none;
+        }
+
+        &:hover {
+          .copy-username-button {
+            display: block;
+            font-size: medium;
+          }
+        }
+
+        .account-name {
+          flex: 1;
+        }
+      }
+    }
+    //commons
+    .selected-account-name,
+    .account-name {
+      font-family: Poppins;
+      font-size: 14.531px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      user-select: none;
+      color: $dark-grey;
+    }
+    .user-picture {
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
     }
   }
 }
