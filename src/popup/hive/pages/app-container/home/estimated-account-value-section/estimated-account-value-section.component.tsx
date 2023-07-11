@@ -36,7 +36,7 @@ const EstimatedAccountValueSection = ({
           </CustomTooltip>
         </div>
         <div data-testid="estimated-account-div-value" className="value">
-          {accountValue ? `$ ${accountValue} USD` : '...'}
+          {accountValue ? `$ ${accountValue}` : '...'}
         </div>
       </div>
     </>
