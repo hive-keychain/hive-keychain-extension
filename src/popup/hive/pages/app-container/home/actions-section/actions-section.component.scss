@@ -1,5 +1,14 @@
 .actions-section {
   display: flex;
   justify-content: space-between;
-  padding: 24px;
+  align-items: flex-start;
+  padding: 0px 24px;
+  position: fixed;
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  bottom: 0;
+  background: white;
+  border-radius: 24px 24px 0px 0px;
+  left: 16px;
+  height: 90px;
 }

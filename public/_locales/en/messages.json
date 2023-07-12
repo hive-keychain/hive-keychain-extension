@@ -3341,5 +3341,9 @@
   "tx_missing_posting_auth": {
     "message": "Posting key is incorrect. Please update your key and try again.",
     "description": "Error message from blockchain: Posting key incorrect"
+  },
+  "chains": {
+    "message": "Chains",
+    "description": "Chains"
   }
 }

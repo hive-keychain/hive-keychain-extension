@@ -10,32 +10,37 @@
   user-select: none;
 
   .icon-container {
-    height: 50px;
-    width: 50px;
-    border: 1px solid $red-transparent;
-    border-radius: 50%;
-    background: $red-transparent;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 60px;
+    height: 54px;
+    border: 1px solid $light-grey-border;
+    border-radius: 0px 11px 74px 74px;
+    border-top: 0px;
 
-    &:hover {
-      background: $red-dark;
-      border-color: $red-dark;
-    }
     .icon {
-      color: white;
-      font-size: 24px;
+      color: $red;
+      @include icon-size(24px);
     }
-    .imported-icon {
-      height: 24px;
-      width: 24px;
+  }
+
+  &:hover {
+    .icon-container {
+      background: $red;
+      .icon {
+        color: white;
+      }
     }
   }
 
   .label {
-    font-size: 14px;
-    color: white;
-    text-transform: uppercase;
+    color: $lighter-grey;
+    text-align: center;
+    font-family: Josefin Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
   }
 }

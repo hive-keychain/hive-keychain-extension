@@ -74,18 +74,30 @@ export enum Icons {
   WITNESS_DISABLED = 'no_accounts',
 }
 
+import BUY from 'public/assets/images/buy.svg';
+import CHAINS from 'public/assets/images/chains.svg';
 import CLAIM_REWARDS from 'public/assets/images/claim-rewards.svg';
+import HISTORY from 'public/assets/images/history.svg';
+import HIVE_ENGINE from 'public/assets/images/hive-engine.svg';
 import MENU from 'public/assets/images/menu.svg';
 import RESOURCE_CREDITS from 'public/assets/images/resource-credit.svg';
 import SELECT_ARROW_DOWN from 'public/assets/images/select-arrow-down.svg';
 import SELECT_ARROW_UP from 'public/assets/images/select-arrow-up.svg';
+import SEND from 'public/assets/images/send.svg';
 import VOTING_MANA from 'public/assets/images/voting-mana.svg';
 
 export const NewIcons = {
+  BUY,
+  CHAINS,
   CLAIM_REWARDS,
+  HISTORY,
+  HIVE_ENGINE,
   MENU,
   RESOURCE_CREDITS,
   SELECT_ARROW_DOWN,
   SELECT_ARROW_UP,
+  SEND,
   VOTING_MANA,
 };
+
+export type IconType = string;

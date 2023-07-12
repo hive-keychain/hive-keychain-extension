@@ -1,12 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins&display=swap');
 
-$red: #a5112c;
-$blue: #212838;
+$dark-red: #a5112c;
+$red: #e31337;
+$dark-blue: #212838;
 $light-grey: #929292;
 $dark-grey: #484848;
 $light-background: #e5edf5;
 $dark-background: #212838;
 
+$lighter-grey: #818a9f;
+
+//border
 $light-grey-border: #e3e1e1;
 
 // OLD  STYLE REMOVE WHEN DONE
@@ -49,8 +53,8 @@ $caption-font-size: 16px;
   text-decoration: none;
   border-bottom: white 2px dotted;
   &:hover {
-    border-bottom: $red 2px dotted;
-    color: $red;
+    border-bottom: $dark-red 2px dotted;
+    color: $dark-red;
   }
 }
 
