@@ -14,8 +14,8 @@ interface WalletSectionInfoItemProps {
   iconColor?: 'red' | 'green';
   mainValue: string | Asset | number;
   mainValueLabel: string;
-  subValue: string | Asset | number;
-  subValueLabel: string;
+  subValue?: string | Asset | number;
+  subValueLabel?: string;
   menuItems: DropdownMenuItemInterface[];
   infoContent?: string;
 }
@@ -44,12 +44,13 @@ const walletInfoSectionItem = ({
         <div className="main-value">
           {FormatUtils.formatCurrencyValue(mainValue)}
         </div>
-        {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
-          <div className="sub-value">
-            {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
-            {FormatUtils.formatCurrencyValue(subValue)} ({subValueLabel})
-          </div>
-        )}
+        {subValue &&
+          parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
+            <div className="sub-value">
+              {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
+              {FormatUtils.formatCurrencyValue(subValue)} ({subValueLabel})
+            </div>
+          )}
       </div>
       {isDropdownMenuOpen && (
         <DropdownMenu
