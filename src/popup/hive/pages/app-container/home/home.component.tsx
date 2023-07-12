@@ -178,16 +178,16 @@ const Home = ({
   };
 
   return (
-    <div className={'home-page'}>
+    <div className={'home-page'} data-testid={`${Screen.HOME_PAGE}-page`}>
       {activeRpc && activeRpc.uri !== 'NULL' && (
-        <div data-testid={`${Screen.HOME_PAGE}-page`}>
+        <>
           <TopBarComponent />
           <ResourcesSectionComponent />
           <EstimatedAccountValueSectionComponent />
           <WalletInfoSectionComponent />
           <ActionsSectionComponent />
           <ProposalVotingSectionComponent />
-        </div>
+        </>
       )}
 
       {renderPopup(

@@ -4,7 +4,9 @@
   background-image: url(assets/images/background.svg);
   background-repeat: no-repeat;
   background-position-y: 30%;
-
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
   .react-dropdown-select-dropdown-handle {
     margin-left: -10px !important;
   }

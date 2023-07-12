@@ -43,3 +43,26 @@
   height: $size;
   width: $size;
 }
+
+@mixin poppins500($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 147%;
+}
+@mixin poppins700($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 147%;
+}
+
+@mixin poppins400($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

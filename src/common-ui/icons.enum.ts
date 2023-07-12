@@ -77,8 +77,10 @@ export enum Icons {
 import BUY from 'public/assets/images/buy.svg';
 import CHAINS from 'public/assets/images/chains.svg';
 import CLAIM_REWARDS from 'public/assets/images/claim-rewards.svg';
+import HBD from 'public/assets/images/hbd.svg';
 import HISTORY from 'public/assets/images/history.svg';
 import HIVE_ENGINE from 'public/assets/images/hive-engine.svg';
+import HIVE from 'public/assets/images/hive.svg';
 import MENU from 'public/assets/images/menu.svg';
 import RESOURCE_CREDITS from 'public/assets/images/resource-credit.svg';
 import SELECT_ARROW_DOWN from 'public/assets/images/select-arrow-down.svg';
@@ -90,7 +92,9 @@ export const NewIcons = {
   BUY,
   CHAINS,
   CLAIM_REWARDS,
+  HBD,
   HISTORY,
+  HIVE,
   HIVE_ENGINE,
   MENU,
   RESOURCE_CREDITS,

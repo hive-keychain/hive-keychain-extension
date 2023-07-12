@@ -2,15 +2,16 @@ import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
-import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
-import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import {
   HBDDropdownMenuItems,
   HiveDropdownMenuItems,
   HpDropdownMenuItems,
-} from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
-import { WalletInfoSectionItemComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
+} from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
+import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section.component.scss';
@@ -89,6 +90,8 @@ const WalletInfoSection = ({
   return (
     <div className="wallet-info-section">
       <WalletInfoSectionItemComponent
+        icon={NewIcons.HIVE}
+        iconColor="red"
         mainValue={activeAccount.account.balance}
         mainValueLabel={currencyLabels.hive}
         subValue={activeAccount.account.savings_balance}
@@ -96,7 +99,10 @@ const WalletInfoSection = ({
         menuItems={HiveDropdownMenuItems}
         infoContent={hiveRowInfoContent}
       />
+
       <WalletInfoSectionItemComponent
+        icon={NewIcons.HBD}
+        iconColor="green"
         mainValue={activeAccount.account.hbd_balance}
         mainValueLabel={currencyLabels.hbd}
         subValue={activeAccount.account.savings_hbd_balance}
@@ -105,6 +111,8 @@ const WalletInfoSection = ({
         infoContent={hbdRowInfoContent}
       />
       <WalletInfoSectionItemComponent
+        icon={NewIcons.HIVE}
+        iconColor="red"
         mainValue={FormatUtils.toHP(
           activeAccount.account.vesting_shares as string,
           globalProperties.globals,

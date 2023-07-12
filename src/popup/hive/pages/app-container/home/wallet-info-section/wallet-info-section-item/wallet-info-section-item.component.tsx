@@ -3,11 +3,15 @@ import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import DropdownMenu from 'src/common-ui/dropdown-menu/dropdown-menu.component';
+import { IconType } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section-item.component.scss';
 
 interface WalletSectionInfoItemProps {
+  icon: IconType;
+  iconColor?: 'red' | 'green';
   mainValue: string | Asset | number;
   mainValueLabel: string;
   subValue: string | Asset | number;
@@ -17,6 +21,8 @@ interface WalletSectionInfoItemProps {
 }
 
 const walletInfoSectionItem = ({
+  icon,
+  iconColor,
   mainValue,
   mainValueLabel,
   subValue,
@@ -32,40 +38,19 @@ const walletInfoSectionItem = ({
 
   return (
     <div className="wallet-info-row" data-testid={`wallet-info-section-row`}>
+      <SVGIcon icon={icon} className={`currency-icon ${iconColor ?? ''}`} />
+      <div className="main-value-label">{mainValueLabel}</div>
       <div className="value">
-        <div className="balance">
+        <div className="main-value">
           {FormatUtils.formatCurrencyValue(mainValue)}
         </div>
         {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
-          <div className="savings">
+          <div className="sub-value">
             {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
-            {FormatUtils.formatCurrencyValue(subValue)}
+            {FormatUtils.formatCurrencyValue(subValue)} ({subValueLabel})
           </div>
         )}
       </div>
-      <div className="currency">
-        <div className="balance">
-          {mainValueLabel}
-          {/* {infoContent && (
-            <Icon
-              name={Icons.INFO}
-               
-              tooltipMessage={infoContent}
-              skipTooltipTranslation
-            />
-          )} */}
-        </div>
-
-        {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
-          <div className="savings">({subValueLabel})</div>
-        )}
-      </div>
-      <img
-        data-testid={`dropdown-arrow-${mainValueLabel.toLowerCase()}`}
-        className="dropdown-arrow"
-        src="/assets/images/uparrow.png"
-        onClick={toggleDropdown}
-      />
       {isDropdownMenuOpen && (
         <DropdownMenu
           dropdownMenuItems={menuItems}
