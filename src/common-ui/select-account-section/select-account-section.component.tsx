@@ -89,10 +89,9 @@ const SelectAccountSection = ({
           }}
         />
         <div className="account-name">{selectProps.item.label}</div>
-        {/* <SVGIcon
-          icon={CopySVG}
-          className="copy-username-button"
-        /> */}
+        {selectedLocalAccount === selectProps.item.value && (
+          <SVGIcon icon={NewIcons.ACTIVE} className="active-icon" />
+        )}
       </div>
     );
   };
@@ -121,6 +120,15 @@ const SelectAccountSection = ({
     );
   };
 
+  const customDropdownRenderer = ({
+    props,
+    state,
+    methods,
+  }: SelectRenderer<LocalAccountListItem>) => {
+    console.log(props, state, methods);
+    return <div className="custom-select-dropdown"></div>;
+  };
+
   return (
     <>
       {selectedLocalAccount && options && (
@@ -133,6 +141,7 @@ const SelectAccountSection = ({
             itemRenderer={customItemRender}
             className="select-account-select"
             dropdownHandleRenderer={customHandleRenderer}
+            dropdownRenderer={customDropdownRenderer}
           />
         </div>
       )}

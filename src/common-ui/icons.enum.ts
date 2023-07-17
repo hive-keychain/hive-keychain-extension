@@ -74,6 +74,7 @@ export enum Icons {
   WITNESS_DISABLED = 'no_accounts',
 }
 
+import ACTIVE from 'public/assets/images/active.svg';
 import BUY from 'public/assets/images/buy.svg';
 import CHAINS from 'public/assets/images/chains.svg';
 import CLAIM_REWARDS from 'public/assets/images/claim-rewards.svg';
@@ -101,6 +102,7 @@ import TOKEN_DELEGATION from 'public/assets/images/token-delegation.svg';
 import TOKEN_UNSTAKE from 'public/assets/images/unstake.svg';
 
 export const NewIcons = {
+  ACTIVE,
   BUY,
   CHAINS,
   CLAIM_REWARDS,
