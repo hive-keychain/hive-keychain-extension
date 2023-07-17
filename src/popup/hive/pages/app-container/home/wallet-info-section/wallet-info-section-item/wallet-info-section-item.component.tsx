@@ -5,9 +5,10 @@ import {
   ActionButton,
   WalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { IconType } from 'src/common-ui/icons.enum';
+import { IconType, NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
@@ -61,6 +62,18 @@ const walletInfoSectionItem = ({
     );
   };
 
+  const handleHistoryClick = (
+    event: BaseSyntheticEvent,
+    tokenBalance?: TokenBalance,
+  ) => {
+    event.stopPropagation();
+    if (tokenBalance) {
+      navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance });
+    } else {
+      navigateToWithParams(Screen.WALLET_HISTORY_PAGE, []);
+    }
+  };
+
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
@@ -81,6 +94,13 @@ const walletInfoSectionItem = ({
               </div>
             )}
         </div>
+        {isExpanded && (
+          <SVGIcon
+            icon={NewIcons.HISTORY}
+            className={`history-icon `}
+            onClick={($event) => handleHistoryClick($event, tokenBalance)}
+          />
+        )}
       </div>
       {isExpanded && (
         <>

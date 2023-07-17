@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { BaseSyntheticEvent } from 'react';
 
 interface ISVGIconProps {
   dataTestId?: string;
@@ -13,16 +13,16 @@ export const SVGIcon = ({
   className,
   icon,
 }: ISVGIconProps) => {
-  const handleClick = () => {
+  const handleClick = (event: BaseSyntheticEvent) => {
     if (onClick) {
-      onClick();
+      onClick(event);
     }
   };
 
   return (
     <div
       data-testid={dataTestId}
-      onClick={() => handleClick()}
+      onClick={($event) => handleClick($event)}
       className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}>
       {icon()}
     </div>

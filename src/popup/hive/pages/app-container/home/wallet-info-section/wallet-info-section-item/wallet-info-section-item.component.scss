@@ -37,6 +37,22 @@
       }
     }
 
+    .history-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid $extra-light-grey;
+      border-radius: 13px;
+      @include icon-size(32px);
+      padding: 2px;
+      color: $dark-red;
+      &:hover {
+        color: white;
+        background: $dark-red;
+      }
+    }
+
     .main-value-label {
       flex: 1;
       color: #3d3d3d;
