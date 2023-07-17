@@ -120,7 +120,7 @@ export default async (
               rpc,
             );
           } else {
-            Logic.requestWithoutConfirmation(requestHandler, tab!, req);
+            Logic.requestWithoutConfirmation(requestHandler, tab!, req, domain);
           }
         }
       }

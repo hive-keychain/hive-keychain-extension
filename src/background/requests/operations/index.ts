@@ -153,7 +153,8 @@ export const performOperation = async (
       }
     } else chrome.runtime.sendMessage(message);
     requestHandler.reset(false);
-    if (!tab) {
+
+    if (domain && !domain.includes('.')) {
       sendExternalResponse(message?.msg, domain);
     }
   }

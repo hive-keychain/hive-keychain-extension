@@ -144,16 +144,10 @@ const externalMessagesHandler = (
         } as KeychainRequestWrapper,
         sender,
       );
-      // sendRequestToBackground(value);
-      // if (prevReq) {
-      //   cancelPreviousRequest(prevReq);
-      // }
     } else {
       sendIncompleteDataResponse(value!, error, sender.id);
-      // req = prevReq;
     }
   } else {
-    //TODO : no incomplete type, should be different error
     sendIncompleteDataResponse(
       externalMessage!,
       'Your extension has not been whitelisted! Please contact us on Discord!',
@@ -166,8 +160,9 @@ export const performOperationFromIndex = async (
   requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
+  domain: string,
 ) => {
-  performOperation(requestHandler, request, tab!, request.domain, false);
+  performOperation(requestHandler, request, tab!, domain, false);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
