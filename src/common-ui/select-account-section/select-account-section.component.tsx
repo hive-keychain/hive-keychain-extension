@@ -1,9 +1,6 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
+import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -67,34 +64,7 @@ const SelectAccountSection = ({
       </div>
     );
   };
-  const customItemRender = (
-    selectProps: SelectItemRenderer<LocalAccountListItem>,
-  ) => {
-    return (
-      <div
-        data-testid={`select-account-item-${selectProps.item.value}`}
-        className={`select-account-item ${
-          selectedLocalAccount === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          handleItemClicked(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          className="user-picture"
-          src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="account-name">{selectProps.item.label}</div>
-        {selectedLocalAccount === selectProps.item.value && (
-          <SVGIcon icon={NewIcons.ACTIVE} className="active-icon" />
-        )}
-      </div>
-    );
-  };
+
   const copyUsernameToClipboard = (
     event: BaseSyntheticEvent,
     username: string,
@@ -125,8 +95,37 @@ const SelectAccountSection = ({
     state,
     methods,
   }: SelectRenderer<LocalAccountListItem>) => {
-    console.log(props, state, methods);
-    return <div className="custom-select-dropdown"></div>;
+    return (
+      <div className="custom-select-dropdown">
+        {props.options.map((option, index) => (
+          <div className="option" key={`option-${option.value}`}>
+            <div
+              data-testid={`select-account-item-${option.value}`}
+              className={`select-account-item ${
+                selectedLocalAccount === option.value ? 'selected' : ''
+              }`}
+              onClick={() => {
+                handleItemClicked(option.value);
+                methods.dropDown('close');
+              }}>
+              <img
+                className="user-picture"
+                src={`https://images.hive.blog/u/${option.label}/avatar`}
+                onError={(e: any) => {
+                  e.target.onError = null;
+                  e.target.src = '/assets/images/accounts.png';
+                }}
+              />
+              <div className="account-name">{option.label}</div>
+              {selectedLocalAccount === option.value && (
+                <SVGIcon icon={NewIcons.ACTIVE} className="active-icon" />
+              )}
+            </div>
+            {index !== options.length - 1 && <div className="separator"></div>}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -138,7 +137,6 @@ const SelectAccountSection = ({
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
-            itemRenderer={customItemRender}
             className="select-account-select"
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}

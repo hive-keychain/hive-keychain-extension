@@ -282,7 +282,6 @@ const TokensTransfer = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state.navigation);
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),

@@ -37,6 +37,19 @@
     }
 
     .react-dropdown-select-dropdown {
+      .custom-select-dropdown {
+        .option {
+          display: flex;
+          flex-direction: column;
+          .separator {
+            height: 1px;
+            background: $extra-light-grey;
+            width: 80%;
+            align-self: center;
+          }
+        }
+      }
+      width: auto;
       border: 1px solid white;
       top: 50px;
       background-color: white;
@@ -47,7 +60,6 @@
         column-gap: 12px;
         padding: 10px 6px;
         box-sizing: border-box;
-        border-bottom: 1px solid $grey;
 
         .copy-username-button {
           display: none;

@@ -137,7 +137,6 @@ export const WalletInfoSectionActions = (
       });
     }
 
-    console.log(tokenBalance, tokenInfo, actions);
     return actions;
   }
 };
