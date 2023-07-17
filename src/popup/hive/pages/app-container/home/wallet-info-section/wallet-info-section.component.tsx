@@ -8,11 +8,6 @@ import {
   loadTokensMarket,
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
-import {
-  HBDDropdownMenuItems,
-  HiveDropdownMenuItems,
-  HpDropdownMenuItems,
-} from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -31,23 +26,23 @@ const WalletInfoSection = ({
   globalProperties,
   conversions,
   userTokens,
-  allTokens,
   market,
+  allTokens,
   fetchConversionRequests,
-  loadTokens,
   loadTokensMarket,
   loadUserTokens,
+  loadTokens,
 }: PropsFromRedux) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
   );
 
-  const [hiveRowInfoContent, setHiveRowInfoContent] = useState<
-    string | undefined
-  >(undefined);
-  const [hbdRowInfoContent, setHbdRowInfoContent] = useState<
-    string | undefined
-  >(undefined);
+  // const [hiveRowInfoContent, setHiveRowInfoContent] = useState<
+  //   string | undefined
+  // >(undefined);
+  // const [hbdRowInfoContent, setHbdRowInfoContent] = useState<
+  //   string | undefined
+  // >(undefined);
 
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
@@ -62,8 +57,8 @@ const WalletInfoSection = ({
 
   useEffect(() => {
     if (activeAccount && !ActiveAccountUtils.isEmpty(activeAccount)) {
-      loadTokens();
       loadHiddenTokens();
+      loadTokens();
       loadTokensMarket();
       loadUserTokens(activeAccount.name!);
       fetchConversionRequests(activeAccount.name!);
@@ -111,12 +106,12 @@ const WalletInfoSection = ({
       return Asset.fromString(conv.amount).symbol === 'HBD';
     });
     if (pendingHbdConversions.length > 0) {
-      setHbdRowInfoContent(
-        chrome.i18n.getMessage('popup_html_pending_conversions', [
-          pendingHbdConversions.length.toString(),
-          'HIVE',
-        ]),
-      );
+      // setHbdRowInfoContent(
+      //   chrome.i18n.getMessage('popup_html_pending_conversions', [
+      //     pendingHbdConversions.length.toString(),
+      //     'HIVE',
+      //   ]),
+      // );
     }
 
     const pendingHiveConversions = conversions.filter((conv: Conversion) => {
@@ -124,39 +119,38 @@ const WalletInfoSection = ({
     });
 
     if (pendingHiveConversions.length > 0) {
-      setHiveRowInfoContent(
-        chrome.i18n.getMessage('popup_html_pending_conversions', [
-          pendingHiveConversions.length.toString(),
-          'HIVE',
-        ]),
-      );
+      // setHiveRowInfoContent(
+      //   chrome.i18n.getMessage('popup_html_pending_conversions', [
+      //     pendingHiveConversions.length.toString(),
+      //     'HIVE',
+      //   ]),
+      // );
     }
   }, [conversions]);
 
   return (
     <div className="wallet-info-section">
       <WalletInfoSectionItemComponent
+        tokenSymbol="HIVE"
         icon={NewIcons.HIVE}
         iconColor="red"
         mainValue={activeAccount.account.balance}
         mainValueLabel={currencyLabels.hive}
         subValue={activeAccount.account.savings_balance}
         subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
-        menuItems={HiveDropdownMenuItems}
-        infoContent={hiveRowInfoContent}
       />
 
       <WalletInfoSectionItemComponent
+        tokenSymbol="HBD"
         icon={NewIcons.HBD}
         iconColor="green"
         mainValue={activeAccount.account.hbd_balance}
         mainValueLabel={currencyLabels.hbd}
         subValue={activeAccount.account.savings_hbd_balance}
         subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
-        menuItems={HBDDropdownMenuItems}
-        infoContent={hbdRowInfoContent}
       />
       <WalletInfoSectionItemComponent
+        tokenSymbol="HP"
         icon={NewIcons.HIVE}
         iconColor="red"
         mainValue={FormatUtils.toHP(
@@ -170,23 +164,25 @@ const WalletInfoSection = ({
             ? chrome.i18n.getMessage('popup_html_delegations')
             : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.'
         }
-        menuItems={HpDropdownMenuItems}
       />
-      {filteredTokenList && filteredTokenList.length > 0 && (
-        <>
-          <div className="separator"></div>
-          {filteredTokenList.map((token) => (
-            <WalletInfoSectionItemComponent
-              key={`token-${token.symbol}`}
-              icon={NewIcons.HIVE_ENGINE}
-              mainValue={token.balance}
-              mainValueLabel={token.symbol}
-              menuItems={HBDDropdownMenuItems}
-              infoContent={hbdRowInfoContent}
-            />
-          ))}
-        </>
-      )}
+      {allTokens?.length > 0 &&
+        filteredTokenList &&
+        filteredTokenList.length > 0 && (
+          <>
+            <div className="separator"></div>
+            {filteredTokenList.map((token) => (
+              <WalletInfoSectionItemComponent
+                key={`token-${token.symbol}`}
+                tokenSymbol={token.symbol}
+                tokenBalance={token}
+                tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
+                icon={NewIcons.HIVE_ENGINE}
+                mainValue={token.balance}
+                mainValueLabel={token.symbol}
+              />
+            ))}
+          </>
+        )}
     </div>
   );
 };
@@ -199,16 +195,16 @@ const mapStateToProps = (state: RootState) => {
     delegations: state.delegations,
     conversions: state.conversions,
     userTokens: state.userTokens,
-    allTokens: state.tokens,
     market: state.tokenMarket,
+    allTokens: state.tokens,
   };
 };
 
 const connector = connect(mapStateToProps, {
   fetchConversionRequests,
-  loadTokens,
   loadTokensMarket,
   loadUserTokens,
+  loadTokens,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

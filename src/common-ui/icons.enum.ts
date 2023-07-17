@@ -88,19 +88,40 @@ import SELECT_ARROW_UP from 'public/assets/images/select-arrow-up.svg';
 import SEND from 'public/assets/images/send.svg';
 import VOTING_MANA from 'public/assets/images/voting-mana.svg';
 
+import CONVERT from 'public/assets/images/convert.svg';
+import POWER_DOWN from 'public/assets/images/power-down.svg';
+import POWER_UP from 'public/assets/images/power-up.svg';
+import SAVINGS from 'public/assets/images/savings.svg';
+
+import HP_DELEGATION from 'public/assets/images/hp-delegation.svg';
+import RC_DELEGATION from 'public/assets/images/rc-delegation.svg';
+
+import TOKEN_STAKE from 'public/assets/images/stake.svg';
+import TOKEN_DELEGATION from 'public/assets/images/token-delegation.svg';
+import TOKEN_UNSTAKE from 'public/assets/images/unstake.svg';
+
 export const NewIcons = {
   BUY,
   CHAINS,
   CLAIM_REWARDS,
+  CONVERT,
   HBD,
   HISTORY,
   HIVE,
   HIVE_ENGINE,
+  HP_DELEGATION,
   MENU,
+  POWER_DOWN,
+  POWER_UP,
+  RC_DELEGATION,
   RESOURCE_CREDITS,
+  SAVINGS,
   SELECT_ARROW_DOWN,
   SELECT_ARROW_UP,
   SEND,
+  TOKEN_DELEGATION,
+  TOKEN_STAKE,
+  TOKEN_UNSTAKE,
   VOTING_MANA,
 };
 
