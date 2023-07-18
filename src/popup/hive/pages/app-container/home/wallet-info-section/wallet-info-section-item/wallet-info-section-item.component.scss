@@ -44,11 +44,9 @@
       background: white;
       border: 1px solid $extra-light-grey;
       border-radius: 13px;
-      @include icon-size(32px);
-      padding: 2px;
-      color: $dark-red;
+      padding: 10px;
+
       &:hover {
-        color: white;
         background: $dark-red;
       }
     }
@@ -72,8 +70,6 @@
         @include poppins400(12px);
       }
     }
-    .history-button {
-    }
   }
 
   .actions-panel {
@@ -83,33 +79,5 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    .wallet-action-button {
-      display: flex;
-      column-gap: 8px;
-      background: white;
-      padding: 16px;
-      width: 130px;
-      border-radius: 13px;
-      border: 1px solid $light-grey-border;
-      box-sizing: border-box;
-      .title {
-        @include poppins400(14px);
-        color: #484848;
-      }
-      .action-icon {
-        @include icon-size(16px);
-        color: black;
-        padding: 8px;
-        border: 1px solid $lighter-grey-border;
-        border-radius: 50%;
-      }
-      &:hover {
-        background: $dark-red;
-        .action-icon,
-        .title {
-          color: white;
-        }
-      }
-    }
   }
 }

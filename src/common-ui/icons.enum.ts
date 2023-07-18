@@ -85,7 +85,7 @@ export enum NewIcons {
   HISTORY_HOMEPAGE = 'history-homepage',
   HIVE = 'hive',
   HIVE_ENGINE = 'hive-engine',
-  HP_DELEGATION = 'hp-delegations',
+  HP_DELEGATION = 'hp-delegation',
   MENU = 'menu',
   POWER_DOWN = 'power-down',
   POWER_UP = 'power-up',

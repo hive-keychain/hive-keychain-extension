@@ -1,0 +1,26 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
+.wallet-action-button {
+  display: flex;
+  column-gap: 8px;
+  background: white;
+  padding: 8px 12px;
+  width: 130px;
+  min-height: 58px;
+  border-radius: 13px;
+  border: 1px solid $light-grey-border;
+  box-sizing: border-box;
+  .title {
+    vertical-align: middle;
+    align-self: center;
+    @include poppins400(14px);
+    color: #484848;
+  }
+  &:hover {
+    background: $dark-red;
+    .title {
+      color: white;
+    }
+  }
+}

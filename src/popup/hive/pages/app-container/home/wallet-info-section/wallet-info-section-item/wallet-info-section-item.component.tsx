@@ -5,6 +5,7 @@ import {
   ActionButton,
   WalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -109,8 +110,9 @@ const walletInfoSectionItem = ({
         {isExpanded && (
           <SVGIcon
             icon={NewIcons.HISTORY}
-            className={`history-icon `}
+            className={`history-icon`}
             onClick={($event) => handleHistoryClick($event, tokenBalance)}
+            hoverable
           />
         )}
       </div>
@@ -119,15 +121,11 @@ const walletInfoSectionItem = ({
           <div className="separator" />
           <div className="actions-panel">
             {actionButtons.map((ab, index) => (
-              <div
-                className="wallet-action-button"
-                onClick={($event) => handleClick($event, ab)}
-                key={`action-${ab.label}-${index}`}>
-                <SVGIcon icon={ab.icon} className="action-icon" />
-                <div className="title">
-                  {chrome.i18n.getMessage(ab.label, ab.labelParams)}
-                </div>
-              </div>
+              <WalletInfoSectionItemButton
+                key={`action-${ab.label}-${index}`}
+                actionButton={ab}
+                handleClick={handleClick}
+              />
             ))}
           </div>
         </>
