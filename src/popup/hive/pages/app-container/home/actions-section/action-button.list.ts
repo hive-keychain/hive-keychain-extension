@@ -12,7 +12,7 @@ export const ActionButtonList: ActionButton[] = [
     label: 'popup_html_send_transfer',
     nextScreen: Screen.TRANSFER_FUND_PAGE,
     nextScreenParams: { selectedCurrency: 'hive' },
-    icon: NewIcons.SEND,
+    icon: NewIcons.SEND_HOMEPAGE,
   },
   {
     label: 'popup_html_buy',
@@ -21,7 +21,7 @@ export const ActionButtonList: ActionButton[] = [
   },
   {
     label: 'popup_html_history',
-    icon: NewIcons.HISTORY,
+    icon: NewIcons.HISTORY_HOMEPAGE,
     nextScreen: Screen.WALLET_HISTORY_PAGE,
   },
   {

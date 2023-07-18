@@ -2,12 +2,12 @@ import '@common-style/home/resources-section/resource-item.component.scss';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
 interface ResourceItemProps {
-  icon: Icons | string;
+  icon: NewIcons;
   label: string;
   value: string;
   tooltipText: string;
@@ -34,7 +34,6 @@ const ResourceItem = ({
         data-testid={ariaLabel}
         className={`resource-item ${additionalClass ?? ''}`}>
         <SVGIcon className="icon" icon={icon} />
-        {/* <Icon name={icon} additionalClassName="icon"></Icon> */}
         <div className="right-panel">
           <div className="top">
             <div className="label">{chrome.i18n.getMessage(label)}</div>

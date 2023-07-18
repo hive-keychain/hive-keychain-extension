@@ -128,6 +128,7 @@ const TopBar = ({
           dataTestId="reward-claim-icon"
           className="claim-button"
           onClick={() => claim()}
+          hoverable
         />
       )}
 

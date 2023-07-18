@@ -1,10 +1,13 @@
-import React, { BaseSyntheticEvent } from 'react';
+import React, { BaseSyntheticEvent, useState } from 'react';
+import { NewIcons } from 'src/common-ui/icons.enum';
 
 interface ISVGIconProps {
   dataTestId?: string;
   onClick?: (...params: any) => void;
   className?: string;
-  icon: any;
+  icon: NewIcons;
+  hoverable?: boolean;
+  forceHover?: boolean;
 }
 
 export const SVGIcon = ({
@@ -12,7 +15,11 @@ export const SVGIcon = ({
   onClick,
   className,
   icon,
+  hoverable,
+  forceHover,
 }: ISVGIconProps) => {
+  const [hovered, setHovered] = useState(false);
+
   const handleClick = (event: BaseSyntheticEvent) => {
     if (onClick) {
       onClick(event);
@@ -20,11 +27,24 @@ export const SVGIcon = ({
   };
 
   return (
-    <div
+    <img
       data-testid={dataTestId}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onClick={($event) => handleClick($event)}
-      className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}>
-      {icon()}
-    </div>
+      className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}
+      src={`/assets/images/${icon}${
+        hoverable && (hovered || forceHover) ? '-hovered' : ''
+      }.svg`}
+    />
   );
+
+  // return (
+  //   <div
+  //
+  //     onClick={($event) => handleClick($event)}
+  //     className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}>
+  //     {icon()}
+  //   </div>
+  // );
 };

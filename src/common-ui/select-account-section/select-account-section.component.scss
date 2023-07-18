@@ -14,6 +14,23 @@
       background: transparent;
     }
 
+    //commons
+    .selected-account-name,
+    .account-name {
+      font-family: Poppins;
+      font-size: 14.531px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      user-select: none;
+      color: $dark-grey;
+    }
+    .user-picture {
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+    }
+
     .react-dropdown-select-content {
       .selected-account-panel {
         display: flex;
@@ -41,6 +58,13 @@
         .option {
           display: flex;
           flex-direction: column;
+          &:hover {
+            background-color: $red;
+            .account-name,
+            .active-icon {
+              color: white !important;
+            }
+          }
           .separator {
             height: 1px;
             background: $extra-light-grey;
@@ -81,22 +105,6 @@
           width: 20px;
         }
       }
-    }
-    //commons
-    .selected-account-name,
-    .account-name {
-      font-family: Poppins;
-      font-size: 14.531px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: normal;
-      user-select: none;
-      color: $dark-grey;
-    }
-    .user-picture {
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
     }
   }
 }

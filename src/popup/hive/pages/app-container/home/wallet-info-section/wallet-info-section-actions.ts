@@ -3,12 +3,12 @@ import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/
 import { PowerType } from '@popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { TokenOperationType } from '@popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { Screen } from '@reference-data/screen.enum';
-import { IconType, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {
   label: string;
   labelParams?: string[];
-  icon: IconType;
+  icon: NewIcons;
   nextScreen: Screen;
   nextScreenParams?: any;
 }

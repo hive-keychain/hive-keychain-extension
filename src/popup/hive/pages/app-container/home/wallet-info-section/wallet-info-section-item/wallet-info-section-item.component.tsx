@@ -8,7 +8,7 @@ import {
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { IconType, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
@@ -18,7 +18,7 @@ interface WalletSectionInfoItemProps {
   tokenSymbol: string;
   tokenInfo?: Token;
   tokenBalance?: TokenBalance;
-  icon: IconType;
+  icon: NewIcons;
   iconColor?: 'red' | 'green';
   mainValue: string | Asset | number;
   mainValueLabel: string;
@@ -80,7 +80,19 @@ const walletInfoSectionItem = ({
       data-testid={`wallet-info-section-row`}
       onClick={() => toggleDropdown()}>
       <div className="information-panel">
-        <SVGIcon icon={icon} className={`currency-icon ${iconColor ?? ''}`} />
+        {!tokenInfo && (
+          <SVGIcon icon={icon} className={`currency-icon ${iconColor ?? ''}`} />
+        )}
+        {tokenInfo && (
+          <img
+            className="currency-icon"
+            src={tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = '/assets/images/hive-engine.svg';
+            }}
+          />
+        )}
         <div className="main-value-label">{mainValueLabel}</div>
         <div className="value">
           <div className="main-value">
