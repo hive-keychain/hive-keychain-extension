@@ -1,4 +1,5 @@
-@import '/src/common-style/variable.scss';
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
 
 .select-account-section {
   .select-account-select {
@@ -17,11 +18,7 @@
     //commons
     .selected-account-name,
     .account-name {
-      font-family: Poppins;
-      font-size: 14.531px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: normal;
+      @include poppins500(14px);
       user-select: none;
       color: $dark-grey;
     }

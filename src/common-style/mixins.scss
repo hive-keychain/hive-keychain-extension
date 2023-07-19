@@ -58,6 +58,13 @@
   width: $size;
 }
 
+@mixin poppins400($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
 @mixin poppins500($fontSize) {
   font-family: Poppins;
   font-size: $fontSize;
@@ -65,20 +72,19 @@
   font-weight: 500;
   line-height: 147%;
 }
+@mixin poppins600($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
 @mixin poppins700($fontSize) {
   font-family: Poppins;
   font-size: $fontSize;
   font-style: normal;
   font-weight: 700;
   line-height: 147%;
-}
-
-@mixin poppins400($fontSize) {
-  font-family: Poppins;
-  font-size: $fontSize;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
 }
 
 @mixin non-clickable {

@@ -3,6 +3,7 @@ import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { SelectAccountSectionItemComponent } from 'src/common-ui/select-account-section/select-account-section-item.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -98,31 +99,14 @@ const SelectAccountSection = ({
     return (
       <div className="custom-select-dropdown">
         {props.options.map((option, index) => (
-          <div className="option" key={`option-${option.value}`}>
-            <div
-              data-testid={`select-account-item-${option.value}`}
-              className={`select-account-item ${
-                selectedLocalAccount === option.value ? 'selected' : ''
-              }`}
-              onClick={() => {
-                handleItemClicked(option.value);
-                methods.dropDown('close');
-              }}>
-              <img
-                className="user-picture"
-                src={`https://images.hive.blog/u/${option.label}/avatar`}
-                onError={(e: any) => {
-                  e.target.onError = null;
-                  e.target.src = '/assets/images/accounts.png';
-                }}
-              />
-              <div className="account-name">{option.label}</div>
-              {selectedLocalAccount === option.value && (
-                <SVGIcon icon={NewIcons.ACTIVE} className="active-icon" />
-              )}
-            </div>
-            {index !== options.length - 1 && <div className="separator"></div>}
-          </div>
+          <SelectAccountSectionItemComponent
+            key={`option-${option.value}`}
+            isLast={options.length === index}
+            item={option}
+            selectedAccount={selectedLocalAccount}
+            handleItemClicked={(value) => setSelectedLocalAccount(value)}
+            closeDropdown={() => methods.dropDown('close')}
+          />
         ))}
       </div>
     );

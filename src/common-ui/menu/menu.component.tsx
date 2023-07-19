@@ -25,7 +25,7 @@ const Menu = ({
       title: title,
       isBackButtonEnabled: isBackButtonEnable,
     });
-  });
+  }, []);
 
   const handleMenuItemClick = (menuItem: MenuItem) => {
     if (menuItem.nextScreen) {
@@ -39,10 +39,9 @@ const Menu = ({
     <div className="menu-page">
       <div className="menu">
         {menuItems.map((menuItem, index) => (
-          <div className="menu-item-container">
+          <div className="menu-item-container" key={index}>
             <div
               data-testid={'menu-settings-button-' + menuItem.icon}
-              key={index}
               className="menu-item"
               onClick={() => handleMenuItemClick(menuItem)}>
               <SVGIcon icon={menuItem.icon} className="icon" />

@@ -18,7 +18,7 @@ export enum Icons {
   BUY = 'shopping_cart',
   CLAIM = 'redeem',
   CLEAR = 'clear',
-  CLOSE = 'clear',
+  CLOSE = 'close-circle',
   CONVERT = 'currency_exchange',
   COPY = 'file_copy',
   CREATE_ACCOUNT = 'group_add',
