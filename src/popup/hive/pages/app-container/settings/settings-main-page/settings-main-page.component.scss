@@ -1,18 +1,31 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
 .settings-main-page {
+  // @include background-bottom;
   display: flex;
   flex-direction: column;
   height: 100%;
+  row-gap: 8px;
+  padding-top: 8px;
+  justify-content: space-between;
+  .love-text {
+    @include poppins500(15px);
+    text-align: center;
+    color: $dark-blue;
+  }
   .link-panel {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 16px 0px;
-    column-gap: 16px;
+    column-gap: 8px;
     cursor: pointer;
-    .icon {
-      height: 20px;
-      width: 20px;
+    .network-icon {
+      background: white;
+      border-radius: 66px 66px 0px 0px;
+      border: 1px solid $light-grey-border;
+      padding: 14px 12px 8px 12px;
     }
   }
 }

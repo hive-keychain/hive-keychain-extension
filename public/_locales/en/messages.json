@@ -3345,5 +3345,9 @@
   "chains": {
     "message": "Chains",
     "description": "Chains"
+  },
+  "popup_html_theme": {
+    "message": "Theme",
+    "description": "Theme"
   }
 }

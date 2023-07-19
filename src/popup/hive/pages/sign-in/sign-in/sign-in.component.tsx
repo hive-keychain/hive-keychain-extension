@@ -63,7 +63,6 @@ const SignIn = ({
       />
       <ButtonComponent
         label={'popup_html_signin'}
-        logo={Icons.LOGIN}
         onClick={login}
         dataTestId={'login-button'}
       />

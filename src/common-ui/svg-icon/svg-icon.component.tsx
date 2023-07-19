@@ -1,5 +1,6 @@
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import './svg-icon.component.scss';
 
 interface ISVGIconProps {
   dataTestId?: string;
@@ -32,7 +33,7 @@ export const SVGIcon = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={($event) => handleClick($event)}
-      className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}
+      className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''}`}
       src={`/assets/images/${icon}${
         hoverable && (hovered || forceHover) ? '-hovered' : ''
       }.svg`}

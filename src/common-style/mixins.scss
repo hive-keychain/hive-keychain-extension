@@ -1,5 +1,19 @@
 @import './variable.scss';
 
+@mixin background {
+  background-image: url(assets/images/background.svg);
+  background-repeat: no-repeat;
+}
+
+@mixin background-bottom {
+  @include background;
+  background-position-y: 135%;
+}
+@mixin background-top {
+  @include background;
+  background-position-y: 30%;
+}
+
 @mixin pageLayout {
   display: flex;
   flex-direction: column;
@@ -65,4 +79,9 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+@mixin non-clickable {
+  cursor: not-allowed;
+  pointer-events: none;
 }

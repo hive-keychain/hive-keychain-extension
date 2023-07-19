@@ -1,10 +1,12 @@
 @import '/src/common-style/variable.scss';
+@import '@common-style/mixins.scss';
 
 .theme {
   &.light {
-    background: $light-background;
+    background-color: $light-background;
   }
   &.dark {
-    background: $dark-background;
+    background-color: $dark-background;
   }
+  @include background-bottom;
 }

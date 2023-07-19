@@ -1,0 +1,35 @@
+@import '@common-style/variable.scss';
+
+.theme.dark {
+  .switch-container {
+    .switch-panel {
+      border-radius: 10px;
+      background-color: $dark-background !important;
+      label {
+        &::before {
+          //   background-image: url('/public/assets/images/light-mode.svg') !important;
+        }
+        &::after {
+          //   background-image: url('/public/assets/images/dark-mode.svg') !important;
+        }
+      }
+    }
+  }
+}
+
+.theme.light {
+  .switch-container {
+    .switch-panel {
+      border-radius: 10px;
+      background-color: $light-background !important;
+      label {
+        &::before {
+          background-image: url('/public/assets/images/light-mode.svg') !important;
+        }
+        & ::after {
+          background-image: url('/public/assets/images/dark-mode.svg') !important;
+        }
+      }
+    }
+  }
+}

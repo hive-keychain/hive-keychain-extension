@@ -67,9 +67,6 @@ const WitnessVotingSection = ({
   }
   return (
     <div className="witness-voting-section">
-      <div className="text">
-        {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
-      </div>
       {voteForAccount && (
         <OperationButtonComponent
           dataTestId="vote-for-stoodkev-witness"
@@ -79,6 +76,7 @@ const WitnessVotingSection = ({
           }}
           label={'html_popup_vote_for_witness'}
           requiredKey={KeychainKeyTypesLC.active}
+          height="medium"
         />
       )}
     </div>

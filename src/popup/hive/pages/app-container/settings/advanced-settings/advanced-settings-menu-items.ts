@@ -1,4 +1,4 @@
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 
@@ -6,32 +6,32 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [
     {
       label: 'popup_html_rpc_node',
-      icon: Icons.RPC,
+      icon: NewIcons.RPC_NODES,
       nextScreen: Screen.SETTINGS_RPC_NODES,
     },
     {
       label: 'popup_html_autolock',
-      icon: Icons.AUTO_LOCK,
+      icon: NewIcons.AUTOLOCK,
       nextScreen: Screen.SETTINGS_AUTO_LOCK,
     },
     {
       label: 'popup_html_change_password',
-      icon: Icons.PASSWORD,
+      icon: NewIcons.CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
     },
     {
       label: 'popup_html_keychainify',
-      icon: Icons.LINK,
+      icon: NewIcons.KEYCHAINIFY,
       nextScreen: Screen.SETTINGS_KEYCHAINIFY,
     },
     {
       label: 'popup_html_analytics',
-      icon: Icons.ANALYTICS,
+      icon: NewIcons.ANALYTICS,
       nextScreen: Screen.SETTINGS_ANALYTICS,
     },
     {
       label: 'ledger_link_ledger_device',
-      icon: Icons.USB,
+      icon: NewIcons.LINK_LEDGER,
       action: async () => {
         const extensionId = (await chrome.management.getSelf()).id;
         chrome.tabs.create({
@@ -41,12 +41,12 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
     },
     {
       label: 'popup_html_import_export_settings',
-      icon: Icons.IMPORT_EXPORT,
+      icon: NewIcons.IMPORT_EXPORT_SETTINGS,
       nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
     },
     {
       label: 'popup_html_clear',
-      icon: Icons.CLEAR,
+      icon: NewIcons.CLEAR_ALL,
       nextScreen: Screen.SETTINGS_CLEAR_ALL_DATA,
     },
   ];

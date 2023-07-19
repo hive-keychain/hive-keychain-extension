@@ -1,8 +1,9 @@
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WitnessVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/witness-voting-section/witness-voting-section.component';
 import { RootState } from 'src/popup/hive/store';
 import SettingsMenuItems from './settings-main-page-menu-items';
@@ -23,26 +24,29 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
     <div
       className="settings-main-page"
       data-testid={`${Screen.SETTINGS_MAIN_PAGE}-page`}>
+      <div className="love-text">
+        {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
+      </div>
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}
         menuItems={SettingsMenuItems}></MenuComponent>
-      <div className="divider"></div>
       <WitnessVotingSectionComponent />
+      {/* <div className="divider"></div> */}
       <div className="link-panel">
-        <img
-          className="icon"
-          src={`/assets/images/${Icons.DISCORD}`}
+        <SVGIcon
+          className="network-icon"
+          icon={NewIcons.DISCORD}
           onClick={goToDiscord}
         />
-        <img
-          className="icon"
-          src={`/assets/images/${Icons.HIVE}`}
+        <SVGIcon
+          className="network-icon"
+          icon={NewIcons.HIVE}
           onClick={goToPeakD}
         />
-        <img
-          className="icon"
-          src={`/assets/images/${Icons.TWITTER}`}
+        <SVGIcon
+          className="network-icon"
+          icon={NewIcons.TWITTER}
           onClick={goToTwitter}
         />
       </div>

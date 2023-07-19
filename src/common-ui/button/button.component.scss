@@ -8,8 +8,10 @@
   user-select: none;
   cursor: pointer;
   color: white;
-  height: 48px;
   position: relative;
+  background: $red;
+  border: unset;
+  border-radius: 48px;
 
   .logo {
     position: absolute;
@@ -17,60 +19,65 @@
     bottom: 10px;
   }
 
-  &.default {
-    background: transparent;
-    border: 1px solid white;
-    &:hover {
-      background: white;
-      color: black;
-    }
+  &:hover {
+    box-shadow: 0px 13px 9px 0px $red-shadow;
   }
 
-  &.stroked {
-    background: transparent;
-    border: 1px solid white;
-    &:hover {
-      background: #ffffff2b;
-      color: white;
-    }
+  &.tall {
+    height: 58px;
+  }
+  &.medium {
+    height: 50px;
+  }
+  &.small {
+    height: 42px;
   }
 
-  &.important {
-    background: white;
-    color: black;
-    border: none;
+  // &.stroked {
+  //   background: transparent;
+  //   border: 1px solid white;
+  //   &:hover {
+  //     background: #ffffff2b;
+  //     color: white;
+  //   }
+  // }
 
-    &:hover {
-      background: $red-dark;
-      color: white;
-    }
-  }
-  &.no-border {
-    background: none;
-    border: none;
-    color: white;
-    text-decoration: underline;
-  }
-  &.raised {
-    background: white;
-    border: none;
-    color: black;
+  // &.important {
+  //   background: white;
+  //   color: black;
+  //   border: none;
 
-    &:hover {
-      background: #eee;
-    }
-  }
+  //   &:hover {
+  //     background: $red-dark;
+  //     color: white;
+  //   }
+  // }
+  // &.no-border {
+  //   background: none;
+  //   border: none;
+  //   color: white;
+  //   text-decoration: underline;
+  // }
+  // &.raised {
+  //   background: white;
+  //   border: none;
+  //   color: black;
 
-  &.reverse {
-    background: white;
-    color: black;
-    border: 1px solid black;
+  //   &:hover {
+  //     background: #eee;
+  //   }
+  // }
 
-    &:hover {
-      background: black;
-      color: white;
-    }
-  }
+  // &.reverse {
+  //   background: white;
+  //   color: black;
+  //   border: 1px solid black;
+
+  //   &:hover {
+  //     background: black;
+  //     color: white;
+  //   }
+  // }
 
   &.fix-to-bottom {
     position: fixed;
@@ -79,9 +86,9 @@
     width: calc(100% - 48px);
   }
 
-  &.no-border {
-    background: none;
-    border: none;
-    color: white;
-  }
+  // &.no-border {
+  //   background: none;
+  //   border: none;
+  //   color: white;
+  // }
 }

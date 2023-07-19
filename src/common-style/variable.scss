@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins:wght@400;500;700&display=swap');
 $dark-red: #a5112c;
 $red: #e31337;
 $light-red: #fdebee;
@@ -10,6 +9,7 @@ $dark-grey: #484848;
 $light-background: #e5edf5;
 $dark-background: #212838;
 $light-green: #dff6e1;
+$red-shadow: rgba(227, 19, 55, 0.21);
 
 $lighter-grey: #818a9f;
 $extra-light-grey: #eaeaea;
@@ -79,8 +79,9 @@ $caption-font-size: 16px;
   font-size: $caption-font-size;
 }
 
-@mixin icon-size($size) {
-  height: $size;
-  width: $size;
-  font-size: $size;
+.separator {
+  height: 1px;
+  background: $extra-light-grey;
+  width: 80%;
+  align-self: center;
 }

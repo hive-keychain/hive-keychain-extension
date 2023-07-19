@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -39,21 +39,22 @@ const Menu = ({
     <div className="menu-page">
       <div className="menu">
         {menuItems.map((menuItem, index) => (
-          <div
-            data-testid={'menu-settings-button-' + menuItem.icon}
-            key={index}
-            className="menu-item"
-            onClick={() => handleMenuItemClick(menuItem)}>
-            {menuItem.importedIcon && (
-              <img className="icon" src={`/assets/images/${menuItem.icon}`} />
-            )}
-            {!menuItem.importedIcon && (
-              <Icon name={menuItem.icon!} additionalClassName="icon"></Icon>
-            )}
-
-            <div className="menu-label">
-              {chrome.i18n.getMessage(menuItem.label)}
+          <div className="menu-item-container">
+            <div
+              data-testid={'menu-settings-button-' + menuItem.icon}
+              key={index}
+              className="menu-item"
+              onClick={() => handleMenuItemClick(menuItem)}>
+              <SVGIcon icon={menuItem.icon} className="icon" />
+              <div className="menu-label">
+                {chrome.i18n.getMessage(menuItem.label)}
+              </div>
+              <div className="divider"></div>
+              {menuItem.rightPanel && <menuItem.rightPanel />}
             </div>
+            {index !== menuItems.length - 1 && (
+              <div className="separator"></div>
+            )}
           </div>
         ))}
       </div>

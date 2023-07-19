@@ -1,7 +1,7 @@
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   goBack,
   navigateTo,
@@ -43,11 +43,12 @@ const PageTitle = ({
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
-        <Icon
+        <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
-          name={Icons.BACK}
-          additionalClassName="icon-button"></Icon>
+          icon={NewIcons.BACK}
+          className="icon-button"
+        />
       )}
       <div className="title">
         {skipTitleTranslation
@@ -55,11 +56,12 @@ const PageTitle = ({
           : chrome.i18n.getMessage(title, titleParams)}
       </div>
       {!isCloseButtonDisabled && (
-        <Icon
+        <SVGIcon
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
-          name={Icons.CLOSE}
-          additionalClassName="icon-button"></Icon>
+          icon={NewIcons.CLOSE}
+          className="icon-button"
+        />
       )}
     </div>
   );

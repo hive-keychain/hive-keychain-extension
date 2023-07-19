@@ -1,9 +1,9 @@
+@import '@common-style/mixins.scss';
+
 .home-page {
+  @include background-top;
   height: 100%;
   overflow: hidden;
-  background-image: url(assets/images/background.svg);
-  background-repeat: no-repeat;
-  background-position-y: 30%;
   display: flex;
   flex-direction: column;
   row-gap: 24px;

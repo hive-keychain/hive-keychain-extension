@@ -169,7 +169,7 @@ const AppRouter = ({
       style={{
         height: '100%',
         display: 'grid',
-        gridTemplateRows: hasTitle ? '70px 1fr' : '1fr',
+        gridTemplateRows: hasTitle ? '64px 1fr' : '1fr',
       }}>
       {hasTitle && (
         <PageTitleComponent

@@ -6,7 +6,7 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import SettingsMenuItems from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 describe('settings-main-page.component tests:\n', () => {
@@ -35,7 +35,7 @@ describe('settings-main-page.component tests:\n', () => {
   });
   it('Must open each menu item', async () => {
     const filteredCopyItems = SettingsMenuItems.filter(
-      (menuItem) => menuItem.icon !== Icons.SUPPORT,
+      (menuItem) => menuItem.icon !== NewIcons.CONTACT_SUPPORT,
     );
     for (let i = 0; i < filteredCopyItems.length; i++) {
       await act(async () => {

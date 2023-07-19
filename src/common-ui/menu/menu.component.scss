@@ -1,34 +1,40 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
 .menu {
-  .menu-item {
+  border-radius: 11px;
+  border: 1px solid #f3f3f3;
+  background: #fff;
+  margin: 0px 18px;
+
+  .menu-item-container {
     display: flex;
-    align-items: center;
-    background-color: rgba(33, 37, 41, 0.68);
-    height: 60px;
-    width: 100%;
-    padding: 0 32px 0 32px;
-    cursor: pointer;
-    box-sizing: border-box;
-    user-select: none;
+    flex-direction: column;
+    .menu-item {
+      display: flex;
+      align-items: center;
+      height: 60px;
+      width: 100%;
+      padding: 0 24px;
+      cursor: pointer;
+      box-sizing: border-box;
+      user-select: none;
+      column-gap: 12px;
 
-    &:hover {
-      background-color: rgba(56, 63, 70, 0.68);
-    }
-
-    &:nth-child(odd) {
-      background-color: rgba(227, 19, 55, 0.32);
-      &:hover {
-        background-color: rgba(227, 19, 55, 0.45);
+      .icon {
+        padding: 8px 12px;
+        border: 1px solid $light-grey-border;
+        border-radius: 50px;
       }
-    }
 
-    .icon {
-      font-size: 28px;
-      height: 28px;
-      margin-right: 36px;
-    }
+      &:hover {
+        // background-color: rgba(56, 63, 70, 0.68);
+      }
 
-    .menu-label {
-      font-size: 18px;
+      .menu-label {
+        @include poppins500(15px);
+        color: $dark-blue;
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .my-witness-tab {
   @include pageLayoutRowGap;
