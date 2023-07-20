@@ -28,13 +28,13 @@ describe('settings-main-page.component tests:\n', () => {
     for (let i = 0; i < SettingsMenuItems.length; i++) {
       expect(
         screen.getByTestId(
-          dataTestIdButton.menuPreFix + SettingsMenuItems[i].icon,
+          dataTestIdButton.menuPreFix + SettingsMenuItems(() => {})[i].icon,
         ),
       ).toBeInTheDocument();
     }
   });
   it('Must open each menu item', async () => {
-    const filteredCopyItems = SettingsMenuItems.filter(
+    const filteredCopyItems = SettingsMenuItems(() => {}).filter(
       (menuItem) => menuItem.icon !== NewIcons.CONTACT_SUPPORT,
     );
     for (let i = 0; i < filteredCopyItems.length; i++) {

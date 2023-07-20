@@ -3349,5 +3349,9 @@
   "popup_html_theme": {
     "message": "Theme",
     "description": "Theme"
+  },
+  "popup_html_logout": {
+    "message": "Logout",
+    "description": "Logout"
   }
 }

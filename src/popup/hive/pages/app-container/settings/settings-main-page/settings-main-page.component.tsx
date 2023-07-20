@@ -1,3 +1,5 @@
+import { forgetMk } from '@popup/hive/actions/mk.actions';
+import { resetNav } from '@popup/hive/actions/navigation.actions';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -9,7 +11,7 @@ import { RootState } from 'src/popup/hive/store';
 import SettingsMenuItems from './settings-main-page-menu-items';
 import './settings-main-page.component.scss';
 
-const SettingsMainPage = ({}: PropsFromRedux) => {
+const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
   const goToDiscord = () => {
     chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
   };
@@ -18,6 +20,11 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
   };
   const goToTwitter = () => {
     chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
+  };
+  const logout = () => {
+    console.log('logout');
+    resetNav();
+    forgetMk();
   };
 
   return (
@@ -30,7 +37,7 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}
-        menuItems={SettingsMenuItems}></MenuComponent>
+        menuItems={SettingsMenuItems(logout)}></MenuComponent>
       <WitnessVotingSectionComponent />
       <div className="link-panel">
         <SVGIcon
@@ -60,7 +67,10 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  forgetMk,
+  resetNav,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SettingsMainPageComponent = connector(SettingsMainPage);
