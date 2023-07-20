@@ -89,7 +89,7 @@ export enum NewIcons {
   CHANGE_PASSWORD = 'password',
   CLAIM_REWARDS = 'claim-rewards',
   CLEAR_ALL = 'clear',
-  CLOSE = 'arrow-left',
+  CLOSE = 'close-circle',
   CONVERT = 'convert',
   CONTACT_SUPPORT = 'contact-support',
   CREATE_ACCOUNT = 'create-account',

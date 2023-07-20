@@ -1,4 +1,5 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .about-page {
   display: grid;
@@ -6,15 +7,32 @@
   grid-template-rows: 1fr 28px;
   padding: 0px 24px;
   .content {
-    font-size: 16px;
-    text-align: justify;
+    ul {
+      padding-inline-start: 20px;
+      margin-inline-end: 20px;
+      li::marker {
+        font-size: 18px;
+      }
+      .text {
+        opacity: 0.7;
+      }
+    }
+    @include poppins400(12px);
+    color: $dark-blue;
+    font-size: 14px;
+    text-align: left;
     a {
       color: $red;
       text-decoration: none;
     }
   }
   .version {
+    @include poppins500(12px);
     text-align: center;
-    font-size: 14px;
+    color: $red;
+  }
+  .separator {
+    margin: 12px;
+    background: #dcdcdc;
   }
 }
