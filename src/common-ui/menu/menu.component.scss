@@ -10,31 +10,5 @@
   .menu-item-container {
     display: flex;
     flex-direction: column;
-    .menu-item {
-      display: flex;
-      align-items: center;
-      height: 60px;
-      width: 100%;
-      padding: 0 24px;
-      cursor: pointer;
-      box-sizing: border-box;
-      user-select: none;
-      column-gap: 12px;
-
-      .icon {
-        padding: 8px 12px;
-        border: 1px solid $light-grey-border;
-        border-radius: 50px;
-      }
-
-      &:hover {
-        // background-color: rgba(56, 63, 70, 0.68);
-      }
-
-      .menu-label {
-        @include poppins500(15px);
-        color: $dark-blue;
-      }
-    }
   }
 }

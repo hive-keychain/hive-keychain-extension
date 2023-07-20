@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -39,22 +39,12 @@ const Menu = ({
     <div className="menu-page">
       <div className="menu">
         {menuItems.map((menuItem, index) => (
-          <div className="menu-item-container" key={index}>
-            <div
-              data-testid={'menu-settings-button-' + menuItem.icon}
-              className="menu-item"
-              onClick={() => handleMenuItemClick(menuItem)}>
-              <SVGIcon icon={menuItem.icon} className="icon" />
-              <div className="menu-label">
-                {chrome.i18n.getMessage(menuItem.label)}
-              </div>
-              <div className="divider"></div>
-              {menuItem.rightPanel && <menuItem.rightPanel />}
-            </div>
-            {index !== menuItems.length - 1 && (
-              <div className="separator"></div>
-            )}
-          </div>
+          <MenuItemComponent
+            menuItem={menuItem}
+            key={index}
+            handleMenuItemClick={handleMenuItemClick}
+            isLast={menuItems.length - 1 === index}
+          />
         ))}
       </div>
     </div>

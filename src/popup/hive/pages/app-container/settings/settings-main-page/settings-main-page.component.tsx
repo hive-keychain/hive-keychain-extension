@@ -32,22 +32,24 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
         isBackButtonEnable={true}
         menuItems={SettingsMenuItems}></MenuComponent>
       <WitnessVotingSectionComponent />
-      {/* <div className="divider"></div> */}
       <div className="link-panel">
         <SVGIcon
           className="network-icon"
           icon={NewIcons.DISCORD}
           onClick={goToDiscord}
+          hoverable
         />
         <SVGIcon
           className="network-icon"
           icon={NewIcons.HIVE}
           onClick={goToPeakD}
+          hoverable
         />
         <SVGIcon
           className="network-icon"
           icon={NewIcons.TWITTER}
           onClick={goToTwitter}
+          hoverable
         />
       </div>
     </div>

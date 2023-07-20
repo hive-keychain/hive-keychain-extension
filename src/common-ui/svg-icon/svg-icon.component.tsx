@@ -35,17 +35,8 @@ export const SVGIcon = ({
       onClick={($event) => handleClick($event)}
       className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''}`}
       src={`/assets/images/${icon}${
-        hoverable && (hovered || forceHover) ? '-hovered' : ''
+        (hoverable && hovered) || forceHover ? '-hovered' : ''
       }.svg`}
     />
   );
-
-  // return (
-  //   <div
-  //
-  //     onClick={($event) => handleClick($event)}
-  //     className={`${className ?? ''} ${onClick ? 'clickable' : ''}`}>
-  //     {icon()}
-  //   </div>
-  // );
 };

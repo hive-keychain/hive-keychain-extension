@@ -26,6 +26,10 @@
       border-radius: 66px 66px 0px 0px;
       border: 1px solid $light-grey-border;
       padding: 14px 12px 8px 12px;
+      &:hover {
+        background: $red;
+        border-radius: 66px 66px 0px 10px;
+      }
     }
   }
 }

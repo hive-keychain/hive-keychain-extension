@@ -1,0 +1,32 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  padding: 0 24px;
+  cursor: pointer;
+  box-sizing: border-box;
+  user-select: none;
+  column-gap: 12px;
+
+  .icon {
+    padding: 8px 12px;
+    border: 1px solid $light-grey-border;
+    border-radius: 50px;
+  }
+
+  .menu-label {
+    @include poppins500(15px);
+    color: $dark-blue;
+  }
+
+  &:hover {
+    background-color: $red;
+    .menu-label {
+      color: white;
+    }
+  }
+}
