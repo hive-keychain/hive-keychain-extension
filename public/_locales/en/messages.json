@@ -87,8 +87,16 @@
     "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
     "description": "Text on registration page"
   },
-  "popup_html_unlock": {
-    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+  "popup_html_unlock1": {
+    "message": "The ultimate HIVE wallet",
+    "description": "Text on unlock page"
+  },
+  "popup_html_unlock2": {
+    "message": "Manage HIVE assets, and connect to HIVE applications",
+    "description": "Text on unlock page"
+  },
+  "popup_html_unlock3": {
+    "message": "Simple. Lightweight. Secure.",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {

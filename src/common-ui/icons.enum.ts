@@ -108,6 +108,7 @@ export enum NewIcons {
   HIVE = 'hive',
   HIVE_ENGINE = 'hive-engine',
   HP_DELEGATION = 'hp-delegation',
+  KEYCHAIN_LOGO = 'keychain-logo',
   KEYCHAINIFY = 'keychainify',
   LINK_LEDGER = 'link-ledger',
   LOGOUT = 'logout',

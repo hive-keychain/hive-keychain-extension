@@ -2,9 +2,10 @@ import MkUtils from '@hiveapp/utils/mk.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { retrieveAccounts } from 'src/popup/hive/actions/account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
@@ -45,12 +46,18 @@ const SignIn = ({
 
   return (
     <div data-testid="sign-in-page" className="sign-in-page">
-      <img src="/assets/images/keychain_logo.png" className="logo-white" />
-      <p
-        className="introduction"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_unlock'),
-        }}></p>
+      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_LOGO} />
+      <div className="introduction-panel">
+        <span className="introduction big first">
+          {chrome.i18n.getMessage('popup_html_unlock1')}
+        </span>
+        <span className="introduction medium second">
+          {chrome.i18n.getMessage('popup_html_unlock2')}
+        </span>
+        <span className="introduction medium lighter third">
+          {chrome.i18n.getMessage('popup_html_unlock3')}
+        </span>
+      </div>
 
       <InputComponent
         value={password}
