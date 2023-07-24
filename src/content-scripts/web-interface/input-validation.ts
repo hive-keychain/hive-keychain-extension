@@ -1,5 +1,7 @@
 /* istanbul ignore file */
 import Joi from 'joi';
+
+const arrayPublicKeys = Joi.array().items(Joi.string());
 const username = Joi.string().required().min(3);
 const method = Joi.string()
   .valid('Posting', 'Active', 'Memo', 'posting', 'active', 'memo')
@@ -42,6 +44,12 @@ const decode = Joi.object({
 const encode = Joi.object({
   username,
   receiver: username,
+  message,
+  method,
+});
+const encodeMultisig = Joi.object({
+  username,
+  publicKeys: arrayPublicKeys,
   message,
   method,
 });
@@ -306,6 +314,7 @@ const recurrentTransfer = Joi.object({
 const schemas = {
   decode,
   encode,
+  encodeMultisig,
   signBuffer,
   vote,
   post,

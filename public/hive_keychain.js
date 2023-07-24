@@ -49,6 +49,41 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
   /**
+   * This function is called to allow encoding a message with multiple receivers. This is used in the case of multisig
+   * @example
+   * const keychain = window.hive_keychain;
+   * const message = username + Date.now();
+   * keychain.requestEncodeMessage(username, [pubKey1, pubKey2], message, 'Memo', (response) => {
+   *   if (response.success) {
+   *     const encodedMessages = response.result;
+   *     // Send message to a server where you can use your private key to decode it
+   *   }
+   * });
+   *
+   * @param {String} username Hive account to perform the request
+   * @param {Array<String>} publicKeys Key that can decode the string
+   * @param {String} message Message to be encrypted
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   */
+  requestMultisigEncode: function (
+    username,
+    publicKeys,
+    message,
+    key,
+    callback,
+  ) {
+    var request = {
+      type: 'encodeMultisig',
+      username,
+      publicKeys,
+      message,
+      method: key,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+  /**
    * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
    * @example
    * const keychain = window.hive_keychain;

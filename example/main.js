@@ -32,6 +32,18 @@ $('#send_encode').click(() => {
     },
   );
 });
+$('#send_encode_multisig').click(() => {
+  hive_keychain.requestMultisigEncode(
+    $('#encode_user_multisig').val(),
+    $('#encode_public_keys_multisig').val().split(','),
+    $('#encode_message_multisig').val(),
+    $('#encode_method_multisig option:selected').text(),
+    function (response) {
+      console.log('main js response - verify key');
+      console.log(response);
+    },
+  );
+});
 
 // Send post request
 $('#send_post').click(function () {
