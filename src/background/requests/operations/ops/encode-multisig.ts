@@ -9,12 +9,10 @@ export const encodeMultisig = async (
   requestHandler: RequestsHandler,
   data: RequestEncodeMultisig & RequestId,
 ) => {
-  let encoded = null;
+  let encoded: { [a: string]: string } = {};
   let error = null;
   try {
     const key = requestHandler.data.key;
-
-    const encoded: any = {};
 
     for (const receiverPublicKey of data.publicKeys) {
       encoded[receiverPublicKey.toString()] = encode(
@@ -23,7 +21,6 @@ export const encodeMultisig = async (
         data.message,
       );
     }
-    console.log(encoded);
   } catch (err) {
     error = err;
   } finally {
