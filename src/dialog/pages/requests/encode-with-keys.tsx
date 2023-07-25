@@ -1,6 +1,6 @@
 import {
   KeychainKeyTypesLC,
-  RequestEncodeMultisig,
+  RequestEncodeWithKeys,
   RequestId,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -11,13 +11,13 @@ import RequestItem, {
 } from 'src/dialog/components/request-item/request-item';
 
 type Props = {
-  data: RequestEncodeMultisig & RequestId;
+  data: RequestEncodeWithKeys & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
 };
 
-const EncodeMultisig = (props: Props) => {
+const EncodeWithKeys = (props: Props) => {
   const { data } = props;
   return (
     <Operation
@@ -36,4 +36,4 @@ const EncodeMultisig = (props: Props) => {
   );
 };
 
-export default EncodeMultisig;
+export default EncodeWithKeys;

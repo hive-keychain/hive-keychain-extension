@@ -66,7 +66,7 @@ var hive_keychain = {
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
-  requestMultisigEncode: function (
+  requestEncodeWithKeys: function (
     username,
     publicKeys,
     message,
@@ -74,7 +74,7 @@ var hive_keychain = {
     callback,
   ) {
     var request = {
-      type: 'encodeMultisig',
+      type: 'encodeWithKeys',
       username,
       publicKeys,
       message,

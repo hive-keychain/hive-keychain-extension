@@ -14,7 +14,6 @@ type Props = {
 };
 
 const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
-  console.log(content);
   switch (type) {
     case RequestItemType.STRING:
       return (
@@ -23,11 +22,14 @@ const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
         </div>
       );
     case RequestItemType.LIST:
-      console.log('rturn list');
       return (
         <ul>
           {content.map((c: string, index: number) => {
-            return <li key={`item-${index}`}>{c}</li>;
+            return (
+              <li className="small" key={`item-${index}`}>
+                {c}
+              </li>
+            );
           })}
         </ul>
       );

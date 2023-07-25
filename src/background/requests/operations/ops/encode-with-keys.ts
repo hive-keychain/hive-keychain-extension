@@ -2,12 +2,12 @@ import { createMessage } from '@background/requests/operations/operations.utils'
 import { RequestsHandler } from '@background/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
-  RequestEncodeMultisig,
+  RequestEncodeWithKeys,
   RequestId,
 } from '@interfaces/keychain.interface';
-export const encodeMultisig = async (
+export const encodeWithKeys = async (
   requestHandler: RequestsHandler,
-  data: RequestEncodeMultisig & RequestId,
+  data: RequestEncodeWithKeys & RequestId,
 ) => {
   let encoded: { [a: string]: string } = {};
   let error = null;

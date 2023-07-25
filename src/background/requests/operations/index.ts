@@ -14,7 +14,7 @@ import { broadcastCustomJson } from '@background/requests/operations/ops/custom-
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
-import { encodeMultisig } from '@background/requests/operations/ops/encode-multisig';
+import { encodeWithKeys } from '@background/requests/operations/ops/encode-with-keys';
 import { broadcastPost } from '@background/requests/operations/ops/post';
 import {
   broadcastPowerDown,
@@ -119,8 +119,8 @@ export const performOperation = async (
       case KeychainRequestTypes.encode:
         message = await encodeMessage(requestHandler, data);
         break;
-      case KeychainRequestTypes.encodeMultisig:
-        message = await encodeMultisig(requestHandler, data);
+      case KeychainRequestTypes.encodeWithKeys:
+        message = await encodeWithKeys(requestHandler, data);
         break;
       case KeychainRequestTypes.signBuffer:
         message = await signBuffer(requestHandler, data);

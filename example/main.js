@@ -33,7 +33,7 @@ $('#send_encode').click(() => {
   );
 });
 $('#send_encode_multisig').click(() => {
-  hive_keychain.requestMultisigEncode(
+  hive_keychain.requestEncodeWithKeys(
     $('#encode_user_multisig').val(),
     $('#encode_public_keys_multisig').val().split(','),
     $('#encode_message_multisig').val(),

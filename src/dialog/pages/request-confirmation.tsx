@@ -18,7 +18,7 @@ import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import Delegation from 'src/dialog/pages/requests/delegation';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
-import EncodeMultisig from 'src/dialog/pages/requests/encode-multisig';
+import EncodeWithKeys from 'src/dialog/pages/requests/encode-with-keys';
 import Post from 'src/dialog/pages/requests/post';
 import PowerDown from 'src/dialog/pages/requests/power/power-down';
 import PowerUp from 'src/dialog/pages/requests/power/power-up';
@@ -59,8 +59,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <DecodeMemo {...data} data={data.data} />;
     case KeychainRequestTypes.encode:
       return <EncodeMemo {...data} data={data.data} />;
-    case KeychainRequestTypes.encodeMultisig:
-      return <EncodeMultisig {...data} data={data.data} />;
+    case KeychainRequestTypes.encodeWithKeys:
+      return <EncodeWithKeys {...data} data={data.data} />;
     case KeychainRequestTypes.custom:
       return <CustomJson {...data} data={data.data} />;
     case KeychainRequestTypes.signBuffer:

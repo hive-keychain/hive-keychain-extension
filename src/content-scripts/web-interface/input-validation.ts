@@ -47,7 +47,7 @@ const encode = Joi.object({
   message,
   method,
 });
-const encodeMultisig = Joi.object({
+const encodeWithKeys = Joi.object({
   username,
   publicKeys: arrayPublicKeys,
   message,
@@ -314,7 +314,7 @@ const recurrentTransfer = Joi.object({
 const schemas = {
   decode,
   encode,
-  encodeMultisig,
+  encodeWithKeys,
   signBuffer,
   vote,
   post,
