@@ -1,20 +1,26 @@
 import { Icons } from '@popup/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import SettingsUtils from 'src/utils/settings.utils';
+import { ImportExportUtils } from 'src/utils/import-export.utils';
 
 const ImportExportSubMenuItems: MenuItem[] = [
   {
     label: 'popup_html_import_permissions',
     icon: Icons.IMPORT,
     action: () => {
-      SettingsUtils.importSettings();
+      ImportExportUtils.importBackup();
+
+      //TODO delete old way bellow, file & related
+      // SettingsUtils.importSettings();
     },
   },
   {
     label: 'popup_html_export_permissions',
     icon: Icons.EXPORT,
     action: () => {
-      SettingsUtils.exportSettings();
+      ImportExportUtils.exportBackup();
+
+      //TODO delete old way bellow, file & related
+      // SettingsUtils.exportSettings();
     },
   },
 ];

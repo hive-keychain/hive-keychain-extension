@@ -14,9 +14,10 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         fileContent,
         mk,
       );
+      console.log({ importedAccounts }); //TODO remove line
     } catch (e) {
       chrome.runtime.sendMessage({
-        command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+        command: BackgroundCommand.SEND_BACK_IMPORTED_BACKUP,
         value: { feedback: { message: 'import_html_error' } },
       });
       return;
@@ -35,6 +36,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         importedAccounts,
         accounts.list || [],
       );
+    console.log({ newAccounts }); //TODO remove line
     const newAccountsEncrypted = EncryptUtils.encryptJson(
       { list: newAccounts },
       mk,
@@ -52,7 +54,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     );
     const extensionId = (await chrome.management.getSelf()).id;
     chrome.runtime.sendMessage({
-      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      command: BackgroundCommand.SEND_BACK_IMPORTED_BACKUP,
       value: {
         accounts: newAccounts,
         feedback: useLedger

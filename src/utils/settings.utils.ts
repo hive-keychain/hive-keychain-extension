@@ -15,10 +15,11 @@ const exportSettings = async () => {
     LocalStorageKeyEnum.CURRENT_RPC,
     LocalStorageKeyEnum.SWITCH_RPC_AUTO,
   ]);
-
+  console.log({ val }); //TODO remove line
   var data = new Blob([JSON.stringify(val)], {
     type: 'text/plain',
   });
+  console.log({ data }); //TODO remove line
   var url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;

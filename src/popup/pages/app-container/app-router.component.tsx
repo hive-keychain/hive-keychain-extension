@@ -36,7 +36,7 @@ import { AnalyticsComponent } from '@popup/pages/app-container/settings/advanced
 import { AutoLockComponent } from '@popup/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
-import { ImportExportPreferencesComponent } from '@popup/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
+import { ImportExportComponent } from '@popup/pages/app-container/settings/advanced-settings/import-export/import-export.component';
 import { KeychainifyComponent } from '@popup/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
@@ -141,7 +141,11 @@ const AppRouter = ({
       case Screen.SETTINGS_CLEAR_ALL_DATA:
         return <ClearAllDataComponent />;
       case Screen.SETTINGS_IMPORT_EXPORT:
-        return <ImportExportPreferencesComponent />;
+        return <ImportExportComponent />;
+      //TODO bellow remove
+      // all related to classes, locale messages, etc.
+      // ImportExportPreferencesComponent
+      // return <ImportExportPreferencesComponent />;
       case Screen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;
       case Screen.SETTINGS_AUTHORIZED_OPERATIONS:

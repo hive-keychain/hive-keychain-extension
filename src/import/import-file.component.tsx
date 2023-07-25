@@ -5,6 +5,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
+import Logger from 'src/utils/logger.utils';
 import './import-file.scss';
 
 interface PropsType {
@@ -31,14 +32,18 @@ const ImportFile = ({
     setSelectedFile(event.target.files[0]);
   };
 
-  const importKeysFromFile = async () => {
+  const importBackupFromFile = async () => {
+    console.log('importBackupFromFile', selectedFile); //TODO remove
     if (selectedFile) {
       const base64 = await FileUtils.toBase64(selectedFile);
       const fileData = atob(base64);
+      Logger.log('HI THERE!!'); //TODO remove line
+      console.log({ fileData, callBackCommand }); //TODO remove
       chrome.runtime.sendMessage({
         command: command,
         value: fileData,
       });
+
       if (callBackCommand) {
         chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
       } else {
@@ -52,13 +57,16 @@ const ImportFile = ({
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
+    console.log({ callBackCommand, backgroundMessage }); //TODO remove
     if (backgroundMessage.command === callBackCommand) {
       if (backgroundMessage.value.feedback) {
+        console.log({ feedback: backgroundMessage.value.feedback }); //TODO remove
         setFeedBack(backgroundMessage.value.feedback);
       } else {
-        setTimeout(() => {
-          window.close();
-        }, 3000);
+        //TODO uncomment
+        // setTimeout(() => {
+        //   window.close();
+        // }, 3000);
       }
 
       chrome.runtime.onMessage.removeListener(
@@ -100,7 +108,7 @@ const ImportFile = ({
 
       {selectedFile && (
         <ButtonComponent
-          onClick={importKeysFromFile}
+          onClick={importBackupFromFile}
           label="popup_html_import"
           type={ButtonType.RAISED}
           fixToBottom></ButtonComponent>

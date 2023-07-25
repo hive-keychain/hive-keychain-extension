@@ -204,7 +204,7 @@
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
-    "message": "Import Settings",
+    "message": "Import Accounts & Settings",
     "description": "Import permissions"
   },
   "popup_html_import_key": {
@@ -303,6 +303,14 @@
     "message": "Import / Export Settings",
     "description": "on settings page"
   },
+  "popup_html_import_export": {
+    "message": "Import / Export",
+    "description": "on advance settings"
+  },
+  "popup_html_import_export_caption": {
+    "message": "You can import/export accounts & preferences, all in one file.",
+    "description": "on import/export page"
+  },
   "popup_html_automated_tasks": {
     "message": "Automated tasks",
     "description": "on settings page"
@@ -376,7 +384,7 @@
     "description": "on import / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "Export settings",
+    "message": "Export Accounts & Settings",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
@@ -1317,8 +1325,15 @@
     "message": "Import keys",
     "description": "Title of import keys popup"
   },
+  "import_backup_html_title": {
+    "message": "Import Accounts & Settings",
+    "description": "Title of import backup popup"
+  },
   "import_html_text": {
     "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
+  },
+  "import_backup_html_text": {
+    "message": "Import your accounts & settings, from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
   },
   "import_html_success": {
     "message": "You succesfully imported your keys!"
@@ -1781,9 +1796,17 @@
     "message": "Work in progress...",
     "description": "General"
   },
+  "html_popup_import_backup_successful": {
+    "message": "Successfully imported backup",
+    "description": "Import accounts & settings success message"
+  },
   "html_popup_import_settings_successful": {
     "message": "Successfully imported settings",
     "description": "Import settings success message"
+  },
+  "html_popup_import_backup_error": {
+    "message": "Failed to import backup",
+    "description": "Import backup failed message"
   },
   "html_popup_import_settings_error": {
     "message": "Failed to import settings",

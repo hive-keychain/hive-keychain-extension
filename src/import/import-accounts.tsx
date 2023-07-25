@@ -2,7 +2,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ImportFile from './import-file.component';
-
+//TODO bellow delete all related + locales, etc.
 ReactDOM.render(
   <ImportFile
     title={'import_html_title'}

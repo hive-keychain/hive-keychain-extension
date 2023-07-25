@@ -300,6 +300,8 @@ const isAccountListIdentical = (
 ): boolean => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
+
+//TODO remove block downloadAccounts bellow
 /* istanbul ignore next */
 const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
   const accounts = { list: acc };
