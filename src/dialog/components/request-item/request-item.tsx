@@ -16,11 +16,7 @@ type Props = {
 const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
   switch (type) {
     case RequestItemType.STRING:
-      return (
-        <div className={`operation_item_content ${red ? 'operation-red' : ''}`}>
-          {content}
-        </div>
-      );
+      return content;
     case RequestItemType.LIST:
       return (
         <ul>
@@ -52,7 +48,9 @@ const RequestItem = ({
           <pre>{content}</pre>
         </div>
       ) : (
-        renderContent(content, type, red)
+        <div className={`operation_item_content ${red ? 'operation-red' : ''}`}>
+          {renderContent(content, type, red)}
+        </div>
       )}
     </>
   );
