@@ -4,12 +4,13 @@ import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
@@ -110,7 +111,7 @@ const AutomatedTasks = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.label}`}
+        data-testid={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -132,7 +133,9 @@ const AutomatedTasks = ({
   const isClaimedAccountDisabled =
     activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
   return (
-    <div aria-label="automated-tasks-page" className="automated-tasks-page">
+    <div
+      data-testid={`${Screen.SETTINGS_AUTOMATED_TASKS}-page`}
+      className="automated-tasks-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
@@ -149,7 +152,7 @@ const AutomatedTasks = ({
       </div>
 
       <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-rewards"
+        dataTestId="checkbox-autoclaim-rewards"
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
@@ -158,7 +161,7 @@ const AutomatedTasks = ({
         disabled={!!claimRewardsErrorMessage}
       />
       <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-accounts"
+        dataTestId="checkbox-autoclaim-accounts"
         title="popup_html_enable_autoclaim_accounts"
         checked={claimAccounts && !isClaimedAccountDisabled}
         onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
@@ -175,7 +178,7 @@ const AutomatedTasks = ({
         disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
       />
       <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-savings"
+        dataTestId="checkbox-autoclaim-savings"
         title="popup_html_enable_autoclaim_savings"
         checked={claimSavings}
         onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}

@@ -4,8 +4,9 @@ import { goBack } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
@@ -49,10 +50,10 @@ const Analytics = ({
 
   return (
     <div
-      aria-label="analytics-settings-page"
+      data-testid={`${Screen.SETTINGS_ANALYTICS}-page`}
       className="analytics-settings-page">
       <CheckboxComponent
-        ariaLabel={`checkbox-allow-ga`}
+        dataTestId={`checkbox-allow-ga`}
         title="popup_html_analytics_allow_ga"
         hint="popup_html_analytics_message"
         checked={allowGoogleAnalytics}
@@ -61,7 +62,7 @@ const Analytics = ({
         }}></CheckboxComponent>
 
       <ButtonComponent
-        ariaLabel="button-save"
+        dataTestId="button-save"
         label={'popup_html_save'}
         onClick={() => save()}
         fixToBottom

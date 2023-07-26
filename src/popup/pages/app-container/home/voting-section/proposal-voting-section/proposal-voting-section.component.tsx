@@ -74,7 +74,7 @@ const ProposalVotingSection = ({
   };
   return (
     <div
-      aria-label="proposal-voting-section"
+      data-testid="proposal-voting-section"
       className={`proposal-voting-section ${
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
@@ -90,12 +90,12 @@ const ProposalVotingSection = ({
       {isOpen && (
         <div className="button-panel">
           <ButtonComponent
-            ariaLabel="button-read-proposal"
+            dataTestId="button-read-proposal"
             onClick={handleReadClicked}
             label={'html_popup_read'}
           />
           <OperationButtonComponent
-            ariaLabel="vote-key-chain-proposal"
+            dataTestId="vote-key-chain-proposal"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleVoteForProposalClicked}
             label={'html_popup_vote'}

@@ -9,7 +9,7 @@ interface TooltipProps {
   message?: string;
   messageParams?: any;
   skipTranslation?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
   additionalClassName?: string;
 }
 
@@ -20,7 +20,7 @@ export const CustomTooltip = ({
   messageParams,
   skipTranslation,
   children,
-  ariaLabel,
+  dataTestId,
   additionalClassName,
 }: TooltipProps) => {
   const [isOpen, setOpen] = useState(false);
@@ -42,14 +42,14 @@ export const CustomTooltip = ({
 
   return (
     <div
-      aria-label={ariaLabel}
+      data-testid={dataTestId}
       className={`tooltip-container ${additionalClassName}`}
       onMouseEnter={show}
       onMouseLeave={hide}>
       <div className="tooltip-anchor">{children}</div>
       {isOpen && message && (
         <div
-          aria-label="tooltip-content"
+          data-testid="tooltip-content"
           className={`tooltip ${position ? position : 'top'}`}
           dangerouslySetInnerHTML={{
             __html: skipTranslation

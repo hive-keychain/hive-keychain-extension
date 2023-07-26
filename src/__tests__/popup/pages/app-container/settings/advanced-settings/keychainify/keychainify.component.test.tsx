@@ -1,29 +1,70 @@
-import { waitFor } from '@testing-library/react';
-import keychainify from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/keychainify/mocks/keychainify';
-import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('keychainify.component tests:\n', () => {
-  let _asFragment: () => DocumentFragment;
-  const { methods, constants, extraMocks } = keychainify;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   beforeEach(async () => {
-    _asFragment = await keychainify.beforeEach();
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          ledgerRelated: {
+            LedgerUtils: {
+              isLedgerSupported: true,
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+      );
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.LINK),
+      );
+    });
   });
   it('Must load component and match show intro message', () => {
-    assertion.getByLabelText(alComponent.advanceSettings.link);
-    assertion.getOneByText(constants.message.intro);
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_KEYCHAINIFY}-page`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(chrome.i18n.getMessage('popup_html_keychainify_text'), {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
   });
-  it('Must set keychainify', async () => {
-    await clickAwait([alCheckbox.keychainify.checkbox]);
-    await waitFor(() => {
-      expect(extraMocks.spy().mock.lastCall).toEqual([
-        'keychainify_enabled',
-        false,
-      ]);
+
+  it('Must call saveValueInLocalStorage', async () => {
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(dataTestIdCheckbox.keychainify.checkbox),
+      );
     });
+    expect(sSaveValueInLocalStorage.mock.lastCall[0]).toBe(
+      LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
+    );
+    sSaveValueInLocalStorage.mockRestore();
   });
 });

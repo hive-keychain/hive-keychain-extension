@@ -35,6 +35,7 @@ export const fetchAccountTransactions =
       store.getState().globalProperties.globals!,
       memoKey!,
     );
+
     dispatch({
       type: ActionType.ADD_TRANSACTIONS,
       payload: result,

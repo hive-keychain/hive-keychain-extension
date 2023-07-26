@@ -1,4 +1,5 @@
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
+import { FavoriteUserListName } from '@interfaces/favorite-user.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
@@ -6,7 +7,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { FavoriteUserListName } from 'src/utils/favorite-user.utils';
 import './favorite-accounts-item.component.scss';
 
 interface FavoriteAccountsItemProps {

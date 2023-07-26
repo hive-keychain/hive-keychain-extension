@@ -13,14 +13,22 @@ import { SurveyComponent } from '@popup/pages/app-container/survey/survey.compon
 import { Survey } from '@popup/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
+import {
+  WrongKeyPopupComponent,
+  WrongKeysOnUser,
+} from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
@@ -39,15 +47,18 @@ const Home = ({
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
+    WrongKeysOnUser | undefined
+  >();
 
   useEffect(() => {
     resetTitleContainerProperties();
-
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       refreshActiveAccount();
     }
     initWhatsNew();
     initSurvey();
+    initCheckKeysOnAccounts(accounts);
   }, []);
 
   useEffect(() => {
@@ -95,10 +106,53 @@ const Home = ({
     }
   };
 
+  const initCheckKeysOnAccounts = async (localAccounts: LocalAccount[]) => {
+    const extendedAccountsList = await AccountUtils.getExtendedAccounts(
+      localAccounts.map((acc) => acc.name!),
+    );
+    let foundWrongKey: WrongKeysOnUser;
+    try {
+      let noKeyCheck: WrongKeysOnUser =
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
+      if (!noKeyCheck) noKeyCheck = { [localAccounts[0].name!]: [] };
+
+      for (let i = 0; i < extendedAccountsList.length; i++) {
+        const accountName = localAccounts[i].name!;
+        const keys = localAccounts[i].keys;
+        foundWrongKey = { [accountName]: [] };
+        if (!noKeyCheck.hasOwnProperty(accountName)) {
+          noKeyCheck = { ...noKeyCheck, [accountName]: [] };
+        }
+        for (const [key, value] of Object.entries(keys)) {
+          if (!value.length) continue;
+          foundWrongKey = KeysUtils.checkWrongKeyOnAccount(
+            key,
+            value,
+            accountName,
+            extendedAccountsList[i],
+            foundWrongKey,
+            !!noKeyCheck[accountName].find(
+              (keyName: string) => keyName === key.split('Pubkey')[0],
+            ),
+          );
+        }
+        if (foundWrongKey[accountName].length > 0) {
+          setDisplayWrongKeyPopup(foundWrongKey);
+          break;
+        }
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+  };
+
   const renderPopup = (
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
+    displayWrongKeyPopup: WrongKeysOnUser | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -113,13 +167,20 @@ const Home = ({
       );
     } else if (surveyToDisplay) {
       return <SurveyComponent survey={surveyToDisplay} />;
+    } else if (displayWrongKeyPopup) {
+      return (
+        <WrongKeyPopupComponent
+          displayWrongKeyPopup={displayWrongKeyPopup}
+          setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
+        />
+      );
     }
   };
 
   return (
-    <div className="home-page">
+    <div className={'home-page'}>
       {activeRpc && activeRpc.uri !== 'NULL' && (
-        <div aria-label="home-page-component">
+        <div data-testid={`${Screen.HOME_PAGE}-page`}>
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />
@@ -134,6 +195,7 @@ const Home = ({
         displayWhatsNew,
         governanceAccountsToExpire,
         surveyToDisplay,
+        displayWrongKeyPopup,
       )}
     </div>
   );

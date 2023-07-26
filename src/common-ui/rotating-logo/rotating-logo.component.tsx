@@ -5,7 +5,7 @@ const RotatingLogoComponent = () => (
   <img
     className="rotating-logo"
     src="/assets/images/iconhive.png"
-    aria-label="loading-logo"
+    data-testid="loading-logo"
   />
 );
 

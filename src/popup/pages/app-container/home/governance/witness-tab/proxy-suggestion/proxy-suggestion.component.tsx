@@ -7,7 +7,7 @@ import {
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -75,7 +75,7 @@ const ProxySuggestion = ({
   };
   return (
     <div
-      aria-label="proxy-suggestion"
+      data-testid="proxy-suggestion"
       className={`proxy-suggestion ${
         isMessageContainerDisplayed || forceClosed ? 'hide' : ''
       }`}>
@@ -84,11 +84,11 @@ const ProxySuggestion = ({
       </div>
       <div className="button-panel">
         <ButtonComponent
-          ariaLabel="button-panel-close"
+          dataTestId="button-panel-close"
           label="popup_html_close"
           onClick={handleClose}></ButtonComponent>
         <OperationButtonComponent
-          ariaLabel="operation-ok-button"
+          dataTestId="operation-ok-button"
           requiredKey={KeychainKeyTypesLC.active}
           onClick={handleSetProxy}
           label={'html_popup_set_as_proxy'}

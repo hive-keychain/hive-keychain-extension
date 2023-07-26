@@ -71,4 +71,5 @@ export enum Icons {
   USB = 'usb',
   VISIBLE = 'visibility',
   WARNING = 'warning',
+  WITNESS_DISABLED = 'no_accounts',
 }

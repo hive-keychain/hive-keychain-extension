@@ -1,25 +1,40 @@
 import App from '@popup/App';
-import { screen } from '@testing-library/react';
+import { Icons } from '@popup/icons.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import settingsMainPage from 'src/__tests__/popup/pages/app-container/settings/settings-main-page/mocks/settings-main-page';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('about.component tests:\n', () => {
-  settingsMainPage.methods.afterEach;
-  beforeEach(async () => {
-    await settingsMainPage.beforeEach(<App />);
-    await clickAwait([alButton.menuPreFix + 'info']);
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must show about message', () => {
-    let cleaned = manipulateStrings.removeHtmlTags(
-      settingsMainPage.constants.messages.about,
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
     );
-    expect(screen.getByLabelText(alDiv.about.content)).toHaveTextContent(
-      cleaned,
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+    });
+  });
+  it('Must show about message', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.INFO),
+      );
+    });
+    expect(
+      screen.getByTestId(`${Icons.INFO}-page-content`).textContent,
+    ).toMatch(
+      manipulateStrings.removeHtmlTags(
+        chrome.i18n.getMessage('popup_html_about_text'),
+      ),
     );
   });
 });
