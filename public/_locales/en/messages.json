@@ -1459,7 +1459,7 @@
     "description": "Title of import keys popup"
   },
   "import_backup_html_title": {
-    "message": "Import Accounts & Settings",
+    "message": "Import Backup",
     "description": "Title of import backup popup"
   },
   "import_html_text": {
