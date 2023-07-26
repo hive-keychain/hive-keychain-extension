@@ -5,7 +5,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
-import Logger from 'src/utils/logger.utils';
 import './import-file.scss';
 
 interface PropsType {
@@ -33,12 +32,10 @@ const ImportFile = ({
   };
 
   const importBackupFromFile = async () => {
-    console.log('importBackupFromFile', selectedFile); //TODO remove
     if (selectedFile) {
       const base64 = await FileUtils.toBase64(selectedFile);
       const fileData = atob(base64);
-      Logger.log('HI THERE!!'); //TODO remove line
-      console.log({ fileData, callBackCommand }); //TODO remove
+
       chrome.runtime.sendMessage({
         command: command,
         value: fileData,
@@ -57,22 +54,31 @@ const ImportFile = ({
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    console.log({ callBackCommand, backgroundMessage }); //TODO remove
     if (backgroundMessage.command === callBackCommand) {
       if (backgroundMessage.value.feedback) {
-        console.log({ feedback: backgroundMessage.value.feedback }); //TODO remove
         setFeedBack(backgroundMessage.value.feedback);
-      } else {
-        //TODO uncomment
-        // setTimeout(() => {
-        //   window.close();
-        // }, 3000);
+      } else if (
+        backgroundMessage.command === BackgroundCommand.IMPORT_BACKUP_CALLBACK
+      ) {
+        setFeedBack({
+          message: 'html_popup_import_backup_successful',
+          params: null,
+        });
+      } else if (
+        backgroundMessage.command ===
+          BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS &&
+        backgroundMessage.value.accounts
+      ) {
+        setFeedBack({
+          message: 'html_popup_import_accounts_successful',
+          params: null,
+        });
       }
-
-      chrome.runtime.onMessage.removeListener(
-        onCallBackCommandeMessageListener,
-      );
     }
+    chrome.runtime.onMessage.removeListener(onCallBackCommandeMessageListener);
+    setTimeout(() => {
+      window.close();
+    }, 5000);
   };
 
   const handleOpenFileInput = () => {

@@ -301,20 +301,6 @@ const isAccountListIdentical = (
   return JSON.stringify(a) === JSON.stringify(b);
 };
 
-//TODO remove block downloadAccounts bellow
-/* istanbul ignore next */
-const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
-  const accounts = { list: acc };
-  var data = new Blob([await AccountUtils.encryptAccounts(accounts, mk)], {
-    type: 'text/plain',
-  });
-  var url = window.URL.createObjectURL(data);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'accounts.kc';
-  a.click();
-};
-
 const getAccountValue = (
   {
     hbd_balance,
@@ -561,7 +547,6 @@ const AccountUtils = {
   deleteKey,
   isAccountListIdentical,
   deleteAccount,
-  downloadAccounts,
   getKeys,
   getAccountValue,
   getPublicMemo,

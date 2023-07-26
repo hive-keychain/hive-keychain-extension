@@ -55,21 +55,17 @@ const chromeMessageHandler = async (
       MkModule.saveMk(backgroundMessage.value);
       break;
     case BackgroundCommand.IMPORT_BACKUP:
-      console.log({ backgroundMessage }); //TODO remove
-      //TODO bellow uncomment & finish
       const { settings, accounts } = JSON.parse(backgroundMessage.value);
-      console.log({ settings, accounts }); //TODO remove line
-      await AccountModule.sendBackImportedAccounts(accounts);
       await SettingsModule.sendBackImportedFileContent(settings);
-      //send success message html_popup_import_backup_successful
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.SEND_BACK_IMPORTED_BACKUP,
-        value: 'html_popup_import_backup_successful',
-      });
+      await AccountModule.sendBackImportedAccounts(
+        accounts,
+        backgroundMessage.command,
+      );
       break;
-    //TODO check bellow what to remove/delete
     case BackgroundCommand.IMPORT_ACCOUNTS:
-      AccountModule.sendBackImportedAccounts(backgroundMessage.value);
+      AccountModule.sendBackImportedAccounts(
+        JSON.parse(backgroundMessage.value).accounts,
+      );
       break;
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
@@ -121,12 +117,6 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);
-      break;
-    //TODO delete bellow as not needed anymore & delete those bg enums
-    case BackgroundCommand.SEND_BACK_SETTINGS:
-      SettingsModule.sendBackImportedFileContent(
-        JSON.parse(backgroundMessage.value),
-      );
       break;
     case BackgroundCommand.PING:
       Logger.log('ping');

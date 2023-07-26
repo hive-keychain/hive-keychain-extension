@@ -8,4 +8,25 @@
   .caption {
     font-size: 16px;
   }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+    margin-top: 32px;
+  }
+
+  .button-import-export {
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo {
+    margin-left: 4px !important;
+    position: relative !important;
+    right: inherit !important;
+    bottom: inherit !important;
+  }
 }

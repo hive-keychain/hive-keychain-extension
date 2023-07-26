@@ -9,7 +9,7 @@ ReactDOM.render(
     text={'import_backup_html_text'}
     command={BackgroundCommand.IMPORT_BACKUP}
     accept={'.kc'}
-    callBackCommand={BackgroundCommand.SEND_BACK_IMPORTED_BACKUP}
+    callBackCommand={BackgroundCommand.IMPORT_BACKUP_CALLBACK}
   />,
   document.getElementById('root'),
 );

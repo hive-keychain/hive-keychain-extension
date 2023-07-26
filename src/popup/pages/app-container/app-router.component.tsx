@@ -142,10 +142,6 @@ const AppRouter = ({
         return <ClearAllDataComponent />;
       case Screen.SETTINGS_IMPORT_EXPORT:
         return <ImportExportComponent />;
-      //TODO bellow remove
-      // all related to classes, locale messages, etc.
-      // ImportExportPreferencesComponent
-      // return <ImportExportPreferencesComponent />;
       case Screen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;
       case Screen.SETTINGS_AUTHORIZED_OPERATIONS:

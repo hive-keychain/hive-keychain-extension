@@ -6,15 +6,12 @@ export enum BackgroundCommand {
   SEND_BACK_MK = 'sendBackMk',
   SAVE_MK = 'saveMk',
 
-  //TODO in import section check what to delete
   // Import
   IMPORT_ACCOUNTS = 'importAccounts',
   SEND_BACK_IMPORTED_ACCOUNTS = 'sendBackimportedAccounts',
-  SEND_BACK_SETTINGS = 'sendBackSettings',
-  IMPORT_SETTINGS_CALLBACK = 'importSettingsCallback',
-
   IMPORT_BACKUP = 'importBackup',
   SEND_BACK_IMPORTED_BACKUP = 'sendBackimportedBackup',
+  IMPORT_BACKUP_CALLBACK = 'importBackupCallback',
 
   //RPC
   SAVE_RPC = 'saveRPC',

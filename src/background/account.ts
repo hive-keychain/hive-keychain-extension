@@ -5,8 +5,15 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const sendBackImportedAccounts = async (fileContent: string) => {
+const sendBackImportedAccounts = async (
+  fileContent: string,
+  initialBackgroundCommand?: BackgroundCommand,
+) => {
   if (fileContent?.length) {
+    const callBackCommand =
+      initialBackgroundCommand === BackgroundCommand.IMPORT_BACKUP
+        ? BackgroundCommand.IMPORT_BACKUP_CALLBACK
+        : BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS;
     const mk = await MkModule.getMk();
     let importedAccounts;
     try {
@@ -14,10 +21,9 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         fileContent,
         mk,
       );
-      console.log({ importedAccounts }); //TODO remove line
     } catch (e) {
       chrome.runtime.sendMessage({
-        command: BackgroundCommand.SEND_BACK_IMPORTED_BACKUP,
+        command: callBackCommand,
         value: { feedback: { message: 'import_html_error' } },
       });
       return;
@@ -36,7 +42,6 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         importedAccounts,
         accounts.list || [],
       );
-    console.log({ newAccounts }); //TODO remove line
     const newAccountsEncrypted = EncryptUtils.encryptJson(
       { list: newAccounts },
       mk,
@@ -54,7 +59,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     );
     const extensionId = (await chrome.management.getSelf()).id;
     chrome.runtime.sendMessage({
-      command: BackgroundCommand.SEND_BACK_IMPORTED_BACKUP,
+      command: callBackCommand,
       value: {
         accounts: newAccounts,
         feedback: useLedger

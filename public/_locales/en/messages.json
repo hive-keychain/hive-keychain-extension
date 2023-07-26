@@ -1797,20 +1797,16 @@
     "description": "General"
   },
   "html_popup_import_backup_successful": {
-    "message": "Successfully imported backup",
+    "message": "Successfully imported backup.<br />You can close this window or it will self close.",
     "description": "Import accounts & settings success message"
   },
-  "html_popup_import_settings_successful": {
-    "message": "Successfully imported settings",
-    "description": "Import settings success message"
+  "html_popup_import_accounts_successful": {
+    "message": "Successfully imported accounts.<br />You can close this window or it will self close.",
+    "description": "Import accounts success message"
   },
   "html_popup_import_backup_error": {
     "message": "Failed to import backup",
     "description": "Import backup failed message"
-  },
-  "html_popup_import_settings_error": {
-    "message": "Failed to import settings",
-    "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
     "message": "For more information, click here to access the witness database",
