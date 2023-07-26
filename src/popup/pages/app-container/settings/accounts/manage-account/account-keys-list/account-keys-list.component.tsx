@@ -4,7 +4,10 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { WrongKeysOnUser } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
@@ -37,6 +40,7 @@ const AccountKeysList = ({
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  goBack,
 }: PropsType & AccountKeysListProps) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState<LocalAccount>();
@@ -90,9 +94,11 @@ const AccountKeysList = ({
           activeAccount.name!,
           accounts,
         );
+
         let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
+
         if (no_key_check && no_key_check.hasOwnProperty(activeAccount.name!)) {
           delete no_key_check[activeAccount.name!];
           if (Object.keys(no_key_check).length === 0) no_key_check = null;
@@ -127,12 +133,12 @@ const AccountKeysList = ({
         } else {
           finalAccounts = newAccounts;
         }
-
         setAccounts(finalAccounts);
         if (finalAccounts.length) {
           loadActiveAccount(finalAccounts[0]);
         }
         removeFromLoadingList('html_popup_delete_account_operation');
+        goBack();
       },
     });
   };
@@ -218,6 +224,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  goBack,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

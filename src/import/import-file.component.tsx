@@ -31,14 +31,16 @@ const ImportFile = ({
     setSelectedFile(event.target.files[0]);
   };
 
-  const importKeysFromFile = async () => {
+  const importBackupFromFile = async () => {
     if (selectedFile) {
       const base64 = await FileUtils.toBase64(selectedFile);
       const fileData = atob(base64);
+
       chrome.runtime.sendMessage({
         command: command,
         value: fileData,
       });
+
       if (callBackCommand) {
         chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
       } else {
@@ -55,16 +57,28 @@ const ImportFile = ({
     if (backgroundMessage.command === callBackCommand) {
       if (backgroundMessage.value.feedback) {
         setFeedBack(backgroundMessage.value.feedback);
-      } else {
-        setTimeout(() => {
-          window.close();
-        }, 3000);
+      } else if (
+        backgroundMessage.command === BackgroundCommand.IMPORT_BACKUP_CALLBACK
+      ) {
+        setFeedBack({
+          message: 'html_popup_import_backup_successful',
+          params: null,
+        });
+      } else if (
+        backgroundMessage.command ===
+          BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS &&
+        backgroundMessage.value.accounts
+      ) {
+        setFeedBack({
+          message: 'html_popup_import_accounts_successful',
+          params: null,
+        });
       }
-
-      chrome.runtime.onMessage.removeListener(
-        onCallBackCommandeMessageListener,
-      );
     }
+    chrome.runtime.onMessage.removeListener(onCallBackCommandeMessageListener);
+    setTimeout(() => {
+      window.close();
+    }, 5000);
   };
 
   const handleOpenFileInput = () => {
@@ -100,7 +114,7 @@ const ImportFile = ({
 
       {selectedFile && (
         <ButtonComponent
-          onClick={importKeysFromFile}
+          onClick={importBackupFromFile}
           label="popup_html_import"
           type={ButtonType.RAISED}
           fixToBottom></ButtonComponent>

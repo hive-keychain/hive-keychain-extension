@@ -30,7 +30,6 @@ const AddKey = ({
       title: 'popup_html_add_key',
       isBackButtonEnabled: true,
     });
-    console.log('Called using: ', keyType);
   });
 
   const importKey = async () => {

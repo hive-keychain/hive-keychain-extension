@@ -16,7 +16,7 @@ const ManageAccount = ({
 }: PropsFromRedux) => {
   const [wrongKeysFound, setWrongKeysFound] = useState<
     WrongKeysOnUser | undefined
-  >();
+  >(undefined);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -32,19 +32,21 @@ const ManageAccount = ({
       );
       let tempFoundWrongKeys: WrongKeysOnUser;
       tempFoundWrongKeys = { [activeAccount.name!]: [] };
-      for (const [key, value] of Object.entries(selectedLocalAccount!.keys)) {
-        tempFoundWrongKeys = KeysUtils.checkWrongKeyOnAccount(
-          key,
-          value,
-          activeAccount.name!,
-          activeAccount.account,
-          tempFoundWrongKeys,
-        );
-      }
-      if (tempFoundWrongKeys[activeAccount.name!].length > 0) {
-        setWrongKeysFound(tempFoundWrongKeys);
-      } else {
-        setWrongKeysFound(undefined);
+      if (selectedLocalAccount) {
+        for (const [key, value] of Object.entries(selectedLocalAccount!.keys)) {
+          tempFoundWrongKeys = KeysUtils.checkWrongKeyOnAccount(
+            key,
+            value,
+            activeAccount.name!,
+            activeAccount.account,
+            tempFoundWrongKeys,
+          );
+        }
+        if (tempFoundWrongKeys[activeAccount.name!].length > 0) {
+          setWrongKeysFound(tempFoundWrongKeys);
+        } else {
+          setWrongKeysFound(undefined);
+        }
       }
     }
   }, [activeAccount]);

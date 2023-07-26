@@ -40,10 +40,16 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       },
     },
     {
-      label: 'popup_html_import_export_settings',
+      label: 'popup_html_import_export',
       icon: Icons.IMPORT_EXPORT,
       nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
     },
+    //TODO delete bellow & corresponding locale messages.
+    // {
+    //   label: 'popup_html_import_export_settings',
+    //   icon: Icons.IMPORT_EXPORT,
+    //   nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
+    // },
     {
       label: 'popup_html_clear',
       icon: Icons.CLEAR,

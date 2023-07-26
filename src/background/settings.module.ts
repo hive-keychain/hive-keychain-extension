@@ -156,15 +156,11 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
     }
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_successful',
-    });
   } catch (err) {
     Logger.error(err);
     chrome.runtime.sendMessage({
-      command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_error',
+      command: BackgroundCommand.IMPORT_BACKUP_CALLBACK,
+      value: { feedback: { message: 'html_popup_import_backup_error' } },
     });
   }
 };

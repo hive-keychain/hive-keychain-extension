@@ -54,8 +54,18 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SAVE_MK:
       MkModule.saveMk(backgroundMessage.value);
       break;
+    case BackgroundCommand.IMPORT_BACKUP:
+      const { settings, accounts } = JSON.parse(backgroundMessage.value);
+      await SettingsModule.sendBackImportedFileContent(settings);
+      await AccountModule.sendBackImportedAccounts(
+        accounts,
+        backgroundMessage.command,
+      );
+      break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
-      AccountModule.sendBackImportedAccounts(backgroundMessage.value);
+      AccountModule.sendBackImportedAccounts(
+        JSON.parse(backgroundMessage.value).accounts,
+      );
       break;
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
@@ -107,11 +117,6 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);
-      break;
-    case BackgroundCommand.SEND_BACK_SETTINGS:
-      SettingsModule.sendBackImportedFileContent(
-        JSON.parse(backgroundMessage.value),
-      );
       break;
     case BackgroundCommand.PING:
       Logger.log('ping');

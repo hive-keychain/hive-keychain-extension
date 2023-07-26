@@ -10,7 +10,7 @@ const config = {
     dialog: './src/dialog/index.tsx',
     background: './src/background/index.ts',
     importAccounts: './src/import/import-accounts.tsx',
-    importSettings: './src/import/import-settings.tsx',
+    importBackup: './src/import/import-backup.tsx',
     addKeyFromLedger: './src/ledger/add-key/index.tsx',
     linkLedgerDevice: './src/ledger/link-device/index.tsx',
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
