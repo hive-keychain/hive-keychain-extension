@@ -4,8 +4,9 @@
 .splashscreen {
   .loading-animation-container {
     display: flex;
-    width: 100px;
-    height: 140px;
+    margin-top: -20px;
+    width: 140px;
+    height: auto;
     justify-content: space-around;
     .first,
     .second,
