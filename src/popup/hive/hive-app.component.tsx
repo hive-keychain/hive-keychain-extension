@@ -319,7 +319,7 @@ const HiveApp = ({
         displayChangeRpcPopup,
         switchToRpc,
       )}
-      {displaySplashscreen || (true && <SplashscreenComponent />)}
+      {displaySplashscreen && <SplashscreenComponent />}
     </div>
   );
 };

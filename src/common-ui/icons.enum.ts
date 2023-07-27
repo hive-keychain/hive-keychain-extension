@@ -134,6 +134,7 @@ export enum NewIcons {
   THEME_DARK_MODE = 'light-mode',
   THEME_LIGHT_MODE = 'light-mode',
   TOKEN_DELEGATION = 'token-delegation',
+  TOKEN_OUTGOING_DELEGATION = 'token-outgoing-delegation',
   TOKEN_STAKE = 'token-stake',
   TOKEN_UNSTAKE = 'token-unstake',
   TWITTER = 'twitter',
