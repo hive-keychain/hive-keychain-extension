@@ -2,10 +2,11 @@
 @import '@common-style/mixins.scss';
 
 .sign-in-page {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 55px;
+  padding: 55px 20px 32px;
   row-gap: 36px;
   .logo-white {
     width: 228px;
@@ -38,13 +39,24 @@
     }
   }
 
-  .reset-password-link {
-    @include poppins600(12px);
-    color: $dark-blue;
-    cursor: pointer;
-    text-decoration: underline;
-    &:hover {
-      color: $red;
+  .password-input {
+    width: 100%;
+  }
+
+  .action-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    align-items: center;
+    .reset-password-link {
+      @include poppins600(12px);
+      color: $dark-blue;
+      cursor: pointer;
+      text-decoration: underline;
+      &:hover {
+        color: $red;
+      }
     }
   }
 }

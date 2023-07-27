@@ -34,7 +34,7 @@ $message-container-info: black;
 $message-container-error: $red-dark;
 
 //sizes
-$input-font-size: 16px;
+$input-font-size: 15px;
 $input-height: 36px;
 $input-logo-size: 20px;
 $input-hint-font-size: 15px;
@@ -84,4 +84,8 @@ $caption-font-size: 16px;
   background: $extra-light-grey;
   width: 80%;
   align-self: center;
+}
+
+.divider {
+  flex: 1;
 }

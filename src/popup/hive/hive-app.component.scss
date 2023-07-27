@@ -1,9 +1,5 @@
 @import '/src/common-style/variable.scss';
-@font-face {
-  font-family: Futura;
-  src: url('/assets/fonts/Futura-Boo.otf');
-  font-weight: 400;
-}
+@import '/src/common-style/mixins.scss';
 
 .App {
   height: 600px;
@@ -19,9 +15,6 @@
     row-gap: 32px;
     grid-template-rows: 28px 1fr;
     height: 100%;
-  }
-  .divider {
-    flex: 1;
   }
 
   .change-rpc-popup {
@@ -66,10 +59,33 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
-        padding-box,
-      linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
-        padding-box !important;
+    background: $dark-background;
+
+    .logo {
+      z-index: 2;
+    }
+
+    .overlay {
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      background-color: #212838;
+
+      & > div {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        background-image: url(assets/images/background.svg);
+        background-repeat: no-repeat;
+        opacity: 0.4;
+        &.top {
+          background-position-y: -44%;
+        }
+        &.bottom {
+          background-position-y: 135%;
+        }
+      }
+    }
 
     .caption {
       font-size: 32px;

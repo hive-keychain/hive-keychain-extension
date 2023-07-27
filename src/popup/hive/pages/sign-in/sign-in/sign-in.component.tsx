@@ -2,7 +2,7 @@ import MkUtils from '@hiveapp/utils/mk.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -60,24 +60,28 @@ const SignIn = ({
       </div>
 
       <InputComponent
+        classname="password-input"
         value={password}
         onChange={setPassword}
-        logo={Icons.PASSWORD}
+        label="popup_html_password"
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
         dataTestId={'password-input'}
       />
-      <ButtonComponent
-        label={'popup_html_signin'}
-        onClick={login}
-        dataTestId={'login-button'}
-      />
-      <div
-        className="reset-password-link"
-        onClick={goToForgetPassword}
-        data-testid="reset-password-link">
-        {chrome.i18n.getMessage('popup_html_forgot')}
+      <div className="divider"></div>
+      <div className="action-panel">
+        <ButtonComponent
+          label={'popup_html_signin'}
+          onClick={login}
+          dataTestId={'login-button'}
+        />
+        <div
+          className="reset-password-link"
+          onClick={goToForgetPassword}
+          data-testid="reset-password-link">
+          {chrome.i18n.getMessage('popup_html_forgot')}
+        </div>
       </div>
     </div>
   );

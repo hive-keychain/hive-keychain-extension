@@ -1,0 +1,34 @@
+@import '@common-style/variable.scss';
+@import '@common-style/keyframes.scss';
+
+.splashscreen {
+  .loading-animation-container {
+    display: flex;
+    width: 100px;
+    height: 140px;
+    justify-content: space-around;
+    .first,
+    .second,
+    .third {
+      border-radius: 50%;
+      width: 1em;
+      height: 1em;
+      transform-origin: 50% 100%;
+      animation: bounce 2s linear infinite;
+    }
+
+    .ball {
+      display: flex;
+      margin: 1.5em;
+      width: 1em;
+      height: 1em;
+      background: white;
+      &.second {
+        animation-delay: 0.1s;
+      }
+      &.third {
+        animation-delay: 0.2s;
+      }
+    }
+  }
+}

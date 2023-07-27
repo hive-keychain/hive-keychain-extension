@@ -1,0 +1,82 @@
+@keyframes bounce {
+  from {
+    transform: translateY(0) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  to {
+    transform: translateY(0) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  9% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: linear;
+  }
+  29% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: linear;
+  }
+  49% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: linear;
+  }
+  69% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: linear;
+  }
+  10% {
+    transform: translateY(5em) scale(1.5, 0.5);
+    animation-timing-function: linear;
+  }
+  11% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  31% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  51% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  71% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  91% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-out;
+  }
+  20% {
+    transform: translateY(2.5em) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  30% {
+    transform: translateY(5em) scale(1.25, 0.75);
+    animation-timing-function: linear;
+  }
+  40% {
+    transform: translateY(3.75em) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  50% {
+    transform: translateY(5em) scale(1.125, 0.875);
+    animation-timing-function: linear;
+  }
+  60% {
+    transform: translateY(4.375em) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  70% {
+    transform: translateY(5em) scale(1.0625, 0.9375);
+    animation-timing-function: linear;
+  }
+  85% {
+    transform: translateY(5em) scale(1, 1);
+    animation-timing-function: ease-in;
+  }
+  90% {
+    transform: translateY(5em) scale(1.875, 0.125);
+    animation-timing-function: ease-in-out;
+  }
+}

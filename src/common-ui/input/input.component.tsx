@@ -1,14 +1,14 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
 import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
 interface InputProps {
   value: any;
-  logo?: Icons | string;
+  logo?: Icons | string | NewIcons;
   label?: string;
   placeholder: string;
   type: InputType;
@@ -25,6 +25,7 @@ interface InputProps {
   hasError?: boolean;
   dataTestId?: string;
   disabled?: boolean;
+  classname?: string;
   onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
@@ -52,7 +53,7 @@ const InputComponent = (props: InputProps) => {
   };
 
   return (
-    <div className="custom-input">
+    <div className={`custom-input ${props.classname ?? ''}`}>
       {props.label && (
         <div className="label">
           {props.skipLabelTranslation
@@ -94,26 +95,29 @@ const InputComponent = (props: InputProps) => {
           onBlur={() => handleOnBlur()}
         />
         {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-          <Icon
+          <SVGIcon
+            icon={NewIcons.VISIBLE}
+            className="input-img display-password"
             onClick={() => setPasswordDisplayed(true)}
-            name={Icons.VISIBLE}
-            additionalClassName="input-img display-password"></Icon>
+          />
         )}
         {props.type === InputType.PASSWORD && isPasswordDisplay && (
-          <Icon
+          <SVGIcon
+            icon={NewIcons.HIDE}
+            className="input-img display-password"
             onClick={() => setPasswordDisplayed(false)}
-            name={Icons.HIDDEN}
-            additionalClassName="input-img display-password"></Icon>
+          />
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
           props.value &&
           props.value.length > 0 && (
-            <Icon
+            <SVGIcon
               dataTestId="input-clear"
+              icon={NewIcons.CLEAR_ALL}
+              className="input-img erase"
               onClick={() => props.onChange('')}
-              name={Icons.CLEAR}
-              additionalClassName="input-img erase"></Icon>
+            />
           )}
         {isFocused && props.autocompleteValues && (
           <AutocompleteBox
@@ -130,15 +134,14 @@ const InputComponent = (props: InputProps) => {
           </div>
         )}
         {props.logo && (
-          <Icon name={props.logo} additionalClassName="input-img"></Icon>
+          <SVGIcon icon={props.logo as NewIcons} className="input-img" />
         )}
         {props.onSetToMaxClicked && (
-          <span
+          <SVGIcon
             data-testid="set-to-max-button"
-            className="set-to-max-button"
-            onClick={props.onSetToMaxClicked}>
-            {chrome.i18n.getMessage('popup_html_send_max')}
-          </span>
+            icon={NewIcons.MAX}
+            onClick={props.onSetToMaxClicked}
+          />
         )}
       </div>
     </div>

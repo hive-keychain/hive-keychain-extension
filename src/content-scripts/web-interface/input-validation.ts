@@ -303,7 +303,12 @@ const recurrentTransfer = Joi.object({
   rpc,
 });
 
+const encodeMultisig = Joi.object({
+  username,
+});
+
 const schemas = {
+  encodeMultisig,
   decode,
   encode,
   signBuffer,

@@ -1,9 +1,12 @@
-@import '/src/common-style/variable.scss';
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
 
 $autoCompleteItemHeight: 30px;
+$placeholderColor: rgba(92, 100, 113, 0.5);
 .custom-input {
   .label {
-    font-size: 16px;
+    color: $dark-blue;
+    @include poppins600(14px);
   }
   .input-container {
     position: relative;
@@ -13,23 +16,19 @@ $autoCompleteItemHeight: 30px;
     user-select: none;
 
     input {
+      @include poppins500($input-font-size);
       width: 100%;
-      height: $input-height + 2;
+      background: white;
+      padding: 16px;
       box-sizing: border-box;
-      background: transparent;
-      opacity: 1;
-      padding-left: 66px;
-      font-size: $input-font-size;
-      color: white;
+      color: $dark-blue;
       border-style: unset;
-      border-bottom: solid 1px $grey;
+      border-radius: 66px;
+      border: 1px solid $lighter-grey-border;
 
       &::placeholder {
-        color: $grey;
-        font-family: Futura;
-        font-size: $input-font-size;
-
-        padding-top: 10px;
+        color: $placeholderColor;
+        @include poppins400(15px);
       }
 
       &.has-error {
@@ -50,7 +49,7 @@ $autoCompleteItemHeight: 30px;
     }
 
     &.no-logo > input {
-      padding-left: 12px;
+      padding-left: 20px;
     }
 
     &.password-type > input {
@@ -59,11 +58,7 @@ $autoCompleteItemHeight: 30px;
 
     .input-img {
       position: absolute;
-      top: 8px;
       left: 12px;
-      width: 24px;
-      height: 30px;
-      font-size: $input-logo-size;
     }
 
     .focused {
@@ -76,18 +71,19 @@ $autoCompleteItemHeight: 30px;
       left: unset;
       right: 20px;
       cursor: pointer;
-      width: 28px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
     }
 
     .erase {
       display: none;
-      // top: 18px;
-      top: 8px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
       left: unset;
       right: 20px;
       cursor: pointer;
-      height: 14px;
-      width: 14px;
     }
 
     &:hover {

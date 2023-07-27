@@ -10,7 +10,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import {
@@ -319,12 +319,7 @@ const HiveApp = ({
         displayChangeRpcPopup,
         switchToRpc,
       )}
-      {displaySplashscreen && (
-        <div className="splashscreen">
-          <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">HIVE KEYCHAIN</div>
-        </div>
-      )}
+      {displaySplashscreen || (true && <SplashscreenComponent />)}
     </div>
   );
 };
