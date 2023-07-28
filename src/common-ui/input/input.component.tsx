@@ -1,6 +1,6 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
-import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
+import { AutocompleteBox } from 'src/common-ui/autocomplete/autocomplete-box.component';
 import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { InputType } from './input-type.enum';
@@ -125,11 +125,11 @@ const InputComponent = (props: InputProps) => {
                 onClick={() => props.onChange('')}
               />
             )}
-          {isFocused && props.autocompleteValues && (
+          {(isFocused || true) && props.autocompleteValues && (
             <AutocompleteBox
               autoCompleteValues={props.autocompleteValues}
               handleOnChange={props.onChange}
-              propsValue={props.value}
+              value={props.value}
             />
           )}
           {props.logo && (

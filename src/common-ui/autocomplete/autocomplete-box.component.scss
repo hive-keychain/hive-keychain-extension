@@ -1,24 +1,27 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 $autoCompleteItemHeight: 30px;
 .autocomplete-panel {
   position: absolute;
+  top: 46px;
   width: 100%;
   z-index: 2;
   font-size: $input-font-size;
-  background-color: $black;
-  color: white;
+  background-color: #f7f8f9;
+  border: 1px solid $light-grey-border;
+  border-radius: 24px;
+  color: $dark-blue;
   box-sizing: border-box;
-  max-height: $autoCompleteItemHeight * 5;
+  min-height: $autoCompleteItemHeight * 2;
+  max-height: $autoCompleteItemHeight * 8;
   overflow: auto;
 
   .category {
+    margin-left: 20px;
     padding-top: 8px;
     .title {
-      font-weight: bold;
-      margin-left: 10px;
-      font-size: 18px;
-      font-style: italic;
+      @include poppins600(16px);
     }
   }
 }

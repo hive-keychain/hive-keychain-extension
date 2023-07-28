@@ -12,13 +12,13 @@ type Props = {
   autoCompleteValues?: AutoCompleteValuesType;
   translateSimpleAutoCompleteValues?: boolean;
   handleOnChange: (value: any) => void;
-  propsValue: any;
+  value: any;
 };
-const AutocompleteBox = ({
+export const AutocompleteBox = ({
   autoCompleteValues,
   translateSimpleAutoCompleteValues,
   handleOnChange,
-  propsValue,
+  value,
 }: Props) => {
   const [filteredValues, setFilteredValues] = useState<AutoCompleteValuesType>(
     autoCompleteValues ? autoCompleteValues : [],
@@ -26,7 +26,7 @@ const AutocompleteBox = ({
 
   useEffect(() => {
     if (autoCompleteValues) {
-      const lowerCaseSearchValue = String(propsValue).toLowerCase();
+      const lowerCaseSearchValue = String(value).toLowerCase();
       if (!!(autoCompleteValues as AutoCompleteValues).categories) {
         setFilteredValues({
           categories: AutoCompleteUtils.filterCategoriesList(
@@ -50,7 +50,7 @@ const AutocompleteBox = ({
         );
       }
     }
-  }, [propsValue, autoCompleteValues]);
+  }, [value, autoCompleteValues]);
 
   const renderList = (values: AutoCompleteValuesType) => {
     if (!!(autoCompleteValues as AutoCompleteValues).categories) {
@@ -101,5 +101,3 @@ const AutocompleteBox = ({
 
   return <div className="autocomplete-panel">{renderList(filteredValues)}</div>;
 };
-
-export default AutocompleteBox;
