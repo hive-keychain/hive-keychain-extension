@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins:wght@300;400;500;600;700&display=swap');
 $dark-red: #a5112c;
 $red: #e31337;
 $light-red: #fdebee;
 $dark-blue: #212838;
 $light-blue: #347abc2b;
 $light-grey: #929292;
-$dark-grey: #484848;
+$dark-grey: #7f8288;
+$darker-grey: #484848;
 $light-background: #e5edf5;
 $dark-background: #212838;
 $light-green: #dff6e1;
@@ -80,9 +81,16 @@ $caption-font-size: 16px;
 }
 
 .separator {
-  height: 1px;
   background: $extra-light-grey;
-  width: 80%;
+  height: 100%;
+  width: 2px;
+  align-self: center;
+}
+
+.vertical-separator {
+  height: 80%;
+  width: 1px;
+  background: $extra-light-grey;
   align-self: center;
 }
 

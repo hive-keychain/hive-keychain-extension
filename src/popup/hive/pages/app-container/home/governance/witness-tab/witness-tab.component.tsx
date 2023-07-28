@@ -7,7 +7,7 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';

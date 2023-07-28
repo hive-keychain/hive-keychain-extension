@@ -1,0 +1,17 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
+.balance-section {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  align-items: center;
+  .label {
+    @include poppins400(14px);
+    color: $dark-grey;
+  }
+  .value {
+    @include poppins700(40px);
+    color: $dark-blue;
+  }
+}

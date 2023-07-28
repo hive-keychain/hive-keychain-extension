@@ -175,7 +175,7 @@ const IncomingOutgoing = ({
                 type={InputType.NUMBER}
                 onChange={setValue}
                 placeholder=""
-                onSetToMaxClicked={() => setToMax()}></InputComponent>
+                rightActionClicked={() => setToMax()}></InputComponent>
             )}
             {delegationType === DelegationType.OUTGOING &&
               !editModeActivated && (

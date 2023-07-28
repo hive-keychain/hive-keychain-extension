@@ -28,7 +28,8 @@ interface InputProps {
   classname?: string;
   onChange: (value: any) => void;
   onEnterPress?(): any;
-  onSetToMaxClicked?(): any;
+  rightActionClicked?(): any;
+  rightActionIcon?: NewIcons;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -60,88 +61,91 @@ const InputComponent = (props: InputProps) => {
             ? props.label
             : chrome.i18n.getMessage(props.label)}{' '}
           {props.required ? '*' : ''}
+          {props.hint && (
+            <div className="hint">
+              {props.skipHintTranslation
+                ? props.hint
+                : chrome.i18n.getMessage(props.hint)}
+            </div>
+          )}
         </div>
       )}
-      <div
-        className={`input-container ${props.logo ? '' : 'no-logo'} ${
-          props.type === InputType.PASSWORD ? 'password-type' : ''
-        } ${isFocused ? 'focused' : ''} `}>
-        <input
-          data-testid={props.dataTestId}
-          className={`${props.hasError ? 'has-error' : ''} ${
-            props.onSetToMaxClicked ? 'has-max-button' : ''
-          }`}
-          type={
-            props.type === InputType.PASSWORD && isPasswordDisplay
-              ? InputType.TEXT
-              : props.type
-          }
-          placeholder={`${
-            props.skipPlaceholderTranslation
-              ? props.placeholder
-              : chrome.i18n.getMessage(props.placeholder)
-          } ${props.required ? '*' : ''}`}
-          value={props.value}
-          step={props.step}
-          min={props.min}
-          max={props.max}
-          onChange={(e) => props.onChange(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && props.onEnterPress) {
-              props.onEnterPress();
+      <div className={`custom-input-content`}>
+        <div
+          className={`input-container ${props.logo ? 'has-logo' : 'no-logo'} ${
+            props.type === InputType.PASSWORD ? 'password-type' : ''
+          } ${isFocused ? 'focused' : ''}`}>
+          <input
+            data-testid={props.dataTestId}
+            className={`${props.hasError ? 'has-error' : ''}`}
+            type={
+              props.type === InputType.PASSWORD && isPasswordDisplay
+                ? InputType.TEXT
+                : props.type
             }
-          }}
-          onFocus={() => handleOnFocus()}
-          onBlur={() => handleOnBlur()}
-        />
-        {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-          <SVGIcon
-            icon={NewIcons.VISIBLE}
-            className="input-img display-password"
-            onClick={() => setPasswordDisplayed(true)}
+            placeholder={`${
+              props.skipPlaceholderTranslation
+                ? props.placeholder
+                : chrome.i18n.getMessage(props.placeholder)
+            } ${props.required ? '*' : ''}`}
+            value={props.value}
+            step={props.step}
+            min={props.min}
+            max={props.max}
+            onChange={(e) => props.onChange(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && props.onEnterPress) {
+                props.onEnterPress();
+              }
+            }}
+            onFocus={() => handleOnFocus()}
+            onBlur={() => handleOnBlur()}
           />
-        )}
-        {props.type === InputType.PASSWORD && isPasswordDisplay && (
-          <SVGIcon
-            icon={NewIcons.HIDE}
-            className="input-img display-password"
-            onClick={() => setPasswordDisplayed(false)}
-          />
-        )}
-        {props.type !== InputType.PASSWORD &&
-          !props.onSetToMaxClicked &&
-          props.value &&
-          props.value.length > 0 && (
+          {props.type === InputType.PASSWORD && !isPasswordDisplay && (
             <SVGIcon
-              dataTestId="input-clear"
-              icon={NewIcons.CLEAR_ALL}
-              className="input-img erase"
-              onClick={() => props.onChange('')}
+              icon={NewIcons.VISIBLE}
+              className="input-img display-password right"
+              onClick={() => setPasswordDisplayed(true)}
             />
           )}
-        {isFocused && props.autocompleteValues && (
-          <AutocompleteBox
-            autoCompleteValues={props.autocompleteValues}
-            handleOnChange={props.onChange}
-            propsValue={props.value}
-          />
-        )}
-        {props.hint && (
-          <div className="hint">
-            {props.skipHintTranslation
-              ? props.hint
-              : chrome.i18n.getMessage(props.hint)}
+          {props.type === InputType.PASSWORD && isPasswordDisplay && (
+            <SVGIcon
+              icon={NewIcons.HIDE}
+              className="input-img display-password right"
+              onClick={() => setPasswordDisplayed(false)}
+            />
+          )}
+          {props.type !== InputType.PASSWORD &&
+            props.value &&
+            props.value.length > 0 && (
+              <SVGIcon
+                dataTestId="input-clear"
+                icon={NewIcons.CLEAR_ALL}
+                className="input-img erase right"
+                onClick={() => props.onChange('')}
+              />
+            )}
+          {isFocused && props.autocompleteValues && (
+            <AutocompleteBox
+              autoCompleteValues={props.autocompleteValues}
+              handleOnChange={props.onChange}
+              propsValue={props.value}
+            />
+          )}
+          {props.logo && (
+            <SVGIcon icon={props.logo as NewIcons} className="input-img left" />
+          )}
+        </div>
+
+        {props.rightActionClicked && props.rightActionIcon && (
+          <div className="right-action">
+            <div className="vertical-separator"></div>
+            <SVGIcon
+              data-testid="right-action"
+              icon={props.rightActionIcon}
+              onClick={props.rightActionClicked}
+            />
           </div>
-        )}
-        {props.logo && (
-          <SVGIcon icon={props.logo as NewIcons} className="input-img" />
-        )}
-        {props.onSetToMaxClicked && (
-          <SVGIcon
-            data-testid="set-to-max-button"
-            icon={NewIcons.MAX}
-            onClick={props.onSetToMaxClicked}
-          />
         )}
       </div>
     </div>

@@ -20,7 +20,7 @@
     .account-name {
       @include poppins500(14px);
       user-select: none;
-      color: $dark-grey;
+      color: $darker-grey;
     }
     .user-picture {
       border-radius: 50%;

@@ -257,7 +257,7 @@ const TokensTransfer = ({
             skipPlaceholderTranslation={true}
             value={amount}
             onChange={setAmount}
-            onSetToMaxClicked={setAmountToMaxValue}
+            rightActionClicked={setAmountToMaxValue}
           />
         </div>
         <div className="symbol">{symbol}</div>

@@ -5,119 +5,107 @@ $autoCompleteItemHeight: 30px;
 $placeholderColor: rgba(92, 100, 113, 0.5);
 .custom-input {
   .label {
+    display: flex;
+    column-gap: 8px;
     color: $dark-blue;
     @include poppins600(14px);
+    .hint {
+      @include poppins300($input-font-size - 2px);
+    }
   }
-  .input-container {
-    position: relative;
+  .custom-input-content {
+    display: flex;
+    column-gap: 12px;
     width: 100%;
-    padding: 0;
     margin: 0;
+    margin-right: 12px;
     user-select: none;
 
-    input {
-      @include poppins500($input-font-size);
-      width: 100%;
-      background: white;
-      padding: 16px;
-      box-sizing: border-box;
-      color: $dark-blue;
-      border-style: unset;
-      border-radius: 66px;
-      border: 1px solid $lighter-grey-border;
+    background: white;
+    padding: 16px;
+    box-sizing: border-box;
+    color: $dark-blue;
+    border-style: unset;
+    border-radius: 66px;
+    border: 1px solid $lighter-grey-border;
 
-      &::placeholder {
-        color: $placeholderColor;
-        @include poppins400(15px);
-      }
-
-      &.has-error {
-        border-color: $red-dark;
+    .input-container {
+      display: flex;
+      position: relative;
+      flex: 1;
+      input {
+        flex: 1;
+        border-style: unset;
+        border: none;
+        @include poppins500($input-font-size);
+        color: $dark-blue;
         &::placeholder {
-          color: $red-dark;
+          color: $placeholderColor;
+          @include poppins400(15px);
+        }
+
+        &.has-error {
+          border-color: $red-dark;
+          &::placeholder {
+            color: $red-dark;
+          }
+        }
+
+        &:focus {
+          outline: none !important;
+          border-color: white;
         }
       }
 
-      &:focus {
-        outline: none !important;
-        border-color: white;
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
 
-      &.has-max-button {
-        padding-right: 48px;
+      /* Firefox */
+      input[type='number'] {
+        -moz-appearance: textfield;
       }
-    }
 
-    &.no-logo > input {
-      padding-left: 20px;
-    }
+      &.has-logo > input {
+        padding-left: 24px;
+      }
 
-    &.password-type > input {
-      padding-right: 60px;
-    }
+      &.password-type > input {
+        padding-right: 32px;
+      }
 
-    .input-img {
-      position: absolute;
-      left: 12px;
-    }
-
-    .focused {
       .input-img {
-        color: $grey;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+
+        &.left {
+          left: 0;
+        }
+
+        &.right {
+          right: 0;
+        }
       }
-    }
 
-    .display-password {
-      left: unset;
-      right: 20px;
-      cursor: pointer;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-    }
-
-    .erase {
-      display: none;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      left: unset;
-      right: 20px;
-      cursor: pointer;
-    }
-
-    &:hover {
       .erase {
-        display: block;
+        display: none;
+      }
+
+      &:hover {
+        .erase {
+          display: block;
+        }
       }
     }
 
-    .set-to-max-button {
-      position: absolute;
-      right: 8px;
-      // bottom: 14px;
-      bottom: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .hint {
-      font-style: italic;
-      margin-top: 2px;
-      font-size: $input-font-size;
-    }
-
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    /* Firefox */
-    input[type='number'] {
-      -moz-appearance: textfield;
+    .right-action {
+      display: flex;
+      column-gap: 12px;
     }
   }
 }

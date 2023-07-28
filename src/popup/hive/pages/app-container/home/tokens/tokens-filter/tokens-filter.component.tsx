@@ -3,7 +3,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';

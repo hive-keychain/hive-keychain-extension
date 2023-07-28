@@ -8,7 +8,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import Config from 'src/config';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -151,7 +151,7 @@ const AutomatedTasks = ({
         />
       </div>
 
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-autoclaim-rewards"
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
@@ -160,7 +160,7 @@ const AutomatedTasks = ({
         tooltipMessage={claimRewardsErrorMessage}
         disabled={!!claimRewardsErrorMessage}
       />
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-autoclaim-accounts"
         title="popup_html_enable_autoclaim_accounts"
         checked={claimAccounts && !isClaimedAccountDisabled}
@@ -177,7 +177,7 @@ const AutomatedTasks = ({
         }
         disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
       />
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-autoclaim-savings"
         title="popup_html_enable_autoclaim_savings"
         checked={claimSavings}

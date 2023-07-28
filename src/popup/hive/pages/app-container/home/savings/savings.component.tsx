@@ -406,7 +406,7 @@ const SavingsPage = ({
             skipPlaceholderTranslation={true}
             value={value}
             onChange={setValue}
-            onSetToMaxClicked={setToMax}
+            rightActionClicked={setToMax}
           />
         </div>
         <Select

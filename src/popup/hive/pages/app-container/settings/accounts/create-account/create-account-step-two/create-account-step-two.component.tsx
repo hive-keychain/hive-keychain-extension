@@ -9,7 +9,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import {
   addToLoadingList,

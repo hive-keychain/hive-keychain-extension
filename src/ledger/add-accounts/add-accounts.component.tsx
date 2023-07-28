@@ -8,7 +8,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';

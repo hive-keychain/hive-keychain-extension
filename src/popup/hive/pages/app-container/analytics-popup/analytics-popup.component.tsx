@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import {
   setErrorMessage,
   setSuccessMessage,

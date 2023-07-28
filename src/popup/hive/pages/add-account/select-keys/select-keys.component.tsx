@@ -3,7 +3,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { Keys } from 'src/interfaces/keys.interface';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
@@ -64,7 +64,7 @@ const SelectKeys = ({
           __html: chrome.i18n.getMessage('popup_html_import_success'),
         }}></div>
 
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-import-posting-key"
         title="popup_html_posting"
         hint="popup_html_posting_info"
@@ -75,7 +75,7 @@ const SelectKeys = ({
           keys.posting ? undefined : 'popup_html_public_key_not_matching'
         }
       />
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-import-active-key"
         title="popup_html_active"
         hint="popup_html_active_info"
@@ -86,7 +86,7 @@ const SelectKeys = ({
           keys.active ? undefined : 'popup_html_public_key_not_matching'
         }
       />
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-import-memo-key"
         title="popup_html_memo"
         hint="popup_html_memo_info"

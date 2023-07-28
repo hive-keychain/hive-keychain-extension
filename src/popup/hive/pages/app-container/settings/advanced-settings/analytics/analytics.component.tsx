@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { setSuccessMessage } from 'src/popup/hive/actions/message.actions';
 import { goBack } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -52,14 +52,14 @@ const Analytics = ({
     <div
       data-testid={`${Screen.SETTINGS_ANALYTICS}-page`}
       className="analytics-settings-page">
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId={`checkbox-allow-ga`}
         title="popup_html_analytics_allow_ga"
         hint="popup_html_analytics_message"
         checked={allowGoogleAnalytics}
         onChange={() => {
           setAllowGoogleAnalytics(!allowGoogleAnalytics);
-        }}></CheckboxComponent>
+        }}></CheckboxPanelComponent>
 
       <ButtonComponent
         dataTestId="button-save"

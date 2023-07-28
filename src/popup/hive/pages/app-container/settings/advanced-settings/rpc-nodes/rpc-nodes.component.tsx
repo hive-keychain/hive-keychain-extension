@@ -8,7 +8,8 @@ import Select, {
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
@@ -196,12 +197,12 @@ const RpcNodes = ({
           __html: chrome.i18n.getMessage('popup_html_rpc_node_text'),
         }}></p>
 
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-rpc-nodes-automatic-mode"
         title="popup_html_rpc_automatic_mode"
         hint="popup_html_rpc_automatic_mode_hint"
         checked={switchAuto}
-        onChange={setSwitchAuto}></CheckboxComponent>
+        onChange={setSwitchAuto}></CheckboxPanelComponent>
 
       {activeRpc && !switchAuto && options && (
         <div className="select-account-section">

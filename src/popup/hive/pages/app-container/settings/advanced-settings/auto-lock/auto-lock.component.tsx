@@ -4,7 +4,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { setSuccessMessage } from 'src/popup/hive/actions/message.actions';
@@ -55,30 +55,30 @@ const AutoLock = ({
     <div
       data-testid={`${Screen.SETTINGS_AUTO_LOCK}-page`}
       className="auto-lock-page">
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
         title="popup_html_al_default_title"
         hint="popup_html_al_default_info"
         checked={selectedType === AutoLockType.DEFAULT}
         onChange={() =>
           setSelectedType(AutoLockType.DEFAULT)
-        }></CheckboxComponent>
-      <CheckboxComponent
+        }></CheckboxPanelComponent>
+      <CheckboxPanelComponent
         dataTestId={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
         title="popup_html_al_locked_title"
         hint="popup_html_al_locked_info"
         checked={selectedType === AutoLockType.DEVICE_LOCK}
         onChange={() =>
           setSelectedType(AutoLockType.DEVICE_LOCK)
-        }></CheckboxComponent>
-      <CheckboxComponent
+        }></CheckboxPanelComponent>
+      <CheckboxPanelComponent
         dataTestId={`checkbox-auto-lock-${AutoLockType.IDLE_LOCK}`}
         title="popup_html_al_idle_title"
         hint="popup_html_al_idle_info"
         checked={selectedType === AutoLockType.IDLE_LOCK}
         onChange={() =>
           setSelectedType(AutoLockType.IDLE_LOCK)
-        }></CheckboxComponent>
+        }></CheckboxPanelComponent>
 
       {selectedType === AutoLockType.IDLE_LOCK && (
         <InputComponent

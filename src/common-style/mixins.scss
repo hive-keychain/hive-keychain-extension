@@ -58,6 +58,13 @@
   width: $size;
 }
 
+@mixin poppins300($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 147%;
+}
 @mixin poppins400($fontSize) {
   font-family: Poppins;
   font-size: $fontSize;
@@ -90,4 +97,20 @@
 @mixin non-clickable {
   cursor: not-allowed;
   pointer-events: none;
+}
+
+@mixin form-panel {
+  background: white;
+  border-radius: 40px 40px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 42px;
+  padding: 36px 20px;
+  flex: 1;
+  justify-content: space-between;
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+  }
 }

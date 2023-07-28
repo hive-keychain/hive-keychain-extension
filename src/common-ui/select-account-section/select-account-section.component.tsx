@@ -104,7 +104,7 @@ const SelectAccountSection = ({
             isLast={options.length === index}
             item={option}
             selectedAccount={selectedLocalAccount}
-            handleItemClicked={(value) => setSelectedLocalAccount(value)}
+            handleItemClicked={(value) => handleItemClicked(value)}
             closeDropdown={() => methods.dropDown('close')}
           />
         ))}

@@ -204,7 +204,7 @@ const Conversion = ({
             skipPlaceholderTranslation={true}
             value={value}
             onChange={setValue}
-            onSetToMaxClicked={setToMax}
+            rightActionClicked={setToMax}
           />
         </div>
         <div className="currency">{currency}</div>

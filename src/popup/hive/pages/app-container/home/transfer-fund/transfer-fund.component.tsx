@@ -7,18 +7,17 @@ import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
+import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import {
+  CustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
-import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -83,6 +82,8 @@ const TransferFunds = ({
     useState<AutoCompleteValues>({
       categories: [],
     });
+
+  const [encrypted, setEncrypted] = useState(false);
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -234,7 +235,7 @@ const TransferFunds = ({
           let success;
           let memoParam = memo;
           if (memo.length) {
-            if (memo.startsWith('#')) {
+            if (memo.startsWith('#') || encrypted) {
               if (!activeAccount.keys.memo) {
                 setErrorMessage('popup_html_memo_key_missing');
                 return;
@@ -302,117 +303,104 @@ const TransferFunds = ({
     });
   };
 
-  const customLabelRender = (selectProps: SelectRenderer<CurrencyListItem>) => {
-    return (
-      <div
-        className="selected-currency"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        {currencyLabels[selectedCurrency]}
-      </div>
-    );
-  };
-  const customItemRender = (
-    selectProps: SelectItemRenderer<CurrencyListItem>,
-  ) => {
-    return (
-      <div
-        className={`select-account-item ${
-          selectedCurrency === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          setSelectedCurrency(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="currency">{selectProps.item.label}</div>
-      </div>
-    );
-  };
-
   return (
     <>
       <div
         className="transfer-funds-page"
         data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
-        <SummaryPanelComponent
-          bottom={balance}
-          bottomRight={currencyLabels[selectedCurrency]}
-          bottomLeft={'popup_html_balance'}
+        <BalanceSectionComponent
+          value={balance}
+          unit={currencyLabels[selectedCurrency]}
+          label="popup_html_balance"
         />
-        <div className="form-container">
-          <InputComponent
-            dataTestId="input-username"
-            type={InputType.TEXT}
-            logo={Icons.AT}
-            placeholder="popup_html_username"
-            value={receiverUsername}
-            onChange={setReceiverUsername}
-            autocompleteValues={autocompleteFavoriteUsers}
-          />
-          <div className="value-panel">
-            <div className="value-input-panel">
-              <InputComponent
-                dataTestId="amount-input"
-                type={InputType.NUMBER}
-                placeholder="0.000"
-                skipPlaceholderTranslation={true}
-                value={amount}
-                min={0}
-                onChange={setAmount}
-                onSetToMaxClicked={setAmountToMaxValue}
-              />
-            </div>
-            <Select
-              values={[]}
-              options={options}
-              onChange={() => undefined}
-              contentRenderer={customLabelRender}
-              itemRenderer={customItemRender}
-              className="select-currency"
-            />
-          </div>
 
-          <InputComponent
-            dataTestId="input-memo-optional"
-            type={InputType.TEXT}
-            placeholder="popup_html_memo_optional"
-            value={memo}
-            onChange={setMemo}
-          />
-          <CheckboxComponent
-            dataTestId="checkbox-transfer-recurrent"
-            title={
-              parseFloat(amount) === 0
-                ? 'popup_html_cancel_recurrent_transfer'
-                : 'popup_html_recurrent_transfer'
-            }
-            checked={isRecurrent}
-            onChange={setIsRecurrent}></CheckboxComponent>
-          {isRecurrent && parseFloat(amount) !== 0 && (
-            <div className="recurrent-panel">
-              <InputComponent
-                dataTestId="input-recurrent-frecuency"
-                type={InputType.NUMBER}
-                placeholder="popup_html_recurrent_transfer_frequency"
-                min={24}
-                step={1}
-                value={frequency}
-                onChange={setFrequency}
-                hint={'popup_html_recurrent_transfer_frequency_hint'}
+        <div className="form-container">
+          <div className="form-fields">
+            <InputComponent
+              dataTestId="input-username"
+              type={InputType.TEXT}
+              logo={NewIcons.AT}
+              placeholder="popup_html_username"
+              value={receiverUsername}
+              onChange={setReceiverUsername}
+              autocompleteValues={autocompleteFavoriteUsers}
+            />
+            <div className="value-panel">
+              <CustomSelect
+                selectedItem={
+                  {
+                    value: selectedCurrency,
+                    label: currencyLabels[selectedCurrency],
+                  } as OptionItem
+                }
+                options={options}
+                setSelectedItem={(item) =>
+                  setSelectedCurrency(item.value as keyof CurrencyLabels)
+                }
               />
-              <InputComponent
-                dataTestId="input-recurrent-iterations"
-                type={InputType.NUMBER}
-                placeholder="popup_html_recurrent_transfer_iterations"
-                min={2}
-                step={1}
-                value={iteration}
-                onChange={setIterations}
-                hint={'popup_html_recurrent_transfer_iterations_hint'}
-              />
+
+              <div className="value-input-panel">
+                <InputComponent
+                  dataTestId="amount-input"
+                  type={InputType.NUMBER}
+                  placeholder="0.000"
+                  skipPlaceholderTranslation={true}
+                  value={amount}
+                  min={0}
+                  onChange={setAmount}
+                  rightActionClicked={setAmountToMaxValue}
+                  rightActionIcon={NewIcons.MAX}
+                />
+              </div>
             </div>
-          )}
+
+            <InputComponent
+              dataTestId="input-memo-optional"
+              type={InputType.TEXT}
+              placeholder="popup_html_memo_optional"
+              value={memo}
+              onChange={setMemo}
+              rightActionClicked={() => setEncrypted(!encrypted)}
+              rightActionIcon={
+                encrypted ? NewIcons.ENCRYPTED : NewIcons.NOT_ENCRYPTED
+              }
+            />
+            <CheckboxComponent
+              dataTestId="checkbox-transfer-recurrent"
+              title={
+                parseFloat(amount) === 0
+                  ? 'popup_html_cancel_recurrent_transfer'
+                  : 'popup_html_recurrent_transfer'
+              }
+              checked={isRecurrent}
+              onChange={setIsRecurrent}></CheckboxComponent>
+            {isRecurrent && parseFloat(amount) !== 0 && (
+              <div className="recurrent-panel">
+                <InputComponent
+                  dataTestId="input-recurrent-frecuency"
+                  type={InputType.NUMBER}
+                  placeholder="popup_html_recurrent_transfer_frequency"
+                  label="popup_html_recurrent_transfer_frequency"
+                  min={24}
+                  step={1}
+                  value={frequency}
+                  onChange={setFrequency}
+                  hint={'popup_html_recurrent_transfer_frequency_hint'}
+                />
+                <InputComponent
+                  dataTestId="input-recurrent-iterations"
+                  type={InputType.NUMBER}
+                  label="popup_html_recurrent_transfer_iterations"
+                  placeholder="popup_html_recurrent_transfer_iterations"
+                  min={2}
+                  step={1}
+                  value={iteration}
+                  onChange={setIterations}
+                  hint={'popup_html_recurrent_transfer_iterations_hint'}
+                />
+              </div>
+            )}
+          </div>
           <OperationButtonComponent
             dataTestId="send-transfer"
             requiredKey={KeychainKeyTypesLC.active}

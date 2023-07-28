@@ -2,7 +2,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -42,12 +42,12 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
         {chrome.i18n.getMessage('popup_html_keychainify_text')}
       </div>
 
-      <CheckboxComponent
+      <CheckboxPanelComponent
         dataTestId="checkbox-keychainify"
         title="popup_html_enable_keychainify_title"
         checked={enabled}
         onChange={setEnabled}
-        hint="popup_html_enable_keychainify_info"></CheckboxComponent>
+        hint="popup_html_enable_keychainify_info"></CheckboxPanelComponent>
     </div>
   );
 };
