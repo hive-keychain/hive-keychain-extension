@@ -12,6 +12,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
@@ -263,7 +264,7 @@ const walletInfoSectionItem = ({
                 )}
             </div>
           )}
-          <div className="separator" />
+          <Separator type={'horizontal'} />
           <div className="actions-panel">
             {actionButtons.map((ab, index) => (
               <WalletInfoSectionItemButton

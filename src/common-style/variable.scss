@@ -80,20 +80,6 @@ $caption-font-size: 16px;
   font-size: $caption-font-size;
 }
 
-.separator {
-  background: $extra-light-grey;
-  height: 100%;
-  width: 2px;
-  align-self: center;
-}
-
-.vertical-separator {
-  height: 80%;
-  width: 1px;
-  background: $extra-light-grey;
-  align-self: center;
-}
-
 .divider {
   flex: 1;
 }

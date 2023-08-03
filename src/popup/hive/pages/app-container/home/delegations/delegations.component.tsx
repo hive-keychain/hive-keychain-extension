@@ -9,6 +9,7 @@ import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import {
   loadDelegatees,
@@ -311,7 +312,7 @@ const Delegations = ({
             {currencyLabels.hp}
           </div>
         </div>
-        <div className="separator"></div>
+        <Separator type={'horizontal'} />
         <div className="total-available">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_available')}

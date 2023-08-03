@@ -1,5 +1,6 @@
 import { MenuItem } from '@interfaces/menu-item.interface';
 import React, { useState } from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import './menu-item.component.scss';
 
@@ -32,7 +33,7 @@ export const MenuItemComponent = ({
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}
       </div>
-      {!isLast && <div className="separator"></div>}
+      {!isLast && <Separator type={'horizontal'} />}
     </div>
   );
 };

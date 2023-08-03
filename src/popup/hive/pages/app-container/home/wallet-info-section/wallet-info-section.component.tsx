@@ -14,6 +14,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
@@ -169,7 +170,7 @@ const WalletInfoSection = ({
         filteredTokenList &&
         filteredTokenList.length > 0 && (
           <>
-            <div className="separator"></div>
+            <Separator type={'horizontal'} />
             {filteredTokenList.map((token) => (
               <WalletInfoSectionItemComponent
                 key={`token-${token.symbol}`}

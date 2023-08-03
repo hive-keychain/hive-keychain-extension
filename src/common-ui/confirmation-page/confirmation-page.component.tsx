@@ -6,6 +6,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { goBack } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
@@ -41,7 +42,7 @@ const ConfirmationPage = ({
       skipTitleTranslation,
       isBackButtonEnabled: false,
     });
-  });
+  }, []);
   const hasField = fields && fields.length !== 0;
 
   const handleClickOnConfirm = () => {
@@ -69,15 +70,24 @@ const ConfirmationPage = ({
         )}
         {hasField && (
           <div className="fields">
-            {fields.map((field) => (
-              <div className="field" key={field.label}>
-                <div className="label">
-                  {chrome.i18n.getMessage(field.label)}
+            {fields.map((field, index) => (
+              <>
+                <div className="field" key={field.label}>
+                  <div className="label">
+                    {chrome.i18n.getMessage(field.label)}
+                  </div>
+                  <div className={`value ${field.valueClassName ?? ''}`}>
+                    {field.value}
+                  </div>
                 </div>
-                <div className={`value ${field.valueClassName ?? ''}`}>
-                  {field.value}
-                </div>
-              </div>
+                {index !== fields.length - 1 && (
+                  <Separator
+                    key={` separator-${field.label}`}
+                    type={'horizontal'}
+                    fullSize
+                  />
+                )}
+              </>
             ))}
           </div>
         )}

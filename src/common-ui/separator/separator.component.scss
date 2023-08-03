@@ -1,0 +1,19 @@
+@import '@common-style/variable.scss';
+
+.separator {
+  background: $extra-light-grey;
+  align-self: center;
+
+  &.horizontal {
+    width: 80%;
+    height: 2px;
+    &.full-size {
+      width: 100%;
+    }
+  }
+
+  &.vertical {
+    height: 100%;
+    width: 1px;
+  }
+}

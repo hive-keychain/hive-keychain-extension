@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 interface CustomSelectItemProps<T> {
@@ -44,7 +45,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           />
         )}
       </div>
-      {!isLast && <div className="separator"></div>}
+      {!isLast && <Separator type={'horizontal'} />}
     </div>
   );
 }

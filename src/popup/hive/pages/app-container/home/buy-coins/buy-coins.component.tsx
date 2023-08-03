@@ -5,6 +5,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
@@ -76,9 +77,7 @@ const BuyCoins = ({
               {index <=
                 BuyCoinsListItem(selectedCurrency, activeAccountName).list
                   .length -
-                  1 && (
-                <div className="separator" key={`separator-${index}`}></div>
-              )}
+                  1 && <Separator type={'horizontal'} />}
             </React.Fragment>
           ),
         )}
