@@ -1,12 +1,14 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
+import { FieldError } from 'react-hook-form';
 import { AutocompleteBox } from 'src/common-ui/autocomplete/autocomplete-box.component';
 import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { FormUtils } from 'src/utils/form.utils';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
-interface InputProps {
+export interface InputProps {
   value: any;
   logo?: Icons | string | NewIcons;
   label?: string;
@@ -22,7 +24,7 @@ interface InputProps {
   autocompleteValues?: AutoCompleteValuesType;
   translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
-  hasError?: boolean;
+  error?: FieldError;
   dataTestId?: string;
   disabled?: boolean;
   classname?: string;
@@ -70,14 +72,13 @@ const InputComponent = (props: InputProps) => {
           )}
         </div>
       )}
-      <div className={`custom-input-content`}>
+      <div className={`custom-input-content ${props.error ? 'has-error' : ''}`}>
         <div
           className={`input-container ${props.logo ? 'has-logo' : 'no-logo'} ${
             props.type === InputType.PASSWORD ? 'password-type' : ''
           } ${isFocused ? 'focused' : ''}`}>
           <input
             data-testid={props.dataTestId}
-            className={`${props.hasError ? 'has-error' : ''}`}
             type={
               props.type === InputType.PASSWORD && isPasswordDisplay
                 ? InputType.TEXT
@@ -125,7 +126,7 @@ const InputComponent = (props: InputProps) => {
                 onClick={() => props.onChange('')}
               />
             )}
-          {(isFocused || true) && props.autocompleteValues && (
+          {isFocused && props.autocompleteValues && (
             <AutocompleteBox
               autoCompleteValues={props.autocompleteValues}
               handleOnChange={props.onChange}
@@ -148,6 +149,9 @@ const InputComponent = (props: InputProps) => {
           </div>
         )}
       </div>
+      {props.error && (
+        <div className="error">{FormUtils.parseJoiError(props.error)}</div>
+      )}
     </div>
   );
 };

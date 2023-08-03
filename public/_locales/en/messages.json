@@ -3361,5 +3361,17 @@
   "popup_html_logout": {
     "message": "Logout",
     "description": "Logout"
+  },
+  "validation_error_mandatory": {
+    "message": "This field is required",
+    "description": "Form validation error: required"
+  },
+  "validation_error_greater_than_value": {
+    "message": "Value should be greater than $1",
+    "description": "Form validation error: should be greater than"
+  },
+  "validation_error_less_or_equal_value": {
+    "message": "Value should be less than or equal to $1",
+    "description": "Form validation error: should be less than (or equal)"
   }
 }

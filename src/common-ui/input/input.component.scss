@@ -44,13 +44,6 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
           @include poppins400(15px);
         }
 
-        &.has-error {
-          border-color: $red-dark;
-          &::placeholder {
-            color: $red-dark;
-          }
-        }
-
         &:focus {
           outline: none !important;
           border-color: white;
@@ -107,5 +100,13 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
       display: flex;
       column-gap: 12px;
     }
+
+    &.has-error {
+      border-color: $red !important;
+    }
+  }
+  .error {
+    @include poppins400(12px);
+    color: $red;
   }
 }

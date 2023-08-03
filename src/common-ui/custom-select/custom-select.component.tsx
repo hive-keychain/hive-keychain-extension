@@ -10,7 +10,7 @@ export interface OptionItem {
   value: string;
 }
 
-interface CustomSelectProps<T> {
+export interface CustomSelectProps<T> {
   options: T[];
   selectedItem: T;
   setSelectedItem: (item: T) => void;

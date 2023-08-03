@@ -355,7 +355,6 @@ const AddAccountsComponent = () => {
                 label="popup_html_master"
                 placeholder="popup_html_master"
                 type={InputType.TEXT}
-                hasError={!!accountsForm[currentAccount].errors.master}
                 hint={accountsForm[currentAccount].errors?.master}
               />
             )}
@@ -370,7 +369,6 @@ const AddAccountsComponent = () => {
                     label="popup_html_active"
                     placeholder="popup_html_active"
                     type={InputType.TEXT}
-                    hasError={!!accountsForm[currentAccount].errors.active}
                     hint={accountsForm[currentAccount].errors?.active}
                   />
                 )}
@@ -383,7 +381,6 @@ const AddAccountsComponent = () => {
                     label="popup_html_posting"
                     placeholder="popup_html_posting"
                     type={InputType.TEXT}
-                    hasError={!!accountsForm[currentAccount].errors.posting}
                     hint={accountsForm[currentAccount].errors?.posting}
                   />
                 )}
@@ -396,7 +393,6 @@ const AddAccountsComponent = () => {
                     label="popup_html_memo"
                     placeholder="popup_html_memo"
                     type={InputType.TEXT}
-                    hasError={!!accountsForm[currentAccount].errors.memo}
                     hint={accountsForm[currentAccount].errors?.memo}
                   />
                 )}
