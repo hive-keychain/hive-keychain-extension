@@ -1,54 +1,69 @@
+@import '@common-style/variable.scss';
+@import '@common-style/mixins.scss';
+
 .buy-coins-page {
   display: flex;
   flex-direction: column;
   padding: 0px 24px;
   padding-bottom: 16px;
-
-  .switch-container {
-    align-self: end;
-    position: fixed;
-    top: 24px;
-    right: 24px;
-  }
+  row-gap: 24px;
 
   .list {
     display: flex;
     flex-direction: column;
-    row-gap: 24px;
+    row-gap: 8px;
     .card {
       display: flex;
       flex-direction: column;
-      padding: 8px;
+      padding: 32px;
       align-items: center;
       justify-content: center;
       row-gap: 16px;
+      border-radius: 26px;
+      border: 1px solid $dark-grey-border;
+      background: white;
+      position: relative;
+      align-items: start;
+      justify-content: center;
+
+      .buy-button {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        border-radius: 0px 20px;
+        box-shadow: 0px 13px 9px 0px $red-shadow;
+        width: auto;
+        padding: 0px 32px;
+      }
 
       .description {
-        font-size: 16px;
-        color: white;
+        @include josefin500(14px);
+        color: $dark-blue;
+        opacity: 0.8;
       }
+
       .title {
-        font-size: 24px;
-        color: white;
-        margin-bottom: 24px;
-        margin-left: 8px;
+        @include josefin700(20px);
+        color: $dark-blue;
       }
 
-      .exchange-item {
-        height: 50px;
-        width: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-        border: 1px white solid;
-        border-radius: 8px;
-      }
-
-      img {
-        width: 200px;
-        height: auto;
-        max-height: 60px;
+      .exchange-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 12px;
+        row-gap: 12px;
+        width: 100%;
+        .exchange-item {
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          border: 1px $dark-grey-border solid;
+          border-radius: 10px;
+          box-sizing: border-box;
+          cursor: pointer;
+        }
       }
     }
   }

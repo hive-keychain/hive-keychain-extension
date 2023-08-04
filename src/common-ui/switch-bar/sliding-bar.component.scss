@@ -1,0 +1,64 @@
+@import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.sliding-bar-container {
+  @include background-top;
+  $itemHeight: 36px;
+  $itemWidth: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .tabs {
+    display: flex;
+    position: relative;
+    background-color: #fff;
+    padding: 2px;
+    border-radius: 99px; // just a high number to create pill effect
+    * {
+      z-index: 2;
+    }
+  }
+  input[type='radio'] {
+    display: none;
+  }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $itemWidth;
+    height: $itemHeight;
+    border-radius: 99px; // just a high number to create pill effect
+    cursor: pointer;
+    transition: color 0.15s ease-in;
+
+    label {
+      @include poppins500(13px);
+    }
+  }
+
+  input[type='radio'] {
+    & + label {
+      color: $darker-grey;
+    }
+    &:checked {
+      & + label {
+        color: white;
+      }
+    }
+  }
+
+  .glider {
+    position: absolute;
+    display: flex;
+    height: $itemHeight;
+    width: $itemWidth;
+    background-color: $red;
+    z-index: 1;
+    border-radius: 99px; // just a high number to create pill effect
+    transition: 0.25s ease-out;
+    box-shadow: 0 0 1px 0 $red, 0 6px 12px 0 $red;
+    box-shadow: 0px 10px 7px 0px $red-shadow;
+  }
+}

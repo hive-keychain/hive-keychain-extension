@@ -5,8 +5,8 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { Separator } from 'src/common-ui/separator/separator.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
@@ -42,59 +42,59 @@ const BuyCoins = ({
     <div
       className="buy-coins-page"
       data-testid={`${Screen.BUY_COINS_PAGE}-page`}>
-      <SwitchComponent
+      <SlidingBarComponent
         dataTestId="buy-coins"
         onChange={changeSelectedCurrency}
         selectedValue={selectedCurrency}
-        leftValue={BuyCoinType.BUY_HIVE}
-        rightValue={BuyCoinType.BUY_HDB}
-        leftValueLabel={currencyLabels.hive}
-        rightValueLabel={currencyLabels.hbd}
-        skipLeftTranslation
-        skipRightTranslation
+        values={[
+          {
+            value: BuyCoinType.BUY_HIVE,
+            label: currencyLabels.hive,
+            skipLabelTranslation: true,
+          },
+          {
+            value: BuyCoinType.BUY_HDB,
+            label: currencyLabels.hbd,
+            skipLabelTranslation: true,
+          },
+        ]}
       />
 
       <div className="list">
         {BuyCoinsListItem(selectedCurrency, activeAccountName).list.map(
           (item, index) => (
-            <React.Fragment key={`card=${index}`}>
-              <div className="card" key={`card-item-${index}`}>
-                <a
-                  href={item.link}
-                  key={item.image + `${index}`}
-                  target="_blank">
-                  <img src={`/assets/images/${item.image}`} />
-                </a>
-                <span className="description">
-                  {chrome.i18n.getMessage(item.description)}
-                </span>
-                <ButtonComponent
-                  onClick={() => goTo(item.link)}
-                  label={'popup_html_buy'}
-                  type={ButtonType.DEFAULT}
-                />
-              </div>
-              {index <=
-                BuyCoinsListItem(selectedCurrency, activeAccountName).list
-                  .length -
-                  1 && <Separator type={'horizontal'} />}
-            </React.Fragment>
+            <div className="card" key={`card-item-${index}`}>
+              <SVGIcon icon={item.image} onClick={() => goTo(item.link)} />
+              <span className="title">{item.name}</span>
+              <span className="description">
+                {chrome.i18n.getMessage(item.description)}
+              </span>
+              <ButtonComponent
+                additionalClass="buy-button"
+                onClick={() => goTo(item.link)}
+                label={'popup_html_buy'}
+                type={ButtonType.DEFAULT}
+              />
+            </div>
           ),
         )}
         <div className="card">
           <div className="title">
             {chrome.i18n.getMessage('html_popup_exchanges')}
           </div>
-          {BuyCoinsListItem(selectedCurrency, activeAccountName).exchanges.map(
-            (item, index) => (
-              <div className="exchange-item" key={`exchange-item-${index}`}>
-                <img
-                  src={`/assets/images/${item.image}`}
-                  onClick={() => goTo(item.link)}
-                />
+          <div className="exchange-list">
+            {BuyCoinsListItem(
+              selectedCurrency,
+              activeAccountName,
+            ).exchanges.map((item, index) => (
+              <div
+                className="exchange-item"
+                key={`exchange-item-${index}`}
+                onClick={() => goTo(item.link)}>
+                <SVGIcon icon={item.image} />
               </div>
-            ),
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>

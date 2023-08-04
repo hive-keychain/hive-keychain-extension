@@ -145,4 +145,14 @@ export enum NewIcons {
   USER_PREFERENCES = 'user-preferences',
   VISIBLE = 'visible',
   VOTING_MANA = 'voting-mana',
+
+  // LOGOS
+  BINANCE = 'binance',
+  IONOMY = 'ionomy',
+  GATEIO = 'gateio',
+  HUOBI = 'huobi',
+  MEXC = 'mexc-global',
+  PROBIT = 'probit',
+  TRANSAK = 'transak',
+  UPBIT = 'upbit',
 }

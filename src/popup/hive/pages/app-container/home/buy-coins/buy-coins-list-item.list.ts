@@ -1,32 +1,33 @@
+import { NewIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 
 interface Exchange {
   name: string;
-  image: string;
+  image: NewIcons;
   link: string;
   username: string;
   acceptedCoins: string[];
 }
 
-export const exchanges = [
+export const exchanges: Exchange[] = [
   {
     name: 'Binance',
-    image: 'binance.svg',
+    image: NewIcons.BINANCE,
     link: 'https://www.binance.com/en/trade/HIVE_BTC',
     username: 'deepcrypto8',
     acceptedCoins: ['HIVE'],
   },
   {
     name: 'Upbit',
-    image: 'upbit.svg',
+    image: NewIcons.UPBIT,
     link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE',
     username: 'user.dunamu',
     acceptedCoins: ['HIVE', 'HBD'],
   },
   {
     name: 'Gateio',
-    image: 'gateio.svg',
+    image: NewIcons.GATEIO,
     link: 'https://www.gate.io/trade/HIVE_USDT',
     username: 'gateiodeposit',
     acceptedCoins: ['HIVE'],
@@ -38,32 +39,32 @@ export const exchanges = [
   // },
   {
     name: 'Ionomy',
-    image: 'ionomy.svg',
+    image: NewIcons.IONOMY,
     link: 'https://exchange.ionomy.com/en/markets/btc-hive',
     username: 'ionomy',
     acceptedCoins: ['HIVE', 'HBD'],
   },
   {
     name: 'Huobi',
-    image: 'huobi.svg',
+    image: NewIcons.HUOBI,
     link: 'https://www.huobi.com/en-us/exchange/hive_usdt/',
     username: 'huobi-pro',
     acceptedCoins: ['HIVE'],
   },
   {
     name: 'Mexc',
-    image: 'mexc.svg',
+    image: NewIcons.MEXC,
     link: 'https://www.mexc.com/exchange/HIVE_USDT',
     username: 'mxchive',
     acceptedCoins: ['HIVE'],
   },
-  {
-    name: 'Probit',
-    image: 'probit.png',
-    link: 'https://www.probit.com/app/exchange/HIVE-USDT',
-    username: 'probithive',
-    acceptedCoins: ['HIVE'],
-  },
+  // {
+  //   name: 'Probit',
+  //   image: NewIcons.PROBIT,
+  //   link: 'https://www.probit.com/app/exchange/HIVE-USDT',
+  //   username: 'probithive',
+  //   acceptedCoins: ['HIVE'],
+  // },
   // {
   //   image: 'bittrex.png',
   //   link: 'https://global.bittrex.com/Market/Index?MarketName=BTC-HIVE',
@@ -74,7 +75,7 @@ export const exchanges = [
 
 interface Platform {
   name: string;
-  image: string;
+  image: NewIcons;
   link: string;
   description: string;
 }
@@ -94,7 +95,7 @@ export const BuyCoinsListItem = (
         list: [
           {
             name: 'Transak',
-            image: 'transak.svg',
+            image: NewIcons.TRANSAK,
             link: `https://global.transak.com?apiKey=${Config.transak.apiKey}&defaultCryptoCurrency=HIVE&exchangeScreenTitle=Buy%20HIVEs&isFeeCalculationHidden=true&walletAddress=${username}`,
             description: 'html_popup_transak_description',
           },

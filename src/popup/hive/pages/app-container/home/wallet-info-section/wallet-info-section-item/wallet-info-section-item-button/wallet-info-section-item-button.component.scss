@@ -15,7 +15,7 @@
     vertical-align: middle;
     align-self: center;
     @include poppins400(14px);
-    color: #484848;
+    color: $darker-grey;
   }
   &:hover {
     background: $dark-red;

@@ -58,6 +58,21 @@
   width: $size;
 }
 
+@mixin josefin500($fontSize) {
+  font-family: Josefin Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+@mixin josefin700($fontSize) {
+  font-family: Josefin Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
 @mixin poppins300($fontSize) {
   font-family: Poppins;
   font-size: $fontSize;
