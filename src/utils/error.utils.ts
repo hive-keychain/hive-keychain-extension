@@ -9,6 +9,7 @@ enum BlockchainErrorType {
   WITNESS_NOT_FOUND = 'get_witness',
   VALIDATION = 'validate',
   VALIDATE_TRANSACTION = 'validate_transaction',
+  MISSING_AUTHORITY = 'verify_authority',
 }
 
 enum HiveEngineErrorType {
@@ -104,6 +105,9 @@ const parse = (error: any) => {
         if (error.message.includes('transaction expiration exception')) {
           return new KeychainError('broadcast_error_transaction_expired');
         }
+      }
+      case BlockchainErrorType.MISSING_AUTHORITY: {
+        return new KeychainError(error.data.name);
       }
     }
   }

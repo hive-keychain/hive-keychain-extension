@@ -1,23 +1,24 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
-import * as tokenActions from 'src/popup/actions/token.actions';
-import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
-import Logger from 'src/utils/logger.utils';
-import TokensUtils from 'src/utils/tokens.utils';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
   initialEmptyStateStore,
   initialStateJustTokens,
 } from 'src/__tests__/utils-for-testing/initial-states';
+import * as tokenActions from 'src/popup/actions/token.actions';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
+import Logger from 'src/utils/logger.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
 describe('token.actions tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   const tokenObjZeroBalance = {
     _id: 119999,
-    account: utilsT.userData.username,
+    account: userData.one.username,
     symbol: 'FAKETOKEN',
     balance: '0',
     stake: '1138.87982783',
@@ -30,16 +31,18 @@ describe('token.actions tests:\n', () => {
     test('Must load tokens', async () => {
       HiveEngineUtils.get = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeTokensResponse);
+        .mockResolvedValueOnce(tokensList.fakeTokensResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(tokenActions.loadTokens());
-      expect(fakeStore.getState().tokens).toEqual(utilsT.expectedTokensPayload);
+      expect(fakeStore.getState().tokens).toEqual(
+        tokensList.expectedTokensPayload,
+      );
     });
 
     test('If error on response, will throw an unhandled error', async () => {
       HiveEngineUtils.get = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeTokensResponseNoMetadata);
+        .mockResolvedValueOnce(tokensList.fakeTokensResponseNoMetadata);
       const newError = new SyntaxError(
         'Unexpected token u in JSON at position 0',
       );
@@ -57,11 +60,11 @@ describe('token.actions tests:\n', () => {
     test('Must load tokens market', async () => {
       HiveEngineUtils.get = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeMarketMetricsResponse);
+        .mockResolvedValueOnce(tokensList.fakeMarketMetricsResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(tokenActions.loadTokensMarket());
       expect(fakeStore.getState().tokenMarket).toEqual(
-        utilsT.fakeMarketMetricsResponse,
+        tokensList.fakeMarketMetricsResponse,
       );
     });
   });
@@ -69,13 +72,13 @@ describe('token.actions tests:\n', () => {
   describe('loadUserTokens tests:\n', () => {
     test('Must clear current userTokens and load user tokens', async () => {
       const newUserTokenBalances =
-        utilsT.fakeGetUserBalanceResponse as TokenBalance[];
+        tokensList.fakeGetUserBalanceResponse as TokenBalance[];
       TokensUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
       await fakeStore.dispatch<any>(
-        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+        tokenActions.loadUserTokens(userData.two.username),
       );
       expect(fakeStore.getState().userTokens).toEqual({
         list: newUserTokenBalances,
@@ -84,8 +87,8 @@ describe('token.actions tests:\n', () => {
     });
     test('Must clear current userTokens, load userTokens filtered', async () => {
       const newUserTokenBalances = [
-        utilsT.fakeGetUserBalanceResponse[1],
-        utilsT.fakeGetUserBalanceResponse[2],
+        tokensList.fakeGetUserBalanceResponse[1],
+        tokensList.fakeGetUserBalanceResponse[2],
         tokenObjZeroBalance,
       ] as TokenBalance[];
       TokensUtils.getUserBalance = jest
@@ -93,7 +96,7 @@ describe('token.actions tests:\n', () => {
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
       await fakeStore.dispatch<any>(
-        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+        tokenActions.loadUserTokens(userData.two.username),
       );
       expect(fakeStore.getState().userTokens).toEqual({
         list: newUserTokenBalances,
@@ -110,7 +113,7 @@ describe('token.actions tests:\n', () => {
         .mockRejectedValueOnce(promiseError);
       const fakeStore = getFakeStore(initialStateJustTokens);
       await fakeStore.dispatch<any>(
-        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+        tokenActions.loadUserTokens(userData.two.username),
       );
       expect(fakeStore.getState().userTokens).toEqual(userTokensReseted);
       expect(spyLoggerError).toBeCalledWith(promiseError);
@@ -128,10 +131,7 @@ describe('token.actions tests:\n', () => {
         .mockResolvedValueOnce([]);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        tokenActions.loadTokenHistory(
-          utilsT.secondAccountOnState.name,
-          currency,
-        ),
+        tokenActions.loadTokenHistory(userData.two.username, currency),
       );
       expect(fakeStore.getState().tokenHistory).toEqual(
         tokenHistory.expectedPayLoadloadTokenHistory,
@@ -147,13 +147,10 @@ describe('token.actions tests:\n', () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
       try {
         await fakeStore.dispatch<any>(
-          tokenActions.loadTokenHistory(
-            utilsT.secondAccountOnState.name,
-            currency,
-          ),
+          tokenActions.loadTokenHistory(userData.two.username, currency),
         );
         expect(fakeStore.getState().tokenHistory).toEqual([
-          ...utilsT.expectedPayLoadloadTokenHistory,
+          ...tokensList.expectedPayLoadloadTokenHistory,
         ]);
       } catch (error) {
         expect(error).toEqual(error);

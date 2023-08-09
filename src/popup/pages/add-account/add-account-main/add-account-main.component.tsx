@@ -3,7 +3,7 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
@@ -72,7 +72,9 @@ const AddAccountMain = ({
   };
 
   return (
-    <div className="add-account-page" aria-label="add-account-page">
+    <div
+      className="add-account-page"
+      data-testid={`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`}>
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -81,25 +83,25 @@ const AddAccountMain = ({
 
       <div className="button-container">
         <ButtonComponent
-          ariaLabel="add-by-keys-button"
+          dataTestId="add-by-keys-button"
           label={'popup_html_add_by_keys'}
           onClick={handleAddByKeys}
         />
         {accounts.length > 0 && (
           <ButtonComponent
-            ariaLabel="add-by-auth-button"
+            dataTestId="add-by-auth-button"
             label={'popup_html_add_by_auth'}
             onClick={handleAddByAuth}
           />
         )}
         <ButtonComponent
-          ariaLabel="import-keys-button"
+          dataTestId="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
         />
         {isLedgerSupported && (
           <ButtonComponent
-            ariaLabel="import-keys-button"
+            dataTestId="import-keys-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
           />

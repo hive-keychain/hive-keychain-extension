@@ -1,12 +1,11 @@
+import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as delegationsActions from 'src/popup/actions/delegations.actions';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import Logger from 'src/utils/logger.utils';
-import delegations from 'src/__tests__/utils-for-testing/data/delegations';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
-import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+
 describe('delegations.actions tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -18,7 +17,7 @@ describe('delegations.actions tests:\n', () => {
         .mockResolvedValue(delegations.delegators);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        delegationsActions.loadDelegators(utilsT.secondAccountOnState.name),
+        delegationsActions.loadDelegators(userData.two.username),
       );
       expect(fakeStore.getState().delegations.incoming).toEqual(
         delegations.delegators,
@@ -35,7 +34,7 @@ describe('delegations.actions tests:\n', () => {
       jest.spyOn(Logger, 'error');
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        delegationsActions.loadDelegators(utilsT.secondAccountOnState.name),
+        delegationsActions.loadDelegators(userData.two.username),
       );
       expect(fakeStore.getState().delegations.incoming).toEqual(null);
       expect(fakeStore.getState().errorMessage).toEqual(errorMessageExpected);
@@ -49,7 +48,7 @@ describe('delegations.actions tests:\n', () => {
         .mockResolvedValue(delegations.delegatees);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        delegationsActions.loadDelegatees(utilsT.secondAccountOnState.name),
+        delegationsActions.loadDelegatees(userData.two.username),
       );
       expect(fakeStore.getState().delegations.outgoing).toEqual(
         delegations.delegatees,
@@ -64,7 +63,7 @@ describe('delegations.actions tests:\n', () => {
       const spyLoggerError = jest.spyOn(Logger, 'error');
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        delegationsActions.loadDelegatees(utilsT.secondAccountOnState.name),
+        delegationsActions.loadDelegatees(userData.two.username),
       );
       expect(fakeStore.getState().delegations.outgoing).toEqual([]);
       expect(spyLoggerError).toBeCalledTimes(1);

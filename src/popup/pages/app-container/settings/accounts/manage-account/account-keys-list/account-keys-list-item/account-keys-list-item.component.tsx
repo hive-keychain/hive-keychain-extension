@@ -7,13 +7,16 @@ import {
 } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import { KeysUtils } from 'src/utils/keys.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
@@ -22,6 +25,7 @@ export interface KeyListItemProps {
   keyName: string;
   keyType: KeyType;
   canDelete: boolean;
+  isWrongKey?: boolean;
 }
 
 const AccountKeysListItem = ({
@@ -32,6 +36,7 @@ const AccountKeysListItem = ({
   activeAccount,
   accounts,
   canDelete,
+  isWrongKey,
   setInfoMessage,
   navigateToWithParams,
   removeKey,
@@ -64,6 +69,12 @@ const AccountKeysListItem = ({
     }
   };
 
+  const removePopupTagForAriaLabel = (keyName: string) => {
+    return keyName.includes('popup_html_')
+      ? keyName.split('popup_html_')[1]
+      : keyName;
+  };
+
   const handleClickOnRemoveKey = () => {
     const keyTypeLabel = chrome.i18n.getMessage(keyType.toLowerCase());
 
@@ -74,6 +85,16 @@ const AccountKeysListItem = ({
       ]),
       title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
+        let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
+        if (actualNoKeyCheck && actualNoKeyCheck[activeAccount.name!]) {
+          delete actualNoKeyCheck[activeAccount.name!];
+        }
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+          actualNoKeyCheck,
+        );
         removeKey(keyType);
         goBack();
       },
@@ -93,10 +114,22 @@ const AccountKeysListItem = ({
   return (
     <div className="account-keys-list-item">
       <div className="top-panel">
-        <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
+        <div className="key-name-container">
+          <span className="key-name">{chrome.i18n.getMessage(keyName)} </span>
+          {isWrongKey && (
+            <CustomTooltip
+              message="popup_html_wrong_key_tooltip_text"
+              position={'bottom'}
+              additionalClassName="tool-tip-custom">
+              <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+            </CustomTooltip>
+          )}
+        </div>
         {publicKey && privateKey && canDelete && (
           <Icon
-            ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
+            dataTestId={`icon-remove-key-${removePopupTagForAriaLabel(
+              keyName,
+            )}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
             type={IconType.OUTLINED}
@@ -106,7 +139,7 @@ const AccountKeysListItem = ({
 
       {!privateKey && !publicKey && (
         <Icon
-          ariaLabel={`icon-add-key-${chrome.i18n.getMessage(keyName)}`}
+          dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
           type={IconType.OUTLINED}
@@ -118,7 +151,7 @@ const AccountKeysListItem = ({
           {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
-                aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
+                data-testid={`clickeable-account-key-${removePopupTagForAriaLabel(
                   keyName,
                 )}`}
                 className={`private-key key-field ${
@@ -134,7 +167,7 @@ const AccountKeysListItem = ({
                   : privateKey}
               </div>
               <div
-                className="public-key key-field"
+                className={`public-key key-field`}
                 onClick={() => copyToClipboard(publicKey)}>
                 {publicKey}
               </div>
@@ -142,7 +175,7 @@ const AccountKeysListItem = ({
           )}
           {isAuthorizedAccount && publicKey && (
             <div
-              aria-label="using-authorized-account"
+              data-testid="using-authorized-account"
               className="using-authorized-account"
               onClick={() => goToAccount(publicKey)}>
               {chrome.i18n.getMessage('html_popup_using_authorized_account', [
@@ -153,7 +186,7 @@ const AccountKeysListItem = ({
           {isUsingLedger && privateKey && (
             <>
               <div
-                aria-label="using-authorized-account"
+                data-testid="using-authorized-account"
                 className="using-authorized-account">
                 {chrome.i18n.getMessage('html_popup_using_ledger')}
               </div>

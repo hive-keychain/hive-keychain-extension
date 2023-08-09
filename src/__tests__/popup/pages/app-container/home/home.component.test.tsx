@@ -1,87 +1,197 @@
+import { ExtendedAccount } from '@hiveio/dhive';
 import App from '@popup/App';
+import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
-import { screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
-import alToolTip from 'src/__tests__/utils-for-testing/aria-labels/al-toolTip';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
+import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import currencies from 'src/__tests__/utils-for-testing/data/currencies';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  clickAwait,
-  userEventPendingTimers,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { extraMocks } = home;
+import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import AccountUtils from 'src/utils/account.utils';
+import CurrencyUtils from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
+import HiveUtils from 'src/utils/hive.utils';
+
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
-    await home.beforeEach(<App />, accounts.twoAccounts);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getAccountsFromLocalStorage: accounts.twoAccounts,
+            },
+          },
+        },
+      },
+    );
   });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must show home page and user information', () => {
-    home.userInformation();
+
+  it('Must show home page', () => {
+    expect(screen.getByTestId(`${Screen.HOME_PAGE}-page`)).toBeInTheDocument();
   });
-  it('Must show tool tip when hover on mana', async () => {
-    await userEventPendingTimers.hover(
-      screen.getByLabelText(alToolTip.custom.resources.votingMana),
+
+  it('Must show user related information & labels', () => {
+    //TopBarComponent
+    expect(screen.getByTestId(dataTestIdIcon.refreshHome)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdButton.logOut)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdButton.menu)).toBeInTheDocument();
+
+    //SelectAccountSectionComponent
+    const selectedAccountHTMLElement = screen.getByTestId(
+      dataTestIdDiv.selectedAccount,
     );
-    expect(screen.getByLabelText(alToolTip.content)).toBeInTheDocument();
-    expect(screen.getByText(home.methods.manaReadyIn())).toBeInTheDocument();
-  });
-  it('Must show tool tip when hover on credits', async () => {
-    await userEventPendingTimers.hover(
-      screen.getByLabelText(alToolTip.custom.resources.resourceCredits),
+    expect(selectedAccountHTMLElement).toBeInTheDocument();
+    expect(selectedAccountHTMLElement).toHaveTextContent(mk.user.one);
+
+    //ResourcesSectionComponent
+    expect(screen.getByTestId(dataTestIdDiv.resources.vm)).toBeInTheDocument();
+    expect(screen.getByTestId(dataTestIdDiv.resources.rc)).toBeInTheDocument();
+
+    //EstimatedAccountValueSectionComponent
+    expect(
+      screen.getByText(chrome.i18n.getMessage('popup_html_estimation'), {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+    const estimatedValueHTMLElement = screen.getByTestId(
+      dataTestIdDiv.estimatedAccountValue,
     );
-    expect(screen.getByLabelText(alToolTip.content)).toBeInTheDocument();
-  });
-  it('Must change active account to the selected one', async () => {
-    extraMocks.remockGetAccount();
-    await clickAwait([
-      alSelect.accountSelector,
-      alSelect.itemSelectorPreFix + mk.user.two,
-    ]);
-    expect(screen.getByLabelText(alDiv.selectedAccount)).toHaveTextContent(
-      mk.user.two,
+    expect(estimatedValueHTMLElement).toBeInTheDocument();
+    const accountValue = AccountUtils.getAccountValue(
+      accounts.extended,
+      currencies.prices.data,
+      dynamic.globalProperties,
     );
+    expect(estimatedValueHTMLElement).toHaveTextContent(
+      `$ ${accountValue} USD`,
+    );
+
+    //WalletInfoSectionComponent
+    expect(
+      screen.getByTestId(
+        dataTestIdDropdown.arrow.preFix +
+          CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
+      ),
+    ).toBeDefined();
+    expect(
+      screen.getByTestId(
+        dataTestIdDropdown.arrow.preFix +
+          CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
+      ),
+    ).toBeDefined();
+    expect(
+      screen.getByTestId(
+        dataTestIdDropdown.arrow.preFix +
+          CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase(),
+      ),
+    ).toBeDefined();
   });
-  it('Must refresh data when click on logo', async () => {
-    mockPreset.setOrDefault({
-      home: { getAccountValue: home.constants.estimatedValue },
+
+  it('Must show action buttons labels', () => {
+    for (let i = 0; i < ActionButtonList.length; i++) {
+      expect(
+        screen.getByTestId(
+          dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(chrome.i18n.getMessage(ActionButtonList[i].label)),
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('Must show tool tip when hover on mana with actual value', async () => {
+    const manaReadyInText = HiveUtils.getTimeBeforeFull(
+      manabar.percentage / 100,
+    );
+    await act(async () => {
+      await userEvent.hover(
+        screen.getByTestId(dataTestIdToolTip.custom.resources.votingMana),
+      );
     });
-    await clickAwait([alIcon.refreshHome]);
-    actAdvanceTime(4300);
-    await assertion.awaitFindText(`$ ${home.constants.estimatedValue} USD`);
+    expect(
+      await screen.findByTestId(dataTestIdToolTip.custom.resources.votingMana),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(manaReadyInText, { exact: true }),
+    ).toBeInTheDocument();
   });
+
+  it('Must show tool tip when hover on credits with its value', async () => {
+    const resourceReadyInValue = HiveUtils.getTimeBeforeFull(
+      fake_RC.rc.percentage,
+    );
+    await act(async () => {
+      await userEvent.hover(
+        screen.getByTestId(dataTestIdToolTip.custom.resources.resourceCredits),
+      );
+    });
+    const rcHTMLElement = await screen.findByTestId(dataTestIdToolTip.content);
+    expect(rcHTMLElement).toBeInTheDocument();
+    expect(rcHTMLElement).toHaveTextContent(resourceReadyInValue);
+  });
+
+  it('Must change active account to the selected one', async () => {
+    AccountUtils.getAccount = jest.fn().mockResolvedValue([
+      {
+        ...accounts.extended,
+        name: mk.user.two,
+      } as ExtendedAccount,
+    ]);
+    await act(async () => {
+      //bellow the only element using an actual aria-label.
+      await userEvent.click(
+        screen.getByLabelText(dataTestIdSelect.accountSelector),
+      );
+      await userEvent.click(
+        screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
+      );
+    });
+    expect(
+      await screen.findByTestId(dataTestIdDiv.selectedAccount),
+    ).toHaveTextContent(mk.user.two);
+  });
+
+  it('Must refresh data when click on logo and show new estimated account value', async () => {
+    const formattedEstimatedAccountValue = FormatUtils.withCommas('69999');
+    AccountUtils.getAccountValue = jest
+      .fn()
+      .mockReturnValue(formattedEstimatedAccountValue);
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdIcon.refreshHome));
+    });
+    expect(
+      await screen.findByText(`$ ${formattedEstimatedAccountValue} USD`, {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('Must log out user when clicking on log out', async () => {
-    await clickAwait([alButton.logOut]);
-    expect(screen.getByLabelText(alComponent.signIn)).toBeInTheDocument();
-  });
-  it('Must show menu settings', async () => {
-    await clickAwait([alButton.menu]);
-    assertion.getByText(home.constants.iconsMenuSettings);
-  });
-  it('Must show dropdown menu on HIVE balance', async () => {
-    await clickAwait([alDropdown.arrow.hive]);
-    assertion.getByText(home.constants.menuItems.hive);
-  });
-  it('Must show dropdown menu on HBD balance', async () => {
-    await clickAwait([alDropdown.arrow.hbd]);
-    assertion.getByText(home.constants.menuItems.hbd);
-  });
-  it('Must show dropdown menu on HP balance', async () => {
-    await clickAwait([alDropdown.arrow.hp]);
-    assertion.getByText(home.constants.menuItems.hp);
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.logOut));
+    });
+    expect(await screen.findByTestId('sign-in-page')).toBeInTheDocument();
   });
 });

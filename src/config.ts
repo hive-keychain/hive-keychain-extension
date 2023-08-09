@@ -43,6 +43,9 @@ const Config = {
         ? 'http://localhost:5050'
         : 'https://swap.hive-keychain.com',
   },
+  witnesses: {
+    feedWarningLimitInHours: 5,
+  },
 };
 
 export default Config;

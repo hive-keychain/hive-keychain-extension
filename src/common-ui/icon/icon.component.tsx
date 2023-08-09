@@ -21,12 +21,14 @@ interface IconProps {
   skipTooltipTranslation?: boolean;
   ariaLabel?: string;
   rotate?: boolean;
+  dataTestId?: string;
 }
 
 const getIconTemplate = (props: IconProps) => {
   return (
     <span
       aria-label={props.ariaLabel}
+      data-testid={props.dataTestId}
       className={`icon-component material-icons ${
         props.type ?? IconType.OUTLINED
       } ${props.additionalClassName ?? ''} ${

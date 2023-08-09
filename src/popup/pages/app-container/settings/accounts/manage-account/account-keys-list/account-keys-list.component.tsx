@@ -6,11 +6,14 @@ import {
 } from '@popup/actions/loading.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
+import { WrongKeysOnUser } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -18,9 +21,15 @@ import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list.component.scss';
 
+interface AccountKeysListProps {
+  wrongKeysFound?: WrongKeysOnUser;
+}
+
 const AccountKeysList = ({
+  wrongKeysFound,
   activeAccount,
   accounts,
   setAccounts,
@@ -28,7 +37,7 @@ const AccountKeysList = ({
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
-}: PropsType) => {
+}: PropsType & AccountKeysListProps) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState<LocalAccount>();
   const [canDeleteKey, setCanDeleteKey] = useState(true);
@@ -43,6 +52,16 @@ const AccountKeysList = ({
     setAccount(acc!);
     setCanDeleteKey(KeysUtils.keysCount(activeAccount.keys) > 2);
   }, [activeAccount]);
+
+  const isWrongKey = (keyType: KeychainKeyTypesLC) => {
+    return (
+      wrongKeysFound &&
+      wrongKeysFound[activeAccount.name!] &&
+      !!wrongKeysFound[activeAccount.name!].find(
+        (keyFound) => keyFound === keyType,
+      )
+    );
+  };
 
   const deleteAccount = () => {
     let warningMessage, warningParams;
@@ -71,7 +90,17 @@ const AccountKeysList = ({
           activeAccount.name!,
           accounts,
         );
-
+        let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
+        if (no_key_check && no_key_check.hasOwnProperty(activeAccount.name!)) {
+          delete no_key_check[activeAccount.name!];
+          if (Object.keys(no_key_check).length === 0) no_key_check = null;
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.NO_KEY_CHECK,
+            no_key_check,
+          );
+        }
         let finalAccounts = [];
         if (hasAuthorizedAccountLinkedToActiveAccount) {
           for (let i = 0; i < newAccounts.length; i++) {
@@ -126,6 +155,7 @@ const AccountKeysList = ({
           keyName={'popup_html_active'}
           keyType={KeyType.ACTIVE}
           canDelete={canDeleteKey}
+          isWrongKey={isWrongKey(KeychainKeyTypesLC.active)}
         />
         <AccountKeysListItemComponent
           privateKey={activeAccount.keys.posting}
@@ -133,6 +163,7 @@ const AccountKeysList = ({
           keyName={'popup_html_posting'}
           keyType={KeyType.POSTING}
           canDelete={canDeleteKey}
+          isWrongKey={isWrongKey(KeychainKeyTypesLC.posting)}
         />
         <AccountKeysListItemComponent
           privateKey={activeAccount.keys.memo}
@@ -140,11 +171,12 @@ const AccountKeysList = ({
           keyName={'popup_html_memo'}
           keyType={KeyType.MEMO}
           canDelete={canDeleteKey}
+          isWrongKey={isWrongKey(KeychainKeyTypesLC.memo)}
         />
       </div>
 
       <ButtonComponent
-        ariaLabel="button-toogle-qr-code"
+        dataTestId="button-toogle-qr-code"
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
         onClick={() => toggleQRCode()}
       />
@@ -152,7 +184,7 @@ const AccountKeysList = ({
         <>
           <div ref={qrCodeRef}></div>
           <QRCode
-            aria-label="qrcode"
+            data-testid="qrcode"
             className="qrcode"
             value={`keychain://add_account=${AccountUtils.generateQRCode(
               account!,
@@ -163,7 +195,7 @@ const AccountKeysList = ({
 
       {accounts.length > 1 && (
         <ButtonComponent
-          ariaLabel="button-delete-account"
+          dataTestId="button-delete-account"
           label="popup_html_delete_account"
           type={ButtonType.IMPORTANT}
           onClick={() => deleteAccount()}

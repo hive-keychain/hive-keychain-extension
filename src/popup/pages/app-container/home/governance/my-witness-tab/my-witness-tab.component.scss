@@ -1,0 +1,31 @@
+@import '../../../../../variable.scss';
+
+.my-witness-tab {
+  @include pageLayoutRowGap;
+  overflow: hidden;
+  height: 100%;
+
+  .rotating-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
+
+  .error-witness {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    row-gap: 0px !important;
+    text-align: center;
+    font-size: 16px;
+    row-gap: 16px;
+
+    .icon-component {
+      @include icon-size(70px);
+    }
+  }
+}

@@ -24,7 +24,7 @@ interface InputProps {
   translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
   disabled?: boolean;
   tooltip?: string;
   skipTooltipTranslation?: boolean;
@@ -80,8 +80,8 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          aria-label={props.ariaLabel}
           ref={ref as any}
+          data-testid={props.dataTestId}
           className={`${props.hasError ? 'has-error' : ''} ${
             props.onSetToMaxClicked ? 'has-max-button' : ''
           }`}
@@ -129,7 +129,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           props.value &&
           props.value.length > 0 && (
             <Icon
-              ariaLabel="input-clear"
+              dataTestId="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
               additionalClassName="input-img erase"></Icon>
@@ -157,7 +157,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
         {props.rightIcon}
         {props.onSetToMaxClicked && (
           <span
-            aria-label="set-to-max-button"
+            data-testid="set-to-max-button"
             className="set-to-max-button"
             onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}

@@ -4,8 +4,14 @@ import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import { keys } from 'src/__tests__/utils-for-testing/data/keys';
+import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+
 export const initialEmptyStateStore = {
   activeRpc: {
     testnet: false,
@@ -14,19 +20,13 @@ export const initialEmptyStateStore = {
 } as RootState;
 
 export const initialStateWAccountsWActiveAccountStore = {
-  accounts: [
-    {
-      name: utilsT.userData.username,
-      keys: utilsT.keysUserData1,
-    },
-    utilsT.secondAccountOnState,
-  ] as LocalAccount[],
+  accounts: [localAccounts.user1, localAccounts.user2],
   activeAccount: {
-    name: utilsT.userData.username,
+    name: userData.one.username,
     account: {
-      name: utilsT.userData.username,
+      name: userData.one.username,
     } as ExtendedAccount,
-    keys: utilsT.keysUserData1 as Keys,
+    keys: keys.keysUser1 as Keys,
     rc: {},
   },
   activeRpc: {
@@ -36,17 +36,11 @@ export const initialStateWAccountsWActiveAccountStore = {
 } as RootState;
 
 export const initialStateForHome = {
-  accounts: [
-    {
-      name: utilsT.userData.username,
-      keys: utilsT.keysUserData1,
-    },
-    utilsT.secondAccountOnState,
-  ],
+  accounts: [localAccounts.user1, localAccounts.user2],
   activeAccount: {
-    name: utilsT.userData.username,
+    name: userData.one.username,
     account: {
-      name: utilsT.userData.username,
+      name: userData.one.username,
       reputation: 100,
       reward_hbd_balance: '100 HBD',
       reward_hive_balance: '100 HIVE',
@@ -56,7 +50,7 @@ export const initialStateForHome = {
       balance: new Asset(1000, 'HIVE'),
       savings_balance: new Asset(10000, 'HBD'),
     } as ExtendedAccount,
-    keys: utilsT.keysUserData1 as Keys,
+    keys: keys.keysUser1 as Keys,
     rc: {
       current_mana: 1000,
       max_mana: 10000,
@@ -64,22 +58,22 @@ export const initialStateForHome = {
     } as Manabar,
   },
   activeRpc: { uri: 'https://hived.privex.io/', testnet: false } as Rpc,
-  mk: utilsT.userData.username,
+  mk: mk.user.one,
   globalProperties: {
-    globals: utilsT.dynamicPropertiesObj,
-    price: utilsT.fakeCurrentMedianHistoryPrice,
-    rewardFund: utilsT.fakePostRewardFundResponse,
+    globals: dynamic.globalProperties,
+    price: dynamic.medianHistoryPrice,
+    rewardFund: dynamic.rewardFund,
   } as GlobalProperties,
 } as RootState;
 
 export const initialStateWOneKey = {
-  accounts: [utilsT.secondAccountOnState],
+  accounts: [localAccounts.user2],
   activeAccount: {
-    name: utilsT.secondAccountOnState.name,
+    name: userData.two.username,
     account: {
-      name: utilsT.secondAccountOnState.name,
+      name: userData.two.username,
     },
-    keys: utilsT.secondAccountOnState.keys,
+    keys: keys.keysUser2,
     rc: {},
   },
   activeRpc: {
@@ -91,14 +85,14 @@ export const initialStateWOneKey = {
 export const initialStateNoKeys = {
   accounts: [
     {
-      name: utilsT.secondAccountOnState.name,
+      name: userData.two.username,
       keys: {},
     },
   ],
   activeAccount: {
-    name: utilsT.secondAccountOnState.name,
+    name: userData.two.username,
     account: {
-      name: utilsT.secondAccountOnState.name,
+      name: userData.two.username,
     },
     keys: {},
     rc: {},
@@ -112,22 +106,25 @@ export const initialStateNoKeys = {
 export const initialStateDifferentAccounts = {
   accounts: [
     {
-      name: utilsT.userData.username,
-      keys: utilsT.keysUserData1,
+      name: userData.one.username,
+      keys: keys.keysUser1,
     },
   ],
   activeAccount: {
-    name: utilsT.secondAccountOnState.name,
+    name: userData.two.username,
     account: {
-      name: utilsT.secondAccountOnState.name,
+      name: userData.two.username,
     },
-    keys: utilsT.secondAccountOnState.keys,
+    keys: keys.keysUser2,
     rc: {},
   },
 } as unknown as RootState;
 
 export const initialStateJustTokens = {
-  userTokens: { loading: false, list: [utilsT.fakeGetUserBalanceResponse[0]] },
+  userTokens: {
+    loading: false,
+    list: [tokensList.fakeGetUserBalanceResponse[0]],
+  },
 } as RootState;
 
 export const ghostState = {
@@ -143,17 +140,11 @@ export const ghostState = {
 } as RootState;
 
 export const initialStateFull = {
-  accounts: [
-    {
-      name: utilsT.userData.username,
-      keys: utilsT.keysUserData1,
-    },
-    utilsT.secondAccountOnState,
-  ] as LocalAccount[],
+  accounts: [localAccounts.user1, localAccounts.user2] as LocalAccount[],
   activeAccount: {
-    name: utilsT.userData.username,
+    name: userData.one.username,
     account: {
-      name: utilsT.userData.username,
+      name: userData.one.username,
       reputation: 100,
       reward_hbd_balance: '100 HBD',
       reward_hive_balance: '100 HIVE',
@@ -165,7 +156,7 @@ export const initialStateFull = {
       proxy: '',
       witness_votes: ['aggroed', 'blocktrades'],
     } as ExtendedAccount,
-    keys: utilsT.keysUserData1 as Keys,
+    keys: keys.keysUser1 as Keys,
     rc: {
       current_mana: 1000,
       max_mana: 10000,
@@ -173,10 +164,10 @@ export const initialStateFull = {
     } as Manabar,
   },
   activeRpc: { uri: 'https://active.fromState.io/', testnet: false } as Rpc,
-  mk: utilsT.userData.username,
+  mk: mk.user.one,
   globalProperties: {
-    globals: utilsT.dynamicPropertiesObj,
-    price: utilsT.fakeCurrentMedianHistoryPrice,
-    rewardFund: utilsT.fakePostRewardFundResponse,
+    globals: dynamic.globalProperties,
+    price: dynamic.medianHistoryPrice,
+    rewardFund: dynamic.rewardFund,
   } as GlobalProperties,
 } as RootState;

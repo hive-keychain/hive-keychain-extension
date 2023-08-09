@@ -2,8 +2,9 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -37,9 +38,11 @@ const BuyCoins = ({
   };
 
   return (
-    <div className="buy-coins-page" aria-label="buy-coins-page">
+    <div
+      className="buy-coins-page"
+      data-testid={`${Screen.BUY_COINS_PAGE}-page`}>
       <SwitchComponent
-        ariaLabel="buy-coins"
+        dataTestId="buy-coins"
         onChange={changeSelectedCurrency}
         selectedValue={selectedCurrency}
         leftValue={BuyCoinType.BUY_HIVE}

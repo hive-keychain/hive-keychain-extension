@@ -11,7 +11,7 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -92,7 +92,7 @@ const ProxyTab = ({
   };
 
   return (
-    <div aria-label="proxy-tab" className="proxy-tab">
+    <div data-testid="proxy-tab" className="proxy-tab">
       <div className="introduction">
         {chrome.i18n.getMessage(
           activeAccount.account.proxy.length > 0
@@ -102,7 +102,7 @@ const ProxyTab = ({
       </div>
 
       {activeAccount.account.proxy.length > 0 && (
-        <div aria-label="proxy-name" className="proxy-name">
+        <div data-testid="proxy-name" className="proxy-name">
           {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
             activeAccount.account.proxy,
           ])}
@@ -111,7 +111,7 @@ const ProxyTab = ({
 
       {activeAccount.account.proxy.length === 0 && (
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           value={proxyUsername}
           onChange={setProxyUsername}
           logo={Icons.AT}
@@ -121,7 +121,7 @@ const ProxyTab = ({
       )}
       {activeAccount.account.proxy.length === 0 && (
         <OperationButtonComponent
-          ariaLabel="operation-set-as-proxy-button"
+          dataTestId="operation-set-as-proxy-button"
           requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_set_as_proxy'}
           onClick={() => setAsProxy()}
@@ -130,7 +130,7 @@ const ProxyTab = ({
       )}
       {activeAccount.account.proxy.length > 0 && (
         <OperationButtonComponent
-          ariaLabel="operation-clear-proxy"
+          dataTestId="operation-clear-proxy"
           requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_clear_proxy'}
           onClick={() => removeProxy()}

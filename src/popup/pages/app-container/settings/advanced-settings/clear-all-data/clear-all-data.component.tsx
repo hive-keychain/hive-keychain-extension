@@ -37,7 +37,9 @@ const ClearAllData = ({
   };
 
   return (
-    <div aria-label="clear-all-data-page" className="clear-all-data-page">
+    <div
+      data-testid={`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`}
+      className="clear-all-data-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -46,11 +48,11 @@ const ClearAllData = ({
 
       <div className="bottom-panel">
         <ButtonComponent
-          ariaLabel="dialog_cancel-button"
+          dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
-          ariaLabel="dialog_confirm-button"
+          dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={() => reset()}
           type={ButtonType.RAISED}></ButtonComponent>

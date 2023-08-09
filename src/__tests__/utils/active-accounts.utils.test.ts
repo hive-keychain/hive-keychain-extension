@@ -2,10 +2,13 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { RewardsUtils } from 'src/utils/rewards.utils';
-const chrome = require('chrome-mock');
-global.chrome = chrome;
 
 describe(' active-account.utils tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
   describe('isEmpty tests', () => {
     test('Passing an object without the account key must return true', () => {
       const notEmptyObject = {

@@ -100,3 +100,8 @@ export interface CreateAccount extends Transaction {
   new_account_name: string;
   fee: string;
 }
+
+export interface ProducerReward extends Transaction {
+  producer: string;
+  vesting_shares: string;
+}

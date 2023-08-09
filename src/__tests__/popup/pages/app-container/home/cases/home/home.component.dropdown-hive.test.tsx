@@ -1,66 +1,80 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import { HiveDropdownMenuItems } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
+import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import CurrencyUtils from 'src/utils/currency.utils';
 describe('home.component dropdown hive tests:\n', () => {
   beforeEach(async () => {
-    await home.beforeEach(<App />, accounts.twoAccounts);
-    await clickAwait([alDropdown.arrow.hive]);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getAccountsFromLocalStorage: accounts.twoAccounts,
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdDropdown.arrow.preFix +
+            CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
+        ),
+      );
+    });
   });
   afterEach(() => {
-    afterTests.clean();
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
 
   it('Must open each menu item', async () => {
-    const hiveDropdownLabelPage = [
-      {
-        ariaLabelPreFixed:
-          alDropdown.walletInfo.preFix +
-          HiveDropdownMenuItems.filter((item) => item.icon === Icons.SEND)[0]
-            .icon,
-        pageComponent: alComponent.transfersFundsPage,
-      },
-      {
-        ariaLabelPreFixed:
-          alDropdown.walletInfo.preFix +
-          HiveDropdownMenuItems.filter(
-            (item) => item.icon === Icons.ARROW_UPWARDS,
-          )[0].icon,
-        pageComponent: alComponent.powerUpDownPage,
-      },
-      {
-        ariaLabelPreFixed:
-          alDropdown.walletInfo.preFix +
-          HiveDropdownMenuItems.filter((item) => item.icon === Icons.CONVERT)[0]
-            .icon,
-        pageComponent: alComponent.conversionPage,
-      },
-      {
-        ariaLabelPreFixed:
-          alDropdown.walletInfo.preFix +
-          HiveDropdownMenuItems.filter((item) => item.icon === Icons.SAVINGS)[0]
-            .icon,
-        pageComponent: alComponent.savingsPage,
-      },
-    ];
-
-    for (let i = 0; i < hiveDropdownLabelPage.length; i++) {
-      const { ariaLabelPreFixed, pageComponent } = hiveDropdownLabelPage[i];
-      await clickAwait([ariaLabelPreFixed]);
-      assertion.getByLabelText(pageComponent);
-      await clickAwait([alIcon.closePage]);
-      await clickAwait([alDropdown.arrow.hive]);
+    for (let i = 0; i < HiveDropdownMenuItems.length; i++) {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdDropdown.walletInfo.preFix +
+              HiveDropdownMenuItems[i].icon,
+          ),
+        );
+      });
+      if (
+        HiveDropdownMenuItems[i].icon === Icons.ARROW_DOWNWARDS ||
+        HiveDropdownMenuItems[i].icon === Icons.ARROW_UPWARDS
+      ) {
+        expect(
+          await screen.findByTestId(`${Screen.POWER_UP_PAGE}-page`),
+        ).toBeInTheDocument();
+      } else {
+        expect(
+          await screen.findByTestId(
+            `${HiveDropdownMenuItems[i].nextScreen}-page`,
+          ),
+        ).toBeInTheDocument();
+      }
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdDropdown.arrow.preFix +
+              CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
+          ),
+        );
+      });
     }
   });
 });

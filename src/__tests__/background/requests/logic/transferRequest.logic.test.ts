@@ -1,82 +1,112 @@
 import { transferRequest } from '@background/requests/logic';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import transferRequestLogic from 'src/__tests__/background/requests/logic/mocks/transferRequest.logic';
+import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+
 describe('transferRequest.logic tests:\n', () => {
-  const { methods, constants, spies, callback } = transferRequestLogic;
-  const { requestHandler, request, domain, current_rpc } = constants;
-  const { tab } = constants;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   it('Must call createPopup with sendErrors if no active key', () => {
+    const sCreatePopup = jest
+      .spyOn(DialogLifeCycle, 'createPopup')
+      .mockImplementation(() => undefined);
     const accountNoActive = objects.clone(accounts.local.one) as LocalAccount;
     delete accountNoActive.keys.active;
+    const request = keychainRequest.noValues.transfer;
     request.username = mk.user.one;
     request.enforce = true;
     request.memo = '#';
+    const requestHandler = new RequestsHandler();
     transferRequest(
       requestHandler,
-      tab,
+      0,
       request,
-      domain,
+      'domain',
       accounts.twoAccounts,
-      current_rpc,
+      DefaultRpcs[0],
       accountNoActive,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noActive.toString(),
+    expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
+      'bgd_auth_transfer_no_active',
     );
   });
+
   it('Must call createPopup with sendErrors if no memo key', () => {
+    const sCreatePopup = jest
+      .spyOn(DialogLifeCycle, 'createPopup')
+      .mockImplementation(() => undefined);
     const accountNoMemo = objects.clone(accounts.local.one) as LocalAccount;
     delete accountNoMemo.keys.memo;
+    const request = keychainRequest.noValues.transfer;
     request.username = mk.user.one;
     request.enforce = false;
     request.memo = '#';
+    const requestHandler = new RequestsHandler();
     transferRequest(
       requestHandler,
-      tab,
+      0,
       request,
-      domain,
+      'domain',
       accounts.twoAccounts,
-      current_rpc,
+      DefaultRpcs[0],
       accountNoMemo,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noMemo.toString(),
+    expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
+      'bgd_auth_transfer_no_memo',
     );
   });
+
   it('Must call createPopup with sendErrors if no acccounts', () => {
+    const sCreatePopup = jest
+      .spyOn(DialogLifeCycle, 'createPopup')
+      .mockImplementation(() => undefined);
     const account = objects.clone(accounts.local.one) as LocalAccount;
+    const request = keychainRequest.noValues.transfer;
     request.username = mk.user.one;
+    const requestHandler = new RequestsHandler();
     transferRequest(
       requestHandler,
-      tab,
+      0,
       request,
-      domain,
+      'domain',
       [],
-      current_rpc,
+      DefaultRpcs[0],
       account,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noActiveAccounts.toString(),
+    expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
+      'bgd_auth_transfer_no_active',
     );
   });
+
   it('Must call createPopup with sendMessage callback', () => {
+    const sCreatePopup = jest
+      .spyOn(DialogLifeCycle, 'createPopup')
+      .mockImplementation(() => undefined);
     const account = objects.clone(accounts.local.one) as LocalAccount;
+    const request = keychainRequest.noValues.transfer;
     request.username = mk.user.one;
+    const requestHandler = new RequestsHandler();
     transferRequest(
       requestHandler,
-      tab,
+      0,
       request,
-      domain,
+      'domain',
       accounts.twoAccounts,
-      current_rpc,
+      DefaultRpcs[0],
       account,
     );
-    expect(
-      methods.clean(spies.createPopup.mock.calls[0][0].toString()),
-    ).toEqual(methods.clean(callback.sendMessage.toString()));
+    expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
+      'chrome.runtime.sendMessage',
+    );
   });
 });

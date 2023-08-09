@@ -1,56 +1,149 @@
 import App from '@popup/App';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import signUp from 'src/__tests__/popup/pages/sign-up/mocks/sign-up';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+
 describe('sign-up.component tests:\n', () => {
   beforeEach(async () => {
-    await signUp.beforeEach(<App />);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialEmptyStateStore,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              hasStoredAccounts: false,
+              getAccountsFromLocalStorage: [],
+            },
+            ActiveAccountUtils: {
+              getActiveAccountNameFromLocalStorage: '',
+            },
+            MkUtils: {
+              getMkFromLocalStorage: '',
+            },
+          },
+        },
+      },
+    );
   });
-  afterEach(() => {
-    afterTests.clean();
+  afterEach(() => cleanup());
+
+  it('Must show sign up component', async () => {
+    expect(screen.getByTestId('signup-page')).toBeInTheDocument();
   });
-  it('Must show sign-up page', () => {
-    assertion.getByLabelText(alComponent.signUp);
-  });
+
   it('Must show error message when using different passwords and pressing enter', async () => {
-    await signUp.methods.typeNEnter('@1qEWqw!!', '1qEWqw{enter}');
-    await assertion.awaitFor(
-      signUp.methods.message('popup_password_mismatch'),
-      QueryDOM.BYTEXT,
-    );
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '@1qEWqw!!',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '@1qEWqw!{enter}',
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_password_mismatch'),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
+
   it('Must show error message when using different passwords and clicking button', async () => {
-    await signUp.methods.typeNClick('@1qEWqw!!', '1qEWqw');
-    await assertion.awaitFor(
-      signUp.methods.message('popup_password_mismatch'),
-      QueryDOM.BYTEXT,
-    );
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '@1qEWqw!!',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '@1qEWqw!',
+      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_password_mismatch'),
+        { exact: true },
+      ),
+    ).toBeInTheDocument();
   });
+
   it('Must show error message when invalid password and pressing enter', async () => {
-    await signUp.methods.typeNEnter('1qEWqw', '1qEWqw{enter}');
-    await assertion.awaitFor(
-      signUp.methods.message('popup_password_regex'),
-      QueryDOM.BYTEXT,
-    );
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '1qEWqw',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '1qEWqw{enter}',
+      );
+    });
+    expect(
+      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
   });
+
   it('Must show error message when invalid password and clicking button', async () => {
-    await signUp.methods.typeNClick('1qEWqw', '1qEWqw');
-    await assertion.awaitFor(
-      signUp.methods.message('popup_password_regex'),
-      QueryDOM.BYTEXT,
-    );
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '1qEWqw',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '1qEWqw',
+      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
+    });
+    expect(
+      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
   });
+
   it('Must navigate to add_keys_page with valid password and pressing enter', async () => {
-    await signUp.methods.typeNEnter('1qEWqw23', '1qEWqw23{enter}');
-    await assertion.awaitFor(alComponent.addAccountMain, QueryDOM.BYLABEL);
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '1qEWqw23',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '1qEWqw23{enter}',
+      );
+    });
+    expect(
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
+    ).toBeInTheDocument();
   });
-  it('Must navigate to add_keys_page with valid password and clicking button', async () => {
-    await signUp.methods.typeNClick('1qEWqw23', '1qEWqw23');
-    await assertion.awaitFor(alComponent.addAccountMain, QueryDOM.BYLABEL);
+
+  it('Must navigate to add_keys_page with valid password and click button', async () => {
+    await act(async () => {
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.password),
+        '1qEWqw23',
+      );
+      await userEvent.type(
+        screen.getByTestId(dataTestIdInput.confirmation),
+        '1qEWqw23',
+      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
+    });
+    expect(
+      await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
+    ).toBeInTheDocument();
   });
 });

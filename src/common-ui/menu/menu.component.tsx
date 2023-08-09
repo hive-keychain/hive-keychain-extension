@@ -40,7 +40,7 @@ const Menu = ({
       <div className="menu">
         {menuItems.map((menuItem, index) => (
           <div
-            aria-label={'menu-settings-button-' + menuItem.icon}
+            data-testid={'menu-settings-button-' + menuItem.icon}
             key={index}
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
