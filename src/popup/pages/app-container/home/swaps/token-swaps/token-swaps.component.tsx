@@ -611,7 +611,6 @@ const TokenSwaps = ({
             </div>
 
             <OperationButtonComponent
-              ariaLabel="operation-process-button"
               requiredKey={KeychainKeyTypesLC.active}
               onClick={processSwap}
               label={'html_popup_swaps_process_swap'}

@@ -74,7 +74,7 @@ const TokenList = ({
   }, [userTokens, market, filterValue]);
 
   return (
-    <div className="tokens-page" data-testid={`${Screen.TOKENS_PAGE}-page`}>
+    <div className="token-list" data-testid={`${Screen.TOKENS_PAGE}-page`}>
       <div
         className="disclaimer"
         dangerouslySetInnerHTML={{
