@@ -20,7 +20,7 @@ export const MenuItemComponent = ({
   return (
     <div
       className="menu-item-container"
-      onMouseEnter={() => setHovered(true)}
+      onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}>
       <div
         data-testid={'menu-settings-button-' + menuItem.icon}
