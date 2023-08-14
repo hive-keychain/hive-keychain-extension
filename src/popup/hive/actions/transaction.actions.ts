@@ -1,8 +1,8 @@
-import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { AppThunk } from 'src/popup/hive/actions/interfaces';
 import { store } from 'src/popup/hive/store';
+import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 
 export const initAccountTransactions =
   (accountName: string): AppThunk =>

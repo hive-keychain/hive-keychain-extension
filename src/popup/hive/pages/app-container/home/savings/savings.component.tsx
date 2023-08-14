@@ -1,7 +1,3 @@
-import CurrencyUtils, { CurrencyLabels } from '@hiveapp/utils/currency.utils';
-import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
-import { SavingsUtils } from '@hiveapp/utils/savings.utils';
-import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
@@ -34,6 +30,12 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import CurrencyUtils, {
+  CurrencyLabels,
+} from 'src/popup/hive/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
+import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
+import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 import './savings.component.scss';

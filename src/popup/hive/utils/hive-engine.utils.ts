@@ -1,12 +1,12 @@
-import { ErrorUtils } from '@hiveapp/utils/error.utils';
-import { HiveEngineConfigUtils } from '@hiveapp/utils/hive-engine-config.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { TokenRequestParams } from '@hiveapp/utils/token-request-params.interface';
 import { CustomJsonOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
+import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
 
 const sendOperation = async (
   operations: CustomJsonOperation[],

@@ -1,12 +1,12 @@
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypes,
   RequestEncode,
   RequestId,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 export const encodeMessage = async (
   requestHandler: RequestsHandler,
   data: RequestEncode & RequestId,

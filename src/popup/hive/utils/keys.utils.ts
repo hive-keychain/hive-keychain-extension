@@ -1,8 +1,8 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { Account, ExtendedAccount, PrivateKey } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {

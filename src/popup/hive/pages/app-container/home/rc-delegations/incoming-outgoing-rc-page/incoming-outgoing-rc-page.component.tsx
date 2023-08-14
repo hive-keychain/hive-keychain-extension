@@ -1,5 +1,3 @@
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
-import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
 import {
   RcDelegation,
   RCDelegationValue,
@@ -22,6 +20,8 @@ import {
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 import './incoming-outgoing-rc-page.component.scss';
 
 const IncomingOutgoingRcPage = ({

@@ -1,10 +1,10 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { ErrorUtils } from '@hiveapp/utils/error.utils';
 import { KeyType } from '@interfaces/keys.interface';
 import { QueryParams } from '@interfaces/query-params.interface';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './add-key.component.scss';

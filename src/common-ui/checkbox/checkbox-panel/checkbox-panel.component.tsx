@@ -13,6 +13,8 @@ interface CheckboxPanelProps extends CheckboxProps {
   backgroundType?: BackgroundType;
   hint?: string;
   skipHintTranslation?: boolean;
+  text?: string;
+  skipTextTranslation?: boolean;
 }
 
 export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
@@ -20,13 +22,20 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
     <div
       className={`checkbox-panel ${
         props.backgroundType ?? BackgroundType.FILLED
-      }`}>
+      } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}>
       <CheckboxComponent {...props} />
       {props.hint && (
         <div className="hint">
           {props.skipHintTranslation
             ? props.hint
             : chrome.i18n.getMessage(props.hint)}
+        </div>
+      )}
+      {props.text && (
+        <div className="text">
+          {props.skipTextTranslation
+            ? props.hint
+            : chrome.i18n.getMessage(props.text)}
         </div>
       )}
     </div>

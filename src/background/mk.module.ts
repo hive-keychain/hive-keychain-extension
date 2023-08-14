@@ -1,5 +1,5 @@
-import EncryptUtils from '@hiveapp/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 

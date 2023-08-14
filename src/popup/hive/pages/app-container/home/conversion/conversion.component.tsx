@@ -1,5 +1,3 @@
-import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Asset } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
@@ -25,6 +23,8 @@ import {
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 import './conversion.component.scss';

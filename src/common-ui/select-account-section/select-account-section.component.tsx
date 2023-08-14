@@ -11,12 +11,19 @@ import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 import './select-account-section.component.scss';
 
+interface Props {
+  background?: 'white';
+  fullSize?: boolean;
+}
+
 const SelectAccountSection = ({
+  background,
+  fullSize,
   accounts,
   activeAccount,
   loadActiveAccount,
   setInfoMessage,
-}: PropsFromRedux) => {
+}: PropsFromRedux & Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
 
   useEffect(() => {
@@ -45,7 +52,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
-        className="selected-account-panel"
+        className={`selected-account-panel ${fullSize ? 'fullsize' : ''}`}
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
@@ -115,13 +122,13 @@ const SelectAccountSection = ({
   return (
     <>
       {selectedLocalAccount && options && (
-        <div className="select-account-section">
+        <div className={`select-account-section ${fullSize ? 'fullsize' : ''}`}>
           <Select
             values={[selectedLocalAccount as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
-            className="select-account-select"
+            className={`select-account-select ${background ? background : ''}`}
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />

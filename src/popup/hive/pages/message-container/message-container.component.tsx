@@ -1,101 +1,63 @@
 import { MessageType } from '@reference-data/message-type.enum';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { resetMessage } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 import './message-container.component.scss';
 
-const DURATION = 5000;
-
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
-  const [timeoutId, setTimeoutId] = useState<any>();
-  useEffect(() => {
-    if (errorMessage.key) {
-      switch (errorMessage.type) {
-        case MessageType.ERROR:
-          toast.error(
-            <div
-              dangerouslySetInnerHTML={{
-                __html: chrome.i18n.getMessage(
-                  errorMessage.key,
-                  errorMessage.params,
-                ),
-              }}></div>,
-          );
-          break;
-        case MessageType.SUCCESS:
-          toast.success(
-            <div
-              dangerouslySetInnerHTML={{
-                __html: chrome.i18n.getMessage(
-                  errorMessage.key,
-                  errorMessage.params,
-                ),
-              }}></div>,
-          );
-          break;
-        case MessageType.WARNING:
-          toast.warning(
-            <div
-              dangerouslySetInnerHTML={{
-                __html: chrome.i18n.getMessage(
-                  errorMessage.key,
-                  errorMessage.params,
-                ),
-              }}></div>,
-          );
-          break;
-        case MessageType.INFO:
-          toast.info(
-            <div
-              dangerouslySetInnerHTML={{
-                __html: chrome.i18n.getMessage(
-                  errorMessage.key,
-                  errorMessage.params,
-                ),
-              }}></div>,
-          );
-          break;
-      }
-
-      const id = setTimeout(() => {
-        close();
-      }, DURATION);
-      setTimeoutId(id);
-    }
-  }, [errorMessage]);
-
   const close = () => {
     resetMessage();
-    clearTimeout(timeoutId);
+  };
+
+  const getIcon = (errorType: MessageType) => {
+    switch (errorType) {
+      case MessageType.SUCCESS:
+        return NewIcons.MESSAGE_SUCCESS;
+      case MessageType.ERROR:
+        return NewIcons.MESSAGE_ERROR;
+      default:
+        return NewIcons.MESSAGE_SUCCESS;
+    }
+  };
+
+  const getTitle = (errorType: MessageType) => {
+    switch (errorType) {
+      case MessageType.SUCCESS:
+        return 'message_container_title_success';
+      case MessageType.ERROR:
+        return 'message_container_title_fail';
+      default:
+        return 'message_container_title_success';
+    }
   };
 
   return (
-    <ToastContainer
-      position="bottom-center"
-      autoClose={DURATION}
-      pauseOnHover
-      theme="dark"
-      onClick={() => {
-        close();
-      }}
-      closeOnClick={true}
-      draggable={false}
-      style={{
-        maxHeight: 'unset',
-      }}
-      toastStyle={{
-        maxHeight: 'unset',
-      }}
-      bodyStyle={{
-        fontSize: '16px',
-        fontFamily: 'Futura',
-        fontWeight: '400',
-        maxHeight: 'unset',
-      }}
-    />
+    <div className="message-container">
+      <div className="overlay"></div>
+      <div className="message-card">
+        <SVGIcon icon={getIcon(errorMessage.type)} />
+        <div className="title">
+          {chrome.i18n.getMessage(getTitle(errorMessage.type))}
+        </div>
+        <div
+          className="message"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(
+              errorMessage.key,
+              errorMessage.params,
+            ),
+          }}></div>
+        <ButtonComponent
+          label="message_container_close_button"
+          onClick={close}
+        />
+      </div>
+    </div>
   );
 };
 

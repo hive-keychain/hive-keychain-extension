@@ -1,10 +1,10 @@
 import MkModule from '@background/mk.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
 export const addAccount = async (
   requestHandler: RequestsHandler,

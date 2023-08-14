@@ -1,15 +1,20 @@
-import MkUtils from '@hiveapp/utils/mk.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import {
+  BackgroundType,
+  CheckboxPanelComponent,
+} from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { setMk } from 'src/popup/hive/actions/mk.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { resetTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
+import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import './sign-up.component.scss';
 
@@ -21,6 +26,7 @@ const SignUp = ({
 }: PropsFromRedux) => {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
     resetTitleContainerProperties;
@@ -41,29 +47,46 @@ const SignUp = ({
 
   return (
     <div className="sign-up-page" data-testid="signup-page">
-      <img src="/assets/images/keychain_logo.png" className="logo-white" />
-      <p
-        className="introduction"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_register'),
-        }}></p>
+      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_LOGO} />
+      <div className="introduction-panel">
+        <span className="introduction big first">
+          {chrome.i18n.getMessage('popup_html_unlock1')}
+        </span>
+        <span className="introduction medium second">
+          {chrome.i18n.getMessage('popup_html_unlock2')}
+        </span>
+        <span className="introduction medium lighter third">
+          {chrome.i18n.getMessage('popup_html_unlock3')}
+        </span>
+      </div>
       <div className="inputs-panel">
         <InputComponent
           value={newPassword}
           onChange={setNewPassword}
           logo={Icons.PASSWORD}
           placeholder="popup_html_new_password"
+          label="popup_html_new_password"
           type={InputType.PASSWORD}
           dataTestId="password-input"
+          classname="password-input"
         />
         <InputComponent
           value={newPasswordConfirm}
           onChange={setNewPasswordConfirm}
           logo={Icons.PASSWORD}
           placeholder="popup_html_confirm"
+          label="popup_html_confirm"
           type={InputType.PASSWORD}
           onEnterPress={submitMk}
           dataTestId="password-input-confirmation"
+          classname="password-input"
+        />
+        <CheckboxPanelComponent
+          onChange={() => setAccepted(!accepted)}
+          checked={accepted}
+          backgroundType={BackgroundType.FILLED}
+          text="accept_terms_and_condition"
+          dataTestId="accept-terms-and-condition"
         />
       </div>
       <ButtonComponent

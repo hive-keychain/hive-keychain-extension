@@ -1,10 +1,10 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   CommentOperation,
   CommentOptionsOperation,
   VoteOperation,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const vote = (
   voter: string,

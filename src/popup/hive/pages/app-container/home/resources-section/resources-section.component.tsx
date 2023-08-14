@@ -1,10 +1,10 @@
 import '@common-style/home/resources-section/resource-section.component.scss';
-import HiveUtils from '@hiveapp/utils/hive.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { ResourceItemComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { RootState } from 'src/popup/hive/store';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
 const ResourcesSection = ({
   activeAccount,

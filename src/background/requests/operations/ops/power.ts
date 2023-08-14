@@ -1,10 +1,6 @@
 import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import { PowerUtils } from '@hiveapp/utils/power.utils';
 import {
   RequestId,
   RequestPowerDown,
@@ -12,6 +8,10 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
+import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastPowerUp = async (

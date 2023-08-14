@@ -1,4 +1,4 @@
-import { CurrencyLabels } from '@hiveapp/utils/currency.utils';
+import { CurrencyLabels } from 'src/popup/hive/utils/currency.utils';
 
 export interface CurrencyListItem {
   label: string;

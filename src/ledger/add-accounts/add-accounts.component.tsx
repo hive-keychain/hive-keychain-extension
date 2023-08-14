@@ -1,8 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { ErrorUtils } from '@hiveapp/utils/error.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -12,6 +7,11 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.componen
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';

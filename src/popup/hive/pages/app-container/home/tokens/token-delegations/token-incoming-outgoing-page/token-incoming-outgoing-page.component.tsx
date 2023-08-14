@@ -1,4 +1,3 @@
-import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { Screen } from '@reference-data/screen.enum';
@@ -16,6 +15,7 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { TokenIncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component';
 import { RootState } from 'src/popup/hive/store';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './token-incoming-outgoing-page.component.scss';
 

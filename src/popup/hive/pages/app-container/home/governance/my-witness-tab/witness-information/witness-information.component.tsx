@@ -1,7 +1,3 @@
-import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
-import WitnessUtils, {
-  WITNESS_DISABLED_KEY,
-} from '@hiveapp/utils/witness.utils';
 import {
   Witness,
   WitnessInfo,
@@ -33,6 +29,10 @@ import {
 import { WitnessGlobalInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from 'src/popup/hive/store';
+import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
+import WitnessUtils, {
+  WITNESS_DISABLED_KEY,
+} from 'src/popup/hive/utils/witness.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './witness-information.component.scss';
 
@@ -265,7 +265,7 @@ const WitnessInformation = ({
                   requiredKey={KeychainKeyTypesLC.active}
                   onClick={() => disableWitness()}
                   label={'popup_html_disable_witness'}
-                  type={ButtonType.IMPORTANT}
+                  type={ButtonType.DEFAULT}
                 />
               )}
               {witnessInfo.isDisabled && lastSigningKey && (
@@ -273,7 +273,7 @@ const WitnessInformation = ({
                   requiredKey={KeychainKeyTypesLC.active}
                   onClick={() => enableWitness()}
                   label={'popup_html_enable_witness'}
-                  type={ButtonType.IMPORTANT}
+                  type={ButtonType.DEFAULT}
                 />
               )}
             </div>

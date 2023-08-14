@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Josefin+Sans:wght@500&family=Poppins:wght@300;400;500;600;700&display=swap');
 $dark-red: #a5112c;
 $red: #e31337;
 $light-red: #fdebee;
@@ -11,6 +11,7 @@ $light-background: #e5edf5;
 $dark-background: #212838;
 $light-green: #dff6e1;
 $red-shadow: rgba(227, 19, 55, 0.21);
+$white-shadow: rgba(255, 255, 255, 0.21);
 
 $lighter-grey: #818a9f;
 $extra-light-grey: #eaeaea;
@@ -40,7 +41,7 @@ $input-font-size: 15px;
 $input-height: 36px;
 $input-logo-size: 20px;
 $input-hint-font-size: 15px;
-$caption-font-size: 16px;
+$caption-font-size: 12px;
 
 @mixin pageLayout {
   display: flex;

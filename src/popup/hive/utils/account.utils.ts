@@ -1,7 +1,3 @@
-import EncryptUtils from '@hiveapp/utils/encrypt.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import MkUtils from '@hiveapp/utils/mk.utils';
 import {
   AccountUpdateOperation,
   Authority,
@@ -17,6 +13,10 @@ import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
 import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';

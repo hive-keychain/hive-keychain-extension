@@ -1,4 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
 import { ErrorMessage } from '@interfaces/errorMessage.interface';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -7,6 +6,7 @@ import {
   refreshKeys,
 } from 'src/popup/hive/actions/active-account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ActionType } from './action-type.enum';
 import { ActionPayload, AppThunk } from './interfaces';
 

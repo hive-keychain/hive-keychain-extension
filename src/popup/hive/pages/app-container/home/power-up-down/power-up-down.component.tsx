@@ -1,7 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
-import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
-import { PowerUtils } from '@hiveapp/utils/power.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -27,6 +23,10 @@ import {
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
+import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';

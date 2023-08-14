@@ -1,7 +1,7 @@
-import CurrencyPricesUtils from '@hiveapp/utils/currency-prices.utils';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { AppThunk } from 'src/popup/hive/actions/interfaces';
 import { AppStatus } from 'src/popup/hive/reducers/app-status.reducer';
+import CurrencyPricesUtils from 'src/popup/hive/utils/currency-prices.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadCurrencyPrices = (): AppThunk => async (dispatch) => {

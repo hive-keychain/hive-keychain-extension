@@ -1,5 +1,5 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getDynamicGlobalProperties =
   async (): Promise<DynamicGlobalProperties> => {

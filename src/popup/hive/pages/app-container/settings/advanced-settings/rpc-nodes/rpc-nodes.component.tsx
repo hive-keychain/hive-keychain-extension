@@ -1,4 +1,3 @@
-import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
@@ -17,6 +16,7 @@ import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as ValidUrl from 'valid-url';
 import './rpc-nodes.component.scss';

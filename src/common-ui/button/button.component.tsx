@@ -4,12 +4,8 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import './button.component.scss';
 
 export enum ButtonType {
-  STROKED = 'stroked',
-  RAISED = 'raised',
-  IMPORTANT = 'important',
   DEFAULT = 'default',
-  REVERSE = 'reverse',
-  NO_BORDER = 'no-border',
+  WHITE = 'white',
 }
 
 export interface ButtonProps {

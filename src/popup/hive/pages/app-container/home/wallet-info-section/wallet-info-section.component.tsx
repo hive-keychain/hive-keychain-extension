@@ -1,5 +1,3 @@
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
@@ -17,6 +15,8 @@ import { NewIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { RootState } from 'src/popup/hive/store';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-info-section.component.scss';

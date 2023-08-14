@@ -1,8 +1,8 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import './estimated-account-value-section.component.scss';
 
 const EstimatedAccountValueSection = ({

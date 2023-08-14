@@ -1,13 +1,18 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .add-by-keys-page {
   display: flex;
   flex-direction: column;
-  row-gap: 24px;
+  row-gap: 12px;
   padding: 0px 24px;
 
   .caption {
+    color: $dark-blue;
     @include caption;
+    a {
+      color: $dark-blue;
+    }
   }
 
   .form-container {

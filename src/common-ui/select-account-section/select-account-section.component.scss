@@ -15,6 +15,14 @@
       background: transparent;
     }
 
+    &.white {
+      background: white;
+      &:hover,
+      &:focus {
+        background: white;
+      }
+    }
+
     //commons
     .selected-account-name,
     .account-name {
@@ -98,4 +106,29 @@
       }
     }
   }
+
+  &.fullsize {
+    margin: 0px 20px;
+    height: 68px;
+    .select-account-select {
+      height: 68px;
+    }
+    .selected-account-name,
+    .account-name {
+      @include poppins500(15px);
+    }
+    .user-picture {
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+    }
+    .react-dropdown-select-dropdown {
+      top: 72px;
+      width: 100%;
+    }
+  }
+}
+
+.css-wmy1p7-ReactDropdownSelect {
+  box-shadow: none !important;
 }

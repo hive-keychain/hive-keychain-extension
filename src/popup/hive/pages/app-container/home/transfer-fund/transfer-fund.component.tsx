@@ -1,9 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import CurrencyUtils, { CurrencyLabels } from '@hiveapp/utils/currency.utils';
-import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
-import HiveUtils from '@hiveapp/utils/hive.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
@@ -36,6 +30,14 @@ import {
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import CurrencyUtils, {
+  CurrencyLabels,
+} from 'src/popup/hive/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';

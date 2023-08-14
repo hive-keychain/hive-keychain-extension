@@ -1,8 +1,8 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { AccountWitnessProxyOperation, ExtendedAccount } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const findUserProxy = async (user: ExtendedAccount): Promise<string | null> => {
   const previousChecked: string[] = [user.name!];

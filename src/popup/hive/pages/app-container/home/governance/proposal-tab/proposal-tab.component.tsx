@@ -1,5 +1,3 @@
-import ProposalUtils from '@hiveapp/utils/proposal.utils';
-import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { Proposal } from '@interfaces/proposal.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -15,6 +13,8 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { ProposalItemComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-item/proposal-item.component';
 import { RootState } from 'src/popup/hive/store';
+import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
+import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import './proposal-tab.component.scss';
 
 const ProposalTab = ({

@@ -1,10 +1,10 @@
-import { SurveyUtils } from '@hiveapp/utils/survey.utils';
 import React, { useEffect, useState } from 'react';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
+import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
 import './survey.component.scss';
 
 interface Props {
@@ -53,13 +53,13 @@ const Survey = ({ survey }: Props) => {
           </div>
           <div className="button-panel">
             <ButtonComponent
-              type={ButtonType.NO_BORDER}
+              type={ButtonType.WHITE}
               label="popup_html_survey_no_thanks"
               onClick={() => noThanks()}
             />
             <ButtonComponent
               dataTestId="help-us-page"
-              type={ButtonType.STROKED}
+              type={ButtonType.DEFAULT}
               label="popup_html_survey_help_us"
               onClick={() => helpUs()}
             />

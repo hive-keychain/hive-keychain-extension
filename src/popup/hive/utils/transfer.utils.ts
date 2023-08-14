@@ -1,4 +1,3 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   RecurrentTransferOperation,
   Transaction,
@@ -8,6 +7,7 @@ import { Key } from '@interfaces/keys.interface';
 import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
 import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getTransferWarning = (
   account: string,

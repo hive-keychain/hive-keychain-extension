@@ -5,10 +5,10 @@ import thunk from 'redux-thunk';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import reducers from 'src/popup/hive/reducers';
 // import {composeWithDevTools} from 'remote-redux-devtools';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import MkUtils from '@hiveapp/utils/mk.utils';
-import RpcUtils from '@hiveapp/utils/rpc.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import MkUtils from 'src/popup/hive/utils/mk.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 // const composeEnhancers = composeWithDevTools({

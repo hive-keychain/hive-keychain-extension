@@ -1,21 +1,19 @@
+@import 'src/common-style/variable.scss';
+@import 'src/common-style/mixins.scss';
+
 .add-account-page {
   display: flex;
   flex-direction: column;
   row-gap: 32px;
   padding: 0px 24px;
   .caption {
-    line-height: 22px;
-    font-size: 16px;
-    text-align: left;
-    text-overflow: clip;
-    white-space: normal;
-    color: white;
+    color: $dark-blue;
+    @include poppins400(12px);
   }
 
   .button-container {
     display: flex;
     flex-direction: column;
-    row-gap: 32px;
-    margin-top: 32px;
+    row-gap: 12px;
   }
 }

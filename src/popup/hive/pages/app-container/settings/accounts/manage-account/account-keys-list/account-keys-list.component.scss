@@ -5,15 +5,48 @@
   padding: 0px 24px;
   padding-bottom: 24px;
 
-  .account-keys-list-item:nth-child(even) {
-    background: $red-transparent;
+  .keys-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    padding: 0px 8px;
   }
 
   scroll-behavior: smooth;
 }
 
-.qrcode {
-  margin: 16px 0px;
-  align-self: center;
-  border: solid 3px white;
+.qr-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+
+  .overlay {
+    background: $dark-background;
+    opacity: 0.8;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+
+  .qr-code-popup {
+    display: flex;
+    flex-direction: column;
+    padding: 42px;
+    background: white;
+    z-index: 2;
+    border-radius: 20px;
+    row-gap: 32px;
+
+    .qr-code-container {
+      border-radius: 20px;
+      border: 4px solid black;
+      padding: 12px;
+    }
+  }
 }

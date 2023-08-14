@@ -1,9 +1,9 @@
-import { CustomJsonUtils } from '@hiveapp/utils/custom-json.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { Asset } from '@hiveio/dhive';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
+import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const GIGA = 1000000000;
 

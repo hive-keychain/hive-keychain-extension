@@ -1,6 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
-import HiveUtils from '@hiveapp/utils/hive.utils';
 import { Asset } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
@@ -25,6 +22,9 @@ import {
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
 import './create-account-step-one.component.scss';
 

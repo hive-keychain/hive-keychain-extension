@@ -1,4 +1,3 @@
-import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -25,6 +24,7 @@ import {
 } from 'src/popup/hive/actions/token.actions';
 import { TokenItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/token-item/token-item.component';
 import { RootState } from 'src/popup/hive/store';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens.component.scss';
 

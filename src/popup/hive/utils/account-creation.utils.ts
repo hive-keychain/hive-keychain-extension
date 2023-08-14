@@ -1,5 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   AccountCreateOperation,
   AuthorityType,
@@ -9,6 +7,8 @@ import {
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 export enum AccountCreationType {
   USING_TICKET = 'USING_TICKET',

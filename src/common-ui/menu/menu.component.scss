@@ -2,7 +2,7 @@
 @import '@common-style/mixins.scss';
 
 .menu {
-  border-radius: 11px;
+  border-radius: 12px;
   border: 1px solid #f3f3f3;
   background: #fff;
   margin: 0px 18px;
@@ -10,5 +10,16 @@
   .menu-item-container {
     display: flex;
     flex-direction: column;
+
+    &:first-child {
+      .menu-item {
+        border-radius: 12px 12px 0px 0px;
+      }
+    }
+    &:last-child {
+      .menu-item {
+        border-radius: 0px 0px 12px 12px;
+      }
+    }
   }
 }

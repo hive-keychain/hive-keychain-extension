@@ -102,7 +102,7 @@ const ConfirmationPage = ({
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={handleClickOnConfirm}
-          type={ButtonType.RAISED}></ButtonComponent>
+          type={ButtonType.DEFAULT}></ButtonComponent>
       </div>
     </div>
   );

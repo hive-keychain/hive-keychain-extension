@@ -1,5 +1,3 @@
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -17,6 +15,8 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 import './top-bar.component.scss';

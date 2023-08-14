@@ -1,4 +1,3 @@
-import { isPasswordValid } from '@hiveapp/utils/password.utils';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -8,6 +7,7 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
 import './register.scss';
 
 type Props = {

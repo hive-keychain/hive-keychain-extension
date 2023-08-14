@@ -1,9 +1,9 @@
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
 type Props = {
   data: RequestConvert & RequestId;

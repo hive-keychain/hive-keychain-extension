@@ -50,12 +50,28 @@
 }
 
 @mixin caption {
-  font-size: $caption-font-size;
+  padding: 0px 30px;
+  @include poppins400($caption-font-size);
 }
 
 @mixin icon-size($size) {
   height: $size;
   width: $size;
+}
+
+@mixin dmSans400($fontSize) {
+  font-family: DM Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
+}
+@mixin dmSans700($fontSize) {
+  font-family: DM Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
 }
 
 @mixin josefin500($fontSize) {

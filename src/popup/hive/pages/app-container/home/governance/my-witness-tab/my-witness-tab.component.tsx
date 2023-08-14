@@ -1,4 +1,3 @@
-import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { Witness } from '@interfaces/witness.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,6 +8,7 @@ import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { EditMyWitnessComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/edit-my-witness/edit-my-witness.component';
 import { WitnessInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
 import { RootState } from 'src/popup/hive/store';
+import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 import './my-witness-tab.component.scss';
 
 type Props = {

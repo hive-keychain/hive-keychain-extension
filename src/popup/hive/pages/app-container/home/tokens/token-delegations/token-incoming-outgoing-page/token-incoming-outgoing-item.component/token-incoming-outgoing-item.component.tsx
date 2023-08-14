@@ -1,6 +1,3 @@
-import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import TokensUtils from '@hiveapp/utils/tokens.utils';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -20,6 +17,9 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import './token-incoming-outgoing-item.component.scss';
 

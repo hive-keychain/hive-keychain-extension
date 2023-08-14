@@ -55,7 +55,7 @@ const ClearAllData = ({
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={() => reset()}
-          type={ButtonType.RAISED}></ButtonComponent>
+          type={ButtonType.DEFAULT}></ButtonComponent>
       </div>
     </div>
   );

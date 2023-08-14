@@ -1,0 +1,24 @@
+@import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
+
+.checkbox-panel {
+  display: flex;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid #fff;
+  background: #fff;
+
+  &.has-hint {
+    flex-direction: column;
+  }
+
+  .text {
+    @include poppins400(14px);
+    color: $dark-blue;
+  }
+  .hint {
+    @include poppins400(14px);
+    color: $lighter-grey;
+    margin-left: 32px;
+  }
+}

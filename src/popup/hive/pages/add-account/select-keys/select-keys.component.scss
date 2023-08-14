@@ -1,9 +1,13 @@
+@import 'src/common-style/variable.scss';
+@import 'src/common-style/mixins.scss';
+
 .select-keys-page {
   display: flex;
   flex-direction: column;
   row-gap: 20px;
   padding: 0px 24px;
   .caption {
-    font-size: 16px;
+    @include caption();
+    color: $dark-blue;
   }
 }

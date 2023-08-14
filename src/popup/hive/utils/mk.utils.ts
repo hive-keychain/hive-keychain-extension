@@ -1,6 +1,6 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { isPasswordValid } from '@hiveapp/utils/password.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const login = async (password: string): Promise<boolean> => {

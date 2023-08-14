@@ -69,11 +69,11 @@ export default ({ data, wrongMk, index }: Props) => {
       <ButtonComponent
         label={'dialog_unlock'}
         onClick={login}
-        type={ButtonType.RAISED}
+        type={ButtonType.DEFAULT}
       />
       <ButtonComponent
         label={'dialog_cancel'}
-        type={ButtonType.STROKED}
+        type={ButtonType.DEFAULT}
         onClick={() => {
           window.close();
         }}

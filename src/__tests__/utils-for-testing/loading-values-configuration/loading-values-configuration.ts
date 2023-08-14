@@ -1,21 +1,4 @@
 import { KeychainApi } from '@api/keychain';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
-import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
-import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
-import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
-import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
-import HiveUtils from '@hiveapp/utils/hive.utils';
-import MkUtils from '@hiveapp/utils/mk.utils';
-import ProposalUtils from '@hiveapp/utils/proposal.utils';
-import ProxyUtils from '@hiveapp/utils/proxy.utils';
-import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
-import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
-import RpcUtils from '@hiveapp/utils/rpc.utils';
-import { SurveyUtils } from '@hiveapp/utils/survey.utils';
-import TokensUtils from '@hiveapp/utils/tokens.utils';
-import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import {
   DynamicGlobalProperties,
   ExtendedAccount,
@@ -53,6 +36,23 @@ import {
   GetManifest,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
+import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
+import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
+import MkUtils from 'src/popup/hive/utils/mk.utils';
+import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
+import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
+import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
+import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
+import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
+import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';

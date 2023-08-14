@@ -1,5 +1,3 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import HiveUtils from '@hiveapp/utils/hive.utils';
 import { DynamicGlobalProperties, utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
@@ -23,6 +21,8 @@ import {
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 

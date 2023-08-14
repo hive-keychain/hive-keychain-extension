@@ -1,4 +1,3 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   CollateralizedConvertOperation,
   ConvertOperation,
@@ -7,6 +6,7 @@ import { CollateralizedConversion } from '@interfaces/collaterelized-conversion.
 import { Conversion } from '@interfaces/conversion.interface';
 import { Key } from '@interfaces/keys.interface';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getConversionRequests = async (name: string): Promise<Conversion[]> => {
   const [hbdConversions, hiveConversions] = await Promise.all([

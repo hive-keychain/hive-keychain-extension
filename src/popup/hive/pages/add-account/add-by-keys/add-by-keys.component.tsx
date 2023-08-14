@@ -1,10 +1,8 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
@@ -12,6 +10,8 @@ import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import './add-by-keys.component.scss';
 
@@ -78,7 +78,8 @@ const AddByKeys = ({
           dataTestId="input-username"
           value={username}
           onChange={setUsername}
-          logo={Icons.AT}
+          logo={NewIcons.AT}
+          label="popup_html_username"
           placeholder="popup_html_username"
           type={InputType.TEXT}
           onEnterPress={submitForm}
@@ -87,7 +88,7 @@ const AddByKeys = ({
           dataTestId="input-private-key"
           value={privateKey}
           onChange={setPrivateKey}
-          logo={Icons.KEY}
+          label="popup_html_private_key"
           placeholder="popup_html_private_key"
           type={InputType.PASSWORD}
           onEnterPress={submitForm}

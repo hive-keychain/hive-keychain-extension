@@ -1,10 +1,10 @@
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { removeKey, setAccounts } from 'src/popup/hive/actions/account.actions';
@@ -15,6 +15,7 @@ import {
   navigateToWithParams,
 } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list-item.component.scss';
@@ -27,6 +28,8 @@ export interface KeyListItemProps {
   canDelete: boolean;
   isWrongKey?: boolean;
 }
+
+const SUBSTRING_LENGTH = 15;
 
 const AccountKeysListItem = ({
   privateKey,
@@ -113,7 +116,7 @@ const AccountKeysListItem = ({
 
   return (
     <div className="account-keys-list-item">
-      <div className="top-panel">
+      <div className={`top-panel ${!privateKey && !publicKey ? 'no-key' : ''}`}>
         <div className="key-name-container">
           <span className="key-name">{chrome.i18n.getMessage(keyName)} </span>
           {isWrongKey && (
@@ -126,26 +129,27 @@ const AccountKeysListItem = ({
           )}
         </div>
         {publicKey && privateKey && canDelete && (
-          <Icon
+          <SVGIcon
             dataTestId={`icon-remove-key-${removePopupTagForAriaLabel(
               keyName,
             )}`}
             onClick={() => handleClickOnRemoveKey()}
-            name={Icons.DELETE}
-            additionalClassName="remove-button"></Icon>
+            icon={NewIcons.DELETE}
+            className="remove-button"></SVGIcon>
+        )}
+        {!privateKey && !publicKey && (
+          <SVGIcon
+            dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
+            onClick={() =>
+              navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)
+            }
+            icon={NewIcons.ADD_CIRCLE}
+            className="add-key-icon"></SVGIcon>
         )}
       </div>
 
-      {!privateKey && !publicKey && (
-        <Icon
-          dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
-          onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
-          name={Icons.ADD_CIRCLE}
-          additionalClassName="add-key-icon"></Icon>
-      )}
-
       {(publicKey || privateKey) && (
-        <div className="keys-panel">
+        <div className="keys-panel-content">
           {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
@@ -162,12 +166,17 @@ const AccountKeysListItem = ({
                 }>
                 {isPrivateHidden
                   ? chrome.i18n.getMessage('popup_accounts_reveal_private')
-                  : privateKey}
+                  : `${privateKey?.substring(
+                      SUBSTRING_LENGTH,
+                      0,
+                    )}...${privateKey?.toString().slice(-SUBSTRING_LENGTH)}`}
               </div>
               <div
                 className={`public-key key-field`}
                 onClick={() => copyToClipboard(publicKey)}>
-                {publicKey}
+                {`${publicKey?.substring(SUBSTRING_LENGTH, 0)}...${publicKey
+                  ?.toString()
+                  .slice(-SUBSTRING_LENGTH)}`}
               </div>
             </>
           )}
@@ -191,7 +200,9 @@ const AccountKeysListItem = ({
               <div
                 className="public-key key-field"
                 onClick={() => copyToClipboard(publicKey)}>
-                {publicKey}
+                {`${publicKey?.substring(SUBSTRING_LENGTH, 0)}...${publicKey
+                  ?.toString()
+                  .slice(-SUBSTRING_LENGTH)}`}
               </div>
             </>
           )}

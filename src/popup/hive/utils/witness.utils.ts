@@ -1,6 +1,4 @@
 import { KeychainApi } from '@api/keychain';
-import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
@@ -17,6 +15,8 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
+import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 

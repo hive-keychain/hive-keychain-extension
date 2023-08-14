@@ -1,9 +1,5 @@
 import '@common-style/home/home.component.scss';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import { SurveyUtils } from '@hiveapp/utils/survey.utils';
+import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -28,6 +24,11 @@ import {
   WrongKeysOnUser,
 } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
@@ -40,6 +41,7 @@ const Home = ({
   activeRpc,
   refreshActiveAccount,
   resetTitleContainerProperties,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
@@ -216,6 +218,7 @@ const connector = connect(mapStateToProps, {
   loadCurrencyPrices,
   refreshActiveAccount,
   resetTitleContainerProperties,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

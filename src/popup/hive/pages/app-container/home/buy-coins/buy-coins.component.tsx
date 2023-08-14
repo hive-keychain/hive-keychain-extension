@@ -1,4 +1,3 @@
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -11,6 +10,7 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from 'src/popup/hive/store';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import './buy-coins.component.scss';
 
 const BuyCoins = ({

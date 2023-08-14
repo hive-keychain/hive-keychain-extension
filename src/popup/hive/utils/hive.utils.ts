@@ -1,5 +1,3 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
 import {
@@ -7,6 +5,8 @@ import {
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
 import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';

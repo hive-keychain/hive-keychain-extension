@@ -1,5 +1,3 @@
-import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
-import WitnessUtils from '@hiveapp/utils/witness.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Witness } from '@interfaces/witness.interface';
 import React from 'react';
@@ -15,6 +13,8 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
+import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
+import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 import './witness-voting-section.component.scss';
 
 const toWitnessObject = (name: string): Witness => ({

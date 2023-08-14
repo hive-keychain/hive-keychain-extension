@@ -1,8 +1,10 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import CurrencyUtils, { BaseCurrencies } from '@hiveapp/utils/currency.utils';
 import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import CurrencyUtils, {
+  BaseCurrencies,
+} from 'src/popup/hive/utils/currency.utils';
 
 type Props = {
   amount: number;

@@ -1,12 +1,12 @@
-import { CustomJsonUtils } from '@hiveapp/utils/custom-json.utils';
-import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { TokenRequestParams } from '@hiveapp/utils/token-request-params.interface';
 import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
+import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
+import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
 /* istanbul ignore next */
 const stakeToken = (
   to: string,

@@ -1,8 +1,5 @@
 import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests/request-handler';
-import EncryptUtils from '@hiveapp/utils/encrypt.utils';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import RpcUtils from '@hiveapp/utils/rpc.utils';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -13,6 +10,9 @@ import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';

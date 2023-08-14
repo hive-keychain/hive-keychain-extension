@@ -33,51 +33,13 @@
     height: 42px;
   }
 
-  // &.stroked {
-  //   background: transparent;
-  //   border: 1px solid white;
-  //   &:hover {
-  //     background: #ffffff2b;
-  //     color: white;
-  //   }
-  // }
-
-  // &.important {
-  //   background: white;
-  //   color: black;
-  //   border: none;
-
-  //   &:hover {
-  //     background: $red-dark;
-  //     color: white;
-  //   }
-  // }
-  // &.no-border {
-  //   background: none;
-  //   border: none;
-  //   color: white;
-  //   text-decoration: underline;
-  // }
-  // &.raised {
-  //   background: white;
-  //   border: none;
-  //   color: black;
-
-  //   &:hover {
-  //     background: #eee;
-  //   }
-  // }
-
-  // &.reverse {
-  //   background: white;
-  //   color: black;
-  //   border: 1px solid black;
-
-  //   &:hover {
-  //     background: black;
-  //     color: white;
-  //   }
-  // }
+  &.white {
+    color: $dark-blue;
+    background-color: white;
+    &:hover {
+      box-shadow: 0px 13px 9px 0px $white-shadow;
+    }
+  }
 
   &.fix-to-bottom {
     position: fixed;
@@ -85,10 +47,4 @@
     left: 24px;
     width: calc(100% - 48px);
   }
-
-  // &.no-border {
-  //   background: none;
-  //   border: none;
-  //   color: white;
-  // }
 }

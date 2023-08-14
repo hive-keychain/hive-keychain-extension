@@ -1,7 +1,3 @@
-import AccountUtils from '@hiveapp/utils/account.utils';
-import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
-import MkUtils from '@hiveapp/utils/mk.utils';
-import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -37,6 +33,10 @@ import { MessageContainerComponent } from 'src/popup/hive/pages/message-containe
 import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from 'src/popup/hive/pages/sign-up/sign-up.component';
 import { RootState } from 'src/popup/hive/store';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import MkUtils from 'src/popup/hive/utils/mk.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import { LedgerUtils } from 'src/utils/ledger.utils';
@@ -55,6 +55,7 @@ const HiveApp = ({
   displayProxySuggestion,
   navigationStack,
   appStatus,
+  errorMessage,
   setMk,
   navigateTo,
   loadActiveAccount,
@@ -311,7 +312,7 @@ const HiveApp = ({
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
-      <MessageContainerComponent />
+      {errorMessage?.key && <MessageContainerComponent />}
       {renderPopup(
         loading,
         activeRpc,
@@ -341,6 +342,7 @@ const mapStateToProps = (state: RootState) => {
       state.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
     appStatus: state.appStatus,
+    errorMessage: state.errorMessage,
   };
 };
 

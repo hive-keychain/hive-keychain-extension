@@ -1,6 +1,3 @@
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
-import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
-import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -31,6 +28,9 @@ import {
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
+import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';

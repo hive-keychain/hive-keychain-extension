@@ -1,4 +1,3 @@
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -7,6 +6,7 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { AccountKeysListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import './manage-account.component.scss';
 
 const ManageAccount = ({
@@ -53,7 +53,7 @@ const ManageAccount = ({
     <div
       data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`}
       className="settings-manage-account">
-      <SelectAccountSectionComponent />
+      <SelectAccountSectionComponent background="white" fullSize />
       <AccountKeysListComponent wrongKeysFound={wrongKeysFound} />
     </div>
   );

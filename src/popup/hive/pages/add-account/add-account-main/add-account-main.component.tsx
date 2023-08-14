@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -86,24 +88,28 @@ const AddAccountMain = ({
           dataTestId="add-by-keys-button"
           label={'popup_html_add_by_keys'}
           onClick={handleAddByKeys}
+          type={ButtonType.WHITE}
         />
         {accounts.length > 0 && (
           <ButtonComponent
             dataTestId="add-by-auth-button"
             label={'popup_html_add_by_auth'}
             onClick={handleAddByAuth}
+            type={ButtonType.WHITE}
           />
         )}
         <ButtonComponent
           dataTestId="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
+          type={ButtonType.WHITE}
         />
         {isLedgerSupported && (
           <ButtonComponent
             dataTestId="import-keys-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
+            type={ButtonType.WHITE}
           />
         )}
       </div>
