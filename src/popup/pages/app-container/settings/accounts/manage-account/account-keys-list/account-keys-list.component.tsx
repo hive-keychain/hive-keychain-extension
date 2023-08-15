@@ -4,7 +4,10 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { WrongKeysOnUser } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
@@ -35,6 +38,7 @@ const AccountKeysList = ({
   setAccounts,
   loadActiveAccount,
   navigateToWithParams,
+  navigateTo,
   addToLoadingList,
   removeFromLoadingList,
 }: PropsType & AccountKeysListProps) => {
@@ -132,6 +136,7 @@ const AccountKeysList = ({
         if (finalAccounts.length) {
           loadActiveAccount(finalAccounts[0]);
         }
+        navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
     });
@@ -218,6 +223,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  navigateTo,
 });
 type PropsType = ConnectedProps<typeof connector>;
 
