@@ -107,7 +107,9 @@ const TopBar = ({
 
   return (
     <div className="top-bar">
-      <div className="settings-button-container">
+      <div
+        className="settings-button-container"
+        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}>
         <SVGIcon
           dataTestId="clickable-settings"
           icon={NewIcons.MENU}

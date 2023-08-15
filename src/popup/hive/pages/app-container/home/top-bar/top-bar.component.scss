@@ -50,6 +50,7 @@
     align-items: center;
     padding-left: 10px;
     box-sizing: border-box;
+    cursor: pointer;
     .settings-button {
       @include icon-size(18px);
     }
