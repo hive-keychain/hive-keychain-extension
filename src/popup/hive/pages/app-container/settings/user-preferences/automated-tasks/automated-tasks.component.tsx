@@ -3,12 +3,10 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
+import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import Config from 'src/config';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
@@ -140,52 +138,45 @@ const AutomatedTasks = ({
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
 
-      <div className="select">
-        <Select
-          values={[selectedLocalAccount as any]}
-          options={options}
-          onChange={() => undefined}
-          contentRenderer={customLabelRender}
-          itemRenderer={customItemRender}
-          className="select-account-select"
+      <SelectAccountSectionComponent fullSize background="white" />
+
+      <div className="tasks">
+        <CheckboxPanelComponent
+          dataTestId="checkbox-autoclaim-rewards"
+          title="popup_html_enable_autoclaim_rewards"
+          checked={claimRewards}
+          onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
+          hint="popup_html_enable_autoclaim_rewards_info"
+          tooltipMessage={claimRewardsErrorMessage}
+          disabled={!!claimRewardsErrorMessage}
+        />
+        <CheckboxPanelComponent
+          dataTestId="checkbox-autoclaim-accounts"
+          title="popup_html_enable_autoclaim_accounts"
+          checked={claimAccounts && !isClaimedAccountDisabled}
+          onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
+          skipHintTranslation
+          hint={chrome.i18n.getMessage(
+            'popup_html_enable_autoclaim_accounts_info',
+            [Config.claims.freeAccount.MIN_RC_PCT + ''],
+          )}
+          tooltipMessage={
+            claimAccountErrorMessage || isClaimedAccountDisabled
+              ? 'popup_html_insufficient_hp_claim_accounts'
+              : undefined
+          }
+          disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
+        />
+        <CheckboxPanelComponent
+          dataTestId="checkbox-autoclaim-savings"
+          title="popup_html_enable_autoclaim_savings"
+          checked={claimSavings}
+          onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
+          hint="popup_html_enable_autoclaim_savings_info"
+          tooltipMessage={claimSavingsErrorMessage}
+          disabled={!!claimSavingsErrorMessage}
         />
       </div>
-
-      <CheckboxPanelComponent
-        dataTestId="checkbox-autoclaim-rewards"
-        title="popup_html_enable_autoclaim_rewards"
-        checked={claimRewards}
-        onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
-        hint="popup_html_enable_autoclaim_rewards_info"
-        tooltipMessage={claimRewardsErrorMessage}
-        disabled={!!claimRewardsErrorMessage}
-      />
-      <CheckboxPanelComponent
-        dataTestId="checkbox-autoclaim-accounts"
-        title="popup_html_enable_autoclaim_accounts"
-        checked={claimAccounts && !isClaimedAccountDisabled}
-        onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
-        skipHintTranslation
-        hint={chrome.i18n.getMessage(
-          'popup_html_enable_autoclaim_accounts_info',
-          [Config.claims.freeAccount.MIN_RC_PCT + ''],
-        )}
-        tooltipMessage={
-          claimAccountErrorMessage || isClaimedAccountDisabled
-            ? 'popup_html_insufficient_hp_claim_accounts'
-            : undefined
-        }
-        disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
-      />
-      <CheckboxPanelComponent
-        dataTestId="checkbox-autoclaim-savings"
-        title="popup_html_enable_autoclaim_savings"
-        checked={claimSavings}
-        onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
-        hint="popup_html_enable_autoclaim_savings_info"
-        tooltipMessage={claimSavingsErrorMessage}
-        disabled={!!claimSavingsErrorMessage}
-      />
     </div>
   );
 };

@@ -9,10 +9,7 @@
 
   .caption {
     color: $dark-blue;
-    @include caption;
-    a {
-      color: $dark-blue;
-    }
+    @include caption($dark-blue);
   }
 
   .form-container {

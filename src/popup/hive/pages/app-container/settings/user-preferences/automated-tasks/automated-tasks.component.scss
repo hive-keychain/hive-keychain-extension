@@ -1,17 +1,20 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .automated-tasks-page {
   display: flex;
   flex-direction: column;
   height: 100%;
-  row-gap: 32px;
+  row-gap: 24px;
   padding: 0px 24px;
+  padding-bottom: 16px;
 
-  .intro {
-    font-size: 16px;
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
   }
-
-  .select {
-    margin: 0px -24px;
+  .intro {
+    @include caption($dark-blue);
   }
 }
