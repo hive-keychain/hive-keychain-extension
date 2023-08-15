@@ -3,11 +3,11 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -64,10 +64,11 @@ const AuthorizedOperations = ({
   const handleOnChangeFilter = (valueToFilter: string) => {
     const filtered: NoConfirmWebsite = {};
     const lowerCaseValueToFilter = valueToFilter.toLowerCase();
-    for (const [key, value] of Object.entries(websites)) {
-      if (
-        key.toLowerCase().includes(lowerCaseValueToFilter) ||
-        Object.entries(value).find((operation) => {
+    for (const [website, operations] of Object.entries(websites)) {
+      if (website.toLowerCase().includes(lowerCaseValueToFilter)) {
+        filtered[website] = operations;
+      } else {
+        const op = Object.entries(operations).find((operation) => {
           const readableOperation = chrome.i18n.getMessage(
             `popup_${operation[0]
               .split(/(?=[A-Z])/)
@@ -77,11 +78,14 @@ const AuthorizedOperations = ({
           if (
             operation[0].toLowerCase().includes(lowerCaseValueToFilter) ||
             readableOperation.toLowerCase().includes(lowerCaseValueToFilter)
-          )
+          ) {
             return true;
-        })
-      )
-        filtered[key] = value;
+          }
+        });
+        if (op) {
+          filtered[website] = { [op[0]]: op[1] };
+        }
+      }
     }
     setFilterWebSites(filtered);
   };
@@ -90,46 +94,36 @@ const AuthorizedOperations = ({
     <div
       data-testid={`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`}
       className="authorized-operations-page">
-      <div
-        className="introduction"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_pref_info'),
-        }}></div>
+      <div className="introduction">
+        {chrome.i18n.getMessage('popup_html_pref_info')}
+      </div>
 
-      <SelectAccountSectionComponent></SelectAccountSectionComponent>
+      <SelectAccountSectionComponent
+        fullSize
+        background="white"></SelectAccountSectionComponent>
 
       {websites && Object.keys(websites).length > 0 && (
-        <div className="search-panel">
-          <InputComponent
-            dataTestId="input-filter-box"
-            type={InputType.TEXT}
-            placeholder="popup_html_search"
-            value={filterValue}
-            onChange={(value) => setFilterValue(value)}
-          />
-          <div
-            data-testid="clear-filters"
-            className={'filter-button'}
-            onClick={() => setFilterValue('')}>
-            {chrome.i18n.getMessage(`popup_html_clear_filters`)}
-          </div>
-        </div>
+        <InputComponent
+          dataTestId="input-filter-box"
+          type={InputType.TEXT}
+          placeholder="popup_html_search"
+          value={filterValue}
+          onChange={(value) => setFilterValue(value)}
+        />
       )}
 
       {filterWebSites && Object.keys(filterWebSites).length > 0 && (
         <div className="preferences">
-          {Object.keys(filterWebSites).map((website) => (
-            <div className="website" key={website}>
-              <div className="name">
-                {chrome.i18n.getMessage('popup_website')}: {website}
-              </div>
-              {Object.keys(filterWebSites[website]).map((operation) => {
-                return (
-                  websites[website][operation] && (
-                    <div
-                      data-testid={'whitelisted-operation-item'}
-                      className="operation"
-                      key={operation}>
+          {Object.keys(filterWebSites).map((website) =>
+            Object.keys(filterWebSites[website]).map((operation) => {
+              return (
+                websites[website][operation] && (
+                  <div
+                    data-testid={'whitelisted-operation-item'}
+                    className="operation"
+                    key={operation}>
+                    <div className="left-panel">
+                      <div className="website">dApp : {website}</div>
                       <div className="operation-name">
                         {chrome.i18n.getMessage(
                           `popup_${operation
@@ -138,19 +132,17 @@ const AuthorizedOperations = ({
                             .toLowerCase()}`,
                         )}
                       </div>
-                      <Icon
-                        dataTestId={`icon-delete-authorized-${operation}-${website}`}
-                        onClick={() =>
-                          handleEraseButtonClick(website, operation)
-                        }
-                        name={Icons.DELETE}
-                        additionalClassName="operation-action"></Icon>
                     </div>
-                  )
-                );
-              })}
-            </div>
-          ))}
+                    <SVGIcon
+                      dataTestId={`icon-delete-authorized-${operation}-${website}`}
+                      onClick={() => handleEraseButtonClick(website, operation)}
+                      icon={NewIcons.DELETE}
+                      className="operation-action"></SVGIcon>
+                  </div>
+                )
+              );
+            }),
+          )}
         </div>
       )}
       {(filterWebSites && Object.keys(filterWebSites).length === 0) ||

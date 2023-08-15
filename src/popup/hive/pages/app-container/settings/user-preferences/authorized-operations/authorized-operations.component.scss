@@ -1,4 +1,5 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .authorized-operations-page {
   display: flex;
@@ -7,10 +8,9 @@
   row-gap: 16px;
   padding: 0px 24px;
   .introduction {
-    font-size: 16px;
-    margin-bottom: 8px;
-    margin-top: 20px;
+    @include caption($dark-blue);
   }
+
   .no_pref {
     text-align: center;
     margin-top: 16px;
@@ -18,90 +18,46 @@
   }
 
   .select-account-section {
-    margin: 0px -24px;
+    margin: unset;
   }
 
   .preferences {
     display: flex;
     flex-direction: column;
-    row-gap: 16px;
-    margin: 0px -24px;
-    .website {
-      .name {
-        padding: 0px 24px;
-        font-size: 18px;
-      }
-      .operation {
-        padding-left: 40px;
-        padding-right: 24px;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        background: $red-transparent;
-        height: 30px;
-        .operation-name {
-          flex: 1;
-        }
-        .operation-action {
-          display: none;
-          height: 14px;
-          width: 14px;
-          cursor: pointer;
-        }
-
-        &:hover {
-          .operation-action {
-            display: block;
-            height: auto;
-            width: auto;
-          }
-        }
-
-        &:nth-child(odd) {
-          background: $black-transparent;
-        }
-      }
-    }
-  }
-
-  .search-panel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    column-gap: 8px;
-    margin-bottom: 16px;
-    .input-container {
-      input {
-        height: 30px;
-        font-size: 14px;
-        &:focus {
-          box-shadow: unset;
-        }
-        &::-webkit-input-placeholder {
-          font-size: 14px;
-        }
-      }
-      .input-img.erase {
-        top: 8px;
-        height: 14px;
-        width: 14px;
-      }
-    }
-  }
-
-  .filter-button {
-    padding: 4px;
-    border: 1px solid white;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 14px;
-    cursor: pointer;
-    min-width: 60px;
-
-    &.selected,
-    &:hover {
+    row-gap: 10px;
+    .operation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: white;
-      color: black;
+      border: 1px solid $light-grey-border;
+      border-radius: 22px;
+      padding: 20px;
+      box-sizing: border-box;
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        row-gap: 6px;
+        .website {
+          @include poppins400(12px);
+          color: $dark-blue;
+        }
+        .operation-name {
+          @include poppins400(12px);
+          color: $light-grey;
+          padding-left: 10px;
+        }
+      }
+      .operation-action {
+        display: none;
+      }
+
+      &:hover {
+        .operation-action {
+          display: block;
+        }
+      }
     }
   }
 }
