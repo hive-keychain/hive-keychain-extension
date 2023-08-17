@@ -9,11 +9,9 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
+import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
+import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { FavoriteAccountsListComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
@@ -178,19 +176,10 @@ const FavoriteAccounts = ({
     <div
       data-testid={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
       className="favorite-accounts-page">
-      <div className="intro padding">
+      <div className="intro">
         {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
       </div>
-      <div className="select padding">
-        <Select
-          values={[selectedLocalAccount as any]}
-          options={options}
-          onChange={() => undefined}
-          contentRenderer={customLabelRender}
-          itemRenderer={customItemRender}
-          className="select-account-select"
-        />
-      </div>
+      <SelectAccountSectionComponent background="white" fullSize />
       <FavoriteAccountsListComponent
         key={`${Math.random().toFixed(6).toString()}-${
           FavoriteUserListName.USERS

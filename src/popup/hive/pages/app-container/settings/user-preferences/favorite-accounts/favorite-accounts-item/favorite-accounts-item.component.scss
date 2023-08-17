@@ -1,4 +1,5 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .favorite-accounts-item {
   display: flex;
@@ -7,29 +8,9 @@
   align-content: center;
   row-gap: 12px;
 
-  .buttons {
-    display: none;
-    margin-right: 16px;
-
-    .remove-button,
-    .edit-button {
-      color: white;
-      cursor: pointer;
-      font-size: 22px;
-      margin-left: 3px;
-      &:hover {
-        color: $red-dark;
-      }
-    }
-  }
-
-  &:hover {
-    .buttons {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-  }
+  background: white;
+  border-radius: 22px;
+  border: 1px solid $light-grey-border;
 
   .item {
     flex-direction: row;
@@ -37,37 +18,78 @@
     justify-content: space-between;
     align-items: center;
     font-size: 18px;
+    cursor: pointer;
+    padding: 8px 16px;
 
-    .item-user-favorite {
+    .item-details {
       display: flex;
       align-items: center;
       column-gap: 16px;
-      padding: 8px 16px;
       box-sizing: border-box;
-      width: auto;
+      width: 100%;
 
-      .item-username {
-        flex-direction: column;
-        display: flex;
-        font-weight: bold;
-        align-items: flex-start;
+      .names {
+        flex: 1;
+        .username {
+          @include poppins600(15px);
+          color: $dark-blue;
+        }
+
+        .label {
+          @include poppins400(14px);
+          color: $dark-grey;
+        }
       }
 
-      .as-column {
-        flex-direction: column;
-      }
-
-      .item-username-label {
-        font-weight: 400;
-        font-size: 16px;
-        font-style: italic;
-        color: lightgray;
-      }
-
-      img {
+      .profile-picture {
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    .edit-panel {
+      display: flex;
+      align-items: center;
+      column-gap: 4px;
+
+      .edit-label {
+        border: unset;
+        border-bottom: 1px solid $dark-blue;
+        min-width: unset;
+        outline: none !important;
+        width: 100px;
+        margin-right: 8px;
+        &:focus {
+          border: unset;
+          border-bottom: 1px solid $dark-blue;
+        }
+      }
+    }
+  }
+
+  .expandable-panel {
+    display: flex;
+    flex-direction: column;
+    .expandable-panel-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 20px;
+      padding: 12px 42px;
+      .favorite-item-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8px;
+        border-radius: 13px;
+        border: 1px solid $light-grey-border;
+        padding: 14px 48px;
+        cursor: pointer;
+        .label {
+          @include josefin500(10px);
+          color: $dark-blue;
+        }
       }
     }
   }

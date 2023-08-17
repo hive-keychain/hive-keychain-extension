@@ -1,10 +1,12 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .favorite-accounts-list {
   flex-direction: column;
   display: flex;
   flex: 1;
   overflow: auto;
+  padding: 0px 20px;
 
   .title {
     margin-top: 10px;
@@ -16,5 +18,6 @@
   .text-no-favorites {
     text-align: center;
     font-size: 16px;
+    color: $dark-blue;
   }
 }

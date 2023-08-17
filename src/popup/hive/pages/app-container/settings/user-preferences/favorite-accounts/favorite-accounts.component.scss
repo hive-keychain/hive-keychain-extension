@@ -1,4 +1,5 @@
 @import '/src/common-style/variable.scss';
+@import '/src/common-style/mixins.scss';
 
 .favorite-accounts-page {
   display: flex;
@@ -7,28 +8,7 @@
   row-gap: 16px;
   overflow: hidden;
 
-  .favorite-accounts-item {
-    background: $black-transparent;
-  }
-
-  .favorite-accounts-item:nth-child(odd) {
-    background: $red-transparent;
-  }
-
   .intro {
-    font-size: 16px;
-  }
-
-  .title {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  .select {
-    margin: 0px -24px;
-  }
-
-  .padding {
-    padding: 0px 24px;
+    @include caption($dark-blue);
   }
 }

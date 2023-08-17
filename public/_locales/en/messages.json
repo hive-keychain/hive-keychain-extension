@@ -3389,5 +3389,9 @@
   "accept_terms_and_condition": {
     "message": "By ticking, you are confirming that you have read, understood and agree to Hive Keychain terms & condition.",
     "description": "Accept terms and conditions text"
+  },
+  "delete_label": {
+    "message": "Delete",
+    "description": "General message: delete"
   }
 }

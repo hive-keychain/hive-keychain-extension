@@ -1,11 +1,10 @@
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserListName } from '@interfaces/favorite-user.interface';
-import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import React, { SyntheticEvent, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import './favorite-accounts-item.component.scss';
 
@@ -31,6 +30,7 @@ const FavoriteAccountsItem = ({
 }: PropsFromRedux) => {
   const [label, setLabel] = useState('');
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const save = () => {
     setEditMode(false);
@@ -42,81 +42,92 @@ const FavoriteAccountsItem = ({
     setLabel('');
   };
 
-  const edit = (favorite: AutoCompleteValue) => {
+  const edit = (event: SyntheticEvent, favorite: AutoCompleteValue) => {
+    event.stopPropagation();
     setEditMode(true);
+    setIsExpanded(false);
     setLabel(favorite.subLabel!);
   };
 
-  const customLabelRender = (favorite: AutoCompleteValue) => {
-    return (
-      <div className="item-user-favorite">
-        <img
-          src={`https://images.hive.blog/u/${favorite.value}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        {!isEditMode && (
-          <div
-            className={`item-username${
-              favorite.value && favorite.value.length > 13 ? 'as-column' : ''
-            }`}>
-            <span>{favorite.value}</span>
-            {
-              <div className="item-username-label">
-                {favorite.subLabel ? `${favorite.subLabel!}` : ''}
-              </div>
-            }
-          </div>
-        )}
-      </div>
-    );
+  const deleteFavorite = (
+    event: SyntheticEvent,
+    listname: FavoriteUserListName,
+    favorite: AutoCompleteValue,
+  ) => {
+    event.stopPropagation();
+    handleDeleteFavorite(listname, favorite);
+  };
+
+  const toggleExpandablePanel = () => {
+    if (!isEditMode) setIsExpanded(!isExpanded);
   };
 
   return (
-    <div className="favorite-accounts-item">
+    <div className="favorite-accounts-item" onClick={toggleExpandablePanel}>
       <div className="item">
-        {customLabelRender(favorite)}
-        <div className="buttons">
-          {isEditMode && (
-            <InputComponent
-              onChange={(value) => setLabel(value)}
-              type={InputType.TEXT}
-              value={label}
-              placeholder="popup_html_new_label"
-            />
-          )}
-          {!isEditMode && (
-            <Icon
-              onClick={() => edit(favorite)}
-              name={Icons.EDIT}
-              additionalClassName="edit-button"
-            />
-          )}
-          {isEditMode && (
-            <Icon
-              onClick={() => save()}
-              name={Icons.SAVE}
-              additionalClassName="edit-button"
-            />
-          )}
-          {isEditMode && (
-            <Icon
-              onClick={() => cancel()}
-              name={Icons.CLEAR}
-              additionalClassName="edit-button"
-            />
-          )}
-          {!isEditMode && (
-            <Icon
-              onClick={() => handleDeleteFavorite(listName, favorite)}
-              name={Icons.DELETE}
-              additionalClassName="remove-button"
-            />
+        <div className="item-details">
+          <img
+            className="profile-picture"
+            src={`https://images.hive.blog/u/${favorite.value}/avatar`}
+            onError={(e: any) => {
+              e.target.onError = null;
+              e.target.src = '/assets/images/accounts.png';
+            }}
+          />
+          <div className="names">
+            <div className="username">{favorite.value}</div>
+            <div className="label">
+              {favorite.subLabel ? `${favorite.subLabel!}` : ''}
+            </div>
+          </div>
+          {isExpanded && !isEditMode && (
+            <SVGIcon icon={NewIcons.EXPANDED_ARROW_DOWN} />
           )}
         </div>
+        {isEditMode && (
+          <div className="edit-panel">
+            <input
+              className="edit-label"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+            />
+
+            <SVGIcon
+              onClick={() => save()}
+              icon={NewIcons.FAVORITE_ACCOUNTS_SAVE}
+              className="edit-button"
+            />
+            <SVGIcon
+              onClick={() => cancel()}
+              icon={NewIcons.FAVORITE_ACCOUNTS_CANCEL}
+              className="edit-button"
+            />
+          </div>
+        )}
       </div>
+      {isExpanded && (
+        <div className="expandable-panel">
+          <Separator type="horizontal" />
+          <div className="expandable-panel-content">
+            <div
+              className="favorite-item-button edit"
+              onClick={($event) => edit($event, favorite)}>
+              <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_EDIT} />
+              <span className="label">
+                {chrome.i18n.getMessage('html_popup_button_edit_label')}
+              </span>
+            </div>
+            <div
+              className="favorite-item-button delete"
+              onClick={($event) => deleteFavorite($event, listName, favorite)}>
+              <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_DELETE} />
+              <span className="label">
+                {chrome.i18n.getMessage('delete_label')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
