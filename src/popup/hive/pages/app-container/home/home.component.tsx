@@ -184,9 +184,11 @@ const Home = ({
       {activeRpc && activeRpc.uri !== 'NULL' && (
         <>
           <TopBarComponent />
-          <ResourcesSectionComponent />
-          <EstimatedAccountValueSectionComponent />
-          <WalletInfoSectionComponent />
+          <div className={'home-page-content'}>
+            <ResourcesSectionComponent />
+            <EstimatedAccountValueSectionComponent />
+            <WalletInfoSectionComponent />
+          </div>
           <ActionsSectionComponent />
           <ProposalVotingSectionComponent />
         </>
