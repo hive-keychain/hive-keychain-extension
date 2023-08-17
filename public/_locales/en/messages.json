@@ -3454,6 +3454,10 @@
     "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate.",
     "description": "Caption"
   },
+  "swap_no_token": {
+    "message": "You don't have any HIVE, HBD or Hive-Engine token to swap at the moment.",
+    "description": "Caption"
+  },
   "swap_fee": {
     "message": "Fee",
     "description": "Swap Fee"

@@ -223,7 +223,7 @@ const TokenSwaps = ({
     const lastUsed = await SwapTokenUtils.getLastUsed();
     setStartToken(
       lastUsed.from
-        ? list.find((t) => t.value.symbol === lastUsed.from.symbol)
+        ? list.find((t) => t.value.symbol === lastUsed.from.symbol) || list[0]
         : list[0],
     );
     setStartTokenListOptions(list);
@@ -453,7 +453,18 @@ const TokenSwaps = ({
         <RotatingLogoComponent />
       </div>
     );
-  else
+  else if (!startTokenListOptions.length) {
+    return (
+      <div className="token-swaps" aria-label="token-swaps">
+        <div>
+          <div className="caption">
+            {' '}
+            {chrome.i18n.getMessage('swap_no_token')}
+          </div>
+        </div>
+      </div>
+    );
+  } else
     return (
       <div className="token-swaps" aria-label="token-swaps">
         {!loading && !underMaintenance && !serviceUnavailable && (
