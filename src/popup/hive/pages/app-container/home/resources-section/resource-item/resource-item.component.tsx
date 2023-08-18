@@ -29,6 +29,7 @@ const ResourceItem = ({
     <CustomTooltip
       dataTestId={`custom-tool-tip-${label}`}
       message={tooltipText}
+      position="bottom"
       skipTranslation>
       <div
         data-testid={ariaLabel}

@@ -36,7 +36,7 @@ const ResourcesSection = ({
 
       if (hasMana) {
         setVotingMana(mana?.toFixed(2)!);
-        setVotingValue(voting.toFixed(2) + '$');
+        setVotingValue(`$${voting.toFixed(2)}`);
       } else {
         setVotingMana('--');
         setVotingValue(null);
@@ -58,7 +58,7 @@ const ResourcesSection = ({
       <ResourceItemComponent
         ariaLabel="resource-item-voting-mana"
         label={'popup_html_vm'}
-        value={votingMana}
+        value={`${votingMana}%`}
         secondaryValue={votingValue}
         icon={NewIcons.VOTING_MANA}
         tooltipText={manaReadyIn}
@@ -67,7 +67,7 @@ const ResourcesSection = ({
       <ResourceItemComponent
         ariaLabel="resource-item-resource-credits"
         label={'popup_html_rc'}
-        value={rc}
+        value={`${rc}%`}
         icon={NewIcons.RESOURCE_CREDITS}
         tooltipText={rcReadyIn}
         additionalClass="red"
