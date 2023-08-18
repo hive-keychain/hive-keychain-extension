@@ -129,61 +129,65 @@ const WalletInfoSection = ({
   }, [conversions]);
 
   return (
-    <div className="wallet-info-section">
-      <WalletInfoSectionItemComponent
-        tokenSymbol="HIVE"
-        icon={NewIcons.HIVE}
-        iconColor="red"
-        mainValue={activeAccount.account.balance}
-        mainValueLabel={currencyLabels.hive}
-        subValue={activeAccount.account.savings_balance}
-        subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
-      />
+    <div className="wallet-info-wrapper">
+      <div className="wallet-background" />
+      <div className="wallet-info-section">
+        <WalletInfoSectionItemComponent
+          tokenSymbol="HIVE"
+          icon={NewIcons.HIVE}
+          iconColor="red"
+          mainValue={activeAccount.account.balance}
+          mainValueLabel={currencyLabels.hive}
+          subValue={activeAccount.account.savings_balance}
+          subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+        />
 
-      <WalletInfoSectionItemComponent
-        tokenSymbol="HBD"
-        icon={NewIcons.HBD}
-        iconColor="green"
-        mainValue={activeAccount.account.hbd_balance}
-        mainValueLabel={currencyLabels.hbd}
-        subValue={activeAccount.account.savings_hbd_balance}
-        subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
-      />
-      <WalletInfoSectionItemComponent
-        tokenSymbol="HP"
-        icon={NewIcons.HIVE}
-        iconColor="red"
-        mainValue={FormatUtils.toHP(
-          activeAccount.account.vesting_shares as string,
-          globalProperties.globals,
-        )}
-        mainValueLabel={currencyLabels.hp}
-        subValue={delegationAmount}
-        subValueLabel={
-          chrome.i18n.getMessage('popup_html_delegations').length <= 5
-            ? chrome.i18n.getMessage('popup_html_delegations')
-            : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.'
-        }
-      />
-      {allTokens?.length > 0 &&
-        filteredTokenList &&
-        filteredTokenList.length > 0 && (
-          <>
-            <Separator type={'horizontal'} />
-            {filteredTokenList.map((token) => (
-              <WalletInfoSectionItemComponent
-                key={`token-${token.symbol}`}
-                tokenSymbol={token.symbol}
-                tokenBalance={token}
-                tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
-                tokenMarket={market}
-                icon={NewIcons.HIVE_ENGINE}
-                mainValue={token.balance}
-                mainValueLabel={token.symbol}
-              />
-            ))}
-          </>
-        )}
+        <WalletInfoSectionItemComponent
+          tokenSymbol="HBD"
+          icon={NewIcons.HBD}
+          iconColor="green"
+          mainValue={activeAccount.account.hbd_balance}
+          mainValueLabel={currencyLabels.hbd}
+          subValue={activeAccount.account.savings_hbd_balance}
+          subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+        />
+        <WalletInfoSectionItemComponent
+          tokenSymbol="HP"
+          icon={NewIcons.HIVE}
+          iconColor="red"
+          mainValue={FormatUtils.toHP(
+            activeAccount.account.vesting_shares as string,
+            globalProperties.globals,
+          )}
+          mainValueLabel={currencyLabels.hp}
+          subValue={delegationAmount}
+          subValueLabel={
+            chrome.i18n.getMessage('popup_html_delegations').length <= 5
+              ? chrome.i18n.getMessage('popup_html_delegations')
+              : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) +
+                '.'
+          }
+        />
+        {allTokens?.length > 0 &&
+          filteredTokenList &&
+          filteredTokenList.length > 0 && (
+            <>
+              <Separator type={'horizontal'} />
+              {filteredTokenList.map((token) => (
+                <WalletInfoSectionItemComponent
+                  key={`token-${token.symbol}`}
+                  tokenSymbol={token.symbol}
+                  tokenBalance={token}
+                  tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
+                  tokenMarket={market}
+                  icon={NewIcons.HIVE_ENGINE}
+                  mainValue={token.balance}
+                  mainValueLabel={token.symbol}
+                />
+              ))}
+            </>
+          )}
+      </div>
     </div>
   );
 };
