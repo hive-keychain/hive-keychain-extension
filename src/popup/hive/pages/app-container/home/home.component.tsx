@@ -201,7 +201,9 @@ const Home = ({
             <EstimatedAccountValueSectionComponent />
             <WalletInfoSectionComponent />
           </div>
-          {showBottomBar && <ActionsSectionComponent />}
+          <ActionsSectionComponent
+            additionalClass={showBottomBar ? undefined : 'down'}
+          />
           <ProposalVotingSectionComponent />
         </>
       )}
