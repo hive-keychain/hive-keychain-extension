@@ -47,7 +47,6 @@ const WalletInfoSection = ({
 
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
-
   const loadHiddenTokens = async () => {
     setHiddenTokens(
       (await LocalStorageUtils.getValueFromLocalStorage(

@@ -9,7 +9,7 @@ import {
 import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Screen } from '@reference-data/screen.enum';
-import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -47,6 +47,7 @@ const walletInfoSectionItem = ({
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
+  const reff = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setActionButtons(
@@ -105,7 +106,15 @@ const walletInfoSectionItem = ({
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
       data-testid={`wallet-info-section-row`}
-      onClick={() => toggleDropdown()}>
+      ref={reff}
+      onClick={() => {
+        toggleDropdown();
+        reff.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'center',
+        });
+      }}>
       <div className="information-panel">
         {!tokenInfo && (
           <SVGIcon icon={icon} className={`currency-icon ${iconColor ?? ''}`} />

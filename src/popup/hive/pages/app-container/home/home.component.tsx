@@ -52,6 +52,8 @@ const Home = ({
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
   >();
+  const [scrollTop, setScrollTop] = useState(0);
+  const [showBottomBar, setShowBottomBar] = useState(true);
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -184,12 +186,22 @@ const Home = ({
       {activeRpc && activeRpc.uri !== 'NULL' && (
         <>
           <TopBarComponent />
-          <div className={'home-page-content'}>
+          <div
+            className={'home-page-content'}
+            onScroll={(event) => {
+              const scrolled = event.currentTarget.scrollTop;
+              if (scrolled > scrollTop) {
+                setShowBottomBar(false);
+              } else {
+                setShowBottomBar(true);
+              }
+              setScrollTop(scrolled);
+            }}>
             <ResourcesSectionComponent />
             <EstimatedAccountValueSectionComponent />
             <WalletInfoSectionComponent />
           </div>
-          <ActionsSectionComponent />
+          {showBottomBar && <ActionsSectionComponent />}
           <ProposalVotingSectionComponent />
         </>
       )}
