@@ -77,6 +77,9 @@
       top: 50px;
       background-color: white;
       border-radius: 16px;
+      right: -1px;
+      left: unset !important;
+
       .select-account-item {
         display: flex;
         align-items: center;
@@ -96,12 +99,28 @@
         }
 
         .account-name {
-          flex: 1;
+          width: 120px;
         }
-
-        .active-icon {
-          height: 20px;
-          width: 20px;
+        .icons-wrapper {
+          width: 50px;
+          display: flex;
+          justify-content: space-between;
+          .hovered-icons {
+            flex: 1;
+            justify-content: space-between;
+          }
+          .active-icon,
+          .drag-icon,
+          .copy-icon {
+            height: 20px;
+            width: 20px;
+          }
+          .copy-icon {
+            margin-right: 7px;
+          }
+          .active-icon {
+            margin-left: 27px;
+          }
         }
       }
     }

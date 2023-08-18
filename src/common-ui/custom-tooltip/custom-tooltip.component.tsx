@@ -39,7 +39,6 @@ export const CustomTooltip = ({
     clearTimeout(timeout);
     setOpen(false);
   };
-  console.log('p', position, message);
   return (
     <div
       data-testid={dataTestId}

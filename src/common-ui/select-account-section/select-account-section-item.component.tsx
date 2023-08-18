@@ -1,5 +1,5 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import React, { useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -9,6 +9,7 @@ interface AccountItemProps {
   selectedAccount: string;
   handleItemClicked: (value: LocalAccountListItem['value']) => void;
   closeDropdown: () => void;
+  setInfoMessage?: (key: string, params?: string[]) => void;
 }
 
 export const SelectAccountSectionItemComponent = ({
@@ -17,8 +18,18 @@ export const SelectAccountSectionItemComponent = ({
   isLast,
   handleItemClicked,
   closeDropdown,
+  setInfoMessage,
 }: AccountItemProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
+
+  const copyUsernameToClipboard = (event: SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(item.value);
+    if (setInfoMessage) {
+      setInfoMessage('popup_html_text_copied', [item.value]);
+    }
+  };
 
   return (
     <div
@@ -45,14 +56,26 @@ export const SelectAccountSectionItemComponent = ({
           }}
         />
         <div className="account-name">{item.label}</div>
-        {selectedAccount === item.value && (
-          <SVGIcon
-            icon={NewIcons.ACTIVE}
-            className="active-icon"
-            forceHover={hovered}
-            hoverable
-          />
-        )}
+        <div className="icons-wrapper">
+          {selectedAccount === item.value && !hovered && (
+            <SVGIcon
+              icon={NewIcons.ACTIVE}
+              className="active-icon"
+              forceHover={hovered}
+              hoverable
+            />
+          )}
+          {hovered && (
+            <div className="hovered-icons">
+              <SVGIcon
+                icon={NewIcons.COPY}
+                className="copy-icon"
+                onClick={(event) => copyUsernameToClipboard(event)}
+              />
+              <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
+            </div>
+          )}
+        </div>
       </div>
       {!isLast && <div className="separator"></div>}
     </div>

@@ -1,5 +1,5 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -14,6 +14,7 @@ import './select-account-section.component.scss';
 interface Props {
   background?: 'white';
   fullSize?: boolean;
+  isOnMain?: boolean;
 }
 
 const SelectAccountSection = ({
@@ -73,16 +74,6 @@ const SelectAccountSection = ({
     );
   };
 
-  const copyUsernameToClipboard = (
-    event: BaseSyntheticEvent,
-    username: string,
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-    navigator.clipboard.writeText(username);
-    setInfoMessage('popup_html_text_copied', [username]);
-  };
-
   const customHandleRenderer = ({
     props,
     state,
@@ -113,6 +104,7 @@ const SelectAccountSection = ({
             selectedAccount={selectedLocalAccount}
             handleItemClicked={(value) => handleItemClicked(value)}
             closeDropdown={() => methods.dropDown('close')}
+            setInfoMessage={setInfoMessage}
           />
         ))}
       </div>
