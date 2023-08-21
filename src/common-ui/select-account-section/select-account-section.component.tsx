@@ -1,5 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import { setAccounts } from '@popup/hive/actions/account.actions';
 import { RootState } from '@popup/hive/store';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import React, { useEffect, useState } from 'react';
 import {
   DragDropContext,
@@ -26,6 +28,7 @@ const SelectAccountSection = ({
   background,
   fullSize,
   accounts,
+  setAccounts,
   activeAccount,
   loadActiveAccount,
   setInfoMessage,
@@ -60,7 +63,13 @@ const SelectAccountSection = ({
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
     setOptions(list);
-    // AccountUtils.saveAccounts();
+    setAccounts(
+      AccountUtils.reorderAccounts(
+        accounts,
+        result.source.index,
+        result.destination.index,
+      ),
+    );
   };
   const customLabelRender = (
     selectProps: SelectRenderer<LocalAccountListItem>,
@@ -175,6 +184,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setInfoMessage,
+  setAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

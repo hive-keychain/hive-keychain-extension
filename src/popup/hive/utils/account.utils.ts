@@ -547,6 +547,17 @@ const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
   await AccountUtils.saveAccounts(newSavedAccounts, mk);
 };
 
+const reorderAccounts = (
+  accounts: LocalAccount[],
+  start: number,
+  end: number,
+) => {
+  const list = Array.from(accounts);
+  const [removed] = list.splice(start, 1);
+  list.splice(end, 0, removed);
+  return list;
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -578,6 +589,7 @@ const AccountUtils = {
   getUpdateAccountOperation,
   getUpdateAccountTransaction,
   addAccount,
+  reorderAccounts,
 };
 
 export const BackgroundAccountUtils = {
