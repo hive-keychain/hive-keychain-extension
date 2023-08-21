@@ -1,5 +1,6 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import React, { SyntheticEvent, useState } from 'react';
+import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -10,6 +11,7 @@ interface AccountItemProps {
   handleItemClicked: (value: LocalAccountListItem['value']) => void;
   closeDropdown: () => void;
   setInfoMessage?: (key: string, params?: string[]) => void;
+  dragHandle: DraggableProvidedDragHandleProps | null | undefined;
 }
 
 export const SelectAccountSectionItemComponent = ({
@@ -19,6 +21,7 @@ export const SelectAccountSectionItemComponent = ({
   handleItemClicked,
   closeDropdown,
   setInfoMessage,
+  dragHandle,
 }: AccountItemProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
 
@@ -72,7 +75,9 @@ export const SelectAccountSectionItemComponent = ({
                 className="copy-icon"
                 onClick={(event) => copyUsernameToClipboard(event)}
               />
-              <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
+              <span {...dragHandle}>
+                <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
+              </span>
             </div>
           )}
         </div>

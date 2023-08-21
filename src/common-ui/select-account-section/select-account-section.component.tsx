@@ -1,5 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import { RootState } from '@popup/hive/store';
 import React, { useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -8,9 +10,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import './select-account-section.component.scss';
-
 interface Props {
   background?: 'white';
   fullSize?: boolean;
@@ -90,23 +90,45 @@ const SelectAccountSection = ({
   };
 
   const customDropdownRenderer = ({
-    props,
+    props: properties,
     state,
     methods,
   }: SelectRenderer<LocalAccountListItem>) => {
     return (
       <div className="custom-select-dropdown">
-        {props.options.map((option, index) => (
-          <SelectAccountSectionItemComponent
-            key={`option-${option.value}`}
-            isLast={options.length === index}
-            item={option}
-            selectedAccount={selectedLocalAccount}
-            handleItemClicked={(value) => handleItemClicked(value)}
-            closeDropdown={() => methods.dropDown('close')}
-            setInfoMessage={setInfoMessage}
-          />
-        ))}
+        <DragDropContext
+          onDragEnd={() => {}}
+          dragHandleUsageInstructions="Plop">
+          <Droppable droppableId="droppable-account" type="account">
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                {properties.options.map((option, index) => (
+                  <Draggable
+                    key={option.value}
+                    draggableId={option.value}
+                    index={index}>
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                        <SelectAccountSectionItemComponent
+                          key={`option-${option.value}`}
+                          isLast={options.length === index}
+                          item={option}
+                          selectedAccount={selectedLocalAccount}
+                          handleItemClicked={(value) =>
+                            handleItemClicked(value)
+                          }
+                          dragHandle={provided.dragHandleProps}
+                          closeDropdown={() => methods.dropDown('close')}
+                          setInfoMessage={setInfoMessage}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     );
   };

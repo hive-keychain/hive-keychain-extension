@@ -108,6 +108,7 @@
           .hovered-icons {
             flex: 1;
             justify-content: space-between;
+            flex-direction: row;
           }
           .active-icon,
           .drag-icon,
