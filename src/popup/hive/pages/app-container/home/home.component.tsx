@@ -181,22 +181,30 @@ const Home = ({
     }
   };
 
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const scrolled = event.currentTarget.scrollTop;
+
+    if (scrolled > scrollTop) {
+      setShowBottomBar(false);
+    } else {
+      setShowBottomBar(true);
+    }
+    setScrollTop(scrolled);
+
+    if (
+      event.currentTarget.scrollHeight - event.currentTarget.scrollTop ===
+      event.currentTarget.clientHeight
+    ) {
+      setShowBottomBar(true);
+    }
+  };
+
   return (
     <div className={'home-page'} data-testid={`${Screen.HOME_PAGE}-page`}>
       {activeRpc && activeRpc.uri !== 'NULL' && (
         <>
           <TopBarComponent />
-          <div
-            className={'home-page-content'}
-            onScroll={(event) => {
-              const scrolled = event.currentTarget.scrollTop;
-              if (scrolled > scrollTop) {
-                setShowBottomBar(false);
-              } else {
-                setShowBottomBar(true);
-              }
-              setScrollTop(scrolled);
-            }}>
+          <div className={'home-page-content'} onScroll={handleScroll}>
             <ResourcesSectionComponent />
             <EstimatedAccountValueSectionComponent />
             <WalletInfoSectionComponent />

@@ -4,11 +4,14 @@ import {
 } from '@interfaces/autocomplete.interface';
 
 const filterStringList = (list: string[], query: string) => {
-  return list.filter((item) => item.toLowerCase().includes(query));
+  const filteredList = list.filter((item) =>
+    item.toLowerCase().includes(query),
+  );
+  return filteredList;
 };
 
 const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
-  return list.categories.map((category) => {
+  let filteredList = list.categories.map((category) => {
     return {
       ...category,
       values: category.values.filter(
@@ -18,14 +21,17 @@ const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
       ),
     };
   });
+  filteredList = filteredList.filter((category) => category.values, length > 0);
+  return filteredList;
 };
 
 const filterValuesList = (list: AutoCompleteValue[], query: string) => {
-  return list.filter(
+  const filteredList = list.filter(
     (item) =>
       item.value.toLowerCase().includes(query) ||
       item.subLabel?.toLowerCase().includes(query),
   );
+  return filteredList;
 };
 
 export const AutoCompleteUtils = {
