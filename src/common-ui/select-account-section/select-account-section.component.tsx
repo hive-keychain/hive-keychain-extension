@@ -1,7 +1,12 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { RootState } from '@popup/hive/store';
 import React, { useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -24,6 +29,7 @@ const SelectAccountSection = ({
   activeAccount,
   loadActiveAccount,
   setInfoMessage,
+  isOnMain = false,
 }: PropsFromRedux & Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
 
@@ -48,6 +54,14 @@ const SelectAccountSection = ({
     loadActiveAccount(itemClicked!);
   };
 
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const list = Array.from(options);
+    const [removed] = list.splice(result.source.index, 1);
+    list.splice(result.destination.index, 0, removed);
+    setOptions(list);
+    // AccountUtils.saveAccounts();
+  };
   const customLabelRender = (
     selectProps: SelectRenderer<LocalAccountListItem>,
   ) => {
@@ -96,9 +110,7 @@ const SelectAccountSection = ({
   }: SelectRenderer<LocalAccountListItem>) => {
     return (
       <div className="custom-select-dropdown">
-        <DragDropContext
-          onDragEnd={() => {}}
-          dragHandleUsageInstructions="Plop">
+        <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable-account" type="account">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -117,6 +129,7 @@ const SelectAccountSection = ({
                           handleItemClicked={(value) =>
                             handleItemClicked(value)
                           }
+                          isOnMain={isOnMain}
                           dragHandle={provided.dragHandleProps}
                           closeDropdown={() => methods.dropDown('close')}
                           setInfoMessage={setInfoMessage}

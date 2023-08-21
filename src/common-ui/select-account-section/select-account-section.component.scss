@@ -136,6 +136,10 @@
     .selected-account-name,
     .account-name {
       @include poppins500(15px);
+      flex: 1;
+    }
+    .active-icon {
+      margin-right: 10px;
     }
     .user-picture {
       border-radius: 50%;

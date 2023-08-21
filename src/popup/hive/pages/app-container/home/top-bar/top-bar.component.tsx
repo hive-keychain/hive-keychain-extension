@@ -134,7 +134,7 @@ const TopBar = ({
         />
       )}
 
-      <SelectAccountSectionComponent />
+      <SelectAccountSectionComponent isOnMain />
     </div>
   );
 };

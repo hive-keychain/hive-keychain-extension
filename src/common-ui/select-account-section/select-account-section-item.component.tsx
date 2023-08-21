@@ -12,6 +12,7 @@ interface AccountItemProps {
   closeDropdown: () => void;
   setInfoMessage?: (key: string, params?: string[]) => void;
   dragHandle: DraggableProvidedDragHandleProps | null | undefined;
+  isOnMain: boolean;
 }
 
 export const SelectAccountSectionItemComponent = ({
@@ -22,6 +23,7 @@ export const SelectAccountSectionItemComponent = ({
   closeDropdown,
   setInfoMessage,
   dragHandle,
+  isOnMain,
 }: AccountItemProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
 
@@ -32,6 +34,42 @@ export const SelectAccountSectionItemComponent = ({
     if (setInfoMessage) {
       setInfoMessage('popup_html_text_copied', [item.value]);
     }
+  };
+  const renderCheckedAccount = () => {
+    if (isOnMain)
+      return (
+        <div className="icons-wrapper">
+          {selectedAccount === item.value && !hovered && (
+            <SVGIcon
+              icon={NewIcons.ACTIVE}
+              className="active-icon"
+              forceHover={hovered}
+              hoverable
+            />
+          )}
+          {hovered && (
+            <div className="hovered-icons">
+              <SVGIcon
+                icon={NewIcons.COPY}
+                className="copy-icon"
+                onClick={(event) => copyUsernameToClipboard(event)}
+              />
+              <span {...dragHandle}>
+                <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    else if (selectedAccount === item.value)
+      return (
+        <SVGIcon
+          icon={NewIcons.ACTIVE}
+          className="active-icon"
+          forceHover={hovered}
+          hoverable
+        />
+      );
   };
 
   return (
@@ -59,28 +97,7 @@ export const SelectAccountSectionItemComponent = ({
           }}
         />
         <div className="account-name">{item.label}</div>
-        <div className="icons-wrapper">
-          {selectedAccount === item.value && !hovered && (
-            <SVGIcon
-              icon={NewIcons.ACTIVE}
-              className="active-icon"
-              forceHover={hovered}
-              hoverable
-            />
-          )}
-          {hovered && (
-            <div className="hovered-icons">
-              <SVGIcon
-                icon={NewIcons.COPY}
-                className="copy-icon"
-                onClick={(event) => copyUsernameToClipboard(event)}
-              />
-              <span {...dragHandle}>
-                <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
-              </span>
-            </div>
-          )}
-        </div>
+        {renderCheckedAccount()}
       </div>
       {!isLast && <div className="separator"></div>}
     </div>
