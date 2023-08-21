@@ -21,7 +21,7 @@ export const AutocompleteBox = ({
   value,
 }: Props) => {
   const [filteredValues, setFilteredValues] = useState<AutoCompleteValuesType>(
-    autoCompleteValues ? autoCompleteValues : [],
+    [],
   );
 
   useEffect(() => {
@@ -52,52 +52,64 @@ export const AutocompleteBox = ({
     }
   }, [value, autoCompleteValues]);
 
-  const renderList = (values: AutoCompleteValuesType) => {
+  const renderList = (autoCompleteValues: AutoCompleteValuesType) => {
     if (!!(autoCompleteValues as AutoCompleteValues).categories) {
-      return (filteredValues as AutoCompleteValues).categories.map(
-        (category) =>
-          category.values.length > 0 && (
-            <div className="category" key={category.title}>
-              <span className="title">
-                {category.translateTitle
-                  ? chrome.i18n.getMessage(category.title)
-                  : category.title}
-              </span>
-              {category.values.map((autoCompleteItem, index) => (
-                <AutocompleteItemComponent
-                  key={`item-${index}`}
-                  value={autoCompleteItem.value}
-                  translateValue={autoCompleteItem.translateValue}
-                  onItemClick={handleOnChange}
-                  subLabel={autoCompleteItem.subLabel}
-                  translateSublabel={autoCompleteItem.translateSubLabel}
-                />
-              ))}
-            </div>
-          ),
+      return (
+        <div className="autocomplete-panel">
+          {(filteredValues as AutoCompleteValues).categories.map(
+            (category) =>
+              category.values.length > 0 && (
+                <div className="category" key={category.title}>
+                  <span className="title">
+                    {category.translateTitle
+                      ? chrome.i18n.getMessage(category.title)
+                      : category.title}
+                  </span>
+                  {category.values.map((autoCompleteItem, index) => (
+                    <AutocompleteItemComponent
+                      key={`item-${index}`}
+                      value={autoCompleteItem.value}
+                      translateValue={autoCompleteItem.translateValue}
+                      onItemClick={handleOnChange}
+                      subLabel={autoCompleteItem.subLabel}
+                      translateSublabel={autoCompleteItem.translateSubLabel}
+                    />
+                  ))}
+                </div>
+              ),
+          )}
+        </div>
       );
     } else if (typeof (autoCompleteValues as string[]).at(0) === 'string') {
-      return (filteredValues as string[]).map((item, index) => (
-        <AutocompleteItemComponent
-          key={`item-${index}`}
-          value={item}
-          translateValue={translateSimpleAutoCompleteValues}
-          onItemClick={handleOnChange}
-        />
-      ));
+      return (
+        <div className="autocomplete-panel">
+          {(filteredValues as string[]).map((item, index) => (
+            <AutocompleteItemComponent
+              key={`item-${index}`}
+              value={item}
+              translateValue={translateSimpleAutoCompleteValues}
+              onItemClick={handleOnChange}
+            />
+          ))}{' '}
+        </div>
+      );
     } else {
-      return (filteredValues as AutoCompleteValue[]).map((item, index) => (
-        <AutocompleteItemComponent
-          key={`item-${index}`}
-          value={item.value}
-          translateValue={item.translateValue}
-          subLabel={item.subLabel}
-          translateSublabel={item.translateSubLabel}
-          onItemClick={handleOnChange}
-        />
-      ));
+      return (
+        <div className="autocomplete-panel">
+          {(filteredValues as AutoCompleteValue[]).map((item, index) => (
+            <AutocompleteItemComponent
+              key={`item-${index}`}
+              value={item.value}
+              translateValue={item.translateValue}
+              subLabel={item.subLabel}
+              translateSublabel={item.translateSubLabel}
+              onItemClick={handleOnChange}
+            />
+          ))}
+        </div>
+      );
     }
   };
 
-  return <div className="autocomplete-panel">{renderList(filteredValues)}</div>;
+  return renderList(filteredValues);
 };

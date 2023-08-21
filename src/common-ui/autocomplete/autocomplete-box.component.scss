@@ -17,6 +17,10 @@ $autoCompleteItemHeight: 30px;
   max-height: $autoCompleteItemHeight * 8;
   overflow: auto;
 
+  &:empty {
+    display: none;
+  }
+
   .category {
     margin-left: 20px;
     padding-top: 8px;
