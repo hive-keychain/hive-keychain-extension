@@ -121,7 +121,7 @@ const checkAndUpdateLocalStorage = async () => {
         }
         if (oldFormat) {
           const favoriteUserData: any = {};
-          const mk = await LocalStorageUtils.getValueFromLocalStorage(
+          const mk = await LocalStorageUtils.getValueFromSessionStorage(
             LocalStorageKeyEnum.__MK,
           );
           const localAccounts =

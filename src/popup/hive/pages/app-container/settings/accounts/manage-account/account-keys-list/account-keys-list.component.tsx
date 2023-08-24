@@ -1,3 +1,16 @@
+import { setAccounts } from '@popup/hive/actions/account.actions';
+import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/hive/actions/loading.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/hive/actions/navigation.actions';
+import { AccountKeysListItemComponent } from '@popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
+import { WrongKeysOnUser } from '@popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import { RootState } from '@popup/hive/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -9,16 +22,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
-import { AccountKeysListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
-import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -35,6 +38,7 @@ const AccountKeysList = ({
   setAccounts,
   loadActiveAccount,
   navigateToWithParams,
+  navigateTo,
   addToLoadingList,
   removeFromLoadingList,
 }: PropsType & AccountKeysListProps) => {
@@ -132,6 +136,7 @@ const AccountKeysList = ({
         if (finalAccounts.length) {
           loadActiveAccount(finalAccounts[0]);
         }
+        navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
     });
@@ -228,6 +233,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  navigateTo,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

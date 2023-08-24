@@ -75,6 +75,12 @@ const TokenItem = ({
     chrome.tabs.create({ url: tokenInfo.metadata.url });
   };
 
+  const getFormattedTokenPrice = (tokenPrice: number) => {
+    return tokenPrice.toFixed(
+      Math.max(2, -Math.floor(Math.log(tokenPrice) / Math.log(10))),
+    );
+  };
+
   return (
     <div data-testid={ariaLabel} className="token-item">
       <div
@@ -148,10 +154,10 @@ const TokenItem = ({
                 hive,
               ).toFixed(2)}{' '}
               ($
-              {(
+              {getFormattedTokenPrice(
                 TokensUtils.getHiveEngineTokenPrice(tokenBalance, market) *
-                hive?.usd!
-              ).toFixed(2)}
+                  hive?.usd!,
+              )}
               /{chrome.i18n.getMessage('token').toLowerCase()})
             </div>
             <div>

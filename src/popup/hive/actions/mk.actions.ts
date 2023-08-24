@@ -3,7 +3,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { ActionType } from './action-type.enum';
 
 export const setMk = (mk: string, sendMk: boolean) => {
-  LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.__MK, mk);
+  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, mk);
   return {
     type: ActionType.SET_MK,
     payload: mk,
@@ -11,7 +11,7 @@ export const setMk = (mk: string, sendMk: boolean) => {
 };
 
 export const forgetMk = () => {
-  LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
+  LocalStorageUtils.removeFromSessionStorage(LocalStorageKeyEnum.__MK);
   return {
     type: ActionType.SET_MK,
     payload: '',

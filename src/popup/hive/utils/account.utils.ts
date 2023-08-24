@@ -527,7 +527,7 @@ const getUpdateAccountTransaction = (
 };
 
 const addAccount = async (username: string, keys: Keys) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
 
@@ -537,7 +537,7 @@ const addAccount = async (username: string, keys: Keys) => {
 };
 
 const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
 

@@ -9,11 +9,11 @@ const login = async (password: string): Promise<boolean> => {
 };
 /* istanbul ignore next */
 const getMkFromLocalStorage = () => {
-  return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);
+  return LocalStorageUtils.getValueFromSessionStorage(LocalStorageKeyEnum.__MK);
 };
 /* istanbul ignore next */
 const saveMkInLocalStorage = (mk: string): void => {
-  LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.__MK, mk);
+  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, mk);
 };
 
 const MkUtils = {

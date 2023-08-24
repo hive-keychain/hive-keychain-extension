@@ -65,7 +65,7 @@ const saveFavoriteUser = async (
   username: string,
   activeAccount: ActiveAccount,
 ) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
   const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);

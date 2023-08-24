@@ -8,7 +8,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 
 > If you like the wallet, but just don't have time to contribute, that's fine. There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
 >
-> - Star the project
+> - Star this repo on Github
 > - Tweet about it
 > - Mention the Hive blockchain at local meetups and tell your friends/colleagues
 

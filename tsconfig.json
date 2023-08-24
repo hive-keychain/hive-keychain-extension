@@ -22,6 +22,6 @@
       "@api/*": ["./src/api/*"]
     }
   },
-  "include": ["src/**/*"]
-  // "exclude": ["src/__tests__/*"] // TODO Comment when working on tests
+  "include": ["src/**/*"],
+  "exclude": ["src/__tests__/*"] // TODO Comment when working on tests
 }
