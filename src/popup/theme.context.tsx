@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import Logger from 'src/utils/logger.utils';
 
 export enum Theme {
   DARK = 'dark',
@@ -12,6 +13,8 @@ export type ThemeContextType = {
 
 export const ThemeContext = createContext<ThemeContextType>({
   theme: Theme.DARK,
-  setTheme: (theme) => console.log('no theme provider'),
+  setTheme: (theme) => {
+    Logger.log('no theme provider');
+  },
 });
 export const useThemeContext = () => useContext(ThemeContext);

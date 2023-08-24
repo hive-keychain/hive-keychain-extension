@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import Logger from 'src/utils/logger.utils';
 
 export enum Chain {
   HIVE = 'HIVE',
@@ -12,6 +13,6 @@ export type ChainContextType = {
 
 export const ChainContext = createContext<ChainContextType>({
   chain: Chain.HIVE,
-  setChain: (chain) => console.log('no chain provider'),
+  setChain: (chain) => Logger.log('no chain provider'),
 });
 export const useChainContext = () => useContext(ChainContext);

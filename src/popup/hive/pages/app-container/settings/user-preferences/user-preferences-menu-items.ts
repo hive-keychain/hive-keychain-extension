@@ -2,6 +2,7 @@ import { ThemeToggle } from '@popup/hive/pages/app-container/settings/user-prefe
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
+import Logger from 'src/utils/logger.utils';
 
 const UserPreferencesMenuItems: MenuItem[] = [
   {
@@ -23,7 +24,7 @@ const UserPreferencesMenuItems: MenuItem[] = [
     label: 'popup_html_theme',
     icon: NewIcons.THEME,
     action: () => {
-      console.log('should switch theme');
+      Logger.log('should switch theme');
     },
     rightPanel: ThemeToggle,
   },

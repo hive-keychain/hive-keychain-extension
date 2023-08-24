@@ -22,7 +22,6 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
     chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
   };
   const logout = () => {
-    console.log('logout');
     resetNav();
     forgetMk();
   };

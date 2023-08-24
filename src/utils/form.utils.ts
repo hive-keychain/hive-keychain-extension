@@ -10,8 +10,6 @@ const FormValidationError: Record<string, string> = {
 };
 
 const parseJoiError = (error: FieldError) => {
-  console.log(error);
-
   let errMessage = chrome.i18n.getMessage(
     FormValidationError[error.type],
     error.ref?.value ? [error.ref.value] : [],
