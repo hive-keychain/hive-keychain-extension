@@ -146,3 +146,12 @@
     row-gap: 24px;
   }
 }
+
+@mixin inter400($fontSize) {
+  text-align: center;
+  font-family: Inter;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14px; /* 116.667% */
+}
