@@ -14,7 +14,7 @@ export const exchanges = [
     name: 'Binance',
     image: 'binance.svg',
     link: 'https://www.binance.com/en/trade/HIVE_BTC',
-    username: 'deepcrypto8',
+    username: 'bdhivesteem',
     acceptedCoins: ['HIVE'],
   },
   {
