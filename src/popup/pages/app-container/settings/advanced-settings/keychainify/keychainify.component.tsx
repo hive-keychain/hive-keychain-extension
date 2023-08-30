@@ -1,8 +1,9 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './keychainify.component.scss';
@@ -34,13 +35,15 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
   };
 
   return (
-    <div aria-label="keychainify-page" className="keychainify-page">
+    <div
+      data-testid={`${Screen.SETTINGS_KEYCHAINIFY}-page`}
+      className="keychainify-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_keychainify_text')}
       </div>
 
       <CheckboxComponent
-        ariaLabel="checkbox-keychainify"
+        dataTestId="checkbox-keychainify"
         title="popup_html_enable_keychainify_title"
         checked={enabled}
         onChange={setEnabled}

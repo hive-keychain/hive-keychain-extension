@@ -15,12 +15,13 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { loadTokens } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -142,7 +143,7 @@ const TokensSettings = ({
   const customLabelRender = (selectProps: SelectRenderer<SelectOption>) => {
     return (
       <div
-        aria-label={`selected-panel-${selectProps.props.values[0].panelType}`}
+        data-testid={`selected-panel-${selectProps.props.values[0].panelType}`}
         className="selected-panel"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -154,7 +155,7 @@ const TokensSettings = ({
   const customItemRender = (selectProps: SelectItemRenderer<SelectOption>) => {
     return (
       <div
-        aria-label={`select-item-${selectProps.props.values[0].panelType}`}
+        data-testid={`select-item-${selectProps.props.values[0].panelType}`}
         className={`select-item ${
           selectProps.item.label === selectProps.props.values[0]?.label
             ? 'selected'
@@ -168,7 +169,7 @@ const TokensSettings = ({
         {!selectProps.item.isDefault &&
           selectProps.item.label !== selectProps.props.values[0]?.label && (
             <img
-              aria-label="erase-rpc-img"
+              data-testid={`erase-rpc-img-${selectProps.item.label}`}
               src="/assets/images/clear.png"
               className="erase-button"
               onClick={($event) => {
@@ -214,7 +215,9 @@ const TokensSettings = ({
   };
 
   return (
-    <div aria-label="tokens-settings" className="tokens-settings">
+    <div
+      data-testid={`${Screen.TOKENS_SETTINGS}-page`}
+      className="tokens-settings">
       <div className="hive-engine-rpc-panel">
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">
@@ -227,7 +230,7 @@ const TokensSettings = ({
             className="select-hive-engine-rpc-node-select"
           />
           <Icon
-            ariaLabel="icon-tokens-settings-add-rpc"
+            dataTestId="icon-tokens-settings-add-rpc"
             name={Icons.ADD_CIRCLE}
             type={IconType.OUTLINED}
             onClick={() => setIsNewRpcPanelOpened(true)}
@@ -236,7 +239,7 @@ const TokensSettings = ({
         {isNewRpcPanelOpened && (
           <div className="new-account-history-panel new-item-panel">
             <InputComponent
-              ariaLabel="input-text"
+              dataTestId="input-text"
               onChange={setNewRpc}
               value={newRpc}
               label="html_popup_new_rpc"
@@ -244,7 +247,7 @@ const TokensSettings = ({
               type={InputType.TEXT}
             />
             <Icon
-              ariaLabel="icon-tokens-settings-save-rpc"
+              dataTestId="icon-tokens-settings-save-rpc"
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               onClick={() => saveRpc()}
@@ -269,7 +272,7 @@ const TokensSettings = ({
             className="select-account-history-api-select"
           />
           <Icon
-            ariaLabel="icon-tokens-settings-add-account-history"
+            dataTestId="icon-tokens-settings-add-account-history"
             name={Icons.ADD_CIRCLE}
             type={IconType.OUTLINED}
             onClick={() => setIsNewAccountHistoryPanelOpened(true)}
@@ -278,7 +281,7 @@ const TokensSettings = ({
         {isNewAccountHistoryPanelOpened && (
           <div className="new-account-history-panel new-item-panel">
             <InputComponent
-              ariaLabel="input-text"
+              dataTestId="input-text"
               onChange={setNewAccountHistory}
               value={newAccountHistory}
               label="html_popup_new_account_history"
@@ -286,7 +289,7 @@ const TokensSettings = ({
               type={InputType.TEXT}
             />
             <Icon
-              ariaLabel="icon-tokens-settings-save-account-history"
+              dataTestId="icon-tokens-settings-save-account-history"
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               onClick={() => saveAccountHistory()}

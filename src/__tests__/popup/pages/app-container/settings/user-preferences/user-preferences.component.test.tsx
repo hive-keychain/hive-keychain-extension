@@ -1,31 +1,53 @@
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
 import UserPreferencesMenuItems from '@popup/pages/app-container/settings/user-preferences/user-preferences-menu-items';
-import userPreferences from 'src/__tests__/popup/pages/app-container/settings/user-preferences/mocks/user-preferences';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('user-preferences.component tests:\n', () => {
-  let _asFragment: () => DocumentFragment;
-  const { methods, constants } = userPreferences;
-  const { menuPage } = constants;
-  methods.afterEach;
   beforeEach(async () => {
-    _asFragment = await userPreferences.beforeEach();
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
+      );
+    });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
   it('Must load each menu items', () => {
     UserPreferencesMenuItems.forEach((item) => {
-      assertion.getByLabelText(alButton.menuPreFix + item.icon);
+      expect(screen.getByTestId(dataTestIdButton.menuPreFix + item.icon));
     });
   });
   it('Must open each menu item', async () => {
-    for (let i = 0; i < menuPage.length; i++) {
-      const menuButton = alButton.menuPreFix + menuPage[i].icon;
-      await clickAwait([menuButton]);
-      await assertion.awaitFor(menuPage[i].pageAriaLabel, QueryDOM.BYLABEL);
-      await clickAwait([alIcon.arrowBack]);
+    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue([]);
+    for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
+      const menuButtonAriaLabel =
+        dataTestIdButton.menuPreFix + UserPreferencesMenuItems[i].icon;
+      const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(menuButtonAriaLabel));
+      });
+      expect(await screen.findByTestId(pageAriaLabel)).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
+      });
     }
   });
 });

@@ -1,12 +1,10 @@
-import { ActiveAccount } from '@interfaces/active-account.interface';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-const chrome = require('chrome-mock');
-global.chrome = chrome;
+
 describe('transfer.utils tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('getExchangeValidationWarning tests:\n', () => {
     test('Trying to transfer to exchange account with recurrent transfer should return warning', async () => {
       const messageFromI18n = `Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.`;
@@ -69,114 +67,6 @@ describe('transfer.utils tests:\n', () => {
       expect(mocki18nGetMessage).toBeCalledWith(i18nMessageName);
       mocki18nGetMessage.mockReset();
       mocki18nGetMessage.mockRestore();
-    });
-  });
-
-  describe('saveFavoriteUser tests:\n', () => {
-    const enumCallingGetvalue = LocalStorageKeyEnum.FAVORITE_USERS;
-    const enumCallingSaveValue = LocalStorageKeyEnum.FAVORITE_USERS;
-    test('Passing empty data and getting undefined from localStorage, will save undefined object on localStorage and return undefined', async () => {
-      const activeAccount = {} as ActiveAccount;
-      const username = '';
-      const spyGetValueFromLocalStorage = jest
-        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-        .mockResolvedValueOnce(undefined);
-      const spySaveValueInLocalStorage = jest.spyOn(
-        LocalStorageUtils,
-        'saveValueInLocalStorage',
-      );
-      expect(
-        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
-      ).toBe(undefined);
-      expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
-      expect(spySaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(spySaveValueInLocalStorage).toBeCalledWith(enumCallingSaveValue, {
-        undefined: [''],
-      });
-      spyGetValueFromLocalStorage.mockReset();
-      spyGetValueFromLocalStorage.mockRestore();
-      spySaveValueInLocalStorage.mockReset();
-      spySaveValueInLocalStorage.mockRestore();
-    });
-    test('Passing valid data but getting undefined from localStorage, must initialize the transferTo object and save the requested account into localStorage', async () => {
-      const activeAccount = { name: 'quentin' } as ActiveAccount;
-      const username = utilsT.userData.username;
-      const spyGetValueFromLocalStorage = jest
-        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-        .mockResolvedValueOnce(undefined);
-      const spySaveValueInLocalStorage = jest.spyOn(
-        LocalStorageUtils,
-        'saveValueInLocalStorage',
-      );
-      expect(
-        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
-      ).toBe(undefined);
-      expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
-      expect(spySaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(spySaveValueInLocalStorage).toBeCalledWith(enumCallingSaveValue, {
-        [activeAccount.name!]: [username],
-      });
-      spyGetValueFromLocalStorage.mockReset();
-      spyGetValueFromLocalStorage.mockRestore();
-      spySaveValueInLocalStorage.mockReset();
-      spySaveValueInLocalStorage.mockRestore();
-    });
-    test('Passing an account not present in localStorage transfer_to, will save that account into localStorage', async () => {
-      const activeAccount = { name: 'cedric' } as ActiveAccount;
-      const username = utilsT.userData.username;
-      const transferTo = { [activeAccount.name!]: ['theghost1980', 'mandela'] };
-      const expectedToSave = {
-        [activeAccount.name!]: ['theghost1980', 'mandela', username],
-      };
-      const spyGetValueFromLocalStorage = jest
-        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-        .mockResolvedValueOnce(transferTo);
-      const spySaveValueInLocalStorage = jest.spyOn(
-        LocalStorageUtils,
-        'saveValueInLocalStorage',
-      );
-      expect(
-        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
-      ).toBe(undefined);
-      expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
-      expect(spySaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(spySaveValueInLocalStorage).toBeCalledWith(
-        enumCallingSaveValue,
-        expectedToSave,
-      );
-      spyGetValueFromLocalStorage.mockReset();
-      spyGetValueFromLocalStorage.mockRestore();
-      spySaveValueInLocalStorage.mockReset();
-      spySaveValueInLocalStorage.mockRestore();
-    });
-    test('Passing an account already present in localStorage transfer_to, will save the original object into localStorage', async () => {
-      const activeAccount = { name: 'cedric' } as ActiveAccount;
-      const username = 'theghost1980';
-      const transferTo = { [activeAccount.name!]: ['theghost1980', 'mandela'] };
-      const spyGetValueFromLocalStorage = jest
-        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-        .mockResolvedValueOnce(transferTo);
-      const spySaveValueInLocalStorage = jest.spyOn(
-        LocalStorageUtils,
-        'saveValueInLocalStorage',
-      );
-      expect(
-        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
-      ).toBe(undefined);
-      expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
-      expect(spySaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(spySaveValueInLocalStorage).toBeCalledWith(
-        enumCallingSaveValue,
-        transferTo,
-      );
-      spyGetValueFromLocalStorage.mockReset();
-      spyGetValueFromLocalStorage.mockRestore();
-      spySaveValueInLocalStorage.mockReset();
-      spySaveValueInLocalStorage.mockRestore();
     });
   });
 });

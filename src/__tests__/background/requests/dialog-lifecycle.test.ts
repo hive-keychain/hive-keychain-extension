@@ -1,27 +1,44 @@
 import { createPopup } from '@background/requests/dialog-lifecycle';
-import dialogLifecycleMocks from 'src/__tests__/background/requests/mocks/dialog-lifecycle-mocks';
+import { RequestsHandler } from '@background/requests/request-handler';
+import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('dialog-lifecycle tests:\n', () => {
-  const { methods, constants, spies } = dialogLifecycleMocks;
-  const { requestHandler } = constants;
-  methods.afterAll;
-  methods.afterEach;
-  methods.beforeEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   describe('createPopup cases:\n', () => {
     it('Must createPopup', () => {
-      spies.requestHandler.saveInLocalStorage;
-      createPopup(async () => {}, requestHandler);
-      expect(spies.requestHandler.setConfirmed).toBeCalledWith(false);
-      expect(spies.chrome.windows.getCurrent).toBeCalledTimes(1);
+      jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      const requestHandler = new RequestsHandler();
+      const sSetConfirmed = jest.spyOn(requestHandler, 'setConfirmed');
+      const sGetCurrent = jest.spyOn(chrome.windows, 'getCurrent');
+      createPopup(() => {}, requestHandler);
+      expect(sSetConfirmed).toBeCalledWith(false);
+      expect(sGetCurrent).toBeCalledTimes(1);
     });
+
     it('Must createPopup with windowId as undefined', () => {
-      spies.requestHandler.saveInLocalStorage;
+      jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockReturnValue(undefined);
+      const requestHandler = new RequestsHandler();
       requestHandler.data.windowId = 1;
+      const sSetConfirmed = jest.spyOn(requestHandler, 'setConfirmed');
+      const sGetCurrent = jest.spyOn(chrome.windows, 'getCurrent');
+      const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
+      const sSetWindowId = jest.spyOn(requestHandler, 'setWindowId');
       createPopup(async () => {}, requestHandler);
-      expect(spies.requestHandler.setConfirmed).toBeCalledWith(false);
-      expect(spies.removeWindow).toBeCalledWith(1);
-      expect(spies.requestHandler.setWindowId).toBeCalledWith(undefined);
-      expect(spies.chrome.windows.getCurrent).toBeCalledTimes(1);
+      expect(sSetConfirmed).toBeCalledWith(false);
+      expect(sRemoveWindow).toBeCalledWith(1);
+      expect(sSetWindowId).toBeCalledWith(undefined);
+      expect(sGetCurrent).toBeCalledTimes(1);
     });
   });
 });

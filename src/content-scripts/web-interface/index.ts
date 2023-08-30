@@ -12,6 +12,9 @@ import { WebInterfaceUtils } from 'src/content-scripts/web-interface/web-interfa
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
 import { KeychainRequestsUtils } from 'src/utils/keychain-requests.utils';
 
+const { chrome } = window;
+//@ts-ignore
+window.chrome = undefined;
 let req: KeychainRequest | null = null;
 
 // Injecting Keychain
@@ -33,7 +36,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
   req = (request as KeychainRequestWrapper).detail;
   const { error, value } = KeychainRequestsUtils.validateRequest(req);
   if (!error) {
-    sendRequestToBackground(value);
+    sendRequestToBackground(value, chrome);
     if (prevReq) {
       cancelPreviousRequest(prevReq);
     }

@@ -19,13 +19,13 @@ interface IconProps {
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
   skipTooltipTranslation?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
 }
 
 const getIconTemplate = (props: IconProps) => {
   return (
     <span
-      aria-label={props.ariaLabel}
+      data-testid={props.dataTestId}
       className={`icon-component material-icons${props.type} ${
         props.additionalClassName ?? ''
       } ${props.onClick ? 'clickable' : ''}`}

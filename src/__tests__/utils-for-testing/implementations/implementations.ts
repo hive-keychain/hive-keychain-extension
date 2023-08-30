@@ -1,15 +1,15 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import { DEFAULT_FILTER } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
-import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
@@ -24,55 +24,80 @@ const hasKeys = (obj: {}) => {
  * @param args
  * @param args[0] Is always used for the LocalStorageKeyEnum.
  * @param customData Used to pass custom readed value from LS. To use, assign dataMocks.customDataFromLocalStorage
- * @returns Null if not found or not mocked yet.
- * If debug needed, just uncomment the console.log after the default case.
+ * @returns Undefined if not found or not mocked yet. Enable console.log in default case, to see which key is not being mocked.
+ * If debug needed, just uncomment the console.log
  */
 const getValuefromLS = async (...args: any[]): Promise<any> => {
-  let customData: CustomDataFromLocalStorage =
-    dataMocks.customDataFromLocalStorage;
-  //console.log('being called with: ', args[0], customData);
+  let customData: CustomDataFromLocalStorage = args[1] ?? {};
+  // console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customAutolock')
         ? customData.customAutolock
         : {
             type: AutoLockType.DEFAULT,
             mn: 1,
           };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return hasKeys(customData) ? customData.customSwitchAuto : true;
+      return customData.hasOwnProperty('customSwitchAuto')
+        ? customData.customSwitchAuto
+        : true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return null;
+      return customData.hasOwnProperty('customWalletHistoryFilters')
+        ? customData.customWalletHistoryFilters
+        : DEFAULT_FILTER;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
-      return { 'keychain.tests': true };
+      return customData.hasOwnProperty('customHideSuggestionProxy')
+        ? customData.customHideSuggestionProxy
+        : { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
-      return { 'keychain.tests': ['one1', 'two2', 'three3'] };
+      return customData.hasOwnProperty('customFavoriteUsers')
+        ? customData.customFavoriteUsers
+        : { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customlastVersionSeen')
         ? customData.customlastVersionSeen
         : manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
-      return [];
+      return customData.hasOwnProperty('customHiddenTokenList')
+        ? customData.customHiddenTokenList
+        : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
-      return hasKeys(customData) ? customData.accountHistoryApi : [];
+      return customData.hasOwnProperty('accountHistoryApi')
+        ? customData.accountHistoryApi
+        : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
-      return hasKeys(customData) ? customData.customRpcList : [];
+      return customData.hasOwnProperty('customRpcList')
+        ? customData.customRpcList
+        : [];
     case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
-      return true;
+      return customData.hasOwnProperty('customKeychainifyEnabled')
+        ? customData.customKeychainifyEnabled
+        : true;
     case LocalStorageKeyEnum.RPC_LIST:
-      return hasKeys(customData) ? customData.customsRpcs : [];
+      return customData.hasOwnProperty('customsRpcs')
+        ? customData.customsRpcs
+        : [];
     case LocalStorageKeyEnum.NO_CONFIRM:
-      return hasKeys(customData)
+      return customData.hasOwnProperty('customAuthorizedOP')
         ? customData.customAuthorizedOP
         : ({} as NoConfirm);
     case LocalStorageKeyEnum.LOCAL_STORAGE_VERSION:
-      return hasKeys(customData) ? customData.customStorageVersion : undefined;
+      return customData.hasOwnProperty('customStorageVersion')
+        ? customData.customStorageVersion
+        : undefined;
     case LocalStorageKeyEnum.CURRENT_RPC:
-      return hasKeys(customData) ? customData.customCurrentRpc : undefined;
+      return customData.hasOwnProperty('customCurrentRpc')
+        ? customData.customCurrentRpc
+        : undefined;
     case LocalStorageKeyEnum.__MK:
-      return hasKeys(customData) ? customData.customMK : undefined;
+      return customData.hasOwnProperty('customMK')
+        ? customData.customMK
+        : undefined;
     case LocalStorageKeyEnum.ACCOUNTS:
-      return hasKeys(customData) ? customData.customAccounts : undefined;
+      return customData.hasOwnProperty('customAccounts')
+        ? customData.customAccounts
+        : undefined;
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
@@ -121,6 +146,7 @@ const keychainApiGet = async (
   urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
+  // console.log({ customData });
   switch (true) {
     case urlToGet === 'hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
@@ -148,7 +174,6 @@ const keychainApiGet = async (
 };
 
 const hiveTxUtils = {
-  //TODO add types when needed
   getData: (toUse: {
     conversionRequests?: any;
     collateralized?: any;

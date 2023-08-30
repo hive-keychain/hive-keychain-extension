@@ -5,12 +5,13 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
+import { Screen } from '@reference-data/screen.enum';
 import './add-key.component.scss';
 
 const AddKey = ({
@@ -48,9 +49,11 @@ const AddKey = ({
   };
 
   return (
-    <div className="add-key-page">
+    <div
+      className="add-key-page"
+      data-testid={`${Screen.SETTINGS_ADD_KEY}-page`}>
       <p
-        aria-label="add-key-page-paragraph-introduction"
+        data-testid="add-key-page-paragraph-introduction"
         className="introduction"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_add_key_text', [
@@ -59,7 +62,7 @@ const AddKey = ({
         }}></p>
 
       <InputComponent
-        ariaLabel="input-private-key"
+        dataTestId="input-private-key"
         type={InputType.PASSWORD}
         logo={Icons.KEY}
         placeholder="popup_html_private_key"
@@ -75,7 +78,7 @@ const AddKey = ({
       )}
 
       <ButtonComponent
-        ariaLabel="import-keys-button"
+        dataTestId="import-keys-button"
         label="popup_html_import_key"
         onClick={importKey}
         fixToBottom

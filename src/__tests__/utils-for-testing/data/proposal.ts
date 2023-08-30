@@ -1,4 +1,5 @@
 import { Asset } from '@hiveio/dhive';
+import { Proposal } from '@interfaces/proposal.interface';
 import moment from 'moment';
 
 const expectedResponse = [
@@ -254,7 +255,7 @@ const expectedResultProposal = [
     totalVotes: '40.27M HP',
     voted: false,
   },
-];
+] as Proposal[];
 
 export default {
   expectedResponse,

@@ -1,44 +1,151 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import App from '@popup/App';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import witnessVotingSection from 'src/__tests__/popup/pages/app-container/home/voting-section/witness-voting-section/mocks/witness-voting-section';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-const { methods, constants, extraMocks } = witnessVotingSection;
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
+import WitnessUtils from 'src/utils/witness.utils';
 describe('witness-voting-section.component tests:\n', () => {
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('With Active Key', () => {
     beforeEach(async () => {
-      await witnessVotingSection.beforeEach(<App />);
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+      );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      });
     });
-    it('Must show text message', () => {
-      assertion.getOneByText(constants.textMessage);
+
+    it('Must show text message', async () => {
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev'),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must show success after if voting', async () => {
-      extraMocks.vote(true);
-      await clickAwait([alButton.operation.voteStoodkevWitness]);
-      await assertion.awaitFor(constants.voting.success, QueryDOM.BYTEXT);
+
+    it('Must show success when voting', async () => {
+      WitnessUtils.voteWitness = jest.fn().mockResolvedValue({
+        tx_id: 'tx_id',
+        id: 'id',
+        confirmed: true,
+      } as TransactionResult);
+      BlockchainTransactionUtils.delayRefresh = jest
+        .fn()
+        .mockResolvedValue(undefined);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('html_popup_vote_stoodkev_witness_success'),
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('Must show error when voting', async () => {
+      WitnessUtils.voteWitness = jest
+        .fn()
+        .mockRejectedValue(new Error('Error trying to vote for witness'));
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
+        );
+      });
+      expect(
+        await screen.findByText('Error trying to vote for witness'),
+      ).toBeInTheDocument();
     });
   });
-  describe('No votes left', () => {
+
+  describe('No witness votes left', () => {
     beforeEach(async () => {
-      await witnessVotingSection.beforeEach(<App />, { noVotesleft: true });
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getExtendedAccount: {
+                  ...accounts.extended,
+                  witnesses_voted_for: 30,
+                },
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      });
     });
-    it('Must show error if not votes left', async () => {
-      await clickAwait([alButton.operation.voteStoodkevWitness]);
-      await assertion.awaitFor(constants.voting.noMoreVotes, QueryDOM.BYTEXT);
+    it('Must show error if no witness votes left', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage(
+            'html_popup_vote_stoodkev_witness_error_30_votes',
+          ),
+        ),
+      ).toBeInTheDocument();
     });
   });
+
   describe('No Active Key', () => {
     beforeEach(async () => {
-      await witnessVotingSection.beforeEach(<App />, { removeActiveKey: true });
+      const cloneLocalAccounts = objects.clone(
+        accounts.twoAccounts,
+      ) as LocalAccount[];
+      delete cloneLocalAccounts[0].keys.active;
+      delete cloneLocalAccounts[0].keys.activePubkey;
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: cloneLocalAccounts,
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      });
     });
     it('Must show error trying to vote', async () => {
-      await clickAwait([alButton.operation.voteStoodkevWitness]);
-      await assertion.awaitFor(constants.missingKey, QueryDOM.BYTEXT);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.operation.voteStoodkevWitness),
+        );
+      });
+      expect(
+        await screen.findByText(
+          chrome.i18n.getMessage('popup_missing_key', ['active']),
+        ),
+      ).toBeInTheDocument();
     });
   });
 });

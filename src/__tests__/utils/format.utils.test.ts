@@ -1,8 +1,52 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import FormatUtils from 'src/utils/format.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('format.utils tests:\n', () => {
+  const iterationValuesNoDecimals = [
+    { input: 1e3, expectedString: '1k' },
+    { input: 10e3, expectedString: '10k' },
+    { input: 100e3, expectedString: '100k' },
+    { input: 1e6, expectedString: '1M' },
+    { input: 10e6, expectedString: '10M' },
+    { input: 100e6, expectedString: '100M' },
+    { input: 1e9, expectedString: '1G' },
+    { input: 10e9, expectedString: '10G' },
+    { input: 100e9, expectedString: '100G' },
+    { input: 1e12, expectedString: '1T' },
+    { input: 10e12, expectedString: '10T' },
+    { input: 100e12, expectedString: '100T' },
+    { input: 1e15, expectedString: '1P' },
+    { input: 10e15, expectedString: '10P' },
+    { input: 100e15, expectedString: '100P' },
+    { input: 1e18, expectedString: '1E' },
+  ];
+  const iterationValuesWithDecimals1 = [
+    { input: 0.0, expectedString: '0', decimals: 1 },
+    { input: 0.0, expectedString: '0', decimals: 2 },
+    { input: 0.1, expectedString: '0.1', decimals: 1 },
+    { input: 0.1234, expectedString: '0.12', decimals: 2 },
+    { input: 0.1234, expectedString: '0.123', decimals: 3 },
+    { input: 0.1234, expectedString: '0.1234', decimals: 4 },
+  ];
+  const iterationValuesWithDecimals2 = [
+    { input: 1000.0123, expectedString: '1k', decimals: 1 },
+    { input: 100000.0123, expectedString: '100k', decimals: 2 },
+    { input: 10000000.1, expectedString: '10M', decimals: 1 },
+    { input: 1000000000000.1234, expectedString: '1T', decimals: 2 },
+    { input: 10000000000000.12345432, expectedString: '10T', decimals: 5 },
+    {
+      input: 10000045600000.12345432,
+      expectedString: '10.00005T',
+      decimals: 5,
+    },
+    { input: 100000000000000.12345432, expectedString: '100T', decimals: 4 },
+    { input: 1450000000000000.12345432, expectedString: '1.45P', decimals: 4 },
+  ];
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   describe('withCommas tests:\n', () => {
     test('Passing a currency value using a comma, must return same value in U.S format standards', () => {
       const result = FormatUtils.withCommas('12,38 HIVE');
@@ -132,7 +176,7 @@ describe('format.utils tests:\n', () => {
       const vesting_balance = '1000.000 HIVE';
       const result = FormatUtils.toHP(
         vesting_balance,
-        utilsT.dynamicPropertiesObj,
+        dynamic.globalProperties,
       );
       expect(result).toBe(expectedValue);
     });
@@ -142,7 +186,7 @@ describe('format.utils tests:\n', () => {
     test('Passing hp and valid props(as declared in fake-data.utils), must return expected value defined bellow', () => {
       const expectedValue: number = 1000;
       const hp = '0.5458633941648806';
-      const result = FormatUtils.fromHP(hp, utilsT.dynamicPropertiesObj);
+      const result = FormatUtils.fromHP(hp, dynamic.globalProperties);
       expect(result).toBe(expectedValue);
     });
     test('Passing hp and invalid props(as declared bellow), will return NaN', () => {
@@ -309,12 +353,8 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('10.001');
     });
     test('Must return a string with custom exponencial representation, i.e: 1e3 must return 1k(no decimals). For each case on the data array', () => {
-      const iterationValues = [...utilsT.iterationValuesNoDecimals];
+      const iterationValues = [...iterationValuesNoDecimals];
       const showValuesIteration = false;
-      const showArrayToTest = false;
-      if (showArrayToTest) {
-        console.log(iterationValues);
-      }
       for (let i = 0; i < iterationValues.length; i++) {
         if (showValuesIteration) {
           console.log(
@@ -334,7 +374,7 @@ describe('format.utils tests:\n', () => {
     });
 
     test('Must return a string with the asked decimals, i.e: 0.13 must return 0.1 if asked 1 decimal. Same for each case on the data array', () => {
-      const iterationValues = [...utilsT.iterationValuesWithDecimals1];
+      const iterationValues = [...iterationValuesWithDecimals1];
       const showValuesIteration = false;
       const showArrayToTest = false;
       if (showArrayToTest) {
@@ -357,7 +397,7 @@ describe('format.utils tests:\n', () => {
       }
     });
     test('Must return a string in exponential custom format, i.e: 100000.13 must return 100k. Same for each case on the data array', () => {
-      const iterationValues = [...utilsT.iterationValuesWithDecimals2];
+      const iterationValues = [...iterationValuesWithDecimals2];
       const showValuesIteration = false;
       const showArrayToTest = false;
       if (showArrayToTest) {

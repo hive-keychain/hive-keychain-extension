@@ -5,7 +5,10 @@ import {
   AutoCompleteValue,
   AutoCompleteValues,
 } from '@interfaces/autocomplete.interface';
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import {
+  FavoriteUserItems,
+  FavoriteUserListName,
+} from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -62,7 +65,7 @@ const saveFavoriteUser = async (
   username: string,
   activeAccount: ActiveAccount,
 ) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
   const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
@@ -75,8 +78,16 @@ const saveFavoriteUser = async (
   if (!favoriteUser[activeAccount.name!]) {
     favoriteUser[activeAccount.name!] = [];
   }
+
+  let found = false;
+  if (favoriteUser[activeAccount.name!].length > 0) {
+    found = Object.values(favoriteUser[activeAccount.name!]).some(
+      (favValue: any) => favValue.value === username,
+    );
+  }
+
   if (
-    !favoriteUser[activeAccount.name!].includes(username) &&
+    !found &&
     !exchanges.find((exchange) => exchange.username === username) &&
     !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
@@ -91,20 +102,6 @@ const saveFavoriteUser = async (
   );
 };
 
-export enum FavoriteUserListName {
-  USERS = 'users',
-  LOCAL_ACCOUNTS = 'local_accounts',
-  EXCHANGES = 'exchanges',
-}
-export interface FavoriteUserList {
-  name: FavoriteUserListName;
-  list: AutoCompleteValue[];
-}
-export interface FavoriteAccounts {
-  account: string;
-  label: string;
-  subLabel?: string;
-}
 const getAutocompleteListByCategories = async (
   username: string,
   localAccounts: LocalAccount[],
@@ -145,6 +142,7 @@ const getAutocompleteListByCategories = async (
         favoriteUsersList.values.push(fav);
     }
   }
+
   for (const localAccount of localAccounts) {
     if (localAccount.name !== username) {
       favoriteLocalAccountsList.values.push({
@@ -179,6 +177,9 @@ const getAutocompleteListByCategories = async (
 
 const fixFavoriteList = async (favoriteUsers: any) => {
   let hasChanged = false;
+  if (typeof favoriteUsers === 'string') {
+    favoriteUsers = JSON.parse(favoriteUsers);
+  }
   for (const user in favoriteUsers) {
     if (!Array.isArray(favoriteUsers[user])) favoriteUsers[user] = [];
     favoriteUsers[user] = favoriteUsers[user].map((e: any) => {

@@ -4,7 +4,7 @@ import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 function getMk() {
-  return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);
+  return LocalStorageUtils.getValueFromSessionStorage(LocalStorageKeyEnum.__MK);
 }
 
 const login = async (mk: string) => {
@@ -23,11 +23,11 @@ async function sendBackMk() {
 }
 
 function saveMk(newMk: string) {
-  chrome.storage.local.set({ [LocalStorageKeyEnum.__MK]: newMk });
+  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, newMk);
 }
 
 function lock() {
-  chrome.storage.local.remove(LocalStorageKeyEnum.__MK);
+  LocalStorageUtils.removeFromSessionStorage(LocalStorageKeyEnum.__MK);
 }
 
 const MkModule = {

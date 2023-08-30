@@ -17,7 +17,10 @@ export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   sendResponse(response);
 };
 
-export const sendRequestToBackground = (req: KeychainRequest) => {
+export const sendRequestToBackground = (
+  req: KeychainRequest,
+  chrome: typeof globalThis.chrome,
+) => {
   chrome.runtime.sendMessage({
     command: 'sendRequest',
     request: req,

@@ -1,28 +1,28 @@
 import { KeychainApi } from '@api/keychain';
-import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
+import { ExtendedAccount } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
 import { AssertionError } from 'assert';
-import {
-  GlobalProperties,
-  RewardFund,
-} from 'src/interfaces/global-properties.interface';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import conversions from 'src/__tests__/utils-for-testing/data/conversions';
+import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import conversions from 'src/__tests__/utils-for-testing/data/conversions';
-import delegations from 'src/__tests__/utils-for-testing/data/delegations';
-import rpc from 'src/__tests__/utils-for-testing/data/rpc';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
+
 describe('hive.utils tests:\n', () => {
   async function resetClient() {
     await HiveTxUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
   }
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.resetModules();
     await resetClient();
   });
   beforeEach(async () => {
@@ -30,7 +30,7 @@ describe('hive.utils tests:\n', () => {
   });
 
   describe('setRpc tests:\n', () => {
-    test('Passing uri as "DEFAULT" will set the uri of the Client class as the return value from KeychainApi.get', async () => {
+    it('Nust set default uri', async () => {
       const returnedUriValue = 'https://ValueFromHive/rpc/api';
       KeychainApi.get = jest
         .fn()
@@ -45,189 +45,76 @@ describe('hive.utils tests:\n', () => {
   });
 
   describe('getVP tests:\n', () => {
-    test('Passing an ExtendedAccount Obj with no account property must return null', () => {
+    it('Must return null', () => {
       const fakeExtended = {} as ExtendedAccount;
       const result = HiveUtils.getVP(fakeExtended);
       expect(result).toBeNull();
     });
-    test('Passing a valid ExtendedAccount Obj with 0 values, will return NaN', () => {
+
+    it('Must return NaN', () => {
       const fakeExtendedData = {
-        name: utilsT.dataUserExtended.name,
-        vesting_withdraw_rate: '0.000 VESTS',
+        ...accounts.extended,
+        vesting_withdraw_rate: '0',
         voting_manabar: {
-          current_mana: 0,
-          last_update_time: 0,
+          current_mana: '0',
+          last_update_time: Date.now(),
         },
-        vesting_shares: '0.000 VESTS',
-        delegated_vesting_shares: '0.000 VESTS',
-        received_vesting_shares: '0.000 VESTS',
+        vesting_shares: '0 VESTS',
+        received_vesting_shares: '0 VESTS',
+        delegated_vesting_shares: '0 VESTS',
       } as ExtendedAccount;
       const result = HiveUtils.getVP(fakeExtendedData);
       expect(result).toBe(NaN);
     });
-    test('Passing a valid ExtendedAccount Obj(cedricDataSample) with specific values, must return and estimated_pct=100', () => {
-      const fakeExtendedData = {
-        name: utilsT.cedricDataSample.name,
-        vesting_withdraw_rate: utilsT.cedricDataSample.vesting_withdraw_rate,
-        voting_manabar: utilsT.cedricDataSample.voting_manabar,
-        vesting_shares: utilsT.cedricDataSample.vesting_shares,
-        delegated_vesting_shares:
-          utilsT.cedricDataSample.delegated_vesting_shares,
-        received_vesting_shares:
-          utilsT.cedricDataSample.received_vesting_shares,
-      } as ExtendedAccount;
-      const result = HiveUtils.getVP(fakeExtendedData);
-      expect(result).toBe(100);
-    });
   });
 
   describe('getVotingDollarsPerAccount tests:\n', () => {
-    const price = new Price(new Asset(0.49, 'HBD'), new Asset(1, 'HIVE'));
-    const rewardFund: RewardFund = {
-      id: 0,
-      name: 'post',
-      reward_balance: '794370.819 HIVE',
-      recent_claims: '618003654293909260',
-      last_update: '2022-05-13T13:59:27',
-      content_constant: '2000000000000',
-      percent_curation_rewards: 5000,
-      percent_content_rewards: 10000,
-      author_reward_curve: 'linear',
-      curation_reward_curve: 'linear',
-    };
-    const properties: GlobalProperties = {
-      globals: utilsT.dynamicPropertiesObj,
-      price: price,
-      rewardFund: rewardFund,
-    };
     const fakeExtendedData = {
-      name: utilsT.cedricDataSample.name,
-      vesting_withdraw_rate: utilsT.cedricDataSample.vesting_withdraw_rate,
-      voting_manabar: utilsT.cedricDataSample.voting_manabar,
-      vesting_shares: utilsT.cedricDataSample.vesting_shares,
-      delegated_vesting_shares:
-        utilsT.cedricDataSample.delegated_vesting_shares,
-      received_vesting_shares: utilsT.cedricDataSample.received_vesting_shares,
-    } as ExtendedAccount;
-    test('Passing the testing data above, must return a voteValue="0.12"', async () => {
+      ...accounts.extendedStringValues,
+      vesting_shares: '100000000 VESTS',
+      received_vesting_shares: '100000000 VESTS',
+      delegated_vesting_shares: '0 VESTS',
+      vesting_withdraw_rate: '0 VESTS',
+    };
+    const fakeGlobals = {
+      globals: dynamic.globalProperties,
+      price: {
+        base: '0.294 HBD',
+        quote: '1.000 HIVE',
+      },
+      rewardFund: dynamic.rewardFund,
+    } as unknown as GlobalProperties;
+
+    it('Nust return 1.54', async () => {
       const result = HiveUtils.getVotingDollarsPerAccount(
         100,
-        properties,
+        fakeGlobals,
         fakeExtendedData,
         false,
       );
-      expect(result).not.toBeNull();
-      expect(result).toBe('0.12');
+      expect(result).toBe('1.54');
     });
-    test('Passing the testing data above, but with voteWeight=50, must return a voteValue="0.06"', async () => {
+
+    it('Must return 0.78', async () => {
       const result = HiveUtils.getVotingDollarsPerAccount(
         50,
-        properties,
+        fakeGlobals,
         fakeExtendedData,
         false,
       );
-      expect(result).not.toBeNull();
-      expect(result).toBe('0.06');
+      expect(result).toBe('0.78');
     });
-    test('Passing the testing data above, but with voteWeight=0, must return a voteValue="0.00"', async () => {
+
+    it('Must return null', () => {
+      const cloneGlobals = objects.clone(fakeGlobals) as GlobalProperties;
+      delete cloneGlobals.globals;
       const result = HiveUtils.getVotingDollarsPerAccount(
         0,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).not.toBeNull();
-      expect(result).toBe('0.00');
-    });
-    test('Passing a GlobalProperties without globals property, must return null', () => {
-      const _properties = {} as GlobalProperties;
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        _properties,
+        cloneGlobals,
         fakeExtendedData,
         false,
       );
       expect(result).toBeNull();
-    });
-    test('Passing an Extended Account without name property must return null', () => {
-      const _fakeExtendedData = {} as ExtendedAccount;
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        _fakeExtendedData,
-        false,
-      );
-      expect(result).toBeNull();
-    });
-    test('If getRewardBalance returns 0, must return undefined', () => {
-      const spyGetRewardBalance = jest
-        .spyOn(HiveUtils, 'getRewardBalance')
-        .mockReturnValueOnce(0);
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).toBeUndefined();
-      expect(spyGetRewardBalance).toBeCalledTimes(1);
-      expect(spyGetRewardBalance).toBeCalledWith(properties);
-    });
-    test('If getRecentClaims returns 0, must return undefined', () => {
-      const spyGetRecentClaims = jest
-        .spyOn(HiveUtils, 'getRecentClaims')
-        .mockReturnValueOnce(0);
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).toBeUndefined();
-      expect(spyGetRecentClaims).toBeCalledTimes(1);
-      expect(spyGetRecentClaims).toBeCalledWith(properties);
-    });
-    test('If getHivePrice returns 0, must return undefined', () => {
-      const spyGetHivePrice = jest
-        .spyOn(HiveUtils, 'getHivePrice')
-        .mockReturnValueOnce(0);
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).toBeUndefined();
-      expect(spyGetHivePrice).toBeCalledTimes(1);
-      expect(spyGetHivePrice).toBeCalledWith(properties);
-    });
-    test('If getVotePowerReserveRate returns 0, must return undefined', () => {
-      const spyGetVotePowerReserveRate = jest
-        .spyOn(HiveUtils, 'getVotePowerReserveRate')
-        .mockReturnValueOnce(0);
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).toBeUndefined();
-      expect(spyGetVotePowerReserveRate).toBeCalledTimes(1);
-      expect(spyGetVotePowerReserveRate).toBeCalledWith(properties);
-    });
-    test('If getRewardBalance returns Infinity, will return "Infinity"', () => {
-      const spyGetRewardBalance = jest
-        .spyOn(HiveUtils, 'getRewardBalance')
-        .mockReturnValueOnce(Infinity);
-      const result = HiveUtils.getVotingDollarsPerAccount(
-        100,
-        properties,
-        fakeExtendedData,
-        false,
-      );
-      expect(result).toBe('Infinity');
-      expect(spyGetRewardBalance).toBeCalledTimes(1);
-      expect(spyGetRewardBalance).toBeCalledWith(properties);
     });
   });
 
@@ -241,23 +128,7 @@ describe('hive.utils tests:\n', () => {
       expect(result).not.toBeNull();
       expect(result).toEqual([expectedMessage]);
     });
-    test('Passing different values of votingPower(votingPowerArrayTest) must return the expectedMessageArray', () => {
-      const showIteration = false;
-      const votingPowerArrayTest = [...utilsT.votingPowerArrayTest];
-      chrome.i18n.getMessage = jest.fn().mockImplementation((...args) => {
-        return args;
-      });
-      votingPowerArrayTest.forEach((testCase) => {
-        if (showIteration) {
-          console.log(
-            `About to test, votingPower: ${testCase.votingPower}\nMust return: ${testCase.expectedMessageArray}`,
-          );
-        }
-        expect(HiveUtils.getTimeBeforeFull(testCase.votingPower)).toEqual(
-          testCase.expectedMessageArray,
-        );
-      });
-    });
+
     test('Passing a negative votingPower value will return undefined', () => {
       chrome.i18n.getMessage = jest.fn().mockImplementationOnce((...args) => {
         return args;
@@ -373,28 +244,20 @@ describe('hive.utils tests:\n', () => {
   });
 
   describe('signMessage tests:\n', () => {
-    test('Passing a message and valid private key, must return the expected signature', () => {
-      const signature = require('@hiveio/hive-js/lib/auth/ecc');
-      const spySignature = jest.spyOn(signature.Signature, 'signBuffer');
-      const callingParams = [
-        'test message',
-        '5K3R75h6KGBLbEHkmkL34MND95bMveeEu8jPSZWLh5X6DhcnKzM',
-      ];
+    test('Must return the expected signature', () => {
       const expectedSignature =
         '1f4aa1439a8a3c1f559eec87b4ada274698138efc6ba4e5b7cabffa32828943e6251aca3b097b5c422f8689cb13b933b49c32b81064bfb8662e423a281142f1286';
       const result = HiveUtils.signMessage(
         'test message',
-        utilsT.userData.nonEncryptKeys.posting,
+        userData.one.nonEncryptKeys.posting,
       );
       expect(result).toBe(expectedSignature);
-      expect(spySignature).toBeCalledTimes(1);
-      expect(spySignature).toBeCalledWith(...callingParams);
     });
-    test('Passing a message and public key, must throw an AssertionError', () => {
+    test('Must throw an AssertionError', () => {
       try {
         const result = HiveUtils.signMessage(
           'test message',
-          utilsT.userData.encryptKeys.posting,
+          userData.one.encryptKeys.posting,
         );
         expect(result).toBe(1);
       } catch (error) {

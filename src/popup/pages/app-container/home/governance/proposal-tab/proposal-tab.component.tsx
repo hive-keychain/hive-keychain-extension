@@ -10,7 +10,7 @@ import {
 import { ProposalItemComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-item/proposal-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import ProposalUtils from 'src/utils/proposal.utils';
@@ -62,7 +62,7 @@ const ProposalTab = ({
 
   return (
     <div
-      aria-label="proposal-tab"
+      data-testid="proposal-tab"
       className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
       {!isLoading && (
         <>

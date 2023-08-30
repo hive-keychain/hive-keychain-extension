@@ -1,37 +1,37 @@
 import { Account } from '@hiveio/dhive';
 import { Keys } from '@interfaces/keys.interface';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { KeysUtils } from 'src/utils/keys.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('keys.utils tests:\n', () => {
   describe('getPublicKeyFromPrivateKeyString tests:\n', () => {
     test('Passing the memo private key must return the memo public key', () => {
       const result = KeysUtils.getPublicKeyFromPrivateKeyString(
-        utilsT.userData.nonEncryptKeys.memo,
+        userData.one.nonEncryptKeys.memo,
       );
-      expect(result).toBe(utilsT.userData.encryptKeys.memo);
+      expect(result).toBe(userData.one.encryptKeys.memo);
     });
     test('Passing the posting private key must return the memo public posting key', () => {
       const result = KeysUtils.getPublicKeyFromPrivateKeyString(
-        utilsT.userData.nonEncryptKeys.posting,
+        userData.one.nonEncryptKeys.posting,
       );
-      expect(result).toBe(utilsT.userData.encryptKeys.posting);
+      expect(result).toBe(userData.one.encryptKeys.posting);
     });
     test('Passing the active private key must return the memo public active key', () => {
       const result = KeysUtils.getPublicKeyFromPrivateKeyString(
-        utilsT.userData.nonEncryptKeys.active,
+        userData.one.nonEncryptKeys.active,
       );
-      expect(result).toBe(utilsT.userData.encryptKeys.active);
+      expect(result).toBe(userData.one.encryptKeys.active);
     });
     test('Passing the owner private key must return the memo public owner key', () => {
       const result = KeysUtils.getPublicKeyFromPrivateKeyString(
-        utilsT.userData.nonEncryptKeys.owner,
+        userData.one.nonEncryptKeys.owner,
       );
-      expect(result).toBe(utilsT.userData.encryptKeys.owner);
+      expect(result).toBe(userData.one.encryptKeys.owner);
     });
     test('Passing a fake WIF decoded key must return null', () => {
       const result = KeysUtils.getPublicKeyFromPrivateKeyString(
-        utilsT.userData.nonEncryptKeys.fakeKey,
+        userData.one.nonEncryptKeys.fakeKey,
       );
       expect(result).toBe(null);
     });
@@ -48,12 +48,12 @@ describe('keys.utils tests:\n', () => {
         ['peakd.app', 1],
         ['stoodkev', 1],
       ],
-      key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
+      key_auths: [[userData.one.encryptKeys.posting, 1]],
     };
     test('Passing a posting key authority object with weigth must return 1', () => {
       expect(
         KeysUtils.getPubkeyWeight(
-          utilsT.userData.encryptKeys.posting,
+          userData.one.encryptKeys.posting,
           postingHasWeight,
         ),
       ).toBe(1);
@@ -62,7 +62,7 @@ describe('keys.utils tests:\n', () => {
       postingHasWeight.key_auths = [];
       expect(
         KeysUtils.getPubkeyWeight(
-          utilsT.userData.encryptKeys.posting,
+          userData.one.encryptKeys.posting,
           postingHasWeight,
         ),
       ).toBe(0);
@@ -76,7 +76,7 @@ describe('keys.utils tests:\n', () => {
     test('Passing a Keys object with at least one key must return true', () => {
       expect(
         KeysUtils.hasKeys({
-          activePubkey: utilsT.userData.encryptKeys.active,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(true);
     });
@@ -89,17 +89,17 @@ describe('keys.utils tests:\n', () => {
     test('Passing a Keys Object with 1 key, must return 1', () => {
       expect(
         KeysUtils.keysCount({
-          memoPubkey: utilsT.userData.encryptKeys.memo,
+          memoPubkey: userData.one.encryptKeys.memo,
         } as Keys),
       ).toBe(1);
     });
     test('Passing a Keys Object with 4 keys, must return 4', () => {
       expect(
         KeysUtils.keysCount({
-          activePubkey: utilsT.userData.encryptKeys.active,
-          active: utilsT.userData.nonEncryptKeys.active,
-          postingPubkey: utilsT.userData.encryptKeys.posting,
-          posting: utilsT.userData.nonEncryptKeys.posting,
+          activePubkey: userData.one.encryptKeys.active,
+          active: userData.one.nonEncryptKeys.active,
+          postingPubkey: userData.one.encryptKeys.posting,
+          posting: userData.one.nonEncryptKeys.posting,
         } as Keys),
       ).toBe(4);
     });
@@ -112,16 +112,16 @@ describe('keys.utils tests:\n', () => {
     test('Passing a Keys object with active key present, must return true', () => {
       expect(
         KeysUtils.hasActive({
-          active: utilsT.userData.nonEncryptKeys.active,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          active: userData.one.nonEncryptKeys.active,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(true);
     });
     test('Passing a Keys object with keys but no active key present, must return false', () => {
       expect(
         KeysUtils.hasActive({
-          memo: utilsT.userData.nonEncryptKeys.memo,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          memo: userData.one.nonEncryptKeys.memo,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(false);
     });
@@ -134,16 +134,16 @@ describe('keys.utils tests:\n', () => {
     test('Passing a Keys object with posting key present, must return true', () => {
       expect(
         KeysUtils.hasPosting({
-          posting: utilsT.userData.nonEncryptKeys.posting,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          posting: userData.one.nonEncryptKeys.posting,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(true);
     });
     test('Passing a Keys object with keys but no posting key present, must return false', () => {
       expect(
         KeysUtils.hasPosting({
-          memo: utilsT.userData.nonEncryptKeys.memo,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          memo: userData.one.nonEncryptKeys.memo,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(false);
     });
@@ -156,16 +156,16 @@ describe('keys.utils tests:\n', () => {
     test('Passing a Keys object with memo key present, must return true', () => {
       expect(
         KeysUtils.hasMemo({
-          memo: utilsT.userData.nonEncryptKeys.memo,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          memo: userData.one.nonEncryptKeys.memo,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(true);
     });
     test('Passing a Keys object with keys but no memo key present, must return false', () => {
       expect(
         KeysUtils.hasMemo({
-          posting: utilsT.userData.nonEncryptKeys.posting,
-          activePubkey: utilsT.userData.encryptKeys.active,
+          posting: userData.one.nonEncryptKeys.posting,
+          activePubkey: userData.one.encryptKeys.active,
         } as Keys),
       ).toBe(false);
     });
@@ -174,12 +174,12 @@ describe('keys.utils tests:\n', () => {
   describe('isAuthorizedAccount tests:\n', () => {
     test('Passing a key without @ at the beginning, must return false', () => {
       expect(
-        KeysUtils.isAuthorizedAccount(utilsT.userData.nonEncryptKeys.active),
+        KeysUtils.isAuthorizedAccount(userData.one.nonEncryptKeys.active),
       ).toBe(false);
     });
     test('Passing a public key that starts with @, must return true', () => {
       expect(
-        KeysUtils.isAuthorizedAccount(`@${utilsT.userData.encryptKeys.active}`),
+        KeysUtils.isAuthorizedAccount(`@${userData.one.encryptKeys.active}`),
       ).toBe(true);
     });
   });
@@ -188,14 +188,14 @@ describe('keys.utils tests:\n', () => {
     test('Passing valid account obj, master key and username must return all keys', () => {
       const account = {
         id: 1,
-        name: utilsT.userData.username,
+        name: userData.one.username,
         posting: {
           weight_threshold: 1,
           account_auths: [
             ['peakd.app', 1],
             ['stoodkev', 1],
           ],
-          key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
+          key_auths: [[userData.one.encryptKeys.posting, 1]],
         },
         active: {
           weight_threshold: 1,
@@ -203,23 +203,23 @@ describe('keys.utils tests:\n', () => {
             ['peakd.app', 1],
             ['stoodkev', 1],
           ],
-          key_auths: [[utilsT.userData.encryptKeys.active, 1]],
+          key_auths: [[userData.one.encryptKeys.active, 1]],
         },
-        memo_key: utilsT.userData.encryptKeys.memo,
+        memo_key: userData.one.encryptKeys.memo,
       } as Account;
       expect(
         KeysUtils.derivateFromMasterPassword(
           account.name,
-          utilsT.userData.nonEncryptKeys.master,
+          userData.one.nonEncryptKeys.master,
           account,
         ),
       ).toEqual({
-        active: utilsT.userData.nonEncryptKeys.active,
-        activePubkey: utilsT.userData.encryptKeys.active,
-        posting: utilsT.userData.nonEncryptKeys.posting,
-        postingPubkey: utilsT.userData.encryptKeys.posting,
-        memo: utilsT.userData.nonEncryptKeys.memo,
-        memoPubkey: utilsT.userData.encryptKeys.memo,
+        active: userData.one.nonEncryptKeys.active,
+        activePubkey: userData.one.encryptKeys.active,
+        posting: userData.one.nonEncryptKeys.posting,
+        postingPubkey: userData.one.encryptKeys.posting,
+        memo: userData.one.nonEncryptKeys.memo,
+        memoPubkey: userData.one.encryptKeys.memo,
       });
     });
   });

@@ -22,14 +22,11 @@ import Logger from 'src/utils/logger.utils';
 import { PluginsUtils } from 'src/utils/plugins.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
-/* istanbul ignore next */
-chrome.runtime.onStartup.addListener(() => {
-  LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
-});
 
 /* istanbul ignore next */
 (async () => {
   await RPCModule.init();
+  LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();

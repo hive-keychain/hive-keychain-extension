@@ -3,4 +3,5 @@ export interface ConfirmationPageFields {
   value: string;
   labelParams?: string[];
   valueParams?: string[];
+  valueClassName?: string;
 }
