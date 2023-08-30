@@ -189,7 +189,7 @@ const PowerUpDown = ({
                 activeAccount.keys.active!,
               );
           }
-          if (success && success.confirmed) {
+          if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
             setSuccessMessage('popup_html_power_up_down_success', [

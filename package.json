@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.5",
+  "version": "2.5.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "3.5.3",
+    "@engrave/ledger-app-hive": "^3.5.5",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
     "@ledgerhq/hw-transport": "6.27.10",
