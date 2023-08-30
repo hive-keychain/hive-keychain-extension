@@ -141,7 +141,7 @@ const AddAccountsComponent = () => {
   const filterFromExistingAccounts = async (
     discoveredAccounts: LocalAccount[],
   ) => {
-    const mk = await LocalStorageUtils.getValueFromLocalStorage(
+    const mk = await LocalStorageUtils.getValueFromSessionStorage(
       LocalStorageKeyEnum.__MK,
     );
     let localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
