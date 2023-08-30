@@ -4,8 +4,8 @@ import React, { BaseSyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import './generic-transaction.component.scss';
 
@@ -71,11 +71,11 @@ const GenericTransaction = ({
       key={transaction.key}
       onClick={toggleExpandableContent}>
       <div className="information-panel">
-        <div className="top-row">
-          <Icon
-            dataTestId="icon-open-new-window"
-            name={getIcon()}
-            onClick={openTransactionOnHiveblocks}></Icon>
+        <SVGIcon
+          icon={NewIcons.ACCOUNTS}
+          onClick={openTransactionOnHiveblocks}
+        />
+        <div className="right-panel">
           <CustomTooltip
             dataTestId="custom-tool-tip"
             message={moment(transaction.timestamp).format(
@@ -86,16 +86,17 @@ const GenericTransaction = ({
               {moment(transaction.timestamp).format('L')}
             </div>
           </CustomTooltip>
-          <div className="divider"></div>
-          {expandableContent && (
-            <Icon
-              name={Icons.EXPAND_MORE}
-              onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
-              additionalClassName={`more ${
-                isExpandablePanelOpened ? 'opened' : 'closed'
-              }`}></Icon>
-          )}
         </div>
+
+        {/* <div className="top-row">
+          <Icon
+            dataTestId="icon-open-new-window"
+            name={getIcon()}
+            onClick={openTransactionOnHiveblocks}></Icon>
+
+          <div className="divider"></div>
+          
+        </div> */}
         <div className="bottom-row">{detail}</div>
       </div>
       {expandableContent && isExpandablePanelOpened && (

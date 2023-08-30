@@ -109,6 +109,7 @@ export enum NewIcons {
   FAVORITE_ACCOUNTS_DELETE = 'favorite-item-delete',
   FAVORITE_ACCOUNTS_EDIT = 'favorite-item-edit',
   FAVORITE_ACCOUNTS_SAVE = 'favorite-item-save',
+  FILTER_BUTTON = 'filter-button',
   GOVERNANCE = 'governance',
   INFO_CIRCLE = 'info-circle',
   IMPORT_EXPORT = 'import-export',

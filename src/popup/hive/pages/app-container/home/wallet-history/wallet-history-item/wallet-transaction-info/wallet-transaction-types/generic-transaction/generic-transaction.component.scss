@@ -13,9 +13,9 @@
 
   .information-panel {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     row-gap: 8px;
-    .top-row {
+    .left-panel {
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -27,11 +27,14 @@
       .more.opened {
         transform: rotate(180deg);
       }
-      .icon-component {
-        @include icon-size(20px);
+      .svg-icon {
+        border-radius: 20px 0px 20px 20px;
+        opacity: 0.1;
+        background: $red;
+        padding: 14px 18px;
       }
     }
-    .bottom-row {
+    .right-panel {
       font-size: 16px;
     }
   }

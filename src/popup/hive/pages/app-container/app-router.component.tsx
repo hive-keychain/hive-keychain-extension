@@ -172,14 +172,7 @@ const AppRouter = ({
         gridTemplateRows: hasTitle ? '80px 1fr' : '1fr',
       }}>
       {hasTitle && (
-        <PageTitleComponent
-          title={titleProperties.title}
-          titleParams={titleProperties.titleParams}
-          skipTitleTranslation={titleProperties.skipTitleTranslation}
-          isBackButtonEnabled={titleProperties.isBackButtonEnabled}
-          isCloseButtonDisabled={
-            titleProperties.isCloseButtonDisabled
-          }></PageTitleComponent>
+        <PageTitleComponent {...titleProperties}></PageTitleComponent>
       )}
       <div
         className="page-content"

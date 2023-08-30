@@ -22,7 +22,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -94,7 +94,9 @@ const WalletHistory = ({
   const [previousTransactionLength, setPreviousTransactionLength] = useState(0);
 
   const toggleFilter = () => {
-    setIsFilterPanelOpened(!isFilterOpened);
+    setIsFilterPanelOpened((oldState) => {
+      return !oldState;
+    });
   };
 
   const toggleFilterType = (transactionName: string) => {
@@ -156,7 +158,12 @@ const WalletHistory = ({
     setTitleContainerProperties({
       title: 'popup_html_wallet_history',
       isBackButtonEnabled: true,
+      rightAction: {
+        icon: NewIcons.FILTER_BUTTON,
+        callback: toggleFilter,
+      },
     });
+
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
@@ -400,10 +407,6 @@ const WalletHistory = ({
         className={
           'filter-panel ' + (isFilterOpened ? 'filter-opened' : 'filter-closed')
         }>
-        <div className="title-panel" onClick={() => toggleFilter()}>
-          <div className="title">Filter</div>
-          <img className={'icon'} src="/assets/images/downarrow.png" />
-        </div>
         <div className="filters">
           <div className="search-panel">
             <InputComponent

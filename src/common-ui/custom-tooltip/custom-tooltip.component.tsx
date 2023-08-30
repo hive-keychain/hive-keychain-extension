@@ -13,6 +13,11 @@ interface TooltipProps {
   additionalClassName?: string;
 }
 
+interface TooltipCoordinates {
+  x: number;
+  y: number;
+}
+
 const TOOLTIP_WIDTH = 150;
 const TOOLTIP_PADDING = 12;
 const TOOLTIP_ARROW_SIZE = 6;
@@ -32,7 +37,7 @@ export const CustomTooltip = ({
 
   const [isOpen, setOpen] = useState(false);
   let timeout: NodeJS.Timeout;
-  let [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+  let [coordinates, setCoordinates] = useState<TooltipCoordinates>();
 
   useEffect(() => {
     if (isOpen && (!position || position === 'top')) {
@@ -111,7 +116,7 @@ export const CustomTooltip = ({
         {children}
       </div>
 
-      {isOpen && message && (
+      {isOpen && message && coordinates && (
         <div
           ref={tooltip}
           data-testid="tooltip-content"

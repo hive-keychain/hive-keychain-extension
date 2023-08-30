@@ -17,6 +17,10 @@ export interface PageTitleProps {
   skipTitleTranslation?: boolean;
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
+  rightAction?: {
+    icon: NewIcons;
+    callback: () => void;
+  };
 }
 
 const PageTitle = ({
@@ -25,6 +29,7 @@ const PageTitle = ({
   skipTitleTranslation,
   isBackButtonEnabled,
   isCloseButtonDisabled,
+  rightAction,
   goBack,
   navigateTo,
   canGoBack,
@@ -38,6 +43,12 @@ const PageTitle = ({
   const handleCloseButtonClick = (): void => {
     resetNav();
     navigateTo(Screen.HOME_PAGE, true);
+  };
+
+  const handleRightActionButtonClick = () => {
+    if (rightAction) {
+      rightAction.callback();
+    }
   };
 
   return (
@@ -55,7 +66,13 @@ const PageTitle = ({
           ? title
           : chrome.i18n.getMessage(title, titleParams)}
       </div>
-      {!isCloseButtonDisabled && (
+      {rightAction && (
+        <SVGIcon
+          onClick={handleRightActionButtonClick}
+          icon={rightAction.icon}
+        />
+      )}
+      {!rightAction && !isCloseButtonDisabled && (
         <SVGIcon
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}

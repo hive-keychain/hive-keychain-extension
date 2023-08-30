@@ -27,7 +27,8 @@
     "test:cov": "jest --verbose --coverage",
     "bump": "scripts/bump-version",
     "release": "scripts/release.sh",
-    "release-beta": "scripts/release-beta.sh"
+    "release-beta": "scripts/release-beta.sh",
+    "check-installed-libs": "node scripts/check-installed-libs.js"
   },
   "repository": {
     "type": "git",
@@ -77,7 +78,7 @@
     "react-responsive-carousel": "3.2.23",
     "react-tabs": "3.2.3",
     "react-toastify": "8.2.0",
-    "redux": "4.2.0",
+    "redux": "^4.2.1",
     "redux-thunk": "2.4.1",
     "resolve-cwd": "3.0.0",
     "sass": "1.65.1",
