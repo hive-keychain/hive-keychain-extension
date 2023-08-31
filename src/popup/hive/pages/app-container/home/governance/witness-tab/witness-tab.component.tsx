@@ -116,7 +116,7 @@ const WitnessTab = ({
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
-        if (success && success.confirmed) {
+        if (success) {
           setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
         } else {
           setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
