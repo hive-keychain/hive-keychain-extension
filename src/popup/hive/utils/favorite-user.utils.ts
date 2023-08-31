@@ -177,6 +177,9 @@ const getAutocompleteListByCategories = async (
 
 const fixFavoriteList = async (favoriteUsers: any) => {
   let hasChanged = false;
+  if (typeof favoriteUsers === 'string') {
+    favoriteUsers = JSON.parse(favoriteUsers);
+  }
   for (const user in favoriteUsers) {
     if (!Array.isArray(favoriteUsers[user])) favoriteUsers[user] = [];
     favoriteUsers[user] = favoriteUsers[user].map((e: any) => {

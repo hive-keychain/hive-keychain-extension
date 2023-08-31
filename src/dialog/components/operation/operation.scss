@@ -27,6 +27,14 @@
   .operation_item_content {
     font-style: italic;
     overflow-wrap: break-word;
+
+    ul {
+      margin-block-start: 0;
+      padding-inline-start: 14px;
+      .small {
+        font-size: 12px;
+      }
+    }
   }
 
   .operation_header {

@@ -210,7 +210,7 @@ const Delegations = ({
               ' VESTS',
             activeAccount.keys.active!,
           );
-          if (success && success.confirmed) {
+          if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_delegation_successful');
@@ -247,7 +247,7 @@ const Delegations = ({
             '0.000000 VESTS',
             activeAccount.keys.active!,
           );
-          if (success && success.confirmed) {
+          if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_cancel_delegation_successful');

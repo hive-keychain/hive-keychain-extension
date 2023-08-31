@@ -236,7 +236,7 @@ const SavingsPage = ({
           }
 
           navigateTo(Screen.HOME_PAGE, true);
-          if (success && success.confirmed) {
+          if (success) {
             await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage(
               selectedSavingOperationType === SavingOperationType.DEPOSIT

@@ -1116,6 +1116,14 @@
     "message": "Encode message",
     "description": "Website request title"
   },
+  "dialog_title_encode_multisig": {
+    "message": "Encode Multisig",
+    "description": "Website request title"
+  },
+  "dialog_public_keys": {
+    "message": "Public keys",
+    "description": "Website request title"
+  },
   "dialog_title_sign": {
     "message": "Sign Message",
     "description": "Website request title"
