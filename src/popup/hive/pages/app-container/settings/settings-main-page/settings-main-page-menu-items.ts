@@ -6,39 +6,39 @@ const SettingsMenuItems = (logout: () => void): MenuItem[] => {
   return [
     {
       label: 'popup_html_accounts',
-      icon: NewIcons.ACCOUNTS,
+      icon: NewIcons.MENU_ACCOUNTS,
       nextScreen: Screen.SETTINGS_ACCOUNTS,
     },
     {
       label: 'popup_html_user_preferences',
-      icon: NewIcons.USER_PREFERENCES,
+      icon: NewIcons.MENU_USER_PREFERENCES,
       nextScreen: Screen.SETTINGS_USER_PREFERENCES,
     },
     {
       label: 'popup_html_advanced_settings',
-      icon: NewIcons.ADVANCED_SETTINGS,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS,
       nextScreen: Screen.SETTINGS_ADVANCED,
     },
     {
       label: 'popup_html_governance',
-      icon: NewIcons.GOVERNANCE,
+      icon: NewIcons.MENU_GOVERNANCE,
       nextScreen: Screen.GOVERNANCE_PAGE,
     },
     {
       label: 'popup_html_contact_support',
-      icon: NewIcons.CONTACT_SUPPORT,
+      icon: NewIcons.MENU_SUPPORT,
       action: () => {
         chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
       },
     },
     {
       label: 'popup_html_about',
-      icon: NewIcons.INFO_CIRCLE,
+      icon: NewIcons.MENU_ABOUT,
       nextScreen: Screen.SETTINGS_ABOUT,
     },
     {
       label: 'popup_html_logout',
-      icon: NewIcons.LOGOUT,
+      icon: NewIcons.MENU_LOGOUT,
       action: () => {
         logout();
       },

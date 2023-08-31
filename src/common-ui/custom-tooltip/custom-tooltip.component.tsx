@@ -11,6 +11,7 @@ interface TooltipProps {
   skipTranslation?: boolean;
   dataTestId?: string;
   additionalClassName?: string;
+  color?: 'white' | 'grey';
 }
 
 interface TooltipCoordinates {
@@ -31,6 +32,7 @@ export const CustomTooltip = ({
   children,
   dataTestId,
   additionalClassName,
+  color,
 }: TooltipProps) => {
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
@@ -98,13 +100,15 @@ export const CustomTooltip = ({
       () => {
         setOpen(true);
       },
-      delayShow ? delayShow : 0,
+      delayShow ? delayShow : 250,
     );
   };
 
   const hide = () => {
-    clearTimeout(timeout);
-    setOpen(false);
+    setTimeout(() => {
+      clearTimeout(timeout);
+      setOpen(false);
+    }, 250);
   };
   return (
     <div
@@ -120,7 +124,9 @@ export const CustomTooltip = ({
         <div
           ref={tooltip}
           data-testid="tooltip-content"
-          className={`tooltip ${position ? position : 'top'}`}
+          className={`tooltip ${position ? position : 'top'} ${
+            color ? color : ''
+          }`}
           style={{
             position: 'fixed',
             top: coordinates.y,

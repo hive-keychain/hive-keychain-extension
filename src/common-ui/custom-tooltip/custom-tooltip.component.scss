@@ -5,9 +5,10 @@
 :root {
   --tooltip-text-color: black;
   --tooltip-background-color: #fffffff2;
-  --tooltip-margin: 30px;
   --tooltip-arrow-size: 6px;
 }
+
+$tooltip-arrow-size: 6px;
 
 .tooltip-container {
   display: inline-block;
@@ -24,6 +25,16 @@
     width: 150px;
     text-align: center;
 
+    &.white {
+      background: white;
+      color: #000;
+    }
+
+    &.grey {
+      background: $lighter-grey;
+      color: white;
+    }
+
     @include inter400(14px);
     &::before {
       content: ' ';
@@ -32,7 +43,7 @@
       width: 0;
       position: absolute;
       pointer-events: none;
-      border-width: var(--tooltip-arrow-size);
+      border-width: $tooltip-arrow-size;
     }
 
     &.top {

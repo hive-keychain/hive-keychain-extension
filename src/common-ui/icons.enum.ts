@@ -75,6 +75,16 @@ export enum Icons {
 }
 
 export enum NewIcons {
+  MENU_ABOUT = 'menu-about',
+  MENU_ACCOUNTS = 'menu-accounts',
+  MENU_ADVANCED_SETTINGS = 'menu-advanced-settings',
+  MENU_GOVERNANCE = 'menu-governance',
+  MENU_LOGOUT = 'menu-logout',
+  MENU_PLUGINS = 'menu-plugins',
+  MENU_SUPPORT = 'menu-support',
+  MENU_USER_PREFERENCES = 'menu-user-preferences',
+
+  //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',
   ACTIVE = 'active',
   ADD_ACCOUNT = 'add-account',
@@ -157,6 +167,9 @@ export enum NewIcons {
   USER_PREFERENCES = 'user-preferences',
   VISIBLE = 'visible',
   VOTING_MANA = 'voting-mana',
+  WALLET_HISTORY_COLLAPSE = 'wallet-history-collapse',
+  WALLET_HISTORY_EXPAND = 'wallet-history-expand',
+  WALLET_HISTORY_TOP = 'wallet-history-top',
 
   // LOGOS
   BINANCE = 'binance',

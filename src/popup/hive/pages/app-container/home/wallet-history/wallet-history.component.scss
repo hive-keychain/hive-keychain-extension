@@ -1,5 +1,3 @@
-@import '/src/common-style/variable.scss';
-
 .wallet-history-page {
   // display: flex;
   // flex-direction: column;
@@ -128,6 +126,7 @@
     background: white;
     padding: 44px 34px;
     border-radius: 40px;
+    row-gap: 8px;
 
     .rotating-logo-container {
       min-height: 100px;

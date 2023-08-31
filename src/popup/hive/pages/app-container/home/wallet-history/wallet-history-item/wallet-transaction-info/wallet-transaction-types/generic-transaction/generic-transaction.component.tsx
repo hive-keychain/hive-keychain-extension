@@ -72,20 +72,29 @@ const GenericTransaction = ({
       onClick={toggleExpandableContent}>
       <div className="information-panel">
         <SVGIcon
+          className="operation-icon"
           icon={NewIcons.ACCOUNTS}
           onClick={openTransactionOnHiveblocks}
         />
         <div className="right-panel">
+          <div className="detail">{detail}</div>
           <CustomTooltip
-            dataTestId="custom-tool-tip"
+            dataTestId="scustom-tool-tip"
             message={moment(transaction.timestamp).format(
               'YYYY/MM/DD , hh:mm:ss a',
             )}
-            skipTranslation>
+            skipTranslation
+            color="grey">
             <div className="date">
               {moment(transaction.timestamp).format('L')}
             </div>
           </CustomTooltip>
+          {expandableContent && !isExpandablePanelOpened && (
+            <SVGIcon icon={NewIcons.WALLET_HISTORY_EXPAND} />
+          )}
+          {expandableContent && isExpandablePanelOpened && (
+            <SVGIcon icon={NewIcons.WALLET_HISTORY_COLLAPSE} />
+          )}
         </div>
 
         {/* <div className="top-row">
@@ -97,7 +106,6 @@ const GenericTransaction = ({
           <div className="divider"></div>
           
         </div> */}
-        <div className="bottom-row">{detail}</div>
       </div>
       {expandableContent && isExpandablePanelOpened && (
         <div

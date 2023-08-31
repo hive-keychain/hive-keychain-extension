@@ -42,7 +42,6 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
-import './hive-app.component.scss';
 
 const HiveApp = ({
   mk,

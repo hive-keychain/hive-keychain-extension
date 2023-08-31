@@ -1,4 +1,3 @@
-import '@common-style/home/resources-section/resource-item.component.scss';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';

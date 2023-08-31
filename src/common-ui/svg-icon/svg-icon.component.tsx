@@ -1,4 +1,5 @@
 import React, { BaseSyntheticEvent, useState } from 'react';
+import { ReactSVG } from 'react-svg';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import './svg-icon.component.scss';
 
@@ -29,7 +30,15 @@ export const SVGIcon = ({
 
   return (
     <>
-      <img
+      <ReactSVG
+        className={`svg-icon ${className ?? ''} `}
+        src={`/assets/images/${icon}.svg`}
+        onClick={($event) => handleClick($event)}
+      />
+
+      {/* <object type="image/svg+xml" data={`/assets/images/${icon}.svg`}></object> */}
+
+      {/* <img
         data-testid={dataTestId}
         onMouseOver={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -38,7 +47,7 @@ export const SVGIcon = ({
         src={`/assets/images/${icon}${
           (hoverable && hovered) || forceHover ? '-hovered' : ''
         }.svg`}
-      />
+      /> */}
     </>
   );
 };

@@ -1,10 +1,8 @@
-@import '/src/common-style/variable.scss';
-
 .wallet-history-item {
   border-radius: 22px;
   border: 1px solid $extra-light-grey;
-  padding: 8px 16px;
   display: flex;
   align-items: center;
   column-gap: 16px;
+  padding-right: 24px;
 }

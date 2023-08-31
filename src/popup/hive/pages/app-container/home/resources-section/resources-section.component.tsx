@@ -1,4 +1,3 @@
-import '@common-style/home/resources-section/resource-section.component.scss';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
