@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.5",
+  "version": "2.5.2",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -45,12 +45,12 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "3.5.3",
+    "@engrave/ledger-app-hive": "^3.5.5",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
     "@ledgerhq/hw-transport": "6.27.10",
     "@ledgerhq/hw-transport-webusb": "6.27.10",
-    "@types/chrome": "0.0.177",
+    "@types/chrome": "^0.0.243",
     "@types/crypto-js": "4.1.1",
     "@types/yargs": "17.0.11",
     "axios": "0.25.0",
@@ -77,6 +77,7 @@
     "redux": "4.2.0",
     "redux-thunk": "^2.4.1",
     "resolve-cwd": "3.0.0",
+    "sass": "^1.65.1",
     "scss-tokenizer": "0.4.3",
     "sscjs": "0.0.9",
     "url-loader": "4.1.1",
@@ -116,7 +117,6 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
     "jest-chrome": "0.7.2",
-    "node-sass": "7.0.1",
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
