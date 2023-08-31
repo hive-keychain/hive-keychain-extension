@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.5",
+  "version": "2.5.2",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "3.5.3",
+    "@engrave/ledger-app-hive": "^3.5.5",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
     "@ledgerhq/hw-transport": "6.27.10",
@@ -56,7 +56,7 @@
     "axios": "0.25.0",
     "crypto-js": "4.1.1",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.2.0",
+    "hive-keychain-commons": "^1.2.2",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "joi": "17.6.0",
     "locate-path": "7.1.1",

@@ -24,7 +24,7 @@ module.exports = merge(common, {
     }),
     // new BundleAnalyzerPlugin(),
   ],
-  optimization: {
-    runtimeChunk: 'single',
-  },
+  // optimization: {
+  //   runtimeChunk: 'single',
+  // },
 });

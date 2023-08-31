@@ -75,6 +75,12 @@ const TokenItem = ({
     chrome.tabs.create({ url: tokenInfo.metadata.url });
   };
 
+  const getFormattedTokenPrice = (tokenPrice: number) => {
+    return tokenPrice.toFixed(
+      Math.max(2, -Math.floor(Math.log(tokenPrice) / Math.log(10))),
+    );
+  };
+
   return (
     <div data-testid={ariaLabel} className="token-item">
       <div
@@ -151,10 +157,10 @@ const TokenItem = ({
                 hive,
               ).toFixed(2)}{' '}
               ($
-              {(
+              {getFormattedTokenPrice(
                 TokensUtils.getHiveEngineTokenPrice(tokenBalance, market) *
-                hive?.usd!
-              ).toFixed(2)}
+                  hive?.usd!,
+              )}
               /{chrome.i18n.getMessage('token').toLowerCase()})
             </div>
             <div>
@@ -203,16 +209,14 @@ const TokenItem = ({
                 data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
-                <div>
-                  {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
-                  {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.delegationsIn),
-                    tokenInfo.precision,
-                  )}
-                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
-                  )}
-                </div>
+                {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
+                {FormatUtils.trimUselessZero(
+                  parseFloat(tokenBalance.delegationsIn),
+                  tokenInfo.precision,
+                )}
+                {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                )}
               </div>
             )}
             {tokenInfo.delegationEnabled &&
