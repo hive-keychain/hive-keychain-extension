@@ -60,45 +60,6 @@ $input-logo-size: 20px;
 $input-hint-font-size: 15px;
 $caption-font-size: 12px;
 
-@mixin pageLayout {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-
-@mixin pageLayoutRowGap {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
-}
-
-@mixin link {
-  color: white;
-  text-decoration: none;
-  border-bottom: white 2px dotted;
-  &:hover {
-    border-bottom: $dark-red 2px dotted;
-    color: $dark-red;
-  }
-}
-
-@mixin fake-input {
-  font-size: $input-font-size;
-  padding: 7px;
-  background: transparent;
-  border: unset;
-  border-bottom: $grey solid 1px !important;
-  cursor: not-allowed;
-  min-width: 50px;
-  flex: 1;
-  text-align: center;
-}
-
-@mixin caption {
-  font-size: $caption-font-size;
-}
-
 .divider {
   flex: 1;
 }

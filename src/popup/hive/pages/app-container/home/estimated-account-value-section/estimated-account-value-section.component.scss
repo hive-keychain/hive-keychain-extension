@@ -1,5 +1,3 @@
-@import '@common-style/variable.scss';
-
 .estimated-account-value-section {
   height: 60px;
   display: flex;
@@ -34,6 +32,9 @@
     font-style: normal;
     font-weight: 700;
     line-height: 147%;
+  }
+  .account-value-explanation-section {
+    font-size: 18px;
   }
 }
 .estimated-account-value-tooltip {

@@ -1,4 +1,3 @@
-import '@common-style/home/home.component.scss';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';

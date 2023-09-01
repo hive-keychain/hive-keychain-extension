@@ -1,8 +1,4 @@
-@import '@common-style/variable.scss';
-@import '@common-style/mixins.scss';
-
 .settings-main-page {
-  // @include background-bottom;
   display: flex;
   flex-direction: column;
   height: 100%;
