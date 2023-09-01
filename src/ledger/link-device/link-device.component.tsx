@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
-import './link-device.component.scss';
 
 const LinkLedgerDevice = () => {
   const [done, setDone] = useState(false);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { DropdownMenuItemComponent } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.component';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
-import './dropdown-menu.component.scss';
 
 export interface DropdownMenuProps {
   dropdownMenuItems: DropdownMenuItemInterface[];

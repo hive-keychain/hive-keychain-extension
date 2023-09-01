@@ -7,7 +7,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
 import { InputType } from './input-type.enum';
-import './input.component.scss';
 
 export interface InputProps {
   value: any;

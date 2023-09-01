@@ -17,7 +17,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './pending-savings-withdrawal-item.component.scss';
 
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;

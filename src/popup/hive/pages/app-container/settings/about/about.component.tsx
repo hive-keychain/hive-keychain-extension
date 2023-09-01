@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Icons } from 'src/common-ui/icons.enum';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import './about.component.scss';
 
 const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   useEffect(() => {

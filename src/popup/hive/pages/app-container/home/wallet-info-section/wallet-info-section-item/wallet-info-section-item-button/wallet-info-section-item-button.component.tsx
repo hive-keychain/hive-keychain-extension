@@ -1,7 +1,6 @@
 import { ActionButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import './wallet-info-section-item-button.component.scss';
 
 interface WalletInfoSectionItemButtonProps {
   handleClick: (event: BaseSyntheticEvent, actionButton: ActionButton) => void;

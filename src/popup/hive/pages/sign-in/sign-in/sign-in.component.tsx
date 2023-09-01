@@ -14,7 +14,6 @@ import { resetTitleContainerProperties } from 'src/popup/hive/actions/title-cont
 import { RootState } from 'src/popup/hive/store';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './sign-in.component.scss';
 
 const SignIn = ({
   setErrorMessage,

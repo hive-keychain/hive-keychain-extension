@@ -9,7 +9,6 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './wrong-key-popup.component.scss';
 
 export interface WrongKeysOnUser {
   [key: string]: string[];

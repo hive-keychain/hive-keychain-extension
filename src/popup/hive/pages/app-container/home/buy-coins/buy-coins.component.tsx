@@ -11,7 +11,6 @@ import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/b
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import './buy-coins.component.scss';
 
 const BuyCoins = ({
   setTitleContainerProperties,

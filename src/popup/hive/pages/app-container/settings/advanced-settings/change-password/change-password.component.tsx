@@ -15,7 +15,6 @@ import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './change-password.component.scss';
 
 const ChangePassword = ({
   setErrorMessage,

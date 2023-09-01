@@ -21,7 +21,6 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './token-incoming-outgoing-item.component.scss';
 
 interface TokenIncomingOutgoingProps {
   delegationType: DelegationType;

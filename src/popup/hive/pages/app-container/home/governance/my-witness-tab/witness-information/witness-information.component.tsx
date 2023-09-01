@@ -34,7 +34,6 @@ import WitnessUtils, {
   WITNESS_DISABLED_KEY,
 } from 'src/popup/hive/utils/witness.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './witness-information.component.scss';
 
 interface WitnessInformationProps {
   witnessInfo: WitnessInfo;

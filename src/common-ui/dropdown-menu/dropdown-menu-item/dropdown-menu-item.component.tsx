@@ -4,7 +4,6 @@ import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-
 import Icon from 'src/common-ui/icon/icon.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
-import './dropdown-menu-item.component.scss';
 
 const DropdownMenuItem = ({
   icon,

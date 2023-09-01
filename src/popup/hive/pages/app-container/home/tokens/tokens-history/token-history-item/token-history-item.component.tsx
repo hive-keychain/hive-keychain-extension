@@ -20,7 +20,6 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { RootState } from 'src/popup/hive/store';
-import './token-history-item.component.scss';
 
 interface TokenHistoryItemProps {
   transaction: TokenTransaction;

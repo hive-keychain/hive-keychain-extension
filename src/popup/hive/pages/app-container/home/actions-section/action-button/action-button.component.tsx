@@ -4,7 +4,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ActionButton } from 'src/interfaces/action-button.interface';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
-import './action-button.component.scss';
 
 const ActionButton = ({
   label,

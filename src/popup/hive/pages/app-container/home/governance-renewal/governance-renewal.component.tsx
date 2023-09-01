@@ -8,7 +8,6 @@ import {
 } from 'src/popup/hive/actions/loading.actions';
 import { RootState } from 'src/popup/hive/store';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
-import './governance-renewal.component.scss';
 
 interface GovernanceRenewalProps {
   accountNames: string[];

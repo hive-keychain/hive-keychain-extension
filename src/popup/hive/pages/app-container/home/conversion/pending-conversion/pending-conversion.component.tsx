@@ -6,7 +6,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import './pending-conversion.component.scss';
 
 const PendingConversionPage = ({
   navParams,

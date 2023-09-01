@@ -18,7 +18,6 @@ import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
   privateKey?: Key;

@@ -20,7 +20,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
-import './account-authorities-list-item.component.scss';
 
 export interface AuthoritiesListItemProps {
   authority: AuthorityType;

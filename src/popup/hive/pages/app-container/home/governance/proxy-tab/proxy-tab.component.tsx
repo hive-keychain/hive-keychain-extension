@@ -18,7 +18,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
-import './proxy-tab.component.scss';
 
 const ProxyTab = ({
   activeAccount,

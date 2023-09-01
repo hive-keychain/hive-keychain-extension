@@ -7,7 +7,6 @@ import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FavoriteAccountsItemComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 import { RootState } from 'src/popup/hive/store';
-import './favorite-accounts-list.component.scss';
 
 interface FavoriteAccountsListProps {
   favoriteList: FavoriteUserList;

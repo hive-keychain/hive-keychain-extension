@@ -19,7 +19,6 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
-import './top-bar.component.scss';
 
 const TopBar = ({
   navigateTo,

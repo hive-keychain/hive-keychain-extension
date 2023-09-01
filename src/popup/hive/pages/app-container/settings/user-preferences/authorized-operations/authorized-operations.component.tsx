@@ -12,7 +12,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
-import './authorized-operations.component.scss';
 
 const AuthorizedOperations = ({
   activeAccount,

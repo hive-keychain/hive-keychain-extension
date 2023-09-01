@@ -1,7 +1,6 @@
 import { Switch } from 'pretty-checkbox-react';
 import React from 'react';
 import { NewIcons } from 'src/common-ui/icons.enum';
-import './switch.component.scss';
 
 interface SwitchProps {
   onChange: (value: any) => void;

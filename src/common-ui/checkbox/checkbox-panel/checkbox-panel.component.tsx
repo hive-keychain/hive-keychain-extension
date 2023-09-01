@@ -2,7 +2,6 @@ import React from 'react';
 import CheckboxComponent, {
   CheckboxProps,
 } from 'src/common-ui/checkbox/checkbox/checkbox.component';
-import './checkbox-panel.component.scss';
 
 export enum BackgroundType {
   TRANSPARENT = 'transparent',

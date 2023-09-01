@@ -1,7 +1,6 @@
 import React from 'react';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import './rotating-logo.component.scss';
 
 const RotatingLogoComponent = () => (
   <SVGIcon

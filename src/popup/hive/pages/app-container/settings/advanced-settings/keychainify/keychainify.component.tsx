@@ -6,7 +6,6 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './keychainify.component.scss';
 
 const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
   const [enabled, setEnabled] = useState(false);

@@ -17,7 +17,6 @@ import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './proposal-item.component.scss';
 
 interface ProposalItemProps {
   proposal: Proposal;

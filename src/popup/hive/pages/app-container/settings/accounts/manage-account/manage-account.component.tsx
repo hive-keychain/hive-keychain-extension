@@ -7,7 +7,6 @@ import { AccountKeysListComponent } from 'src/popup/hive/pages/app-container/set
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import './manage-account.component.scss';
 
 const ManageAccount = ({
   setTitleContainerProperties,

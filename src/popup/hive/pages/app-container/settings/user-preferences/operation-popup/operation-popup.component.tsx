@@ -3,7 +3,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { RootState } from 'src/popup/hive/store';
-import './operation-popup.component.scss';
 
 const OperationPopup = ({}: PropsFromRedux) => {
   return (

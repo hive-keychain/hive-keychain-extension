@@ -19,7 +19,6 @@ import { RootState } from 'src/popup/hive/store';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as ValidUrl from 'valid-url';
-import './rpc-nodes.component.scss';
 
 interface RpcListItem {
   label: string;

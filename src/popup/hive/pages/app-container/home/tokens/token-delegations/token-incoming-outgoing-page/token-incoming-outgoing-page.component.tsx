@@ -17,7 +17,6 @@ import { TokenIncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-con
 import { RootState } from 'src/popup/hive/store';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './token-incoming-outgoing-page.component.scss';
 
 const TokenIncomingOutgoingPage = ({
   delegationType,

@@ -26,7 +26,6 @@ import { TokenItemComponent } from 'src/popup/hive/pages/app-container/home/toke
 import { RootState } from 'src/popup/hive/store';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './tokens.component.scss';
 
 const Tokens = ({
   activeAccount,

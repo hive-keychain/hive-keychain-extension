@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import './sliding-bar.component.scss';
 
 interface SlidingBarValue {
   value: any;

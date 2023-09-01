@@ -10,7 +10,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { goBack } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import './confirmation-page.component.scss';
 
 export interface ConfirmationPageParams {
   fields: any;

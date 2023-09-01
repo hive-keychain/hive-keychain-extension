@@ -2,7 +2,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AccountAuthoritiesListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 import { RootState } from 'src/popup/hive/store';
-import './account-authorities-list.component.scss';
 
 const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
   return (

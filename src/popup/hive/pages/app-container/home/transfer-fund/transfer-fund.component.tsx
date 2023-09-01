@@ -42,7 +42,6 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
-import './transfer-fund.component.scss';
 
 interface TransferForm {
   receiverUsername: string;

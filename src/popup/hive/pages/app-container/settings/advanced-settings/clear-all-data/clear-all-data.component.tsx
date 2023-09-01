@@ -11,7 +11,6 @@ import { goBack, navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './clear-all-data.component.scss';
 
 const ClearAllData = ({
   setTitleContainerProperties,

@@ -25,7 +25,6 @@ import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/popup/hive/utils/currency.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
-import './edit-my-witness.component.scss';
 
 interface EditMyWitnessProps {
   witnessInfo: WitnessInfo;

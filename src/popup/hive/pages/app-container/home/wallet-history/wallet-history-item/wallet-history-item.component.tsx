@@ -3,7 +3,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { WalletTransactionInfoComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-info.component';
 import { RootState } from 'src/popup/hive/store';
-import './wallet-history-item.component.scss';
 
 interface WalletHistoryItemProps {
   transaction: Transaction;

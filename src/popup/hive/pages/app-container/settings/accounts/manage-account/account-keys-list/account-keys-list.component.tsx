@@ -25,7 +25,6 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './account-keys-list.component.scss';
 
 interface AccountKeysListProps {
   wrongKeysFound?: WrongKeysOnUser;

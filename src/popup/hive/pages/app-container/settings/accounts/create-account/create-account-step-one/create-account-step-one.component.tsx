@@ -26,8 +26,6 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
-import './create-account-step-one.component.scss';
-
 interface SelectOption {
   label: string;
   value: string;

@@ -13,7 +13,6 @@ import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './add-by-auth.component.scss';
 
 const AddByAuth = ({
   setErrorMessage,

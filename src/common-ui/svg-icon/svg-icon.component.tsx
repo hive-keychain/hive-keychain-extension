@@ -1,7 +1,6 @@
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { ReactSVG } from 'react-svg';
 import { NewIcons } from 'src/common-ui/icons.enum';
-import './svg-icon.component.scss';
 
 interface ISVGIconProps {
   dataTestId?: string;

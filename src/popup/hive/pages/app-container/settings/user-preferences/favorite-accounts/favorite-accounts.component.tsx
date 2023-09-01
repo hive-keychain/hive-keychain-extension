@@ -18,7 +18,6 @@ import { FavoriteAccountsListComponent } from 'src/popup/hive/pages/app-containe
 import { RootState } from 'src/popup/hive/store';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './favorite-accounts.component.scss';
 
 const FavoriteAccounts = ({
   accounts,

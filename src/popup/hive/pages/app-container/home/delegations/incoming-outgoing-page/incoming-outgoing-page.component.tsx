@@ -15,7 +15,6 @@ import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-containe
 import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './incoming-outgoing-page.component.scss';
 
 const IncomingOutgoingPage = ({
   delegationType,

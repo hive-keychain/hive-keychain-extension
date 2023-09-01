@@ -12,7 +12,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
 import { Screen } from '@reference-data/screen.enum';
-import './add-key.component.scss';
 
 const AddKey = ({
   keyType,

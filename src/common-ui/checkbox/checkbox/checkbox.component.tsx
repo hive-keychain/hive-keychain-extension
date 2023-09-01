@@ -2,7 +2,6 @@ import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import './checkbox.component.scss';
 
 export interface CheckboxProps {
   onChange: (value: boolean) => void;

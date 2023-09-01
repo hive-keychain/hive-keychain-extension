@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import { RootState } from 'src/popup/hive/store';
 import getAdvancedSettingsMenuItems from './advanced-settings-menu-items';
-import './advanced-settings.component.scss';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (

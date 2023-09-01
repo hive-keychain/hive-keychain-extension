@@ -12,7 +12,6 @@ import { loadTokens } from 'src/popup/hive/actions/token.actions';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './tokens-filter.component.scss';
 
 const TokensFilter = ({
   tokens,

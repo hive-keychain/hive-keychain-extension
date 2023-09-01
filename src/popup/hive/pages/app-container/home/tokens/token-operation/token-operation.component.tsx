@@ -31,7 +31,6 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './token-operation.component.scss';
 
 export enum TokenOperationType {
   STAKE = 'stake',

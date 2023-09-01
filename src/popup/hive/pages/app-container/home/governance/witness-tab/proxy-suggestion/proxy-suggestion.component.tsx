@@ -12,7 +12,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './proxy-suggestion.component.scss';
 
 const ProxySuggestion = ({
   activeAccount,

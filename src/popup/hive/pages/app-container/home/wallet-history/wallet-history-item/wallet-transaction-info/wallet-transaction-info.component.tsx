@@ -40,7 +40,6 @@ import { RecurrentTransferTransactionComponent } from 'src/popup/hive/pages/app-
 import { TransferTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/transfer-transaction/transfer-transaction.component';
 import { WithdrawSavingsTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/withdraw-savings-transaction/withdraw-savings-transaction.component';
 import { RootState } from 'src/popup/hive/store';
-import './wallet-transaction-info.component.scss';
 
 interface WalletTransactionInfoProps {
   transaction: Transaction;

@@ -15,7 +15,6 @@ import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import './add-accounts.component.scss';
 
 enum SynchronizeLedgerStep {
   DISCOVER_ACCOUNTS = 'add_accounts_from_ledger',

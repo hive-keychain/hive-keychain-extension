@@ -12,7 +12,6 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
-import './automated-tasks.component.scss';
 
 const AutomatedTasks = ({
   accounts,

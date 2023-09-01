@@ -21,7 +21,6 @@ import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
-import './incoming-outgoing-item.component.scss';
 
 interface IncomingOutgoingProps {
   delegationType: DelegationType;

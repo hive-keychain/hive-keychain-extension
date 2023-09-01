@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './custom-tooltip.component.scss';
 
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 interface TooltipProps {

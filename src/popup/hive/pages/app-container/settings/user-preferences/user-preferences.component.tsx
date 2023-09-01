@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import UserPreferencesMenuItems from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences-menu-items';
 import { RootState } from 'src/popup/hive/store';
-import './user-preferences.component.scss';
 
 const UserPreferencesPage = ({}: PropsFromRedux) => {
   return (

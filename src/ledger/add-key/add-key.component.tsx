@@ -7,7 +7,6 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
-import './add-key.component.scss';
 
 const AddKeyComponent = () => {
   const [username, setUsername] = useState('');

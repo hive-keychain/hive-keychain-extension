@@ -9,7 +9,6 @@ import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import './select-keys.component.scss';
 
 const SelectKeys = ({
   keys,

@@ -1,5 +1,5 @@
 import React from 'react';
-import './balance-section.component.scss';
+
 interface Props {
   value: number | string;
   unit: string;

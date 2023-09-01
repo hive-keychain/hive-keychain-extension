@@ -11,7 +11,6 @@ import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/toke
 import { RootState } from 'src/popup/hive/store';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './token-item.component.scss';
 
 interface TokenItemProps {
   tokenBalance: TokenBalance;

@@ -33,8 +33,6 @@ import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-import './rc-delegations.component.scss';
-
 const RCDelegations = ({
   activeAccount,
   currencyLabels,

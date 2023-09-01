@@ -7,7 +7,6 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
-import './generic-transaction.component.scss';
 
 interface GenericTransactionProps {
   transaction: Transaction;

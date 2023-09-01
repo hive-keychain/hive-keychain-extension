@@ -23,7 +23,6 @@ import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
-import './witness-tab.component.scss';
 
 const MAX_WITNESS_VOTE = 30;
 

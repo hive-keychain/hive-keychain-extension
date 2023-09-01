@@ -9,7 +9,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
-import './page-title.component.scss';
 
 export interface PageTitleProps {
   title: string;

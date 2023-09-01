@@ -1,5 +1,4 @@
 import React from 'react';
-import './separator.component.scss';
 
 interface SeparatorProps {
   type: 'vertical' | 'horizontal';

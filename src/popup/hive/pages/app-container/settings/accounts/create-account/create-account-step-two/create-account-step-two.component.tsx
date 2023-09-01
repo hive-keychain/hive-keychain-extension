@@ -24,8 +24,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 
-import './create-account-step-two.component.scss';
-
 const CreateAccountStepTwo = ({
   navParams,
   setErrorMessage,

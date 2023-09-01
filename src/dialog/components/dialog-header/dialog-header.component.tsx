@@ -1,5 +1,4 @@
 import React from 'react';
-import './dialog-header.component.scss';
 
 type Props = { title: string };
 

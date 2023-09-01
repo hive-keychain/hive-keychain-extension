@@ -10,7 +10,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
-import './add-account-main.component.scss';
 
 const AddAccountMain = ({
   navigateTo,

@@ -2,7 +2,6 @@ import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RootState } from 'src/popup/hive/store';
-import './import-keys.component.scss';
 
 const ImportKeys = ({}: PropsFromRedux) => {
   return (

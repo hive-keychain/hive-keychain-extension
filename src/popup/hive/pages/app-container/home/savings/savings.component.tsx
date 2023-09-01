@@ -38,7 +38,6 @@ import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
-import './savings.component.scss';
 
 const SavingsPage = ({
   currencyLabels,

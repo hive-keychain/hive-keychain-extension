@@ -1,7 +1,6 @@
 import React from 'react';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import { ActionButtonComponent } from 'src/popup/hive/pages/app-container/home/actions-section/action-button/action-button.component';
-import './actions-section.component.scss';
 
 type Props = {
   additionalClass?: string;

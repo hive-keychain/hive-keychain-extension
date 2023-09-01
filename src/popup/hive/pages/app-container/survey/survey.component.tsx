@@ -5,7 +5,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
-import './survey.component.scss';
 
 interface Props {
   survey: Survey;

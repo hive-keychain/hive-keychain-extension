@@ -2,7 +2,7 @@ import { Theme, useThemeContext } from '@popup/theme.context';
 import React from 'react';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
-import './theme-toggle.component.scss';
+
 export const ThemeToggle = () => {
   const { theme, setTheme } = useThemeContext();
 

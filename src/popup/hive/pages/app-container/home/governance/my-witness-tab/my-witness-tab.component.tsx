@@ -9,7 +9,6 @@ import { EditMyWitnessComponent } from 'src/popup/hive/pages/app-container/home/
 import { WitnessInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
 import { RootState } from 'src/popup/hive/store';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
-import './my-witness-tab.component.scss';
 
 type Props = {
   ranking: Witness[];

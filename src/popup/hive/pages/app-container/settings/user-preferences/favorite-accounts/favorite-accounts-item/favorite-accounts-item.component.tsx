@@ -6,7 +6,6 @@ import { NewIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
-import './favorite-accounts-item.component.scss';
 
 interface FavoriteAccountsItemProps {
   favorite: AutoCompleteValue;

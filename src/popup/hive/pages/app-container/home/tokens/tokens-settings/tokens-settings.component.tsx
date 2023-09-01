@@ -28,7 +28,6 @@ import { RootState } from 'src/popup/hive/store';
 import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import ArrayUtils from 'src/utils/array.utils';
 import * as ValidUrl from 'valid-url';
-import './tokens-settings.component.scss';
 
 interface SelectOption {
   panelType: string;

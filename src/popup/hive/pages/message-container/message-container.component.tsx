@@ -7,7 +7,6 @@ import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { resetMessage } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
-import './message-container.component.scss';
 
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const close = () => {

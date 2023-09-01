@@ -12,7 +12,6 @@ import { ProposalTabComponent } from 'src/popup/hive/pages/app-container/home/go
 import { ProxyTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/witness-tab/witness-tab.component';
 import { RootState } from 'src/popup/hive/store';
-import './governance.component.scss';
 
 const Governance = ({
   setTitleContainerProperties,

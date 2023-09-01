@@ -4,7 +4,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 import { RootState } from 'src/popup/hive/store';
-import './witness-information-parameters.component.scss';
 
 interface WitnessParametersInformationProps {
   witnessInfo: WitnessInfo;

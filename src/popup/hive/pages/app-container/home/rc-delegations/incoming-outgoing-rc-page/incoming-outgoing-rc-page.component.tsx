@@ -22,7 +22,6 @@ import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegati
 import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
-import './incoming-outgoing-rc-page.component.scss';
 
 const IncomingOutgoingRcPage = ({
   delegationType,

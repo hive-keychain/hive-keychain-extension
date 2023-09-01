@@ -6,7 +6,6 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {
   witnessInfo: WitnessInfo;

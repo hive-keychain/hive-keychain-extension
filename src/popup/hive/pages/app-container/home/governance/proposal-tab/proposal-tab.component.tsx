@@ -15,7 +15,6 @@ import { ProposalItemComponent } from 'src/popup/hive/pages/app-container/home/g
 import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
-import './proposal-tab.component.scss';
 
 const ProposalTab = ({
   activeAccount,

@@ -5,7 +5,6 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { AccountAuthoritiesListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list.component';
 import { RootState } from 'src/popup/hive/store';
-import './manage-account-authorities.component.scss';
 
 const ManageAccountAuthorities = ({
   setTitleContainerProperties,

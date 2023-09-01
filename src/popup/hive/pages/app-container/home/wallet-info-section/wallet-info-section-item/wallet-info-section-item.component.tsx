@@ -16,7 +16,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
-import './wallet-info-section-item.component.scss';
 
 interface WalletSectionInfoItemProps {
   tokenSymbol: string;

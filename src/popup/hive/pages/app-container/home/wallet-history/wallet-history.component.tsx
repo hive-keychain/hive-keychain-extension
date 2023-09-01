@@ -38,7 +38,6 @@ import TransactionUtils, {
 import { WalletHistoryUtils } from 'src/popup/hive/utils/wallet-history.utils';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './wallet-history.component.scss';
 
 type FilterTransactionTypes = {
   [key: string]: boolean;

@@ -1,7 +1,6 @@
 import React from 'react';
 import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
-import './witness-info-data.component.scss';
 
 interface WitnessInfoDataProps {
   label: string;

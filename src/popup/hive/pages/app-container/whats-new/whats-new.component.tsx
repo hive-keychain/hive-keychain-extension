@@ -9,7 +9,6 @@ import {
   WhatsNewContent,
 } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
-import './whats-new.component.scss';
 
 interface Props {
   onOverlayClick: () => void;

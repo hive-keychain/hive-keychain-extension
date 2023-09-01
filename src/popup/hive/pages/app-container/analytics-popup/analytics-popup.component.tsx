@@ -8,7 +8,6 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
-import './analytics-popup.component.scss';
 
 interface Props {
   onAnswered: any;

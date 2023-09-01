@@ -15,7 +15,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
-import './witness-voting-section.component.scss';
 
 const toWitnessObject = (name: string): Witness => ({
   name,

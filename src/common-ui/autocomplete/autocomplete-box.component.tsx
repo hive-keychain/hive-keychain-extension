@@ -6,7 +6,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import AutocompleteItemComponent from 'src/common-ui/autocomplete/autocomplete-item/autocomplete-item.component';
 import { AutoCompleteUtils } from 'src/utils/autocomplete.utils';
-import './autocomplete-box.component.scss';
 
 type Props = {
   autoCompleteValues?: AutoCompleteValuesType;

@@ -17,7 +17,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
-import './select-account-section.component.scss';
+
 interface Props {
   background?: 'white';
   fullSize?: boolean;

@@ -4,7 +4,6 @@ import {
   CustomTooltipPosition,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { Icons } from 'src/common-ui/icons.enum';
-import './icon.component.scss';
 
 interface IconProps {
   onClick?: (params: any) => void;

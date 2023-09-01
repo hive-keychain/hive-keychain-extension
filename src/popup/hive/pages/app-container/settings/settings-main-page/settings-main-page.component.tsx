@@ -9,7 +9,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WitnessVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/witness-voting-section/witness-voting-section.component';
 import { RootState } from 'src/popup/hive/store';
 import SettingsMenuItems from './settings-main-page-menu-items';
-import './settings-main-page.component.scss';
 
 const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
   const goToDiscord = () => {

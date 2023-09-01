@@ -19,7 +19,6 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './wallet-info-section.component.scss';
 
 const WalletInfoSection = ({
   activeAccount,

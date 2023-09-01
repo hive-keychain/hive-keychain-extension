@@ -13,7 +13,6 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './auto-lock.component.scss';
 
 const AutoLock = ({
   setSuccessMessage,

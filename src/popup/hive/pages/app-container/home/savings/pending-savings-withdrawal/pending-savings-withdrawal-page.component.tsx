@@ -5,7 +5,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { PendingSavingsWithdrawalItemComponent } from 'src/popup/hive/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 import { RootState } from 'src/popup/hive/store';
-import './pending-savings-withdrawal-page.component.scss';
 
 interface PendingSavingsWithdrawalProps {
   currentWithdrawLabel?: string;

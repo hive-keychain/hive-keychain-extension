@@ -27,7 +27,6 @@ import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
-import './conversion.component.scss';
 
 const Conversion = ({
   currencyLabels,

@@ -31,7 +31,6 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import './tokens-transfer.component.scss';
 
 const TokensTransfer = ({
   activeAccount,

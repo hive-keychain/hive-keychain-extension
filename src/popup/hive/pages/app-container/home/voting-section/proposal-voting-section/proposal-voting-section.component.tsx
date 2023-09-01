@@ -13,7 +13,6 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './proposal-voting-section.component.scss';
 
 const ProposalVotingSection = ({
   activeAccount,
