@@ -3,7 +3,6 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import './request-username.scss';
 
 type Props = {
   accounts: string[];
@@ -15,7 +14,7 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
   const accountsList = accounts.map((e) => ({ label: e, value: e }));
 
   const customLabelRender = (
-    selectProps: SelectRenderer<typeof accountsList[0]>,
+    selectProps: SelectRenderer<(typeof accountsList)[0]>,
   ) => {
     return (
       <div
@@ -29,7 +28,7 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
   };
 
   const customItemRender = (
-    selectProps: SelectItemRenderer<typeof accountsList[0]>,
+    selectProps: SelectItemRenderer<(typeof accountsList)[0]>,
   ) => {
     return (
       <div>

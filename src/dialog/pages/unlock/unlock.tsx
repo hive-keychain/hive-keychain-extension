@@ -9,7 +9,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
-import './unlock.scss';
 
 type Props = {
   data: UnlockMessage;

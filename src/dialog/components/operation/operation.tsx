@@ -8,7 +8,6 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.componen
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
-import './operation.scss';
 
 type Props = {
   title: string;

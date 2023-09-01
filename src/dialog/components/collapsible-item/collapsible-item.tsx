@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './collapsible-item.scss';
 
 type Props = {
   title: string;

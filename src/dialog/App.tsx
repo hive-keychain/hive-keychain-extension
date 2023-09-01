@@ -1,14 +1,13 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import DialogError from 'src/dialog/pages/error';
-import Register from 'src/dialog/pages/register';
+import Register from 'src/dialog/pages/register/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
-import SignTransaction from 'src/dialog/pages/sign-transaction';
-import Unlock from 'src/dialog/pages/unlock';
+import SignTransaction from 'src/dialog/pages/sign-transaction/sign-transaction';
+import Unlock from 'src/dialog/pages/unlock/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
 import './../analytics/analytics/gtag';
-import './dialog.scss';
 
 const App = () => {
   const [data, setData] = useState<any>({});
