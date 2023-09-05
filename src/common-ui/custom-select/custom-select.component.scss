@@ -52,7 +52,7 @@
           color: white;
           .account-name,
           .active-icon {
-            color: $dark-blue !important;
+            color: var(--main-font-color) !important;
           }
         }
       }
@@ -67,7 +67,7 @@
 
       .item-label {
         flex: 1;
-        color: $dark-blue;
+        color: var(--main-font-color);
       }
 
       .active-icon {

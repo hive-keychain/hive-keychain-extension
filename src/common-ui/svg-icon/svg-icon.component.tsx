@@ -30,23 +30,15 @@ export const SVGIcon = ({
   return (
     <>
       <ReactSVG
-        className={`svg-icon ${className ?? ''} `}
-        src={`/assets/images/${icon}.svg`}
-        onClick={($event) => handleClick($event)}
-      />
-
-      {/* <object type="image/svg+xml" data={`/assets/images/${icon}.svg`}></object> */}
-
-      {/* <img
         data-testid={dataTestId}
         onMouseOver={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={($event) => handleClick($event)}
-        className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''}`}
-        src={`/assets/images/${icon}${
-          (hoverable && hovered) || forceHover ? '-hovered' : ''
-        }.svg`}
-      /> */}
+        className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
+          (hoverable && hovered) || forceHover ? 'hovered' : ''
+        }`}
+        src={`/assets/images/${icon}.svg`}
+      />
     </>
   );
 };

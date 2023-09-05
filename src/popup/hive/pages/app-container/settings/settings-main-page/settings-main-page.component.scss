@@ -8,7 +8,7 @@
   .love-text {
     @include poppins500(15px);
     text-align: center;
-    color: $dark-blue;
+    color: var(--main-font-color);
   }
   .link-panel {
     display: flex;

@@ -11,7 +11,7 @@
 
   .text {
     @include poppins400(14px);
-    color: $dark-blue;
+    color: var(--main-font-color);
   }
   .hint {
     @include poppins400(14px);

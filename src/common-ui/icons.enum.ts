@@ -75,14 +75,35 @@ export enum Icons {
 }
 
 export enum NewIcons {
-  MENU_ABOUT = 'menu-about',
-  MENU_ACCOUNTS = 'menu-accounts',
-  MENU_ADVANCED_SETTINGS = 'menu-advanced-settings',
-  MENU_GOVERNANCE = 'menu-governance',
-  MENU_LOGOUT = 'menu-logout',
-  MENU_PLUGINS = 'menu-plugins',
-  MENU_SUPPORT = 'menu-support',
-  MENU_USER_PREFERENCES = 'menu-user-preferences',
+  MENU_ABOUT = 'menu/about',
+
+  MENU_ACCOUNTS = 'menu/accounts',
+  MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
+  MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
+  MENU_ACCOUNTS_EXPORT = 'menu/accounts/export',
+  MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
+  MENU_ACCOUNTS_MANAGE_AUTHORITIES = 'menu/accounts/manage-authorities',
+
+  MENU_ADVANCED_SETTINGS = 'menu/advanced-settings',
+  MENU_ADVANCED_SETTINGS_ANALYTICS = 'menu/advanced-settings/analytics',
+  MENU_ADVANCED_SETTINGS_AUTO_LOCK = 'menu/advanced-settings/auto-lock',
+  MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD = 'menu/advanced-settings/change-password',
+  MENU_ADVANCED_SETTINGS_CLEAR_ALL = 'menu/advanced-settings/clear-all',
+  MENU_ADVANCED_SETTINGS_IMPORT_EXPORT = 'menu/advanced-settings/import-export-settings',
+  MENU_ADVANCED_SETTINGS_KEYCHAINIFY = 'menu/advanced-settings/keychainify',
+  MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE = 'menu/advanced-settings/link-ledger-device',
+  MENU_ADVANCED_SETTINGS_RPC_NODE = 'menu/advanced-settings/rpc-nodes',
+
+  MENU_GOVERNANCE = 'menu/governance',
+  MENU_LOGOUT = 'menu/logout',
+  MENU_PLUGINS = 'menu/plugins',
+  MENU_SUPPORT = 'menu/support',
+
+  MENU_USER_PREFERENCES = 'menu/user-preferences',
+  MENU_USER_PREFERENCES_OPERATIONS = 'menu/user-preferences/operations',
+  MENU_USER_PREFERENCES_AUTOMATED_TASKS = 'menu/user-preferences/automated-tasks',
+  MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
+  MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
 
   //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',

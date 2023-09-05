@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: row;
     row-gap: 8px;
-    color: $dark-blue;
+    color: var(--main-font-color);
     .operation-icon {
       border-radius: 20px 0px 20px 20px;
       background: $light-red;
@@ -26,7 +26,7 @@
       flex: 1;
       .detail {
         @include poppins400(12px);
-        color: $dark-blue;
+        color: var(--main-font-color);
         flex: 1;
       }
       .date {
@@ -46,7 +46,7 @@
       transition: max-height 0.25s ease-in;
       margin-top: 8px;
       @include poppins400(12px);
-      color: $dark-blue;
+      color: var(--main-font-color);
       padding: 0px 12px 12px 12px;
     }
   }

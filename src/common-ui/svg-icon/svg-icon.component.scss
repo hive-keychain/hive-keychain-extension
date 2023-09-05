@@ -3,3 +3,13 @@
     cursor: pointer;
   }
 }
+@media (resolution >= 2dppx) {
+  .svg-icon {
+    --menu-icon-border-width: #{$border-width};
+  }
+}
+@media (resolution < 2dppx) {
+  .svg-icon {
+    --menu-icon-border-width: #{$border-width-low-resolution};
+  }
+}

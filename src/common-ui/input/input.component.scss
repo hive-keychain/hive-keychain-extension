@@ -4,7 +4,7 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
   .label {
     display: flex;
     column-gap: 8px;
-    color: $dark-blue;
+    color: var(--main-font-color);
     @include poppins600(14px);
     .hint {
       @include poppins300($input-font-size - 2px);
@@ -21,7 +21,7 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
     background: white;
     padding: 16px;
     box-sizing: border-box;
-    color: $dark-blue;
+    color: var(--main-font-color);
     border-style: unset;
     border-radius: 66px;
     border: 1px solid $lighter-grey-border;
@@ -35,7 +35,7 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
         border-style: unset;
         border: none;
         @include poppins500($input-font-size);
-        color: $dark-blue;
+        color: var(--main-font-color);
         &::placeholder {
           color: $placeholderColor;
           @include poppins400(15px);

@@ -5,7 +5,7 @@
   padding: 0px 24px;
 
   .caption {
-    color: $dark-blue;
+    color: var(--main-font-color);
     @include caption($dark-blue);
   }
 

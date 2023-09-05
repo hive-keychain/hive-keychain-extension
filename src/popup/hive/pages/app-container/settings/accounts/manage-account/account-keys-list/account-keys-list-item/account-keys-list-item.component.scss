@@ -17,7 +17,7 @@
       column-gap: 8px;
       .key-name {
         @include poppins600(14px);
-        color: $dark-blue;
+        color: var(--main-font-color);
       }
     }
 
@@ -34,7 +34,7 @@
     .key-field {
       @include poppins400(12px);
       cursor: pointer;
-      color: $dark-blue;
+      color: var(--main-font-color);
       &.wrong-key {
         color: $red;
       }

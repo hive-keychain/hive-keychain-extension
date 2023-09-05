@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Josefin+Sans:wght@500&family=Poppins:wght@300;400;500;600;700&family=Inter&display=swap');
 
+// Colors
 $dark-red: #a5112c;
 $red: #e31337;
 $light-red: #fbe8ec;
@@ -21,22 +22,8 @@ $extra-light-grey: #eaeaea;
 $light-grey-border: #e3e1e1;
 $lighter-grey-border: #e9edf3;
 $dark-grey-border: #b4c0cf;
-
-.theme {
-  &.light {
-    --menu-icon-color: #{$red};
-    --menu-hovered-icon-color: white;
-    --menu-icon-border-color: #{$light-grey-border};
-    --menu-hovered-icon-border-color: white;
-  }
-
-  &.dark {
-    --menu-icon-color: #{$red};
-    --menu-hovered-icon-color: blue;
-    --menu-icon-border-color: #{$light-grey-border};
-    --menu-hovered-icon-border-color: blue;
-  }
-}
+$border-width: 0.847;
+$border-width-low-resolution: 1.4;
 
 // OLD STYLE REMOVE WHEN DONE
 //colors

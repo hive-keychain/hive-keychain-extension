@@ -16,7 +16,7 @@
     .introduction {
       text-align: center;
       opacity: 0.7;
-      color: $dark-blue;
+      color: var(--main-font-color);
       &.big {
         @include poppins400(22px);
       }

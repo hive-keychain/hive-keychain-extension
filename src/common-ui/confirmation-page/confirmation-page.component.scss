@@ -8,7 +8,7 @@
     .introduction {
       padding: 0px 32px;
       @include poppins400(12px);
-      color: $dark-blue;
+      color: var(--main-font-color);
     }
 
     .warning-message {
@@ -23,7 +23,7 @@
       max-height: 324px;
       overflow: auto;
       padding: 16px 24px;
-      color: $dark-blue;
+      color: var(--main-font-color);
       background: white;
       border-radius: 20px;
       border: 1px solid $light-grey-border;

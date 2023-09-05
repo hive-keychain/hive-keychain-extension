@@ -9,6 +9,6 @@
   }
   .value {
     @include poppins700(40px);
-    color: $dark-blue;
+    color: var(--main-font-color);
   }
 }

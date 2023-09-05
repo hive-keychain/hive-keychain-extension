@@ -6,32 +6,32 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [
     {
       label: 'popup_html_rpc_node',
-      icon: NewIcons.RPC_NODES,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_RPC_NODE,
       nextScreen: Screen.SETTINGS_RPC_NODES,
     },
     {
       label: 'popup_html_autolock',
-      icon: NewIcons.AUTOLOCK,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_AUTO_LOCK,
       nextScreen: Screen.SETTINGS_AUTO_LOCK,
     },
     {
       label: 'popup_html_change_password',
-      icon: NewIcons.CHANGE_PASSWORD,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
     },
     {
       label: 'popup_html_keychainify',
-      icon: NewIcons.KEYCHAINIFY,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
       nextScreen: Screen.SETTINGS_KEYCHAINIFY,
     },
     {
       label: 'popup_html_analytics',
-      icon: NewIcons.ANALYTICS,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
       nextScreen: Screen.SETTINGS_ANALYTICS,
     },
     {
       label: 'ledger_link_ledger_device',
-      icon: NewIcons.LINK_LEDGER,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
       action: async () => {
         const extensionId = (await chrome.management.getSelf()).id;
         chrome.tabs.create({
@@ -41,12 +41,12 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
     },
     {
       label: 'popup_html_import_export_settings',
-      icon: NewIcons.IMPORT_EXPORT_SETTINGS,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_IMPORT_EXPORT,
       nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
     },
     {
       label: 'popup_html_clear',
-      icon: NewIcons.CLEAR_ALL,
+      icon: NewIcons.MENU_ADVANCED_SETTINGS_CLEAR_ALL,
       nextScreen: Screen.SETTINGS_CLEAR_ALL_DATA,
     },
   ];

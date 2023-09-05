@@ -29,7 +29,7 @@
         flex: 1;
         .username {
           @include poppins600(15px);
-          color: $dark-blue;
+          color: var(--main-font-color);
         }
 
         .label {
@@ -85,7 +85,7 @@
         cursor: pointer;
         .label {
           @include josefin500(10px);
-          color: $dark-blue;
+          color: var(--main-font-color);
         }
       }
     }

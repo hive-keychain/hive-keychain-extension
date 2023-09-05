@@ -4,7 +4,7 @@
   row-gap: 32px;
   padding: 0px 24px;
   .caption {
-    color: $dark-blue;
+    color: var(--main-font-color);
     @include poppins400(12px);
   }
 

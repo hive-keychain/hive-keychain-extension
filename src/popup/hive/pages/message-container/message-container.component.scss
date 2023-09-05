@@ -90,7 +90,7 @@
     .message {
       text-align: center;
       @include dmSans400(15px);
-      color: $dark-blue;
+      color: var(--main-font-color);
     }
   }
 }

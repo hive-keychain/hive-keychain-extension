@@ -7,22 +7,22 @@ import Logger from 'src/utils/logger.utils';
 const UserPreferencesMenuItems: MenuItem[] = [
   {
     label: 'popup_html_operations',
-    icon: NewIcons.AUTHORIZED_OPERATIONS,
+    icon: NewIcons.MENU_USER_PREFERENCES_OPERATIONS,
     nextScreen: Screen.SETTINGS_AUTHORIZED_OPERATIONS,
   },
   {
     label: 'popup_html_automated_tasks',
-    icon: NewIcons.AUTOMATED_TASKS,
+    icon: NewIcons.MENU_USER_PREFERENCES_AUTOMATED_TASKS,
     nextScreen: Screen.SETTINGS_AUTOMATED_TASKS,
   },
   {
     label: 'popup_html_favorite_accounts',
-    icon: NewIcons.FAVORITE_ACCOUNTS,
+    icon: NewIcons.MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS,
     nextScreen: Screen.SETTINGS_FAVORITE_ACCOUNTS,
   },
   {
     label: 'popup_html_theme',
-    icon: NewIcons.THEME,
+    icon: NewIcons.MENU_USER_PREFERENCES_THEME,
     action: () => {
       Logger.log('should switch theme');
     },

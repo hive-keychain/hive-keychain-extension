@@ -35,13 +35,13 @@
 
       .description {
         @include josefin500(14px);
-        color: $dark-blue;
+        color: var(--main-font-color);
         opacity: 0.8;
       }
 
       .title {
         @include josefin700(20px);
-        color: $dark-blue;
+        color: var(--main-font-color);
       }
 
       .exchange-list {

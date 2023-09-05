@@ -80,7 +80,7 @@
 
   .token-info-panel {
     @include poppins500(12px);
-    color: $dark-blue;
+    color: var(--main-font-color);
     opacity: 0.7;
     width: 100%;
     display: flex;

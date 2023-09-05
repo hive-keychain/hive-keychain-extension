@@ -16,7 +16,7 @@
     .introduction {
       text-align: center;
       opacity: 0.7;
-      color: $dark-blue;
+      color: var(--main-font-color);
       &.big {
         @include poppins400(22px);
       }
@@ -48,7 +48,7 @@
     align-items: center;
     .reset-password-link {
       @include poppins600(12px);
-      color: $dark-blue;
+      color: var(--main-font-color);
       cursor: pointer;
       text-decoration: underline;
       &:hover {

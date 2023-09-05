@@ -1,0 +1,18 @@
+$dark: (
+  --main-font-color: white,
+  --background-color: $dark-background,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $light-grey-border,
+);
+$light: (
+  --main-font-color: $dark-blue,
+  --background-color: $light-background,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $light-grey-border,
+);
+
+@mixin spread-map($map: ()) {
+  @each $key, $value in $map {
+    #{$key}: $value;
+  }
+}

@@ -3,10 +3,11 @@
 
 .theme {
   &.light {
-    background-color: $light-background;
+    @include spread-map($light);
   }
   &.dark {
-    background-color: $dark-background;
+    @include spread-map($dark);
   }
+  background-color: var(--background-color);
   @include background-bottom;
 }
