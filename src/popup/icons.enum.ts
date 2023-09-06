@@ -40,6 +40,7 @@ export enum Icons {
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
   HIVE = 'hive.svg',
+  HIVE_WHITE = 'hive-brands.svg',
   HBD = 'hbd_green.svg',
   INBOX = 'inbox',
   INFO = 'info',

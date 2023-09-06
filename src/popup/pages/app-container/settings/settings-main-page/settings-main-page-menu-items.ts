@@ -20,7 +20,7 @@ const SettingsMenuItems: MenuItem[] = [
   },
   {
     label: 'popup_html_governance',
-    icon: Icons.HIVE,
+    icon: Icons.HIVE_WHITE,
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,
   },
