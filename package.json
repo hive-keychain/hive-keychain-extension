@@ -45,14 +45,10 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "^3.5.5",
-    "@hiveio/dhive": "1.2.3",
+    "@engrave/ledger-app-hive": "3.5.6",
     "@hiveio/hive-js": "2.0.4",
-    "@ledgerhq/hw-transport": "6.27.10",
-    "@ledgerhq/hw-transport-webusb": "6.27.10",
-    "@types/chrome": "^0.0.243",
-    "@types/crypto-js": "4.1.1",
-    "@types/yargs": "17.0.11",
+    "@ledgerhq/hw-transport": "6.28.8",
+    "@ledgerhq/hw-transport-webusb": "^6.27.19",
     "axios": "0.25.0",
     "crypto-js": "4.1.1",
     "flatlist-react": "1.5.0",
@@ -90,10 +86,13 @@
     "@babel/eslint-parser": "7.18.9",
     "@babel/preset-env": "7.18.10",
     "@babel/preset-react": "7.18.6",
+    "@hiveio/dhive": "1.2.3",
     "@hot-loader/react-dom": "17.0.2",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "14.4.3",
+    "@types/chrome": "^0.0.243",
+    "@types/crypto-js": "4.1.1",
     "@types/gtag.js": "0.0.12",
     "@types/jest": "27.5.2",
     "@types/lodash.debounce": "^4.0.7",
@@ -105,6 +104,7 @@
     "@types/redux-mock-store": "1.0.3",
     "@types/remote-redux-devtools": "0.5.5",
     "@types/sinon-chrome": "2.2.11",
+    "@types/yargs": "17.0.11",
     "@typescript-eslint/eslint-plugin": "5.33.0",
     "@typescript-eslint/parser": "5.33.0",
     "babel-loader": "8.2.5",
@@ -139,9 +139,6 @@
   "overrides": {
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
-    },
-    "@engrave/ledger-app-hive": {
-      "@hiveio/dhive": "1.2.3"
     }
   },
   "browser": {
