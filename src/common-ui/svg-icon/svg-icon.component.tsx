@@ -28,17 +28,15 @@ export const SVGIcon = ({
   };
 
   return (
-    <>
-      <ReactSVG
-        data-testid={dataTestId}
-        onMouseOver={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={($event) => handleClick($event)}
-        className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
-          (hoverable && hovered) || forceHover ? 'hovered' : ''
-        }`}
-        src={`/assets/images/${icon}.svg`}
-      />
-    </>
+    <ReactSVG
+      data-testid={dataTestId}
+      onMouseOver={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={($event) => handleClick($event)}
+      className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
+        (hoverable && hovered) || forceHover ? 'hovered' : ''
+      }`}
+      src={`/assets/images/${icon}.svg`}
+    />
   );
 };

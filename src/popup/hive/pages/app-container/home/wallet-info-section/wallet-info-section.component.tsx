@@ -133,8 +133,7 @@ const WalletInfoSection = ({
       <div className="wallet-info-section">
         <WalletInfoSectionItemComponent
           tokenSymbol="HIVE"
-          icon={NewIcons.HIVE}
-          iconColor="red"
+          icon={NewIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
           mainValueLabel={currencyLabels.hive}
           subValue={activeAccount.account.savings_balance}
@@ -143,8 +142,7 @@ const WalletInfoSection = ({
 
         <WalletInfoSectionItemComponent
           tokenSymbol="HBD"
-          icon={NewIcons.HBD}
-          iconColor="green"
+          icon={NewIcons.WALLET_HBD_LOGO}
           mainValue={activeAccount.account.hbd_balance}
           mainValueLabel={currencyLabels.hbd}
           subValue={activeAccount.account.savings_hbd_balance}
@@ -152,8 +150,7 @@ const WalletInfoSection = ({
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HP"
-          icon={NewIcons.HIVE}
-          iconColor="red"
+          icon={NewIcons.WALLET_HP_LOGO}
           mainValue={FormatUtils.toHP(
             activeAccount.account.vesting_shares as string,
             globalProperties.globals,
@@ -180,6 +177,7 @@ const WalletInfoSection = ({
                   tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
                   tokenMarket={market}
                   icon={NewIcons.HIVE_ENGINE}
+                  addBackground
                   mainValue={token.balance}
                   mainValueLabel={token.symbol}
                 />

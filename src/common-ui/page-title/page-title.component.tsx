@@ -20,6 +20,8 @@ export interface PageTitleProps {
     icon: NewIcons;
     callback: () => void;
   };
+  onCloseAdditional?: () => void;
+  onBackAdditional?: () => void;
 }
 
 const PageTitle = ({
@@ -29,17 +31,24 @@ const PageTitle = ({
   isBackButtonEnabled,
   isCloseButtonDisabled,
   rightAction,
+  onBackAdditional,
+  onCloseAdditional,
   goBack,
   navigateTo,
   canGoBack,
   resetNav,
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
+    if (onBackAdditional) onBackAdditional();
     if (isBackButtonEnabled) {
       goBack();
     }
   };
   const handleCloseButtonClick = (): void => {
+    if (onCloseAdditional) {
+      onCloseAdditional();
+    }
+
     resetNav();
     navigateTo(Screen.HOME_PAGE, true);
   };

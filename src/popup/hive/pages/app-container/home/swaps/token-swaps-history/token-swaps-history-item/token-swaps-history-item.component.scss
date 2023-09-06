@@ -1,0 +1,117 @@
+.history-item {
+  display: flex;
+  flex-direction: column;
+  min-height: 50px;
+  padding: 16px 16px;
+  row-gap: 12px;
+  &:nth-child(even) {
+    background-color: $red;
+  }
+  .expand-panel {
+    &.hidden {
+      cursor: default !important;
+      visibility: hidden;
+    }
+  }
+  .history-item-information {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    column-gap: 8px;
+    width: 100%;
+    .swap-details {
+      flex: 1;
+      .approximate {
+        vertical-align: -30%;
+      }
+      .from-to {
+        font-size: 16px;
+        display: inline-flex;
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+    .chip {
+      border: 1px solid white;
+      padding: 8px;
+      border-radius: 8px;
+      min-width: 60px;
+      text-align: center;
+      font-size: 14px;
+
+      &.COMPLETED {
+        background-color: rgb(1, 106, 1);
+      }
+      &.REFUNDED_CANNOT_COMPLETE,
+      &.FUNDS_RETURNED,
+      &.REFUNDED_SLIPPAGE,
+      &.CANCELED_DUE_TO_ERROR {
+        background-color: $red-dark;
+      }
+
+      &.PENDING {
+        background-color: transparent;
+        color: white;
+      }
+
+      &.STARTED {
+        background-color: rgb(255, 255, 255);
+        color: black;
+      }
+    }
+  }
+  .fee-paid {
+    font-size: 15px;
+    margin-left: 32px;
+  }
+  .history {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    .id {
+      font-size: 14px;
+      cursor: pointer;
+      font-style: italic;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      height: 30px;
+      .step-number {
+        font-size: 16px;
+        // border: 2px solid;
+        border-radius: 50px;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 2px;
+        box-sizing: border-box;
+        font-weight: bold;
+      }
+      .details {
+        .description {
+          font-size: 15px;
+        }
+        .go-to-tx {
+          cursor: pointer;
+        }
+      }
+      .step-status {
+        flex: 1;
+        text-align: right;
+        // &.success {
+        //   color: $success;
+        // }
+        // &.pending {
+        //   color: rgb(207, 142, 2);
+        // }
+        // &.failed {
+        //   color: $red-dark;
+        // }
+      }
+    }
+  }
+}

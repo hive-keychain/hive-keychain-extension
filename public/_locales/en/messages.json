@@ -3046,7 +3046,7 @@
     "description": "Error while confirming transaction on hive engine"
   },
   "hive_engine_overdraw_balance_error": {
-    "message": "Your $1 balance is insufficiant",
+    "message": "Your $1 balance is insufficient",
     "description": "Error if trying to send too much of a token"
   },
   "hive_engine_not_existing_token_error": {
@@ -3274,6 +3274,26 @@
     "message": "Confirm",
     "description": "Discover key on Ledger"
   },
+  "popup_html_token_swaps": {
+    "message": "Swaps",
+    "description": "Token swaps"
+  },
+  "html_popup_swaps_slipperage": {
+    "message": "Slippage",
+    "description": "Token swaps : Slippage"
+  },
+  "html_popup_swaps_process_swap": {
+    "message": "Swap",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_final_price": {
+    "message": "≈ $1 $2",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_slippage_definition": {
+    "message": "At each step of the swap, we check if the final result is superior to the estimation minus the slippage. If not, the swap is canceled and the funds are returned. Note that some swaps require several operations and your funds can be returned in a different token.",
+    "description": "Token swaps : process"
+  },
   "local": {
     "message": "Local",
     "description": "generic word"
@@ -3330,6 +3350,50 @@
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
   },
+  "html_popup_swap_token_confirm_title": {
+    "message": "Confirm token swap",
+    "description": "Confirm token swap"
+  },
+  "html_popup_swap_token_confirm_message": {
+    "message": "You are about to initiate a token swap using Keychain. You can track its status from the swap history screen.",
+    "description": "confirm token swap message"
+  },
+  "html_popup_swap_swap_id": {
+    "message": "Swap ID",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_from": {
+    "message": "Swapping from",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_to": {
+    "message": "Swapping to",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_amount": {
+    "message": "Swap Estimation",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_expected_amount": {
+    "message": "Expected amount",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_slipperage": {
+    "message": "Slippage",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_to_swap_account": {
+    "message": "Sending $1 to @$2",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_successful": {
+    "message": "Your swap is on the way! Thank you for using our service!",
+    "description": "token swap"
+  },
+  "html_popup_swap_error_sending_token": {
+    "message": "There was an error while sending tokens to @$1.",
+    "description": "token swap general error message"
+  },
   "local_accounts": {
     "message": "Local accounts",
     "description": "General word"
@@ -3342,6 +3406,86 @@
     "message": "Exchanges",
     "description": "General word"
   },
+  "html_popup_token_swaps_history": {
+    "message": "Swap History",
+    "description": "token swap history"
+  },
+  "swap_refresh_countdown": {
+    "message": "Refreshing in $1s",
+    "description": "swap token auto refresh"
+  },
+  "swap_status_started": {
+    "message": "In progress",
+    "description": "swap status"
+  },
+  "swap_status_completed": {
+    "message": "Completed",
+    "description": "swap status"
+  },
+  "swap_status_pending": {
+    "message": "Pending",
+    "description": "swap status"
+  },
+  "swap_status_canceled_due_to_error": {
+    "message": "Canceled",
+    "description": "swap status"
+  },
+  "swap_status_returned": {
+    "message": "Returned",
+    "description": "swap status"
+  },
+  "swap_status_refunded": {
+    "message": "Refunded",
+    "description": "swap status"
+  },
+  "swap_copied_to_clipboard": {
+    "message": "Copied to clipboard!",
+    "description": "on preferences when clicking on swap id"
+  },
+  "swap_advanced_parameters": {
+    "message": "Advanced parameters",
+    "description": "Swap advanced parameters"
+  },
+  "swap_no_history": {
+    "message": "Your swap history is empty",
+    "description": "History swap empty"
+  },
+  "swap_under_maintenance": {
+    "message": "Keychain Swap is under maintenance, please try again later",
+    "description": "Keychain swap under maintenance"
+  },
+  "swap_start_end_token_should_be_different": {
+    "message": "Please choose two different tokens",
+    "description": "Start and end tokens should be differents"
+  },
+  "swap_not_enough_volume_error": {
+    "message": "There is not enough volume on this token pair to perform this swap",
+    "description": "Operation impossible because not enough volume"
+  },
+  "swap_min_slippage_error": {
+    "message": "The slippage should be at least $1%",
+    "description": "Minimum slippage error"
+  },
+  "swap_caption": {
+    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate.",
+    "description": "Caption"
+  },
+  "swap_no_token": {
+    "message": "You don't have any HIVE, HBD or Hive-Engine token to swap at the moment.",
+    "description": "Caption"
+  },
+  "swap_fee": {
+    "message": "Fee",
+    "description": "Swap Fee"
+  },
+  "swap_last_update": {
+    "message": "Last update: $1",
+    "description": "swap last update"
+  },
+  "swap_see_transaction": {
+    "message": "See transaction",
+    "description": "swap see transaction"
+  },
   "hive_tx_network_error": {
     "message": "Network Timeout Error: Please check your connection!",
     "description": "General word"
@@ -3349,6 +3493,38 @@
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
     "description": "Need more RC"
+  },
+  "swap_no_estimate_error": {
+    "message": "You need an estimate to be able to process",
+    "description": "No estimate error"
+  },
+  "swap_server_unavailable": {
+    "message": "The swap server is currently unavailable, please try again later",
+    "description": "Swap server not responding error"
+  },
+  "service_unavailable_message": {
+    "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
+    "description": "General service unavailable page message"
+  },
+  "swap_autorefresh": {
+    "message": "Refreshing in $1s",
+    "description": "Swap autorefresh"
+  },
+  "swap_transfer_not_sent": {
+    "message": "Transfer not sent",
+    "description": "When transfer not sent, swap status"
+  },
+  "swap_cannot_switch_tokens": {
+    "message": "Cannot switch tokens because you don't have any $1",
+    "description": "When trying to switch tokens (invert start and end)"
+  },
+  "swap_layer_two_delayed": {
+    "message": "Hive Engine is currently behind blocks. The swap might take longer than usual and has a bigger chance of aborting due to slippage.",
+    "description": "When layer two is delayed"
+  },
+  "swap_min_hive_value_error": {
+    "message": "Minimum value should be equivalent to 1 HIVE (currently $1 HIVE)",
+    "description": "When equilavent hive value is too small"
   },
   "tx_missing_active_auth": {
     "message": "Active key is incorrect. Please update your key and try again.",
@@ -3358,9 +3534,9 @@
     "message": "Posting key is incorrect. Please update your key and try again.",
     "description": "Error message from blockchain: Posting key incorrect"
   },
-  "chains": {
-    "message": "Chains",
-    "description": "Chains"
+  "ecosystem": {
+    "message": "Ecosystem",
+    "description": "Ecosystem"
   },
   "popup_html_theme": {
     "message": "Theme",

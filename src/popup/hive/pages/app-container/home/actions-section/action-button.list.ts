@@ -4,29 +4,24 @@ import { Screen } from 'src/reference-data/screen.enum';
 
 export const ActionButtonList: ActionButton[] = [
   {
-    label: 'chains',
+    label: 'ecosystem',
     nextScreen: Screen.CHAINS,
-    icon: NewIcons.CHAINS,
+    icon: NewIcons.BOTTOM_BAR_ECOSYSTEM,
   },
   {
     label: 'popup_html_send_transfer',
     nextScreen: Screen.TRANSFER_FUND_PAGE,
     nextScreenParams: { selectedCurrency: 'hive' },
-    icon: NewIcons.SEND_HOMEPAGE,
+    icon: NewIcons.BOTTOM_BAR_SEND,
   },
   {
     label: 'popup_html_buy',
-    icon: NewIcons.BUY,
+    icon: NewIcons.BOTTOM_BAR_BUY,
     nextScreen: Screen.BUY_COINS_PAGE,
   },
   {
-    label: 'popup_html_history',
-    icon: NewIcons.HISTORY_HOMEPAGE,
+    label: 'popup_html_token_swaps',
+    icon: NewIcons.BOTTOM_BAR_SWAPS,
     nextScreen: Screen.WALLET_HISTORY_PAGE,
-  },
-  {
-    label: 'popup_html_tokens',
-    icon: NewIcons.HIVE_ENGINE,
-    nextScreen: Screen.TOKENS_PAGE,
   },
 ];

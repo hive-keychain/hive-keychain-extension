@@ -131,6 +131,9 @@
 .Toastify__toast--success {
   background: $message-container-success !important;
 }
+.Toastify__toast--warning {
+  background: $message-container-warning !important;
+}
 
 .material-icons,
 .material-icons-outlined {

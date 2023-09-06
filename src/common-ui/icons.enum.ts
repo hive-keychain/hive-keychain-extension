@@ -75,6 +75,11 @@ export enum Icons {
 }
 
 export enum NewIcons {
+  BOTTOM_BAR_BUY = 'bottom-bar/buy',
+  BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
+  BOTTOM_BAR_SEND = 'bottom-bar/send',
+  BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
+
   MENU_BUTTON = 'top-bar/menu-button',
   MENU_ABOUT = 'menu/about',
 
@@ -110,6 +115,10 @@ export enum NewIcons {
   TOP_BAR_CLAIM_REWARDS_BTN = 'top-bar/claim-rewards-button',
   TOP_BAR_CLOSE_BTN = 'top-bar/close-button',
   TOP_BAR_KEYCHAIN_LOGO = 'top-bar/keychain-logo',
+
+  WALLET_HBD_LOGO = 'wallet/hbd-logo',
+  WALLET_HIVE_LOGO = 'wallet/hive-logo',
+  WALLET_HP_LOGO = 'wallet/hp-logo',
 
   //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',

@@ -6,6 +6,8 @@
   .remaining-votes {
     font-size: 20px;
   }
+
+  @include tab-style(3);
   .react-tabs {
     flex: 1;
     display: flex;

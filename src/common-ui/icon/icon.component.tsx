@@ -12,6 +12,8 @@ interface IconProps {
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
   skipTooltipTranslation?: boolean;
+  ariaLabel?: string;
+  rotate?: boolean;
   dataTestId?: string;
   containerAdditionalClassname?: string;
 }

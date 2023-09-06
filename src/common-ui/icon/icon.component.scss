@@ -3,4 +3,8 @@
   &.clickable {
     cursor: pointer;
   }
+
+  &.rotate {
+    @include rotate-logo-mixin;
+  }
 }

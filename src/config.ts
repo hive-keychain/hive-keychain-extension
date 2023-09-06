@@ -35,6 +35,14 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
   },
+  swaps: {
+    autoRefreshPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),
+    autoRefreshHistoryPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 10),
+    baseURL:
+      process.env.KEYCHAIN_SWAP_API_DEV === 'true'
+        ? 'http://localhost:5050'
+        : 'https://swap.hive-keychain.com',
+  },
   witnesses: {
     feedWarningLimitInHours: 5,
   },

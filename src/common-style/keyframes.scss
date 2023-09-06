@@ -80,3 +80,12 @@
     animation-timing-function: ease-in-out;
   }
 }
+
+@keyframes rotate-stop {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

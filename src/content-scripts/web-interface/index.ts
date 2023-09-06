@@ -74,6 +74,6 @@ chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
 const validateRequest = (req: KeychainRequest) => {
   if (!req) return { value: req, error: 'Missing request.' };
   if (!req.type) return { value: req, error: 'Missing request type.' };
-
+  //@ts-ignore
   return schemas[req.type].append(commonRequestParams).validate(req);
 };

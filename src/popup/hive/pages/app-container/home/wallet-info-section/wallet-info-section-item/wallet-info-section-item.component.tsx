@@ -23,7 +23,7 @@ interface WalletSectionInfoItemProps {
   tokenBalance?: TokenBalance;
   tokenMarket?: TokenMarket[];
   icon: NewIcons;
-  iconColor?: 'red' | 'green';
+  addBackground?: boolean;
   mainValue: string | Asset | number;
   mainValueLabel: string;
   subValue?: string | Asset | number;
@@ -36,7 +36,7 @@ const walletInfoSectionItem = ({
   tokenBalance,
   tokenMarket,
   icon,
-  iconColor,
+  addBackground,
   mainValue,
   mainValueLabel,
   subValue,
@@ -49,6 +49,7 @@ const walletInfoSectionItem = ({
   const reff = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log(addBackground);
     setActionButtons(
       WalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
     );
@@ -116,11 +117,14 @@ const walletInfoSectionItem = ({
       }}>
       <div className="information-panel">
         {!tokenInfo && (
-          <SVGIcon icon={icon} className={`currency-icon ${iconColor ?? ''}`} />
+          <SVGIcon
+            icon={icon}
+            className={`currency-icon ${addBackground ? 'add-background' : ''}`}
+          />
         )}
         {tokenInfo && (
           <img
-            className="currency-icon"
+            className={`currency-icon ${addBackground ? 'add-background' : ''}`}
             src={tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null;

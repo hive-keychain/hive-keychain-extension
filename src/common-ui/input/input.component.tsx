@@ -34,7 +34,7 @@ export interface InputProps {
   rightActionIcon?: NewIcons;
 }
 
-const InputComponent = (props: InputProps) => {
+const InputComponent = React.forwardRef((props: InputProps, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -154,6 +154,6 @@ const InputComponent = (props: InputProps) => {
       )}
     </div>
   );
-};
+});
 
 export default InputComponent;

@@ -20,17 +20,14 @@
     width: 100%;
     display: flex;
     align-items: center;
-    column-gap: 8px;
+    column-gap: 16px;
     .currency-icon {
-      background: $light-blue;
-      padding: 6px;
-      border-radius: 50%;
-      @include icon-size(24px);
-      &.green {
-        background: $light-green;
-      }
-      &.red {
-        background: $light-red;
+      @include icon-size(36px);
+      &.add-background {
+        background: $light-blue;
+        padding: 6px;
+        border-radius: 50%;
+        @include icon-size(24px);
       }
     }
 

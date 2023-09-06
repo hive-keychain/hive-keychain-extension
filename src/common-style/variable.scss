@@ -18,6 +18,8 @@ $white-shadow: rgba(255, 255, 255, 0.21);
 $lighter-grey: #818a9f;
 $extra-light-grey: #eaeaea;
 
+$success: rgb(1, 106, 1);
+
 //border
 $light-grey-border: #e3e1e1;
 $lighter-grey-border: #e9edf3;
@@ -37,15 +39,16 @@ $grey: #7e8c9a;
 $white-transparent: #ffffff6e;
 $grey-dark: #6c757e;
 $message-container-success: $black;
+$message-container-warning: orange;
 $message-container-info: black;
 $message-container-error: $red-dark;
 
 //sizes
-$input-font-size: 15px;
+$input-font-size: 16px;
 $input-height: 36px;
 $input-logo-size: 20px;
 $input-hint-font-size: 15px;
-$caption-font-size: 12px;
+$caption-font-size: 16px;
 
 .divider {
   flex: 1;

@@ -1,3 +1,5 @@
+import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
+import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -25,7 +27,6 @@ import { TokensFilterComponent } from 'src/popup/hive/pages/app-container/home/t
 import { TokensHistoryComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
 import { TokensTransferComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
-import { TokensComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from 'src/popup/hive/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
 import { AboutPageComponent } from 'src/popup/hive/pages/app-container/settings/about/about.component';
@@ -92,8 +93,8 @@ const AppRouter = ({
       case Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingRcPageComponent />;
       //Tokens
-      case Screen.TOKENS_PAGE:
-        return <TokensComponent />;
+      // case Screen.TOKENS_PAGE:
+      //   return <TokensComponent />;
       case Screen.TOKENS_HISTORY:
         return <TokensHistoryComponent />;
       case Screen.TOKENS_SETTINGS:
@@ -106,6 +107,10 @@ const AppRouter = ({
         return <TokenIncomingOutgoingPageComponent />;
       case Screen.TOKENS_FILTER:
         return <TokensFilterComponent />;
+      case Screen.TOKEN_SWAP_PAGE:
+        return <TokenSwapsComponent />;
+      case Screen.TOKENS_SWAP_HISTORY:
+        return <TokenSwapsHistoryComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
