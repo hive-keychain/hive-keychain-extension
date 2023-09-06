@@ -37,7 +37,7 @@ export const CustomTooltip = ({
   const tooltip = useRef<HTMLDivElement>(null);
 
   const [isOpen, setOpen] = useState(false);
-  let timeout: NodeJS.Timeout;
+  const [timeout, setTimeoutId] = useState<NodeJS.Timeout>();
   let [coordinates, setCoordinates] = useState<TooltipCoordinates>();
 
   useEffect(() => {
@@ -95,12 +95,13 @@ export const CustomTooltip = ({
       }
     }
 
-    timeout = setTimeout(
+    let timeoutId = setTimeout(
       () => {
         setOpen(true);
       },
       delayShow ? delayShow : 250,
     );
+    setTimeoutId(timeoutId);
   };
 
   const hide = () => {
@@ -137,43 +138,6 @@ export const CustomTooltip = ({
               : chrome.i18n.getMessage(message, messageParams),
           }}></div>
       )}
-
-      {/* <div
-        style={{
-          width: 4,
-          height: 4,
-          background: 'blue',
-          position: 'fixed',
-          top: left.y,
-          left: left.x,
-        }}></div>
-      <div
-        style={{
-          width: 4,
-          height: 4,
-          background: 'blue',
-          position: 'fixed',
-          top: right.y,
-          left: right.x,
-        }}></div>
-      <div
-        style={{
-          width: 4,
-          height: 4,
-          background: 'blue',
-          position: 'fixed',
-          top: top.y,
-          left: top.x,
-        }}></div>
-      <div
-        style={{
-          width: 4,
-          height: 4,
-          background: 'blue',
-          position: 'fixed',
-          top: bottom.y,
-          left: bottom.x,
-        }}></div> */}
     </div>
   );
 };
