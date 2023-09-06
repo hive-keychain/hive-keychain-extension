@@ -37,7 +37,7 @@ const SettingsMainPage = ({}: PropsFromRedux) => {
         />
         <img
           className="icon"
-          src={`/assets/images/${Icons.HIVE}`}
+          src={`/assets/images/${Icons.HIVE_WHITE}`}
           onClick={goToPeakD}
         />
         <img
