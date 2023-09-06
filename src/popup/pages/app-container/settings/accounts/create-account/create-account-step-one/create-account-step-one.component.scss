@@ -23,18 +23,20 @@
   }
 
   .price-panel {
-    margin: auto;
     display: flex;
+    margin: auto;
     flex-direction: column;
     border: 1px solid white;
     border-radius: 8px;
-    min-width: 70px;
     font-size: 16px;
     text-align: center;
     row-gap: 4px;
-    padding: 4px 8px;
+    padding: 8px 8px;
     margin-bottom: 30px;
-    min-height: 42px;
+    height: 60px;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
     .label {
       text-transform: uppercase;
       font-weight: bold;

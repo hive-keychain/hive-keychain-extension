@@ -16,6 +16,7 @@ import { RewardsUtils } from 'src/utils/rewards.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 
 const start = async () => {
+  if (!!process.env.STOP_AUTOLOCK) return;
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
   chrome.alarms.create({ periodInMinutes: Config.claims.FREQUENCY });
   await alarmHandler();
@@ -24,13 +25,14 @@ const start = async () => {
 const alarmHandler = async () => {
   const localStorage = await LocalStorageUtils.getMultipleValueFromLocalStorage(
     [
-      LocalStorageKeyEnum.__MK,
       LocalStorageKeyEnum.CLAIM_ACCOUNTS,
       LocalStorageKeyEnum.CLAIM_REWARDS,
       LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-  const mk = localStorage[LocalStorageKeyEnum.__MK];
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
+    LocalStorageKeyEnum.__MK,
+  );
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
   const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];

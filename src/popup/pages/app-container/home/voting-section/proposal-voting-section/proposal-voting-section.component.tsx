@@ -6,11 +6,12 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import Config from 'src/config';
+import FormatUtils from 'src/utils/format.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
 
@@ -35,7 +36,15 @@ const ProposalVotingSection = ({
     if (
       await ProposalUtils.isRequestingProposalVotes(globalProperties.globals!)
     ) {
-      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount.name!));
+      // Consider as already voted if it is, or if the account has a proxy or few HP
+      const hasVoted =
+        (await ProposalUtils.hasVotedForProposal(activeAccount.name!)) ||
+        !!activeAccount.account.proxy.length ||
+        FormatUtils.toHP(
+          activeAccount.account.vesting_shares.toString(),
+          globalProperties.globals,
+        ) < 100;
+      sethasVoted(hasVoted);
     }
   };
 
@@ -63,10 +72,9 @@ const ProposalVotingSection = ({
     event.nativeEvent.stopImmediatePropagation();
     setForcedClosed(true);
   };
-
   return (
     <div
-      aria-label="proposal-voting-section"
+      data-testid="proposal-voting-section"
       className={`proposal-voting-section ${
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
@@ -82,12 +90,12 @@ const ProposalVotingSection = ({
       {isOpen && (
         <div className="button-panel">
           <ButtonComponent
-            ariaLabel="button-read-proposal"
+            dataTestId="button-read-proposal"
             onClick={handleReadClicked}
             label={'html_popup_read'}
           />
           <OperationButtonComponent
-            ariaLabel="vote-key-chain-proposal"
+            dataTestId="vote-key-chain-proposal"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleVoteForProposalClicked}
             label={'html_popup_vote'}

@@ -15,19 +15,22 @@ import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
 import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-page.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
+import { TokenSwapsHistoryComponent } from '@popup/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
+import { TokenSwapsComponent } from '@popup/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
+import { TokensPageComponent } from '@popup/pages/app-container/home/tokens/token-page/token-page.component';
 import { TokensFilterComponent } from '@popup/pages/app-container/home/tokens/tokens-filter/tokens-filter.component';
 import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
 import { TokensTransferComponent } from '@popup/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
-import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { CreateAccountStepOneComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
 import { CreateAccountStepTwoComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
+import { ManageAccountAuthoritiesComponent } from '@popup/pages/app-container/settings/accounts/manage-account-authorities/manage-account-authorities.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
@@ -41,6 +44,7 @@ import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from '@popup/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from '@popup/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
+import { FavoriteAccountsComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { OperationPopupComponent } from '@popup/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from '@popup/pages/app-container/settings/user-preferences/user-preferences.component';
 import { RootState } from '@popup/store';
@@ -91,7 +95,7 @@ const AppRouter = ({
         return <IncomingOutgoingRcPageComponent />;
       //Tokens
       case Screen.TOKENS_PAGE:
-        return <TokensComponent />;
+        return <TokensPageComponent />;
       case Screen.TOKENS_HISTORY:
         return <TokensHistoryComponent />;
       case Screen.TOKENS_SETTINGS:
@@ -104,6 +108,10 @@ const AppRouter = ({
         return <TokenIncomingOutgoingPageComponent />;
       case Screen.TOKENS_FILTER:
         return <TokensFilterComponent />;
+      case Screen.TOKEN_SWAP_PAGE:
+        return <TokenSwapsComponent />;
+      case Screen.TOKENS_SWAP_HISTORY:
+        return <TokenSwapsHistoryComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
@@ -122,6 +130,8 @@ const AppRouter = ({
         return <SelectKeysComponent />;
       case Screen.SETTINGS_MANAGE_ACCOUNTS:
         return <ManageAccountComponent />;
+      case Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES:
+        return <ManageAccountAuthoritiesComponent />;
       case Screen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;
       case Screen.SETTINGS_ADVANCED:
@@ -146,6 +156,8 @@ const AppRouter = ({
         return <OperationPopupComponent />;
       case Screen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
+      case Screen.SETTINGS_FAVORITE_ACCOUNTS:
+        return <FavoriteAccountsComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:
@@ -171,6 +183,8 @@ const AppRouter = ({
           titleParams={titleProperties.titleParams}
           skipTitleTranslation={titleProperties.skipTitleTranslation}
           isBackButtonEnabled={titleProperties.isBackButtonEnabled}
+          onBackAdditional={titleProperties.onBackAdditional}
+          onCloseAdditional={titleProperties.onCloseAdditional}
           isCloseButtonDisabled={
             titleProperties.isCloseButtonDisabled
           }></PageTitleComponent>

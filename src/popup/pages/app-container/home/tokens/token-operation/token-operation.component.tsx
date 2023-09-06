@@ -1,6 +1,7 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
-import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -19,12 +20,10 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -69,7 +68,9 @@ const TokensOperation = ({
   let balance: number | string;
   switch (operationType) {
     case TokenOperationType.UNSTAKE:
-      balance = tokenBalance.stake;
+      balance =
+        parseFloat(tokenBalance.stake) -
+        parseFloat(tokenBalance.pendingUnstake);
       break;
     case TokenOperationType.STAKE:
       balance = tokenBalance.balance;
@@ -83,9 +84,8 @@ const TokensOperation = ({
 
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -97,7 +97,7 @@ const TokensOperation = ({
 
   const loadAutocompleteFavoriteUsers = async () => {
     setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
       ),
@@ -120,6 +120,11 @@ const TokensOperation = ({
   const handleClickOnSend = async () => {
     if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
       setErrorMessage('popup_no_such_account');
+      return;
+    }
+
+    if (parseFloat(amount.toString()) <= 0) {
+      setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
@@ -157,7 +162,7 @@ const TokensOperation = ({
             activeAccount.keys.activePubkey!,
           ),
         );
-        let tokenOperationResult: TransactionStatus;
+        let tokenOperationResult: HiveEngineTransactionStatus;
         try {
           switch (operationType) {
             case TokenOperationType.DELEGATE:
@@ -191,7 +196,6 @@ const TokensOperation = ({
           if (tokenOperationResult && tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList(`popup_html_${operationType}_tokens`);
-
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(
@@ -204,14 +208,14 @@ const TokensOperation = ({
               setErrorMessage('popup_token_timeout');
             }
           } else {
-            removeFromLoadingList('html_popup_transfer_token_operation');
+            removeFromLoadingList(`popup_html_${operationType}_tokens`);
             setErrorMessage(`popup_html_${operationType}_tokens_failed`);
           }
         } catch (err: any) {
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, [err]);
         } finally {
           removeFromLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
+          removeFromLoadingList(`popup_html_${operationType}_tokens`);
         }
       },
     });
@@ -231,7 +235,9 @@ const TokensOperation = ({
   };
 
   return (
-    <div aria-label="tokens-operation-page" className="transfer-tokens-page">
+    <div
+      data-testid={`${Screen.TOKENS_OPERATION}-page`}
+      className="transfer-tokens-page">
       <SummaryPanelComponent
         bottom={balance}
         bottomRight={symbol}
@@ -250,7 +256,7 @@ const TokensOperation = ({
         )}
       {operationType === TokenOperationType.DELEGATE && (
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_username"
@@ -262,7 +268,7 @@ const TokensOperation = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -274,7 +280,7 @@ const TokensOperation = ({
         <div className="symbol">{symbol}</div>
       </div>
       <OperationButtonComponent
-        ariaLabel={`token-button-operation-${operationType}`}
+        dataTestId={`token-button-operation-${operationType}`}
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}

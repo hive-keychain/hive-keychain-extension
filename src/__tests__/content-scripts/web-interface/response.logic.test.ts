@@ -1,19 +1,39 @@
+import { KeychainRequest, KeychainRequestTypes } from 'hive-keychain-commons';
 import Joi from 'joi';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import * as ResponseLogicModule from 'src/content-scripts/web-interface/response.logic';
 import {
   cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
 } from 'src/content-scripts/web-interface/response.logic';
-import responseLogicMocks from 'src/__tests__/content-scripts/web-interface/mocks/response.logic-mocks';
 
 describe('response.logic tests:\n', () => {
-  const { prevReq, spies, req } = responseLogicMocks;
-  const { methods } = responseLogicMocks;
-  methods.afterEach;
+  const prevReq = {
+    domain: 'domain',
+    request_id: 1,
+    type: KeychainRequestTypes.convert,
+    username: userData.one.username,
+    collaterized: true,
+    amount: '1.000',
+  } as KeychainRequest;
+
+  const req = {} as KeychainRequest;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
+
   describe('cancelPreviousRequest cases:\n', () => {
     it('Must call sendResponse', () => {
+      const sSendResponse = jest
+        .spyOn(ResponseLogicModule, 'sendResponse')
+        .mockImplementation(() => {});
+
       cancelPreviousRequest(prevReq);
-      expect(spies.sendResponse).toBeCalledWith({
+      expect(sSendResponse).toBeCalledWith({
         success: false,
         error: 'ignored',
         result: null,
@@ -25,8 +45,12 @@ describe('response.logic tests:\n', () => {
   });
   describe('sendRequestToBackground cases:\n', () => {
     it('Must call sendMessage', () => {
+      const sSendMessage = jest
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockImplementation(() => {});
+
       sendRequestToBackground(req);
-      expect(spies.sendMessage).toBeCalledWith({
+      expect(sSendMessage).toBeCalledWith({
         command: 'sendRequest',
         request: req,
         domain: window.location.hostname,
@@ -36,8 +60,11 @@ describe('response.logic tests:\n', () => {
   });
   describe('sendIncompleteDataResponse cases:\n', () => {
     it('Must call sendResponse using error as string', () => {
+      const sSendResponse = jest
+        .spyOn(ResponseLogicModule, 'sendResponse')
+        .mockImplementation(() => {});
       sendIncompleteDataResponse(req, 'error_string');
-      expect(spies.sendResponse).toBeCalledWith({
+      expect(sSendResponse).toBeCalledWith({
         success: false,
         error: 'incomplete',
         result: null,
@@ -52,8 +79,12 @@ describe('response.logic tests:\n', () => {
         'details_error_stack',
         'original',
       );
+      const sSendResponse = jest
+        .spyOn(ResponseLogicModule, 'sendResponse')
+        .mockImplementation(() => {});
+
       sendIncompleteDataResponse(req, joiError);
-      expect(spies.sendResponse).toBeCalledWith({
+      expect(sSendResponse).toBeCalledWith({
         success: false,
         error: 'incomplete',
         result: null,

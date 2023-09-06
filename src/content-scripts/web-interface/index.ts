@@ -13,6 +13,9 @@ import {
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
 import Logger from 'src/utils/logger.utils';
 
+const { chrome } = window;
+//@ts-ignore
+window.chrome = undefined;
 let req: KeychainRequest | null = null;
 
 // Injecting Keychain
@@ -28,7 +31,6 @@ const setupInjection = () => {
   }
 };
 setupInjection();
-
 // Answering the handshakes
 document.addEventListener('swHandshake_hive', () => {
   window.postMessage(
@@ -49,7 +51,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
   const validation = validateRequest(req);
   const { error, value } = validation;
   if (!error) {
-    sendRequestToBackground(value);
+    sendRequestToBackground(value, chrome);
     if (prevReq) {
       cancelPreviousRequest(prevReq);
     }
@@ -62,7 +64,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
 // Get notification from the background upon request completion and pass it back to the dApp.
 chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
   if (obj.command === DialogCommand.ANSWER_REQUEST) {
-    //console.log('response', obj.msg);
+    // console.log('response', obj.msg);
     sendResponse(obj.msg);
     req = null;
   }
@@ -72,6 +74,6 @@ chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
 const validateRequest = (req: KeychainRequest) => {
   if (!req) return { value: req, error: 'Missing request.' };
   if (!req.type) return { value: req, error: 'Missing request type.' };
-
+  //@ts-ignore
   return schemas[req.type].append(commonRequestParams).validate(req);
 };

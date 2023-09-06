@@ -9,8 +9,11 @@ $grey: #7e8c9a;
 $white-transparent: #ffffff6e;
 $grey-dark: #6c757e;
 $message-container-success: $black;
+$message-container-warning: orange;
 $message-container-info: black;
 $message-container-error: $red-dark;
+
+$success: rgb(1, 106, 1);
 
 //sizes
 $input-font-size: 16px;
@@ -62,4 +65,61 @@ $caption-font-size: 16px;
   height: $size;
   width: $size;
   font-size: $size;
+}
+
+@mixin tab-style($nbTab) {
+  .react-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .react-tabs__tab-panel--selected {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+
+  .react-tabs__tab-list {
+    display: grid;
+    grid-template-columns: repeat($nbTab, 1fr);
+    margin: 0 0 16px !important;
+
+    .react-tabs__tab {
+      text-align: center;
+      font-size: 18px;
+      background: $black-transparent;
+      color: white;
+      user-select: none;
+    }
+
+    .react-tabs__tab--selected {
+      background: $red-dark;
+      border: unset;
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+@mixin flex-column-full-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+@mixin rotate-logo-mixin {
+  animation: rotate-stop 2s infinite linear;
+  transform: rotate();
+}
+
+@keyframes rotate-stop {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

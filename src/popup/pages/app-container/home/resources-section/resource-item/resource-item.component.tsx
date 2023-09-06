@@ -25,10 +25,10 @@ const ResourceItem = ({
 }: PropsType) => {
   return (
     <CustomTooltip
-      ariaLabel={`custom-tool-tip-${label}`}
+      dataTestId={`custom-tool-tip-${label}`}
       message={tooltipText}
       skipTranslation>
-      <div aria-label={ariaLabel} className="resource-item">
+      <div data-testid={ariaLabel} className="resource-item">
         <Icon
           name={icon}
           type={IconType.STROKED}

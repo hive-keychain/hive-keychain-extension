@@ -107,6 +107,10 @@
     "message": "Password",
     "description": "Placeholder in input for password"
   },
+  "popup_html_new_label": {
+    "message": "New Label",
+    "description": "Placeholder in input for new favorite label item"
+  },
   "popup_html_signin": {
     "message": "Sign In"
   },
@@ -160,7 +164,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Witness",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -215,9 +219,57 @@
     "message": "Active Key",
     "description": "When adding an account via master key"
   },
+  "popup_html_operation_button_save": {
+    "message": "Save",
+    "description": "When using operation button to save data"
+  },
+  "popup_html_authority_active": {
+    "message": "Active Authority",
+    "description": "on manage authorities list item"
+  },
   "popup_html_master": {
     "message": "Master Key",
     "description": "When adding an account via master key"
+  },
+  "popup_html_authority_posting": {
+    "message": "Posting Authority",
+    "description": "on manage authorities list item"
+  },
+  "popup_html_owner": {
+    "message": "Owner Key",
+    "description": "When using owner key"
+  },
+  "popup_html_role": {
+    "message": "Role",
+    "description": "placeholder for entering role"
+  },
+  "popup_html_manage_account_authority_weight_label": {
+    "message": "Weight",
+    "description": "On Accounts > Manage Authorities"
+  },
+  "popup_html_manage_accounts_authorities_text": {
+    "message": "Accounts with granted authorities can perform operations on your behalf. Most of the time, these authorizations are tied to a dApp or game and only authorize the posting authority. We recommend giving such authorities only when necessary and when the recipient is trusted.",
+    "description": "Accounts > Manage Authorities"
+  },
+  "popup_html_confirm_remove_account_authority_message": {
+    "message": "Please confirm that you want to remove @$2's $1 authority on your account.",
+    "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
+  },
+  "popup_html_remove_account_authority": {
+    "message": "Remove authority",
+    "description": "while confirming remove account authority"
+  },
+  "html_popup_remove_authorized_account_operation": {
+    "message": "Removing authorized account",
+    "description": "remove authority operation"
+  },
+  "popup_html_remove_account_authority_successful": {
+    "message": "Successfully removed an account authority",
+    "description": "Success message remove account authority"
+  },
+  "popup_html_remove_account_authority_fail": {
+    "message": "Failed to remove an account authority",
+    "description": "Failed message remove account authority"
   },
   "popup_html_memo": {
     "message": "Memo Key",
@@ -278,6 +330,14 @@
   "popup_html_operations": {
     "message": "Operations",
     "description": "on settings page"
+  },
+  "popup_html_favorite_accounts": {
+    "message": "Favorite accounts",
+    "description": "on settings page"
+  },
+  "popup_html_favorite_accounts_no_favorites": {
+    "message": "No favorites saved for this account",
+    "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
     "message": "Operation popup",
@@ -347,9 +407,29 @@
     "message": "Remove from Keychain",
     "description": "on manage accounts"
   },
+  "popup_html_disable_witness": {
+    "message": "Disable witness",
+    "description": "on manage accounts"
+  },
+  "popup_html_enable_witness": {
+    "message": "Enable witness",
+    "description": "on manage accounts"
+  },
+  "popup_html_witness_rank_label": {
+    "message": "rank",
+    "description": "on my witness"
+  },
   "popup_html_delete_account_confirmation_message": {
     "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
+  },
+  "popup_html_disable_witness_account_confirmation_message": {
+    "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
+  },
+  "popup_html_enable_witness_account_confirmation_message": {
+    "message": "You are about to enable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
   },
   "popup_html_show_qr": {
     "message": "Show QR Code",
@@ -374,6 +454,10 @@
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
     "description": "on preferences"
+  },
+  "popup_html_nothing_found_using_filter": {
+    "message": "Nothing found, try to clear your filter(s)",
+    "description": "on multiple pages where filter is used"
   },
   "popup_html_add_rpc": {
     "message": "Add RPC",
@@ -410,6 +494,10 @@
   "popup_html_copy_username_tooltip_text": {
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
+  },
+  "popup_html_wrong_key_tooltip_text": {
+    "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
+    "description": "after hoover on red wrong key -> manage accounts -> account keys list item"
   },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",
@@ -483,6 +571,79 @@
     "message": "Votes remaining: $1",
     "description": "On witness page"
   },
+
+  "popup_html_witness_information_signing_key_label": {
+    "message": "Signing key",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_witness_disabled_text": {
+    "message": "Witness currently disabled!",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_label": {
+    "message": "Account creation fee",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_fee_label": {
+    "message": "Fee",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_placeholder_text": {
+    "message": "I.e: 1.000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_block_size_placeholder_text": {
+    "message": "Size, example: 65536",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_maximum_block_size_label": {
+    "message": "Block size",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_label": {
+    "message": "Interest rate",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_placeholder_text": {
+    "message": "I.e: 2000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_base_label": {
+    "message": "Exchange rate base",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_quote_label": {
+    "message": "Exchange rate quote",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_url_label": {
+    "message": "Url",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_rewards_label": {
+    "message": "Rewards",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_time_frame_label": {
+    "message": "Time frame",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_week_label": {
+    "message": "Last 7 days",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_month_label": {
+    "message": "Last 30 days",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_year_label": {
+    "message": "Last year",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_all_time_label": {
+    "message": "All time",
+    "description": "On My witness page"
+  },
   "popup_html_tokens_available": {
     "message": "Tokens Available",
     "description": "On tokens page"
@@ -551,6 +712,10 @@
     "message": "Total Outgoing",
     "description": "Main page > Delegate > Click on Outgoing"
   },
+  "popup_html_button_label_cancel": {
+    "message": "Cancel",
+    "description": "when using a cancel button"
+  },
   "popup_html_total_incoming": {
     "message": "Total Incoming",
     "description": "Main page > Delegate > Click on Incoming"
@@ -563,9 +728,21 @@
     "message": "Add your private memo key to read this memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
+  "popup_html_manage_accounts_authorities": {
+    "message": "Manage authorities",
+    "description": "on settings page"
+  },
+  "popup_html_manage_no_accounts_authorities": {
+    "message": "No authority has been given to other accounts",
+    "description": "On Accounts > Manage Authorities"
+  },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
     "description": "If entered password is public key"
+  },
+  "popup_html_public_key_needed": {
+    "message": "Please enter a public key",
+    "description": "If entered is private key"
   },
   "popup_accounts_already_registered": {
     "message": "You already registered an account for @$1!",
@@ -708,12 +885,20 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Succesfully unvoted @$1 as a witness.",
-    "description": "on witness page when unvoting a witness"
+    "message": "Successfully updated witness account @$1.",
+    "description": "on witness when updating a witness"
+  },
+  "popup_success_witness_account_update": {
+    "message": "Successfully updated witness account.",
+    "description": "on my witness on success updating"
   },
   "popup_error_wit": {
     "message": "Error while voting for @$1 as a witness.",
     "description": "on witness page "
+  },
+  "popup_error_witness_account_update": {
+    "message": "Error while updating witness account @$1.",
+    "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
     "message": "Error while unvoting @$1 as a witness.",
@@ -921,6 +1106,14 @@
   },
   "dialog_title_encode": {
     "message": "Encode message",
+    "description": "Website request title"
+  },
+  "dialog_title_encode_multisig": {
+    "message": "Encode Multisig",
+    "description": "Website request title"
+  },
+  "dialog_public_keys": {
+    "message": "Public keys",
     "description": "Website request title"
   },
   "dialog_title_sign": {
@@ -1287,6 +1480,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_private_key_in_memo": {
+    "message": "Sending a private key as memo is a huge security risk.",
+    "description": "When trying to use memo with a private key"
+  },
   "popup_warning_exchange_deposit": {
     "message": "This exchange account does not accept $1 deposits.",
     "description": "When trying to transfer to an exchange that does not accept this currency."
@@ -1323,6 +1520,14 @@
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
+  },
+  "popup_html_proposal_funded_option_hive": {
+    "message": "Convert to HBD",
+    "description": "When converting"
+  },
+  "popup_html_proposal_funded_option_hbd": {
+    "message": "Convert to HIVE",
+    "description": "When converting"
   },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
@@ -1416,6 +1621,10 @@
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
   },
+  "popup_html_favorite_accounts_intro": {
+    "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
+    "description": "When on favorite accounts page"
+  },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Claim Rewards",
     "description": "When on automated tasks page"
@@ -1429,7 +1638,11 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Claim a free account ticket when your RC percentage are over $1%. Depending on your Hive Power, this might use up a big chunk of your RC.",
+    "message": "Claim a free account ticket when your RC is charged over $1%. Depending on your Hive Power, this might use up a big chunk of your RC.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_insufficient_hp_claim_accounts": {
+    "message": "Insufficient HP to claim accounts.",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
@@ -1646,8 +1859,16 @@
     "description": "Governance"
   },
   "popup_html_proposal": {
-    "message": "Proposal",
+    "message": "Proposals",
     "description": "Governance"
+  },
+  "popup_html_my_witness_page": {
+    "message": "My Witness",
+    "description": "Governance"
+  },
+  "popup_html_witness_page_expand_more_tooltip": {
+    "message": "Click to view full witness account information",
+    "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
     "message": "Only voted for",
@@ -1718,7 +1939,7 @@
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Vote @stoodkev as witness",
+    "message": "Vote $1 as witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -1735,6 +1956,10 @@
   },
   "html_popup_vote_stoodkev_witness_success": {
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
+    "description": "Success message when vote for stoodkev as witness"
+  },
+  "html_popup_vote_cedricguillas_witness_success": {
+    "message": "Successfully voted @cedricguillas as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_conversion_operation": {
@@ -1760,6 +1985,66 @@
   "html_popup_unvote_witness_operation": {
     "message": "Unvoting a witness",
     "description": "unvote witness operation"
+  },
+  "html_popup_update_witness_operation": {
+    "message": "Updating witness account",
+    "description": "When updating witness account"
+  },
+  "html_popup_witness_information_info_label": {
+    "message": "Info",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_votes_label": {
+    "message": "Votes",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_vote_value_label": {
+    "message": "Vote value",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_global_information_votes_label": {
+    "message": "Amount of votes",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_blocks_missed_label": {
+    "message": "Blocks missed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_updated_label": {
+    "message": "Updated $1",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_version_label": {
+    "message": "Version",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_last_block_label": {
+    "message": "Last block",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_price_feed_label": {
+    "message": "Price feed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_st_label": {
+    "message": "st",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_nd_label": {
+    "message": "nd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_rd_label": {
+    "message": "rd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_th_label": {
+    "message": "th",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_information_params_label": {
+    "message": "Params",
+    "description": "When displaying my witness account"
   },
   "html_popup_confirm_transaction_operation": {
     "message": "Confirming transaction",
@@ -2107,6 +2392,10 @@
     "message": "An error occured while retrieving the witness ranking. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
+  "popup_html_error_retrieving_witness_information": {
+    "message": "An error occured while retrieving the witness account information. Please try again later.",
+    "description": "Error while retrieving witness information, hivesql not down"
+  },
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
@@ -2124,19 +2413,19 @@
     "description": "token action"
   },
   "popup_html_token_staking": {
-    "message": "Staking",
+    "message": "Staked",
     "description": "token action"
   },
   "popup_html_token_pending_unstake": {
-    "message": "Pending unstake",
+    "message": "Pending unstaking",
     "description": "token action"
   },
   "popup_html_token_delegation_out": {
-    "message": "Delegation out",
+    "message": "Outgoing delegations",
     "description": "token action"
   },
   "popup_html_token_delegation_in": {
-    "message": "Delegation in",
+    "message": "Incoming delegations",
     "description": "token action"
   },
   "popup_html_token_pending_undelegation": {
@@ -2499,6 +2788,14 @@
     "message": "Governance renewal",
     "description": "Governance expiration renewal popup"
   },
+  "html_popup_wrong_key_title": {
+    "message": "Wrong key$1 found",
+    "description": "Wrong key popup"
+  },
+  "html_popup_wrong_key_introduction": {
+    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "description": "Governance expiration renewal popup"
+  },
   "html_popup_governance_renewal_introduction": {
     "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
     "description": "Governance expiration renewal popup"
@@ -2574,6 +2871,14 @@
   "popup_html_analytics_save": {
     "message": "Save",
     "description": "accept button on analytics popup"
+  },
+  "popup_html_wrong_key_popup_replace": {
+    "message": "Replace",
+    "description": "replace key button on wrong key popup"
+  },
+  "popup_html_wrong_key_popup_do_nothing": {
+    "message": "Do nothing",
+    "description": "do nothing button on wrong key popup"
   },
   "popup_html_analytics_accept_to_share": {
     "message": "I agree to share usage data with Keychain",
@@ -2716,6 +3021,10 @@
     "message": "You already voted for this witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
   },
+  "html_popup_button_edit_label": {
+    "message": "Edit",
+    "description": "when using a button as to edit"
+  },
   "html_popup_witness_not_voted": {
     "message": "You did not vote for this witness, you can't unvote it",
     "description": "Error if trying to unvote a witness that has not been voted for"
@@ -2729,7 +3038,7 @@
     "description": "Error while confirming transaction on hive engine"
   },
   "hive_engine_overdraw_balance_error": {
-    "message": "Your $1 balance is insufficiant",
+    "message": "Your $1 balance is insufficient",
     "description": "Error if trying to send too much of a token"
   },
   "hive_engine_not_existing_token_error": {
@@ -2865,7 +3174,7 @@
     "description": "automated tasks => cant claim with Ledger"
   },
   "popup_html_not_enough_rc_to_claim_account": {
-    "message": "You don't have enough RC to claim account.",
+    "message": "You don't have enough RC to claim an account.",
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
@@ -2957,6 +3266,26 @@
     "message": "Confirm",
     "description": "Discover key on Ledger"
   },
+  "popup_html_token_swaps": {
+    "message": "Swaps",
+    "description": "Token swaps"
+  },
+  "html_popup_swaps_slipperage": {
+    "message": "Slippage",
+    "description": "Token swaps : Slippage"
+  },
+  "html_popup_swaps_process_swap": {
+    "message": "Swap",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_final_price": {
+    "message": "≈ $1 $2",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_slippage_definition": {
+    "message": "At each step of the swap, we check if the final result is superior to the estimation minus the slippage. If not, the swap is canceled and the funds are returned. Note that some swaps require several operations and your funds can be returned in a different token.",
+    "description": "Token swaps : process"
+  },
   "local": {
     "message": "Local",
     "description": "generic word"
@@ -2974,7 +3303,15 @@
     "description": "Ledger signing hash confirmation"
   },
   "token_value": {
-    "message": "Value",
+    "message": "Total value",
+    "description": "Value of token in USD"
+  },
+  "token": {
+    "message": "Token",
+    "description": "Value of token in USD"
+  },
+  "liquid_balance": {
+    "message": "Liquid balance",
     "description": "Value of token in USD"
   },
   "ledger_link_device": {
@@ -3004,5 +3341,189 @@
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
+  },
+  "html_popup_swap_token_confirm_title": {
+    "message": "Confirm token swap",
+    "description": "Confirm token swap"
+  },
+  "html_popup_swap_token_confirm_message": {
+    "message": "You are about to initiate a token swap using Keychain. You can track its status from the swap history screen.",
+    "description": "confirm token swap message"
+  },
+  "html_popup_swap_swap_id": {
+    "message": "Swap ID",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_from": {
+    "message": "Swapping from",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_to": {
+    "message": "Swapping to",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_amount": {
+    "message": "Swap Estimation",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_expected_amount": {
+    "message": "Expected amount",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_slipperage": {
+    "message": "Slippage",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_to_swap_account": {
+    "message": "Sending $1 to @$2",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_successful": {
+    "message": "Your swap is on the way! Thank you for using our service!",
+    "description": "token swap"
+  },
+  "html_popup_swap_error_sending_token": {
+    "message": "There was an error while sending tokens to @$1.",
+    "description": "token swap general error message"
+  },
+  "local_accounts": {
+    "message": "Local accounts",
+    "description": "General word"
+  },
+  "users": {
+    "message": "Users",
+    "description": "General word"
+  },
+  "exchanges": {
+    "message": "Exchanges",
+    "description": "General word"
+  },
+  "html_popup_token_swaps_history": {
+    "message": "Swap History",
+    "description": "token swap history"
+  },
+  "swap_refresh_countdown": {
+    "message": "Refreshing in $1s",
+    "description": "swap token auto refresh"
+  },
+  "swap_status_started": {
+    "message": "In progress",
+    "description": "swap status"
+  },
+  "swap_status_completed": {
+    "message": "Completed",
+    "description": "swap status"
+  },
+  "swap_status_pending": {
+    "message": "Pending",
+    "description": "swap status"
+  },
+  "swap_status_canceled_due_to_error": {
+    "message": "Canceled",
+    "description": "swap status"
+  },
+  "swap_status_returned": {
+    "message": "Returned",
+    "description": "swap status"
+  },
+  "swap_status_refunded": {
+    "message": "Refunded",
+    "description": "swap status"
+  },
+  "swap_copied_to_clipboard": {
+    "message": "Copied to clipboard!",
+    "description": "on preferences when clicking on swap id"
+  },
+  "swap_advanced_parameters": {
+    "message": "Advanced parameters",
+    "description": "Swap advanced parameters"
+  },
+  "swap_no_history": {
+    "message": "Your swap history is empty",
+    "description": "History swap empty"
+  },
+  "swap_under_maintenance": {
+    "message": "Keychain Swap is under maintenance, please try again later",
+    "description": "Keychain swap under maintenance"
+  },
+  "swap_start_end_token_should_be_different": {
+    "message": "Please choose two different tokens",
+    "description": "Start and end tokens should be differents"
+  },
+  "swap_not_enough_volume_error": {
+    "message": "There is not enough volume on this token pair to perform this swap",
+    "description": "Operation impossible because not enough volume"
+  },
+  "swap_min_slippage_error": {
+    "message": "The slippage should be at least $1%",
+    "description": "Minimum slippage error"
+  },
+  "swap_caption": {
+    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate.",
+    "description": "Caption"
+  },
+  "swap_no_token": {
+    "message": "You don't have any HIVE, HBD or Hive-Engine token to swap at the moment.",
+    "description": "Caption"
+  },
+  "swap_fee": {
+    "message": "Fee",
+    "description": "Swap Fee"
+  },
+  "swap_last_update": {
+    "message": "Last update: $1",
+    "description": "swap last update"
+  },
+  "swap_see_transaction": {
+    "message": "See transaction",
+    "description": "swap see transaction"
+  },
+  "hive_tx_network_error": {
+    "message": "Network Timeout Error: Please check your connection!",
+    "description": "General word"
+  },
+  "not_enough_rc": {
+    "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
+    "description": "Need more RC"
+  },
+  "swap_no_estimate_error": {
+    "message": "You need an estimate to be able to process",
+    "description": "No estimate error"
+  },
+  "swap_server_unavailable": {
+    "message": "The swap server is currently unavailable, please try again later",
+    "description": "Swap server not responding error"
+  },
+  "service_unavailable_message": {
+    "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
+    "description": "General service unavailable page message"
+  },
+  "swap_autorefresh": {
+    "message": "Refreshing in $1s",
+    "description": "Swap autorefresh"
+  },
+  "swap_transfer_not_sent": {
+    "message": "Transfer not sent",
+    "description": "When transfer not sent, swap status"
+  },
+  "swap_cannot_switch_tokens": {
+    "message": "Cannot switch tokens because you don't have any $1",
+    "description": "When trying to switch tokens (invert start and end)"
+  },
+  "swap_layer_two_delayed": {
+    "message": "Hive Engine is currently behind blocks. The swap might take longer than usual and has a bigger chance of aborting due to slippage.",
+    "description": "When layer two is delayed"
+  },
+  "swap_min_hive_value_error": {
+    "message": "Minimum value should be equivalent to 1 HIVE (currently $1 HIVE)",
+    "description": "When equilavent hive value is too small"
+  },
+  "tx_missing_active_auth": {
+    "message": "Active key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Active key incorrect"
+  },
+  "tx_missing_posting_auth": {
+    "message": "Posting key is incorrect. Please update your key and try again.",
+    "description": "Error message from blockchain: Posting key incorrect"
   }
 }

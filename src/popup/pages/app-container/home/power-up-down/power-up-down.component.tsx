@@ -17,7 +17,7 @@ import { Icons } from '@popup/icons.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -166,7 +166,7 @@ const PowerUpDown = ({
       fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let success = false;
+        let success;
         try {
           switch (powerType) {
             case PowerType.POWER_UP:
@@ -254,7 +254,7 @@ const PowerUpDown = ({
   };
 
   return (
-    <div className="power-up-page" aria-label="power-up-page">
+    <div className="power-up-page" data-testid={`${Screen.POWER_UP_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={available}
         bottomRight={
@@ -278,7 +278,7 @@ const PowerUpDown = ({
         powerDownInfo[1] !== '0' &&
         powerDownInfo[0] !== powerDownInfo[1] && (
           <CustomTooltip
-            ariaLabel="custom-tool-tip-next-power-down"
+            dataTestId="custom-tool-tip-next-power-down"
             message={chrome.i18n.getMessage('popup_next_powerdown', [
               powerDownInfo[2].split('T').join(', '),
             ])}
@@ -299,7 +299,7 @@ const PowerUpDown = ({
 
       {powerType === PowerType.POWER_UP && (
         <InputComponent
-          ariaLabel="input-receiver"
+          dataTestId="input-receiver"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_receiver"
@@ -311,7 +311,7 @@ const PowerUpDown = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -324,7 +324,7 @@ const PowerUpDown = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="submit-power-up-down"
+        dataTestId="submit-power-up-down"
         requiredKey={KeychainKeyTypesLC.active}
         label={title}
         onClick={() => handleButtonClick()}

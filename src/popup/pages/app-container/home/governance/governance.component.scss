@@ -3,10 +3,13 @@
 .governance-page {
   @include pageLayoutRowGap;
   overflow: hidden;
+  height: 100%;
   .disclaimer,
   .remaining-votes {
     font-size: 20px;
   }
+
+  @include tab-style(3);
   .react-tabs {
     flex: 1;
     display: flex;
@@ -22,12 +25,18 @@
 
   .react-tabs__tab-list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    margin: 0 0 32px !important;
+    margin: 0 0 16px !important;
+
+    &.three-items {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    &.four-items {
+      grid-template-columns: auto auto auto auto;
+    }
 
     .react-tabs__tab {
       text-align: center;
-      font-size: 18px;
+      font-size: 16px;
       background: $black-transparent;
       color: white;
       user-select: none;
@@ -40,5 +49,12 @@
         display: none;
       }
     }
+  }
+
+  .rotating-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
   }
 }

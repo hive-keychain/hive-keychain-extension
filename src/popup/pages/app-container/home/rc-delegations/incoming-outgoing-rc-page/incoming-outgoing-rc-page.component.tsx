@@ -110,7 +110,7 @@ const IncomingOutgoingRcPage = ({
       title: 'popup_html_cancel_rc_delegation_title',
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegate_rc_operation');
-        let success = false;
+        let success;
 
         success = await RcDelegationsUtils.cancelDelegation(
           rcDelegation.delegatee,
@@ -136,7 +136,7 @@ const IncomingOutgoingRcPage = ({
   return (
     <div
       className="incoming-outgoing-rc-page"
-      aria-label="incoming-outgoing-rc-page">
+      data-testid={`${Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE}-page`}>
       <div className="list-panel">
         <div className="panel">
           <div className="total">

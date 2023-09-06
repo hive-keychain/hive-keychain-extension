@@ -54,6 +54,7 @@ Before contributing to Hive Keychain, contact us on [Discord](https://discord.co
 
 ## Useful links
 
+- [Keychain SDK](https://www.npmjs.com/package/keychain-sdk) and [playground](https://play.hive-keychain.com)
 - [Developers documentation](./documentation/README.md) for how to interact with Hive Keychain from your website
 - [Contribution Guidelines](/CONTRIBUTING.md)
 - [Landing page](https://hive-keychain.com)

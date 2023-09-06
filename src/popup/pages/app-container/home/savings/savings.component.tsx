@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
@@ -22,13 +23,11 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -68,9 +67,8 @@ const SavingsPage = ({
   const [totalPendingValue, setTotalPendingValue] = useState<
     number | undefined
   >();
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<SavingOperationType>(
@@ -164,7 +162,7 @@ const SavingsPage = ({
 
   const loadAutocompleteFavoriteUsers = async () => {
     setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
       ),
@@ -213,7 +211,7 @@ const SavingsPage = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         try {
-          let success = false;
+          let success;
           switch (selectedSavingOperationType) {
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
@@ -284,7 +282,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label="select-currency-savings"
+        data-testid="select-currency-savings"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -296,7 +294,7 @@ const SavingsPage = ({
   const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
     return (
       <div
-        aria-label="select-operation-type"
+        data-testid="select-operation-type"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -310,7 +308,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label={`select-operation-${selectProps.item.label}`}
+        data-testid={`select-operation-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedSavingOperationType === selectProps.item.value
             ? 'selected'
@@ -329,7 +327,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
-        aria-label={`select-account-item-${selectProps.item.label}`}
+        data-testid={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedCurrency === selectProps.item.value ? 'selected' : ''
         }`}
@@ -363,7 +361,7 @@ const SavingsPage = ({
   };
 
   return (
-    <div className="savings-page" aria-label="savings-page">
+    <div className="savings-page" data-testid={`${Screen.SAVINGS_PAGE}-page`}>
       <SummaryPanelComponent
         bottom={liquid}
         bottomRight={currency}
@@ -390,7 +388,7 @@ const SavingsPage = ({
 
       {
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_transfer_to"
@@ -402,7 +400,7 @@ const SavingsPage = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
-            ariaLabel="amount-input"
+            dataTestId="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -422,7 +420,7 @@ const SavingsPage = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="submit-savings"
+        dataTestId="submit-savings"
         requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW

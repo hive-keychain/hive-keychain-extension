@@ -21,7 +21,7 @@ import { Icons } from '@popup/icons.enum';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -270,16 +270,18 @@ const Delegations = ({
   };
 
   return (
-    <div className="delegations-page" aria-label="delegations-page">
+    <div
+      className="delegations-page"
+      data-testid={`${Screen.DELEGATION_PAGE}-page`}>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>
 
-      <div className="delegations-summary" aria-label="delegations-summary">
+      <div className="delegations-summary" data-testid="delegations-summary">
         <div
           className="total-incoming"
           onClick={goToIncomings}
-          aria-label="total-incoming">
+          data-testid="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -294,7 +296,7 @@ const Delegations = ({
                 type={IconType.OUTLINED}
                 tooltipMessage={incomingError}></Icon>
             )}
-            <span>
+            <span data-testid="delegations-span-total-incoming">
               + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
               {currencyLabels.hp}
             </span>
@@ -303,11 +305,11 @@ const Delegations = ({
         <div
           className="total-outgoing"
           onClick={goToOutgoing}
-          aria-label="total-outgoing">
+          data-testid="total-outgoing">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
-          <div className="value">
+          <div data-testid="total-outgoing-value" className="value">
             - {FormatUtils.withCommas(totalOutgoing.toString())}{' '}
             {currencyLabels.hp}
           </div>
@@ -325,7 +327,7 @@ const Delegations = ({
 
       <div className="form-container">
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           value={username}
           onChange={setUsername}
           logo={Icons.AT}
@@ -337,7 +339,7 @@ const Delegations = ({
         <div className="amount-panel">
           <div className="amount-input-panel">
             <InputComponent
-              ariaLabel="amount-input"
+              dataTestId="amount-input"
               type={InputType.NUMBER}
               placeholder="0.000"
               skipPlaceholderTranslation={true}
@@ -351,7 +353,7 @@ const Delegations = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="delegate-operation-submit-button"
+        dataTestId="delegate-operation-submit-button"
         label={
           value.toString().length > 0 && Number(value) === 0
             ? 'popup_html_cancel_delegation'

@@ -8,6 +8,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './reset-password.component.scss';
 
 const ResetPasswordPage = ({
@@ -24,10 +25,11 @@ const ResetPasswordPage = ({
     });
   }, []);
 
-  const reset = () => {
+  const reset = async () => {
     resetAccount();
     forgetMk();
     resetActiveAccount();
+    await LocalStorageUtils.clearLocalStorage();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
@@ -42,7 +44,7 @@ const ResetPasswordPage = ({
       </div>
 
       <ButtonComponent
-        ariaLabel="reset-password-confirm-button"
+        dataTestId="reset-password-confirm-button"
         label="popup_html_confirm"
         onClick={() => reset()}
         fixToBottom

@@ -1,18 +1,15 @@
+import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
+import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
-export interface AutoCompleteValue {
-  value: string;
-  subLabel?: string;
-}
-
 interface InputProps {
-  onChange: (value: any) => void;
   value: any;
   logo?: Icons | string;
+  rightIcon?: JSX.Element;
   label?: string;
   placeholder: string;
   type: InputType;
@@ -23,20 +20,20 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: AutoCompleteValue[];
+  autocompleteValues?: AutoCompleteValuesType;
+  translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
-  ariaLabel?: string;
+  dataTestId?: string;
   disabled?: boolean;
+  tooltip?: string;
+  skipTooltipTranslation?: boolean;
+  onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
 }
 
-const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<AutoCompleteValue[]>(
-    props.autocompleteValues ? props.autocompleteValues : [],
-  );
-
+const InputComponent = React.forwardRef((props: InputProps, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -47,18 +44,6 @@ const InputComponent = (props: InputProps) => {
       setMounted(false);
     };
   });
-
-  useEffect(() => {
-    if (props.autocompleteValues) {
-      setFilteredValues(
-        props.autocompleteValues.filter(
-          (val) =>
-            val.value?.toLowerCase().includes(props.value) ||
-            val.subLabel?.toLowerCase().includes(props.value),
-        ),
-      );
-    }
-  }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
     if (mounted) {
@@ -73,10 +58,21 @@ const InputComponent = (props: InputProps) => {
     <div className="custom-input">
       {props.label && (
         <div className="label">
-          {props.skipLabelTranslation
-            ? props.label
-            : chrome.i18n.getMessage(props.label)}{' '}
-          {props.required ? '*' : ''}
+          <div>
+            {props.skipLabelTranslation
+              ? props.label
+              : chrome.i18n.getMessage(props.label)}{' '}
+            {props.required ? '*' : ''}
+          </div>
+          {props.tooltip && (
+            <Icon
+              type={IconType.OUTLINED}
+              name={Icons.INFO}
+              skipTooltipTranslation={props.skipTooltipTranslation}
+              tooltipMessage={props.tooltip}
+              tooltipPosition="right"
+            />
+          )}
         </div>
       )}
       <div
@@ -84,7 +80,8 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          aria-label={props.ariaLabel}
+          ref={ref as any}
+          data-testid={props.dataTestId}
           className={`${props.hasError ? 'has-error' : ''} ${
             props.onSetToMaxClicked ? 'has-max-button' : ''
           }`}
@@ -110,6 +107,7 @@ const InputComponent = (props: InputProps) => {
           }}
           onFocus={() => handleOnFocus()}
           onBlur={() => handleOnBlur()}
+          disabled={props.disabled}
         />
         {props.type === InputType.PASSWORD && !isPasswordDisplay && (
           <Icon
@@ -127,26 +125,21 @@ const InputComponent = (props: InputProps) => {
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
+          !props.disabled &&
           props.value &&
           props.value.length > 0 && (
             <Icon
-              ariaLabel="input-clear"
+              dataTestId="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
-              type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
-        {isFocused && filteredValues && filteredValues.length > 0 && (
-          <div className="autocomplete-panel">
-            {filteredValues.map((val, index) => (
-              <div
-                key={index}
-                className="value"
-                onClick={() => props.onChange(val.value)}>
-                {val.value} {val.subLabel ? `(${val.subLabel})` : ''}
-              </div>
-            ))}
-          </div>
+        {isFocused && props.autocompleteValues && (
+          <AutocompleteBox
+            autoCompleteValues={props.autocompleteValues}
+            handleOnChange={props.onChange}
+            propsValue={props.value}
+          />
         )}
         {props.hint && (
           <div className="hint">
@@ -161,9 +154,10 @@ const InputComponent = (props: InputProps) => {
             type={IconType.OUTLINED}
             additionalClassName="input-img"></Icon>
         )}
+        {props.rightIcon}
         {props.onSetToMaxClicked && (
           <span
-            aria-label="set-to-max-button"
+            data-testid="set-to-max-button"
             className="set-to-max-button"
             onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}
@@ -172,6 +166,6 @@ const InputComponent = (props: InputProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default InputComponent;

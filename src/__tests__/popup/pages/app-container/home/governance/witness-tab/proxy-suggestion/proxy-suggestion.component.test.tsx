@@ -1,37 +1,117 @@
+import { TransactionResult } from '@interfaces/hive-tx.interface';
 import App from '@popup/App';
 import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import proxySuggestion from 'src/__tests__/popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/mocks/proxy-suggestion';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
-//TODO unskip if proxy-suggestion.component gets enabled.
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdPopup from 'src/__tests__/utils-for-testing/data-testid/data-testid-popup';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import ProxyUtils from 'src/utils/proxy.utils';
+
+//TODO testings: unskip if proxy-suggestion.component gets enabled.
 describe.skip('Proxy suggestion tests:\n', () => {
-  const { constants, extraMocks } = proxySuggestion;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
+
   beforeEach(async () => {
-    await proxySuggestion.beforeEach(<App />);
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getExtendedAccount: {
+                ...accounts.extended,
+                proxy: '',
+                witness_votes: [],
+                witnesses_voted_for: 0,
+              },
+            },
+          },
+        },
+      },
+    );
   });
-  proxySuggestion.methods.afterEach;
-  it('Must show proxy suggestion after homepage loads', () => {
-    assertion.getByLabelText(alComponent.proxySuggestion);
-    assertion.getOneByText(constants.message.suggestion);
+
+  it('Must show proxy suggestion & display message', async () => {
+    expect(
+      await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_proxy_suggestion'),
+      ),
+    ).toBeInTheDocument();
   });
-  it('Must set @keychain as proxy', async () => {
-    extraMocks(true);
-    await clickAwait([alButton.operation.proxySuggestion.ok]);
-    await assertion.awaitFor(constants.message.success, QueryDOM.BYTEXT);
-  });
-  it('Must close suggestion after clicking close', async () => {
-    await clickAwait([alButton.panel.close]);
-    await assertion.toHaveClass(alComponent.proxySuggestion, constants.closed);
-  });
+
   it('Must show error if suggestion operations fails by HIVE', async () => {
-    extraMocks(false);
-    await clickAwait([alButton.operation.proxySuggestion.ok]);
-    await assertion.awaitFor(constants.message.error, QueryDOM.BYTEXT);
+    ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
+    ProxyUtils.setAsProxy = jest
+      .fn()
+      .mockRejectedValue(new Error('Error setting proxy'));
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdButton.operation.proxySuggestion.ok,
+        ),
+      );
+    });
+    expect(await screen.findByText('Error setting proxy')).toBeInTheDocument();
+  });
+
+  it('Must set @keychain as proxy', async () => {
+    ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
+    ProxyUtils.setAsProxy = jest.fn().mockResolvedValue({
+      tx_id: 'tx_id',
+      id: 'id',
+      confirmed: true,
+    } as TransactionResult);
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdButton.operation.proxySuggestion.ok,
+        ),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_success_proxy', ['keychain']),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must show error if operation fails', async () => {
+    ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
+    ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(null);
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(
+          dataTestIdButton.operation.proxySuggestion.ok,
+        ),
+      );
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_error_proxy', ['keychain']),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Must close suggestion after clicking close', async () => {
+    await act(async () => {
+      await userEvent.click(
+        await screen.findByTestId(dataTestIdButton.panel.close),
+      );
+    });
+    expect(
+      await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
+    ).toHaveClass('proxy-suggestion hide');
   });
 });

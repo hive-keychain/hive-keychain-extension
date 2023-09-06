@@ -1,50 +1,88 @@
 import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import getAdvancedSettingsMenuItems from '@popup/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import advanceSettings from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/mocks/advance-settings';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.afterAllCleanAndResetMocks();
+import { act } from 'react-dom/test-utils';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('advanced-settings.component tests:\n', () => {
-  const { methods, constants, menuPages, spies } = advanceSettings;
-  const { menuItems } = constants;
-  methods.afterEach;
-  beforeEach(async () => {
-    await advanceSettings.beforeEach(<App />);
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  it('Must load advance settings items', () => {
-    for (let i = 0; i < menuItems.advanceSettings.length; i++) {
-      assertion.getByLabelText(
-        alButton.menuPreFix + menuItems.advanceSettings[i].icon,
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          ledgerRelated: {
+            LedgerUtils: {
+              isLedgerSupported: true,
+            },
+          },
+        },
+      },
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
       );
+    });
+  });
+
+  it('Must show advanced settings page', () => {
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must load advance settings items', () => {
+    const advanceMenuItems = getAdvancedSettingsMenuItems(true);
+    for (let i = 0; i < advanceMenuItems.length; i++) {
+      expect(
+        screen.getByTestId(
+          dataTestIdButton.menuPreFix + advanceMenuItems[i].icon,
+        ),
+      ).toBeInTheDocument();
     }
   });
+
   it('Must open each menu page with no actions', async () => {
-    const menuAdvanceSettingsFilteredNoActions =
-      menuItems.advanceSettings.filter((item) => !item.action);
-    for (let i = 0; i < menuAdvanceSettingsFilteredNoActions.length; i++) {
-      const arialLabel =
-        alButton.menuPreFix + menuAdvanceSettingsFilteredNoActions[i].icon;
-      await clickAwait([arialLabel]);
-      await assertion.awaitFor(menuPages[i].ariaLabel, QueryDOM.BYLABEL);
-      await clickAwait([alIcon.arrowBack]);
-      await assertion.awaitFor(alComponent.settingsPage, QueryDOM.BYLABEL);
+    const menuItems = getAdvancedSettingsMenuItems(false);
+    for (let i = 0; i < menuItems.length; i++) {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + menuItems[i].icon),
+        );
+      });
+      expect(screen.getByTestId(`${menuItems[i].nextScreen}-page`));
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
+      });
     }
   });
 
   it('Must call tabs.create when opening ledger menu', async () => {
     const tabId = 'unique-ID';
     chrome.management.getSelf = jest.fn().mockResolvedValue({ id: tabId });
-    const ledgerMenuItem = menuItems.advanceSettings.filter(
+    const ledgerMenuItem = getAdvancedSettingsMenuItems(true).filter(
       (item) => item.label === 'ledger_link_ledger_device',
     )[0];
-    const ariaLabel = alButton.menuPreFix + ledgerMenuItem.icon;
-    await clickAwait([ariaLabel]);
-    expect(spies.chrome.tabs.create()).toBeCalledWith({
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
+      );
+    });
+    expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
       url: `chrome-extension://${tabId}/link-ledger-device.html`,
     });
   });

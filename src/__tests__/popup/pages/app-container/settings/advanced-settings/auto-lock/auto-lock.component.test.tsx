@@ -1,98 +1,98 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { screen, waitFor } from '@testing-library/react';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import autoLock from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/auto-lock/mocks/auto-lock';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import {
-  EventType,
-  QueryDOM,
-} from 'src/__tests__/utils-for-testing/enums/enums';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  clickAwait,
-  clickTypeAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 describe('auto-lock.component tests:\n', () => {
-  const { methods, constants } = autoLock;
-  let _asFragment: () => {};
-  methods.afterEach;
-  methods.afterAll;
-  describe('General cases:\n', () => {
-    beforeEach(async () => {
-      chrome.runtime.sendMessage = jest.fn();
-      LocalStorageUtils.saveValueInLocalStorage = jest.fn();
-      _asFragment = await autoLock.beforeEach();
-      await methods.gotoAutoLock();
-    });
-    it('Must load autolock page', () => {
-      assertion.getByLabelText(alComponent.advanceSettings.autoLock);
-    });
-    it('Must set autolock by click, show message and goback to advanced menu', async () => {
-      await clickAwait([
-        alCheckbox.autoLock.preFix + AutoLockType.DEVICE_LOCK,
-        alButton.save,
-      ]);
-      expect(methods.spy.saveValueInLocalStorage().mock.calls[1]).toEqual([
-        LocalStorageKeyEnum.AUTOLOCK,
-        { mn: 1, type: AutoLockType.DEVICE_LOCK },
-      ]);
-      await assertion.awaitFor(constants.message.saved, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.settingsPage);
-    });
-    it('Must show input when click', async () => {
-      await clickAwait([alCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK]);
-      await waitFor(() => {
-        assertion.queryByLabel(alInput.amount);
-      });
-    });
-    it('Must set autolock by enter, show message and goback to advanced menu', async () => {
-      await clickTypeAwait([
-        {
-          ariaLabel: alCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK,
-          event: EventType.CLICK,
-        },
-        { ariaLabel: alInput.amount, event: EventType.TYPE, text: '0{enter}' },
-      ]);
-      await waitFor(() => {
-        expect(methods.spy.saveValueInLocalStorage().mock.calls[1]).toEqual([
-          LocalStorageKeyEnum.AUTOLOCK,
-          { mn: '10', type: AutoLockType.IDLE_LOCK },
-        ]);
-      });
-      await assertion.awaitFor(constants.message.saved, QueryDOM.BYTEXT);
-      await waitFor(() => {
-        assertion.getByLabelText(alComponent.settingsPage);
-      });
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
   });
-  describe('Custom stored data:\n', () => {
-    beforeEach(async () => {
-      _asFragment = await autoLock.beforeEach({
-        mn: 3,
-        type: AutoLockType.DEVICE_LOCK,
-      });
-      await methods.gotoAutoLock();
-    });
-    it('Must load stored autolock value and have 1 checkbox checked', () => {
-      expect(screen.getAllByRole('checkbox')[1]).toHaveAttribute(
-        'aria-checked',
-        'true',
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <App />,
+      initialStates.iniStateAs.defaultExistent,
+    );
+    await act(async () => {
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
+      );
+      await userEvent.click(
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.AUTO_LOCK),
       );
     });
   });
-  describe('Manual Lock', () => {
-    beforeEach(async () => {
-      _asFragment = await autoLock.beforeEach();
+  it('Must show autolock page', () => {
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_AUTO_LOCK}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must set autolock to DEFAULT, show message and goback to advanced menu', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEFAULT,
+        ),
+      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
     });
-    it('Must lock the app', async () => {
-      await clickAwait([alButton.logOut]);
-      assertion.getByLabelText(alComponent.signIn);
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_save_successful'),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must set autolock to Device_lock, show message and goback to advanced menu', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.DEVICE_LOCK,
+        ),
+      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
     });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_save_successful'),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
+  });
+
+  it('Must set autolock to Idle_Lock, show message and goback to advanced menu', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK,
+        ),
+      );
+      await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '10');
+      await userEvent.click(screen.getByTestId(dataTestIdButton.save));
+    });
+    expect(
+      await screen.findByText(
+        chrome.i18n.getMessage('popup_html_save_successful'),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(`${Screen.SETTINGS_ADVANCED}-page`),
+    ).toBeInTheDocument();
   });
 });

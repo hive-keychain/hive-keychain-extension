@@ -6,10 +6,11 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './clear-all-data.component.scss';
 
 const ClearAllData = ({
@@ -27,15 +28,18 @@ const ClearAllData = ({
     });
   }, []);
 
-  const reset = () => {
+  const reset = async () => {
     resetAccount();
     forgetMk();
     resetActiveAccount();
+    await LocalStorageUtils.clearLocalStorage();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
   return (
-    <div aria-label="clear-all-data-page" className="clear-all-data-page">
+    <div
+      data-testid={`${Screen.SETTINGS_CLEAR_ALL_DATA}-page`}
+      className="clear-all-data-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -44,11 +48,11 @@ const ClearAllData = ({
 
       <div className="bottom-panel">
         <ButtonComponent
-          ariaLabel="dialog_cancel-button"
+          dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
-          ariaLabel="dialog_confirm-button"
+          dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={() => reset()}
           type={ButtonType.RAISED}></ButtonComponent>

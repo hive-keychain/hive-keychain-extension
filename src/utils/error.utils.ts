@@ -9,6 +9,7 @@ enum BlockchainErrorType {
   WITNESS_NOT_FOUND = 'get_witness',
   VALIDATION = 'validate',
   VALIDATE_TRANSACTION = 'validate_transaction',
+  MISSING_AUTHORITY = 'verify_authority',
 }
 
 enum HiveEngineErrorType {
@@ -105,12 +106,19 @@ const parse = (error: any) => {
           return new KeychainError('broadcast_error_transaction_expired');
         }
       }
+      case BlockchainErrorType.MISSING_AUTHORITY: {
+        return new KeychainError(error.data.name);
+      }
     }
-  } else if (stack && stack.format) {
-    return new KeychainError('error_while_broadcasting', [stack.format], error);
   }
 
-  return new KeychainError('error_while_broadcasting', [], error);
+  if (error.data && error.data.name === 'not_enough_rc_exception') {
+    return new KeychainError('not_enough_rc', [], error);
+  }
+  if (stack && stack.format && !stack.format.includes('${what}')) {
+    return new KeychainError('error_while_broadcasting', [stack.format], error);
+  }
+  return new KeychainError('html_popup_error_while_broadcasting', [], error);
 };
 
 const parseHiveEngine = (error: string, payload: any) => {

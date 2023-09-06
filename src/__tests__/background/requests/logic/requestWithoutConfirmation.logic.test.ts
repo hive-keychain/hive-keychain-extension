@@ -1,16 +1,28 @@
 import { performOperationFromIndex } from '@background/index';
-import requestWithoutConfirmationLogic from 'src/__tests__/background/requests/logic/mocks/requestWithoutConfirmation.logic';
+import * as BgOperationsIndex from '@background/requests/operations/index';
+import { RequestsHandler } from '@background/requests/request-handler';
+import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+
 describe('requestWithoutConfirmation.logic tests:\n', () => {
-  const { methods, constants, spies } = requestWithoutConfirmationLogic;
-  const { requestHandler, tab, request } = constants;
-  methods.afterEach;
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('Must call performOperation', async () => {
-    await performOperationFromIndex(requestHandler, tab, request);
-    expect(spies.performOperation).toBeCalledWith(
+    const requestHandler = new RequestsHandler();
+    const sPerformOperation = jest
+      .spyOn(BgOperationsIndex, 'performOperation')
+      .mockResolvedValue(undefined);
+    await performOperationFromIndex(
       requestHandler,
-      request,
-      tab,
-      request.domain,
+      0,
+      keychainRequest.noValues.decode,
+    );
+    expect(sPerformOperation).toBeCalledWith(
+      requestHandler,
+      keychainRequest.noValues.decode,
+      0,
+      keychainRequest.noValues.decode.domain,
       false,
     );
   });

@@ -13,6 +13,7 @@ import {
   TokenTransaction,
 } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
+import { WalletHistoryFilter } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 
@@ -78,9 +79,9 @@ export interface MocksChromeRunTime {
 }
 
 export interface MocksGoogleAnalytics {
-  initializeGoogleAnalytics?: string; //To be used for now as 'bypass' to just mock without impl.
+  initializeGoogleAnalytics?: string;
 }
-//TODO implement as dataMocks/CustomDataFromLocalStorage, when coding tests for survey.
+
 export interface MocksSurvey {
   byPassing: boolean;
 }
@@ -130,10 +131,15 @@ export interface CustomDataFromLocalStorage {
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;
-  customStorageVersion?: string;
+  customStorageVersion?: string | number;
   customCurrentRpc?: Rpc;
   customMK?: string;
   customAccounts?: string;
+  customWalletHistoryFilters?: WalletHistoryFilter;
+  customHideSuggestionProxy?: { [key: string]: boolean };
+  customFavoriteUsers?: { [key: string]: string[] };
+  customHiddenTokenList?: string[];
+  customKeychainifyEnabled?: boolean;
 }
 
 export interface MocksOverwrite {

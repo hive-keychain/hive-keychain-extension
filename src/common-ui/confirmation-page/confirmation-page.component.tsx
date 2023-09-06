@@ -1,6 +1,7 @@
 import { goBack } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
@@ -11,7 +12,7 @@ import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirma
 import './confirmation-page.component.scss';
 
 export interface ConfirmationPageParams {
-  fields: any;
+  fields: ConfirmationPageFields[];
   message: string;
   warningMessage?: string;
   warningParams?: string[];
@@ -19,6 +20,7 @@ export interface ConfirmationPageParams {
   title: string;
   skipTitleTranslation?: boolean;
   afterConfirmAction: () => {};
+  afterCancelAction?: () => {};
   formParams?: any;
 }
 
@@ -26,6 +28,7 @@ const ConfirmationPage = ({
   fields,
   message,
   afterConfirmAction,
+  afterCancelAction,
   warningMessage,
   warningParams,
   skipWarningTranslation,
@@ -39,6 +42,8 @@ const ConfirmationPage = ({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
       isBackButtonEnabled: false,
+      onBackAdditional: handleClickOnCancel,
+      onCloseAdditional: handleClickOnCancel,
     });
   });
   const hasField = fields && fields.length !== 0;
@@ -48,8 +53,17 @@ const ConfirmationPage = ({
     afterConfirmAction();
   };
 
+  const handleClickOnCancel = async () => {
+    if (afterCancelAction) {
+      afterCancelAction();
+    }
+    goBack();
+  };
+
   return (
-    <div className="confirmation-page" aria-label="confirmation-page">
+    <div
+      className="confirmation-page"
+      data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
       <div className="confirmation-top">
         <div
           className="introduction"
@@ -58,7 +72,7 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div aria-label="warning-message" className="warning-message">
+          <div data-testid="warning-message" className="warning-message">
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
@@ -71,7 +85,9 @@ const ConfirmationPage = ({
                 <div className="label">
                   {chrome.i18n.getMessage(field.label)}
                 </div>
-                <div className="value">{field.value}</div>
+                <div className={`value ${field.valueClassName ?? ''}`}>
+                  {field.value}
+                </div>
               </div>
             ))}
           </div>
@@ -80,11 +96,11 @@ const ConfirmationPage = ({
 
       <div className="bottom-panel">
         <ButtonComponent
-          ariaLabel="dialog_cancel-button"
+          dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
-          onClick={goBack}></ButtonComponent>
+          onClick={handleClickOnCancel}></ButtonComponent>
         <ButtonComponent
-          ariaLabel="dialog_confirm-button"
+          dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={handleClickOnConfirm}
           type={ButtonType.RAISED}></ButtonComponent>
@@ -102,6 +118,7 @@ const mapStateToProps = (state: RootState) => {
     skipWarningTranslation:
       state.navigation.stack[0].params.skipWarningTranslation,
     afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
+    afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
   };
@@ -111,6 +128,6 @@ const connector = connect(mapStateToProps, {
   goBack,
   setTitleContainerProperties,
 });
-type PropsType = ConnectedProps<typeof connector>;
+type PropsType = ConnectedProps<typeof connector> & ConfirmationPageParams;
 
 export const ConfirmationPageComponent = connector(ConfirmationPage);

@@ -2,8 +2,8 @@ import { resetMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+import { ConnectedProps, connect } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './message-container.component.scss';
 

@@ -1,16 +1,14 @@
 import { KeychainApi } from '@api/keychain';
-import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import bittrexData from 'src/__tests__/utils-for-testing/data/bittrex-data/bittrex-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
-afterAll(() => {
-  jest.clearAllMocks();
-  jest.restoreAllMocks();
-});
+import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
+
 describe('currency-prices-utils tests', () => {
-  afterEach(() => {
+  afterAll(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
+
   describe('getPrices tests:\n', () => {
     test('Must get prices from Hive API', async () => {
       const mockedApiReply = {
@@ -18,11 +16,7 @@ describe('currency-prices-utils tests', () => {
         hive: { usd: 0.638871, usd_24h_change: -13.100842677149227 },
         hive_dollar: { usd: 0.972868, usd_24h_change: -0.6982597522799386 },
       };
-      mockPreset.setOrDefault({
-        keyChainApiGet: {
-          currenciesPrices: mockedApiReply,
-        },
-      });
+      KeychainApi.get = jest.fn().mockResolvedValueOnce(mockedApiReply);
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply);
     });
@@ -43,10 +37,10 @@ describe('currency-prices-utils tests', () => {
         data: {
           success: true,
           message: '',
-          result: utilsT.bittrexResultArray,
+          result: bittrexData.bittrexResultArray,
         },
       };
-      mocksImplementation.mockFetch(utilsT.bittrexResultArray, 200);
+      mocksImplementation.mockFetch(bittrexData.bittrexResultArray, 200);
       const currencyToGet = 'BTC';
       const result = await CurrencyPricesUtils.getBittrexCurrency(
         currencyToGet,
@@ -58,7 +52,7 @@ describe('currency-prices-utils tests', () => {
     });
 
     test('Must return undefined as not found', async () => {
-      mocksImplementation.mockFetch(utilsT.bittrexResultArray, 200);
+      mocksImplementation.mockFetch(bittrexData.bittrexResultArray, 200);
       const currencyToGet = 'HIVEKCH';
       const result = await CurrencyPricesUtils.getBittrexCurrency(
         currencyToGet,

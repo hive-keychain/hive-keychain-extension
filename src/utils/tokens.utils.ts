@@ -1,6 +1,7 @@
+import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
@@ -240,13 +241,13 @@ const getSendTokenTransaction = (
 };
 
 const getHiveEngineTokenPrice = (
-  balance: TokenBalance,
+  { symbol }: Partial<TokenBalance>,
   market: TokenMarket[],
 ) => {
-  const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  const tokenMarket = market.find((t) => t.symbol === symbol);
   const price = tokenMarket
     ? parseFloat(tokenMarket.lastPrice)
-    : balance.symbol === 'SWAP.HIVE'
+    : symbol === 'SWAP.HIVE'
     ? 1
     : 0;
   return price;
@@ -255,6 +256,7 @@ const getHiveEngineTokenPrice = (
 const getHiveEngineTokenValue = (
   balance: TokenBalance,
   market: TokenMarket[],
+  hive: Currency = { usd: 1 },
 ) => {
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
   const price = tokenMarket
@@ -269,7 +271,7 @@ const getHiveEngineTokenValue = (
     parseFloat(balance.pendingUnstake) +
     parseFloat(balance.delegationsOut) +
     parseFloat(balance.stake);
-  return totalToken * price;
+  return totalToken * price * hive?.usd!;
 };
 /* istanbul ignore next */
 const getUserBalance = (account: string) => {
@@ -317,20 +319,40 @@ const getOutgoingDelegations = async (
  * @param {string} contract Fixed as 'tokens'
  * @param {string} table Fixed as 'tokens
  */
-const getAllTokens = async (
-  query: {},
-  limit: number,
-  offset: number,
-  indexes: {}[],
-): Promise<any[]> => {
-  return HiveEngineUtils.get<any[]>({
-    contract: 'tokens',
-    table: 'tokens',
-    query,
-    limit,
-    offset,
-    indexes,
+const getAllTokens = async (): Promise<Token[]> => {
+  return (
+    await HiveEngineUtils.get<any[]>({
+      contract: 'tokens',
+      table: 'tokens',
+      query: {},
+      limit: 1000,
+      offset: 0,
+      indexes: [],
+    })
+  ).map((t: any) => {
+    return {
+      ...t,
+      metadata: JSON.parse(t.metadata),
+    };
   });
+};
+
+const getTokenInfo = async (symbol: string): Promise<Token> => {
+  return (
+    await HiveEngineUtils.get<any[]>({
+      contract: 'tokens',
+      table: 'tokens',
+      query: { symbol: symbol },
+      limit: 1000,
+      offset: 0,
+      indexes: [],
+    })
+  ).map((t: any) => {
+    return {
+      ...t,
+      metadata: JSON.parse(t.metadata),
+    };
+  })[0];
 };
 
 /* istanbul ignore next */
@@ -353,6 +375,14 @@ const getTokensMarket = async (
     offset: offset,
     indexes: indexes,
   } as TokenRequestParams);
+};
+
+const getTokenPrecision = async (symbol: string) => {
+  if (symbol === 'HBD' || symbol === 'HIVE') {
+    return 3;
+  }
+  const token = await getTokenInfo(symbol);
+  return token.precision;
 };
 
 const TokensUtils = {
@@ -378,6 +408,8 @@ const TokensUtils = {
   getCancelDelegationTokenTransaction,
   getSendTokenTransaction,
   getHiveEngineTokenPrice,
+  getTokenInfo,
+  getTokenPrecision,
 };
 
 export default TokensUtils;

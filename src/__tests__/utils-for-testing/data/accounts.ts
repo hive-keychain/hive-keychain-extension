@@ -15,7 +15,7 @@ const extended = {
   received_vesting_shares: new Asset(20000, 'VESTS'),
   balance: new Asset(1000, 'HIVE'),
   hbd_balance: new Asset(1000, 'HBD'),
-  savings_balance: new Asset(10000, 'HBD'),
+  savings_balance: new Asset(10000, 'HIVE'),
   savings_hbd_balance: new Asset(10000, 'HBD'),
   vesting_shares: new Asset(10000, 'VESTS'),
   proxy: '',
@@ -39,7 +39,20 @@ const extended = {
   witnesses_voted_for: 2,
   voting_manabar: {
     current_mana: 1000000,
+    last_update_time: 1681981338,
   },
+} as ExtendedAccount;
+
+const extendedStringValues = {
+  ...extended,
+  reward_vesting_balance: extended.reward_vesting_balance.toString(),
+  delegated_vesting_shares: extended.delegated_vesting_shares.toString(),
+  received_vesting_shares: extended.received_vesting_shares.toString(),
+  balance: extended.balance.toString(),
+  hbd_balance: extended.hbd_balance.toString(),
+  savings_balance: extended.savings_balance.toString(),
+  savings_hbd_balance: extended.savings_hbd_balance.toString(),
+  vesting_shares: extended.vesting_shares.toString(),
 } as ExtendedAccount;
 
 const asArray = {
@@ -93,6 +106,7 @@ const active = {
     delegated_rc: 0,
     max_rc: 58990650660,
     received_delegated_rc: 0,
+    rc_manabar: { current_mana: '1000000', last_update_time: 1122134 },
   } as RC,
   name: extended.name,
 } as ActiveAccount;
@@ -111,4 +125,12 @@ const encrypted = {
   },
 };
 
-export default { extended, local, twoAccounts, asArray, active, encrypted };
+export default {
+  extended,
+  local,
+  twoAccounts,
+  asArray,
+  active,
+  encrypted,
+  extendedStringValues,
+};

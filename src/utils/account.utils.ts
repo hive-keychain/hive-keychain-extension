@@ -1,4 +1,3 @@
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import {
   AccountUpdateOperation,
   Authority,
@@ -10,7 +9,7 @@ import {
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
 import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
@@ -397,7 +396,7 @@ const getRCMana = async (username: string) => {
 
   const delta: number = Date.now() / 1000 - manabar.last_update_time;
   let current_mana = Number(manabar.current_mana) + (delta * max_mana) / 432000;
-  let percentage: number = Math.round((current_mana / max_mana) * 100);
+  let percentage: number = +((current_mana / max_mana) * 100).toFixed(2);
 
   if (!isFinite(percentage) || percentage < 0) {
     percentage = 0;
@@ -443,11 +442,11 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
+const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
-    rc.percentage > freeAccountConfig.MIN_RC_PCT &&
-    rc.current_mana > freeAccountConfig.MIN_RC
+    activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
+    parseFloat(rc.rc_manabar.current_mana) > freeAccountConfig.MIN_RC
   ) {
     Logger.info(`Claiming free account for @${activeAccount.name}`);
 
@@ -528,7 +527,7 @@ const getUpdateAccountTransaction = (
 };
 
 const addAccount = async (username: string, keys: Keys) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
 
@@ -538,7 +537,7 @@ const addAccount = async (username: string, keys: Keys) => {
 };
 
 const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
-  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+  const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
 

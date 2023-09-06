@@ -1,0 +1,13 @@
+@import '/src/popup/variable.scss';
+
+.autocomplete-item {
+  font-weight: 400;
+  height: 30px;
+  cursor: pointer;
+  padding-left: 16px;
+  display: flex;
+  align-items: center;
+  &:hover {
+    background-color: $red-dark;
+  }
+}

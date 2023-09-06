@@ -1,124 +1,287 @@
+import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { screen } from '@testing-library/react';
-import manageAccounts from 'src/__tests__/popup/pages/app-container/settings/accounts/manage-account/mocks/manage-accounts';
-import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import App from '@popup/App';
+import { Icons } from '@popup/icons.enum';
+import { Screen } from '@reference-data/screen.enum';
+import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
+import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
-import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actAdvanceTime,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import AccountUtils from 'src/utils/account.utils';
 describe('account-keys-list.component tests:\n', () => {
-  let _asFragment: () => DocumentFragment | undefined;
-  const { methods, constants, extraMocks, keys } = manageAccounts;
-  const { localAccount } = constants;
-  methods.afterEach;
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    cleanup();
+  });
   describe('General cases:\n', () => {
     beforeEach(async () => {
-      _asFragment = await manageAccounts.beforeEach();
-    });
-    it('Must show selected private key when clicking', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-        ]);
-        assertion.getOneByText(keys[i].privateKey);
-      }
-    });
-    it('Must copy selected private key to clipboard', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-        ]);
-      }
-      actAdvanceTime(200);
-      expect(screen.queryAllByText(constants.message.copied)).toHaveLength(3);
-    });
-    it('Must show confirmation page when removing key and go back', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alIcon.keys.list.preFix.remove + methods.getKeyName(keys[i].keyName),
-        ]);
-        assertion.getByLabelText(alComponent.confirmationPage);
-        await clickAwait([alButton.dialog.cancel]);
-      }
-    });
-    it('Must show confirmation to remove account', async () => {
-      await clickAwait([alButton.accounts.manage.delete]);
-      await assertion.awaitFor(
-        constants.message.toDeleteAccount,
-        QueryDOM.BYTEXT,
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: [
+                  accounts.local.oneAllkeys,
+                  accounts.local.two,
+                ],
+              },
+            },
+          },
+        },
       );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          ),
+        );
+      });
     });
-    it('Must remove from keychain and navigate to homepage', async () => {
-      extraMocks.remockGetAccount();
-      extraMocks.deleteAccount();
-      await clickAwait([
-        alButton.accounts.manage.delete,
-        alButton.dialog.confirm,
+    it('Must show selected private key when clicking to show', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
+          ),
+        );
+      });
+      expect(
+        await screen.findByText(userData.one.nonEncryptKeys.posting),
+      ).toBeInTheDocument();
+    });
+
+    it('Must copy selected private key to clipboard', async () => {
+      const originalNavigator = navigator;
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: jest.fn(),
+        },
+      });
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
+          ),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
+          ),
+        );
+      });
+      expect(
+        await screen.findByText(chrome.i18n.getMessage('popup_html_copied')),
+      ).toBeInTheDocument();
+      navigator = originalNavigator;
+    });
+
+    it('Must show confirmation page when removing key and go back', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdIcon.keys.list.preFix.remove + 'posting',
+          ),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.dialog.cancel),
+        );
+      });
+    });
+
+    it('Must show confirmation to remove account and go back when cancelling', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.accounts.manage.delete),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.dialog.cancel),
+        );
+      });
+      expect(
+        screen.queryByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).not.toBeInTheDocument();
+    });
+
+    it('Must remove from keychain, navigate to homepage, load remaining account', async () => {
+      AccountUtils.getAccount = jest.fn().mockResolvedValue([
+        {
+          ...accounts.extended,
+          name: mk.user.two,
+        } as ExtendedAccount,
       ]);
-      await assertion.awaitMk(constants.localAccountDeletedOne[0].name);
-      assertion.getByLabelText(alComponent.homePage);
+      AccountUtils.deleteAccount = jest
+        .fn()
+        .mockReturnValue([accounts.local.two] as LocalAccount[]);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.accounts.manage.delete),
+        );
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
+      ).toBeInTheDocument();
+      expect(await screen.findByText(mk.user.two)).toBeInTheDocument();
     });
   });
+
   describe('Removing key cases:\n', () => {
     beforeEach(async () => {
-      const cloneLocalAccounts = objects.clone(localAccount) as LocalAccount[];
-      _asFragment = await manageAccounts.beforeEach({
-        localAccount: cloneLocalAccounts,
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: [
+                  accounts.local.oneAllkeys,
+                  accounts.local.two,
+                ],
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          ),
+        );
       });
     });
     it('Must remove active key', async () => {
-      const ariaLabel =
-        alIcon.keys.list.preFix.remove +
-        methods.getKeyName('popup_html_active');
-      await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
-    });
-    it('Must remove posting key', async () => {
-      const ariaLabel =
-        alIcon.keys.list.preFix.remove +
-        methods.getKeyName('popup_html_posting');
-      await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
-    });
-    it('Must remove memo key', async () => {
-      const ariaLabel =
-        alIcon.keys.list.preFix.remove + methods.getKeyName('popup_html_memo');
-      await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
+      expect(
+        screen.queryByTestId(dataTestIdIcon.keys.list.preFix.add + 'posting'),
+      ).not.toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdIcon.keys.list.preFix.remove + 'posting',
+          ),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
+        );
+      });
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          ),
+        );
+      });
+      expect(
+        await screen.findByTestId(
+          dataTestIdIcon.keys.list.preFix.add + 'posting',
+        ),
+      ).toBeInTheDocument();
     });
   });
+
   describe('Using authorized account', () => {
     beforeEach(async () => {
-      _asFragment = await manageAccounts.beforeEach({
-        localAccount: constants.authorizedLocalAccount,
+      await reactTestingLibrary.renderWithConfiguration(
+        <App />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: [
+                  {
+                    ...accounts.local.oneAllkeys,
+                    keys: {
+                      ...accounts.local.oneAllkeys.keys,
+                      postingPubkey: `@${mk.user.two}`,
+                    },
+                  },
+                  accounts.local.two,
+                ],
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          ),
+        );
       });
     });
+
     it('Must show using authorized account message', () => {
-      assertion.getByLabelText(alDiv.keys.list.usingAuthorized);
-      assertion.getOneByText(constants.message.usingAuthorized);
+      expect(
+        screen.getByText(
+          chrome.i18n.getMessage('html_popup_using_authorized_account', [
+            `@${mk.user.two}`,
+          ]),
+        ),
+      ).toBeInTheDocument();
     });
-    it('Must load authorization source account', async () => {
-      extraMocks.remockGetAccount();
-      await clickAwait([alDiv.keys.list.usingAuthorized]);
-      expect(screen.getByLabelText(alDiv.selectedAccount)).toHaveTextContent(
-        mk.user.two,
-      );
+
+    it('Must load authorizated account', async () => {
+      AccountUtils.getAccount = jest.fn().mockResolvedValue([
+        {
+          ...accounts.extended,
+          name: mk.user.two,
+        } as ExtendedAccount,
+      ]);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdDiv.keys.list.usingAuthorized),
+        );
+      });
+      expect(
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.two);
     });
   });
 });

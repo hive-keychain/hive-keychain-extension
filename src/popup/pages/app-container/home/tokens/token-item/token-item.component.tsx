@@ -1,3 +1,4 @@
+import { Currency } from '@interfaces/bittrex.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -6,7 +7,7 @@ import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -17,6 +18,7 @@ interface TokenItemProps {
   tokenInfo: Token;
   market: TokenMarket[];
   ariaLabel?: string;
+  hive: Currency;
 }
 
 const TokenItem = ({
@@ -25,6 +27,7 @@ const TokenItem = ({
   market,
   ariaLabel,
   navigateToWithParams,
+  hive,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
 
@@ -72,10 +75,16 @@ const TokenItem = ({
     chrome.tabs.create({ url: tokenInfo.metadata.url });
   };
 
+  const getFormattedTokenPrice = (tokenPrice: number) => {
+    return tokenPrice.toFixed(
+      Math.max(2, -Math.floor(Math.log(tokenPrice) / Math.log(10))),
+    );
+  };
+
   return (
-    <div aria-label={ariaLabel} className="token-item">
+    <div data-testid={ariaLabel} className="token-item">
       <div
-        aria-label={`token-user-symbol-${tokenBalance.symbol}`}
+        data-testid={`token-user-symbol-${tokenBalance.symbol}`}
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
         <img
@@ -94,7 +103,7 @@ const TokenItem = ({
           </div>
         </div>
         <Icon
-          ariaLabel={`icon-token-history-${tokenBalance.symbol}`}
+          dataTestId={`icon-token-history-${tokenBalance.symbol}`}
           name={Icons.HISTORY}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
@@ -102,7 +111,7 @@ const TokenItem = ({
           additionalClassName="history"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          ariaLabel={`icon-send-history-${tokenBalance.symbol}`}
+          dataTestId={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_TRANSFER, {
@@ -113,7 +122,7 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          ariaLabel={`icon-expand-more-${tokenBalance.symbol}`}
+          dataTestId={`icon-expand-more-${tokenBalance.symbol}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
@@ -123,7 +132,7 @@ const TokenItem = ({
       </div>
       {tokenInfo && (
         <div
-          aria-label="token-info-expandable-panel"
+          data-testid={`token-info-expandable-panel-${tokenBalance.symbol}`}
           className={
             isExpandablePanelOpen
               ? 'expandable-panel opened'
@@ -131,7 +140,7 @@ const TokenItem = ({
           }>
           <div className="token-info">
             <div
-              aria-label="token-info-go-to-website"
+              data-testid={`token-info-go-to-website-${tokenBalance.symbol}`}
               className="token-description"
               onClick={goToTokenWebsite}>
               <div className="token-name-issuer">
@@ -145,12 +154,17 @@ const TokenItem = ({
               {TokensUtils.getHiveEngineTokenValue(
                 tokenBalance,
                 market,
+                hive,
               ).toFixed(2)}{' '}
-              (${TokensUtils.getHiveEngineTokenPrice(tokenBalance, market)}
-              /unit)
+              ($
+              {getFormattedTokenPrice(
+                TokensUtils.getHiveEngineTokenPrice(tokenBalance, market) *
+                  hive?.usd!,
+              )}
+              /{chrome.i18n.getMessage('token').toLowerCase()})
             </div>
             <div>
-              {chrome.i18n.getMessage('dialog_balance')} :{' '}
+              {chrome.i18n.getMessage('liquid_balance')} :{' '}
               {FormatUtils.trimUselessZero(
                 parseFloat(tokenBalance.balance),
                 tokenInfo.precision,
@@ -177,7 +191,7 @@ const TokenItem = ({
               )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label="button-go-to-incoming-delegations"
+                data-testid={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
@@ -192,21 +206,38 @@ const TokenItem = ({
             )}
             {tokenInfo.delegationEnabled && (
               <div
-                aria-label="button-go-to-outgoing-delegations"
+                data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
-                <div>
-                  {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
-                  {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.delegationsOut),
-                    tokenInfo.precision,
-                  )}
-                </div>
-                {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
+                {FormatUtils.trimUselessZero(
+                  parseFloat(tokenBalance.delegationsIn),
+                  tokenInfo.precision,
+                )}
+                {parseFloat(tokenBalance.delegationsIn) > 0 && (
                   <Icon type={IconType.OUTLINED} name={Icons.LIST} />
                 )}
               </div>
             )}
+            {tokenInfo.delegationEnabled &&
+              parseFloat(tokenBalance.delegationsOut) > 0 && (
+                <div
+                  aria-label="button-go-to-outgoing-delegations"
+                  className="delegation-line"
+                  onClick={goToOutgoingDelegations}>
+                  <div>
+                    {chrome.i18n.getMessage('popup_html_token_delegation_out')}{' '}
+                    :{' '}
+                    {FormatUtils.trimUselessZero(
+                      parseFloat(tokenBalance.delegationsOut),
+                      tokenInfo.precision,
+                    )}
+                  </div>
+                  {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                    <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                  )}
+                </div>
+              )}
             {tokenInfo.delegationEnabled &&
               parseFloat(tokenBalance.pendingUndelegations) > 0 && (
                 <div>
@@ -222,7 +253,7 @@ const TokenItem = ({
               <div className="button-panel">
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label="button-token-stake"
+                    data-testid={`button-token-stake-${tokenBalance.symbol}`}
                     className="action-button stake"
                     onClick={() => stake()}>
                     {chrome.i18n.getMessage('popup_html_token_stake')}
@@ -230,7 +261,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.stakingEnabled && (
                   <div
-                    aria-label="button-token-unstake"
+                    data-testid={`button-token-unstake-${tokenBalance.symbol}`}
                     className="action-button unstake"
                     onClick={() => unstake()}>
                     {chrome.i18n.getMessage('popup_html_token_unstake')}
@@ -238,7 +269,7 @@ const TokenItem = ({
                 )}
                 {tokenInfo.delegationEnabled && (
                   <div
-                    aria-label="button-token-delegate"
+                    data-testid={`button-token-delegate-${tokenBalance.symbol}`}
                     className="action-button delegate"
                     onClick={() => delegate()}>
                     {chrome.i18n.getMessage('popup_html_token_delegate')}
@@ -255,6 +286,7 @@ const TokenItem = ({
 const mapStateToProps = (state: RootState) => {
   return {
     tokens: state.tokens,
+    hive: state.currencyPrices.hive,
   };
 };
 

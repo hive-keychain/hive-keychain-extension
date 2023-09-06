@@ -21,6 +21,11 @@ const AccountSubMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_MANAGE_ACCOUNTS,
   },
   {
+    label: 'popup_html_manage_accounts_authorities',
+    icon: Icons.MANAGE_AUTHORITIES,
+    nextScreen: Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
+  },
+  {
     label: 'popup_html_export',
     icon: Icons.EXPORT,
     action: () => {

@@ -11,15 +11,9 @@ interface PanelProps {
   bottom: number | string;
   bottomLeft: string;
   bottomRight: string;
-  // currentWithdrawingList?: CurrentWithdrawingListItem[];
-  //TODO ad in types center
-  // center?: number | string;
-  // centerLeft?: string;
-  // centerLabel?: string;
   center?: number | string;
   centerLeft?: string;
   centerRight?: string;
-  //TODO remove comments
 
   onBottomPanelClick?: () => void;
   onTopPanelClick?: () => void;

@@ -16,8 +16,8 @@ interface CheckboxProps {
   hint?: string;
   skipHintTranslation?: boolean;
   alignment?: LabelAlignment;
-  ariaLabel?: string;
-  extraAriaLabelOnInput?: string;
+  dataTestId?: string;
+  extraDataTestIdOnInput?: string;
   disabled?: boolean;
   tooltipMessage?: string;
   skipTooltipTranslation?: boolean;
@@ -37,12 +37,12 @@ const getCheckbox = (props: CheckboxProps) => {
       } ${props.disabled ? 'disabled' : ''}`}>
       <div className="checkbox-and-label">
         <Checkbox
-          id={`${props.ariaLabel}-inner-input`}
-          aria-label={props.extraAriaLabelOnInput}
+          id={`${props.dataTestId}-inner-input`}
+          data-testid={props.extraDataTestIdOnInput}
           checked={props.checked}
           onChange={() => handleClick(props)}></Checkbox>
         <div
-          aria-label={props.ariaLabel}
+          data-testid={props.dataTestId}
           className="label"
           onClick={() => handleClick(props)}>
           {props.skipTranslation

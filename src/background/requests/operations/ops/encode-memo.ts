@@ -23,7 +23,6 @@ export const encodeMessage = async (
     } else {
       publicKey = receiver.posting.key_auths[0][0];
     }
-
     encoded = encode(key, publicKey, data.message);
   } catch (err) {
     error = err;

@@ -172,7 +172,7 @@ const RCDelegations = ({
             : 'html_popup_delegate_rc_operation',
         );
         try {
-          let success = false;
+          let success;
 
           success = await RcDelegationsUtils.sendDelegation(
             RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
@@ -233,13 +233,15 @@ const RCDelegations = ({
   };
 
   return (
-    <div className="rc-delegations-page" aria-label="rc-delegations-page">
+    <div
+      className="rc-delegations-page"
+      data-testid={`${Screen.RC_DELEGATIONS_PAGE}-page`}>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
       </div>
 
-      <div className="rc-delegations-summary" aria-label="delegations-summary">
-        <div className="total-incoming" aria-label="total-incoming">
+      <div className="rc-delegations-summary" data-testid="delegations-summary">
+        <div className="total-incoming" data-testid="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -264,7 +266,7 @@ const RCDelegations = ({
         <div
           className="total-outgoing"
           onClick={goToOutgoings}
-          aria-label="total-outgoing">
+          data-testid="total-outgoing">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
@@ -311,7 +313,7 @@ const RCDelegations = ({
 
       <div className="form-container">
         <InputComponent
-          ariaLabel="input-username"
+          dataTestId="input-username"
           value={username}
           onChange={setUsername}
           logo={Icons.AT}
@@ -323,7 +325,7 @@ const RCDelegations = ({
         <div className="amount-panel">
           <div className="amount-input-panel">
             <InputComponent
-              ariaLabel="amount-input"
+              dataTestId="amount-input"
               type={InputType.NUMBER}
               placeholder="0.000"
               skipPlaceholderTranslation={true}
@@ -354,7 +356,7 @@ const RCDelegations = ({
       </div>
 
       <OperationButtonComponent
-        ariaLabel="rc-delegate-operation-submit-button"
+        dataTestId="rc-delegate-operation-submit-button"
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.posting}

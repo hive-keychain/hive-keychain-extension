@@ -1,6 +1,7 @@
 import { Screen } from 'src/reference-data/screen.enum';
 import { ActionType } from './action-type.enum';
 import { AppThunk } from './interfaces';
+
 export const resetNav = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: ActionType.RESET_NAV });
 };
@@ -27,3 +28,12 @@ export const navigateToWithParams =
 export const goBack = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: ActionType.GO_BACK });
 };
+
+export const goBackToThenNavigate =
+  (navigateTo: Screen, goBackTo?: Screen): AppThunk =>
+  async (dispatch, getState) => {
+    dispatch({
+      type: ActionType.GO_BACK_TO_THEN_NAVIGATE,
+      payload: { goBackTo, nextPage: navigateTo },
+    });
+  };
