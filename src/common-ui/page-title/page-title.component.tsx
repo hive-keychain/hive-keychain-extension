@@ -17,6 +17,8 @@ export interface PageTitleProps {
   skipTitleTranslation?: boolean;
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
+  onCloseAdditional?: () => void;
+  onBackAdditional?: () => void;
 }
 
 const PageTitle = ({
@@ -25,17 +27,24 @@ const PageTitle = ({
   skipTitleTranslation,
   isBackButtonEnabled,
   isCloseButtonDisabled,
+  onBackAdditional,
+  onCloseAdditional,
   goBack,
   navigateTo,
   canGoBack,
   resetNav,
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
+    if (onBackAdditional) onBackAdditional();
     if (isBackButtonEnabled) {
       goBack();
     }
   };
   const handleCloseButtonClick = (): void => {
+    if (onCloseAdditional) {
+      onCloseAdditional();
+    }
+
     resetNav();
     navigateTo(Screen.HOME_PAGE, true);
   };

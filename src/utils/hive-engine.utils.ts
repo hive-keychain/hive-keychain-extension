@@ -160,9 +160,9 @@ const getHistory = async (
 };
 
 export const HiveEngineUtils = {
-  getDelayedTransactionInfo,
-  tryConfirmTransaction,
-  sendOperation,
   get,
+  getDelayedTransactionInfo,
   getHistory,
+  sendOperation,
+  tryConfirmTransaction,
 };

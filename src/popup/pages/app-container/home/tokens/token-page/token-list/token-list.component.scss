@@ -1,6 +1,5 @@
-@import '../../../../variable.scss';
-
-.tokens-page {
+@import '../../../../../../variable.scss';
+.token-list {
   @include pageLayoutRowGap;
   row-gap: 32px;
   overflow: hidden;

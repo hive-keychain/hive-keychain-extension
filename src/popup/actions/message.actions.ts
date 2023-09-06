@@ -31,6 +31,15 @@ export const setInfoMessage = (
     payload: { key, type: MessageType.INFO, params },
   };
 };
+export const setWarningMessage = (
+  key: string,
+  params: string[] = [],
+): ActionPayload<ErrorMessage> => {
+  return {
+    type: ActionType.SET_MESSAGE,
+    payload: { key, type: MessageType.WARNING, params },
+  };
+};
 
 export const resetMessage = (): ActionPayload<ErrorMessage> => {
   return {

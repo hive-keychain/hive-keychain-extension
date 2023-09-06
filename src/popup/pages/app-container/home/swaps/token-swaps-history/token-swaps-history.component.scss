@@ -1,0 +1,27 @@
+@import '/src/popup/variable.scss';
+.token-swaps-history {
+  display: flex;
+  flex-direction: column;
+
+  .refresh-panel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 24px;
+  }
+
+  .empty-history-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 8px;
+
+    .icon-component {
+      @include icon-size(60px);
+    }
+    span {
+      font-size: 18px;
+    }
+  }
+}

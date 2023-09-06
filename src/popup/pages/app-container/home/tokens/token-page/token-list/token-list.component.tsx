@@ -7,7 +7,6 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import {
   loadTokens,
   loadTokensMarket,
@@ -26,17 +25,14 @@ import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
-import './tokens.component.scss';
+import './token-list.component.scss';
 
-const Tokens = ({
+const TokenList = ({
   activeAccount,
   userTokens,
   allTokens,
   loadUserTokens,
   navigateTo,
-  addToLoadingList,
-  removeFromLoadingList,
-  setTitleContainerProperties,
   loadTokensMarket,
   loadTokens,
   market,
@@ -58,17 +54,11 @@ const Tokens = ({
     loadHiddenTokens();
     loadTokensMarket();
     loadUserTokens(activeAccount.name!);
-    setTitleContainerProperties({
-      title: 'popup_html_tokens',
-      isBackButtonEnabled: true,
-    });
   }, []);
 
   useEffect(() => {
     if (userTokens.loading) {
-      // addToLoadingList('html_popup_loading_tokens_operation');
     } else if (userTokens.list && market.length) {
-      // removeFromLoadingList('html_popup_loading_tokens_operation');
       const orderedFiltered = userTokens.list
         .filter((token) => !hiddenTokens.includes(token.symbol))
         .filter((token) =>
@@ -84,7 +74,7 @@ const Tokens = ({
   }, [userTokens, market, filterValue]);
 
   return (
-    <div className="tokens-page" data-testid={`${Screen.TOKENS_PAGE}-page`}>
+    <div className="token-list" data-testid={`${Screen.TOKENS_PAGE}-page`}>
       <div
         className="disclaimer"
         dangerouslySetInnerHTML={{
@@ -163,10 +153,9 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
-  setTitleContainerProperties,
   loadTokens,
   loadTokensMarket,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const TokensComponent = connector(Tokens);
+export const TokenListComponent = connector(TokenList);
