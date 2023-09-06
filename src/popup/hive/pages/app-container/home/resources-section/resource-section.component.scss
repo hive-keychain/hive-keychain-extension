@@ -31,6 +31,8 @@
       padding: 7px;
       align-self: flex-start;
       @include icon-size(24px);
+      justify-content: center;
+      align-items: center;
     }
     .right-panel {
       text-align: left;
