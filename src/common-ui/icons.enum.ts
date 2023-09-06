@@ -105,6 +105,9 @@ export enum NewIcons {
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
 
+  TOP_BAR_CLOSE_BTN = 'top-bar/close-button',
+  TOP_BAR_BACK_BTN = 'top-bar/back-button',
+
   //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',
   ACTIVE = 'active',

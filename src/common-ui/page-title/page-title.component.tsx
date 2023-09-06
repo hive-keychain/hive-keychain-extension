@@ -56,7 +56,7 @@ const PageTitle = ({
         <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
-          icon={NewIcons.BACK}
+          icon={NewIcons.TOP_BAR_BACK_BTN}
           className="icon-button"
         />
       )}
@@ -75,7 +75,7 @@ const PageTitle = ({
         <SVGIcon
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
-          icon={NewIcons.CLOSE}
+          icon={NewIcons.TOP_BAR_CLOSE_BTN}
           className="icon-button"
         />
       )}
