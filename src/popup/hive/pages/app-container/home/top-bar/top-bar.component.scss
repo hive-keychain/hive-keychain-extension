@@ -18,40 +18,25 @@
   }
 
   .claim-button {
-    background-color: white;
-    border: 1px solid $light-grey-border;
-    height: 24px;
-    padding: 4px;
-    border-radius: 50%;
-    color: $red;
+    --claim-rewards-color: #{$red};
+    --claim-rewards-background-color: white;
+    --claim-rewards-border-color: #{$light-grey-border};
 
     &:hover {
-      background: $red;
-      color: white;
+      --claim-rewards-background-color: #{$red};
+      --claim-rewards-color: white;
+      --claim-rewards-border-color: #{$red};
     }
   }
   .button {
     cursor: pointer;
+    &.settings-button {
+      margin-top: 4px;
+    }
   }
 
   .lock-button {
     margin-right: 32px;
-  }
-
-  .settings-button-container {
-    background: white;
-    border: 1px solid $light-grey-border;
-    border-radius: 0px 24px 24px 0px;
-    height: 48px;
-    width: 48px;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    box-sizing: border-box;
-    cursor: pointer;
-    .settings-button {
-      @include icon-size(18px);
-    }
   }
 
   .spacer {

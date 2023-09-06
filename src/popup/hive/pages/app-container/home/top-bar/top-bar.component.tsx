@@ -106,16 +106,12 @@ const TopBar = ({
 
   return (
     <div className="top-bar">
-      <div
-        className="settings-button-container"
-        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}>
-        <SVGIcon
-          dataTestId="clickable-settings"
-          icon={NewIcons.MENU}
-          onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
-          className="button settings-button"
-        />
-      </div>
+      <SVGIcon
+        dataTestId="clickable-settings"
+        icon={NewIcons.MENU_BUTTON}
+        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
+        className="button settings-button"
+      />
       <img
         className={`logo ${rotateLogo ? 'rotate' : ''}`}
         src="/assets/images/logo-keychain-small.svg"
@@ -125,7 +121,7 @@ const TopBar = ({
       <div className="spacer"></div>
       {hasRewardToClaim && (
         <SVGIcon
-          icon={NewIcons.CLAIM_REWARDS}
+          icon={NewIcons.TOP_BAR_CLAIM_REWARDS_BTN}
           dataTestId="reward-claim-icon"
           className="claim-button"
           onClick={() => claim()}
