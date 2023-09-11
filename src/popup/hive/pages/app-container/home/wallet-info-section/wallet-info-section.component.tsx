@@ -37,15 +37,9 @@ const WalletInfoSection = ({
     '...',
   );
 
-  // const [hiveRowInfoContent, setHiveRowInfoContent] = useState<
-  //   string | undefined
-  // >(undefined);
-  // const [hbdRowInfoContent, setHbdRowInfoContent] = useState<
-  //   string | undefined
-  // >(undefined);
-
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
+
   const loadHiddenTokens = async () => {
     setHiddenTokens(
       (await LocalStorageUtils.getValueFromLocalStorage(
@@ -82,7 +76,7 @@ const WalletInfoSection = ({
       );
       setDelegationAmount(delegation);
     }
-  }, [activeAccount]);
+  }, [activeAccount.name]);
 
   useEffect(() => {
     if (userTokens.loading) {
