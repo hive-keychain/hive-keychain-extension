@@ -16,6 +16,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;
   try {
     tokens = await TokensUtils.getAllTokens();
+    
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({

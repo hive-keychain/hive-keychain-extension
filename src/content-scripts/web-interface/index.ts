@@ -12,10 +12,11 @@ import {
 } from 'src/content-scripts/web-interface/response.logic';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
 import Logger from 'src/utils/logger.utils';
+if (window.chrome) {
+  //@ts-ignore
+  window.chrome.storage = undefined;
+}
 
-const { chrome } = window;
-//@ts-ignore
-window.chrome = undefined;
 let req: KeychainRequest | null = null;
 
 // Injecting Keychain
