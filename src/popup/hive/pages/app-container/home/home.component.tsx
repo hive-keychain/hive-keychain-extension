@@ -2,6 +2,7 @@ import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
+import { useErrorBoundary } from 'react-error-boundary';
 import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -52,6 +53,8 @@ const Home = ({
   >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
+
+  const { showBoundary } = useErrorBoundary();
 
   useEffect(() => {
     resetTitleContainerProperties();

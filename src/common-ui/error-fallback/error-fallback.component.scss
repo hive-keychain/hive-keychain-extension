@@ -1,0 +1,34 @@
+.error-page {
+  @include background-bottom;
+  background-color: var(--background-color);
+
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  row-gap: 16px;
+  height: 600px;
+  box-sizing: border-box;
+  .svg-icon {
+    align-self: center;
+  }
+  .title {
+    text-align: center;
+    @include dmSans700(20px);
+    color: $red;
+  }
+
+  .detail {
+    background: white;
+    border-radius: 24px;
+    padding: 16px;
+    overflow: auto;
+    @include dmSans400(15px);
+    color: var(--main-font-color);
+    max-height: 300px;
+    box-sizing: border-box;
+
+    .stack {
+      overflow-wrap: break-word;
+    }
+  }
+}

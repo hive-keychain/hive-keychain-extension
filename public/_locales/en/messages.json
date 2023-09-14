@@ -3577,5 +3577,13 @@
   "delete_label": {
     "message": "Delete",
     "description": "General message: delete"
+  },
+  "html_popup_copy_error": {
+    "message": "Copy error",
+    "description": "Copy error message"
+  },
+  "error_message_title": {
+    "message": "Oops! There was an error",
+    "description": "there was an error"
   }
 }
