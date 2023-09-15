@@ -80,6 +80,8 @@ export enum NewIcons {
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
+  HIVE_ENGINE = 'wallet/hive-engine',
+
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
 
   MENU_BUTTON = 'top-bar/menu-button',
@@ -182,7 +184,6 @@ export enum NewIcons {
   HISTORY = 'history',
   HISTORY_HOMEPAGE = 'history-homepage',
   HIVE = 'hive',
-  HIVE_ENGINE = 'hive-engine',
   HP_DELEGATION = 'hp-delegation',
   KEYCHAIN_LOGO = 'keychain-logo',
   KEYCHAIN_LOGO_ROUND = 'logo-keychain-round',

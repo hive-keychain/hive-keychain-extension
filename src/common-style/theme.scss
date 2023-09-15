@@ -1,4 +1,5 @@
 $dark: (
+  --background: url('assets/images/background/dark.svg'),
   --main-font-color: white,
   --main-font-color-inverted: $dark-blue,
   --background-color: $dark-background,
@@ -21,6 +22,7 @@ $dark: (
   --wallet-icon-secondary-color: white,
 );
 $light: (
+  --background: url('assets/images/background/light.svg'),
   --main-font-color: $dark-blue,
   --main-font-color-inverted: white,
   --background-color: $light-background,

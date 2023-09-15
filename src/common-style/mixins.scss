@@ -1,5 +1,5 @@
 @mixin background {
-  background-image: url(assets/images/background.svg);
+  background-image: var(--background);
   background-repeat: no-repeat;
 }
 

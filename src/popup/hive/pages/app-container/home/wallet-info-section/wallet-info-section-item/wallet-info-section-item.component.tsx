@@ -136,7 +136,7 @@ const walletInfoSectionItem = ({
             src={tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null;
-              currentTarget.src = '/assets/images/hive-engine.svg';
+              currentTarget.src = '/assets/images/wallet/hive-engine.svg';
             }}
             style={backgroundColor ? { background: backgroundColor } : {}}
           />
