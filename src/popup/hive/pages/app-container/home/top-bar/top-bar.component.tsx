@@ -112,9 +112,9 @@ const TopBar = ({
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         className="button settings-button"
       />
-      <img
+      <SVGIcon
         className={`logo ${rotateLogo ? 'rotate' : ''}`}
-        src="/assets/images/logo-keychain-small.svg"
+        icon={NewIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
       />

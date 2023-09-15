@@ -20,6 +20,8 @@ $dark: (
   --wallet-icon-border-color: white,
   --wallet-icon-color: white,
   --wallet-icon-secondary-color: white,
+  //top bar
+  --keychain-logo-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -44,6 +46,8 @@ $light: (
   --wallet-icon-border-color: $darker-grey-border,
   --wallet-icon-color: $dark-red,
   --wallet-icon-secondary-color: $dark-red,
+  // Top
+  --keychain-logo-color: $blue-border,
 );
 
 @mixin spread-map($map: ()) {

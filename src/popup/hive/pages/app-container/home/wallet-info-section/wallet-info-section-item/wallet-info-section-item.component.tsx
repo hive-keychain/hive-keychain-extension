@@ -133,7 +133,9 @@ const walletInfoSectionItem = ({
         {tokenInfo && (
           <img
             className={`currency-icon ${addBackground ? 'add-background' : ''}`}
-            src={tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'}
+            src={
+              tokenInfo.metadata.icon ?? '/assets/images/wallet/hive-engine.svg'
+            }
             onError={({ currentTarget }) => {
               currentTarget.onerror = null;
               currentTarget.src = '/assets/images/wallet/hive-engine.svg';
