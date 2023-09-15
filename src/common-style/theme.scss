@@ -1,11 +1,16 @@
 $dark: (
   --main-font-color: white,
+  --main-font-color-inverted: $dark-blue,
   --background-color: $dark-background,
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: white,
   // Home page
   --home-account-value-color: white,
+  // Resource section
+  --resource-item-icon-color: $dark-blue,
+  --resource-item-icon-bg-color: #21283814,
+  --resource-item-bg-color: white,
   //wallet
   --wallet-card-background: $darker-blue,
   --wallet-card-border: $blue-border,
@@ -17,12 +22,18 @@ $dark: (
 );
 $light: (
   --main-font-color: $dark-blue,
+  --main-font-color-inverted: white,
   --background-color: $light-background,
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: $dark-blue,
   // Home page
   --home-account-value-color: $darker-grey,
+  // Resource section
+  --resource-item-icon-color: white,
+  --resource-item-icon-bg-color: #ffffff2b,
+  --resource-item-bg-color: $dark-blue,
+
   // wallet
   --wallet-card-background: white,
   --wallet-card-border: $light-grey-border,

@@ -113,6 +113,9 @@ export enum NewIcons {
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
 
+  RESOURCE_ITEM_MANA = 'resources/mana',
+  RESOURCE_ITEM_RC = 'resources/rc',
+
   TOP_BAR_BACK_BTN = 'top-bar/back-button',
   TOP_BAR_CLAIM_REWARDS_BTN = 'top-bar/claim-rewards-button',
   TOP_BAR_CLOSE_BTN = 'top-bar/close-button',

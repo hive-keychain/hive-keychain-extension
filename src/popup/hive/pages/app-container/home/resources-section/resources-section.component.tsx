@@ -59,7 +59,7 @@ const ResourcesSection = ({
         label={'popup_html_vm'}
         value={`${votingMana}%`}
         secondaryValue={votingValue}
-        icon={NewIcons.VOTING_MANA}
+        icon={NewIcons.RESOURCE_ITEM_MANA}
         tooltipText={manaReadyIn}
         additionalClass="blue"
       />
@@ -67,7 +67,7 @@ const ResourcesSection = ({
         ariaLabel="resource-item-resource-credits"
         label={'popup_html_rc'}
         value={`${rc}%`}
-        icon={NewIcons.RESOURCE_CREDITS}
+        icon={NewIcons.RESOURCE_ITEM_RC}
         tooltipText={rcReadyIn}
         additionalClass="red"
       />
