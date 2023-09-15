@@ -123,7 +123,6 @@ const walletInfoSectionItem = ({
           inline: 'center',
         });
       }}>
-      <style>--background-color: </style>
       <div className="information-panel">
         {!tokenInfo && (
           <SVGIcon
@@ -157,7 +156,7 @@ const walletInfoSectionItem = ({
         </div>
         {isExpanded && (
           <SVGIcon
-            icon={NewIcons.HISTORY}
+            icon={NewIcons.WALLET_HISTORY_BUTTON}
             className={`history-icon`}
             onClick={($event) => handleHistoryClick($event, tokenBalance)}
             hoverable

@@ -80,6 +80,8 @@ export enum NewIcons {
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
+  KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
+
   MENU_BUTTON = 'top-bar/menu-button',
   MENU_ABOUT = 'menu/about',
 
@@ -119,6 +121,17 @@ export enum NewIcons {
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',
   WALLET_HP_LOGO = 'wallet/hp-logo',
+  WALLET_POWER_DOWN = 'wallet/hp/power-down',
+  WALLET_POWER_UP = 'wallet/hive/power-up',
+  WALLET_HP_DELEGATIONS = 'wallet/hp/hp-delegations',
+  WALLET_RC_DELEGATIONS = 'wallet/hp/rc-delegations',
+  WALLET_SAVINGS = 'wallet/common/savings',
+  WALLET_CONVERT = 'wallet/common/convert',
+  WALLET_SEND = 'wallet/common/send',
+  WALLET_HISTORY_BUTTON = 'wallet/common/history',
+  WALLET_TOKEN_DELEGATIONS = 'wallet/tokens/delegations',
+  WALLET_TOKEN_STAKE = 'wallet/tokens/stake',
+  WALLET_TOKEN_UNSTAKE = 'wallet/tokens/unstake',
 
   //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',
@@ -169,7 +182,6 @@ export enum NewIcons {
   HIVE_ENGINE = 'hive-engine',
   HP_DELEGATION = 'hp-delegation',
   KEYCHAIN_LOGO = 'keychain-logo',
-  KEYCHAIN_LOGO_SPLASHSCREEN = 'keychain-logo-splashscreen',
   KEYCHAIN_LOGO_ROUND = 'logo-keychain-round',
   KEYCHAINIFY = 'keychainify',
   LINK_LEDGER = 'link-ledger',

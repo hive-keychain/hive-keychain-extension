@@ -16,7 +16,7 @@
   }
 
   .wallet-background {
-    background: white;
+    background: var(--wallet-card-background);
     grid-area: only;
     border-radius: 40px 40px 0 0;
     position: sticky;

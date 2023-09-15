@@ -1,23 +1,30 @@
 .wallet-action-button {
   display: flex;
   column-gap: 8px;
-  background: white;
   padding: 8px 12px;
-  width: 140px;
+  width: 116px;
   min-height: 58px;
   border-radius: 13px;
-  border: 1px solid $light-grey-border;
+  border: 1px solid var(--wallet-card-darker-border);
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   .title {
-    vertical-align: middle;
-    align-self: center;
-    @include poppins400(14px);
-    color: $darker-grey;
+    @include poppins400(12px);
+    color: var(--main-font-color);
   }
+  .action-button {
+    height: 24px;
+    width: 24px;
+  }
+
   &:hover {
     background: $dark-red;
     .title {
       color: white;
     }
+    --wallet-icon-border-color: white;
+    --wallet-icon-color: white;
+    --wallet-icon-secondary-color: white;
   }
 }

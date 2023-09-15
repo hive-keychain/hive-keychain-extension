@@ -3,12 +3,30 @@ $dark: (
   --background-color: $dark-background,
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
+  --splashscreen-text-color: white,
+  //wallet
+  --wallet-card-background: $darker-blue,
+  --wallet-card-border: $blue-border,
+  --wallet-card-darker-border: $blue-border,
+  --wallet-card-opened-border: $blue-border,
+  --wallet-icon-border-color: white,
+  --wallet-icon-color: white,
+  --wallet-icon-secondary-color: white,
 );
 $light: (
   --main-font-color: $dark-blue,
   --background-color: $light-background,
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
+  --splashscreen-text-color: $dark-blue,
+  // wallet
+  --wallet-card-background: white,
+  --wallet-card-border: $light-grey-border,
+  --wallet-card-darker-border: $darker-grey-border,
+  --wallet-card-opened-border: $darker-grey-border,
+  --wallet-icon-border-color: $darker-grey-border,
+  --wallet-icon-color: $dark-red,
+  --wallet-icon-secondary-color: $dark-red,
 );
 
 @mixin spread-map($map: ()) {

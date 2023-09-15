@@ -1512,6 +1512,10 @@
     "message": "Buy HBD",
     "description": "When clicking on the Hbd arrow menu"
   },
+  "popup_html_convert": {
+    "message": "Convert",
+    "description": "Convert"
+  },
   "popup_html_convert_hbd": {
     "message": "Convert HBD",
     "description": "When clicking on the Hbd arrow menu"
@@ -1598,7 +1602,7 @@
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
-    "message": "$1 savings",
+    "message": "Savings",
     "description": "Saving page title"
   },
   "popup_html_buy_intro": {
