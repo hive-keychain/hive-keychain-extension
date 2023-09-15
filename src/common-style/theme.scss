@@ -4,6 +4,8 @@ $dark: (
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: white,
+  // Home page
+  --home-account-value-color: white,
   //wallet
   --wallet-card-background: $darker-blue,
   --wallet-card-border: $blue-border,
@@ -19,6 +21,8 @@ $light: (
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: $dark-blue,
+  // Home page
+  --home-account-value-color: $darker-grey,
   // wallet
   --wallet-card-background: white,
   --wallet-card-border: $light-grey-border,

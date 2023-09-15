@@ -10,13 +10,9 @@
     align-items: center;
     column-gap: 8px;
     .label {
+      @include poppins400(14px);
       color: $light-grey;
       text-align: center;
-      font-family: Poppins;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
       cursor: help;
     }
     .icon {
@@ -25,13 +21,9 @@
     }
   }
   .value {
-    color: $darker-grey;
+    @include poppins700(32px);
+    color: var(--home-account-value-color);
     text-align: center;
-    font-family: Poppins;
-    font-size: 32px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 147%;
   }
   .account-value-explanation-section {
     font-size: 18px;
