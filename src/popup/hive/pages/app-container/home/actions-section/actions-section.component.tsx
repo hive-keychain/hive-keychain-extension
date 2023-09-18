@@ -7,7 +7,7 @@ type Props = {
 };
 export const ActionsSectionComponent = ({ additionalClass }: Props) => {
   return (
-    <div className={`actions-section ${additionalClass}`}>
+    <div className={`actions-section ${additionalClass ?? ''}`}>
       {ActionButtonList.map((actionButton, index) => (
         <ActionButtonComponent
           key={index}

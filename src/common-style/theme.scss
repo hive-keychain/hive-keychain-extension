@@ -34,6 +34,10 @@ $dark: (
   --menu-icon-color: $red,
   --menu-icon-border-color: $blue-border,
   --network-icon-bg-color: $darker-blue,
+  // Bottom Bar
+  --bottom-bar-border: $blue-border,
+  --bottom-bar-icon-color: $red,
+  --bottom-bar-background: $darker-blue,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -72,6 +76,10 @@ $light: (
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
   --network-icon-bg-color: white,
+  // Bottom Bar
+  --bottom-bar-border: $lighter-grey-border,
+  --bottom-bar-icon-color: $red,
+  --bottom-bar-background: white,
 );
 
 @mixin spread-map($map: ()) {

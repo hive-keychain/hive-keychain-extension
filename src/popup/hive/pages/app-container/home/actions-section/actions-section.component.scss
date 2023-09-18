@@ -7,9 +7,9 @@
   width: calc(100% - 32px);
   box-sizing: border-box;
   bottom: 0;
-  background: white;
+  background: var(--bottom-bar-background);
   border-radius: 24px 24px 0px 0px;
-  border: 1px solid $lighter-grey-border;
+  border: 1px solid var(--bottom-bar-border);
   border-bottom: 0;
   left: 16px;
   height: 90px;
