@@ -41,7 +41,7 @@ export const SelectAccountSectionItemComponent = ({
         <div className="icons-wrapper">
           {selectedAccount === item.value && !hovered && (
             <SVGIcon
-              icon={NewIcons.ACTIVE}
+              icon={NewIcons.SELECT_ACTIVE}
               className="active-icon"
               forceHover={hovered}
               hoverable
@@ -50,12 +50,12 @@ export const SelectAccountSectionItemComponent = ({
           {hovered && (
             <div className="hovered-icons">
               <SVGIcon
-                icon={NewIcons.COPY}
+                icon={NewIcons.SELECT_COPY}
                 className="copy-icon"
                 onClick={(event) => copyUsernameToClipboard(event)}
               />
               <span {...dragHandle}>
-                <SVGIcon icon={NewIcons.DRAG} className="drag-icon" />
+                <SVGIcon icon={NewIcons.SELECT_DRAG} className="drag-icon" />
               </span>
             </div>
           )}

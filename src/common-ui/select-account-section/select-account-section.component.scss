@@ -1,13 +1,13 @@
 .select-account-section {
   .select-account-select {
     border: unset !important;
-    border: 1px solid white !important;
+    border: 1px solid var(--select-border-color) !important;
     border-radius: 16px !important;
     background: transparent;
 
     &:hover,
     &:focus {
-      border: 1px solid white !important;
+      border: 1px solid var(--select-border-color) !important;
       border-radius: 16px !important;
       background: transparent;
     }
@@ -25,7 +25,7 @@
     .account-name {
       @include poppins500(14px);
       user-select: none;
-      color: $darker-grey;
+      color: var(--select-font-color);
     }
     .user-picture {
       border-radius: 50%;
@@ -70,9 +70,9 @@
         }
       }
       width: auto;
-      border: 1px solid white;
+      border: 1px solid var(--select-border-color);
       top: 50px;
-      background-color: white;
+      background-color: var(--select-dropdown-bg-color);
       border-radius: 16px;
       right: -1px;
       left: unset !important;
@@ -88,13 +88,6 @@
           display: none;
         }
 
-        &:hover {
-          .copy-username-button {
-            display: block;
-            font-size: medium;
-          }
-        }
-
         .account-name {
           width: 120px;
         }
@@ -103,6 +96,7 @@
           display: flex;
           justify-content: space-between;
           .hovered-icons {
+            display: flex;
             flex: 1;
             justify-content: space-between;
             flex-direction: row;

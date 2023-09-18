@@ -123,6 +123,12 @@ export enum NewIcons {
   TOP_BAR_CLOSE_BTN = 'top-bar/close-button',
   TOP_BAR_KEYCHAIN_LOGO = 'top-bar/keychain-logo',
 
+  SELECT_ARROW_DOWN = 'select/arrow-down',
+  SELECT_ARROW_UP = 'select/arrow-up',
+  SELECT_ACTIVE = 'select/active',
+  SELECT_COPY = 'select/copy',
+  SELECT_DRAG = 'select/drag',
+
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',
   WALLET_HP_LOGO = 'wallet/hp-logo',
@@ -204,8 +210,6 @@ export enum NewIcons {
   RESOURCE_CREDITS = 'resource-credit',
   RPC_NODES = 'rpc',
   SAVINGS = 'savings',
-  SELECT_ARROW_DOWN = 'select-arrow-down',
-  SELECT_ARROW_UP = 'select-arrow-up',
   SEND = 'send',
   SEND_HOMEPAGE = 'send-homepage',
   THEME = 'theme',
