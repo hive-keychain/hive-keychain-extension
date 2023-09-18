@@ -3,9 +3,8 @@ $dark: (
   --main-font-color: white,
   --main-font-color-inverted: $dark-blue,
   --background-color: $dark-background,
-  --menu-icon-color: $red,
-  --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: white,
+  --separator-color: $blue-border,
   // Home page
   --home-account-value-color: white,
   // Resource section
@@ -27,15 +26,19 @@ $dark: (
   --select-icon-color: white,
   --select-border-color: $blue-border,
   --select-dropdown-bg-color: $darker-blue,
+  // Menu
+  --menu-background: $darker-blue,
+  --menu-border-color: $blue-border,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $blue-border,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
   --main-font-color: $dark-blue,
   --main-font-color-inverted: white,
   --background-color: $light-background,
-  --menu-icon-color: $red,
-  --menu-icon-border-color: $light-grey-border,
   --splashscreen-text-color: $dark-blue,
+  --separator-color: $extra-light-grey,
   // Home page
   --home-account-value-color: $darker-grey,
   // Resource section
@@ -58,6 +61,11 @@ $light: (
   --select-icon-color: $darker-grey,
   --select-border-color: white,
   --select-dropdown-bg-color: white,
+  // Menu
+  --menu-background: white,
+  --menu-border-color: #f3f3f3,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $light-grey-border,
 );
 
 @mixin spread-map($map: ()) {

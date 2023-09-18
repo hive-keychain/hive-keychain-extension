@@ -1,7 +1,7 @@
 .menu {
   border-radius: 12px;
-  border: 1px solid #f3f3f3;
-  background: #fff;
+  border: 1px solid var(--menu-border-color);
+  background: var(--menu-background);
   margin: 0px 18px;
 
   .menu-item-container {

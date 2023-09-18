@@ -1,5 +1,5 @@
 .separator {
-  background: $extra-light-grey;
+  background: var(--separator-color);
   align-self: center;
 
   &.horizontal {
