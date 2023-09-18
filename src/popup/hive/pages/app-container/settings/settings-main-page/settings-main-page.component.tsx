@@ -40,19 +40,19 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
       <div className="link-panel">
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.DISCORD}
+          icon={NewIcons.MENU_BOTTOM_BAR_DISCORD}
           onClick={goToDiscord}
           hoverable
         />
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.HIVE}
+          icon={NewIcons.MENU_BOTTOM_BAR_HIVE}
           onClick={goToPeakD}
           hoverable
         />
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.TWITTER}
+          icon={NewIcons.MENU_BOTTOM_BAR_TWITTER}
           onClick={goToTwitter}
           hoverable
         />

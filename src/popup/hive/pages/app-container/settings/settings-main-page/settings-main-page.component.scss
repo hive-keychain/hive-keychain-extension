@@ -18,13 +18,25 @@
     column-gap: 8px;
     cursor: pointer;
     .network-icon {
-      background: white;
+      & > div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      background: var(--network-icon-bg-color);
       border-radius: 66px 66px 0px 0px;
-      border: 1px solid $light-grey-border;
+      border: 1px solid var(--menu-icon-border-color);
       padding: 14px 12px 8px 12px;
+      width: 53px;
+      height: 48px;
+      box-sizing: border-box;
+
+      --menu-bottom-bar-icon-color: #{$red};
+
       &:hover {
         background: $red;
         border-radius: 66px 66px 0px 10px;
+        --menu-bottom-bar-icon-color: white;
       }
     }
   }

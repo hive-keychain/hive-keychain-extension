@@ -115,6 +115,10 @@ export enum NewIcons {
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
 
+  MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
+  MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
+  MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
+
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',
 

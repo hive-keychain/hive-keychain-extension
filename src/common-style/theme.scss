@@ -21,6 +21,8 @@ $dark: (
   --wallet-icon-secondary-color: white,
   //top bar
   --keychain-logo-color: white,
+  --back-button-color: white,
+  --close-button-color: white,
   // Select
   --select-font-color: white,
   --select-icon-color: white,
@@ -31,6 +33,7 @@ $dark: (
   --menu-border-color: $blue-border,
   --menu-icon-color: $red,
   --menu-icon-border-color: $blue-border,
+  --network-icon-bg-color: $darker-blue,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -56,6 +59,8 @@ $light: (
   --wallet-icon-secondary-color: $dark-red,
   // Top
   --keychain-logo-color: $blue-border,
+  --back-button-color: #292d32,
+  --close-button-color: #292d32,
   // Select account section
   --select-font-color: $darker-grey,
   --select-icon-color: $darker-grey,
@@ -66,6 +71,7 @@ $light: (
   --menu-border-color: #f3f3f3,
   --menu-icon-color: $red,
   --menu-icon-border-color: $light-grey-border,
+  --network-icon-bg-color: white,
 );
 
 @mixin spread-map($map: ()) {

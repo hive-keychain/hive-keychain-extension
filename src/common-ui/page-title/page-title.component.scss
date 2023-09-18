@@ -7,7 +7,7 @@
   .title {
     user-select: none;
     flex: 1;
-    color: $darker-grey;
+    color: var(--main-font-color);
     pointer-events: none;
     height: 28px;
     overflow: hidden;
