@@ -76,10 +76,18 @@ const TokenItem = ({
   };
 
   const getFormattedTokenPrice = (tokenPrice: number) => {
+    if (tokenPrice === 0) return 0;
     return tokenPrice.toFixed(
       Math.max(2, -Math.floor(Math.log(tokenPrice) / Math.log(10))),
     );
   };
+
+  const totalToken =
+    parseFloat(tokenBalance.balance) +
+    parseFloat(tokenBalance.pendingUndelegations) +
+    parseFloat(tokenBalance.pendingUnstake) +
+    parseFloat(tokenBalance.delegationsOut) +
+    parseFloat(tokenBalance.stake);
 
   return (
     <div data-testid={ariaLabel} className="token-item">
@@ -89,7 +97,7 @@ const TokenItem = ({
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
         <img
           className="token-icon"
-          src={tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'}
+          src={tokenInfo.metadata?.icon ?? '/assets/images/hive-engine.svg'}
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
             currentTarget.src = '/assets/images/hive-engine.svg';
@@ -99,7 +107,7 @@ const TokenItem = ({
           <div className="symbol">{tokenBalance.symbol}</div>
 
           <div className="balance">
-            {FormatUtils.withCommas(tokenBalance.balance, 3)}
+            {FormatUtils.withCommas(totalToken + '', 3)}
           </div>
         </div>
         <Icon
