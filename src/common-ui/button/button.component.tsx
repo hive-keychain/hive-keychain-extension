@@ -3,8 +3,8 @@ import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export enum ButtonType {
-  DEFAULT = 'default',
-  WHITE = 'white',
+  IMPORTANT = 'important',
+  ALTERNATIVE = 'alternative',
 }
 
 export interface ButtonProps {
@@ -25,7 +25,7 @@ const ButtonComponent = (props: ButtonProps) => {
     <button
       data-testid={props.dataTestId}
       className={`submit-button ${
-        props.type ? props.type : ButtonType.DEFAULT
+        props.type ? props.type : ButtonType.IMPORTANT
       } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${
         props.additionalClass ?? ''
       } ${props.height ?? 'medium'}`}

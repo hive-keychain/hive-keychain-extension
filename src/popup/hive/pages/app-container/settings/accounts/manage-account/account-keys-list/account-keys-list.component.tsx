@@ -183,7 +183,7 @@ const AccountKeysList = ({
         dataTestId="button-toogle-qr-code"
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
         onClick={() => toggleQRCode()}
-        type={ButtonType.WHITE}
+        type={ButtonType.ALTERNATIVE}
       />
       {qrCodeDisplayed && (
         <div className="qr-code">
@@ -211,7 +211,7 @@ const AccountKeysList = ({
         <ButtonComponent
           dataTestId="button-delete-account"
           label="popup_html_delete_account"
-          type={ButtonType.DEFAULT}
+          type={ButtonType.IMPORTANT}
           onClick={() => deleteAccount()}
         />
       )}

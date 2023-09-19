@@ -116,7 +116,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
           <div className="button-panel">
             {pageIndex > 0 && (
               <ButtonComponent
-                type={ButtonType.DEFAULT}
+                type={ButtonType.IMPORTANT}
                 label="popup_html_whats_new_previous"
                 onClick={() => previous()}
               />
@@ -124,7 +124,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             {pageIndex === content.features[locale].length - 1 && (
               <ButtonComponent
                 dataTestId="button-last-page"
-                type={ButtonType.DEFAULT}
+                type={ButtonType.IMPORTANT}
                 label="popup_html_whats_new_got_it"
                 onClick={() => finish()}
               />
@@ -132,7 +132,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             {pageIndex < content.features[locale].length - 1 && (
               <ButtonComponent
                 dataTestId="button-next-page"
-                type={ButtonType.DEFAULT}
+                type={ButtonType.IMPORTANT}
                 label="popup_html_whats_new_next"
                 onClick={() => next()}
               />

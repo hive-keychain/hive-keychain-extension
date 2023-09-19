@@ -5,7 +5,7 @@ import {
   BackgroundType,
   CheckboxPanelComponent,
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -46,7 +46,7 @@ const SignUp = ({
 
   return (
     <div className="sign-up-page" data-testid="signup-page">
-      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_LOGO} />
+      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_FULL_LOGO} />
       <div className="introduction-panel">
         <span className="introduction big first">
           {chrome.i18n.getMessage('popup_html_unlock1')}
@@ -62,7 +62,6 @@ const SignUp = ({
         <InputComponent
           value={newPassword}
           onChange={setNewPassword}
-          logo={Icons.PASSWORD}
           placeholder="popup_html_new_password"
           label="popup_html_new_password"
           type={InputType.PASSWORD}
@@ -72,7 +71,6 @@ const SignUp = ({
         <InputComponent
           value={newPasswordConfirm}
           onChange={setNewPasswordConfirm}
-          logo={Icons.PASSWORD}
           placeholder="popup_html_confirm"
           label="popup_html_confirm"
           type={InputType.PASSWORD}

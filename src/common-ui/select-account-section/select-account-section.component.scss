@@ -13,10 +13,10 @@
     }
 
     &.white {
-      background: white;
+      background: var(--select-background-color);
       &:hover,
       &:focus {
-        background: white;
+        background: var(--select-background-color);
       }
     }
 

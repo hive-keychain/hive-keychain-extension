@@ -104,14 +104,14 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           />
           {props.type === InputType.PASSWORD && !isPasswordDisplay && (
             <SVGIcon
-              icon={NewIcons.VISIBLE}
+              icon={NewIcons.INPUT_SHOW}
               className="input-img display-password right"
               onClick={() => setPasswordDisplayed(true)}
             />
           )}
           {props.type === InputType.PASSWORD && isPasswordDisplay && (
             <SVGIcon
-              icon={NewIcons.HIDE}
+              icon={NewIcons.INPUT_HIDE}
               className="input-img display-password right"
               onClick={() => setPasswordDisplayed(false)}
             />

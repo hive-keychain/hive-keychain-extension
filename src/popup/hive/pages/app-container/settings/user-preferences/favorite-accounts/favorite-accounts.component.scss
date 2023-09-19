@@ -6,6 +6,6 @@
   overflow: hidden;
 
   .intro {
-    @include caption($dark-blue);
+    @include caption();
   }
 }

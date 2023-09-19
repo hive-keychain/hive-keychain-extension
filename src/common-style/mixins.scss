@@ -47,10 +47,10 @@
   text-align: center;
 }
 
-@mixin caption($fontColor) {
+@mixin caption() {
   padding: 0px 30px;
   @include poppins400($caption-font-size);
-  color: $fontColor;
+  color: var(--main-font-color);
 }
 
 @mixin icon-size($size) {

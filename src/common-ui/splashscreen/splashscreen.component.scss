@@ -25,7 +25,7 @@
       width: 100%;
       height: 100%;
       position: fixed;
-      background-image: url(assets/images/background.svg);
+      background-image: var(--background);
       background-repeat: no-repeat;
       // opacity: 0.4;
       &.top {

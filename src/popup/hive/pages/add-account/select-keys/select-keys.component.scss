@@ -4,6 +4,6 @@
   row-gap: 20px;
   padding: 0px 24px;
   .caption {
-    @include caption($dark-blue);
+    @include caption();
   }
 }

@@ -31,7 +31,7 @@ const getCheckbox = (props: CheckboxProps) => {
       data-testid={props.extraDataTestIdOnInput}
       onClick={() => handleClick(props)}>
       <div className="custom-checkbox">
-        {props.checked && <SVGIcon icon={NewIcons.CHECK} />}
+        {props.checked && <SVGIcon icon={NewIcons.CHECKBOX_CHECKED} />}
       </div>
       <div className="label">
         {props.skipTranslation

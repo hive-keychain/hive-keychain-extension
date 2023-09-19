@@ -72,7 +72,7 @@ const BuyCoins = ({
                 additionalClass="buy-button"
                 onClick={() => goTo(item.link)}
                 label={'popup_html_buy'}
-                type={ButtonType.DEFAULT}
+                type={ButtonType.IMPORTANT}
               />
             </div>
           ),

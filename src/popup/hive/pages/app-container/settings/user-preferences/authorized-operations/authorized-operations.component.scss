@@ -5,7 +5,7 @@
   row-gap: 16px;
   padding: 0px 24px;
   .introduction {
-    @include caption($dark-blue);
+    @include caption();
   }
 
   .no_pref {

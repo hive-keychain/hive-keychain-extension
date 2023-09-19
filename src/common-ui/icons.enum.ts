@@ -80,9 +80,18 @@ export enum NewIcons {
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
+  CHECKBOX_CHECKED = 'checkbox/checked',
+
   HIVE_ENGINE = 'wallet/hive-engine',
 
+  INPUT_SHOW = 'input/show',
+  INPUT_HIDE = 'input/hide',
+  INPUT_MAX = 'input/max',
+  INPUT_ENCRYPT = 'input/encrypt',
+  INPUT_DECRYPT = 'input/decrypt',
+
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
+  KEYCHAIN_FULL_LOGO = 'keychain-full-logo',
 
   MENU_BUTTON = 'top-bar/menu-button',
   MENU_ABOUT = 'menu/about',

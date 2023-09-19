@@ -87,28 +87,28 @@ const AddAccountMain = ({
           dataTestId="add-by-keys-button"
           label={'popup_html_add_by_keys'}
           onClick={handleAddByKeys}
-          type={ButtonType.WHITE}
+          type={ButtonType.ALTERNATIVE}
         />
         {accounts.length > 0 && (
           <ButtonComponent
             dataTestId="add-by-auth-button"
             label={'popup_html_add_by_auth'}
             onClick={handleAddByAuth}
-            type={ButtonType.WHITE}
+            type={ButtonType.ALTERNATIVE}
           />
         )}
         <ButtonComponent
           dataTestId="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
-          type={ButtonType.WHITE}
+          type={ButtonType.ALTERNATIVE}
         />
         {isLedgerSupported && (
           <ButtonComponent
             dataTestId="import-keys-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
-            type={ButtonType.WHITE}
+            type={ButtonType.ALTERNATIVE}
           />
         )}
       </div>

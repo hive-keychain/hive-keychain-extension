@@ -2,8 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  row-gap: 8px;
-  padding-top: 8px;
   justify-content: space-between;
   .love-text {
     @include poppins500(15px);

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  row-gap: 24px;
+  row-gap: 12px;
   padding: 0px 24px;
   padding-bottom: 16px;
 
@@ -12,6 +12,6 @@
     row-gap: 8px;
   }
   .intro {
-    @include caption($dark-blue);
+    @include caption();
   }
 }

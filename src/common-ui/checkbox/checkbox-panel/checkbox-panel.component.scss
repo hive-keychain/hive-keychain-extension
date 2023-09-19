@@ -2,8 +2,8 @@
   display: flex;
   padding: 16px;
   border-radius: 22px;
-  border: 1px solid #fff;
-  background: #fff;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
 
   &.has-hint {
     flex-direction: column;

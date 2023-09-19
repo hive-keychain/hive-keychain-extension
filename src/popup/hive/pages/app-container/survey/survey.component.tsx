@@ -52,13 +52,13 @@ const Survey = ({ survey }: Props) => {
           </div>
           <div className="button-panel">
             <ButtonComponent
-              type={ButtonType.WHITE}
+              type={ButtonType.ALTERNATIVE}
               label="popup_html_survey_no_thanks"
               onClick={() => noThanks()}
             />
             <ButtonComponent
               dataTestId="help-us-page"
-              type={ButtonType.DEFAULT}
+              type={ButtonType.IMPORTANT}
               label="popup_html_survey_help_us"
               onClick={() => helpUs()}
             />

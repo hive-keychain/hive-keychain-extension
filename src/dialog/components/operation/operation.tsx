@@ -97,13 +97,13 @@ const Operation = ({
         <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
           <ButtonComponent
             label="dialog_cancel"
-            type={ButtonType.DEFAULT}
+            type={ButtonType.IMPORTANT}
             onClick={() => {
               window.close();
             }}
           />
           <ButtonComponent
-            type={ButtonType.DEFAULT}
+            type={ButtonType.IMPORTANT}
             label="dialog_confirm"
             onClick={onConfirm || genericOnConfirm}
           />

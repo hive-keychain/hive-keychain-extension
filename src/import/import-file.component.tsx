@@ -102,7 +102,7 @@ const ImportFile = ({
         <ButtonComponent
           onClick={importKeysFromFile}
           label="popup_html_import"
-          type={ButtonType.DEFAULT}
+          type={ButtonType.IMPORTANT}
           fixToBottom></ButtonComponent>
       )}
 

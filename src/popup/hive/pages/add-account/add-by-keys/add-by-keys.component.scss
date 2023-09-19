@@ -5,8 +5,7 @@
   padding: 0px 24px;
 
   .caption {
-    color: var(--main-font-color);
-    @include caption($dark-blue);
+    @include caption();
   }
 
   .form-container {

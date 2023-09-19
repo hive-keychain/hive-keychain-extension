@@ -21,13 +21,13 @@ $dark: (
   --wallet-icon-secondary-color: white,
   //top bar
   --keychain-logo-color: white,
-  --back-button-color: white,
-  --close-button-color: white,
+  --topbar-button-color: white,
   // Select
   --select-font-color: white,
   --select-icon-color: white,
   --select-border-color: $blue-border,
   --select-dropdown-bg-color: $darker-blue,
+  --select-background-color: $darker-blue,
   // Menu
   --menu-background: $darker-blue,
   --menu-border-color: $blue-border,
@@ -38,6 +38,15 @@ $dark: (
   --bottom-bar-border: $blue-border,
   --bottom-bar-icon-color: $red,
   --bottom-bar-background: $darker-blue,
+  // Inputs
+  --input-background: $darker-blue,
+  --input-border: $blue-border,
+  --checkbox-color: white,
+  --checkbox-background: transparent,
+  // Buttons
+  --button-background-color: $red,
+  --button-alternative-background-color: $darker-blue,
+  --button-alternative-border-color: $blue-border,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -63,13 +72,13 @@ $light: (
   --wallet-icon-secondary-color: $dark-red,
   // Top
   --keychain-logo-color: $blue-border,
-  --back-button-color: #292d32,
-  --close-button-color: #292d32,
+  --topbar-button-color: $darker-blue,
   // Select account section
   --select-font-color: $darker-grey,
   --select-icon-color: $darker-grey,
   --select-border-color: white,
   --select-dropdown-bg-color: white,
+  --select-background-color: white,
   // Menu
   --menu-background: white,
   --menu-border-color: #f3f3f3,
@@ -80,6 +89,15 @@ $light: (
   --bottom-bar-border: $lighter-grey-border,
   --bottom-bar-icon-color: $red,
   --bottom-bar-background: white,
+  // Inputs
+  --input-background: white,
+  --input-border: $lighter-grey-border,
+  --checkbox-color: $darker-blue,
+  --checkbox-background: #e6eef6,
+  // Buttons
+  --button-background-color: $red,
+  --button-alternative-background-color: white,
+  --button-alternative-border-color: white,
 );
 
 @mixin spread-map($map: ()) {

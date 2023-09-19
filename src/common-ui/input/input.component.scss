@@ -18,13 +18,13 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
     margin-right: 12px;
     user-select: none;
 
-    background: white;
-    padding: 16px;
+    background: var(--input-background);
+    padding: 12px;
     box-sizing: border-box;
     color: var(--main-font-color);
     border-style: unset;
     border-radius: 66px;
-    border: 1px solid $lighter-grey-border;
+    border: 1px solid var(--input-border);
 
     .input-container {
       display: flex;
@@ -34,6 +34,8 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
         flex: 1;
         border-style: unset;
         border: none;
+        background: var(--input-background);
+        padding-left: 12px;
         @include poppins500($input-font-size);
         color: var(--main-font-color);
         &::placeholder {

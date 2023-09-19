@@ -264,7 +264,7 @@ const WitnessInformation = ({
                   requiredKey={KeychainKeyTypesLC.active}
                   onClick={() => disableWitness()}
                   label={'popup_html_disable_witness'}
-                  type={ButtonType.DEFAULT}
+                  type={ButtonType.IMPORTANT}
                 />
               )}
               {witnessInfo.isDisabled && lastSigningKey && (
@@ -272,7 +272,7 @@ const WitnessInformation = ({
                   requiredKey={KeychainKeyTypesLC.active}
                   onClick={() => enableWitness()}
                   label={'popup_html_enable_witness'}
-                  type={ButtonType.DEFAULT}
+                  type={ButtonType.IMPORTANT}
                 />
               )}
             </div>

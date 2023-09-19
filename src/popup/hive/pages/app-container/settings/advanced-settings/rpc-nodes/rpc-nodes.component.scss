@@ -67,7 +67,7 @@
   flex-direction: column;
   row-gap: 14px;
   .add-rpc-caption {
-    @include caption($dark-blue);
+    @include caption();
     margin-top: 12px;
   }
 }

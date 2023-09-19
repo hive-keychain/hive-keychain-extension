@@ -45,7 +45,7 @@ const SignIn = ({
 
   return (
     <div data-testid="sign-in-page" className="sign-in-page">
-      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_LOGO} />
+      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_FULL_LOGO} />
       <div className="introduction-panel">
         <span className="introduction big first">
           {chrome.i18n.getMessage('popup_html_unlock1')}
