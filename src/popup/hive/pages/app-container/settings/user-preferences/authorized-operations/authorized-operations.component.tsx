@@ -106,6 +106,8 @@ const AuthorizedOperations = ({
           dataTestId="input-filter-box"
           type={InputType.TEXT}
           placeholder="popup_html_search"
+          logo={NewIcons.INPUT_SEARCH}
+          logoPosition="right"
           value={filterValue}
           onChange={(value) => setFilterValue(value)}
         />
@@ -135,7 +137,7 @@ const AuthorizedOperations = ({
                     <SVGIcon
                       dataTestId={`icon-delete-authorized-${operation}-${website}`}
                       onClick={() => handleEraseButtonClick(website, operation)}
-                      icon={NewIcons.DELETE}
+                      icon={NewIcons.GLOBAL_DELETE}
                       className="operation-action"></SVGIcon>
                   </div>
                 )

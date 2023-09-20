@@ -11,7 +11,7 @@
   .no_pref {
     text-align: center;
     margin-top: 16px;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--main-font-color);
   }
 
@@ -27,8 +27,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: white;
-      border: 1px solid $light-grey-border;
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
       border-radius: 22px;
       padding: 20px;
       box-sizing: border-box;

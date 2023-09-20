@@ -9,7 +9,6 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -68,57 +67,57 @@ const FavoriteAccounts = ({
     ]);
   };
 
-  const handleItemClicked = (accountName: string) => {
-    const itemClicked = accounts.find(
-      (account: LocalAccount) => account.name === accountName,
-    );
-    loadActiveAccount(itemClicked!);
-  };
+  // const handleItemClicked = (accountName: string) => {
+  //   const itemClicked = accounts.find(
+  //     (account: LocalAccount) => account.name === accountName,
+  //   );
+  //   loadActiveAccount(itemClicked!);
+  // };
 
-  const customLabelRender = (
-    selectProps: SelectRenderer<LocalAccountListItem>,
-  ) => {
-    return (
-      <div
-        className="selected-account-panel"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="selected-account-name">{selectedLocalAccount}</div>
-      </div>
-    );
-  };
-  const customItemRender = (
-    selectProps: SelectItemRenderer<LocalAccountListItem>,
-  ) => {
-    return (
-      <div
-        data-testid={`select-account-item-${selectProps.item.label}`}
-        className={`select-account-item ${
-          selectedLocalAccount === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          handleItemClicked(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="account-name">{selectProps.item.label}</div>
-      </div>
-    );
-  };
+  // const customLabelRender = (
+  //   selectProps: SelectRenderer<LocalAccountListItem>,
+  // ) => {
+  //   return (
+  //     <div
+  //       className="selected-account-panel"
+  //       onClick={() => {
+  //         selectProps.methods.dropDown('close');
+  //       }}>
+  //       <img
+  //         src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
+  //         onError={(e: any) => {
+  //           e.target.onError = null;
+  //           e.target.src = '/assets/images/accounts.png';
+  //         }}
+  //       />
+  //       <div className="selected-account-name">{selectedLocalAccount}</div>
+  //     </div>
+  //   );
+  // };
+  // const customItemRender = (
+  //   selectProps: SelectItemRenderer<LocalAccountListItem>,
+  // ) => {
+  //   return (
+  //     <div
+  //       data-testid={`select-account-item-${selectProps.item.label}`}
+  //       className={`select-account-item ${
+  //         selectedLocalAccount === selectProps.item.value ? 'selected' : ''
+  //       }`}
+  //       onClick={() => {
+  //         handleItemClicked(selectProps.item.value);
+  //         selectProps.methods.dropDown('close');
+  //       }}>
+  //       <img
+  //         src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
+  //         onError={(e: any) => {
+  //           e.target.onError = null;
+  //           e.target.src = '/assets/images/accounts.png';
+  //         }}
+  //       />
+  //       <div className="account-name">{selectProps.item.label}</div>
+  //     </div>
+  //   );
+  // };
 
   const handleDeleteFavorite = (
     listName: FavoriteUserListName,

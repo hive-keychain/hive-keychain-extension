@@ -11,6 +11,7 @@ import { InputType } from './input-type.enum';
 export interface InputProps {
   value: any;
   logo?: Icons | string | NewIcons;
+  logoPosition?: 'left' | 'right';
   label?: string;
   placeholder: string;
   type: InputType;
@@ -74,9 +75,11 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
       )}
       <div className={`custom-input-content ${props.error ? 'has-error' : ''}`}>
         <div
-          className={`input-container ${props.logo ? 'has-logo' : 'no-logo'} ${
-            props.type === InputType.PASSWORD ? 'password-type' : ''
-          } ${isFocused ? 'focused' : ''}`}>
+          className={`input-container ${
+            props.logo ? `has-${props.logoPosition ?? 'left'}-logo` : 'no-logo'
+          } ${props.type === InputType.PASSWORD ? 'password-type' : ''} ${
+            isFocused ? 'focused' : ''
+          }`}>
           <input
             data-testid={props.dataTestId}
             type={
@@ -134,7 +137,10 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
             />
           )}
           {props.logo && (
-            <SVGIcon icon={props.logo as NewIcons} className="input-img left" />
+            <SVGIcon
+              icon={props.logo as NewIcons}
+              className={`input-img ${props.logoPosition ?? 'left'}`}
+            />
           )}
         </div>
 

@@ -11,6 +11,9 @@ $dark: (
   --resource-item-icon-color: $dark-blue,
   --resource-item-icon-bg-color: #21283814,
   --resource-item-bg-color: white,
+  // Card
+  --card-background: $darker-blue,
+  --card-border: $blue-border,
   // Buy page
   --buy-card-background: $dark-blue,
   --buy-card-border: $blue-border,
@@ -52,6 +55,10 @@ $dark: (
   --button-alternative-background-color: $darker-blue,
   --button-alternative-border-color: $blue-border,
   --button-alternative-shadow-color: $black-shadow,
+  // Favorite accounts
+  --favorite-account-btn-border: $blue-border,
+  --favorite-account-btn-icon: white,
+  --favorite-account-save-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -66,6 +73,9 @@ $light: (
   --resource-item-icon-color: white,
   --resource-item-icon-bg-color: #ffffff2b,
   --resource-item-bg-color: $dark-blue,
+  // Card
+  --card-background: white,
+  --card-border: $dark-grey-border,
   // Buy page
   --buy-card-background: white,
   --buy-card-border: $dark-grey-border,
@@ -107,6 +117,10 @@ $light: (
   --button-alternative-background-color: white,
   --button-alternative-border-color: white,
   --button-alternative-shadow-color: $white-shadow,
+  // Favorite accounts
+  --favorite-account-btn-border: $light-grey-border,
+  --favorite-account-btn-icon: $dark-blue,
+  --favorite-account-save-color: $dark-blue,
 );
 
 @mixin spread-map($map: ()) {

@@ -5,9 +5,9 @@
   align-content: center;
   row-gap: 12px;
 
-  background: white;
+  background: var(--card-background);
   border-radius: 22px;
-  border: 1px solid $light-grey-border;
+  border: 1px solid var(--card-color);
 
   .item {
     flex-direction: row;
@@ -52,14 +52,16 @@
 
       .edit-label {
         border: unset;
-        border-bottom: 1px solid $dark-blue;
+        border-bottom: 1px solid var(--card-border);
         min-width: unset;
         outline: none !important;
         width: 100px;
         margin-right: 8px;
+        background: transparent;
+        color: var(--main-font-color);
         &:focus {
           border: unset;
-          border-bottom: 1px solid $dark-blue;
+          border-bottom: 1px solid var(--card-border);
         }
       }
     }
@@ -80,11 +82,11 @@
         justify-content: center;
         column-gap: 8px;
         border-radius: 13px;
-        border: 1px solid $light-grey-border;
+        border: 1px solid var(--card-border);
         padding: 14px 48px;
         cursor: pointer;
         .label {
-          @include josefin500(10px);
+          @include josefin500(14px);
           color: var(--main-font-color);
         }
       }

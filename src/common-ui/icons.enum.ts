@@ -90,6 +90,11 @@ export enum NewIcons {
 
   CHECKBOX_CHECKED = 'checkbox/checked',
 
+  FAVORITE_ACCOUNTS_EDIT = 'favorite-accounts/edit',
+  FAVORITE_ACCOUNTS_DELETE = 'favorite-accounts/delete',
+  FAVORITE_ACCOUNTS_CANCEL = 'favorite-accounts/cancel',
+  FAVORITE_ACCOUNTS_SAVE = 'favorite-accounts/save',
+
   GLOBAL_DELETE = 'global/delete',
 
   HIVE_ENGINE = 'wallet/hive-engine',
@@ -199,10 +204,6 @@ export enum NewIcons {
   EXPORT_ACCOUNTS = 'export-accounts',
   EXPORT_SETTINGS = 'export-settings',
   FAVORITE_ACCOUNTS = 'favorite-accounts',
-  FAVORITE_ACCOUNTS_CANCEL = 'favorite-item-cancel',
-  FAVORITE_ACCOUNTS_DELETE = 'favorite-item-delete',
-  FAVORITE_ACCOUNTS_EDIT = 'favorite-item-edit',
-  FAVORITE_ACCOUNTS_SAVE = 'favorite-item-save',
   FILTER_BUTTON = 'filter-button',
   GOVERNANCE = 'governance',
   INFO_CIRCLE = 'info-circle',
