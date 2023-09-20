@@ -80,7 +80,17 @@ export enum NewIcons {
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
+  BUY_BINANCE = 'buy/binance',
+  BUY_GATEIO = 'buy/gateio',
+  BUY_HUOBI = 'buy/huobi',
+  BUY_IONOMY = 'buy/ionomy',
+  BUY_MEXC = 'buy/mexc',
+  BUY_TRANSAK = 'buy/transak',
+  BUY_UPBIT = 'buy/upbit',
+
   CHECKBOX_CHECKED = 'checkbox/checked',
+
+  GLOBAL_DELETE = 'global/delete',
 
   HIVE_ENGINE = 'wallet/hive-engine',
 
@@ -89,6 +99,7 @@ export enum NewIcons {
   INPUT_MAX = 'input/max',
   INPUT_ENCRYPT = 'input/encrypt',
   INPUT_DECRYPT = 'input/decrypt',
+  INPUT_SEARCH = 'input/search',
 
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',

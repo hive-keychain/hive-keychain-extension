@@ -77,7 +77,7 @@ const BuyCoins = ({
             </div>
           ),
         )}
-        <div className="card">
+        <div className="card exchanges-card">
           <div className="title">
             {chrome.i18n.getMessage('html_popup_exchanges')}
           </div>

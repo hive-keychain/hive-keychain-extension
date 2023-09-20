@@ -11,6 +11,10 @@ $dark: (
   --resource-item-icon-color: $dark-blue,
   --resource-item-icon-bg-color: #21283814,
   --resource-item-bg-color: white,
+  // Buy page
+  --buy-card-background: $dark-blue,
+  --buy-card-border: $blue-border,
+  --buy-card-hovered-shadow: $black-shadow,
   //wallet
   --wallet-card-background: $darker-blue,
   --wallet-card-border: $blue-border,
@@ -47,6 +51,7 @@ $dark: (
   --button-background-color: $red,
   --button-alternative-background-color: $darker-blue,
   --button-alternative-border-color: $blue-border,
+  --button-alternative-shadow-color: $black-shadow,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -61,7 +66,10 @@ $light: (
   --resource-item-icon-color: white,
   --resource-item-icon-bg-color: #ffffff2b,
   --resource-item-bg-color: $dark-blue,
-
+  // Buy page
+  --buy-card-background: white,
+  --buy-card-border: $dark-grey-border,
+  --buy-card-hovered-shadow: $white-shadow,
   // wallet
   --wallet-card-background: white,
   --wallet-card-border: $light-grey-border,
@@ -98,6 +106,7 @@ $light: (
   --button-background-color: $red,
   --button-alternative-background-color: white,
   --button-alternative-border-color: white,
+  --button-alternative-shadow-color: $white-shadow,
 );
 
 @mixin spread-map($map: ()) {
