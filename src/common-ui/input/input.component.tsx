@@ -124,7 +124,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
             props.value.length > 0 && (
               <SVGIcon
                 dataTestId="input-clear"
-                icon={NewIcons.CLEAR_ALL}
+                icon={NewIcons.INPUT_CLEAR}
                 className="input-img erase right"
                 onClick={() => props.onChange('')}
               />
