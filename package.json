@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -56,7 +56,7 @@
     "axios": "0.25.0",
     "crypto-js": "4.1.1",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.2.0",
+    "hive-keychain-commons": "^1.2.1",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "joi": "17.6.0",
     "locate-path": "7.1.1",
