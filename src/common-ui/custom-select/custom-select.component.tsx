@@ -10,6 +10,8 @@ export interface OptionItem {
 }
 
 export interface CustomSelectProps<T> {
+  label?: string;
+  skipLabelTranslation?: boolean;
   options: T[];
   selectedItem: T;
   setSelectedItem: (item: T) => void;
@@ -67,14 +69,23 @@ export function CustomSelect<T extends OptionItem>(
   };
 
   return (
-    <Select
-      values={[itemProps.selectedItem]}
-      options={itemProps.options}
-      onChange={() => undefined}
-      dropdownHandleRenderer={customHandleRenderer}
-      contentRenderer={customLabelRender}
-      dropdownRenderer={customDropdownRenderer}
-      className="custom-select"
-    />
+    <div className="custom-select-container">
+      {itemProps.label && (
+        <div className="label">
+          {itemProps.skipLabelTranslation
+            ? itemProps.label
+            : chrome.i18n.getMessage(itemProps.label)}
+        </div>
+      )}
+      <Select
+        values={[itemProps.selectedItem]}
+        options={itemProps.options}
+        onChange={() => undefined}
+        dropdownHandleRenderer={customHandleRenderer}
+        contentRenderer={customLabelRender}
+        dropdownRenderer={customDropdownRenderer}
+        className="custom-select"
+      />
+    </div>
   );
 }

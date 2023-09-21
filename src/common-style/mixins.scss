@@ -35,12 +35,24 @@
   }
 }
 
+@mixin input-label {
+  display: flex;
+  column-gap: 8px;
+  color: var(--main-font-color);
+  margin-bottom: 4px;
+  @include poppins600(14px);
+  .hint {
+    @include poppins300($input-font-size - 2px);
+  }
+}
+
 @mixin fake-input {
   font-size: $input-font-size;
   padding: 7px;
   background: transparent;
   border: unset;
-  border-bottom: $grey solid 1px !important;
+  border-bottom: var(--input-border) solid 1px !important;
+  color: var(--main-font-color);
   cursor: not-allowed;
   min-width: 50px;
   flex: 1;
@@ -130,7 +142,8 @@
 }
 
 @mixin form-panel {
-  background: white;
+  overflow: auto;
+  background: var(--form-panel-background);
   border-radius: 40px 40px 0px 0px;
   display: flex;
   flex-direction: column;

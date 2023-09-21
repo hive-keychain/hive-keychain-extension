@@ -45,7 +45,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
     return function cleanup() {
       setMounted(false);
     };
-  });
+  }, []);
 
   const handleOnBlur = () => {
     if (mounted) {
@@ -148,6 +148,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           <div className="right-action">
             <Separator type={'vertical'} />
             <SVGIcon
+              className="right-action-logo"
               data-testid="right-action"
               icon={props.rightActionIcon}
               onClick={props.rightActionClicked}

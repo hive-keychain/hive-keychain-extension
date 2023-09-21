@@ -50,6 +50,7 @@ $dark: (
   --input-border: $blue-border,
   --checkbox-color: white,
   --checkbox-background: transparent,
+  --autocomplete-background: $darker-blue,
   // Buttons
   --button-background-color: $red,
   --button-alternative-background-color: $darker-blue,
@@ -59,6 +60,8 @@ $dark: (
   --favorite-account-btn-border: $blue-border,
   --favorite-account-btn-icon: white,
   --favorite-account-save-color: white,
+  // Forms
+  --form-panel-background: $darker-blue,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -112,6 +115,7 @@ $light: (
   --input-border: $lighter-grey-border,
   --checkbox-color: $darker-blue,
   --checkbox-background: #e6eef6,
+  --autocomplete-background: #f7f8f9,
   // Buttons
   --button-background-color: $red,
   --button-alternative-background-color: white,
@@ -121,6 +125,8 @@ $light: (
   --favorite-account-btn-border: $light-grey-border,
   --favorite-account-btn-icon: $dark-blue,
   --favorite-account-save-color: $dark-blue,
+  // Forms
+  --form-panel-background: white,
 );
 
 @mixin spread-map($map: ()) {

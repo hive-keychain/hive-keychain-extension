@@ -2,20 +2,13 @@ $autoCompleteItemHeight: 30px;
 $placeholderColor: rgba(92, 100, 113, 0.5);
 .custom-input {
   .label {
-    display: flex;
-    column-gap: 8px;
-    color: var(--main-font-color);
-    @include poppins600(14px);
-    .hint {
-      @include poppins300($input-font-size - 2px);
-    }
+    @include input-label;
   }
   .custom-input-content {
     display: flex;
     column-gap: 12px;
     width: 100%;
     margin: 0;
-    margin-right: 12px;
     user-select: none;
 
     background: var(--input-background);
@@ -35,7 +28,6 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
         border-style: unset;
         border: none;
         background: var(--input-background);
-        padding-left: 8px;
         @include poppins500($input-font-size);
         color: var(--main-font-color);
         &::placeholder {
@@ -103,6 +95,9 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
     .right-action {
       display: flex;
       column-gap: 12px;
+      .right-action-logo {
+        height: 25px;
+      }
     }
 
     &.has-error {

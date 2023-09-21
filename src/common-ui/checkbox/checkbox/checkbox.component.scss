@@ -21,8 +21,8 @@
   }
   .label {
     user-select: none;
+    @include input-label;
     color: var(--main-font-color);
-    @include poppins500(12px);
   }
 
   &.disabled {

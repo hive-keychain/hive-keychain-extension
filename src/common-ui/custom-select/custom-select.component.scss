@@ -1,78 +1,83 @@
-.custom-select {
-  border: unset !important;
-  border: 1px solid $light-grey-border !important;
-  background: transparent;
-  min-width: 120px;
-  height: 56px;
-  border-radius: 66px !important;
-
-  .selected-item {
-    @include poppins500(14px);
-    user-select: none;
-    color: $darker-grey;
+.custom-select-container {
+  .label {
+    @include input-label;
   }
+  .custom-select {
+    border: unset !important;
+    border: 1px solid var(--input-border) !important;
+    background: transparent;
+    min-width: 120px;
+    height: 52px;
+    border-radius: 66px !important;
 
-  .react-dropdown-select-content {
     .selected-item {
-      display: flex;
-      align-items: center;
-      column-gap: 8px;
-      padding: 6px 6px;
-      padding-left: 12px;
-      box-sizing: border-box;
-      width: 100%;
-      font-size: $input-font-size;
+      @include poppins500(14px);
+      user-select: none;
+      color: var(--main-font-color);
     }
-  }
 
-  .react-dropdown-select-dropdown-handle {
-    width: 24px !important;
-    margin-top: 2px;
-    vertical-align: middle;
-    margin-left: unset !important;
-    .custom-select-handle {
-      height: 10px;
-      width: 10px;
-    }
-  }
-
-  .react-dropdown-select-dropdown {
-    border-radius: 8px;
-    width: 100%;
-    border: 1px solid $light-grey-border;
-    top: 60px;
-    background-color: white;
-    border-radius: 16px;
-    .custom-select-dropdown {
-      .option {
+    .react-dropdown-select-content {
+      .selected-item {
         display: flex;
-        flex-direction: column;
-        &:hover {
-          background-color: $red;
-          color: white;
-          .account-name,
-          .active-icon {
-            color: var(--main-font-color) !important;
+        align-items: center;
+        column-gap: 8px;
+        padding: 6px 6px;
+        padding-left: 12px;
+        box-sizing: border-box;
+        width: 100%;
+        font-size: $input-font-size;
+      }
+    }
+
+    .react-dropdown-select-dropdown-handle {
+      width: 24px !important;
+      margin-top: 4px;
+      vertical-align: middle;
+      margin-left: unset !important;
+      .custom-select-handle {
+        height: 10px;
+        width: 10px;
+      }
+    }
+
+    .react-dropdown-select-dropdown {
+      border-radius: 8px;
+      width: 100%;
+      border: 1px solid var(--input-border);
+      top: 60px;
+      background-color: var(--input-background);
+      border-radius: 16px;
+      .custom-select-dropdown {
+        .option {
+          display: flex;
+          flex-direction: column;
+          &:hover {
+            background-color: $red;
+            color: white;
+            .account-name,
+            .active-icon {
+              color: var(--main-font-color) !important;
+            }
           }
         }
       }
-    }
 
-    .custom-select-item {
-      display: flex;
-      align-items: center;
-      column-gap: 12px;
-      padding: 10px 6px;
-      box-sizing: border-box;
+      .custom-select-item {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+        padding: 10px 6px;
+        box-sizing: border-box;
 
-      .item-label {
-        flex: 1;
-        color: var(--main-font-color);
-      }
+        .item-label {
+          flex: 1;
+          color: var(--main-font-color);
+        }
 
-      .active-icon {
-        height: 20px;
-        width: 20px;
+        .active-icon {
+          height: 20px;
+          width: 20px;
+        }
       }
     }
   }

@@ -175,7 +175,7 @@ const TransferFunds = ({
 
     let memoField = form.memo;
     if (form.memo.length) {
-      if (form.memo.startsWith('#')) {
+      if (form.memo.startsWith('#') || form.encrypted) {
         memoField = `${form.memo} (${chrome.i18n.getMessage(
           'popup_encrypted',
         )})`;
@@ -338,12 +338,14 @@ const TransferFunds = ({
               control={control}
               dataTestId="input-username"
               type={InputType.TEXT}
-              logo={NewIcons.AT}
+              logo={NewIcons.INPUT_AT}
               placeholder="popup_html_username"
+              label="popup_html_username"
               autocompleteValues={autocompleteFavoriteUsers}
             />
             <div className="value-panel">
               <CustomSelect
+                label="popup_html_currency"
                 options={options}
                 selectedItem={
                   {
@@ -368,11 +370,12 @@ const TransferFunds = ({
                   control={control}
                   dataTestId="amount-input"
                   type={InputType.NUMBER}
+                  label="popup_html_transfer_amount"
                   placeholder="0.000"
-                  skipPlaceholderTranslation={true}
+                  skipPlaceholderTranslation
                   min={0}
                   rightActionClicked={setAmountToMaxValue}
-                  rightActionIcon={NewIcons.MAX}
+                  rightActionIcon={NewIcons.INPUT_MAX}
                 />
               </div>
             </div>
@@ -382,12 +385,15 @@ const TransferFunds = ({
               control={control}
               dataTestId="input-memo-optional"
               type={InputType.TEXT}
+              label="popup_html_memo_optional"
               placeholder="popup_html_memo_optional"
               rightActionClicked={() =>
                 setValue('encrypted', !watch('encrypted'))
               }
               rightActionIcon={
-                watch('encrypted') ? NewIcons.ENCRYPTED : NewIcons.NOT_ENCRYPTED
+                watch('encrypted')
+                  ? NewIcons.INPUT_ENCRYPT
+                  : NewIcons.INPUT_DECRYPT
               }
             />
             <CheckboxFormComponent

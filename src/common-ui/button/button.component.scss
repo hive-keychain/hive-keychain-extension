@@ -23,12 +23,15 @@
 
   &.tall {
     height: 58px;
+    min-height: 58px;
   }
   &.medium {
     height: 50px;
+    min-height: 50px;
   }
   &.small {
     height: 42px;
+    min-height: 42px;
   }
 
   &.alternative {

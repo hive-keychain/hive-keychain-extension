@@ -105,6 +105,7 @@ export enum NewIcons {
   INPUT_ENCRYPT = 'input/encrypt',
   INPUT_DECRYPT = 'input/decrypt',
   INPUT_SEARCH = 'input/search',
+  INPUT_AT = 'input/at',
 
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',

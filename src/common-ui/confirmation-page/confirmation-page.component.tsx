@@ -81,8 +81,8 @@ const ConfirmationPage = ({
         {hasField && (
           <div className="fields">
             {fields.map((field, index) => (
-              <>
-                <div className="field" key={field.label}>
+              <React.Fragment key={field.label}>
+                <div className="field">
                   <div className="label">
                     {chrome.i18n.getMessage(field.label)}
                   </div>
@@ -97,7 +97,7 @@ const ConfirmationPage = ({
                     fullSize
                   />
                 )}
-              </>
+              </React.Fragment>
             ))}
           </div>
         )}

@@ -1,6 +1,7 @@
 .transfer-funds-page {
   @include pageLayoutRowGap;
   flex: 1;
+  overflow: hidden;
 
   .form-container {
     @include form-panel;

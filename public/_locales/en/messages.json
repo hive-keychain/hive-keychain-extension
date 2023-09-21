@@ -3589,5 +3589,9 @@
   "error_message_title": {
     "message": "Oops! There was an error",
     "description": "there was an error"
+  },
+  "popup_html_currency": {
+    "message": "Currency",
+    "description": "Currency"
   }
 }
