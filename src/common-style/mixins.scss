@@ -7,9 +7,15 @@
   @include background;
   background-position-y: 135%;
 }
+
 @mixin background-top {
   @include background;
   background-position-y: 30%;
+}
+
+@mixin background-higher-top {
+  @include background;
+  background-position-y: 15%;
 }
 
 @mixin pageLayout {
@@ -17,12 +23,23 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  @include background-top();
 }
 
 @mixin pageLayoutRowGap {
   display: flex;
   flex-direction: column;
   row-gap: 16px;
+  @include background-higher-top();
+  height: 100%;
+}
+
+@mixin resources-panel {
+  display: flex;
+  column-gap: 6px;
+  margin: 20px 0px;
+  justify-content: center;
+  padding: 0px 24px;
 }
 
 @mixin link {
@@ -50,11 +67,11 @@
   font-size: $input-font-size;
   padding: 7px;
   background: transparent;
-  border: unset;
-  border-bottom: var(--input-border) solid 1px !important;
+  border: var(--input-border) solid 1px !important;
   color: var(--main-font-color);
   cursor: not-allowed;
-  min-width: 50px;
+  // min-width: 50px;
+  padding: 0px 8px;
   flex: 1;
   text-align: center;
 }
@@ -147,14 +164,14 @@
   border-radius: 40px 40px 0px 0px;
   display: flex;
   flex-direction: column;
-  row-gap: 42px;
-  padding: 36px 20px;
+  row-gap: 24px;
+  padding: 20px;
   flex: 1;
-  justify-content: space-between;
   .form-fields {
     display: flex;
     flex-direction: column;
     row-gap: 24px;
+    flex: 1;
   }
 }
 

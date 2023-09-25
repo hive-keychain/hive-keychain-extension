@@ -24,6 +24,7 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
       position: relative;
       flex: 1;
       input {
+        width: calc(100% - 32px);
         flex: 1;
         border-style: unset;
         border: none;

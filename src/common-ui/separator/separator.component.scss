@@ -5,6 +5,7 @@
   &.horizontal {
     width: 80%;
     height: 2px;
+    min-height: 2px;
     &.full-size {
       width: 100%;
     }
@@ -13,5 +14,6 @@
   &.vertical {
     height: 100%;
     width: 1px;
+    min-width: 1px;
   }
 }

@@ -1,12 +1,19 @@
+import { joiResolver } from '@hookform/resolvers/joi';
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { loadDelegatees } from 'src/popup/hive/actions/delegations.actions';
 import {
   addToLoadingList,
@@ -27,10 +34,20 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { PowerUtils } from 'src/popup/hive/utils/power.utils';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+interface PowerUpDownForm {
+  receiver: string;
+  amount: number;
+  currency: string;
+}
+
+const rules = FormUtils.createRules<PowerUpDownForm>({
+  receiver: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+});
 
 const PowerUpDown = ({
   currencyLabels,
@@ -39,6 +56,7 @@ const PowerUpDown = ({
   globalProperties,
   formParams,
   delegations,
+  localAccounts,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -48,24 +66,38 @@ const PowerUpDown = ({
   removeFromLoadingList,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [receiver, setReceiver] = useState(
-    formParams.receiver ? formParams.receiver : activeAccount.name!,
-  );
-  const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : '',
-  );
+  const { control, handleSubmit, setValue, watch } = useForm<PowerUpDownForm>({
+    defaultValues: {
+      receiver: formParams.receiver ? formParams.receiver : activeAccount.name,
+      amount: formParams.amount ? formParams.amount : '',
+      currency:
+        powerType === PowerType.POWER_UP
+          ? currencyLabels.hive
+          : currencyLabels.hp,
+    },
+    resolver: (values, context, options) => {
+      const resolver = joiResolver<Joi.ObjectSchema<PowerUpDownForm>>(rules, {
+        context: { maxAmount: available },
+        errors: { render: true },
+      });
+      return resolver(values, { maxAmount: available }, options);
+    },
+  });
+
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({
+      categories: [],
+    });
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.FAVORITE_USERS,
-    );
-    setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
-    );
+    const autoCompleteListByCategories: AutoCompleteValues =
+      await FavoriteUserUtils.getAutocompleteListByCategories(
+        activeAccount.name!,
+        localAccounts,
+      );
+    setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
 
   useEffect(() => {
@@ -78,9 +110,6 @@ const PowerUpDown = ({
     activeAccount.account,
     globalProperties.globals!,
   );
-
-  const currency =
-    powerType === PowerType.POWER_UP ? currencyLabels.hive : currencyLabels.hp;
 
   useEffect(() => {
     const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
@@ -120,26 +149,28 @@ const PowerUpDown = ({
       ? 'popup_html_powerup_text'
       : 'popup_html_powerdown_text';
 
-  const handleButtonClick = () => {
-    if (value.toString().trim() === '') {
+  const handleButtonClick = (form: PowerUpDownForm) => {
+    if (form.amount.toString().trim() === '') {
       setErrorMessage('popup_html_fill_form_error');
       return;
     }
     if (
       powerType === PowerType.POWER_DOWN &&
-      Number(value).toFixed(3) === '0.000'
+      Number(form.amount).toFixed(3) === '0.000'
     ) {
-      return handleCancelButtonClick();
+      return handleCancelButtonClick(form);
     }
 
-    if (parseFloat(value.toString()) > parseFloat(available.toString())) {
+    if (parseFloat(form.amount.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
     const operationString = chrome.i18n.getMessage(
       powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
     );
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      form.currency
+    }`;
 
     const fields = [];
 
@@ -148,7 +179,10 @@ const PowerUpDown = ({
         label: 'popup_html_transfer_from',
         value: `@${activeAccount.name}`,
       });
-      fields.push({ label: 'popup_html_transfer_to', value: `@${receiver}` });
+      fields.push({
+        label: 'popup_html_transfer_to',
+        value: `@${form.receiver}`,
+      });
     }
 
     fields.push({ label: 'popup_html_amount', value: valueS });
@@ -172,7 +206,7 @@ const PowerUpDown = ({
               addToLoadingList('html_popup_power_up_operation');
               success = await PowerUtils.powerUp(
                 activeAccount.name!,
-                receiver,
+                form.receiver,
                 valueS,
                 activeAccount.keys.active!,
               );
@@ -182,7 +216,7 @@ const PowerUpDown = ({
               success = await PowerUtils.powerDown(
                 activeAccount.name!,
                 `${FormatUtils.fromHP(
-                  Number(value).toFixed(3),
+                  Number(form.amount).toFixed(3),
                   globalProperties.globals!,
                 ).toFixed(6)} VESTS`,
                 activeAccount.keys.active!,
@@ -190,7 +224,10 @@ const PowerUpDown = ({
           }
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.receiver,
+              activeAccount,
+            );
             setSuccessMessage('popup_html_power_up_down_success', [
               operationString,
             ]);
@@ -208,17 +245,14 @@ const PowerUpDown = ({
   };
 
   const setToMax = () => {
-    setValue(available);
+    setValue('amount', Number(available));
   };
 
   const getFormParams = () => {
-    return {
-      receiver: receiver,
-      value: value,
-    };
+    return control;
   };
 
-  const handleCancelButtonClick = () => {
+  const handleCancelButtonClick = (form: PowerUpDownForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_power_down_message',
@@ -229,7 +263,7 @@ const PowerUpDown = ({
         addToLoadingList('html_popup_cancel_power_down_operation');
         try {
           let success = await PowerUtils.powerDown(
-            receiver,
+            form.receiver,
             `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
               6,
             )} VESTS`,
@@ -238,7 +272,10 @@ const PowerUpDown = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.receiver,
+              activeAccount,
+            );
             setSuccessMessage('popup_html_cancel_power_down_success');
           } else {
             setErrorMessage('popup_html_cancel_power_down_fail');
@@ -254,23 +291,28 @@ const PowerUpDown = ({
 
   return (
     <div className="power-up-page" data-testid={`${Screen.POWER_UP_PAGE}-page`}>
-      <SummaryPanelComponent
-        bottom={available}
-        bottomRight={
-          powerType === PowerType.POWER_UP
-            ? currencyLabels.hive
-            : currencyLabels.hp
-        }
-        bottomLeft={'popup_html_available'}
-        top={current}
-        topRight={
-          powerType === PowerType.POWER_UP
-            ? currencyLabels.hp
-            : currencyLabels.hive
-        }
-        topLeft={'popup_html_current'}
-      />
-      <div className="text">{chrome.i18n.getMessage(text)}</div>
+      <div className="resources">
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_MANA}
+          label="popup_html_current"
+          value={`${current} ${
+            powerType === PowerType.POWER_UP
+              ? currencyLabels.hp
+              : currencyLabels.hive
+          }`}
+          additionalClass="blue"
+        />
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_SAVINGS}
+          label="popup_html_available"
+          value={`${available} ${
+            powerType === PowerType.POWER_UP
+              ? currencyLabels.hive
+              : currencyLabels.hp
+          }`}
+          additionalClass="red"
+        />
+      </div>
 
       {powerType === PowerType.POWER_DOWN &&
         powerDownInfo &&
@@ -287,47 +329,62 @@ const PowerUpDown = ({
                 {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
                 {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
               </div>
-              <img
+              <SVGIcon
                 className="icon-button"
-                src="/assets/images/delete.png"
+                icon={NewIcons.GLOBAL_DELETE}
                 onClick={handleCancelButtonClick}
               />
             </div>
           </CustomTooltip>
         )}
 
-      {powerType === PowerType.POWER_UP && (
-        <InputComponent
-          dataTestId="input-receiver"
-          type={InputType.TEXT}
-          logo={Icons.AT}
-          placeholder="popup_html_receiver"
-          value={receiver}
-          onChange={setReceiver}
-          autocompleteValues={autocompleteTransferUsernames}
-        />
-      )}
-      <div className="amount-panel">
-        <div className="amount-input-panel">
-          <InputComponent
-            dataTestId="amount-input"
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={value}
-            onChange={setValue}
-            rightActionClicked={setToMax}
-          />
+      <FormContainer>
+        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <Separator fullSize type="horizontal" />
+        <div className="form-fields">
+          {powerType === PowerType.POWER_UP && (
+            <FormInputComponent
+              dataTestId="input-receiver"
+              control={control}
+              name="receiver"
+              type={InputType.TEXT}
+              logo={NewIcons.INPUT_AT}
+              placeholder="popup_html_receiver"
+              label="popup_html_receiver"
+              autocompleteValues={autocompleteFavoriteUsers}
+            />
+          )}
+          <div className="amount-panel">
+            <FormInputComponent
+              classname="currency-fake-input"
+              dataTestId="currency-input"
+              control={control}
+              name="currency"
+              type={InputType.TEXT}
+              label="popup_html_currency"
+              disabled
+            />
+            <FormInputComponent
+              classname="amount-input"
+              dataTestId="amount-input"
+              control={control}
+              name="amount"
+              type={InputType.NUMBER}
+              placeholder="0.000"
+              skipPlaceholderTranslation
+              label="popup_html_amount"
+              rightActionClicked={setToMax}
+            />
+          </div>
         </div>
-        <div className="currency">{currency}</div>
-      </div>
 
-      <OperationButtonComponent
-        dataTestId="submit-power-up-down"
-        requiredKey={KeychainKeyTypesLC.active}
-        label={title}
-        onClick={() => handleButtonClick()}
-      />
+        <OperationButtonComponent
+          dataTestId="submit-power-up-down"
+          requiredKey={KeychainKeyTypesLC.active}
+          label={title}
+          onClick={handleSubmit(handleButtonClick)}
+        />
+      </FormContainer>
     </div>
   );
 };
@@ -342,6 +399,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     delegations: state.delegations,
+    localAccounts: state.accounts,
   };
 };
 

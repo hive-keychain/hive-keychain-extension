@@ -13,7 +13,7 @@ export interface InputProps {
   logo?: Icons | string | NewIcons;
   logoPosition?: 'left' | 'right';
   label?: string;
-  placeholder: string;
+  placeholder?: string;
   type: InputType;
   step?: number;
   min?: number;
@@ -81,6 +81,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
             isFocused ? 'focused' : ''
           }`}>
           <input
+            disabled={props.disabled}
             data-testid={props.dataTestId}
             type={
               props.type === InputType.PASSWORD && isPasswordDisplay
@@ -88,9 +89,11 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
                 : props.type
             }
             placeholder={`${
-              props.skipPlaceholderTranslation
-                ? props.placeholder
-                : chrome.i18n.getMessage(props.placeholder)
+              props.placeholder
+                ? props.skipPlaceholderTranslation
+                  ? props.placeholder
+                  : chrome.i18n.getMessage(props.placeholder)
+                : ''
             } ${props.required ? '*' : ''}`}
             value={props.value}
             step={props.step}
@@ -105,21 +108,26 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
             onFocus={() => handleOnFocus()}
             onBlur={() => handleOnBlur()}
           />
-          {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-            <SVGIcon
-              icon={NewIcons.INPUT_SHOW}
-              className="input-img display-password right"
-              onClick={() => setPasswordDisplayed(true)}
-            />
-          )}
-          {props.type === InputType.PASSWORD && isPasswordDisplay && (
-            <SVGIcon
-              icon={NewIcons.INPUT_HIDE}
-              className="input-img display-password right"
-              onClick={() => setPasswordDisplayed(false)}
-            />
-          )}
-          {props.type !== InputType.PASSWORD &&
+          {!props.disabled &&
+            props.type === InputType.PASSWORD &&
+            !isPasswordDisplay && (
+              <SVGIcon
+                icon={NewIcons.INPUT_SHOW}
+                className="input-img display-password right"
+                onClick={() => setPasswordDisplayed(true)}
+              />
+            )}
+          {!props.disabled &&
+            props.type === InputType.PASSWORD &&
+            isPasswordDisplay && (
+              <SVGIcon
+                icon={NewIcons.INPUT_HIDE}
+                className="input-img display-password right"
+                onClick={() => setPasswordDisplayed(false)}
+              />
+            )}
+          {!props.disabled &&
+            props.type !== InputType.PASSWORD &&
             props.value &&
             props.value.length > 0 && (
               <SVGIcon
@@ -144,17 +152,19 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           )}
         </div>
 
-        {props.rightActionClicked && props.rightActionIcon && (
-          <div className="right-action">
-            <Separator type={'vertical'} />
-            <SVGIcon
-              className="right-action-logo"
-              data-testid="right-action"
-              icon={props.rightActionIcon}
-              onClick={props.rightActionClicked}
-            />
-          </div>
-        )}
+        {!props.disabled &&
+          props.rightActionClicked &&
+          props.rightActionIcon && (
+            <div className="right-action">
+              <Separator type={'vertical'} />
+              <SVGIcon
+                className="right-action-logo"
+                data-testid="right-action"
+                icon={props.rightActionIcon}
+                onClick={props.rightActionClicked}
+              />
+            </div>
+          )}
       </div>
       {props.error && (
         <div className="error">{FormUtils.parseJoiError(props.error)}</div>

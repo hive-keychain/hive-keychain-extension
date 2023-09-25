@@ -4,8 +4,6 @@
   overflow: hidden;
 
   .form-container {
-    @include form-panel;
-
     .recurrent-panel {
       display: flex;
       flex-direction: column;

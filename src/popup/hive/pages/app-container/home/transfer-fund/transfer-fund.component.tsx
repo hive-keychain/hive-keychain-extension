@@ -12,6 +12,7 @@ import {
   CustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -331,7 +332,7 @@ const TransferFunds = ({
           label="popup_html_balance"
         />
 
-        <div className="form-container">
+        <FormContainer>
           <div className="form-fields">
             <FormInputComponent
               name="receiverUsername"
@@ -439,7 +440,7 @@ const TransferFunds = ({
             onClick={handleSubmit(handleClickOnSend)}
             label={'popup_html_send_transfer'}
           />
-        </div>
+        </FormContainer>
       </div>
     </>
   );

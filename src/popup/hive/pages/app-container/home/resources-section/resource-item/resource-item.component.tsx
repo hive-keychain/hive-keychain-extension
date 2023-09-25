@@ -9,7 +9,7 @@ interface ResourceItemProps {
   icon: NewIcons;
   label: string;
   value: string;
-  tooltipText: string;
+  tooltipText?: string;
   secondaryValue?: string;
   ariaLabel?: string;
   additionalClass?: string;

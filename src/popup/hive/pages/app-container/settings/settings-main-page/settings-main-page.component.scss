@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
+  row-gap: 6px;
   .love-text {
     @include poppins500(15px);
     text-align: center;
@@ -26,7 +27,7 @@
       border: 1px solid var(--menu-icon-border-color);
       padding: 14px 12px 8px 12px;
       width: 53px;
-      height: 48px;
+      height: 44px;
       box-sizing: border-box;
 
       --menu-bottom-bar-icon-color: #{$red};
