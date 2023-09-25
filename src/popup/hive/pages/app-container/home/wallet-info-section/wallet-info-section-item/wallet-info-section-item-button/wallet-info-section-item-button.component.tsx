@@ -5,13 +5,11 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 interface WalletInfoSectionItemButtonProps {
   handleClick: (event: BaseSyntheticEvent, actionButton: ActionButton) => void;
   actionButton: ActionButton;
-  key: string;
 }
 
 export const WalletInfoSectionItemButton = ({
   handleClick,
   actionButton,
-  key,
 }: WalletInfoSectionItemButtonProps) => {
   const [hovered, setHovered] = useState(false);
 
@@ -20,8 +18,7 @@ export const WalletInfoSectionItemButton = ({
       className="wallet-action-button"
       onClick={($event) => handleClick($event, actionButton)}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      key={key}>
+      onMouseLeave={() => setHovered(false)}>
       <SVGIcon
         icon={actionButton.icon}
         className="action-icon"

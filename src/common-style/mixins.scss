@@ -57,6 +57,7 @@
   column-gap: 8px;
   color: var(--main-font-color);
   margin-bottom: 4px;
+  padding-left: 6px;
   @include poppins600(14px);
   .hint {
     @include poppins300($input-font-size - 2px);
@@ -70,7 +71,6 @@
   border: var(--input-border) solid 1px !important;
   color: var(--main-font-color);
   cursor: not-allowed;
-  // min-width: 50px;
   padding: 0px 8px;
   flex: 1;
   text-align: center;
@@ -78,6 +78,12 @@
 
 @mixin caption() {
   padding: 0px 30px;
+  @include poppins400($caption-font-size);
+  color: var(--main-font-color);
+}
+
+@mixin form-container-text {
+  padding: 0px 12px;
   @include poppins400($caption-font-size);
   color: var(--main-font-color);
 }
@@ -161,12 +167,14 @@
 @mixin form-panel {
   overflow: auto;
   background: var(--form-panel-background);
+  border: 1px solid var(--card-border);
   border-radius: 40px 40px 0px 0px;
   display: flex;
   flex-direction: column;
   row-gap: 24px;
   padding: 20px;
   flex: 1;
+
   .form-fields {
     display: flex;
     flex-direction: column;
@@ -182,6 +190,19 @@
   font-style: normal;
   font-weight: 400;
   line-height: 14px; /* 116.667% */
+}
+
+@mixin pending-panel {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  @include poppins500(14px);
+  padding: 16px;
+  color: var(--main-font-color);
+  margin: 0px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 @mixin tab-style($nbTab) {

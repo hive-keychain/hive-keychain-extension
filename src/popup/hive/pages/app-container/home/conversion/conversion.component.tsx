@@ -1,11 +1,17 @@
 import { Asset } from '@hiveio/dhive';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import {
@@ -26,7 +32,19 @@ import { RootState } from 'src/popup/hive/store';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
+
+interface ConversionForm {
+  receiver: string;
+  amount: number;
+  currency: string;
+}
+
+const rules = FormUtils.createRules<ConversionForm>({
+  receiver: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+});
 
 const Conversion = ({
   currencyLabels,
@@ -43,19 +61,29 @@ const Conversion = ({
   setTitleContainerProperties,
   fetchConversionRequests,
 }: PropsFromRedux) => {
-  const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : 0,
-  );
+  const { control, handleSubmit, setValue, watch } = useForm<ConversionForm>({
+    defaultValues: {
+      receiver: formParams.receiver ? formParams.receiver : activeAccount.name,
+      amount: formParams.amount ? formParams.amount : '',
+      currency:
+        conversionType === ConversionType.CONVERT_HIVE_TO_HBD
+          ? currencyLabels.hive
+          : currencyLabels.hbd,
+    },
+    resolver: (values, context, options) => {
+      const resolver = joiResolver<Joi.ObjectSchema<ConversionForm>>(rules, {
+        context: { maxAmount: available },
+        errors: { render: true },
+      });
+      return resolver(values, { maxAmount: available }, options);
+    },
+  });
+
   const [available, setAvailable] = useState<string | number>('...');
   const [totalPending, setTotalPending] = useState<number>(0);
   const [pendingConversions, setPendingConversions] = useState<Conversion[]>(
     [],
   );
-
-  const currency =
-    conversionType === ConversionType.CONVERT_HIVE_TO_HBD
-      ? currencyLabels.hive
-      : currencyLabels.hbd;
 
   useEffect(() => {
     setTitleContainerProperties({ title: title, isBackButtonEnabled: true });
@@ -100,13 +128,15 @@ const Conversion = ({
       ? 'popup_html_convert_hive_intro'
       : 'popup_html_convert_hbd_intro';
 
-  const handleButtonClick = () => {
-    if (parseFloat(value.toString()) > parseFloat(available.toString())) {
+  const handleButtonClick = (form: ConversionForm) => {
+    if (parseFloat(form.amount.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
 
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      form.currency
+    }`;
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
@@ -154,19 +184,17 @@ const Conversion = ({
   };
 
   const setToMax = () => {
-    setValue(available);
+    setValue('amount', Number(available));
   };
 
   const getFormParams = () => {
-    return {
-      value: value,
-    };
+    return control;
   };
 
   const goToPendingConversion = () => {
     navigateToWithParams(Screen.PENDING_CONVERSION_PAGE, {
       pendingConversions: pendingConversions,
-      currency: currency,
+      currency: watch('currency'),
     });
   };
 
@@ -174,48 +202,60 @@ const Conversion = ({
     <div
       className="conversion-page"
       data-testid={`${Screen.CONVERSION_PAGE}-page`}>
-      {totalPending > 0 && (
-        <SummaryPanelComponent
-          top={available}
-          topRight={currency}
-          topLeft={'popup_html_available'}
-          bottom={totalPending}
-          bottomRight={currency}
-          bottomLeft={'popup_html_pending'}
-          onBottomPanelClick={goToPendingConversion}
-        />
-      )}
-      {totalPending === 0 && (
-        <SummaryPanelComponent
-          bottom={available}
-          bottomRight={currency}
-          bottomLeft={'popup_html_available'}
-        />
-      )}
-      <div className="text">{chrome.i18n.getMessage(text)}</div>
-
-      <div className="amount-panel">
-        <div className="amount-input-panel">
-          <InputComponent
-            dataTestId="amount-input"
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={value}
-            onChange={setValue}
-            rightActionClicked={setToMax}
-          />
-        </div>
-        <div className="currency">{currency}</div>
-      </div>
-
-      <OperationButtonComponent
-        dataTestId="submit-button"
-        label={title}
-        onClick={() => handleButtonClick()}
-        requiredKey={KeychainKeyTypesLC.active}
-        fixToBottom
+      <BalanceSectionComponent
+        unit={watch('currency')}
+        value={available}
+        label="popup_html_balance"
       />
+
+      {totalPending > 0 && (
+        <div
+          className="pending-conversion-panel"
+          onClick={goToPendingConversion}>
+          <div className="pending-conversion-text">
+            {totalPending} {watch('currency')}{' '}
+            {chrome.i18n.getMessage('popup_html_pending')}{' '}
+          </div>
+        </div>
+      )}
+
+      <FormContainer>
+        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <Separator fullSize type="horizontal" />
+        <div className="form-fields">
+          <div className="amount-panel">
+            <FormInputComponent
+              classname="currency-fake-input"
+              dataTestId="currency-input"
+              control={control}
+              name="currency"
+              type={InputType.TEXT}
+              label="popup_html_currency"
+              disabled
+            />
+            <FormInputComponent
+              name="amount"
+              dataTestId="amount-input"
+              control={control}
+              type={InputType.NUMBER}
+              placeholder="0.000"
+              skipPlaceholderTranslation
+              label="popup_html_amount"
+              min={0}
+              rightActionClicked={setToMax}
+              rightActionIcon={NewIcons.INPUT_MAX}
+            />
+          </div>
+        </div>
+
+        <OperationButtonComponent
+          dataTestId="submit-button"
+          label={title}
+          onClick={handleSubmit(handleButtonClick)}
+          requiredKey={KeychainKeyTypesLC.active}
+          fixToBottom
+        />
+      </FormContainer>
     </div>
   );
 };

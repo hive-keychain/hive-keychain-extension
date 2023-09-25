@@ -1,14 +1,14 @@
 .balance-section {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 4px;
   align-items: center;
   .label {
     @include poppins400(14px);
     color: $dark-grey;
   }
   .value {
-    @include poppins700(40px);
+    @include poppins700(24px);
     color: var(--main-font-color);
   }
 }

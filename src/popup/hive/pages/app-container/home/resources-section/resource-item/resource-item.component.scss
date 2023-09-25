@@ -6,7 +6,7 @@
   border-radius: 15px;
   padding-top: 10px;
   padding-left: 12px;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
 
   cursor: help;
   user-select: none;
@@ -32,11 +32,11 @@
       opacity: 0.7;
 
       .label {
-        font-size: 16px;
+        font-size: 14px;
       }
     }
     .bottom {
-      @include josefin700(22px);
+      @include josefin700(20px);
       .secondary-value {
         text-align: right;
         @include poppins500(12px);

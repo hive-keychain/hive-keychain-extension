@@ -10,17 +10,12 @@
   }
 
   .text {
-    @include caption;
+    @include form-container-text;
+    padding: 0px 12px;
   }
 
   .power-down-panel {
-    background-color: rgba(255, 255, 255, 0.2);
-    margin: 0px -24px;
-    padding: 16px 32px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+    @include pending-panel;
 
     .power-down-text {
       flex: 1;
@@ -28,9 +23,8 @@
 
     .icon-button {
       display: none;
-      height: 16px;
-      width: 16px;
-      font-size: 16px;
+      height: 20px;
+      width: 20px;
     }
 
     &:hover {
@@ -50,7 +44,7 @@
     }
 
     .currency-fake-input {
-      width: 125px;
+      width: 100px;
     }
   }
 }

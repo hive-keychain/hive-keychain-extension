@@ -374,6 +374,7 @@ const PowerUpDown = ({
               skipPlaceholderTranslation
               label="popup_html_amount"
               rightActionClicked={setToMax}
+              rightActionIcon={NewIcons.INPUT_MAX}
             />
           </div>
         </div>
