@@ -303,7 +303,7 @@ const PowerUpDown = ({
           additionalClass="blue"
         />
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_SAVINGS}
+          icon={NewIcons.RESOURCE_ITEM_WALLET}
           label="popup_html_available"
           value={`${available} ${
             powerType === PowerType.POWER_UP

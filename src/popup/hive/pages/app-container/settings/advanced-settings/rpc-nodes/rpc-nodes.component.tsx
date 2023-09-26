@@ -265,7 +265,6 @@ const RpcNodes = ({
             dataTestId="button-save"
             label={'popup_html_save'}
             onClick={() => handleSaveNewRpcClicked()}
-            fixToBottom
           />
         </div>
       )}

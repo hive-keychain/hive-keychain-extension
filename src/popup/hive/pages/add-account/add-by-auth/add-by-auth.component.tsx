@@ -86,7 +86,6 @@ const AddByAuth = ({
         dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitForm}
-        fixToBottom
       />
     </div>
   );

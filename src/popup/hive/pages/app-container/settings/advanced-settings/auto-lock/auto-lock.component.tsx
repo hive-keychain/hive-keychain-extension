@@ -94,7 +94,6 @@ const AutoLock = ({
         dataTestId="button-save"
         label={'popup_html_save'}
         onClick={() => save()}
-        fixToBottom
       />
     </div>
   );

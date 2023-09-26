@@ -283,7 +283,6 @@ const TokensOperation = ({
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}
-        fixToBottom
       />
     </div>
   );

@@ -3593,5 +3593,13 @@
   "popup_html_currency": {
     "message": "Currency",
     "description": "Currency"
+  },
+  "popup_html_savings_operation_type": {
+    "message": "Operation type",
+    "description": "Savings operation type (withdrawal/deposit)"
+  },
+  "popup_html_pending_savings_withdrawal": {
+    "message": "Withdrawing $1 $2",
+    "description": "Savings"
   }
 }

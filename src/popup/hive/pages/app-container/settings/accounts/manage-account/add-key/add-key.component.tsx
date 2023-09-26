@@ -80,7 +80,6 @@ const AddKey = ({
         dataTestId="import-keys-button"
         label="popup_html_import_key"
         onClick={importKey}
-        fixToBottom
       />
     </div>
   );

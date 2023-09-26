@@ -34,14 +34,6 @@
   height: 100%;
 }
 
-@mixin resources-panel {
-  display: flex;
-  column-gap: 6px;
-  margin: 20px 0px;
-  justify-content: center;
-  padding: 0px 24px;
-}
-
 @mixin link {
   color: white;
   text-decoration: none;
@@ -86,6 +78,14 @@
   padding: 0px 12px;
   @include poppins400($caption-font-size);
   color: var(--main-font-color);
+}
+
+@mixin resources-panel {
+  display: flex;
+  column-gap: 6px;
+  margin: 20px 0px;
+  justify-content: center;
+  padding: 0px 24px;
 }
 
 @mixin icon-size($size) {

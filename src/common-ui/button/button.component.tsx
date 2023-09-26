@@ -14,7 +14,6 @@ export interface ButtonProps {
   labelParams?: string[];
   logo?: NewIcons;
   type?: ButtonType;
-  fixToBottom?: boolean;
   dataTestId?: string;
   additionalClass?: string;
   height?: 'tall' | 'medium' | 'small';
@@ -26,9 +25,7 @@ const ButtonComponent = (props: ButtonProps) => {
       data-testid={props.dataTestId}
       className={`submit-button ${
         props.type ? props.type : ButtonType.IMPORTANT
-      } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${
-        props.additionalClass ?? ''
-      } ${props.height ?? 'medium'}`}
+      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'}`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation

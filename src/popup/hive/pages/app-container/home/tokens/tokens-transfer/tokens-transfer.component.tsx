@@ -274,7 +274,6 @@ const TokensTransfer = ({
         requiredKey={KeychainKeyTypesLC.active}
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}
-        fixToBottom
       />
     </div>
   );

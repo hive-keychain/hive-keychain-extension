@@ -358,7 +358,6 @@ const Delegations = ({
         }
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
-        fixToBottom
       />
     </div>
   );

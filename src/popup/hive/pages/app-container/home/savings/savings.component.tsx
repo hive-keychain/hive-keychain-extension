@@ -1,18 +1,20 @@
+import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { CustomSelect } from 'src/common-ui/custom-select/custom-select.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import {
   addToLoadingList,
@@ -37,7 +39,25 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
+
+interface SavingsForm {
+  username: string;
+  amount: number;
+  currency: string;
+  type: SavingOperationType;
+}
+
+interface SelectSavingsTypeOperation {
+  label: string;
+  value: SavingOperationType;
+}
+
+const rules = FormUtils.createRules<SavingsForm>({
+  username: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+});
 
 const SavingsPage = ({
   currencyLabels,
@@ -54,13 +74,27 @@ const SavingsPage = ({
   removeFromLoadingList,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(
-    formParams.username ? formParams.username : activeAccount.name!,
-  );
+  const { control, handleSubmit, setValue, watch } = useForm<SavingsForm>({
+    defaultValues: {
+      username: formParams.username ? formParams.username : activeAccount.name,
+      amount: formParams.amount ? formParams.amount : '',
+      currency: formParams.currency
+        ? formParams.currency
+        : paramsSelectedCurrency,
+      type: formParams.type
+        ? (formParams.type as SavingOperationType)
+        : SavingOperationType.DEPOSIT,
+    },
+    resolver: (values, context, options) => {
+      const resolver = joiResolver<Joi.ObjectSchema<SavingsForm>>(rules, {
+        context: { maxAmount: liquid },
+        errors: { render: true },
+      });
+      return resolver(values, { maxAmount: liquid }, options);
+    },
+  });
+
   const [text, setText] = useState('');
-  const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : 0,
-  );
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
   const [savingsPendingWithdrawalList, setSavingsPendingWithdrawalList] =
@@ -71,33 +105,19 @@ const SavingsPage = ({
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
     useState<AutoCompleteValues>({ categories: [] });
 
-  const [selectedSavingOperationType, setSelectedSavingOperationType] =
-    useState<SavingOperationType>(
-      formParams.selectedSavingOperationType
-        ? (formParams.selectedSavingOperationType as SavingOperationType)
-        : SavingOperationType.DEPOSIT,
-    );
-  const [selectedCurrency, setSelectedCurrency] = useState<
-    keyof CurrencyLabels
-  >(
-    formParams.selectedCurrency
-      ? formParams.selectedCurrency
-      : paramsSelectedCurrency,
-  );
-  const currency = currencyLabels[selectedCurrency];
-
   const currencyOptions = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
     { label: currencyLabels.hbd, value: 'hbd' as keyof CurrencyLabels },
   ];
-  const savingOperationTypeOptions = [
+
+  const savingOperationTypeOptions: SelectSavingsTypeOperation[] = [
     {
       label: chrome.i18n.getMessage(SavingOperationType.WITHDRAW),
-      value: SavingOperationType.WITHDRAW as string,
+      value: SavingOperationType.WITHDRAW,
     },
     {
       label: chrome.i18n.getMessage(SavingOperationType.DEPOSIT),
-      value: SavingOperationType.DEPOSIT as string,
+      value: SavingOperationType.DEPOSIT,
     },
   ];
 
@@ -106,9 +126,9 @@ const SavingsPage = ({
     setTitleContainerProperties({
       title: 'popup_html_savings',
       isBackButtonEnabled: true,
-      titleParams: [currency],
+      titleParams: [currencyLabels[watch('currency') as keyof CurrencyLabels]],
     });
-  }, [currency]);
+  }, [watch('currency')]);
 
   useEffect(() => {
     if (activeAccount.account.savings_withdraw_requests > 0) {
@@ -123,14 +143,14 @@ const SavingsPage = ({
     const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
     const hive = FormatUtils.toNumber(activeAccount.account.balance);
 
-    setLiquid(selectedCurrency === 'hive' ? hive : hbd);
-    setSavings(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
-  }, [selectedCurrency]);
+    setLiquid(watch('currency') === 'hive' ? hive : hbd);
+    setSavings(watch('currency') === 'hive' ? hiveSavings : hbdSavings);
+  }, [watch('currency')]);
 
   useEffect(() => {
     let text = '';
-    if (selectedSavingOperationType === SavingOperationType.DEPOSIT) {
-      if (selectedCurrency === 'hbd') {
+    if (watch('type') === SavingOperationType.DEPOSIT) {
+      if (watch('currency') === 'hbd') {
         text = chrome.i18n.getMessage('popup_html_deposit_hbd_text', [
           Number(globalProperties.globals?.hbd_interest_rate) / 100 + '',
         ]);
@@ -139,7 +159,7 @@ const SavingsPage = ({
       text = chrome.i18n.getMessage('popup_html_withdraw_text');
     }
     setText(text);
-  }, [selectedCurrency, selectedSavingOperationType]);
+  }, [watch('currency'), watch('type')]);
 
   const fetchCurrentWithdrawingList = async () => {
     const savingsPendingWithdrawalList =
@@ -147,7 +167,7 @@ const SavingsPage = ({
 
     const totalPendingValue = filterSavingsPendingWithdrawalList(
       savingsPendingWithdrawalList,
-      currency,
+      currencyLabels[watch('currency') as keyof CurrencyLabels],
     ).reduce((acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]), 0);
     setTotalPendingValue(
       totalPendingValue !== 0 ? totalPendingValue : undefined,
@@ -156,7 +176,7 @@ const SavingsPage = ({
     setSavingsPendingWithdrawalList(
       filterSavingsPendingWithdrawalList(
         savingsPendingWithdrawalList,
-        currency,
+        currencyLabels[watch('currency') as keyof CurrencyLabels],
       ),
     );
   };
@@ -170,36 +190,38 @@ const SavingsPage = ({
     );
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (form: SavingsForm) => {
     if (
-      (selectedSavingOperationType === SavingOperationType.DEPOSIT &&
-        parseFloat(value.toString()) > parseFloat(liquid.toString())) ||
-      (selectedSavingOperationType === SavingOperationType.WITHDRAW &&
-        parseFloat(value.toString()) > parseFloat(savings.toString()))
+      (watch('type') === SavingOperationType.DEPOSIT &&
+        parseFloat(form.amount.toString()) > parseFloat(liquid.toString())) ||
+      (watch('type') === SavingOperationType.WITHDRAW &&
+        parseFloat(form.amount.toString()) > parseFloat(savings.toString()))
     ) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
     let operationString = chrome.i18n.getMessage(
-      selectedSavingOperationType === SavingOperationType.WITHDRAW
+      watch('type') === SavingOperationType.WITHDRAW
         ? 'popup_html_withdraw_param'
         : 'popup_html_deposit_param',
-      [currency],
+      [currencyLabels[form.currency as keyof CurrencyLabels]],
     );
 
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      currencyLabels[watch('currency') as keyof CurrencyLabels]
+    }`;
 
     let warning = TransferUtils.getTransferFromToSavingsValidationWarning(
-      username,
-      selectedSavingOperationType,
+      form.username,
+      watch('type'),
     );
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
-        selectedSavingOperationType === SavingOperationType.WITHDRAW
+        watch('type') === SavingOperationType.WITHDRAW
           ? 'popup_html_confirm_savings_withdraw'
           : 'popup_html_confirm_savings_deposit',
-        [currency],
+        [currencyLabels[watch('currency') as keyof CurrencyLabels]],
       ),
       warningMessage: warning,
       skipWarningTranslation: true,
@@ -207,18 +229,18 @@ const SavingsPage = ({
       skipTitleTranslation: true,
       fields: [
         { label: 'popup_html_value', value: valueS },
-        { label: 'popup_html_username', value: `@${username}` },
+        { label: 'popup_html_username', value: `@${form.username}` },
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         try {
           let success;
-          switch (selectedSavingOperationType) {
+          switch (watch('type')) {
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
               success = await SavingsUtils.deposit(
                 valueS,
-                username,
+                form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
               );
@@ -227,7 +249,7 @@ const SavingsPage = ({
               addToLoadingList('html_popup_withdraw_from_savings_operation');
               success = await SavingsUtils.withdraw(
                 valueS,
-                username,
+                form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
               );
@@ -236,19 +258,22 @@ const SavingsPage = ({
 
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
-            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.username,
+              activeAccount,
+            );
             setSuccessMessage(
-              selectedSavingOperationType === SavingOperationType.DEPOSIT
+              watch('type') === SavingOperationType.DEPOSIT
                 ? 'popup_html_deposit_success'
                 : 'popup_html_withdraw_success',
-              [`${value} ${selectedCurrency.toUpperCase()}`],
+              [`${form.amount} ${watch('currency').toUpperCase()}`],
             );
           } else {
             setErrorMessage(
-              selectedSavingOperationType === SavingOperationType.DEPOSIT
+              watch('type') === SavingOperationType.DEPOSIT
                 ? 'popup_html_deposit_fail'
                 : 'popup_html_withdraw_fail',
-              [selectedCurrency.toUpperCase()],
+              [watch('currency').toUpperCase()],
             );
           }
         } catch (err: any) {
@@ -262,92 +287,24 @@ const SavingsPage = ({
   };
 
   const getFormParams = () => {
-    return {
-      username: username,
-      value: value,
-      selectedSavingOperationType: selectedSavingOperationType,
-      selectedCurrency: selectedCurrency,
-    };
+    return control;
   };
 
   const setToMax = () => {
-    if (selectedSavingOperationType === SavingOperationType.WITHDRAW) {
-      setValue(savings);
+    if (watch('type') === SavingOperationType.WITHDRAW) {
+      setValue('amount', Number(savings));
     } else {
-      setValue(liquid);
+      setValue('amount', Number(liquid));
     }
-  };
-
-  const customCurrencyLabelRender = (
-    selectProps: SelectRenderer<CurrencyListItem>,
-  ) => {
-    return (
-      <div
-        data-testid="select-currency-savings"
-        className="selected-value"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        {currencyLabels[selectedCurrency]}
-      </div>
-    );
-  };
-  const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
-    return (
-      <div
-        data-testid="select-operation-type"
-        className="selected-value"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        {chrome.i18n.getMessage(selectedSavingOperationType)}
-      </div>
-    );
-  };
-  const customSavingOperationTimeItemRender = (
-    selectProps: SelectItemRenderer<any>,
-  ) => {
-    return (
-      <div
-        data-testid={`select-operation-${selectProps.item.label}`}
-        className={`select-account-item ${
-          selectedSavingOperationType === selectProps.item.value
-            ? 'selected'
-            : ''
-        }`}
-        onClick={() => {
-          setSelectedSavingOperationType(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="currency">{selectProps.item.label}</div>
-      </div>
-    );
-  };
-  const customCurrencyItemRender = (
-    selectProps: SelectItemRenderer<CurrencyListItem>,
-  ) => {
-    return (
-      <div
-        data-testid={`select-account-item-${selectProps.item.label}`}
-        className={`select-account-item ${
-          selectedCurrency === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          setSelectedCurrency(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="currency">{selectProps.item.label}</div>
-      </div>
-    );
   };
 
   const goToPendingSavingsWithdrawal = () => {
     navigateToWithParams(Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE, {
       savingsPendingWithdrawalList: filterSavingsPendingWithdrawalList(
         savingsPendingWithdrawalList,
-        currency,
+        currencyLabels[watch('currency') as keyof CurrencyLabels],
       ),
-      currency,
+      currency: watch('currency'),
     });
   };
 
@@ -363,75 +320,115 @@ const SavingsPage = ({
 
   return (
     <div className="savings-page" data-testid={`${Screen.SAVINGS_PAGE}-page`}>
-      <SummaryPanelComponent
-        bottom={liquid}
-        bottomRight={currency}
-        bottomLeft={'popup_html_savings_available'}
-        top={savings}
-        topRight={currency}
-        topLeft={'popup_html_savings_current'}
-        center={totalPendingValue}
-        centerLeft={'popup_html_savings_current_withdrawing'}
-        centerRight={currency}
-        onCenterPanelClick={goToPendingSavingsWithdrawal}
-      />
-
-      <Select
-        values={[]}
-        options={savingOperationTypeOptions}
-        onChange={() => undefined}
-        contentRenderer={customOperationTypeLabelRender}
-        itemRenderer={customSavingOperationTimeItemRender}
-        className="select-operation-type select-dropdown"
-      />
-
-      {text.length > 0 && <div className="text">{text}</div>}
-
-      {
-        <InputComponent
-          dataTestId="input-username"
-          type={InputType.TEXT}
-          logo={Icons.AT}
-          placeholder="popup_html_transfer_to"
-          value={username}
-          onChange={setUsername}
-          autocompleteValues={autocompleteFavoriteUsers}
+      <div className="resources">
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_SAVINGS}
+          label="popup_html_savings_current"
+          value={`${savings} ${
+            currencyLabels[watch('currency') as keyof CurrencyLabels]
+          }`}
+          additionalClass="blue"
         />
-      }
-      <div className="amount-panel">
-        <div className="amount-input-panel">
-          <InputComponent
-            dataTestId="amount-input"
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={value}
-            onChange={setValue}
-            rightActionClicked={setToMax}
-          />
-        </div>
-        <Select
-          values={[]}
-          options={currencyOptions}
-          onChange={() => undefined}
-          contentRenderer={customCurrencyLabelRender}
-          itemRenderer={customCurrencyItemRender}
-          className="select-currency select-dropdown"
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_WALLET}
+          label="popup_html_savings_available"
+          value={`${liquid} ${
+            currencyLabels[watch('currency') as keyof CurrencyLabels]
+          }`}
+          additionalClass="red"
         />
       </div>
 
-      <OperationButtonComponent
-        dataTestId="submit-savings"
-        requiredKey={KeychainKeyTypesLC.active}
-        label={
-          selectedSavingOperationType === SavingOperationType.WITHDRAW
-            ? 'popup_html_withdraw_param'
-            : 'popup_html_deposit_param'
-        }
-        labelParams={[currency]}
-        onClick={() => handleButtonClick()}
-        fixToBottom
-      />
+      {totalPendingValue && totalPendingValue > 0 && (
+        <div
+          className="pending-savings-panel"
+          onClick={goToPendingSavingsWithdrawal}>
+          <div className="pending-savings-text">
+            {chrome.i18n.getMessage('popup_html_pending_savings_withdrawal', [
+              FormatUtils.formatCurrencyValue(totalPendingValue, 3),
+              currencyLabels[watch('currency') as keyof CurrencyLabels],
+            ])}
+          </div>
+        </div>
+      )}
+
+      <FormContainer>
+        {text.length > 0 && (
+          <>
+            <div className="text">{text}</div>
+            <Separator type="horizontal" fullSize />
+          </>
+        )}
+
+        <div className="form-fields">
+          <CustomSelect
+            label="popup_html_savings_operation_type"
+            options={savingOperationTypeOptions}
+            selectedItem={
+              {
+                value: watch('type'),
+                label: chrome.i18n.getMessage(watch('type')),
+              } as SelectSavingsTypeOperation
+            }
+            setSelectedItem={(item: SelectSavingsTypeOperation) =>
+              setValue('type', item.value)
+            }
+          />
+
+          <FormInputComponent
+            name="username"
+            control={control}
+            dataTestId="input-username"
+            type={InputType.TEXT}
+            logo={NewIcons.INPUT_AT}
+            placeholder="popup_html_username"
+            label="popup_html_username"
+            autocompleteValues={autocompleteFavoriteUsers}
+          />
+
+          <div className="amount-panel">
+            <CustomSelect
+              label="popup_html_currency"
+              options={currencyOptions}
+              selectedItem={
+                {
+                  value: watch('currency'),
+                  label:
+                    currencyLabels[watch('currency') as keyof CurrencyLabels],
+                } as CurrencyListItem
+              }
+              setSelectedItem={(item: CurrencyListItem) =>
+                setValue('currency', item.value)
+              }
+            />
+            <FormInputComponent
+              name="amount"
+              control={control}
+              dataTestId="amount-input"
+              type={InputType.NUMBER}
+              label="popup_html_transfer_amount"
+              placeholder="0.000"
+              skipPlaceholderTranslation
+              min={0}
+              rightActionClicked={setToMax}
+              rightActionIcon={NewIcons.INPUT_MAX}
+            />
+          </div>
+        </div>
+        <OperationButtonComponent
+          dataTestId="submit-savings"
+          requiredKey={KeychainKeyTypesLC.active}
+          label={
+            watch('type') === SavingOperationType.WITHDRAW
+              ? 'popup_html_withdraw_param'
+              : 'popup_html_deposit_param'
+          }
+          labelParams={[
+            currencyLabels[watch('currency') as keyof CurrencyLabels],
+          ]}
+          onClick={handleSubmit(handleButtonClick)}
+        />
+      </FormContainer>
     </div>
   );
 };

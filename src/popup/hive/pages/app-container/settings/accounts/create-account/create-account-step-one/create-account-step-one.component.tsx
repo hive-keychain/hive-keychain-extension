@@ -224,11 +224,7 @@ const CreateAccountStepOne = ({
         label="popup_html_username"
         type={InputType.TEXT}
       />
-      <ButtonComponent
-        label="html_popup_next"
-        onClick={() => goToNextPage()}
-        fixToBottom
-      />
+      <ButtonComponent label="html_popup_next" onClick={() => goToNextPage()} />
     </div>
   );
 };

@@ -358,7 +358,6 @@ const RCDelegations = ({
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.posting}
-        fixToBottom
       />
     </div>
   );

@@ -46,7 +46,6 @@ const ResetPasswordPage = ({
         dataTestId="reset-password-confirm-button"
         label="popup_html_confirm"
         onClick={() => reset()}
-        fixToBottom
       />
     </div>
   );

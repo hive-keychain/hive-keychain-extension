@@ -98,7 +98,6 @@ const ChangePassword = ({
         dataTestId="submit-button"
         label={'popup_html_submit'}
         onClick={submitMk}
-        fixToBottom
       />
     </div>
   );

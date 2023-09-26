@@ -253,7 +253,6 @@ const Conversion = ({
           label={title}
           onClick={handleSubmit(handleButtonClick)}
           requiredKey={KeychainKeyTypesLC.active}
-          fixToBottom
         />
       </FormContainer>
     </div>
