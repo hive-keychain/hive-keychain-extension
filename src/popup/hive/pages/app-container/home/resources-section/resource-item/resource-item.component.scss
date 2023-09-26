@@ -8,7 +8,9 @@
   padding-left: 12px;
   padding-bottom: 14px;
 
-  cursor: help;
+  &.has-tooltip {
+    cursor: help;
+  }
   user-select: none;
 
   .icon {

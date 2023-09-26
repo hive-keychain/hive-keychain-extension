@@ -40,7 +40,9 @@ const ResourceItem = ({
       skipTranslation>
       <div
         data-testid={ariaLabel}
-        className={`resource-item ${additionalClass ?? ''}`}
+        className={`resource-item ${additionalClass ?? ''} ${
+          tooltipText ? 'has-tooltip' : ''
+        }`}
         onClick={handleOnClick}>
         <SVGIcon className="icon" icon={icon} />
         <div className="right-panel">
