@@ -146,6 +146,9 @@ export enum NewIcons {
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
   MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
 
+  MESSAGE_ERROR = 'message/error',
+  MESSAGE_SUCCESS = 'message/success',
+
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',
   RESOURCE_ITEM_SAVINGS = 'resources/savings',
@@ -229,8 +232,6 @@ export enum NewIcons {
   MANAGE_AUTHORITIES = 'manage-authorities',
   MAX = 'max',
   MENU = 'menu',
-  MESSAGE_SUCCESS = 'message-success',
-  MESSAGE_ERROR = 'message-error',
   NOT_ENCRYPTED = 'not-encrypted',
   PLUGINS = 'plugins',
   POWER_DOWN = 'power-down',

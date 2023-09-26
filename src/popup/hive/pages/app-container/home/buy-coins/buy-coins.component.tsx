@@ -25,7 +25,6 @@ const BuyCoins = ({
     setTitleContainerProperties({
       title: 'popup_html_buy',
       isBackButtonEnabled: true,
-      isCloseButtonDisabled: true,
     });
   }, []);
 

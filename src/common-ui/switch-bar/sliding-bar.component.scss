@@ -10,9 +10,10 @@
   .tabs {
     display: flex;
     position: relative;
-    background-color: #fff;
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border);
     padding: 2px;
-    border-radius: 99px; // just a high number to create pill effect
+    border-radius: 99px;
     * {
       z-index: 2;
     }
@@ -27,7 +28,7 @@
     justify-content: center;
     width: $itemWidth;
     height: $itemHeight;
-    border-radius: 99px; // just a high number to create pill effect
+    border-radius: 99px;
     cursor: pointer;
     transition: color 0.15s ease-in;
 
@@ -38,7 +39,7 @@
 
   input[type='radio'] {
     & + label {
-      color: $darker-grey;
+      color: var(--main-font-color);
     }
     &:checked {
       & + label {
@@ -54,7 +55,7 @@
     width: $itemWidth;
     background-color: $red;
     z-index: 1;
-    border-radius: 99px; // just a high number to create pill effect
+    border-radius: 99px;
     transition: 0.25s ease-out;
     box-shadow: 0 0 1px 0 $red, 0 6px 12px 0 $red;
     box-shadow: 0px 10px 7px 0px $red-shadow;
