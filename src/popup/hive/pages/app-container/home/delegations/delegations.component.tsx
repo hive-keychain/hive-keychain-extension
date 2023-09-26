@@ -1,11 +1,15 @@
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { joiResolver } from '@hookform/resolvers/joi';
+import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import {
@@ -33,8 +37,20 @@ import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+interface DelegationForm {
+  username: string;
+  amount: number;
+  currency: string;
+}
+
+const rules = FormUtils.createRules<DelegationForm>({
+  username: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+});
 
 const Delegations = ({
   currencyLabels,
@@ -53,12 +69,21 @@ const Delegations = ({
   setTitleContainerProperties,
   loadPendingOutgoingUndelegations,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState<string>(
-    formParams.username ? formParams.username : '',
-  );
-  const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : '',
-  );
+  const { control, handleSubmit, setValue, watch } = useForm<DelegationForm>({
+    defaultValues: {
+      username: formParams.username ? formParams.username : activeAccount.name,
+      amount: formParams.amount ? formParams.amount : '',
+      currency: currencyLabels.hp,
+    },
+    resolver: (values, context, options) => {
+      const resolver = joiResolver<Joi.ObjectSchema<DelegationForm>>(rules, {
+        context: { maxAmount: available },
+        errors: { render: true },
+      });
+      return resolver(values, { maxAmount: available }, options);
+    },
+  });
+
   const [available, setAvailable] = useState<string | number>('...');
 
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
@@ -156,7 +181,7 @@ const Delegations = ({
   }, [delegations]);
 
   const setToMax = () => {
-    setValue(Number(available).toFixed(3));
+    setValue('amount', Number(available));
   };
 
   const goToIncomings = () => {
@@ -173,28 +198,28 @@ const Delegations = ({
     });
   };
 
-  const handleButtonClick = () => {
-    if (parseFloat(value.toString()) > parseFloat(available.toString())) {
+  const handleButtonClick = (form: DelegationForm) => {
+    if (parseFloat(form.amount.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
 
-    if (Number(value) <= 0) {
-      cancelDelegation();
+    if (Number(form.amount) <= 0) {
+      cancelDelegation(form);
     }
 
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
       currencyLabels.hp
     }`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
         valueS,
-        `@${username}`,
+        `@${form.username}`,
       ]),
       fields: [
         { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${username}` },
+        { label: 'popup_html_transfer_to', value: `@${form.username}` },
         { label: 'popup_html_value', value: valueS },
       ],
       title: 'popup_html_delegation',
@@ -204,14 +229,19 @@ const Delegations = ({
         try {
           let success = await DelegationUtils.delegateVestingShares(
             activeAccount.name!,
-            username,
-            FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
-              ' VESTS',
+            form.username,
+            FormatUtils.fromHP(
+              form.amount.toString(),
+              globalProperties!,
+            ).toFixed(6) + ' VESTS',
             activeAccount.keys.active!,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.username,
+              activeAccount,
+            );
             setSuccessMessage('popup_html_delegation_successful');
           } else {
             setErrorMessage('popup_html_delegation_fail');
@@ -225,14 +255,14 @@ const Delegations = ({
     });
   };
 
-  const cancelDelegation = () => {
+  const cancelDelegation = (form: DelegationForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [
         { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${username}` },
+        { label: 'popup_html_transfer_to', value: `@${form.username}` },
       ],
       title: 'popup_html_cancel_delegation',
       formParams: getFormParams(),
@@ -242,13 +272,16 @@ const Delegations = ({
         try {
           let success = await DelegationUtils.delegateVestingShares(
             activeAccount.name!,
-            username,
+            form.username,
             '0.000000 VESTS',
             activeAccount.keys.active!,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.username,
+              activeAccount,
+            );
             setSuccessMessage('popup_html_cancel_delegation_successful');
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
@@ -263,102 +296,83 @@ const Delegations = ({
   };
 
   const getFormParams = () => {
-    return {
-      value: value,
-      username: username,
-    };
+    return control;
   };
 
   return (
     <div
       className="delegations-page"
       data-testid={`${Screen.DELEGATION_PAGE}-page`}>
-      <div className="text">
-        {chrome.i18n.getMessage('popup_html_delegations_text')}
-      </div>
-
-      <div className="delegations-summary" data-testid="delegations-summary">
-        <div
-          className="total-incoming"
+      <div className="resources">
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_DELEGATION_INCOMING}
+          label="popup_html_total_incoming"
+          value={`+${FormatUtils.withCommas(totalIncoming.toString())}
+              ${currencyLabels.hp}`}
           onClick={goToIncomings}
-          data-testid="total-incoming">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_total_incoming')}
-          </div>
-          <div
-            className="value"
-            onClick={() => {
-              if (incomingError) setErrorMessage(incomingError);
-            }}>
-            {incomingError && (
-              <Icon name={Icons.ERROR} tooltipMessage={incomingError}></Icon>
-            )}
-            <span data-testid="delegations-span-total-incoming">
-              + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
-              {currencyLabels.hp}
-            </span>
-          </div>
-        </div>
-        <div
-          className="total-outgoing"
+          additionalClass="blue"
+        />
+        <ResourceItemComponent
+          icon={NewIcons.RESOURCE_ITEM_DELEGATION_OUTGOING}
+          label="popup_html_total_outgoing"
+          value={`-${FormatUtils.withCommas(totalOutgoing.toString())}
+              ${currencyLabels.hp}`}
           onClick={goToOutgoing}
-          data-testid="total-outgoing">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_total_outgoing')}
-          </div>
-          <div data-testid="total-outgoing-value" className="value">
-            - {FormatUtils.withCommas(totalOutgoing.toString())}{' '}
-            {currencyLabels.hp}
-          </div>
-        </div>
-        <Separator type={'horizontal'} />
-        <div className="total-available">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_available')}
-          </div>
-          <div className="value">
-            {FormatUtils.withCommas(available.toString())} {currencyLabels.hp}
-          </div>
-        </div>
+          additionalClass="red"
+        />
       </div>
 
-      <div className="form-container">
-        <InputComponent
-          dataTestId="input-username"
-          value={username}
-          onChange={setUsername}
-          logo={Icons.AT}
-          placeholder="popup_html_username"
-          type={InputType.TEXT}
-          autocompleteValues={autocompleteTransferUsernames}
-        />
+      <FormContainer>
+        <div className="text">
+          {chrome.i18n.getMessage('popup_html_delegations_text')}
+        </div>
+        <Separator type="horizontal" />
+        <div className="form-fields">
+          <FormInputComponent
+            name="receiverUsername"
+            control={control}
+            dataTestId="input-username"
+            type={InputType.TEXT}
+            logo={NewIcons.INPUT_AT}
+            placeholder="popup_html_username"
+            label="popup_html_username"
+            autocompleteValues={autocompleteTransferUsernames}
+          />
 
-        <div className="amount-panel">
-          <div className="amount-input-panel">
-            <InputComponent
+          <div className="amount-panel">
+            <FormInputComponent
+              classname="currency-fake-input"
+              dataTestId="currency-input"
+              control={control}
+              name="currency"
+              type={InputType.TEXT}
+              label="popup_html_currency"
+              disabled
+            />
+            <FormInputComponent
+              name="amount"
+              control={control}
               dataTestId="amount-input"
               type={InputType.NUMBER}
+              label="popup_html_transfer_amount"
               placeholder="0.000"
               skipPlaceholderTranslation={true}
-              value={value}
-              onChange={setValue}
+              rightActionIcon={NewIcons.INPUT_MAX}
               rightActionClicked={setToMax}
             />
           </div>
-          <div className="currency">{currencyLabels.hp}</div>
         </div>
-      </div>
-
-      <OperationButtonComponent
-        dataTestId="delegate-operation-submit-button"
-        label={
-          value.toString().length > 0 && Number(value) === 0
-            ? 'popup_html_cancel_delegation'
-            : 'popup_html_delegate_to_user'
-        }
-        onClick={() => handleButtonClick()}
-        requiredKey={KeychainKeyTypesLC.active}
-      />
+        <OperationButtonComponent
+          dataTestId="delegate-operation-submit-button"
+          label={
+            watch('amount') && Number(watch('amount')) === 0
+              ? 'popup_html_cancel_delegation'
+              : 'popup_html_delegate_to_user'
+          }
+          onClick={() => handleSubmit(handleButtonClick)}
+          requiredKey={KeychainKeyTypesLC.active}
+        />
+      </FormContainer>
     </div>
   );
 };

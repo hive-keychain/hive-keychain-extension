@@ -13,6 +13,7 @@ interface ResourceItemProps {
   secondaryValue?: string;
   ariaLabel?: string;
   additionalClass?: string;
+  onClick?: () => void;
 }
 
 const ResourceItem = ({
@@ -23,7 +24,14 @@ const ResourceItem = ({
   secondaryValue,
   ariaLabel,
   additionalClass,
+  onClick,
 }: PropsType) => {
+  const handleOnClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <CustomTooltip
       dataTestId={`custom-tool-tip-${label}`}
@@ -32,7 +40,8 @@ const ResourceItem = ({
       skipTranslation>
       <div
         data-testid={ariaLabel}
-        className={`resource-item ${additionalClass ?? ''}`}>
+        className={`resource-item ${additionalClass ?? ''}`}
+        onClick={handleOnClick}>
         <SVGIcon className="icon" icon={icon} />
         <div className="right-panel">
           <div className="top">

@@ -1,5 +1,5 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 20 20">
   <mask id="b" width="20" height="20" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha">
     <path fill="url(#a)" d="M0 0h20v20H0z"/>
   </mask>

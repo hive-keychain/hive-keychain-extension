@@ -153,6 +153,8 @@ export enum NewIcons {
   RESOURCE_ITEM_RC = 'resources/rc',
   RESOURCE_ITEM_SAVINGS = 'resources/savings',
   RESOURCE_ITEM_WALLET = 'resources/wallet',
+  RESOURCE_ITEM_DELEGATION_INCOMING = 'resources/delegation-incoming',
+  RESOURCE_ITEM_DELEGATION_OUTGOING = 'resources/delegation-outgoing',
 
   TOP_BAR_BACK_BTN = 'top-bar/back-button',
   TOP_BAR_CLAIM_REWARDS_BTN = 'top-bar/claim-rewards-button',
