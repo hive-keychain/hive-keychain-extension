@@ -1,17 +1,22 @@
+import { joiResolver } from '@hookform/resolvers/joi';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   RcDelegation,
   RCDelegationValue,
 } from '@interfaces/rc-delegation.interface';
+import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -30,8 +35,23 @@ import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
+import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+interface DelegationForm {
+  delegator: string;
+  delegatee: string;
+  gigaRcValue: string;
+  hpValue: string;
+  currency: string;
+}
+
+const rules = FormUtils.createRules<DelegationForm>({
+  delegatee: Joi.string().required(),
+  delegator: Joi.string().required(),
+  gigaRcValue: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+});
 
 const RCDelegations = ({
   activeAccount,
@@ -46,17 +66,27 @@ const RCDelegations = ({
   navigateToWithParams,
   navigateTo,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(
-    formParams ? formParams?.delegatee : '',
-  );
-  const [value, setValue] = useState<RCDelegationValue>({
-    hpValue: formParams
-      ? RcDelegationsUtils.rcToHp(formParams?.value, properties)
-      : '0.000',
-    gigaRcValue: formParams
-      ? RcDelegationsUtils.rcToGigaRc(Number(formParams?.value))
-      : '',
+  const { control, handleSubmit, setValue, watch } = useForm<DelegationForm>({
+    defaultValues: {
+      delegatee: formParams?.delegatee ? formParams.delegatee : '',
+      delegator: activeAccount.name,
+      gigaRcValue: formParams
+        ? RcDelegationsUtils.rcToGigaRc(Number(formParams?.value))
+        : '',
+      hpValue: formParams
+        ? RcDelegationsUtils.rcToHp(formParams?.value, properties)
+        : '',
+      currency: 'G RC',
+    },
+    resolver: (values, context, options) => {
+      const resolver = joiResolver<Joi.ObjectSchema<DelegationForm>>(rules, {
+        context: { maxAmount: available },
+        errors: { render: true },
+      });
+      return resolver(values, { maxAmount: available }, options);
+    },
   });
+
   const [available, setAvailable] = useState<RCDelegationValue>();
 
   const [totalIncoming, setTotalIncoming] = useState<RCDelegationValue>();
@@ -110,20 +140,12 @@ const RCDelegations = ({
   };
 
   const handleValueChange = (value: string) => {
-    setValue({
-      hpValue: RcDelegationsUtils.gigaRcToHp(value, properties),
-      gigaRcValue: value,
-    });
+    setValue('gigaRcValue', value);
+    setValue('hpValue', RcDelegationsUtils.gigaRcToHp(value, properties));
   };
 
   const getFormParams = () => {
-    return {
-      delegator: activeAccount.name!,
-      delegatee: username,
-      value: RcDelegationsUtils.gigaRcToRc(
-        Number(value.gigaRcValue),
-      ).toString(),
-    } as RcDelegation;
+    return control;
   };
 
   const goToOutgoings = () => {
@@ -133,22 +155,17 @@ const RCDelegations = ({
     });
   };
 
-  const handleButtonClick = async () => {
-    if (username.trim().length === 0) {
-      setErrorMessage('popup_html_username_missing');
-      return;
-    }
-
-    const isCancel = Number(value.gigaRcValue) === 0;
+  const handleButtonClick = async (form: DelegationForm) => {
+    const isCancel = Number(form.gigaRcValue) === 0;
 
     const fields = [
-      { label: 'popup_html_rc_delegation_to', value: `@${username}` },
+      { label: 'popup_html_rc_delegation_to', value: `@${form.delegatee}` },
       {
         label: 'popup_html_rc_delegation_value',
         value: `${RcDelegationsUtils.formatRcWithUnit(
-          value.gigaRcValue,
+          form.gigaRcValue,
           true,
-        )} (≈ ${value.hpValue} ${currencyLabels.hp})`,
+        )} (≈ ${form.hpValue} ${currencyLabels.hp})`,
       },
     ];
 
@@ -173,8 +190,8 @@ const RCDelegations = ({
           let success;
 
           success = await RcDelegationsUtils.sendDelegation(
-            RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
-            username,
+            RcDelegationsUtils.gigaRcToRc(parseFloat(form.gigaRcValue)),
+            form.delegatee,
             activeAccount.name!,
             activeAccount.keys.posting!,
           );
@@ -187,15 +204,18 @@ const RCDelegations = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(
+              form.delegatee,
+              activeAccount,
+            );
 
             if (!isCancel) {
               setSuccessMessage('popup_html_rc_delegation_successful', [
-                `@${username}`,
+                `@${form.delegatee}`,
               ]);
             } else {
               setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
-                `@${username}`,
+                `@${form.delegatee}`,
               ]);
             }
           } else {
@@ -224,141 +244,128 @@ const RCDelegations = ({
   };
 
   const setToPresetValue = (value: number) => {
-    setValue({
-      hpValue: value.toFixed(3),
-      gigaRcValue: RcDelegationsUtils.hpToGigaRc(value.toString(), properties),
-    });
+    setValue(
+      'gigaRcValue',
+      RcDelegationsUtils.hpToGigaRc(value.toString(), properties),
+    );
+    setValue('hpValue', value.toFixed(3));
   };
 
   return (
     <div
       className="rc-delegations-page"
       data-testid={`${Screen.RC_DELEGATIONS_PAGE}-page`}>
-      <div className="text">
-        {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
-      </div>
+      {totalIncoming?.gigaRcValue && totalOutgoing?.gigaRcValue && (
+        <div className="resources">
+          <ResourceItemComponent
+            icon={NewIcons.RESOURCE_ITEM_DELEGATION_INCOMING}
+            label="popup_html_total_incoming"
+            value={`+${RcDelegationsUtils.formatRcWithUnit(
+              totalIncoming.gigaRcValue,
+              true,
+            )}`}
+            additionalClass="blue"
+            tooltipText={`≈ ${FormatUtils.withCommas(
+              totalIncoming.hpValue.toString(),
+            )} ${currencyLabels.hp}`}
+          />
+          <ResourceItemComponent
+            icon={NewIcons.RESOURCE_ITEM_DELEGATION_OUTGOING}
+            label="popup_html_total_outgoing"
+            value={`-${RcDelegationsUtils.formatRcWithUnit(
+              totalOutgoing.gigaRcValue,
+              true,
+            )}`}
+            additionalClass="red"
+            tooltipText={`≈ ${FormatUtils.withCommas(
+              totalOutgoing.hpValue.toString(),
+            )} ${currencyLabels.hp}`}
+            onClick={goToOutgoings}
+          />
+        </div>
+      )}
 
-      <div className="rc-delegations-summary" data-testid="delegations-summary">
-        <div className="total-incoming" data-testid="total-incoming">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_total_incoming')}
-          </div>
-          <div className="value">
-            {totalIncoming && (
-              <CustomTooltip
-                skipTranslation
-                position="left"
-                message={`≈ ${FormatUtils.withCommas(
-                  totalIncoming.hpValue.toString(),
-                )} ${currencyLabels.hp}`}>
-                <span className="rc-value">
-                  +{' '}
-                  {FormatUtils.withCommas(totalIncoming.gigaRcValue.toString())}{' '}
-                  G RC
-                </span>
-              </CustomTooltip>
-            )}
-            {!totalIncoming && <span>...</span>}
-          </div>
-        </div>
-        <div
-          className="total-outgoing"
-          onClick={goToOutgoings}
-          data-testid="total-outgoing">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_total_outgoing')}
-          </div>
-          <div className="value">
-            {totalOutgoing && (
-              <CustomTooltip
-                skipTranslation
-                position="left"
-                message={`≈ ${FormatUtils.withCommas(
-                  totalOutgoing.hpValue.toString(),
-                )} ${currencyLabels.hp}`}>
-                <span className="rc-value">
-                  -{' '}
-                  {FormatUtils.withCommas(totalOutgoing.gigaRcValue.toString())}{' '}
-                  G RC
-                </span>
-              </CustomTooltip>
-            )}
-            {!totalOutgoing && <span>...</span>}
-          </div>
-        </div>
-        <div className="total-available">
+      {available?.gigaRcValue && (
+        <div className="available-panel">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_available')}
           </div>
           <div className="value">
-            {available && (
-              <CustomTooltip
-                skipTranslation
-                position="left"
-                message={`≈ ${FormatUtils.withCommas(
-                  available.hpValue.toString(),
-                )} ${currencyLabels.hp}`}>
-                <span className="rc-value">
-                  {FormatUtils.withCommas(available?.gigaRcValue.toString())} G
-                  RC
-                </span>
-              </CustomTooltip>
-            )}
-            {!available && <span>...</span>}
+            {FormatUtils.formatCurrencyValue(available?.gigaRcValue)} G RC
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="form-container">
-        <InputComponent
-          dataTestId="input-username"
-          value={username}
-          onChange={setUsername}
-          logo={Icons.AT}
-          placeholder="popup_html_username"
-          type={InputType.TEXT}
-          autocompleteValues={autocompleteTransferUsernames}
-        />
+      <FormContainer>
+        <div className="text">
+          {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
+        </div>
+        <Separator type="horizontal" />
+        <div className="form-fields">
+          <FormInputComponent
+            dataTestId="input-username"
+            control={control}
+            name="delegatee"
+            logo={Icons.AT}
+            label="popup_html_username"
+            placeholder="popup_html_username"
+            type={InputType.TEXT}
+            autocompleteValues={autocompleteTransferUsernames}
+          />
 
-        <div className="amount-panel">
-          <div className="amount-input-panel">
-            <InputComponent
+          <div className="amount-panel">
+            <FormInputComponent
+              classname="currency-fake-input"
+              dataTestId="currency-input"
+              control={control}
+              name="currency"
+              type={InputType.TEXT}
+              label="popup_html_currency"
+              disabled
+            />
+            <FormInputComponent
               dataTestId="amount-input"
               type={InputType.NUMBER}
+              label="popup_html_transfer_amount"
               placeholder="0.000"
               skipPlaceholderTranslation={true}
-              hint={`≈ ${value?.hpValue} ${currencyLabels.hp}`}
+              hint={
+                watch('hpValue')
+                  ? `≈ ${watch('hpValue')} ${currencyLabels.hp}`
+                  : ''
+              }
               skipHintTranslation
-              value={value?.gigaRcValue}
+              name="gigaRcValue"
+              control={control}
               step={Number(RcDelegationsUtils.hpToGigaRc('5', properties))}
-              onChange={handleValueChange}
+              customOnChange={handleValueChange}
             />
           </div>
-          <div className="currency">G RC</div>
-        </div>
 
-        <div className="preset-button-panels">
-          <div className="preset-button" onClick={() => setToPresetValue(5)}>
-            5 {currencyLabels.hp}
-          </div>
-          <div className="preset-button" onClick={() => setToPresetValue(10)}>
-            10 {currencyLabels.hp}
-          </div>
-          <div className="preset-button" onClick={() => setToPresetValue(50)}>
-            50 {currencyLabels.hp}
-          </div>
-          <div className="preset-button" onClick={() => setToPresetValue(100)}>
-            100 {currencyLabels.hp}
+          <div className="preset-button-panels">
+            <div className="preset-button" onClick={() => setToPresetValue(5)}>
+              5 {currencyLabels.hp}
+            </div>
+            <div className="preset-button" onClick={() => setToPresetValue(10)}>
+              10 {currencyLabels.hp}
+            </div>
+            <div className="preset-button" onClick={() => setToPresetValue(50)}>
+              50 {currencyLabels.hp}
+            </div>
+            <div
+              className="preset-button"
+              onClick={() => setToPresetValue(100)}>
+              100 {currencyLabels.hp}
+            </div>
           </div>
         </div>
-      </div>
-
-      <OperationButtonComponent
-        dataTestId="rc-delegate-operation-submit-button"
-        label={'popup_html_delegate_to_user'}
-        onClick={() => handleButtonClick()}
-        requiredKey={KeychainKeyTypesLC.posting}
-      />
+        <OperationButtonComponent
+          dataTestId="rc-delegate-operation-submit-button"
+          label={'popup_html_delegate_to_user'}
+          onClick={handleSubmit(handleButtonClick)}
+          requiredKey={KeychainKeyTypesLC.posting}
+        />
+      </FormContainer>
     </div>
   );
 };

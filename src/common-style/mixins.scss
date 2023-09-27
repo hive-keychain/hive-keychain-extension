@@ -88,6 +88,29 @@
   padding: 0px 24px;
 }
 
+@mixin available-card-panel {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+
+  .label {
+    @include poppins500(14px);
+    color: var(--available-card-label-color);
+    opacity: 0.7;
+  }
+  .value {
+    @include poppins700(18px);
+    color: var(--main-font-color);
+  }
+
+  padding: 6px 16px;
+
+  margin: 0px 16px;
+  align-items: flex-start;
+}
+
 @mixin icon-size($size) {
   height: $size;
   width: $size;

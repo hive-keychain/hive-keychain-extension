@@ -9,13 +9,19 @@
     @include resources-panel;
   }
 
+  .available-panel {
+    @include available-card-panel;
+    margin-top: -10px;
+    margin-bottom: 30px;
+  }
+
+  .currency-fake-input {
+    width: 100px;
+  }
+
   .amount-panel {
     display: flex;
     column-gap: 16px;
     align-items: baseline;
-
-    .currency {
-      @include fake-input;
-    }
   }
 }

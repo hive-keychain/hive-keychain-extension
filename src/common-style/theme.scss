@@ -62,6 +62,8 @@ $dark: (
   --favorite-account-save-color: white,
   // Forms
   --form-panel-background: $darker-blue,
+  // Available card
+  --available-card-label-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -127,6 +129,8 @@ $light: (
   --favorite-account-save-color: $dark-blue,
   // Forms
   --form-panel-background: white,
+  // Available card
+  --available-card-label-color: $darker-blue,
 );
 
 @mixin spread-map($map: ()) {

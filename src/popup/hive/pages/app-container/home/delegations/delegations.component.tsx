@@ -322,6 +322,15 @@ const Delegations = ({
         />
       </div>
 
+      <div className="available-panel">
+        <div className="label">
+          {chrome.i18n.getMessage('popup_html_available')}
+        </div>
+        <div className="value">
+          {FormatUtils.formatCurrencyValue(available)} {currencyLabels.hp}
+        </div>
+      </div>
+
       <FormContainer>
         <div className="text">
           {chrome.i18n.getMessage('popup_html_delegations_text')}

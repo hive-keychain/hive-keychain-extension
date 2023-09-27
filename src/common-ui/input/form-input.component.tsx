@@ -8,6 +8,7 @@ interface FormInputProps<T extends FieldValues = FieldValues, TContext = any>
   extends Omit<InputProps, 'onChange' | 'value'> {
   name: string;
   control: any;
+  customOnChange?: (...params: any) => void;
 }
 
 export const FormInputComponent = (props: FormInputProps) => (
@@ -19,7 +20,7 @@ export const FormInputComponent = (props: FormInputProps) => (
         <InputComponent
           {...props}
           value={value}
-          onChange={onChange}
+          onChange={props.customOnChange ?? onChange}
           error={error}
         />
       );
