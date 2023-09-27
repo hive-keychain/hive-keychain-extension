@@ -5,7 +5,7 @@ import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.inte
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
@@ -257,7 +257,7 @@ const TokensOperation = ({
         <InputComponent
           dataTestId="input-username"
           type={InputType.TEXT}
-          logo={Icons.AT}
+          logo={NewIcons.INPUT_AT}
           placeholder="popup_html_username"
           value={receiverUsername}
           onChange={setReceiverUsername}

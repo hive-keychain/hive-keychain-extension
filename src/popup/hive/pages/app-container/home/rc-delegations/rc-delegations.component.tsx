@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -306,7 +306,7 @@ const RCDelegations = ({
             dataTestId="input-username"
             control={control}
             name="delegatee"
-            logo={Icons.AT}
+            logo={NewIcons.INPUT_AT}
             label="popup_html_username"
             placeholder="popup_html_username"
             type={InputType.TEXT}

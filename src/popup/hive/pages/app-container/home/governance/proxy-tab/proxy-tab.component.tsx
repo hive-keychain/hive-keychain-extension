@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -113,7 +113,7 @@ const ProxyTab = ({
           dataTestId="input-username"
           value={proxyUsername}
           onChange={setProxyUsername}
-          logo={Icons.AT}
+          logo={NewIcons.INPUT_AT}
           placeholder="popup_html_proxy"
           type={InputType.TEXT}
         />

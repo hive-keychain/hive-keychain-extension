@@ -12,7 +12,7 @@ import Select, {
 } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import {
@@ -219,7 +219,7 @@ const CreateAccountStepOne = ({
       <InputComponent
         onChange={setAccountName}
         value={accountName}
-        logo={Icons.AT}
+        logo={NewIcons.INPUT_AT}
         placeholder="popup_html_username"
         label="popup_html_username"
         type={InputType.TEXT}
