@@ -108,5 +108,6 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
   .error {
     @include poppins400(12px);
     color: $red;
+    padding-left: 6px;
   }
 }

@@ -14,7 +14,6 @@ export const FormContainer = ({ children, onSubmit }: FormContainerProps) => {
   }, []);
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    console.log(event.code);
     if (event.code === 'Enter' || event.code === 'NumpadEnter') {
       if (onSubmit) {
         onSubmit();
