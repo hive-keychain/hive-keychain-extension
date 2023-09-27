@@ -382,10 +382,6 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
-    console.log(
-      transactions.list[transactions.list.length - 1]?.last,
-      transactions.lastUsedStart === 0,
-    );
     if (
       transactions.list[transactions.list.length - 1]?.last === true ||
       transactions.lastUsedStart === 0

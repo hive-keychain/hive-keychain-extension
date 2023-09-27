@@ -148,7 +148,7 @@ const walletInfoSectionItem = ({
           <div className="main-value">
             {FormatUtils.formatCurrencyValue(mainValue)}
           </div>
-          {subValue &&
+          {!!subValue &&
             parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
               <div className="sub-value">
                 {parseFloat(subValue?.toString()) > 0 ? '+' : ''}

@@ -9,6 +9,7 @@ import {
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -163,19 +164,23 @@ const WalletInfoSection = ({
           filteredTokenList.length > 0 && (
             <>
               <Separator type={'horizontal'} />
-              {filteredTokenList.map((token) => (
-                <WalletInfoSectionItemComponent
-                  key={`token-${token.symbol}`}
-                  tokenSymbol={token.symbol}
-                  tokenBalance={token}
-                  tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
-                  tokenMarket={market}
-                  icon={NewIcons.HIVE_ENGINE}
-                  addBackground
-                  mainValue={token.balance}
-                  mainValueLabel={token.symbol}
-                />
-              ))}
+              <FlatList
+                list={filteredTokenList}
+                renderItem={(token: TokenBalance) => (
+                  <WalletInfoSectionItemComponent
+                    key={`token-${token.symbol}`}
+                    tokenSymbol={token.symbol}
+                    tokenBalance={token}
+                    tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
+                    tokenMarket={market}
+                    icon={NewIcons.HIVE_ENGINE}
+                    addBackground
+                    mainValue={token.balance}
+                    mainValueLabel={token.symbol}
+                  />
+                )}
+                renderOnScroll
+              />
             </>
           )}
       </div>
