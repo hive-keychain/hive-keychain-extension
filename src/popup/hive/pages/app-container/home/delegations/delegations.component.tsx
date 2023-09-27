@@ -331,7 +331,7 @@ const Delegations = ({
         </div>
       </div>
 
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
           {chrome.i18n.getMessage('popup_html_delegations_text')}
         </div>

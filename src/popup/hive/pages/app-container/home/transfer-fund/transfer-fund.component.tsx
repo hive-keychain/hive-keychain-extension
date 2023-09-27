@@ -332,7 +332,7 @@ const TransferFunds = ({
           label="popup_html_balance"
         />
 
-        <FormContainer>
+        <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
           <div className="form-fields">
             <FormInputComponent
               name="receiverUsername"

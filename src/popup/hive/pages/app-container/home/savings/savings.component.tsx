@@ -352,7 +352,7 @@ const SavingsPage = ({
         </div>
       )}
 
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         {text.length > 0 && (
           <>
             <div className="text">{text}</div>

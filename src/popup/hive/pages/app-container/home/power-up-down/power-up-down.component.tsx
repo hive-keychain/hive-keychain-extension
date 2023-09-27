@@ -338,7 +338,7 @@ const PowerUpDown = ({
           </CustomTooltip>
         )}
 
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">{chrome.i18n.getMessage(text)}</div>
         <Separator fullSize type="horizontal" />
         <div className="form-fields">

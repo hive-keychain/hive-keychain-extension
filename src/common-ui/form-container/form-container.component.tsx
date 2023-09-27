@@ -1,5 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-export const FormContainer = ({ children }: { children: any }) => {
+interface FormContainerProps {
+  children: any;
+  onSubmit?: (...params: any) => void;
+}
+
+export const FormContainer = ({ children, onSubmit }: FormContainerProps) => {
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === 'Enter') {
+      if (onSubmit) {
+        onSubmit();
+      }
+    }
+  };
+
   return <div className="form-container">{children}</div>;
 };
