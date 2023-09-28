@@ -2,6 +2,8 @@ import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -79,12 +81,12 @@ const PendingSavingsWithdrawalItem = ({
   return (
     <div className="pending-savings-withdraw-row">
       <>
-        <div className="left-panel">{item.amount}</div>
+        <div className="left-panel">{moment(item.complete).format('L')}</div>
         <div className="right-panel">
-          {moment(item.complete).format('L')}
-          <img
-            className="icon erase-delegation"
-            src="/assets/images/clear.png"
+          <span>{item.amount}</span>
+          <SVGIcon
+            className="delete-icon"
+            icon={NewIcons.GLOBAL_DELETE}
             onClick={cancelCurrentWithdrawSavingItem}
           />
         </div>

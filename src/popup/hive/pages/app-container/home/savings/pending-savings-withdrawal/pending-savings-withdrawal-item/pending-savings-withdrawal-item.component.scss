@@ -1,12 +1,5 @@
 .pending-savings-withdraw-row {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  padding: 12px 24px;
-  background-color: $red-transparent;
-  &:nth-child(even) {
-    background-color: $black-transparent;
-  }
+  @include small-card();
 
   .left-panel {
     flex: 1;
@@ -26,47 +19,17 @@
       padding-top: 4px;
     }
 
-    .icon {
+    .delete-icon {
       cursor: pointer;
       display: none;
-      height: 16px;
-      width: 16px;
-      font-size: 16px;
-
-      &.cancel {
-        height: 14px;
-        width: 14px;
-        font-size: 14px;
-      }
-
-      &.always-displayed {
-        display: block;
-      }
-    }
-  }
-
-  .input-container {
-    width: 150px !important;
-    input {
-      height: 30px;
-      font-size: 18px;
-    }
-
-    .set-to-max-button {
-      bottom: 4px;
-    }
-  }
-
-  .pending-undelegation {
-    display: flex;
-    flex: 1;
-    .expiration-date {
-      flex: 1;
+      height: 20px;
+      width: 20px;
+      margin-left: 8px;
     }
   }
 
   &:hover {
-    .icon {
+    .delete-icon {
       display: block;
     }
   }

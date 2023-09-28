@@ -2,6 +2,7 @@ import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { PendingSavingsWithdrawalItemComponent } from 'src/popup/hive/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 import { RootState } from 'src/popup/hive/store';
@@ -26,12 +27,13 @@ const PendingSavingsWithdrawal = ({
     <div
       className="pending-savings-withdrawal-page"
       data-testid={`${Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE}-page`}>
-      <div className="pending-disclaimer">
-        {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
-          currency,
-        ])}
-      </div>
       <div className="list-panel">
+        <div className="pending-disclaimer">
+          {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
+            currency,
+          ])}
+        </div>
+        <Separator type="horizontal" />
         <div className="list">
           {savingsPendingWithdrawalList.map((currentWithdrawItem) => {
             return (

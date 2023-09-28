@@ -215,17 +215,21 @@
   line-height: 14px; /* 116.667% */
 }
 
-@mixin pending-panel {
+@mixin small-card {
   background: var(--card-background);
   border: 1px solid var(--card-border);
   border-radius: 20px;
   @include poppins500(14px);
   padding: 16px;
-  color: var(--main-font-color);
   margin: 0px 16px;
-  cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+@mixin pending-panel {
+  @include small-card();
+  color: var(--main-font-color);
+  cursor: pointer;
 }
 
 @mixin tab-style($nbTab) {
