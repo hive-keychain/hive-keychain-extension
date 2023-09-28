@@ -1,8 +1,7 @@
 .rpc-nodes-page {
   @include pageLayoutRowGap;
-  padding: 0px 24px;
   .introduction {
-    font-size: 16px;
+    @include caption();
   }
 
   .select-rpc-node-select,

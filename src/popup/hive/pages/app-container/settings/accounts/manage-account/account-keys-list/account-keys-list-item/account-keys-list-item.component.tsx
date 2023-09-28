@@ -133,7 +133,7 @@ const AccountKeysListItem = ({
               keyName,
             )}`}
             onClick={() => handleClickOnRemoveKey()}
-            icon={NewIcons.DELETE}
+            icon={NewIcons.GLOBAL_DELETE}
             className="remove-button"></SVGIcon>
         )}
         {!privateKey && !publicKey && (

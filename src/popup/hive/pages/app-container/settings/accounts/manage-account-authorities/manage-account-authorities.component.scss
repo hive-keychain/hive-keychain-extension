@@ -1,14 +1,10 @@
 .settings-manage-account-authorities {
-  @include pageLayout;
+  @include pageLayoutRowGap();
+  row-gap: 16px;
   justify-content: flex-start;
   overflow-y: auto;
 
   .text {
-    font-size: 16px;
-    padding: 4px 12px 12px 20px;
-  }
-
-  .select-account-select {
-    padding: 4px 12px 4px 0px !important;
+    @include caption();
   }
 }

@@ -4,8 +4,8 @@
   row-gap: 8px;
   padding: 20px;
   border-radius: 22px;
-  border: 1px solid $light-grey-border;
-  background: white;
+  border: 1px solid var(--card-border);
+  background: var(--card-background);
   .top-panel {
     display: flex;
     justify-content: space-between;

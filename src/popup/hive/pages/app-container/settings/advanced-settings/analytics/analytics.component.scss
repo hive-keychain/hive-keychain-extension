@@ -3,4 +3,8 @@
   row-gap: 24px;
   padding: 0px 24px;
   margin-top: 3px;
+
+  .fields {
+    @include fields-panel;
+  }
 }

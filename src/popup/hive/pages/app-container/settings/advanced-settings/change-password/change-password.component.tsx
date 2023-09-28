@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import {
@@ -67,7 +66,6 @@ const ChangePassword = ({
         dataTestId="input-old-password"
         value={oldPassword}
         onChange={setOldPassword}
-        logo={Icons.PASSWORD}
         placeholder="popup_html_old_password"
         label="popup_html_old_password"
         type={InputType.PASSWORD}
@@ -77,7 +75,6 @@ const ChangePassword = ({
         dataTestId="input-new-password"
         value={newPassword}
         onChange={setNewPassword}
-        logo={Icons.PASSWORD}
         placeholder="popup_html_new_password"
         label="popup_html_new_password"
         type={InputType.PASSWORD}
@@ -87,7 +84,6 @@ const ChangePassword = ({
         dataTestId="input-new-password-confirmation"
         value={newPasswordConfirm}
         onChange={setNewPasswordConfirm}
-        logo={Icons.PASSWORD}
         placeholder="popup_html_confirm"
         label="popup_html_confirm"
         type={InputType.PASSWORD}

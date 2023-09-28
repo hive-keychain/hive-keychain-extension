@@ -24,7 +24,7 @@ const ManageAccountAuthorities = ({
         {chrome.i18n.getMessage('popup_html_manage_accounts_authorities_text')}
       </div>
 
-      <SelectAccountSectionComponent />
+      <SelectAccountSectionComponent fullSize background="white" />
       <AccountAuthoritiesListComponent />
     </div>
   );

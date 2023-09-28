@@ -51,14 +51,16 @@ const Analytics = ({
     <div
       data-testid={`${Screen.SETTINGS_ANALYTICS}-page`}
       className="analytics-settings-page">
-      <CheckboxPanelComponent
-        dataTestId={`checkbox-allow-ga`}
-        title="popup_html_analytics_allow_ga"
-        hint="popup_html_analytics_message"
-        checked={allowGoogleAnalytics}
-        onChange={() => {
-          setAllowGoogleAnalytics(!allowGoogleAnalytics);
-        }}></CheckboxPanelComponent>
+      <div className="fields">
+        <CheckboxPanelComponent
+          dataTestId={`checkbox-allow-ga`}
+          title="popup_html_analytics_allow_ga"
+          hint="popup_html_analytics_message"
+          checked={allowGoogleAnalytics}
+          onChange={() => {
+            setAllowGoogleAnalytics(!allowGoogleAnalytics);
+          }}></CheckboxPanelComponent>
+      </div>
 
       <ButtonComponent
         dataTestId="button-save"

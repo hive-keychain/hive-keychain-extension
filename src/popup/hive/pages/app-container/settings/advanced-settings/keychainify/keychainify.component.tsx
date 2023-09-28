@@ -40,13 +40,14 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_keychainify_text')}
       </div>
-
-      <CheckboxPanelComponent
-        dataTestId="checkbox-keychainify"
-        title="popup_html_enable_keychainify_title"
-        checked={enabled}
-        onChange={setEnabled}
-        hint="popup_html_enable_keychainify_info"></CheckboxPanelComponent>
+      <div className="fields">
+        <CheckboxPanelComponent
+          dataTestId="checkbox-keychainify"
+          title="popup_html_enable_keychainify_title"
+          checked={enabled}
+          onChange={setEnabled}
+          hint="popup_html_enable_keychainify_info"></CheckboxPanelComponent>
+      </div>
     </div>
   );
 };

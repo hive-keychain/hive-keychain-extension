@@ -2,8 +2,8 @@ import { AuthorityType } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import {
   addToLoadingList,
@@ -117,15 +117,11 @@ const AccountAuthoritiesListItem = ({
                   />
                   <div className="account-name">{accountAuth[0]}</div>
                 </div>
-                <div className="buttons-item text-end">
-                  <Icon
-                    onClick={() =>
-                      handleClickOnRemoveAccountAuth(accountAuth[0])
-                    }
-                    name={Icons.DELETE}
-                    additionalClassName="remove-button"
-                  />
-                </div>
+                <SVGIcon
+                  className="delete-button"
+                  icon={NewIcons.GLOBAL_DELETE}
+                  onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}
+                />
               </div>
             );
           })}

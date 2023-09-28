@@ -80,6 +80,13 @@
   color: var(--main-font-color);
 }
 
+@mixin fields-panel {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  flex: 1;
+}
+
 @mixin resources-panel {
   display: flex;
   column-gap: 6px;

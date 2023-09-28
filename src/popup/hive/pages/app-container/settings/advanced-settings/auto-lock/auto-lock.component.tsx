@@ -54,41 +54,43 @@ const AutoLock = ({
     <div
       data-testid={`${Screen.SETTINGS_AUTO_LOCK}-page`}
       className="auto-lock-page">
-      <CheckboxPanelComponent
-        dataTestId={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
-        title="popup_html_al_default_title"
-        hint="popup_html_al_default_info"
-        checked={selectedType === AutoLockType.DEFAULT}
-        onChange={() =>
-          setSelectedType(AutoLockType.DEFAULT)
-        }></CheckboxPanelComponent>
-      <CheckboxPanelComponent
-        dataTestId={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
-        title="popup_html_al_locked_title"
-        hint="popup_html_al_locked_info"
-        checked={selectedType === AutoLockType.DEVICE_LOCK}
-        onChange={() =>
-          setSelectedType(AutoLockType.DEVICE_LOCK)
-        }></CheckboxPanelComponent>
-      <CheckboxPanelComponent
-        dataTestId={`checkbox-auto-lock-${AutoLockType.IDLE_LOCK}`}
-        title="popup_html_al_idle_title"
-        hint="popup_html_al_idle_info"
-        checked={selectedType === AutoLockType.IDLE_LOCK}
-        onChange={() =>
-          setSelectedType(AutoLockType.IDLE_LOCK)
-        }></CheckboxPanelComponent>
+      <div className="fields">
+        <CheckboxPanelComponent
+          dataTestId={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
+          title="popup_html_al_default_title"
+          hint="popup_html_al_default_info"
+          checked={selectedType === AutoLockType.DEFAULT}
+          onChange={() =>
+            setSelectedType(AutoLockType.DEFAULT)
+          }></CheckboxPanelComponent>
+        <CheckboxPanelComponent
+          dataTestId={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
+          title="popup_html_al_locked_title"
+          hint="popup_html_al_locked_info"
+          checked={selectedType === AutoLockType.DEVICE_LOCK}
+          onChange={() =>
+            setSelectedType(AutoLockType.DEVICE_LOCK)
+          }></CheckboxPanelComponent>
+        <CheckboxPanelComponent
+          dataTestId={`checkbox-auto-lock-${AutoLockType.IDLE_LOCK}`}
+          title="popup_html_al_idle_title"
+          hint="popup_html_al_idle_info"
+          checked={selectedType === AutoLockType.IDLE_LOCK}
+          onChange={() =>
+            setSelectedType(AutoLockType.IDLE_LOCK)
+          }></CheckboxPanelComponent>
 
-      {selectedType === AutoLockType.IDLE_LOCK && (
-        <InputComponent
-          dataTestId="amount-input"
-          value={interval}
-          onChange={setInterval}
-          placeholder="10"
-          type={InputType.NUMBER}
-          onEnterPress={() => save()}
-        />
-      )}
+        {selectedType === AutoLockType.IDLE_LOCK && (
+          <InputComponent
+            dataTestId="amount-input"
+            value={interval}
+            onChange={setInterval}
+            placeholder="10"
+            type={InputType.NUMBER}
+            onEnterPress={() => save()}
+          />
+        )}
+      </div>
 
       <ButtonComponent
         dataTestId="button-save"

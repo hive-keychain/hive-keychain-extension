@@ -2,7 +2,7 @@
   @include pageLayoutRowGap;
   padding: 0px 24px;
   .introduction {
-    font-size: 16px;
+    @include caption();
   }
 
   .bottom-panel {
