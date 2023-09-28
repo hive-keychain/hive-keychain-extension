@@ -2857,7 +2857,7 @@
     "description": "Global"
   },
   "popup_html_pending_currency": {
-    "message": "Pending $1",
+    "message": "Pending conversions",
     "description": "Global"
   },
   "popup_html_pending_currency_timestamp": {

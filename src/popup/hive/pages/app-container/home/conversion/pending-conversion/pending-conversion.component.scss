@@ -1,19 +1,22 @@
 .pending-conversion-page {
+  display: flex;
+  flex: 1;
   .tooltip-container {
     width: 100%;
   }
-  .pending-undelegation {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    font-size: 18px;
-    padding: 12px 24px;
-    background-color: $red-transparent;
-    &:nth-child(even) {
-      background-color: $black-transparent;
-    }
-    .expiration-date {
-      flex: 1;
+  .list-panel {
+    @include form-panel;
+    .list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      .pending-conversion {
+        @include small-card();
+        margin: unset;
+        .expiration-date {
+          flex: 1;
+        }
+      }
     }
   }
 }
