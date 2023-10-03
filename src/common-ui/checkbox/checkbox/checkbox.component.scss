@@ -23,6 +23,7 @@
     user-select: none;
     @include input-label;
     color: var(--main-font-color);
+    margin-bottom: 0px;
   }
 
   &.disabled {

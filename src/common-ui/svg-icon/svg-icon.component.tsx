@@ -1,5 +1,9 @@
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { ReactSVG } from 'react-svg';
+import {
+  CustomTooltip,
+  TooltipProps,
+} from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 
 interface ISVGIconProps {
@@ -9,6 +13,9 @@ interface ISVGIconProps {
   icon: NewIcons;
   hoverable?: boolean;
   forceHover?: boolean;
+  skipTooltipTranslation?: boolean;
+  tooltipMessage?: string;
+  tooltipPosition?: TooltipProps['position'];
 }
 
 export const SVGIcon = ({
@@ -18,6 +25,9 @@ export const SVGIcon = ({
   icon,
   hoverable,
   forceHover,
+  skipTooltipTranslation,
+  tooltipMessage,
+  tooltipPosition,
 }: ISVGIconProps) => {
   const [hovered, setHovered] = useState(false);
 
@@ -27,16 +37,53 @@ export const SVGIcon = ({
     }
   };
 
-  return (
-    <ReactSVG
-      data-testid={dataTestId}
-      onMouseOver={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={($event) => handleClick($event)}
-      className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
-        (hoverable && hovered) || forceHover ? 'hovered' : ''
-      }`}
-      src={`/assets/images/${icon}.svg`}
-    />
-  );
+  const getIconTemplate = ({
+    dataTestId,
+    onClick,
+    className,
+    icon,
+    hoverable,
+    forceHover,
+  }: ISVGIconProps) => {
+    return (
+      <ReactSVG
+        data-testid={dataTestId}
+        onMouseOver={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={($event) => handleClick($event)}
+        className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
+          (hoverable && hovered) || forceHover ? 'hovered' : ''
+        }`}
+        src={`/assets/images/${icon}.svg`}
+      />
+    );
+  };
+
+  if (tooltipMessage && tooltipPosition) {
+    return (
+      <CustomTooltip
+        message={tooltipMessage}
+        position={tooltipPosition}
+        delayShow={500}
+        skipTranslation={skipTooltipTranslation}>
+        {getIconTemplate({
+          dataTestId,
+          onClick,
+          className,
+          icon,
+          hoverable,
+          forceHover,
+        })}
+      </CustomTooltip>
+    );
+  } else {
+    return getIconTemplate({
+      dataTestId,
+      onClick,
+      className,
+      icon,
+      hoverable,
+      forceHover,
+    });
+  }
 };

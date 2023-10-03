@@ -1,26 +1,12 @@
 .witness-tab {
   @include pageLayoutRowGap;
+  row-gap: 8px;
   height: 100%;
   .remaining-votes,
-  .using-proxy {
-    font-size: 16px;
-    padding: 0px 24px;
-    box-sizing: border-box;
-  }
+  .using-proxy,
   .link-to-arcange {
-    padding: 0px 24px;
+    @include caption();
     cursor: pointer;
-    a,
-    span {
-      font-size: 16px;
-      color: white;
-      text-decoration: none;
-    }
-
-    span {
-      vertical-align: bottom;
-      margin-left: 4px;
-    }
   }
 
   .rotating-logo {
@@ -41,14 +27,17 @@
 
       .switches-panel {
         display: flex;
-        justify-content: space-between;
+        column-gap: 8px;
+        margin: 0px 18px;
       }
     }
 
     .ranking {
-      display: block;
+      display: flex;
       height: 100%;
       overflow: auto;
+      flex-direction: column;
+      row-gap: 8px;
 
       .error-witness {
         display: flex;
@@ -59,21 +48,10 @@
         padding: 32px 24px;
         box-sizing: border-box;
         font-size: 16px;
-
-        .icon-component {
-          height: 50px;
-          width: 50px;
-          font-size: 50px;
-        }
       }
 
       .ranking-item {
-        display: grid;
-        grid-template-columns: 70px 1fr 70px;
-        align-items: center;
-        background: $black-transparent;
-        font-size: 18px;
-        height: 48px;
+        @include small-card;
 
         .rank {
           display: flex;
@@ -94,25 +72,21 @@
           text-align: center;
         }
         .not-voted {
-          color: $grey;
-          &:not(.using-proxy):hover {
-            color: white;
-          }
+          --upvote-downvote-color: #{$red};
         }
         .voted {
-          color: white;
-          &:not(.using-proxy):hover {
-            color: $grey;
-          }
+          --upvote-downvote-color: #969696;
         }
         .name {
           display: flex;
           align-items: center;
           column-gap: 4px;
+          flex: 1;
 
           .link-to-witness-page {
             cursor: pointer;
-            font-size: 16px;
+            height: 15px;
+            width: 15px;
           }
 
           &.not-active {
@@ -123,21 +97,18 @@
         }
 
         .tooltip-container {
-          height: 28px;
+          height: 20px;
         }
 
         .action {
-          @include icon-size(28px);
+          height: 20px;
+          width: 20px;
           justify-self: center;
           cursor: pointer;
 
           &.using-proxy {
             cursor: not-allowed;
           }
-        }
-
-        &:nth-child(even) {
-          background: $red-transparent;
         }
       }
     }

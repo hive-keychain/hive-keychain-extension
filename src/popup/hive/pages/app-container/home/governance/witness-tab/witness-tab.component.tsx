@@ -3,11 +3,12 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import {
   addToLoadingList,
@@ -178,22 +179,24 @@ const WitnessTab = ({
           }>
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
-            <Icon
+            <SVGIcon
               dataTestId={`link-to-witness-page-${witness.name}`}
               onClick={() => chrome.tabs.create({ url: witness.url })}
-              name={Icons.OPEN_IN_NEW}
-              additionalClassName="link-to-witness-page"></Icon>
+              icon={NewIcons.GOVERNANCE_WITNESS_LINK}
+              className="link-to-witness-page"></SVGIcon>
           )}
         </div>
-        <Icon
+        <SVGIcon
           dataTestId={`witness-voting-icon-${witness.name}`}
-          additionalClassName={
+          className={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
             ' ' +
-            (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
+            (usingProxy || !activeAccount.keys.active
+              ? 'using-proxy-button'
+              : '')
           }
-          name={Icons.ARROW_CIRCLE_UP}
+          icon={NewIcons.GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE}
           onClick={() => handleVotedButtonClick(witness)}
           tooltipPosition="left"
           tooltipMessage={
@@ -231,13 +234,13 @@ const WitnessTab = ({
           chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
         }
         className="link-to-arcange">
-        <a>
-          {' '}
+        <div>
           {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
-          <Icon
-            name={Icons.OPEN_IN_NEW}
-            additionalClassName="outside-link"></Icon>
-        </a>
+        </div>
+        {/* <SVGIcon
+          icon={NewIcons.GOVERNANCE_WITNESS_LINK}
+          className="outside-link"
+        /> */}
       </div>
 
       <div className="ranking-container">
@@ -245,25 +248,27 @@ const WitnessTab = ({
           <InputComponent
             dataTestId="input-ranking-filter"
             type={InputType.TEXT}
+            logo={NewIcons.INPUT_SEARCH}
+            logoPosition="left"
             placeholder="popup_html_search"
             value={filterValue}
             onChange={setFilterValue}
           />
           <div className="switches-panel">
-            <CheckboxComponent
+            <CheckboxPanelComponent
               dataTestId="switches-panel-witness-voted_only"
               title="html_popup_witness_display_voted_only"
               checked={displayVotedOnly}
               onChange={() => {
                 setDisplayVotedOnly(!displayVotedOnly);
-              }}></CheckboxComponent>
-            <CheckboxComponent
+              }}></CheckboxPanelComponent>
+            <CheckboxPanelComponent
               dataTestId="switches-panel-witness-hide_inactive"
               title="html_popup_witness_hide_inactive"
               checked={hideNonActive}
               onChange={() => {
                 setHideNonActive(!hideNonActive);
-              }}></CheckboxComponent>
+              }}></CheckboxPanelComponent>
           </div>
         </div>
 

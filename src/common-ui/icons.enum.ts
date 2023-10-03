@@ -97,6 +97,9 @@ export enum NewIcons {
 
   GLOBAL_DELETE = 'global/delete',
 
+  GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
+  GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE = 'governance/update-downvote-witness',
+
   HIVE_ENGINE = 'wallet/hive-engine',
 
   INPUT_SHOW = 'input/show',

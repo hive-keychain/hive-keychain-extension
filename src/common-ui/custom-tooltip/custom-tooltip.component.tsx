@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
-interface TooltipProps {
+export interface TooltipProps {
   position?: CustomTooltipPosition;
   delayShow?: number;
   children: any;
