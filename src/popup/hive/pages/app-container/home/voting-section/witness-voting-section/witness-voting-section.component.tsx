@@ -75,7 +75,7 @@ const WitnessVotingSection = ({
           }}
           label={'html_popup_vote_for_witness'}
           requiredKey={KeychainKeyTypesLC.active}
-          height="medium"
+          height="small"
         />
       )}
     </div>

@@ -118,6 +118,9 @@ const ProxyTab = ({
           type={InputType.TEXT}
         />
       )}
+
+      <div className="fill-space"></div>
+
       {activeAccount.account.proxy.length === 0 && (
         <OperationButtonComponent
           dataTestId="operation-set-as-proxy-button"

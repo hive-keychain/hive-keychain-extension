@@ -35,7 +35,6 @@ const Governance = ({
     let requestResult;
     try {
       requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
-      console.log(requestResult);
       if (!!requestResult && requestResult !== '') {
         const ranking: Witness[] = requestResult;
 

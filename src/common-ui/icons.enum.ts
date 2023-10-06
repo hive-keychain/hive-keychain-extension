@@ -99,6 +99,11 @@ export enum NewIcons {
 
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
   GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE = 'governance/update-downvote-witness',
+  GOVERNANCE_PROPOSAL_BUDGET = 'governance/proposal/budget',
+  GOVERNANCE_PROPOSAL_DURATION = 'governance/proposal/duration',
+  GOVERNANCE_PROPOSAL_EXPAND_COLLAPSE = 'governance/proposal/expand-collapse',
+  GOVERNANCE_PROPOSAL_UPVOTE_VALUE = 'governance/proposal/upvote-value',
+  GOVERNANCE_PROPOSAL_UPVOTE = 'governance/proposal/upvote',
 
   HIVE_ENGINE = 'wallet/hive-engine',
 
@@ -112,6 +117,7 @@ export enum NewIcons {
   INPUT_CLEAR = 'input/clear',
 
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
+  KEYCHAIN_LOGO_ROUND = 'keychain-round-logo',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',
 
   MENU_BUTTON = 'top-bar/menu-button',
@@ -231,7 +237,6 @@ export enum NewIcons {
   HIVE = 'hive',
   HP_DELEGATION = 'hp-delegation',
   KEYCHAIN_LOGO = 'keychain-logo',
-  KEYCHAIN_LOGO_ROUND = 'logo-keychain-round',
   KEYCHAINIFY = 'keychainify',
   LINK_LEDGER = 'link-ledger',
   LOGOUT = 'logout',

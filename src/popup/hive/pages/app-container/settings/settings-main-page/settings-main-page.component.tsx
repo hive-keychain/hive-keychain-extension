@@ -29,9 +29,9 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
     <div
       className="settings-main-page"
       data-testid={`${Screen.SETTINGS_MAIN_PAGE}-page`}>
-      <div className="love-text">
+      {/* <div className="love-text">
         {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
-      </div>
+      </div> */}
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}

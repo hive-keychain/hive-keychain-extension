@@ -52,11 +52,12 @@
 
       .ranking-item {
         @include small-card;
-
+        color: var(--main-font-color);
         .rank {
           display: flex;
           align-items: center;
           justify-content: center;
+
           .active-rank {
             font-size: 16px;
             width: 30px;
@@ -72,10 +73,10 @@
           text-align: center;
         }
         .not-voted {
-          --upvote-downvote-color: #{$red};
+          --upvote-downvote-color: #969696;
         }
         .voted {
-          --upvote-downvote-color: #969696;
+          --upvote-downvote-color: #{$red};
         }
         .name {
           display: flex;

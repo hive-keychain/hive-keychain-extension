@@ -14,11 +14,7 @@
     display: flex;
     flex: 1;
     overflow: auto;
-    .proposal-item {
-      &:nth-child(even) {
-        background-color: $red-transparent;
-      }
-    }
+    row-gap: 8px;
   }
   &.loading {
     text-align: center;

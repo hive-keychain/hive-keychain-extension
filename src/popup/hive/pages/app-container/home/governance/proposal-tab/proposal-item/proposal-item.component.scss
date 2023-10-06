@@ -1,23 +1,21 @@
 .proposal-item {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  row-gap: 12px;
-
-  &:nth-child(even) {
-    background-color: $red-transparent;
-  }
+  @include small-card();
+  padding: 20px;
+  align-items: unset;
+  row-gap: 8px;
 
   .title {
-    font-size: 18px;
     cursor: pointer;
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
     column-gap: 8px;
+    @include poppins400(14px);
+    justify-content: space-between;
+    color: var(--main-font-color);
 
     .more {
-      margin-top: -4px;
+      @include icon-size(18px);
     }
 
     .more.opened {
@@ -29,32 +27,25 @@
   .additional-info {
     display: flex;
     align-items: center;
-
-    .icon-component {
-      @include icon-size(28px);
-      &.using-proxy {
-        cursor: not-allowed;
-        padding: unset;
-      }
-      &.not-voted {
-        color: $grey;
-        &:not(.using-proxy):hover {
-          color: white;
+    margin-left: 16px;
+    color: var(--main-font-color);
+    .upvote-button {
+      .svg-icon {
+        @include icon-size(20px);
+        &.not-voted {
+          --proposal-upvote-icon: #969696;
         }
-      }
-      &.voted {
-        color: white;
-        &:not(.using-proxy):hover {
-          color: $grey;
+        &.voted {
+          --proposal-upvote-icon: #{$red};
         }
       }
     }
-
     .left-panel {
       flex: 1;
       display: flex;
       flex-direction: column;
       row-gap: 8px;
+      @include poppins400(12px);
       .creator {
         display: flex;
         align-items: center;
@@ -64,7 +55,6 @@
           border-radius: 50%;
           margin-right: 8px;
         }
-        font-size: 18px;
         cursor: pointer;
       }
     }
@@ -74,9 +64,11 @@
     justify-content: space-between;
     max-height: 0;
     transition: max-height 0.5s ease-out;
-    font-size: 14px;
+
     display: flex;
     align-items: center;
+    @include poppins400(10px);
+    color: var(--main-font-color);
 
     &.opened {
       max-height: 500px;
@@ -94,40 +86,32 @@
         align-items: center;
         column-gap: 8px;
 
-        .icon-component {
-          @include icon-size(18px);
+        .svg-icon {
+          @include icon-size(20px);
         }
-      }
-    }
-    .nb-votes {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      row-gap: 8px;
-
-      .value {
-        font-size: 14px;
       }
     }
 
     .funded-chip {
-      border: 1px solid white;
+      border: 1px solid;
       border-radius: 16px;
       padding: 4px 8px 2px 8px;
       font-size: 14px;
       min-width: 64px;
       text-align: center;
       vertical-align: middle;
+
       &.totally_funded,
       &.partially_funded {
-        background: white;
-        color: black;
+        background: $red;
+        border-color: $red;
+        color: white;
       }
 
       &.not_funded {
-        background: $grey;
-        color: white;
+        border-color: var(--card-border);
+        background: var(--card-background);
+        color: var(--main-font-color);
       }
     }
   }

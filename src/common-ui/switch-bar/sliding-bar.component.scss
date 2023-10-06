@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 .sliding-bar-container {
-  @include background-top;
   $itemHeight: 36px;
   $itemWidth: 72px;
   display: flex;

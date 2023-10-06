@@ -64,6 +64,8 @@ $dark: (
   --form-panel-background: $darker-blue,
   // Available card
   --available-card-label-color: white,
+  // Governance
+  --proposal-detail-icon: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -131,6 +133,8 @@ $light: (
   --form-panel-background: white,
   // Available card
   --available-card-label-color: $darker-blue,
+  // Governance
+  --proposal-detail-icon: $dark-blue,
 );
 
 @mixin spread-map($map: ()) {

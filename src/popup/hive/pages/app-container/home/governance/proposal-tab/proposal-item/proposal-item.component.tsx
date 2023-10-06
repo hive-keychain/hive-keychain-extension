@@ -3,8 +3,8 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -90,8 +90,7 @@ const ProposalItem = ({
     <div
       data-testid={`proposal-item-expandable`}
       className={`proposal-item`}
-      key={proposal.proposalId}
-      onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
+      key={proposal.proposalId}>
       <div className="title">
         <div>
           <span
@@ -100,13 +99,12 @@ const ProposalItem = ({
             #{proposal.id} - {proposal.subject}
           </span>
         </div>
-        <Icon
+        <SVGIcon
           dataTestId={`proposal-item-icon-expandable-${proposal.creator}`}
-          name={Icons.EXPAND_MORE}
+          className={`more ${isExpandablePanelOpened ? 'opened' : 'closed'}`}
+          icon={NewIcons.GOVERNANCE_PROPOSAL_EXPAND_COLLAPSE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
-          additionalClassName={`more ${
-            isExpandablePanelOpened ? 'opened' : 'closed'
-          }`}></Icon>
+        />
       </div>
       <div className="additional-info">
         <div className="left-panel">
@@ -129,16 +127,16 @@ const ProposalItem = ({
             </span>
           </div>
         </div>
-        <div className="nb-votes">
-          <Icon
+        <div className="upvote-button">
+          <SVGIcon
             dataTestId={`proposal-item-icon-vote-unvote-${proposal.creator}`}
             onClick={() => toggleSupport(proposal)}
-            additionalClassName={
+            className={
               (proposal.voted ? 'voted' : 'not-voted') +
               ' ' +
               (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
             }
-            name={Icons.ARROW_CIRCLE_UP}
+            icon={NewIcons.GOVERNANCE_PROPOSAL_UPVOTE}
             tooltipPosition="left"
             tooltipMessage={
               !activeAccount.keys.active
@@ -165,13 +163,13 @@ const ProposalItem = ({
             skipTranslation>
             <div className="extra-info">
               <div className="value">
-                <Icon name={Icons.ARROW_CIRCLE_UP} />
+                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_UPVOTE_VALUE} />
                 <div data-testid="proposal-item-extra-info-value">
                   {proposal.totalVotes}
                 </div>
               </div>
               <div>
-                <Icon name={Icons.TIMELAPSE} />
+                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_DURATION} />
                 <div>
                   {chrome.i18n.getMessage('popup_html_days_remaining', [
                     FormatUtils.withCommas(
@@ -184,7 +182,7 @@ const ProposalItem = ({
                 </div>
               </div>
               <div>
-                <Icon name={Icons.ATTACH_MONEY} />
+                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_BUDGET} />
                 <div>
                   {FormatUtils.withCommas(proposal.dailyPay.toString())}/
                   {chrome.i18n.getMessage('day')}
