@@ -15,13 +15,15 @@ import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
 import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-page.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
+import { TokenSwapsHistoryComponent } from '@popup/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
+import { TokenSwapsComponent } from '@popup/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
+import { TokensPageComponent } from '@popup/pages/app-container/home/tokens/token-page/token-page.component';
 import { TokensFilterComponent } from '@popup/pages/app-container/home/tokens/tokens-filter/tokens-filter.component';
 import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
 import { TokensTransferComponent } from '@popup/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
-import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
@@ -93,7 +95,7 @@ const AppRouter = ({
         return <IncomingOutgoingRcPageComponent />;
       //Tokens
       case Screen.TOKENS_PAGE:
-        return <TokensComponent />;
+        return <TokensPageComponent />;
       case Screen.TOKENS_HISTORY:
         return <TokensHistoryComponent />;
       case Screen.TOKENS_SETTINGS:
@@ -106,6 +108,10 @@ const AppRouter = ({
         return <TokenIncomingOutgoingPageComponent />;
       case Screen.TOKENS_FILTER:
         return <TokensFilterComponent />;
+      case Screen.TOKEN_SWAP_PAGE:
+        return <TokenSwapsComponent />;
+      case Screen.TOKENS_SWAP_HISTORY:
+        return <TokenSwapsHistoryComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
@@ -177,6 +183,8 @@ const AppRouter = ({
           titleParams={titleProperties.titleParams}
           skipTitleTranslation={titleProperties.skipTitleTranslation}
           isBackButtonEnabled={titleProperties.isBackButtonEnabled}
+          onBackAdditional={titleProperties.onBackAdditional}
+          onCloseAdditional={titleProperties.onCloseAdditional}
           isCloseButtonDisabled={
             titleProperties.isCloseButtonDisabled
           }></PageTitleComponent>

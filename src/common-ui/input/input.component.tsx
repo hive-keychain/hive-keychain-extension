@@ -9,6 +9,7 @@ import './input.component.scss';
 interface InputProps {
   value: any;
   logo?: Icons | string;
+  rightIcon?: JSX.Element;
   label?: string;
   placeholder: string;
   type: InputType;
@@ -25,12 +26,14 @@ interface InputProps {
   hasError?: boolean;
   dataTestId?: string;
   disabled?: boolean;
+  tooltip?: string;
+  skipTooltipTranslation?: boolean;
   onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
 }
 
-const InputComponent = (props: InputProps) => {
+const InputComponent = React.forwardRef((props: InputProps, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -55,10 +58,21 @@ const InputComponent = (props: InputProps) => {
     <div className="custom-input">
       {props.label && (
         <div className="label">
-          {props.skipLabelTranslation
-            ? props.label
-            : chrome.i18n.getMessage(props.label)}{' '}
-          {props.required ? '*' : ''}
+          <div>
+            {props.skipLabelTranslation
+              ? props.label
+              : chrome.i18n.getMessage(props.label)}{' '}
+            {props.required ? '*' : ''}
+          </div>
+          {props.tooltip && (
+            <Icon
+              type={IconType.OUTLINED}
+              name={Icons.INFO}
+              skipTooltipTranslation={props.skipTooltipTranslation}
+              tooltipMessage={props.tooltip}
+              tooltipPosition="right"
+            />
+          )}
         </div>
       )}
       <div
@@ -66,6 +80,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
+          ref={ref as any}
           data-testid={props.dataTestId}
           className={`${props.hasError ? 'has-error' : ''} ${
             props.onSetToMaxClicked ? 'has-max-button' : ''
@@ -92,6 +107,7 @@ const InputComponent = (props: InputProps) => {
           }}
           onFocus={() => handleOnFocus()}
           onBlur={() => handleOnBlur()}
+          disabled={props.disabled}
         />
         {props.type === InputType.PASSWORD && !isPasswordDisplay && (
           <Icon
@@ -109,13 +125,13 @@ const InputComponent = (props: InputProps) => {
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
+          !props.disabled &&
           props.value &&
           props.value.length > 0 && (
             <Icon
               dataTestId="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
-              type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
         {isFocused && props.autocompleteValues && (
@@ -138,6 +154,7 @@ const InputComponent = (props: InputProps) => {
             type={IconType.OUTLINED}
             additionalClassName="input-img"></Icon>
         )}
+        {props.rightIcon}
         {props.onSetToMaxClicked && (
           <span
             data-testid="set-to-max-button"
@@ -149,6 +166,6 @@ const InputComponent = (props: InputProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default InputComponent;
