@@ -13,22 +13,10 @@ import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
-  let tokens = [];
-  let offset = 0;
+  let tokens;
   try {
-    do {
-      tokens.push(
-        ...(await TokensUtils.getAllTokens({}, 1000, offset, [])).map(
-          (t: any) => {
-            return {
-              ...t,
-              metadata: JSON.parse(t.metadata),
-            };
-          },
-        ),
-      );
-      offset += 1000;
-    } while (tokens.length % 1000 === 0);
+    tokens = await TokensUtils.getAllTokens();
+    
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({
