@@ -16,6 +16,14 @@
       color: var(--main-font-color);
     }
 
+    &.white {
+      background: var(--select-background-color);
+      &:hover,
+      &:focus {
+        background: var(--select-background-color);
+      }
+    }
+
     .react-dropdown-select-content {
       .selected-item {
         display: flex;
@@ -31,7 +39,6 @@
 
     .react-dropdown-select-dropdown-handle {
       width: 24px !important;
-      margin-top: 4px;
       vertical-align: middle;
       margin-left: unset !important;
       .custom-select-handle {

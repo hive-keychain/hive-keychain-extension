@@ -4,69 +4,61 @@
     @include caption();
   }
 
-  .select-rpc-node-select,
-  .select-rpc-node-select:hover,
-  .select-rpc-node-select:focus {
-    border: unset !important;
-    background: rgba(33, 37, 41, 0.68);
-  }
-  .select-rpc-node-select {
-    .react-dropdown-select-dropdown {
-      border: unset;
-      top: 54px;
-      background-color: black;
-    }
-  }
-
-  .selected-rpc-node-panel {
+  .rpc-form-container {
     display: flex;
-    align-items: center;
-    column-gap: 16px;
-    padding: 12px 6px;
-    box-sizing: border-box;
-    width: 100%;
-  }
-  .selected-rpc-node-panel .selected-rpc-node,
-  .select-rpc-item .rpc-name {
-    font-size: 18px;
-  }
+    flex-direction: column;
+    row-gap: 8px;
+    margin: 0px 32px;
 
-  .select-rpc-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: 16px;
-    padding: 12px;
-    box-sizing: border-box;
-    background: rgba(33, 37, 41, 0.68);
+    .rpc-section {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      .title {
+        @include poppins600(14px);
+      }
 
-    &:hover,
-    &.selected {
-      background: $red;
-
-      .erase-button {
-        display: block;
+      .select-rpc-panel {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        .custom-select-container {
+          flex: 1;
+          .custom-select {
+            height: 56px !important;
+            border-radius: 22px !important;
+          }
+        }
+        .round-button {
+          cursor: pointer;
+          @include small-card;
+          padding: 12px;
+          border-radius: 50%;
+          margin: 0px;
+          width: 18px;
+          transition: 0.5s ease-in-out;
+          &.close-button {
+            rotate: 45deg;
+          }
+          .svg-icon {
+            @include icon-size(18px);
+          }
+        }
+      }
+      .add-rpc-panel {
+        display: flex;
+        flex-direction: column;
+        row-gap: 14px;
+        @include small-card;
+        align-items: unset;
+        margin: 0px;
+        margin-top: -8px;
+        .add-rpc-caption {
+          @include poppins600(14px);
+          display: flex;
+          justify-content: space-between;
+        }
       }
     }
-
-    .erase-button {
-      display: none;
-      height: 16px;
-      width: 16px;
-    }
-  }
-
-  .react-dropdown-select-dropdown {
-    max-height: 250px !important;
-  }
-}
-
-.add-rpc-panel {
-  display: flex;
-  flex-direction: column;
-  row-gap: 14px;
-  .add-rpc-caption {
-    @include caption();
-    margin-top: 12px;
   }
 }

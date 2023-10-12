@@ -157,6 +157,10 @@ export enum NewIcons {
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
   MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
 
+  MENU_RPC_ADD_BUTTON = 'menu/rpc/add-button',
+  MENU_RPC_CLOSE_BUTTON = 'menu/rpc/close-button',
+  MENU_RPC_SAVE_BUTTON = 'menu/rpc/save-rpc-button',
+
   MESSAGE_ERROR = 'message/error',
   MESSAGE_SUCCESS = 'message/success',
 

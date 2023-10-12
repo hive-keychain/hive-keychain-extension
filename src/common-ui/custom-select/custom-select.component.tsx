@@ -15,6 +15,7 @@ export interface CustomSelectProps<T> {
   options: T[];
   selectedItem: T;
   setSelectedItem: (item: T) => void;
+  background?: 'white';
 }
 
 export function CustomSelect<T extends OptionItem>(
@@ -84,7 +85,9 @@ export function CustomSelect<T extends OptionItem>(
         dropdownHandleRenderer={customHandleRenderer}
         contentRenderer={customLabelRender}
         dropdownRenderer={customDropdownRenderer}
-        className="custom-select"
+        className={`custom-select ${
+          itemProps.background ? itemProps.background : ''
+        }`}
       />
     </div>
   );
