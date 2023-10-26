@@ -22,7 +22,10 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from 'src/popup/hive/actions/message.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
@@ -53,6 +56,7 @@ const RpcNodes = ({
   setHEActiveAccountHistoryApi,
   setHEActiveRpc,
   setErrorMessage,
+  setSuccessMessage,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const allRpc = RpcUtils.getFullList();
@@ -70,8 +74,9 @@ const RpcNodes = ({
   const [hiveEngineRpcOptions, setHiveEngineRpcOptions] = useState<
     SelectOption[]
   >([]);
-  const [newRpc, setNewRpc] = useState('');
-  const [isNewRpcPanelOpened, setIsNewRpcPanelOpened] = useState(false);
+  const [newHERpc, setNewHERpc] = useState('');
+  const [isNewHERpcPanelOpened, setIsNewHERpcPanelOpened] = useState(false);
+  const [setNewHeRpcAsActive, setSetNewHeRpcAsActive] = useState(false);
 
   // Hive Engine account history
   const [accountHistoryApiOptions, setAccountHistoryApiOptions] = useState<
@@ -80,6 +85,8 @@ const RpcNodes = ({
   const [isNewAccountHistoryPanelOpened, setIsNewAccountHistoryPanelOpened] =
     useState(false);
   const [newAccountHistory, setNewAccountHistory] = useState('');
+  const [setNewAccountHistoryAsActive, setSetNewAccountHistoryAsActive] =
+    useState(false);
 
   const setRpcAsActive = (option: SelectOption) => {
     setHEActiveRpc(option.value);
@@ -241,6 +248,38 @@ const RpcNodes = ({
     }
   };
 
+  const saveAccountHistory = async () => {
+    if (accountHistoryApiOptions.find((e) => e.value === newAccountHistory)) {
+      setErrorMessage('html_popup_rpc_already_exist');
+      return;
+    }
+    if (ValidUrl.isWebUri(newAccountHistory)) {
+      setSuccessMessage('html_popup_new_account_history_save_success');
+      await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
+      setNewAccountHistory('');
+      setIsNewAccountHistoryPanelOpened(false);
+      init();
+    } else {
+      setErrorMessage('html_popup_url_not_valid');
+    }
+  };
+
+  const saveHiveEngineRpc = async () => {
+    if (hiveEngineRpcOptions.find((e) => e.value === newHERpc)) {
+      setErrorMessage('html_popup_rpc_already_exist');
+      return;
+    }
+    if (ValidUrl.isWebUri(newHERpc)) {
+      setSuccessMessage('html_popup_new_rpc_save_success');
+      await HiveEngineConfigUtils.addCustomRpc(newHERpc);
+      setNewHERpc('');
+      setIsNewHERpcPanelOpened(false);
+      init();
+    } else {
+      setErrorMessage('html_popup_url_not_valid');
+    }
+  };
+
   const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {
     return (
       <div
@@ -295,16 +334,16 @@ const RpcNodes = ({
       </div>
 
       <div className="rpc-form-container">
-        {activeRpc && !switchAuto && options && (
-          <div className="rpc-section hive-rpc">
-            <div className="title">Hive RPC</div>
-            <CheckboxPanelComponent
-              dataTestId="checkbox-rpc-nodes-automatic-mode"
-              title="popup_html_rpc_automatic_mode"
-              hint="popup_html_rpc_automatic_mode_hint"
-              checked={switchAuto}
-              onChange={setSwitchAuto}
-            />
+        <div className="rpc-section hive-rpc">
+          <div className="title">Hive RPC</div>
+          <CheckboxPanelComponent
+            dataTestId="checkbox-rpc-nodes-automatic-mode"
+            title="popup_html_rpc_automatic_mode"
+            hint="popup_html_rpc_automatic_mode_hint"
+            checked={switchAuto}
+            onChange={setSwitchAuto}
+          />
+          {activeRpc && !switchAuto && options && (
             <div className="select-rpc-panel">
               <CustomSelect
                 options={options}
@@ -328,78 +367,8 @@ const RpcNodes = ({
                 <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
               </div>
             </div>
-            {!switchAuto && isAddRpcPanelDisplayed && (
-              <div className="add-rpc-panel">
-                <div className="add-rpc-caption">
-                  <span>
-                    {chrome.i18n.getMessage('popup_html_add_rpc_text')}
-                  </span>
-                  <SVGIcon
-                    icon={NewIcons.MENU_RPC_SAVE_BUTTON}
-                    onClick={() => handleSaveNewRpcClicked()}
-                  />
-                </div>
-                <Separator type="horizontal" />
-                <InputComponent
-                  dataTestId="input-rpc-node-uri"
-                  type={InputType.TEXT}
-                  value={addRpcNodeUri}
-                  onChange={setAddRpcNodeUri}
-                  placeholder={'popup_html_rpc_node'}
-                  onEnterPress={handleSaveNewRpcClicked}
-                />
-                <CheckboxComponent
-                  dataTestId="checkbox-add-rpc-test-node"
-                  title="TESTNET"
-                  checked={addRpcNodeTestnet}
-                  onChange={setAddRpcNodeTestnet}
-                  skipTranslation={true}></CheckboxComponent>
-                {addRpcNodeTestnet && (
-                  <InputComponent
-                    dataTestId="input-node-chain-id"
-                    type={InputType.TEXT}
-                    value={addRpcNodeChainId}
-                    onChange={setAddRpcNodeChainId}
-                    placeholder="Chain Id"
-                    skipPlaceholderTranslation={true}
-                    onEnterPress={handleSaveNewRpcClicked}
-                  />
-                )}
-
-                <CheckboxComponent
-                  dataTestId="checkbox-set-new-rpc-as-active"
-                  title="popup_html_set_new_rpc_as_active"
-                  checked={setNewRpcAsActive}
-                  onChange={setSetNewRpcAsActive}></CheckboxComponent>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="rpc-section hive-engine-rpc">
-          <div className="title">Hive-Engine RPC</div>
-          <div className="select-rpc-panel">
-            <CustomSelect
-              options={hiveEngineRpcOptions}
-              selectedItem={
-                {
-                  value: activeHERpc,
-                  label: activeHERpc,
-                } as SelectOption
-              }
-              setSelectedItem={(item: SelectOption) => {
-                setHEActiveRpc(item.value);
-              }}
-              background="white"
-            />
-            <div
-              className={`round-button ${
-                isNewRpcPanelOpened ? 'close-button' : 'add-button'
-              }`}
-              onClick={() => setIsNewRpcPanelOpened(!isNewRpcPanelOpened)}>
-              <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
-            </div>
-          </div>
-          {isNewRpcPanelOpened && (
+          )}
+          {!switchAuto && isAddRpcPanelDisplayed && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
@@ -440,6 +409,58 @@ const RpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewRpcAsActive}
                 onChange={setSetNewRpcAsActive}></CheckboxComponent>
+            </div>
+          )}
+        </div>
+
+        <div className="rpc-section hive-engine-rpc">
+          <div className="title">Hive-Engine RPC</div>
+          <div className="select-rpc-panel">
+            <CustomSelect
+              options={hiveEngineRpcOptions}
+              selectedItem={
+                {
+                  value: activeHERpc,
+                  label: activeHERpc,
+                } as SelectOption
+              }
+              setSelectedItem={(item: SelectOption) => {
+                setHEActiveRpc(item.value);
+              }}
+              background="white"
+            />
+            <div
+              className={`round-button ${
+                isNewHERpcPanelOpened ? 'close-button' : 'add-button'
+              }`}
+              onClick={() => setIsNewHERpcPanelOpened(!isNewHERpcPanelOpened)}>
+              <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
+            </div>
+          </div>
+          {isNewHERpcPanelOpened && (
+            <div className="add-rpc-panel">
+              <div className="add-rpc-caption">
+                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
+                <SVGIcon
+                  icon={NewIcons.MENU_RPC_SAVE_BUTTON}
+                  onClick={() => saveHiveEngineRpc()}
+                />
+              </div>
+              <Separator type="horizontal" />
+              <InputComponent
+                dataTestId="input-rpc-node-uri"
+                type={InputType.TEXT}
+                value={newHERpc}
+                onChange={setNewHERpc}
+                placeholder={'popup_html_rpc_node'}
+                onEnterPress={handleSaveNewRpcClicked}
+              />
+
+              <CheckboxComponent
+                dataTestId="checkbox-set-new-he-rpc-as-active"
+                title="popup_html_set_new_rpc_as_active"
+                checked={setNewHeRpcAsActive}
+                onChange={setSetNewHeRpcAsActive}></CheckboxComponent>
             </div>
           )}
         </div>
@@ -464,7 +485,9 @@ const RpcNodes = ({
                 isNewAccountHistoryPanelOpened ? 'close-button' : 'add-button'
               }`}
               onClick={() =>
-                setIsAddRpcPanelDisplayed(!isNewAccountHistoryPanelOpened)
+                setIsNewAccountHistoryPanelOpened(
+                  !isNewAccountHistoryPanelOpened,
+                )
               }>
               <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
             </div>
@@ -475,41 +498,24 @@ const RpcNodes = ({
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
                   icon={NewIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => handleSaveNewRpcClicked()}
+                  onClick={() => saveAccountHistory()}
                 />
               </div>
               <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-rpc-node-uri"
                 type={InputType.TEXT}
-                value={addRpcNodeUri}
-                onChange={setAddRpcNodeUri}
-                placeholder={'popup_html_rpc_node'}
-                onEnterPress={handleSaveNewRpcClicked}
+                value={newAccountHistory}
+                onChange={setNewAccountHistory}
+                placeholder={'html_popup_new_account_history'}
+                onEnterPress={saveAccountHistory}
               />
-              <CheckboxComponent
-                dataTestId="checkbox-add-rpc-test-node"
-                title="TESTNET"
-                checked={addRpcNodeTestnet}
-                onChange={setAddRpcNodeTestnet}
-                skipTranslation={true}></CheckboxComponent>
-              {addRpcNodeTestnet && (
-                <InputComponent
-                  dataTestId="input-node-chain-id"
-                  type={InputType.TEXT}
-                  value={addRpcNodeChainId}
-                  onChange={setAddRpcNodeChainId}
-                  placeholder="Chain Id"
-                  skipPlaceholderTranslation={true}
-                  onEnterPress={handleSaveNewRpcClicked}
-                />
-              )}
 
               <CheckboxComponent
-                dataTestId="checkbox-set-new-rpc-as-active"
+                dataTestId="checkbox-set-new-account-history-as-active"
                 title="popup_html_set_new_rpc_as_active"
-                checked={setNewRpcAsActive}
-                onChange={setSetNewRpcAsActive}></CheckboxComponent>
+                checked={setNewAccountHistoryAsActive}
+                onChange={setSetNewAccountHistoryAsActive}></CheckboxComponent>
             </div>
           )}
         </div>
@@ -532,6 +538,7 @@ const connector = connect(mapStateToProps, {
   setHEActiveRpc,
   setErrorMessage,
   setTitleContainerProperties,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

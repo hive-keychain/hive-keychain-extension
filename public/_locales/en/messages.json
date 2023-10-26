@@ -451,6 +451,10 @@
     "message": "Set new RPC node as active",
     "description": "in add rpc node screen"
   },
+  "popup_html_set_new_account_history_as_active": {
+    "message": "Set new account history API as active",
+    "description": "in add rpc node screen"
+  },
   "popup_html_notif_pref": {
     "message": "Notification Preferences",
     "description": "on preferences"
