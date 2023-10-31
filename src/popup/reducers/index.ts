@@ -8,6 +8,7 @@ import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
 import HiveEngineConfigReducer from '@popup/reducers/hive-engine-config.reducer';
 import { LoadingReducer } from '@popup/reducers/loading.reducer';
 import { PhishingReducer } from '@popup/reducers/phishing.reducer';
+import { RpcSwitcherReducer } from '@popup/reducers/rpc-switcher.reducer';
 import { TitleContainerReducer } from '@popup/reducers/title-container.reducer';
 import TokenHistoryReducer from '@popup/reducers/token-history.reducer';
 import TokenMarketReducer from '@popup/reducers/token-market.reducer';
@@ -41,4 +42,5 @@ export default combineReducers({
   titleContainer: TitleContainerReducer,
   hiveEngineConfig: HiveEngineConfigReducer,
   appStatus: AppStatusReducer,
+  rpcSwitcher: RpcSwitcherReducer,
 });

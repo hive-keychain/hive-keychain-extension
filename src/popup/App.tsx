@@ -15,6 +15,10 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import {
+  setDisplayChangeRpcPopup,
+  setSwitchToRpc,
+} from '@popup/actions/rpc-switcher';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -40,7 +44,7 @@ import { AppRouterComponent } from './pages/app-container/app-router.component';
 import { MessageContainerComponent } from './pages/message-container/message-container.component';
 import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
-
+let rpc: string | undefined = '';
 const App = ({
   mk,
   accounts,
@@ -56,17 +60,18 @@ const App = ({
   navigateTo,
   loadActiveAccount,
   refreshActiveAccount,
-  setActiveRpc,
+  switchToRpc,
+  displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   setAccounts,
   loadGlobalProperties,
+  setActiveRpc,
+  setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
-  const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
-  const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
 
@@ -84,7 +89,8 @@ const App = ({
   }, []);
 
   useEffect(() => {
-    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
+    if (activeRpc?.uri !== 'NULL' && activeRpc?.uri !== rpc) initApplication();
+    rpc = activeRpc?.uri;
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
@@ -144,27 +150,12 @@ const App = ({
   };
 
   const initActiveRpc = async (rpc: Rpc) => {
-    const switchAuto = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-    );
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
     setDisplayChangeRpcPopup(!rpcStatusOk);
-
     if (rpcStatusOk) {
       setActiveRpc(rpc);
     } else {
-      for (const rpc of RpcUtils.getFullList().filter(
-        (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
-      )) {
-        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
-          if (switchAuto) {
-            setActiveRpc(rpc);
-          } else {
-            setSwitchToRpc(rpc);
-          }
-          return;
-        }
-      }
+      RpcUtils.useWorkingRPC(rpc);
     }
   };
 
@@ -305,6 +296,7 @@ const App = ({
     setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
   };
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
@@ -326,11 +318,13 @@ const App = ({
   );
 };
 
-const mapStateToProps = (state: RootState) => {
+export const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
+    switchToRpc: state.rpcSwitcher.rpc,
+    displayChangeRpcPopup: state.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
     activeAccountUsername: state.activeAccount.name,
@@ -350,16 +344,19 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
-  setActiveRpc,
   refreshActiveAccount,
   setAccounts,
   loadActiveAccount,
   loadGlobalProperties,
+  setSwitchToRpc,
+  setActiveRpc,
+  setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
   setProcessingDecryptAccount,
   setIsLedgerSupported,
 });
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export default connector(App);
