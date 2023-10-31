@@ -37,6 +37,7 @@ import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
+import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
@@ -89,7 +90,9 @@ const App = ({
   }, []);
 
   useEffect(() => {
-    if (activeRpc?.uri !== 'NULL' && activeRpc?.uri !== rpc) initApplication();
+    if (activeRpc?.uri !== 'NULL' && activeRpc?.uri !== rpc) {
+      initApplication();
+    }
     rpc = activeRpc?.uri;
   }, [activeRpc]);
 
@@ -155,7 +158,7 @@ const App = ({
     if (rpcStatusOk) {
       setActiveRpc(rpc);
     } else {
-      RpcUtils.useWorkingRPC(rpc);
+      useWorkingRPC(rpc);
     }
   };
 
@@ -293,8 +296,10 @@ const App = ({
   };
 
   const tryNewRpc = () => {
-    setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setActiveRpc(switchToRpc!);
+    }, 1000);
   };
 
   return (
