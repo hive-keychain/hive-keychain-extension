@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { CustomSelect } from 'src/common-ui/custom-select/custom-select.component';
+import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -361,7 +361,7 @@ const SavingsPage = ({
         )}
 
         <div className="form-fields">
-          <CustomSelect
+          <ComplexeCustomSelect
             label="popup_html_savings_operation_type"
             options={savingOperationTypeOptions}
             selectedItem={
@@ -387,7 +387,7 @@ const SavingsPage = ({
           />
 
           <div className="amount-panel">
-            <CustomSelect
+            <ComplexeCustomSelect
               label="popup_html_currency"
               options={currencyOptions}
               selectedItem={

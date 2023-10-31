@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import 'react-tabs/style/react-tabs.scss';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export interface SelectOption {
   label: string;
@@ -18,6 +20,8 @@ interface CustomSelectProps {
   skipLabelTranslation?: boolean;
   filterable?: boolean;
   setSelectedValue: (value: any) => void;
+  rightActionIcon?: NewIcons;
+  rightAction?: (...params: any) => void;
 }
 
 const CustomSelect = ({
@@ -26,10 +30,9 @@ const CustomSelect = ({
   selectedValue,
   filterable,
   setSelectedValue,
+  rightActionIcon,
+  rightAction,
 }: CustomSelectProps) => {
-  const updateSelectedValue = (newValue: any) => {
-    setSelectedValue(newValue);
-  };
   const ref = useRef<HTMLInputElement>(null);
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [query, setQuery] = useState('');
@@ -37,6 +40,17 @@ const CustomSelect = ({
   useEffect(() => {
     setFilteredOptions(filter(query));
   }, [query]);
+
+  const updateSelectedValue = (newValue: any, event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    setSelectedValue(newValue);
+  };
+
+  const handleRightActionClick = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    if (rightAction) rightAction();
+  };
 
   const filter = (query: string) => {
     return options.filter(
@@ -99,8 +113,8 @@ const CustomSelect = ({
               className={`select-item ${
                 selectedValue === option.value ? 'selected' : ''
               }`}
-              onClick={() => {
-                updateSelectedValue(option);
+              onClick={(event) => {
+                updateSelectedValue(option, event);
                 methods.dropDown('close');
               }}
               key={`option-${option.label}`}>
@@ -120,6 +134,12 @@ const CustomSelect = ({
                   ? option.label
                   : chrome.i18n.getMessage(option.label)}
               </div>
+              {rightAction && rightActionIcon && (
+                <SVGIcon
+                  icon={rightActionIcon}
+                  onClick={(event) => handleRightActionClick(event)}
+                />
+              )}
             </div>
           );
         })}

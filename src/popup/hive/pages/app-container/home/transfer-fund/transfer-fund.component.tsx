@@ -9,7 +9,7 @@ import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-s
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
 import {
-  CustomSelect,
+  ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
@@ -345,7 +345,7 @@ const TransferFunds = ({
               autocompleteValues={autocompleteFavoriteUsers}
             />
             <div className="value-panel">
-              <CustomSelect
+              <ComplexeCustomSelect
                 label="popup_html_currency"
                 options={options}
                 selectedItem={

@@ -14,7 +14,7 @@ import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
-import { CustomSelect } from 'src/common-ui/custom-select/custom-select.component';
+import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -132,7 +132,7 @@ const RpcNodes = ({
     const rpcOpts = rpcFullList.map((rpc) => {
       return {
         panelType: 'rpc',
-        label: rpc.replace('https://', '').split('/')[0],
+        label: rpc.replace('http://', '').replace('https://', '').split('/')[0],
         value: rpc,
         isDefault: HiveEngineConfigUtils.isRpcDefault(rpc),
         setAsActive: setRpcAsActive,
@@ -150,7 +150,7 @@ const RpcNodes = ({
     const accountHistoryApiOpts = accountHistoryApiFullList.map((api) => {
       return {
         panelType: 'account-history-api',
-        label: api.replace('https://', '').split('/')[0],
+        label: api.replace('http://', '').replace('https://', '').split('/')[0],
         value: api,
         isDefault: HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
         setAsActive: setAccountHistoryApiAsActive,
@@ -254,10 +254,11 @@ const RpcNodes = ({
       return;
     }
     if (ValidUrl.isWebUri(newAccountHistory)) {
-      setSuccessMessage('html_popup_new_account_history_save_success');
+      console.log(newAccountHistory);
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
       setNewAccountHistory('');
       setIsNewAccountHistoryPanelOpened(false);
+      setSuccessMessage('html_popup_new_account_history_save_success');
       init();
     } else {
       setErrorMessage('html_popup_url_not_valid');
@@ -345,7 +346,7 @@ const RpcNodes = ({
           />
           {activeRpc && !switchAuto && options && (
             <div className="select-rpc-panel">
-              <CustomSelect
+              <ComplexeCustomSelect
                 options={options}
                 selectedItem={
                   {
@@ -356,6 +357,8 @@ const RpcNodes = ({
                 }
                 setSelectedItem={(item: RpcListItem) => setActiveRpc(item.rpc)}
                 background="white"
+                rightActionIcon={NewIcons.GLOBAL_DELETE}
+                rightAction={deleteCustomRPC}
               />
               <div
                 className={`round-button ${
@@ -416,7 +419,7 @@ const RpcNodes = ({
         <div className="rpc-section hive-engine-rpc">
           <div className="title">Hive-Engine RPC</div>
           <div className="select-rpc-panel">
-            <CustomSelect
+            <ComplexeCustomSelect
               options={hiveEngineRpcOptions}
               selectedItem={
                 {
@@ -467,7 +470,7 @@ const RpcNodes = ({
         <div className="rpc-section hive-engine-account-history">
           <div className="title">Hive-Engine account history API</div>
           <div className="select-rpc-panel">
-            <CustomSelect
+            <ComplexeCustomSelect
               options={accountHistoryApiOptions}
               selectedItem={
                 {

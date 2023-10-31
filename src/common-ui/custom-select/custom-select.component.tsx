@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { BaseSyntheticEvent } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -16,9 +16,11 @@ export interface CustomSelectProps<T> {
   selectedItem: T;
   setSelectedItem: (item: T) => void;
   background?: 'white';
+  rightActionIcon?: NewIcons;
+  rightAction?: (...params: any) => void;
 }
 
-export function CustomSelect<T extends OptionItem>(
+export function ComplexeCustomSelect<T extends OptionItem>(
   itemProps: CustomSelectProps<T>,
 ) {
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
@@ -63,10 +65,18 @@ export function CustomSelect<T extends OptionItem>(
             isSelected={option.value === itemProps.selectedItem.value}
             handleItemClicked={() => itemProps.setSelectedItem(option)}
             closeDropdown={() => methods.dropDown('close')}
+            rightActionIcon={itemProps.rightActionIcon}
+            rightAction={itemProps.rightAction}
           />
         ))}
       </div>
     );
+  };
+
+  const handleRightActionClick = (item: any, event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    if (itemProps.rightAction) itemProps.rightAction(item, event);
   };
 
   return (
