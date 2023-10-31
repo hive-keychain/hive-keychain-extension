@@ -22,7 +22,6 @@ import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 
 const MINUTE = 60;
 
@@ -240,7 +239,11 @@ const getData = async (
   if (response?.result) {
     return key ? response.result[key] : response.result;
   } else {
-    RpcUtils.useWorkingRPC();
+    if (window) {
+      import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
+        useWorkingRPC();
+      });
+    }
     throw new Error(
       `Error while retrieving data from ${method} : ${JSON.stringify(
         response.error,
