@@ -187,6 +187,12 @@ const AccountKeysList = ({
       />
       {qrCodeDisplayed && (
         <>
+          <p className="introduction">
+            {chrome.i18n.getMessage('popup_html_qr_disclaimer1')}
+            <br />
+            <br />
+            {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
+          </p>
           <div ref={qrCodeRef}></div>
           <QRCode
             data-testid="qrcode"

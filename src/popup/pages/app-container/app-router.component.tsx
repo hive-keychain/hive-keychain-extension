@@ -166,6 +166,8 @@ const AppRouter = ({
         return <CreateAccountStepTwoComponent />;
       case Screen.SETTINGS_ANALYTICS:
         return <AnalyticsComponent />;
+      default:
+        return null;
     }
   };
 
