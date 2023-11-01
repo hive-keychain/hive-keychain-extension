@@ -66,6 +66,8 @@ $dark: (
   --available-card-label-color: white,
   // Governance
   --proposal-detail-icon: white,
+  // QRCode
+  --qrcode-border-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -135,6 +137,8 @@ $light: (
   --available-card-label-color: $darker-blue,
   // Governance
   --proposal-detail-icon: $dark-blue,
+  //QRCode
+  --qrcode-border-color: black,
 );
 
 @mixin spread-map($map: ()) {

@@ -35,8 +35,10 @@
   .qr-code-popup {
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 42px;
-    background: white;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
     z-index: 2;
     border-radius: 20px;
     row-gap: 32px;
@@ -53,7 +55,7 @@
 
     .qr-code-container {
       border-radius: 20px;
-      border: 4px solid black;
+      border: 4px solid var(--qrcode-border-color);
       padding: 12px;
       max-width: 256px;
       display: flex;
