@@ -8,6 +8,9 @@ export interface OptionItem {
   label: string;
   value: any;
   canDelete?: boolean;
+  subLabel?: string;
+  img?: string;
+  imgBackup?: string;
 }
 
 export interface CustomSelectProps<T> {
@@ -30,7 +33,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {itemProps.selectedItem.label}
+        {itemProps.selectedItem.img && (
+          <img className="left-image" src={itemProps.selectedItem.img} />
+        )}
+        <span>{itemProps.selectedItem.label}</span>
       </div>
     );
   };

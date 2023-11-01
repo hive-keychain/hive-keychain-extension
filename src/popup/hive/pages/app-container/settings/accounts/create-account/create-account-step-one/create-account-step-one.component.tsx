@@ -6,12 +6,12 @@ import {
 } from '@popup/hive/utils/account-creation.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -26,9 +26,8 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
-interface SelectOption {
-  label: string;
-  value: string;
+interface AccountItemOption extends OptionItem {
+  img: string;
 }
 
 const CreateAccountStepOne = ({
@@ -39,8 +38,8 @@ const CreateAccountStepOne = ({
   setTitleContainerProperties,
   navigateToWithParams,
 }: PropsFromRedux) => {
-  const [accountOptions, setAccountOptions] = useState<SelectOption[]>();
-  const [selectedAccount, setSelectedAccount] = useState<SelectOption>();
+  const [accountOptions, setAccountOptions] = useState<AccountItemOption[]>();
+  const [selectedAccount, setSelectedAccount] = useState<AccountItemOption>();
   const [accountName, setAccountName] = useState('');
   const [price, setPrice] = useState(3);
   const [creationType, setCreationType] = useState<AccountCreationType>();
@@ -61,6 +60,8 @@ const CreateAccountStepOne = ({
     setSelectedAccount({
       label: `@${activeAccount.name!}`,
       value: activeAccount.name!,
+      canDelete: false,
+      img: `https://images.hive.blog/u/${activeAccount.name!}/avatar`,
     });
   }, [activeAccount]);
 
@@ -74,6 +75,8 @@ const CreateAccountStepOne = ({
       options.push({
         label: `@${account.name!}`,
         value: account.name!,
+        img: `https://images.hive.blog/u/${account.name!}/avatar`,
+        canDelete: false,
       });
     }
     setAccountOptions(options);
@@ -115,53 +118,6 @@ const CreateAccountStepOne = ({
     }
   };
 
-  const customLabelRender = (selectProps: SelectRenderer<SelectOption>) => {
-    return (
-      <div
-        className="selected-account-panel"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectProps.props.values[0].value}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div
-          className="selected-account-name"
-          data-testid="selected-account-name">
-          {selectProps.props.values[0].label}
-        </div>
-      </div>
-    );
-  };
-  const customItemRender = (selectProps: SelectItemRenderer<SelectOption>) => {
-    return (
-      <div
-        data-testid={`select-account-item-${selectProps.item.value}`}
-        className={`select-account-item ${
-          selectProps.props.values[0]?.label === selectProps.item.value
-            ? 'selected'
-            : ''
-        }`}
-        onClick={() => {
-          setSelectedAccount(selectProps.item);
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectProps.item.value}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="account-name">{selectProps.item.label}</div>
-      </div>
-    );
-  };
-
   const getPriceLabel = () => {
     switch (creationType) {
       case AccountCreationType.BUYING:
@@ -201,13 +157,13 @@ const CreateAccountStepOne = ({
       data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`}
       className="create-account-step-one">
       {selectedAccount && accountOptions && (
-        <Select
-          values={[selectedAccount]}
+        <ComplexeCustomSelect<AccountItemOption>
+          selectedItem={selectedAccount}
           options={accountOptions}
-          onChange={() => undefined}
-          contentRenderer={customLabelRender}
-          itemRenderer={customItemRender}
-          className="select-operation-type select-dropdown"
+          setSelectedItem={(item: AccountItemOption) =>
+            setSelectedAccount(item)
+          }
+          background="white"
         />
       )}
       <div className="price-panel">
@@ -224,6 +180,7 @@ const CreateAccountStepOne = ({
         label="popup_html_username"
         type={InputType.TEXT}
       />
+      <div className="fill-space"></div>
       <ButtonComponent label="html_popup_next" onClick={() => goToNextPage()} />
     </div>
   );

@@ -3,6 +3,7 @@
   flex-direction: column;
   padding: 0px 24px;
   row-gap: 16px;
+  margin-bottom: 24px;
   .master-password-panel {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -23,23 +24,13 @@
 
   .price-panel {
     display: flex;
-    margin: auto;
-    flex-direction: column;
-    border: 1px solid white;
-    border-radius: 8px;
     font-size: 16px;
-    text-align: center;
-    row-gap: 4px;
-    padding: 8px 8px;
+    padding: 0px 16px;
     margin-bottom: 30px;
-    height: 60px;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
     box-sizing: border-box;
-    .label {
-      text-transform: uppercase;
-      font-weight: bold;
-    }
+    color: lightgrey;
   }
 
   .react-dropdown-select {

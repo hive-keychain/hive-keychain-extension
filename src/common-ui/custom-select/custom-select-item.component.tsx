@@ -38,6 +38,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           handleItemClicked();
           closeDropdown();
         }}>
+        {item.img && <img className="left-image" src={item.img} />}
         <div className="item-label">{item.label}</div>
         {onDelete && canDelete && !isSelected && (
           <SVGIcon

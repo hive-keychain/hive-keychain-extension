@@ -11,12 +11,23 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     max-height: 250px;
-    .key-name,
-    .username {
-      font-size: 16px;
-    }
-    .key-type {
-      font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .keys-card {
+      @include small-card;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .key-name,
+      .key-label {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+      }
+      .key {
+        @include poppins400(12px);
+        color: $light-grey;
+      }
     }
   }
 

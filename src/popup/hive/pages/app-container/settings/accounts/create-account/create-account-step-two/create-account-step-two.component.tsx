@@ -9,7 +9,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import {
   addToLoadingList,
@@ -217,33 +217,66 @@ const CreateAccountStepTwo = ({
       data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_TWO}-page`}>
       {keysTextVersion.length > 0 && (
         <>
-          <div
-            className="keys-display"
-            dangerouslySetInnerHTML={{
-              __html: keysTextVersion,
-            }}></div>
+          <div className="keys-display">
+            <div className="keys-card">
+              <div className="key-name">Account name: {accountName}</div>
+              <div className="key-name">Master password</div>
+              <div className="key">{masterKey}</div>
+            </div>
 
-          <CheckboxComponent
+            <div className="keys-card">
+              <div className="key-name">Owner key</div>
+              <div className="key-label">Private</div>
+              <div className="key">{generatedKeys.owner.private}</div>
+              <div className="key-label">Public</div>
+              <div className="key">{generatedKeys.owner.public}</div>
+            </div>
+
+            <div className="keys-card">
+              <div className="key-name">Active Key</div>
+              <div className="key-label">Private</div>
+              <div className="key">{generatedKeys.active.private}</div>
+              <div className="key-label">Public</div>
+              <div className="key">{generatedKeys.active.public}</div>
+            </div>
+
+            <div className="keys-card">
+              <div className="key-name">Posting Key</div>
+              <div className="key-label">Private</div>
+              <div className="key">{generatedKeys.posting.private}</div>
+              <div className="key-label">Public</div>
+              <div className="key">{generatedKeys.posting.public}</div>
+            </div>
+            <div className="keys-card">
+              <div className="key-name">Memo Key</div>
+              <div className="key-label">Private</div>
+              <div className="key">{generatedKeys.memo.private}</div>
+              <div className="key-label">Public</div>
+              <div className="key">{generatedKeys.memo.public}</div>
+            </div>
+          </div>
+
+          <CheckboxPanelComponent
             title={getPaymentCheckboxLabel()}
             skipTranslation
             checked={paymentUnderstanding}
             onChange={() => {
               setPaymentUnderstanding(!paymentUnderstanding);
-            }}></CheckboxComponent>
-          <CheckboxComponent
+            }}></CheckboxPanelComponent>
+          <CheckboxPanelComponent
             title="html_popup_create_account_safely_copied_keys"
             checked={safelyCopied}
             onChange={() => {
               setSafelyCopied(!safelyCopied);
-            }}></CheckboxComponent>
-          <CheckboxComponent
+            }}></CheckboxPanelComponent>
+          <CheckboxPanelComponent
             title="html_popup_create_account_storage_understanding"
             checked={notPrimaryStorageUnderstanding}
             onChange={() => {
               setNotPrimaryStorageUnderstanding(
                 !notPrimaryStorageUnderstanding,
               );
-            }}></CheckboxComponent>
+            }}></CheckboxPanelComponent>
           <div className="button-panel">
             <ButtonComponent
               label="html_popup_copy"

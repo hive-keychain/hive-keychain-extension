@@ -34,6 +34,12 @@
         box-sizing: border-box;
         width: 100%;
         font-size: $input-font-size;
+
+        .left-image {
+          height: 40px;
+          width: 40px;
+          border-radius: 50%;
+        }
       }
     }
 
@@ -76,6 +82,12 @@
         column-gap: 12px;
         padding: 10px 6px;
         box-sizing: border-box;
+
+        .left-image {
+          height: 40px;
+          width: 40px;
+          border-radius: 50%;
+        }
 
         .item-label {
           flex: 1;
