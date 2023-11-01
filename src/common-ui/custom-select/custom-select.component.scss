@@ -81,10 +81,28 @@
           flex: 1;
           color: var(--main-font-color);
         }
-
         .active-icon {
-          height: 20px;
-          width: 20px;
+          svg {
+            height: 20px;
+            width: 20px;
+            color: $red;
+          }
+        }
+        .right-action-icon {
+          display: none;
+        }
+        &:hover {
+          .item-label {
+            color: white;
+          }
+          .active-icon {
+            svg {
+              color: white;
+            }
+          }
+          .right-action-icon {
+            display: block;
+          }
         }
       }
     }

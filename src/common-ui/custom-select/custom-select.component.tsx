@@ -1,4 +1,4 @@
-import React, { BaseSyntheticEvent } from 'react';
+import React from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -6,7 +6,8 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export interface OptionItem {
   label: string;
-  value: string;
+  value: any;
+  canDelete?: boolean;
 }
 
 export interface CustomSelectProps<T> {
@@ -16,8 +17,7 @@ export interface CustomSelectProps<T> {
   selectedItem: T;
   setSelectedItem: (item: T) => void;
   background?: 'white';
-  rightActionIcon?: NewIcons;
-  rightAction?: (...params: any) => void;
+  onDelete?: (...params: any) => void;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -65,18 +65,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             isSelected={option.value === itemProps.selectedItem.value}
             handleItemClicked={() => itemProps.setSelectedItem(option)}
             closeDropdown={() => methods.dropDown('close')}
-            rightActionIcon={itemProps.rightActionIcon}
-            rightAction={itemProps.rightAction}
+            onDelete={itemProps.onDelete}
+            canDelete={option.canDelete}
           />
         ))}
       </div>
     );
-  };
-
-  const handleRightActionClick = (item: any, event: BaseSyntheticEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-    if (itemProps.rightAction) itemProps.rightAction(item, event);
   };
 
   return (

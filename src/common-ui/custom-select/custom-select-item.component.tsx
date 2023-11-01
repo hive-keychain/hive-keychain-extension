@@ -1,4 +1,4 @@
-import React, { BaseSyntheticEvent, useState } from 'react';
+import React, { BaseSyntheticEvent } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -10,8 +10,8 @@ interface CustomSelectItemProps<T> {
   isSelected: boolean;
   handleItemClicked: () => void;
   closeDropdown: () => void;
-  rightActionIcon?: NewIcons;
-  rightAction?: (...params: any) => void;
+  onDelete?: (...params: any) => void;
+  canDelete?: boolean;
 }
 
 export function CustomSelectItemComponent<T extends OptionItem>({
@@ -20,24 +20,17 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   isLast,
   handleItemClicked,
   closeDropdown,
-  rightAction,
-  rightActionIcon,
+  onDelete,
+  canDelete = false,
 }: CustomSelectItemProps<T>) {
-  const [hovered, setHovered] = useState<boolean>(false);
-
-  const handleRightActionClick = (event: BaseSyntheticEvent) => {
+  const handleDeleteClick = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    if (rightAction) rightAction();
+    if (onDelete) onDelete(item, event);
   };
 
   return (
-    <div
-      className="option"
-      onMouseEnter={() => {
-        setHovered(true);
-      }}
-      onMouseLeave={() => setHovered(false)}>
+    <div className="option">
       <div
         data-testid={`custom-select-item-${item.value}`}
         className={`custom-select-item ${isSelected ? 'selected' : ''}`}
@@ -46,19 +39,15 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           closeDropdown();
         }}>
         <div className="item-label">{item.label}</div>
-        {rightAction && rightActionIcon && (
+        {onDelete && canDelete && !isSelected && (
           <SVGIcon
-            icon={rightActionIcon}
-            onClick={(event) => handleRightActionClick(event)}
+            className="right-action-icon"
+            icon={NewIcons.SELECT_DELETE}
+            onClick={(event) => handleDeleteClick(event)}
           />
         )}
         {isSelected && (
-          <SVGIcon
-            icon={NewIcons.ACTIVE}
-            className="active-icon"
-            forceHover={hovered}
-            hoverable
-          />
+          <SVGIcon icon={NewIcons.SELECT_ACTIVE} className="active-icon" />
         )}
       </div>
       {!isLast && <Separator type={'horizontal'} />}

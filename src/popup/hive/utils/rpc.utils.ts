@@ -17,7 +17,17 @@ const getFullList = (): Rpc[] => {
 };
 
 const isDefault = (rpc: Rpc): boolean => {
-  return DefaultRpcs.find((r: Rpc) => r.uri === rpc.uri) !== undefined;
+  return (
+    DefaultRpcs.find((r: Rpc) => {
+      const defaultUri = r.uri.trim().endsWith('/')
+        ? r.uri.trim().substring(0, r.uri.trim().length - 1)
+        : r.uri.trim();
+      const uri = rpc.uri.trim().endsWith('/')
+        ? rpc.uri.trim().substring(0, rpc.uri.trim().length - 1)
+        : rpc.uri.trim();
+      return defaultUri === uri;
+    }) !== undefined
+  );
 };
 
 const getCustomRpcs = async (): Promise<Rpc[]> => {

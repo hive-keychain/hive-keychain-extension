@@ -181,6 +181,7 @@ export enum NewIcons {
   SELECT_ACTIVE = 'select/active',
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',
+  SELECT_DELETE = 'select/delete',
 
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',

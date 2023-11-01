@@ -17,6 +17,7 @@
       row-gap: 16px;
       .title {
         @include poppins600(14px);
+        color: var(--main-font-color);
       }
 
       .select-rpc-panel {
@@ -58,6 +59,7 @@
           @include poppins600(14px);
           display: flex;
           justify-content: space-between;
+          color: var(--main-font-color);
         }
       }
     }

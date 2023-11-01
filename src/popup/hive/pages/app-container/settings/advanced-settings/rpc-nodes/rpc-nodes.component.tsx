@@ -10,7 +10,6 @@ import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.util
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
-import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
@@ -37,15 +36,14 @@ interface RpcListItem {
   label: string;
   value: string;
   rpc: Rpc;
+  canDelete: boolean;
 }
 
 interface SelectOption {
   panelType: string;
   label: string;
   value: string;
-  isDefault: boolean;
-  setAsActive: (option: SelectOption) => void;
-  deleteElement: (option: SelectOption, event: any) => void;
+  canDelete: boolean;
 }
 
 const RpcNodes = ({
@@ -70,6 +68,17 @@ const RpcNodes = ({
   const [addRpcNodeTestnet, setAddRpcNodeTestnet] = useState(false);
   const [setNewRpcAsActive, setSetNewRpcAsActive] = useState(false);
 
+  const [hiveRpcOptions, setHiveRpcOptions] = useState(
+    allRpc.map((rpc) => {
+      return {
+        label: rpc.uri,
+        value: rpc.uri,
+        rpc: rpc,
+        canDelete: RpcUtils.isDefault(rpc),
+      };
+    }),
+  );
+
   // Hive Engine RPC
   const [hiveEngineRpcOptions, setHiveEngineRpcOptions] = useState<
     SelectOption[]
@@ -77,6 +86,12 @@ const RpcNodes = ({
   const [newHERpc, setNewHERpc] = useState('');
   const [isNewHERpcPanelOpened, setIsNewHERpcPanelOpened] = useState(false);
   const [setNewHeRpcAsActive, setSetNewHeRpcAsActive] = useState(false);
+  const deleteHeRpc = async (option: SelectOption, event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    await HiveEngineConfigUtils.deleteCustomRpc(option.value);
+    initLayer2();
+  };
 
   // Hive Engine account history
   const [accountHistoryApiOptions, setAccountHistoryApiOptions] = useState<
@@ -87,43 +102,19 @@ const RpcNodes = ({
   const [newAccountHistory, setNewAccountHistory] = useState('');
   const [setNewAccountHistoryAsActive, setSetNewAccountHistoryAsActive] =
     useState(false);
-
-  const setRpcAsActive = (option: SelectOption) => {
-    setHEActiveRpc(option.value);
-  };
-  const setAccountHistoryApiAsActive = (option: SelectOption) => {
-    setHEActiveAccountHistoryApi(option.value);
-  };
-
   const deleteAccountHistoryApi = async (option: SelectOption, event: any) => {
     event.preventDefault();
     event.stopPropagation();
 
     await HiveEngineConfigUtils.deleteCustomAccountHistoryApi(option.value);
-    init();
+    initLayer2();
   };
-  const deleteRpc = async (option: SelectOption, event: any) => {
-    event.preventDefault();
-    event.stopPropagation();
-    await HiveEngineConfigUtils.deleteCustomRpc(option.value);
-    init();
-  };
-
-  const [options, setOptions] = useState(
-    allRpc.map((rpc) => {
-      return {
-        label: rpc.uri,
-        value: rpc.uri,
-        rpc: rpc,
-      };
-    }),
-  );
 
   useEffect(() => {
-    init();
+    initLayer2();
   }, []);
 
-  const init = async () => {
+  const initLayer2 = async () => {
     const customRpcs = await HiveEngineConfigUtils.getCustomRpcs();
     const rpcFullList = ArrayUtils.mergeWithoutDuplicate(
       customRpcs,
@@ -134,9 +125,7 @@ const RpcNodes = ({
         panelType: 'rpc',
         label: rpc.replace('http://', '').replace('https://', '').split('/')[0],
         value: rpc,
-        isDefault: HiveEngineConfigUtils.isRpcDefault(rpc),
-        setAsActive: setRpcAsActive,
-        deleteElement: deleteRpc,
+        canDelete: !HiveEngineConfigUtils.isRpcDefault(rpc),
       };
     });
     setHiveEngineRpcOptions(rpcOpts);
@@ -152,9 +141,7 @@ const RpcNodes = ({
         panelType: 'account-history-api',
         label: api.replace('http://', '').replace('https://', '').split('/')[0],
         value: api,
-        isDefault: HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
-        setAsActive: setAccountHistoryApiAsActive,
-        deleteElement: deleteAccountHistoryApi,
+        canDelete: !HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
       };
     });
 
@@ -163,12 +150,13 @@ const RpcNodes = ({
 
   useEffect(() => {
     displayedRpcs = [...allRpc, ...customRpcs];
-    setOptions(
+    setHiveRpcOptions(
       displayedRpcs.map((rpc) => {
         return {
           label: rpc.uri,
           value: rpc.uri,
           rpc: rpc,
+          canDelete: !RpcUtils.isDefault(rpc),
         };
       }),
     );
@@ -202,22 +190,18 @@ const RpcNodes = ({
     setCustomRpcs(await RpcUtils.getCustomRpcs());
   };
 
-  const handleItemClicked = (rpc: Rpc) => {
-    setActiveRpc(rpc);
-  };
-
-  const deleteCustomRPC = (item: Rpc, event: BaseSyntheticEvent) => {
+  const deleteCustomHiveRPC = async (
+    item: SelectOption,
+    event: BaseSyntheticEvent,
+  ) => {
     event.preventDefault();
     event.stopPropagation();
-    const newRpcs = setCustomRpcs(RpcUtils.deleteCustomRpc(customRpcs, item));
-    if (activeRpc?.uri === item.uri) {
-      setActiveRpc(allRpc[0]);
-    }
-
-    return newRpcs;
+    const newRpcs = RpcUtils.deleteCustomRpc(customRpcs, (item as any).rpc);
+    setCustomRpcs(newRpcs);
+    initCustomRpcList();
   };
 
-  const handleSaveNewRpcClicked = () => {
+  const saveNewHiveRpc = () => {
     if (
       !addRpcNodeUri.length ||
       (addRpcNodeTestnet && !addRpcNodeChainId.length)
@@ -254,12 +238,11 @@ const RpcNodes = ({
       return;
     }
     if (ValidUrl.isWebUri(newAccountHistory)) {
-      console.log(newAccountHistory);
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
       setNewAccountHistory('');
       setIsNewAccountHistoryPanelOpened(false);
       setSuccessMessage('html_popup_new_account_history_save_success');
-      init();
+      initLayer2();
     } else {
       setErrorMessage('html_popup_url_not_valid');
     }
@@ -275,55 +258,10 @@ const RpcNodes = ({
       await HiveEngineConfigUtils.addCustomRpc(newHERpc);
       setNewHERpc('');
       setIsNewHERpcPanelOpened(false);
-      init();
+      initLayer2();
     } else {
       setErrorMessage('html_popup_url_not_valid');
     }
-  };
-
-  const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {
-    return (
-      <div
-        data-testid="selected-rpc-node-panel"
-        className="selected-rpc-node-panel"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        <div data-testid="selected-rpc-node" className="selected-rpc-node">
-          {activeRpc && activeRpc?.uri && activeRpc.uri}
-          {activeRpc?.testnet && <div>- TESTNET</div>}
-        </div>
-      </div>
-    );
-  };
-  const customItemRender = (selectProps: SelectItemRenderer<RpcListItem>) => {
-    return (
-      <div
-        data-testid={`select-rpc-item-${selectProps.item.rpc.uri}`}
-        className={`select-rpc-item ${
-          activeRpc?.uri === selectProps.item.rpc.uri ? 'selected' : ''
-        }`}
-        onClick={() => {
-          handleItemClicked(selectProps.item.rpc);
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="rpc-name">
-          {selectProps.item.label}{' '}
-          {selectProps.item.rpc.testnet && <div>TESTNET</div>}
-        </div>
-        {!RpcUtils.isDefault(selectProps.item.rpc) && (
-          <img
-            data-testid="button-erase-custom-rpc"
-            src="/assets/images/clear.png"
-            className="erase-button"
-            onClick={($event) => {
-              deleteCustomRPC(selectProps.item.rpc, $event);
-              selectProps.methods.dropDown('close');
-            }}
-          />
-        )}
-      </div>
-    );
   };
 
   return (
@@ -344,21 +282,21 @@ const RpcNodes = ({
             checked={switchAuto}
             onChange={setSwitchAuto}
           />
-          {activeRpc && !switchAuto && options && (
+          {activeRpc && !switchAuto && hiveRpcOptions && (
             <div className="select-rpc-panel">
               <ComplexeCustomSelect
-                options={options}
+                options={hiveRpcOptions}
                 selectedItem={
                   {
                     value: activeRpc.uri,
                     label: activeRpc.uri,
                     rpc: activeRpc,
+                    canDelete: !RpcUtils.isDefault(activeRpc),
                   } as RpcListItem
                 }
                 setSelectedItem={(item: RpcListItem) => setActiveRpc(item.rpc)}
                 background="white"
-                rightActionIcon={NewIcons.GLOBAL_DELETE}
-                rightAction={deleteCustomRPC}
+                onDelete={deleteCustomHiveRPC}
               />
               <div
                 className={`round-button ${
@@ -377,7 +315,7 @@ const RpcNodes = ({
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
                   icon={NewIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => handleSaveNewRpcClicked()}
+                  onClick={() => saveNewHiveRpc()}
                 />
               </div>
               <Separator type="horizontal" />
@@ -387,7 +325,7 @@ const RpcNodes = ({
                 value={addRpcNodeUri}
                 onChange={setAddRpcNodeUri}
                 placeholder={'popup_html_rpc_node'}
-                onEnterPress={handleSaveNewRpcClicked}
+                onEnterPress={saveNewHiveRpc}
               />
               <CheckboxComponent
                 dataTestId="checkbox-add-rpc-test-node"
@@ -403,7 +341,7 @@ const RpcNodes = ({
                   onChange={setAddRpcNodeChainId}
                   placeholder="Chain Id"
                   skipPlaceholderTranslation={true}
-                  onEnterPress={handleSaveNewRpcClicked}
+                  onEnterPress={saveNewHiveRpc}
                 />
               )}
 
@@ -431,6 +369,7 @@ const RpcNodes = ({
                 setHEActiveRpc(item.value);
               }}
               background="white"
+              onDelete={deleteHeRpc}
             />
             <div
               className={`round-button ${
@@ -456,7 +395,7 @@ const RpcNodes = ({
                 value={newHERpc}
                 onChange={setNewHERpc}
                 placeholder={'popup_html_rpc_node'}
-                onEnterPress={handleSaveNewRpcClicked}
+                onEnterPress={saveNewHiveRpc}
               />
 
               <CheckboxComponent
@@ -482,6 +421,7 @@ const RpcNodes = ({
                 setHEActiveAccountHistoryApi(item.value);
               }}
               background="white"
+              onDelete={deleteAccountHistoryApi}
             />
             <div
               className={`round-button ${
