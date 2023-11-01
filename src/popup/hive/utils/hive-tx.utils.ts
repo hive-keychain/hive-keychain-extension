@@ -238,12 +238,18 @@ const getData = async (
   const response = await call(method, params);
   if (response?.result) {
     return key ? response.result[key] : response.result;
-  } else
+  } else {
+    if (window) {
+      import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
+        useWorkingRPC();
+      });
+    }
     throw new Error(
       `Error while retrieving data from ${method} : ${JSON.stringify(
         response.error,
       )}`,
     );
+  }
 };
 
 export const HiveTxUtils = {

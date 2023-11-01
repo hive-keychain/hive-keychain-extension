@@ -138,8 +138,8 @@ const TokenSwaps = ({
       setSlippage(config.slippage.default);
     } catch (err: any) {
       Logger.error(err);
-      setErrorMessage(err.reason.template, err.reason.params);
       setServiceUnavailable(true);
+      setErrorMessage(err.reason?.template, err.reason?.params);
     } finally {
       await tokenInitialization;
       setLoading(false);
@@ -474,7 +474,7 @@ const TokenSwaps = ({
 
             <div className="top-row">
               <div className="fee">
-                {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee.amount}%
+                {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee?.amount}%
               </div>
               <Icon
                 name={NewIcons.HISTORY}

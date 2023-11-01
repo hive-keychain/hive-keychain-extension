@@ -1,5 +1,28 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import {
+  retrieveAccounts,
+  setAccounts,
+} from '@popup/hive/actions/account.actions';
+import {
+  loadActiveAccount,
+  refreshActiveAccount,
+} from '@popup/hive/actions/active-account.actions';
+import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
+import {
+  setIsLedgerSupported,
+  setProcessingDecryptAccount,
+} from '@popup/hive/actions/app-status.actions';
+import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
+import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
+import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
+import { setMk } from '@popup/hive/actions/mk.actions';
+import { navigateTo } from '@popup/hive/actions/navigation.actions';
+import {
+  setDisplayChangeRpcPopup,
+  setSwitchToRpc,
+} from '@popup/hive/actions/rpc-switcher';
+import { RootState } from '@popup/hive/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -9,30 +32,11 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import {
-  retrieveAccounts,
-  setAccounts,
-} from 'src/popup/hive/actions/account.actions';
-import {
-  loadActiveAccount,
-  refreshActiveAccount,
-} from 'src/popup/hive/actions/active-account.actions';
-import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
-import {
-  setIsLedgerSupported,
-  setProcessingDecryptAccount,
-} from 'src/popup/hive/actions/app-status.actions';
-import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
-import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
-import { initHiveEngineConfigFromStorage } from 'src/popup/hive/actions/hive-engine-config.actions';
-import { setMk } from 'src/popup/hive/actions/mk.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
 import { MessageContainerComponent } from 'src/popup/hive/pages/message-container/message-container.component';
 import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from 'src/popup/hive/pages/sign-up/sign-up.component';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
@@ -42,7 +46,9 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
-
+import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import './App.scss';
+let rpc: string | undefined = '';
 const HiveApp = ({
   mk,
   accounts,
@@ -59,17 +65,18 @@ const HiveApp = ({
   navigateTo,
   loadActiveAccount,
   refreshActiveAccount,
-  setActiveRpc,
+  switchToRpc,
+  displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   setAccounts,
   loadGlobalProperties,
+  setActiveRpc,
+  setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
-  const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
-  const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
 
@@ -87,7 +94,10 @@ const HiveApp = ({
   }, []);
 
   useEffect(() => {
-    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
+    if (activeRpc?.uri !== 'NULL' && activeRpc?.uri !== rpc) {
+      initApplication();
+    }
+    rpc = activeRpc?.uri;
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
@@ -147,27 +157,12 @@ const HiveApp = ({
   };
 
   const initActiveRpc = async (rpc: Rpc) => {
-    const switchAuto = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-    );
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
     setDisplayChangeRpcPopup(!rpcStatusOk);
-
     if (rpcStatusOk) {
       setActiveRpc(rpc);
     } else {
-      for (const rpc of RpcUtils.getFullList().filter(
-        (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
-      )) {
-        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
-          if (switchAuto) {
-            setActiveRpc(rpc);
-          } else {
-            setSwitchToRpc(rpc);
-          }
-          return;
-        }
-      }
+      useWorkingRPC(rpc);
     }
   };
 
@@ -305,9 +300,12 @@ const HiveApp = ({
   };
 
   const tryNewRpc = () => {
-    setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setActiveRpc(switchToRpc!);
+    }, 1000);
   };
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
@@ -324,11 +322,13 @@ const HiveApp = ({
   );
 };
 
-const mapStateToProps = (state: RootState) => {
+export const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
+    switchToRpc: state.rpcSwitcher.rpc,
+    displayChangeRpcPopup: state.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
     activeAccountUsername: state.activeAccount.name,
@@ -349,16 +349,19 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
-  setActiveRpc,
   refreshActiveAccount,
   setAccounts,
   loadActiveAccount,
   loadGlobalProperties,
+  setSwitchToRpc,
+  setActiveRpc,
+  setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
   setProcessingDecryptAccount,
   setIsLedgerSupported,
 });
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const HiveAppComponent = connector(HiveApp);
