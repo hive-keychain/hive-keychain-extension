@@ -47,7 +47,6 @@ import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
-import './App.scss';
 let rpc: string | undefined = '';
 const HiveApp = ({
   mk,
