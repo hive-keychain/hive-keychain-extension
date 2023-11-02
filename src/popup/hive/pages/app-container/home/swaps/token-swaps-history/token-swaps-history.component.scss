@@ -20,10 +20,8 @@
       align-items: center;
       justify-content: center;
       row-gap: 8px;
+      @include small-card();
 
-      .icon-component {
-        // @include icon-size(60px);
-      }
       span {
         font-size: 18px;
       }

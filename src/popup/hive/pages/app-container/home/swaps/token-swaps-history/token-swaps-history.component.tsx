@@ -6,7 +6,6 @@ import { ISwap } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import Icon from 'src/common-ui/icon/icon.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -64,7 +63,8 @@ const TokenSwapsHistory = ({
     const result = await SwapTokenUtils.retrieveSwapHistory(
       activeAccount.name!,
     );
-    setHistory(result);
+    setHistory([]);
+    // setHistory(result);
     setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
     setRefresh(false);
   };
@@ -106,7 +106,7 @@ const TokenSwapsHistory = ({
           })}
         {history.length === 0 && (
           <div className="empty-history-panel">
-            <Icon name={NewIcons.CLOSE} />
+            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
             <span>{chrome.i18n.getMessage('swap_no_history')}</span>
           </div>
         )}
