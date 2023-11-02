@@ -81,10 +81,7 @@
     align-items: center;
     justify-content: center;
     row-gap: 8px;
-
-    .icon-component {
-      @include icon-size(60px);
-    }
+    @include small-card();
     .text {
       font-size: 18px;
       text-align: center;

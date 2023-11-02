@@ -630,7 +630,7 @@ const TokenSwaps = ({
 
         {underMaintenance && (
           <div className="maintenance-mode">
-            <Icon name={NewIcons.SELECT_ARROW_DOWN} /> {/* TODO fix */}
+            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
             <div className="text">
               {chrome.i18n.getMessage('swap_under_maintenance')}
             </div>
