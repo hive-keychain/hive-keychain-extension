@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export interface OptionItem {
@@ -21,11 +23,25 @@ export interface CustomSelectProps<T> {
   setSelectedItem: (item: T) => void;
   background?: 'white';
   onDelete?: (...params: any) => void;
+  filterable?: boolean;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
   itemProps: CustomSelectProps<T>,
 ) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
+  const [query, setQuery] = useState('');
+
+  const filter = (query: string) => {
+    return itemProps.options.filter(
+      (option) =>
+        option.label.toLowerCase().includes(query.toLowerCase()) ||
+        option.subLabel?.toLowerCase().includes(query.toLowerCase()),
+    );
+  };
+
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
     return (
       <div
@@ -61,11 +77,24 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     state,
     methods,
   }: SelectRenderer<T>) => {
+    setTimeout(() => {
+      ref.current?.focus();
+    }, 200);
     return (
       <div className="custom-select-dropdown">
-        {props.options.map((option, index) => (
+        {itemProps.filterable && (
+          <InputComponent
+            onChange={setQuery}
+            value={query}
+            placeholder={''}
+            type={InputType.TEXT}
+            ref={ref}
+            classname="filter-input"
+          />
+        )}
+        {filteredOptions.map((option, index) => (
           <CustomSelectItemComponent
-            key={`option-${option.value}`}
+            key={`option-${option.label}`}
             isLast={props.options.length === index}
             item={option}
             isSelected={option.value === itemProps.selectedItem.value}

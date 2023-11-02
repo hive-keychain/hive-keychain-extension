@@ -38,7 +38,17 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           handleItemClicked();
           closeDropdown();
         }}>
-        {item.img && <img className="left-image" src={item.img} />}
+        {item.img && (
+          <img
+            className="left-image"
+            src={item.img}
+            onError={(e: any) => {
+              e.target.onError = null;
+              e.target.src =
+                item.imgBackup ?? '/assets/images/wallet/hive-engine.svg';
+            }}
+          />
+        )}
         <div className="item-label">{item.label}</div>
         {onDelete && canDelete && !isSelected && (
           <SVGIcon

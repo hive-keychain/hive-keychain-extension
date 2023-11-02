@@ -28,15 +28,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import Icon from 'src/common-ui/icon/icon.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import CustomSelect, {
-  SelectOption,
-} from 'src/common-ui/select/custom-select.component';
+import { SelectOption } from 'src/common-ui/select/custom-select.component';
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
@@ -67,14 +70,14 @@ const TokenSwaps = ({
   const [slippage, setSlippage] = useState(5);
   const [amount, setAmount] = useState<string>('');
 
-  const [startToken, setStartToken] = useState<SelectOption>();
-  const [endToken, setEndToken] = useState<SelectOption>();
+  const [startToken, setStartToken] = useState<OptionItem>();
+  const [endToken, setEndToken] = useState<OptionItem>();
   const [startTokenListOptions, setStartTokenListOptions] = useState<
-    SelectOption[]
+    OptionItem[]
   >([]);
-  const [endTokenListOptions, setEndTokenListOptions] = useState<
-    SelectOption[]
-  >([]);
+  const [endTokenListOptions, setEndTokenListOptions] = useState<OptionItem[]>(
+    [],
+  );
   const [estimate, setEstimate] = useState<IStep[]>();
   const [estimateValue, setEstimateValue] = useState<string | undefined>();
 
@@ -180,13 +183,13 @@ const TokenSwaps = ({
         img =
           tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
             ? tokenInfo.metadata.icon
-            : '/assets/images/hive-engine.svg';
-        imgBackup = '/assets/images/hive-engine.svg';
+            : '/assets/images/wallet/hive-engine.svg';
+        imgBackup = '/assets/images/wallet/hive-engine.svg';
       } else {
         img =
           token.symbol === BaseCurrencies.HIVE.toUpperCase()
-            ? `/assets/images/${NewIcons.HIVE}`
-            : `/assets/images/${NewIcons.HBD}`;
+            ? `/assets/images/wallet/${NewIcons.HIVE}-logo.svg`
+            : `/assets/images/wallet/${NewIcons.HBD}-logo.svg`;
       }
       return {
         value: token,
@@ -199,23 +202,23 @@ const TokenSwaps = ({
       {
         value: { symbol: BaseCurrencies.HIVE.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HIVE.toUpperCase(),
-        img: `/assets/images/${NewIcons.HIVE}`,
+        img: `/assets/images/wallet/${NewIcons.HIVE}-logo.svg`,
       },
       {
         value: { symbol: BaseCurrencies.HBD.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HBD.toUpperCase(),
-        img: `/assets/images/${NewIcons.HBD}`,
+        img: `/assets/images/wallet/${NewIcons.HBD}-logo.svg`,
       },
       ...allTokens
         .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
         .map((token: Token) => {
           let img = '';
-          img = token.metadata.icon ?? '/assets/images/hive-engine.svg';
+          img = token.metadata.icon ?? '/assets/images/wallet/hive-engine.svg';
           return {
             value: token,
             label: token.symbol,
             img: img,
-            imgBackup: '/assets/images/hive-engine.svg',
+            imgBackup: '/assets/images/wallet/hive-engine.svg',
           };
         }),
     ];
@@ -483,148 +486,149 @@ const TokenSwaps = ({
                 onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
               />
             </div>
-
-            <div className="form">
-              <div className="start-token">
-                <div className="inputs">
-                  {startTokenListOptions.length > 0 && (
-                    <CustomSelect
-                      selectedValue={startToken}
-                      options={startTokenListOptions}
-                      skipLabelTranslation
-                      setSelectedValue={setStartToken}
-                      filterable
-                    />
-                  )}
-                  <InputComponent
-                    type={InputType.NUMBER}
-                    value={amount}
-                    onChange={setAmount}
-                    // label="popup_html_transfer_amount"
-                    placeholder="popup_html_transfer_amount"
-                    min={0}
-                    // onSetToMaxClicked={() =>
-                    //   setAmount(startToken?.value.balance)
-                    // }
-                  />
-                </div>
-                <span className="available">
-                  {chrome.i18n.getMessage('popup_html_available')} :{' '}
-                  {startToken?.value.balance
-                    ? FormatUtils.withCommas(startToken?.value.balance)
-                    : ''}
-                </span>
-              </div>
-              <Icon
-                name={NewIcons.THEME} // Change icon
-                onClick={swapStartAndEnd}
-                additionalClassName="swap-icon"
-              />
-              <div className="end-token">
-                <div className="inputs">
-                  {endTokenListOptions.length > 0 && (
-                    <CustomSelect
-                      selectedValue={endToken}
-                      options={endTokenListOptions}
-                      skipLabelTranslation
-                      setSelectedValue={setEndToken}
-                      filterable
-                    />
-                  )}
-                  <CustomTooltip
-                    message={getTokenUSDPrice(
-                      estimateValue,
-                      endToken?.value.symbol,
+            <FormContainer>
+              <div className="form-fields">
+                <div className="start-token">
+                  <div className="inputs">
+                    {startTokenListOptions.length > 0 && startToken && (
+                      <ComplexeCustomSelect
+                        selectedItem={startToken}
+                        options={startTokenListOptions}
+                        setSelectedItem={setStartToken}
+                        label="token"
+                        filterable
+                      />
                     )}
-                    position={'top'}
-                    skipTranslation>
-                    <InputComponent
-                      type={InputType.TEXT}
-                      value={
-                        estimateValue
-                          ? FormatUtils.withCommas(estimateValue!)
-                          : ''
-                      }
-                      disabled
-                      onChange={() => {}}
-                      placeholder="popup_html_transfer_amount"
-                      // rightIcon={
-                      //   autoRefreshCountdown ? (
-                      //     <Icon
-                      //       name={Icons.REFRESH}
-                      //       type={IconType.OUTLINED}
-                      //       onClick={() => {
-                      //         calculateEstimate(
-                      //           amount,
-                      //           startToken!,
-                      //           endToken!,
-                      //           swapConfig!,
-                      //         );
-                      //         setAutoRefreshCountdown(
-                      //           Config.swaps.autoRefreshPeriodSec,
-                      //         );
-                      //       }}
-                      //       rotate={loadingEstimate}
-                      //       additionalClassName="right"
-                      //     />
-                      //   ) : undefined
-                      // } // TODO fix
-                    />
-                  </CustomTooltip>
-                </div>
-                <div className="countdown">
-                  {!!autoRefreshCountdown && (
-                    <>
-                      {
-                        <span>
-                          {chrome.i18n.getMessage(
-                            'swap_autorefresh',
-                            autoRefreshCountdown + '',
-                          )}
-                        </span>
-                      }
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="advanced-parameters">
-                <div
-                  className="title-panel"
-                  onClick={() =>
-                    setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
-                  }>
-                  <div className="title">
-                    {chrome.i18n.getMessage('swap_advanced_parameters')}
-                  </div>
-                  <Icon
-                    name={NewIcons.SELECT_ARROW_DOWN}
-                    onClick={() =>
-                      setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
-                    }
-                  />
-                </div>
-                {isAdvancedParametersOpen && (
-                  <div className="advanced-parameters-container">
                     <InputComponent
                       type={InputType.NUMBER}
-                      min={5}
-                      step={1}
-                      value={slippage}
-                      onChange={setSlippage}
-                      label="html_popup_swaps_slipperage"
-                      placeholder="html_popup_swaps_slipperage"
-                      // tooltip="html_popup_swaps_slippage_definition"
+                      value={amount}
+                      onChange={setAmount}
+                      label="popup_html_transfer_amount"
+                      placeholder="popup_html_transfer_amount"
+                      min={0}
+                      rightActionClicked={() =>
+                        setAmount(startToken?.value.balance)
+                      }
+                      rightActionIcon={NewIcons.INPUT_MAX}
                     />
                   </div>
-                )}
+                  <span className="available">
+                    {chrome.i18n.getMessage('popup_html_available')} :{' '}
+                    {startToken?.value.balance
+                      ? FormatUtils.withCommas(startToken?.value.balance)
+                      : ''}
+                  </span>
+                </div>
+                <SVGIcon
+                  icon={NewIcons.SWAPS_SWITCH}
+                  onClick={swapStartAndEnd}
+                  className="swap-icon"
+                />
+                <div className="end-token">
+                  <div className="inputs">
+                    {endTokenListOptions.length > 0 && endToken && (
+                      <ComplexeCustomSelect
+                        selectedItem={endToken}
+                        options={endTokenListOptions}
+                        setSelectedItem={setEndToken}
+                        label="token"
+                        filterable
+                      />
+                    )}
+                    <CustomTooltip
+                      message={getTokenUSDPrice(
+                        estimateValue,
+                        endToken?.value.symbol,
+                      )}
+                      position={'top'}
+                      skipTranslation>
+                      <InputComponent
+                        type={InputType.TEXT}
+                        value={
+                          estimateValue
+                            ? FormatUtils.withCommas(estimateValue!)
+                            : ''
+                        }
+                        disabled
+                        onChange={() => {}}
+                        placeholder="popup_html_transfer_amount"
+                        // rightIcon={
+                        //   autoRefreshCountdown ? (
+                        //     <Icon
+                        //       name={Icons.REFRESH}
+                        //       type={IconType.OUTLINED}
+                        //       onClick={() => {
+                        //         calculateEstimate(
+                        //           amount,
+                        //           startToken!,
+                        //           endToken!,
+                        //           swapConfig!,
+                        //         );
+                        //         setAutoRefreshCountdown(
+                        //           Config.swaps.autoRefreshPeriodSec,
+                        //         );
+                        //       }}
+                        //       rotate={loadingEstimate}
+                        //       additionalClassName="right"
+                        //     />
+                        //   ) : undefined
+                        // } // TODO fix
+                      />
+                    </CustomTooltip>
+                  </div>
+                  <div className="countdown">
+                    {!!autoRefreshCountdown && (
+                      <>
+                        {
+                          <span>
+                            {chrome.i18n.getMessage(
+                              'swap_autorefresh',
+                              autoRefreshCountdown + '',
+                            )}
+                          </span>
+                        }
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="advanced-parameters">
+                  <div
+                    className="title-panel"
+                    onClick={() =>
+                      setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                    }>
+                    <div className="title">
+                      {chrome.i18n.getMessage('swap_advanced_parameters')}
+                    </div>
+                    <Icon
+                      name={NewIcons.SELECT_ARROW_DOWN}
+                      onClick={() =>
+                        setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                      }
+                    />
+                  </div>
+                  {isAdvancedParametersOpen && (
+                    <div className="advanced-parameters-container">
+                      <InputComponent
+                        type={InputType.NUMBER}
+                        min={5}
+                        step={1}
+                        value={slippage}
+                        onChange={setSlippage}
+                        label="html_popup_swaps_slipperage"
+                        placeholder="html_popup_swaps_slipperage"
+                        // tooltip="html_popup_swaps_slippage_definition"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-
-            <OperationButtonComponent
-              requiredKey={KeychainKeyTypesLC.active}
-              onClick={processSwap}
-              label={'html_popup_swaps_process_swap'}
-            />
+              <OperationButtonComponent
+                requiredKey={KeychainKeyTypesLC.active}
+                onClick={processSwap}
+                label={'html_popup_swaps_process_swap'}
+              />
+            </FormContainer>
           </>
         )}
 

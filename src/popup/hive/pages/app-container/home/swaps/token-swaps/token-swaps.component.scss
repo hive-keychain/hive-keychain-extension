@@ -3,7 +3,6 @@
   row-gap: 12px;
   overflow: hidden;
   flex: 1;
-  padding: 0px 24px 24px 24px;
   flex-flow: column wrap;
 
   .caption {
@@ -16,6 +15,7 @@
     justify-content: space-between;
     margin-bottom: 25px;
     margin-top: 10px;
+    padding: 0 30px;
 
     .fee {
       @include poppins400($caption-font-size);
@@ -29,7 +29,7 @@
     }
   }
 
-  .form {
+  .form-fields {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -39,10 +39,18 @@
       display: flex;
       flex-direction: column;
       height: 70px;
+
+      .left-image {
+        height: 20px !important;
+        width: 20px !important;
+        border-radius: unset !important;
+      }
+
       .inputs {
         display: grid;
         align-items: flex-end;
         grid-template-columns: 1fr 1fr;
+        column-gap: 12px;
       }
       .available {
         font-style: italic;

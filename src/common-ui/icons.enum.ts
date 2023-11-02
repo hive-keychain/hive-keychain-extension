@@ -183,6 +183,7 @@ export enum NewIcons {
   SELECT_DRAG = 'select/drag',
   SELECT_DELETE = 'select/delete',
 
+  SWAPS_SWITCH = 'swaps/swap-switch',
   SWAPS_HISTORY = 'swaps/history',
   SWAPS_ITEM = 'swaps/swap-item-icon',
   SWAPS_BETWEEN = 'swaps/swap-between',

@@ -107,7 +107,7 @@ const CustomSelect = ({
             ref={ref}
           />
         )}
-        {filteredOptions.map((option) => {
+        {filteredOptions.map((option, index) => {
           return (
             <div
               className={`select-item ${
@@ -117,7 +117,7 @@ const CustomSelect = ({
                 updateSelectedValue(option, event);
                 methods.dropDown('close');
               }}
-              key={`option-${option.label}`}>
+              key={`option-${index}`}>
               {option.img && (
                 <img
                   src={option.img}

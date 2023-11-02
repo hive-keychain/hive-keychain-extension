@@ -62,6 +62,16 @@
       background-color: var(--input-background);
       border-radius: 16px;
       .custom-select-dropdown {
+        .filter-input {
+          border: unset !important;
+          border-radius: unset !important;
+          border-bottom: 1px solid var(--input-border);
+          padding: 6px;
+          input {
+            font-size: 14px;
+          }
+        }
+
         .option {
           display: flex;
           flex-direction: column;
