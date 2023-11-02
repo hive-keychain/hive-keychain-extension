@@ -68,6 +68,11 @@ $dark: (
   --proposal-detail-icon: white,
   // QRCode
   --qrcode-border-color: white,
+  //Swaps
+  --swap-history-button-icon-color: $red,
+  --swap-history-button-background: $darker-blue,
+  --swap-history-button-border-color: $blue-border,
+  --swap-item-icon-background: #e313371a,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -139,6 +144,11 @@ $light: (
   --proposal-detail-icon: $dark-blue,
   //QRCode
   --qrcode-border-color: black,
+  //Swaps
+  --swap-history-button-icon-color: $red,
+  --swap-history-button-border-color: $light-grey-border,
+  --swap-history-button-background: white,
+  --swap-item-icon-background: #e313371a,
 );
 
 @mixin spread-map($map: ()) {

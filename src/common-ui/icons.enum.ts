@@ -183,6 +183,15 @@ export enum NewIcons {
   SELECT_DRAG = 'select/drag',
   SELECT_DELETE = 'select/delete',
 
+  SWAPS_HISTORY = 'swaps/history',
+  SWAPS_ITEM = 'swaps/swap-item-icon',
+  SWAPS_BETWEEN = 'swaps/swap-between',
+  SWAPS_EXPAND = 'swaps/expand',
+  SWAPS_HISTORY_REFRESH = 'swaps/history-refresh',
+  SWAPS_STATUS_PROCESSING = 'swaps/swap-status/processing',
+  SWAPS_STATUS_FINISHED = 'swaps/swap-status/finished',
+  SWAPS_STATUS_CANCELED = 'swaps/swap-status/canceled',
+
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',
   WALLET_HP_LOGO = 'wallet/hp-logo',

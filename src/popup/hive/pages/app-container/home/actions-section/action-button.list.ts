@@ -22,6 +22,6 @@ export const ActionButtonList: ActionButton[] = [
   {
     label: 'popup_html_token_swaps',
     icon: NewIcons.BOTTOM_BAR_SWAPS,
-    nextScreen: Screen.WALLET_HISTORY_PAGE,
+    nextScreen: Screen.TOKEN_SWAP_PAGE,
   },
 ];

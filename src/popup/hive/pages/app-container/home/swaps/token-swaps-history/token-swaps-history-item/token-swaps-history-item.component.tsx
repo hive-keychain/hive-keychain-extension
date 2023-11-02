@@ -5,8 +5,8 @@ import moment from 'moment';
 import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon from 'src/common-ui/icon/icon.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
@@ -46,13 +46,13 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     switch (status) {
       case SwapStatus.PENDING:
       case SwapStatus.STARTED:
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_PROCESSING;
       case SwapStatus.COMPLETED:
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_FINISHED;
       case SwapStatus.CANCELED_DUE_TO_ERROR:
       case SwapStatus.FUNDS_RETURNED:
       case SwapStatus.REFUNDED_SLIPPAGE:
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_CANCELED;
     }
   };
 
@@ -63,13 +63,13 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
   const getStepIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_FINISHED;
       case 'pending':
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_PROCESSING;
       case 'failed':
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_CANCELED;
       default:
-        return NewIcons.CLOSE;
+        return NewIcons.SWAPS_STATUS_PROCESSING;
     }
   };
 
@@ -87,42 +87,46 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
   return (
     <div className={`history-item`}>
       <div className="history-item-information">
-        <Icon
-          name={!isOpen ? NewIcons.CLOSE : NewIcons.CLOSE}
-          additionalClassName={`expand-panel`}
-          onClick={() => setIsOpen(!isOpen)}
-        />
         <div className="swap-details">
-          <div className="from-to">
-            {swap.amount} {swap.startToken} <Icon name={NewIcons.CLOSE} />{' '}
-            <span>
-              {swap.status === SwapStatus.COMPLETED ? (
-                ''
-              ) : (
-                <span className="approximate">~</span>
-              )}{' '}
-              {swap.received ??
-                FormatUtils.withCommas(
-                  Number(swap.expectedAmountAfterFee).toString(),
-                  3,
-                  true,
-                )}{' '}
-              {swap.endToken}
-            </span>
+          <div className="swap-item-icon-container">
+            <SVGIcon icon={NewIcons.SWAPS_ITEM} className="swap-item-icon" />
           </div>
+          <span className="token token-from">
+            {swap.amount} {swap.startToken}
+          </span>{' '}
+          <SVGIcon icon={NewIcons.SWAPS_BETWEEN} className="swap-between" />{' '}
+          <span className="token token-to">
+            {swap.status === SwapStatus.COMPLETED ? (
+              ''
+            ) : (
+              <span className="approximate">~</span>
+            )}{' '}
+            {swap.received ??
+              FormatUtils.withCommas(
+                Number(swap.expectedAmountAfterFee).toString(),
+                3,
+                true,
+              )}{' '}
+            {swap.endToken}
+          </span>
+          <SVGIcon
+            icon={NewIcons.SWAPS_EXPAND}
+            className={`expand-panel ${isOpen ? 'opened' : 'closed'}`}
+            onClick={() => setIsOpen(!isOpen)}
+          />
+          <CustomTooltip
+            position="left"
+            delayShow={0}
+            skipTranslation
+            message={getTooltipMessage(swap)}>
+            <SVGIcon
+              icon={getStatusIcon(swap.status)}
+              className="status-icon"
+            />
+          </CustomTooltip>
         </div>
-        <CustomTooltip
-          position="left"
-          delayShow={0}
-          skipTranslation
-          message={getTooltipMessage(swap)}>
-          <Icon name={getStatusIcon(swap.status)} />
-        </CustomTooltip>
-      </div>
-
-      {isOpen && (
-        <>
-          <div className="history">
+        {isOpen && (
+          <div className="swap-item-history">
             {swap.history
               .sort((a, b) => a.stepNumber - b.stepNumber)
               .map((step) => (
@@ -146,9 +150,9 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                       {step.endToken}
                     </div>
                   </div>
-                  <Icon
-                    name={getStepIcon(step.status)}
-                    additionalClassName={`step-status ${step.status}`}
+                  <SVGIcon
+                    icon={getStepIcon(step.status)}
+                    className={`step-status ${step.status}`}
                   />
                 </div>
               ))}
@@ -171,8 +175,8 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
               </div>
             </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };

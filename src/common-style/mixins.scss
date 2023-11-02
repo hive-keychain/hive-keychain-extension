@@ -233,6 +233,11 @@
   align-items: center;
 }
 
+@mixin small-card-no-padding {
+  @include small-card();
+  padding: 0;
+}
+
 @mixin pending-panel {
   @include small-card();
   color: var(--main-font-color);

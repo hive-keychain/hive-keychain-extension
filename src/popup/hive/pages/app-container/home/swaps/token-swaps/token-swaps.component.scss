@@ -6,60 +6,27 @@
   padding: 0px 24px 24px 24px;
   flex-flow: column wrap;
 
-  .maintenance-mode {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    row-gap: 8px;
-
-    .icon-component {
-      @include icon-size(60px);
-    }
-    .text {
-      font-size: 18px;
-      text-align: center;
-    }
-  }
-
-  .react-tabs {
-    flex: 1;
-  }
-
-  .rotating-logo {
-    align-self: center;
-    justify-self: center;
-  }
-
-  .swap-icon {
-    text-align: center;
-  }
-
-  .autorefresh-panel {
-    text-align: right;
-    font-size: 16px;
-  }
-
   .caption {
-    font-size: 16px;
+    @include caption();
   }
 
-  .fee {
-    font-size: 16px;
-  }
-  .countdown {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 10px;
-    font-size: 13px;
-  }
   .top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 25px;
     margin-top: 10px;
+
+    .fee {
+      @include poppins400($caption-font-size);
+      color: var(--main-font-color);
+    }
+
+    .swap-history-button:hover {
+      --swap-history-button-icon-color: white;
+      --swap-history-button-border-color: #{$red};
+      --swap-history-button-background: #{$red};
+    }
   }
 
   .form {
@@ -106,5 +73,34 @@
         padding-bottom: 8px;
       }
     }
+  }
+
+  .maintenance-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 8px;
+
+    .icon-component {
+      @include icon-size(60px);
+    }
+    .text {
+      font-size: 18px;
+      text-align: center;
+    }
+  }
+
+  .rotating-logo {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    font-size: 13px;
   }
 }

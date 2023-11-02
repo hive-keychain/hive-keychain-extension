@@ -9,9 +9,9 @@ import 'react-tabs/style/react-tabs.scss';
 import Icon from 'src/common-ui/icon/icon.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
-import './token-swaps-history.component.scss';
 
 const TokenSwapsHistory = ({
   activeAccount,
@@ -84,27 +84,33 @@ const TokenSwapsHistory = ({
             {chrome.i18n.getMessage('swap_refresh_countdown', [
               autoRefreshCountdown?.toString(),
             ])}
-            <Icon
-              name={NewIcons.CLOSE}
+            <SVGIcon
+              className={`swap-history-refresh ${
+                shouldRefresh ? 'rotate' : ''
+              }`}
+              icon={NewIcons.SWAPS_HISTORY_REFRESH}
               onClick={refresh}
-              rotate={shouldRefresh}
             />
           </>
         )}
-        {autoRefreshCountdown && <span></span>}
       </div>
-      {history.length > 0 &&
-        history.map((item, index) => {
-          return (
-            <TokenSwapsHistoryItemComponent key={`item-${index}`} swap={item} />
-          );
-        })}
-      {history.length === 0 && (
-        <div className="empty-history-panel">
-          <Icon name={NewIcons.CLOSE} />
-          <span>{chrome.i18n.getMessage('swap_no_history')}</span>
-        </div>
-      )}
+      <div className="history">
+        {history.length > 0 &&
+          history.map((item, index) => {
+            return (
+              <TokenSwapsHistoryItemComponent
+                key={`item-${index}`}
+                swap={item}
+              />
+            );
+          })}
+        {history.length === 0 && (
+          <div className="empty-history-panel">
+            <Icon name={NewIcons.CLOSE} />
+            <span>{chrome.i18n.getMessage('swap_no_history')}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

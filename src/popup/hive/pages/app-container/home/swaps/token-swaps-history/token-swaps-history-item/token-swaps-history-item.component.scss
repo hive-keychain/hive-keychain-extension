@@ -1,62 +1,66 @@
 .history-item {
   display: flex;
   flex-direction: column;
-  min-height: 50px;
-  padding: 16px 16px;
   row-gap: 12px;
-  &:nth-child(even) {
-    background-color: $red;
-  }
+  @include small-card-no-padding();
+  color: var(--main-font-color);
+
   .expand-panel {
-    &.hidden {
-      cursor: default !important;
-      visibility: hidden;
+    &.opened {
+      transform: rotate(-180deg);
+      transition: 0.3s ease-out;
+    }
+    &.closed {
+      transform: rotate(0deg);
+      transition: 0.3s ease-in;
     }
   }
   .history-item-information {
     display: flex;
+    flex-direction: column;
     flex: 1;
     align-items: center;
     column-gap: 8px;
     width: 100%;
-    .swap-details {
-      flex: 1;
-      .approximate {
-        vertical-align: -30%;
-      }
-      .from-to {
-        font-size: 16px;
-        display: inline-flex;
-        flex-direction: column;
-        text-align: center;
+    padding-right: 24px;
+    box-sizing: border-box;
+    .swap-item-icon-container {
+      height: 48px;
+      width: 56px;
+      background: var(--swap-item-icon-background);
+      border-radius: 20px 0px 20px 20px;
+      margin: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .swap-item-icon {
+        @include icon-size(20px);
       }
     }
-    .chip {
-      border: 1px solid white;
-      padding: 8px;
-      border-radius: 8px;
-      min-width: 60px;
-      text-align: center;
-      font-size: 14px;
+    .swap-details {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      width: 100%;
 
-      &.COMPLETED {
-        background-color: rgb(1, 106, 1);
-      }
-      &.REFUNDED_CANNOT_COMPLETE,
-      &.FUNDS_RETURNED,
-      &.REFUNDED_SLIPPAGE,
-      &.CANCELED_DUE_TO_ERROR {
-        background-color: $red-dark;
-      }
-
-      &.PENDING {
-        background-color: transparent;
-        color: white;
+      .token {
+        &.token-from {
+          flex: 2;
+          text-align: right;
+        }
+        &.token-to {
+          flex: 3;
+        }
+        .approximate {
+          vertical-align: -30%;
+        }
       }
 
-      &.STARTED {
-        background-color: rgb(255, 255, 255);
-        color: black;
+      .swap-between,
+      .expand-panel,
+      .status-icon {
+        @include icon-size(18px);
       }
     }
   }
@@ -64,13 +68,12 @@
     font-size: 15px;
     margin-left: 32px;
   }
-  .history {
-    width: 100%;
+  .swap-item-history {
     display: flex;
     flex-direction: column;
     row-gap: 12px;
+    padding: 16px;
     .id {
-      font-size: 14px;
       cursor: pointer;
       font-style: italic;
     }
@@ -78,23 +81,11 @@
       display: flex;
       align-items: center;
       column-gap: 8px;
-      height: 30px;
       .step-number {
-        font-size: 16px;
-        // border: 2px solid;
-        border-radius: 50px;
-        width: 24px;
-        height: 24px;
         text-align: center;
         vertical-align: middle;
-        padding-top: 2px;
-        box-sizing: border-box;
-        font-weight: bold;
       }
       .details {
-        .description {
-          font-size: 15px;
-        }
         .go-to-tx {
           cursor: pointer;
         }
@@ -102,15 +93,7 @@
       .step-status {
         flex: 1;
         text-align: right;
-        // &.success {
-        //   color: $success;
-        // }
-        // &.pending {
-        //   color: rgb(207, 142, 2);
-        // }
-        // &.failed {
-        //   color: $red-dark;
-        // }
+        @include icon-size(18px);
       }
     }
   }

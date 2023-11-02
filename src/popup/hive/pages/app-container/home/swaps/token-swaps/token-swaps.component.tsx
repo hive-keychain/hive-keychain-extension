@@ -38,6 +38,7 @@ import CustomSelect, {
   SelectOption,
 } from 'src/common-ui/select/custom-select.component';
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
@@ -476,8 +477,9 @@ const TokenSwaps = ({
               <div className="fee">
                 {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee?.amount}%
               </div>
-              <Icon
-                name={NewIcons.HISTORY}
+              <SVGIcon
+                className="swap-history-button"
+                icon={NewIcons.SWAPS_HISTORY}
                 onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
               />
             </div>
