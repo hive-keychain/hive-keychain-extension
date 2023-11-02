@@ -24,6 +24,8 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 
+const SUBSTRING_LENGTH = 15;
+
 const CreateAccountStepTwo = ({
   navParams,
   setErrorMessage,
@@ -217,66 +219,125 @@ const CreateAccountStepTwo = ({
       data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_TWO}-page`}>
       {keysTextVersion.length > 0 && (
         <>
-          <div className="keys-display">
-            <div className="keys-card">
-              <div className="key-name">Account name: {accountName}</div>
-              <div className="key-name">Master password</div>
-              <div className="key">{masterKey}</div>
-            </div>
-
-            <div className="keys-card">
-              <div className="key-name">Owner key</div>
-              <div className="key-label">Private</div>
-              <div className="key">{generatedKeys.owner.private}</div>
-              <div className="key-label">Public</div>
-              <div className="key">{generatedKeys.owner.public}</div>
-            </div>
-
-            <div className="keys-card">
-              <div className="key-name">Active Key</div>
-              <div className="key-label">Private</div>
-              <div className="key">{generatedKeys.active.private}</div>
-              <div className="key-label">Public</div>
-              <div className="key">{generatedKeys.active.public}</div>
-            </div>
-
-            <div className="keys-card">
-              <div className="key-name">Posting Key</div>
-              <div className="key-label">Private</div>
-              <div className="key">{generatedKeys.posting.private}</div>
-              <div className="key-label">Public</div>
-              <div className="key">{generatedKeys.posting.public}</div>
-            </div>
-            <div className="keys-card">
-              <div className="key-name">Memo Key</div>
-              <div className="key-label">Private</div>
-              <div className="key">{generatedKeys.memo.private}</div>
-              <div className="key-label">Public</div>
-              <div className="key">{generatedKeys.memo.public}</div>
+          <div className="keys-card">
+            <div className="key-name">Account name: @{accountName}</div>
+            <div className="key-name">Master password</div>
+            <div className="key">
+              {`${masterKey?.substring(SUBSTRING_LENGTH, 0)}...${masterKey
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
             </div>
           </div>
 
-          <CheckboxPanelComponent
-            title={getPaymentCheckboxLabel()}
-            skipTranslation
-            checked={paymentUnderstanding}
-            onChange={() => {
-              setPaymentUnderstanding(!paymentUnderstanding);
-            }}></CheckboxPanelComponent>
-          <CheckboxPanelComponent
-            title="html_popup_create_account_safely_copied_keys"
-            checked={safelyCopied}
-            onChange={() => {
-              setSafelyCopied(!safelyCopied);
-            }}></CheckboxPanelComponent>
-          <CheckboxPanelComponent
-            title="html_popup_create_account_storage_understanding"
-            checked={notPrimaryStorageUnderstanding}
-            onChange={() => {
-              setNotPrimaryStorageUnderstanding(
-                !notPrimaryStorageUnderstanding,
-              );
-            }}></CheckboxPanelComponent>
+          <div className="keys-card">
+            <div className="key-name">Owner key</div>
+            <div className="key-label">Private</div>
+            <div className="key">
+              {`${generatedKeys.owner.private?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.owner.private
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+            <div className="key-label">Public</div>
+            <div className="key">
+              {`${generatedKeys.owner.public?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.owner.public
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+          </div>
+
+          <div className="keys-card">
+            <div className="key-name">Active Key</div>
+            <div className="key-label">Private</div>
+            <div className="key">
+              {`${generatedKeys.active.private?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.active.private
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+            <div className="key-label">Public</div>
+            <div className="key">
+              {`${generatedKeys.active.public?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.active.public
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+          </div>
+
+          <div className="keys-card">
+            <div className="key-name">Posting Key</div>
+            <div className="key-label">Private</div>
+            <div className="key">
+              {`${generatedKeys.posting.private?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.posting.private
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+            <div className="key-label">Public</div>
+            <div className="key">
+              {`${generatedKeys.posting.public?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.posting.public
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+          </div>
+          <div className="keys-card">
+            <div className="key-name">Memo Key</div>
+            <div className="key-label">Private</div>
+            <div className="key">
+              {`${generatedKeys.memo.private?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.memo.private
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+            <div className="key-label">Public</div>
+            <div className="key">
+              {`${generatedKeys.memo.public?.substring(
+                SUBSTRING_LENGTH,
+                0,
+              )}...${generatedKeys.memo.public
+                ?.toString()
+                .slice(-SUBSTRING_LENGTH)}`}
+            </div>
+          </div>
+          <div className="agree-section">
+            <CheckboxPanelComponent
+              title={getPaymentCheckboxLabel()}
+              skipTranslation
+              checked={paymentUnderstanding}
+              onChange={() => {
+                setPaymentUnderstanding(!paymentUnderstanding);
+              }}></CheckboxPanelComponent>
+            <CheckboxPanelComponent
+              title="html_popup_create_account_safely_copied_keys"
+              checked={safelyCopied}
+              onChange={() => {
+                setSafelyCopied(!safelyCopied);
+              }}></CheckboxPanelComponent>
+            <CheckboxPanelComponent
+              title="html_popup_create_account_storage_understanding"
+              checked={notPrimaryStorageUnderstanding}
+              onChange={() => {
+                setNotPrimaryStorageUnderstanding(
+                  !notPrimaryStorageUnderstanding,
+                );
+              }}></CheckboxPanelComponent>
+          </div>
           <div className="button-panel">
             <ButtonComponent
               label="html_popup_copy"

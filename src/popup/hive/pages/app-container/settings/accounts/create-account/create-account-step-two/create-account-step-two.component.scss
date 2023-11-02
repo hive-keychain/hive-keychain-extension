@@ -3,32 +3,30 @@
   flex-direction: column;
   padding: 0px 24px;
   row-gap: 16px;
+  overflow: auto;
+  row-gap: 8px;
+  .keys-card {
+    @include small-card;
+    flex-direction: column;
+    align-items: flex-start;
 
-  .keys-display {
-    overflow: auto;
-    font-size: 11px;
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    max-height: 250px;
+    .key-name,
+    .key-label {
+      @include poppins600(14px);
+      color: var(--main-font-color);
+    }
+    .key {
+      @include poppins400(12px);
+      color: $light-grey;
+    }
+  }
+
+  .agree-section {
+    margin-top: 8px;
+    margin-bottom: 8px;
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-    .keys-card {
-      @include small-card;
-      flex-direction: column;
-      align-items: flex-start;
-
-      .key-name,
-      .key-label {
-        @include poppins600(14px);
-        color: var(--main-font-color);
-      }
-      .key {
-        @include poppins400(12px);
-        color: $light-grey;
-      }
-    }
   }
 
   .button-panel {

@@ -10,6 +10,8 @@
     justify-content: center;
     width: 18px;
     height: 18px;
+    min-width: 18px;
+    min-height: 18px;
     border-radius: 4px;
     border: 1px solid var(--input-border);
     background: var(--checkbox-background);
