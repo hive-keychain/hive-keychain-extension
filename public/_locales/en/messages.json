@@ -952,6 +952,19 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
+
+  "dialog_slippage": {
+    "message": "Slippage",
+    "description": "When website requests a swap"
+  },
+  "dialog_steps": {
+    "message": "Steps",
+    "description": "When website requests a swap"
+  },
+  "dialog_swap": {
+    "message": "Swap",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -1123,6 +1136,10 @@
   "dialog_public_keys": {
     "message": "Public keys",
     "description": "Website request title"
+  },
+  "dialog_title_swap": {
+    "message": "Swap",
+    "description": "When website requests a swap"
   },
   "dialog_title_sign": {
     "message": "Sign Message",

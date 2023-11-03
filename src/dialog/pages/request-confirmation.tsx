@@ -30,6 +30,7 @@ import RecurrentTransfer from 'src/dialog/pages/requests/recurrent-transfer';
 import SendToken from 'src/dialog/pages/requests/send-token';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import SignTx from 'src/dialog/pages/requests/sign-tx';
+import Swap from 'src/dialog/pages/requests/swap';
 import Transfer from 'src/dialog/pages/requests/transfer';
 import Vote from 'src/dialog/pages/requests/vote';
 import WitnessVote from 'src/dialog/pages/requests/witness-vote';
@@ -105,6 +106,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <Post {...data} data={data.data} />;
     case KeychainRequestTypes.broadcast:
       return <Broadcast {...data} data={data.data} />;
+    case KeychainRequestTypes.swap:
+      return <Swap {...data} data={data.data} />;
     default:
       return null;
   }
