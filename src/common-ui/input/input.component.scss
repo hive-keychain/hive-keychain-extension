@@ -98,6 +98,9 @@ $placeholderColor: rgba(92, 100, 113, 0.5);
       column-gap: 12px;
       .right-action-logo {
         height: 25px;
+        &.rotate {
+          @include rotate-logo-mixin;
+        }
       }
     }
 

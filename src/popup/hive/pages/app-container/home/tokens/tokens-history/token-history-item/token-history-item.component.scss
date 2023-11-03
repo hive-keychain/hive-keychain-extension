@@ -24,14 +24,7 @@
       .padding-right {
         padding-right: 8px;
       }
-      .open {
-        transform: rotate(-180deg);
-        transition: 0.3s ease-out;
-      }
-      .closed {
-        transform: rotate(0deg);
-        transition: 0.3s ease-in;
-      }
+      @include open-close-rotate();
     }
     .memo-panel {
       max-height: 0;

@@ -3579,6 +3579,10 @@
     "description": "Message container success title"
   },
   "message_container_title_fail": {
+    "message": "Grrr!",
+    "description": "Message container fail title"
+  },
+  "message_container_title_warning": {
     "message": "Oops!",
     "description": "Message container fail title"
   },

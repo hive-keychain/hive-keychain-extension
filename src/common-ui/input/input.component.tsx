@@ -33,6 +33,7 @@ export interface InputProps {
   onEnterPress?(): any;
   rightActionClicked?(): any;
   rightActionIcon?: NewIcons;
+  rightActionIconClassname?: string;
 }
 
 const InputComponent = React.forwardRef((props: InputProps, ref) => {
@@ -152,19 +153,19 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
           )}
         </div>
 
-        {!props.disabled &&
-          props.rightActionClicked &&
-          props.rightActionIcon && (
-            <div className="right-action">
-              <Separator type={'vertical'} />
-              <SVGIcon
-                className="right-action-logo"
-                data-testid="right-action"
-                icon={props.rightActionIcon}
-                onClick={props.rightActionClicked}
-              />
-            </div>
-          )}
+        {props.rightActionClicked && props.rightActionIcon && (
+          <div className="right-action">
+            <Separator type={'vertical'} />
+            <SVGIcon
+              className={`right-action-logo ${
+                props.rightActionIconClassname ?? ''
+              }`}
+              data-testid="right-action"
+              icon={props.rightActionIcon}
+              onClick={props.rightActionClicked}
+            />
+          </div>
+        )}
       </div>
       {props.error && (
         <div className="error">{FormUtils.parseJoiError(props.error)}</div>

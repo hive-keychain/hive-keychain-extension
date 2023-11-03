@@ -15,16 +15,7 @@
     padding-bottom: 16px;
 
     .empty-history-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      row-gap: 8px;
-      @include small-card();
-
-      span {
-        font-size: 18px;
-      }
+      @include no-data-panel();
     }
   }
 
@@ -35,8 +26,12 @@
     padding: 0 24px;
     @include poppins400(13px);
     color: $red;
-    .svg-icon {
+
+    .swap-history-refresh {
       margin-left: 8px;
+      &.rotate {
+        @include rotate-logo-mixin();
+      }
     }
   }
 }

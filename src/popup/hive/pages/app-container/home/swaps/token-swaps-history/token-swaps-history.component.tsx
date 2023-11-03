@@ -63,8 +63,7 @@ const TokenSwapsHistory = ({
     const result = await SwapTokenUtils.retrieveSwapHistory(
       activeAccount.name!,
     );
-    setHistory([]);
-    // setHistory(result);
+    setHistory(result);
     setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
     setRefresh(false);
   };
@@ -107,7 +106,9 @@ const TokenSwapsHistory = ({
         {history.length === 0 && (
           <div className="empty-history-panel">
             <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
-            <span>{chrome.i18n.getMessage('swap_no_history')}</span>
+            <span className="text">
+              {chrome.i18n.getMessage('swap_no_history')}
+            </span>
           </div>
         )}
       </div>

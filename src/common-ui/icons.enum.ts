@@ -95,6 +95,7 @@ export enum NewIcons {
   FAVORITE_ACCOUNTS_CANCEL = 'favorite-accounts/cancel',
   FAVORITE_ACCOUNTS_SAVE = 'favorite-accounts/save',
 
+  GLOBAL_ARROW = 'global/arrow',
   GLOBAL_DELETE = 'global/delete',
 
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
@@ -162,6 +163,7 @@ export enum NewIcons {
   MENU_RPC_SAVE_BUTTON = 'menu/rpc/save-rpc-button',
 
   MESSAGE_ERROR = 'message/error',
+  MESSAGE_WARNING = 'message/warning',
   MESSAGE_SUCCESS = 'message/success',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
@@ -188,6 +190,7 @@ export enum NewIcons {
   SWAPS_ITEM = 'swaps/swap-item-icon',
   SWAPS_BETWEEN = 'swaps/swap-between',
   SWAPS_EXPAND = 'swaps/expand',
+  SWAPS_ESTIMATE_REFRESH = 'swaps/estimate-refresh',
   SWAPS_HISTORY_REFRESH = 'swaps/history-refresh',
   SWAPS_STATUS_PROCESSING = 'swaps/swap-status/processing',
   SWAPS_STATUS_FINISHED = 'swaps/swap-status/finished',

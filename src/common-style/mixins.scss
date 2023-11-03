@@ -34,6 +34,17 @@
   height: 100%;
 }
 
+@mixin open-close-rotate {
+  &.open {
+    transform: rotate(-180deg);
+    transition: 0.3s ease-out;
+  }
+  &.closed {
+    transform: rotate(0deg);
+    transition: 0.3s ease-in;
+  }
+}
+
 @mixin link {
   color: white;
   text-decoration: none;
@@ -236,6 +247,26 @@
 @mixin small-card-no-padding {
   @include small-card();
   padding: 0;
+}
+
+@mixin no-data-panel {
+  @include small-card();
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 8px;
+  .text {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .svg-icon {
+    @include icon-size(72px);
+    svg {
+      @include icon-size(72px);
+    }
+  }
 }
 
 @mixin pending-panel {

@@ -34,7 +34,6 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import Icon from 'src/common-ui/icon/icon.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -143,7 +142,7 @@ const TokenSwaps = ({
     } catch (err: any) {
       Logger.error(err);
       setServiceUnavailable(true);
-      setErrorMessage(err.reason?.template, err.reason?.params);
+      // setErrorMessage(err.reason?.template, err.reason?.params);
     } finally {
       await tokenInitialization;
       setLoading(false);
@@ -552,27 +551,22 @@ const TokenSwaps = ({
                         disabled
                         onChange={() => {}}
                         placeholder="popup_html_transfer_amount"
-                        // rightIcon={
-                        //   autoRefreshCountdown ? (
-                        //     <Icon
-                        //       name={Icons.REFRESH}
-                        //       type={IconType.OUTLINED}
-                        //       onClick={() => {
-                        //         calculateEstimate(
-                        //           amount,
-                        //           startToken!,
-                        //           endToken!,
-                        //           swapConfig!,
-                        //         );
-                        //         setAutoRefreshCountdown(
-                        //           Config.swaps.autoRefreshPeriodSec,
-                        //         );
-                        //       }}
-                        //       rotate={loadingEstimate}
-                        //       additionalClassName="right"
-                        //     />
-                        //   ) : undefined
-                        // } // TODO fix
+                        rightActionIconClassname={
+                          loadingEstimate ? 'rotate' : ''
+                        }
+                        rightActionIcon={NewIcons.SWAPS_ESTIMATE_REFRESH}
+                        rightActionClicked={() => {
+                          if (!estimate) return;
+                          calculateEstimate(
+                            amount,
+                            startToken!,
+                            endToken!,
+                            swapConfig!,
+                          );
+                          setAutoRefreshCountdown(
+                            Config.swaps.autoRefreshPeriodSec,
+                          );
+                        }}
                       />
                     </CustomTooltip>
                   </div>
@@ -600,11 +594,14 @@ const TokenSwaps = ({
                     <div className="title">
                       {chrome.i18n.getMessage('swap_advanced_parameters')}
                     </div>
-                    <Icon
-                      name={NewIcons.SELECT_ARROW_DOWN}
+                    <SVGIcon
+                      icon={NewIcons.GLOBAL_ARROW}
                       onClick={() =>
                         setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
                       }
+                      className={`advanced-parameters-toggle ${
+                        isAdvancedParametersOpen ? 'open' : 'closed'
+                      }`}
                     />
                   </div>
                   {isAdvancedParametersOpen && (

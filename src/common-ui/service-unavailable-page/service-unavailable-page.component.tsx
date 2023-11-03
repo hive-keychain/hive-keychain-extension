@@ -1,12 +1,11 @@
 import React from 'react';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
-import './service-unavailable-page.component.scss';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 const ServiceUnavailablePage = () => (
   <div className="service-unavailable-page">
-    <Icon name={Icons.CLOSE} />
-    <div className="message">
+    <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+    <div className="text">
       {chrome.i18n.getMessage('service_unavailable_message')}
     </div>
   </div>

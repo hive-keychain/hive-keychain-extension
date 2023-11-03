@@ -19,6 +19,8 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
         return NewIcons.MESSAGE_SUCCESS;
       case MessageType.ERROR:
         return NewIcons.MESSAGE_ERROR;
+      case MessageType.WARNING:
+        return NewIcons.MESSAGE_WARNING;
       default:
         return NewIcons.MESSAGE_SUCCESS;
     }
@@ -30,6 +32,8 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
         return 'message_container_title_success';
       case MessageType.ERROR:
         return 'message_container_title_fail';
+      case MessageType.WARNING:
+        return 'message_container_title_warning';
       default:
         return 'message_container_title_success';
     }
