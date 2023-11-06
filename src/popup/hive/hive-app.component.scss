@@ -42,11 +42,6 @@
       height: 36px;
     }
   }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-    background-color: transparent;
-  }
 }
 
 .react-dropdown-select-dropdown-handle {
@@ -89,23 +84,4 @@
 }
 .Toastify__toast--warning {
   background: $message-container-warning !important;
-}
-
-.material-icons,
-.material-icons-outlined {
-  padding-bottom: 2px;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: unset;
-  box-shadow: unset;
-  border-radius: 4px;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #e31337;
 }

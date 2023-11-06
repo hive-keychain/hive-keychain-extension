@@ -23,14 +23,12 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  // @include background-top();
 }
 
 @mixin pageLayoutRowGap {
   display: flex;
   flex-direction: column;
   row-gap: 16px;
-  // @include background-higher-top();
   height: 100%;
 }
 

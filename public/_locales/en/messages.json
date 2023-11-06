@@ -3554,6 +3554,26 @@
     "message": "Ecosystem",
     "description": "Ecosystem"
   },
+  "ecosystem_category_social": {
+    "message": "Social",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_finance": {
+    "message": "Finance",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_gaming": {
+    "message": "Gaming",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_nft": {
+    "message": "NFT",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_tool": {
+    "message": "Tool",
+    "description": "Ecosystem"
+  },
   "popup_html_theme": {
     "message": "Theme",
     "description": "Theme"
