@@ -8,6 +8,7 @@
     flex-direction: column;
     .title {
       @include poppins500(20px);
+      color: var(--main-font-color);
     }
     .dapps {
       display: flex;
