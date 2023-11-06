@@ -11,6 +11,7 @@ import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastSwap = async (
@@ -40,16 +41,26 @@ export const broadcastSwap = async (
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
       case PrivateKeyType.LEDGER: {
-        const tx = await TransferUtils.getTransferTransaction(
-          data.username!,
-          'keychain.swap', //TODO:dont hardcode
-          data.amount + ' ' + data.startToken,
-          swapId,
-          false,
-          0,
-          0,
-        );
-
+        let tx;
+        if (['HIVE', 'HBD'].includes(startToken)) {
+          tx = await TransferUtils.getTransferTransaction(
+            data.username!,
+            'keychain.swap', //TODO:dont hardcode
+            data.amount + ' ' + data.startToken,
+            swapId,
+            false,
+            0,
+            0,
+          );
+        } else {
+          tx = await TokensUtils.getSendTokenTransaction(
+            data.startToken,
+            'keychain.swap', //TODO:dont hardcode
+            data.amount + '',
+            swapId,
+            data.username!,
+          );
+        }
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
           key: key!,
@@ -62,16 +73,27 @@ export const broadcastSwap = async (
         break;
       }
       default: {
-        result = await TransferUtils.sendTransfer(
-          data.username!,
-          'keychain.swap', //TODO: dont hardcode
-          data.amount + ' ' + data.startToken,
-          swapId,
-          false,
-          0,
-          0,
-          key!,
-        );
+        if (['HIVE', 'HBD'].includes(startToken)) {
+          result = await TransferUtils.sendTransfer(
+            data.username!,
+            'keychain.swap', //TODO: dont hardcode
+            data.amount + ' ' + data.startToken,
+            swapId,
+            false,
+            0,
+            0,
+            key!,
+          );
+        } else {
+          result = await TokensUtils.sendToken(
+            data.startToken,
+            'keychain.swap', //TODO: dont hardcode
+            data.amount + '',
+            swapId,
+            key!,
+            data.username!,
+          );
+        }
         break;
       }
     }

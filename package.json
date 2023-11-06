@@ -86,7 +86,7 @@
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.23.2",
     "@babel/preset-react": "^7.22.15",
-    "@hiveio/dhive": "1.2.3",
+    "@hiveio/dhive": "^1.2.7",
     "@hot-loader/react-dom": "17.0.2",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
