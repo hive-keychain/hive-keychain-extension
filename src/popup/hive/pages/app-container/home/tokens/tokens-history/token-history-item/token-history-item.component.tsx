@@ -17,8 +17,8 @@ import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
 interface TokenHistoryItemProps {
@@ -38,19 +38,19 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.COMMENT_AUTHOR_REWARD:
       case OperationsHiveEngine.COMMENT_CURATION_REWARD:
       case OperationsHiveEngine.MINING_LOTTERY:
-        return Icons.CLAIM;
+        return NewIcons.WALLET_HISTORY_CLAIM_REWARDS;
       case OperationsHiveEngine.TOKENS_TRANSFER:
-        return Icons.SEND;
+        return NewIcons.WALLET_HISTORY_TRANSFER;
       case OperationsHiveEngine.TOKEN_UNSTAKE_START:
       case OperationsHiveEngine.TOKEN_UNSTAKE_DONE:
-        return Icons.ARROW_DOWNWARDS;
+        return NewIcons.WALLET_HISTORY_UNSTAKE;
       case OperationsHiveEngine.TOKEN_STAKE:
-        return Icons.ARROW_UPWARDS;
+        return NewIcons.WALLET_HISTORY_STAKE;
       case OperationsHiveEngine.TOKEN_UNDELEGATE_START:
       case OperationsHiveEngine.TOKEN_UNDELEGATE_DONE:
-        return Icons.DELEGATIONS;
+        return NewIcons.WALLET_HISTORY_TOKEN_DELEGATIONS;
       default:
-        return Icons.LINK;
+        return NewIcons.WALLET_HISTORY_TRANSFER;
     }
   };
 
@@ -203,36 +203,38 @@ const TokenHistoryItem = ({
       onClick={() => setIsMemoOpened(!isMemoOpened)}>
       <div className="transaction">
         <div className="information-panel">
-          <div className="top-row">
-            <div className="top-icon-date">
-              <Icon
-                dataTestId="icon-open-new-window"
-                name={getIcon()}
-                onClick={openTransactionOnHiveblocks}
-                additionalClassName="padding-right"></Icon>
-              <CustomTooltip
-                message={moment(transaction.timestamp * 1000).format(
-                  'YYYY/MM/DD , hh:mm:ss a',
-                )}
-                skipTranslation>
-                <div className="date">
-                  {moment(transaction.timestamp * 1000).format('L')}
-                </div>
-              </CustomTooltip>
-            </div>
+          <SVGIcon
+            dataTestId="icon-open-new-window"
+            icon={getIcon()}
+            onClick={openTransactionOnHiveblocks}
+            className="operation-icon"></SVGIcon>
+          <div className="right-panel">
+            <div className="detail">{label}</div>
+            <CustomTooltip
+              message={moment(transaction.timestamp * 1000).format(
+                'YYYY/MM/DD , hh:mm:ss a',
+              )}
+              skipTranslation>
+              <div className="date">
+                {moment(transaction.timestamp * 1000).format('L')}
+              </div>
+            </CustomTooltip>
             {getMemo() && (
-              <Icon
-                name={Icons.EXPAND_MORE}
+              <SVGIcon
+                icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
                 onClick={() => setIsMemoOpened(!isMemoOpened)}
-                additionalClassName={isMemoOpened ? 'open' : 'closed'}
+                className={`expand-collapse ${
+                  isMemoOpened ? 'open' : 'closed'
+                }`}
               />
             )}
           </div>
-          <div className="bottom-row">{label}</div>
         </div>
         <div
           data-testid={`${dataTestId}-memo-panel-${transaction._id}`}
-          className={isMemoOpened ? 'memo-panel opened' : 'memo-panel closed'}>
+          className={
+            isMemoOpened ? 'expandable-panel opened' : 'expandable-panel closed'
+          }>
           {getMemo()}
         </div>
       </div>

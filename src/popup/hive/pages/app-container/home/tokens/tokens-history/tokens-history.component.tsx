@@ -11,10 +11,12 @@ import {
 } from '@interfaces/tokens.interface';
 import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
@@ -33,6 +35,11 @@ const TokensHistory = ({
   >([]);
 
   const [filterValue, setFilterValue] = useState('');
+  const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+
+  const walletItemList = useRef<HTMLDivElement>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTokenHistory(activeAccountName!, currentTokenBalance.symbol);
@@ -81,7 +88,13 @@ const TokensHistory = ({
         );
       }),
     );
+    setLoading(false);
   }, [tokenHistory, filterValue]);
+
+  const handleScroll = (event: any) => {
+    setDisplayedScrollToTop(event.target.scrollTop !== 0);
+  };
+
   return (
     <div
       data-testid={`${Screen.TOKENS_HISTORY}-page`}
@@ -93,13 +106,19 @@ const TokensHistory = ({
         value={filterValue}
         onChange={setFilterValue}
       />
-      <div className="item-list">
+      <div className="item-list" ref={walletItemList} onScroll={handleScroll}>
         {displayedTransactions.map((transaction: TokenTransaction) => (
           <TokenHistoryItemComponent
             dataTestId={`token-history-item-${transaction.symbol}`}
             key={transaction._id}
             transaction={transaction}></TokenHistoryItemComponent>
         ))}
+        {loading && (
+          <div className="rotating-logo-container">
+            <RotatingLogoComponent></RotatingLogoComponent>
+          </div>
+        )}
+        {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
     </div>
   );

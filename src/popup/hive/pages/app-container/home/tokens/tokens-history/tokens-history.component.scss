@@ -2,19 +2,14 @@
   @include pageLayoutRowGap;
   overflow: hidden;
 
-  .input-container {
-    padding: 0px 24px;
-    box-sizing: border-box;
+  .custom-input {
+    margin: 0px 16px;
   }
 
   .item-list {
     overflow: auto;
-    .token-history-item {
-      background: $black-transparent;
-    }
-
-    .token-history-item:nth-child(even) {
-      background: $red-transparent;
-    }
+    @include form-panel;
+    row-gap: 8px;
+    max-height: 476px;
   }
 }

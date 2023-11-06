@@ -97,16 +97,6 @@ const GenericTransaction = ({
             />
           )}
         </div>
-
-        {/* <div className="top-row">
-          <Icon
-            dataTestId="icon-open-new-window"
-            name={getIcon()}
-            onClick={openTransactionOnHiveblocks}></Icon>
-
-          <div className="divider"></div>
-          
-        </div> */}
       </div>
       {expandableContent && isExpandablePanelOpened && (
         <div

@@ -1,40 +1,76 @@
 .token-history-item {
-  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  @include small-card-no-padding();
+  color: var(--main-font-color);
+  align-items: unset;
+  border-radius: 22px;
   .transaction {
     min-height: 48px;
     display: flex;
     flex-direction: column;
+    flex: 1;
+
+    &.has-expandable-content {
+      cursor: pointer;
+    }
 
     .information-panel {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       row-gap: 8px;
-      .top-row,
-      .bottom-row {
-        display: flex;
-        justify-content: space-between;
+      color: var(--main-font-color);
+      .operation-icon {
+        border-radius: 20px 0px 20px 20px;
+        background: var(--wallet-item-icon-background);
+        margin: 4px;
+        height: 40px;
+        width: 56px;
+
+        > div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+      .right-panel {
+        display: grid;
+        grid-template-columns: 1fr auto 20px;
         align-items: center;
-        font-size: 16px;
+        column-gap: 12px;
+        flex: 1;
+        margin-right: 12px;
+        .detail {
+          @include poppins400(12px);
+          color: var(--main-font-color);
+          flex: 1;
+        }
+        .date {
+          @include poppins400(12px);
+          color: $light-grey;
+        }
       }
-      .top-icon-date {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
-      .padding-right {
-        padding-right: 8px;
-      }
+    }
+
+    .expand-collapse {
+      @include icon-size(18px);
       @include open-close-rotate();
     }
-    .memo-panel {
+
+    .expandable-panel {
       max-height: 0;
-      transition: max-height 0.5s ease-out;
+      transition: max-height 0.25s ease-out;
       overflow: hidden;
       font-size: 14px;
 
       &.opened {
         max-height: 500px;
-        transition: max-height 0.5s ease-in;
+        transition: max-height 0.25s ease-in;
+        margin-top: 8px;
+        @include poppins400(12px);
+        color: var(--main-font-color);
+        padding: 0px 12px 12px 12px;
       }
     }
   }
