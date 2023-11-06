@@ -3519,6 +3519,10 @@
     "message": "The swap server is currently unavailable, please try again later",
     "description": "Swap server not responding error"
   },
+  "bgd_ops_swap_start_success": {
+    "message": "The swap started successfully! You will get your tokens in a few moments.",
+    "description": "Success on swap request"
+  },
   "service_unavailable_message": {
     "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
     "description": "General service unavailable page message"

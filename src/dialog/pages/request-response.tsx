@@ -1,3 +1,4 @@
+import { KeychainRequest } from 'hive-keychain-commons';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
@@ -7,7 +8,7 @@ type Props = {
 };
 
 type ResultMessage = {
-  msg: { message: string; success: boolean };
+  msg: { message: string; success: boolean; data: KeychainRequest };
 };
 
 const RequestResponse = ({ data }: Props) => {
@@ -28,7 +29,17 @@ const RequestResponse = ({ data }: Props) => {
       {data.msg.message.split(/<br\s?\/?>/g).map((msg) => (
         <p style={{ wordBreak: 'break-word' }}>{msg}</p>
       ))}
-
+      {/* {data.msg.data.type === KeychainRequestTypes.swap && (
+        <ButtonComponent
+          label={'html_popup_token_swaps_history'}
+          additionalClass="almost-bottom"
+          fixToBottom
+          onClick={() => {
+            window.close();
+          }}
+        />
+      )} */}{' '}
+      //TODO: Show history directly
       <ButtonComponent
         label={'dialog_ok'}
         fixToBottom

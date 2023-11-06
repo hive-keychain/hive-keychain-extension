@@ -16,19 +16,28 @@ import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastSwap = async (
   requestHandler: RequestsHandler,
-  data: RequestSwap & RequestId,
+  data: RequestSwap & RequestId & { swapAccount?: string },
 ) => {
   let result,
     err: any,
     err_message = null;
   try {
-    const { username, slippage, startToken, endToken, steps, amount } = data;
+    const {
+      username,
+      slippage,
+      startToken,
+      endToken,
+      steps,
+      amount,
+      swapAccount,
+    } = data;
 
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
     );
-
+    if (!swapAccount)
+      throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
     const swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
@@ -37,7 +46,6 @@ export const broadcastSwap = async (
       amount,
       username!,
     );
-
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
       case PrivateKeyType.LEDGER: {
@@ -45,7 +53,7 @@ export const broadcastSwap = async (
         if (['HIVE', 'HBD'].includes(startToken)) {
           tx = await TransferUtils.getTransferTransaction(
             data.username!,
-            'keychain.swap', //TODO:dont hardcode
+            swapAccount,
             data.amount + ' ' + data.startToken,
             swapId,
             false,
@@ -55,7 +63,7 @@ export const broadcastSwap = async (
         } else {
           tx = await TokensUtils.getSendTokenTransaction(
             data.startToken,
-            'keychain.swap', //TODO:dont hardcode
+            swapAccount,
             data.amount + '',
             swapId,
             data.username!,
@@ -76,8 +84,8 @@ export const broadcastSwap = async (
         if (['HIVE', 'HBD'].includes(startToken)) {
           result = await TransferUtils.sendTransfer(
             data.username!,
-            'keychain.swap', //TODO: dont hardcode
-            data.amount + ' ' + data.startToken,
+            swapAccount,
+            data.amount.toFixed(3) + ' ' + data.startToken,
             swapId,
             false,
             0,
@@ -87,7 +95,7 @@ export const broadcastSwap = async (
         } else {
           result = await TokensUtils.sendToken(
             data.startToken,
-            'keychain.swap', //TODO: dont hardcode
+            swapAccount,
             data.amount + '',
             swapId,
             key!,
