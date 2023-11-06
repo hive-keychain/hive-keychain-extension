@@ -120,6 +120,7 @@ export enum NewIcons {
 
   KEYCHAIN_LOGO_SPLASHSCREEN = 'splashscreen/keychain-logo',
   KEYCHAIN_LOGO_ROUND = 'keychain-round-logo',
+  KEYCHAIN_LOGO_ROUND_SMALL = 'keychain-round-logo-small',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',
 
   MENU_BUTTON = 'top-bar/menu-button',

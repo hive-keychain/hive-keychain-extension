@@ -1,10 +1,17 @@
 import { BackgroundMessage } from '@background/background-message.interface';
-import React, { useRef, useState } from 'react';
+import { Theme } from '@popup/theme.context';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
 interface PropsType {
@@ -22,10 +29,15 @@ const ImportFile = ({
   accept,
   callBackCommand,
 }: PropsType) => {
+  const [theme, setTheme] = useState<Theme>();
   const [selectedFile, setSelectedFile] = useState<File>();
   const [feedback, setFeedBack] = useState<any>();
 
   const inputEl = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const handleFileUpload = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -71,10 +83,18 @@ const ImportFile = ({
     inputEl.current?.click();
   };
 
+  const init = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
+
   return (
-    <div className="import-file">
+    <div className={`theme ${theme} import-file`}>
       <div className="title-panel">
-        <img src="/assets/images/iconhive.png" />
+        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage(title)}</div>
       </div>
       <div
@@ -84,25 +104,36 @@ const ImportFile = ({
         }}></div>
       <div className="upload-panel">
         <ButtonComponent
+          type={ButtonType.IMPORTANT}
           label="Choose a file"
           onClick={handleOpenFileInput}
-          skipLabelTranslation={true}></ButtonComponent>
+          skipLabelTranslation={true}
+          height="small"></ButtonComponent>
 
+        {selectedFile && selectedFile.name && (
+          <InputComponent
+            type={InputType.TEXT}
+            onChange={() => null}
+            value={selectedFile?.name}
+            disabled
+          />
+        )}
         <input
           ref={inputEl}
           type="file"
           accept={accept}
           id="file"
+          className="file-input"
           onChange={handleFileUpload}
         />
-        <span id="file_span">{selectedFile?.name}</span>
       </div>
 
       {selectedFile && (
         <ButtonComponent
           onClick={importKeysFromFile}
           label="popup_html_import"
-          type={ButtonType.IMPORTANT}></ButtonComponent>
+          type={ButtonType.IMPORTANT}
+          height="small"></ButtonComponent>
       )}
 
       {feedback && (
