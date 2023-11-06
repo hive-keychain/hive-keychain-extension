@@ -4,7 +4,7 @@ import React, { BaseSyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
@@ -32,27 +32,27 @@ const GenericTransaction = ({
       case 'transfer':
       case 'recurrent_transfer':
       case 'fill_recurrent_transfer':
-        return Icons.SEND;
+        return NewIcons.WALLET_HISTORY_TRANSFER;
       case 'claim_reward_balance':
-        return Icons.CLAIM;
+        return NewIcons.WALLET_HISTORY_CLAIM_REWARDS;
       case 'savings':
-        return Icons.SAVINGS;
+        return NewIcons.WALLET_HISTORY_SAVINGS;
       case 'power_up_down': {
         switch (transaction.subType) {
           case 'transfer_to_vesting':
-            return Icons.ARROW_UPWARDS;
+            return NewIcons.WALLET_HISTORY_POWER_UP;
           case 'withdraw_vesting':
-            return Icons.ARROW_DOWNWARDS;
+            return NewIcons.WALLET_HISTORY_POWER_DOWN;
         }
       }
       case 'delegate_vesting_shares':
-        return Icons.DELEGATIONS;
+        return NewIcons.WALLET_HISTORY_HP_DELEGATIONS;
       case 'claim_account':
-        return Icons.ACCOUNT;
+        return NewIcons.WALLET_HISTORY_CLAIM_ACCOUNT;
       case 'convert':
-        return Icons.CONVERT;
+        return NewIcons.WALLET_HISTORY_CONVERT;
       default:
-        return Icons.LINK;
+        return NewIcons.WALLET_HIVE_LOGO;
     }
   };
 
@@ -72,7 +72,7 @@ const GenericTransaction = ({
       <div className="information-panel">
         <SVGIcon
           className="operation-icon"
-          icon={NewIcons.ACCOUNTS}
+          icon={getIcon()}
           onClick={openTransactionOnHiveblocks}
         />
         <div className="right-panel">
@@ -88,11 +88,13 @@ const GenericTransaction = ({
               {moment(transaction.timestamp).format('L')}
             </div>
           </CustomTooltip>
-          {expandableContent && !isExpandablePanelOpened && (
-            <SVGIcon icon={NewIcons.WALLET_HISTORY_EXPAND} />
-          )}
-          {expandableContent && isExpandablePanelOpened && (
-            <SVGIcon icon={NewIcons.WALLET_HISTORY_COLLAPSE} />
+          {expandableContent && (
+            <SVGIcon
+              icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+              className={`expand-collapse ${
+                isExpandablePanelOpened ? 'open' : 'closed'
+              }`}
+            />
           )}
         </div>
 

@@ -80,7 +80,7 @@ const FavoriteAccountsItem = ({
             </div>
           </div>
           {isExpanded && !isEditMode && (
-            <SVGIcon icon={NewIcons.EXPANDED_ARROW_DOWN} />
+            <SVGIcon icon={NewIcons.GLOBAL_ARROW} />
           )}
         </div>
         {isEditMode && (

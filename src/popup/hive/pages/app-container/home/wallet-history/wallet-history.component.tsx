@@ -21,11 +21,14 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import Icon from 'src/common-ui/icon/icon.component';
 import { Icons, NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { fetchAccountTransactions } from 'src/popup/hive/actions/transaction.actions';
 import { WalletHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
@@ -158,8 +161,9 @@ const WalletHistory = ({
       title: 'popup_html_wallet_history',
       isBackButtonEnabled: true,
       rightAction: {
-        icon: NewIcons.FILTER_BUTTON,
+        icon: NewIcons.WALLET_HISTORY_FILTER_BUTTON,
         callback: toggleFilter,
+        className: 'wallet-filter-button',
       },
     });
 
@@ -382,6 +386,11 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
+    console.log('onscroll');
+    console.log(
+      transactions.list[transactions.list.length - 1]?.last === true,
+      transactions.lastUsedStart === 0,
+    );
     if (
       transactions.list[transactions.list.length - 1]?.last === true ||
       transactions.lastUsedStart === 0
@@ -414,13 +423,9 @@ const WalletHistory = ({
               placeholder="popup_html_search"
               value={filter.filterValue}
               onChange={updateFilterValue}
+              logo={NewIcons.INPUT_SEARCH}
+              logoPosition="right"
             />
-            <div
-              data-testid="clear-filters"
-              className={'filter-button'}
-              onClick={() => clearFilters()}>
-              {chrome.i18n.getMessage(`popup_html_clear_filters`)}
-            </div>
           </div>
           <div className="filter-selectors">
             <div className="types">
@@ -444,7 +449,7 @@ const WalletHistory = ({
                   ),
                 )}
             </div>
-            <div className="vertical-divider"></div>
+            <Separator type="horizontal" fullSize />
             <div className="in-out-panel">
               <div
                 data-testid="filter-by-incoming"
@@ -466,6 +471,12 @@ const WalletHistory = ({
               </div>
             </div>
           </div>
+          <ButtonComponent
+            data-testid="clear-filters"
+            onClick={() => clearFilters()}
+            label="popup_html_clear_filters"
+            height="small"
+          />
         </div>
       </div>
 
@@ -509,7 +520,7 @@ const WalletHistory = ({
               <span className="label">
                 {chrome.i18n.getMessage('popup_html_load_more')}
               </span>
-              <Icon name={Icons.ADD_CIRCLE}></Icon>
+              <SVGIcon icon={NewIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
             </div>
           )}
         {loading && (

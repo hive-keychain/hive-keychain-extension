@@ -19,6 +19,7 @@ export interface PageTitleProps {
   rightAction?: {
     icon: NewIcons;
     callback: () => void;
+    className?: string;
   };
   onCloseAdditional?: () => void;
   onBackAdditional?: () => void;
@@ -78,6 +79,7 @@ const PageTitle = ({
         <SVGIcon
           onClick={handleRightActionButtonClick}
           icon={rightAction.icon}
+          className={`icon-button ${rightAction.className}`}
         />
       )}
       {!rightAction && !isCloseButtonDisabled && (
@@ -85,7 +87,6 @@ const PageTitle = ({
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
           icon={NewIcons.TOP_BAR_CLOSE_BTN}
-          className="icon-button"
         />
       )}
     </div>

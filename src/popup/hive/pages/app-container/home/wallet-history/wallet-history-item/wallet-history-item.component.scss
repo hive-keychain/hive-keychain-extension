@@ -1,8 +1,9 @@
 .wallet-history-item {
-  border-radius: 22px;
-  border: 1px solid $extra-light-grey;
   display: flex;
-  align-items: center;
-  column-gap: 16px;
-  padding-right: 24px;
+  flex-direction: column;
+  row-gap: 12px;
+  @include small-card-no-padding();
+  color: var(--main-font-color);
+  align-items: unset;
+  border-radius: 22px;
 }

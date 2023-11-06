@@ -14,4 +14,12 @@
     text-align: center;
     @include poppins500(20px);
   }
+
+  .icon-button {
+    &.wallet-filter-button {
+      @include small-card;
+      padding: 6px 16px;
+      @include icon-size(18px);
+    }
+  }
 }

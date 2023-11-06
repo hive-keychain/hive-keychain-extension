@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
@@ -63,7 +62,6 @@ const AddKey = ({
       <InputComponent
         dataTestId="input-private-key"
         type={InputType.PASSWORD}
-        logo={Icons.KEY}
         placeholder="popup_html_private_key"
         value={privateKey}
         onChange={setPrivateKey}

@@ -142,7 +142,7 @@ const AccountKeysListItem = ({
             onClick={() =>
               navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)
             }
-            icon={NewIcons.ADD_CIRCLE}
+            icon={NewIcons.GLOBAL_ADD_CIRCLE}
             className="add-key-icon"></SVGIcon>
         )}
       </div>

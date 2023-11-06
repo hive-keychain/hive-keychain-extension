@@ -26,6 +26,8 @@ $dark: (
   --wallet-icon-border-color: white,
   --wallet-icon-color: white,
   --wallet-icon-secondary-color: white,
+  --wallet-item-icon-background: #e313371a,
+  --wallet-history-icon-color: $red,
   //top bar
   --keychain-logo-color: white,
   --topbar-button-color: white,
@@ -102,6 +104,8 @@ $light: (
   --wallet-icon-border-color: $darker-grey-border,
   --wallet-icon-color: $dark-red,
   --wallet-icon-secondary-color: $dark-red,
+  --wallet-item-icon-background: #e313371a,
+  --wallet-history-icon-color: $red,
   // Top
   --keychain-logo-color: $blue-border,
   --topbar-button-color: $darker-blue,

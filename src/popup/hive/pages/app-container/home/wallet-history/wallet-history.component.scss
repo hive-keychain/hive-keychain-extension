@@ -1,16 +1,15 @@
 .wallet-history-page {
-  // display: flex;
-  // flex-direction: column;
-  // flex: 1;
-  // overflow: hidden;
-
+  display: flex;
+  flex: 1;
   .filter-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: white;
+    $filter-max-height: 400px;
 
+    position: fixed;
+    width: 320px;
+    top: 60px;
+    left: 40px;
     padding: 0px 24px;
+    z-index: 2;
     .title-panel {
       display: flex;
       justify-content: space-between;
@@ -32,20 +31,28 @@
       max-height: 0;
       transition: max-height 0.25s;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 16px 0px;
+
+      .submit-button {
+        width: 120px !important;
+      }
 
       .filter-button {
-        padding: 4px;
-        border: 1px solid white;
-        border-radius: 12px;
+        @include small-card-no-padding();
+        padding: 4px 12px;
+        margin: unset;
+        min-width: 70px;
         text-align: center;
-        font-size: 14px;
+        justify-content: center;
+        height: 30px;
+        box-sizing: border-box;
         cursor: pointer;
-        min-width: 60px;
-
         &.selected,
         &:hover {
-          background: white;
-          color: black;
+          background: $red;
+          color: white;
         }
       }
       .search-panel {
@@ -54,7 +61,13 @@
         justify-content: center;
         column-gap: 8px;
         margin-bottom: 16px;
+        width: 100%;
+
+        .custom-input {
+          width: 100%;
+        }
         .input-container {
+          width: 100%;
           input {
             height: 30px;
             font-size: 14px;
@@ -65,46 +78,36 @@
               font-size: 14px;
             }
           }
-          .input-img.erase {
-            top: 8px;
-            height: 14px;
-            width: 14px;
-          }
         }
       }
 
       .filter-selectors {
         display: grid;
-        grid-template-columns: 3fr 1px 1fr;
+        grid-template-rows: 3fr 24px 1fr;
         margin-bottom: 16px;
         column-gap: 8px;
-        max-height: calc(190px - 64px);
-        .vertical-divider {
-          width: 1px;
-          height: 100%;
-          background: white;
-        }
+        max-height: calc($filter-max-height - 64px);
 
         .types {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
-          grid-template-rows: max-content;
+          display: flex;
+          flex-wrap: wrap;
           row-gap: 8px;
           column-gap: 8px;
-          max-height: calc(190px - 54px);
+          max-height: calc($filter-max-height - 54px);
           padding-right: 8px;
           overflow: auto;
         }
 
         .in-out-panel {
           display: flex;
-          flex-direction: column;
-          row-gap: 8px;
+          flex-wrap: wrap;
+          column-gap: 8px;
         }
       }
     }
 
     &.filter-opened {
+      @include small-card;
       .title-panel {
         .icon {
           transform: rotate(180deg);
@@ -112,32 +115,26 @@
       }
 
       .filters {
-        max-height: 190px;
+        max-height: $filter-max-height;
         transition: max-height 0.25s;
       }
     }
   }
 
   .wallet-item-list {
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background: white;
-    padding: 44px 34px;
-    border-radius: 40px;
+    @include form-panel;
     row-gap: 8px;
+    max-height: 476px;
 
     .rotating-logo-container {
-      min-height: 100px;
+      min-height: 100%;
       flex: 1;
       display: flex;
       justify-content: center;
       .rotating-logo {
         align-self: center;
         justify-self: center;
-        height: 50px;
-        width: 50px;
+        @include icon-size(80px);
       }
     }
 
@@ -164,7 +161,7 @@
     }
 
     .load-more-panel {
-      padding: 16px;
+      @include small-card;
       height: 62px;
       display: flex;
       flex-direction: column;
@@ -172,11 +169,8 @@
       justify-content: center;
       row-gap: 4px;
       font-size: 16px;
-      background: $black-transparent;
-      opacity: 0.5;
       cursor: pointer;
       .icon-component {
-        font-size: 20px;
         height: 20px;
         width: 20px;
       }

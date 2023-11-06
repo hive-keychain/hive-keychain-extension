@@ -97,6 +97,7 @@ export enum NewIcons {
 
   GLOBAL_ARROW = 'global/arrow',
   GLOBAL_DELETE = 'global/delete',
+  GLOBAL_ADD_CIRCLE = 'global/add-circle',
 
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
   GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE = 'governance/update-downvote-witness',
@@ -211,11 +212,26 @@ export enum NewIcons {
   WALLET_TOKEN_STAKE = 'wallet/tokens/stake',
   WALLET_TOKEN_UNSTAKE = 'wallet/tokens/unstake',
 
+  WALLET_HISTORY_FILTER_BUTTON = 'wallet/history/filter-button',
+  WALLET_HISTORY_CLAIM_ACCOUNT = 'wallet/history/claim-account',
+  WALLET_HISTORY_CLAIM_REWARDS = 'wallet/history/claim-rewards',
+  WALLET_HISTORY_CONVERT = 'wallet/history/convert',
+  WALLET_HISTORY_HP_DELEGATIONS = 'wallet/history/hp-delegations',
+  WALLET_HISTORY_POWER_DOWN = 'wallet/history/power-down',
+  WALLET_HISTORY_POWER_UP = 'wallet/history/power-up',
+  WALLET_HISTORY_RC_DELEGATIONS = 'wallet/history/rc-delegations',
+  WALLET_HISTORY_SAVINGS = 'wallet/history/savings',
+  WALLET_HISTORY_TRANSFER = 'wallet/history/transfer',
+  WALLET_HISTORY_TOKEN_DELEGATIONS = 'wallet/history/token-delegations',
+  WALLET_HISTORY_STAKE = 'wallet/history/stake',
+  WALLET_HISTORY_UNSTAKE = 'wallet/history/unstake',
+  WALLET_HISTORY_EXPAND_COLLAPSE = 'wallet/history/expand-collapse',
+  WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
+
   //TODO TO REMOVE WHEN FINISHED
   ACCOUNTS = 'accounts',
   ACTIVE = 'active',
   ADD_ACCOUNT = 'add-account',
-  ADD_CIRCLE = 'add-circle',
   ADVANCED_SETTINGS = 'advanced-settings',
   ANALYTICS = 'analytics',
   AT = 'at',
@@ -285,7 +301,6 @@ export enum NewIcons {
   VOTING_MANA = 'voting-mana',
   WALLET_HISTORY_COLLAPSE = 'wallet-history-collapse',
   WALLET_HISTORY_EXPAND = 'wallet-history-expand',
-  WALLET_HISTORY_TOP = 'wallet-history-top',
 
   // LOGOS
   BINANCE = 'binance',
