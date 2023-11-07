@@ -52,9 +52,11 @@ export default ({ data, wrongMk, index }: Props) => {
   };
 
   return (
-    <>
+    <div className="unlock-page">
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
-      <p>{chrome.i18n.getMessage('bgd_auth_locked_desc')}</p>
+      <div className="caption">
+        {chrome.i18n.getMessage('bgd_auth_locked_desc')}
+      </div>
       <InputComponent
         value={password}
         onChange={setPassword}
@@ -63,21 +65,27 @@ export default ({ data, wrongMk, index }: Props) => {
         type={InputType.PASSWORD}
         onEnterPress={login}
       />
-      <p>{wrongMk && chrome.i18n.getMessage('dialog_header_wrong_pwd')}</p>
-
-      <ButtonComponent
-        label={'dialog_unlock'}
-        onClick={login}
-        type={ButtonType.IMPORTANT}
-      />
-      <ButtonComponent
-        label={'dialog_cancel'}
-        type={ButtonType.IMPORTANT}
-        onClick={() => {
-          window.close();
-        }}
-      />
+      {wrongMk && (
+        <div className="error">
+          {chrome.i18n.getMessage('dialog_header_wrong_pwd')}
+        </div>
+      )}
+      <div className="fill-space"></div>
+      <div className="button-panel">
+        <ButtonComponent
+          label={'dialog_cancel'}
+          type={ButtonType.ALTERNATIVE}
+          onClick={() => {
+            window.close();
+          }}
+        />
+        <ButtonComponent
+          label={'dialog_unlock'}
+          onClick={login}
+          type={ButtonType.IMPORTANT}
+        />
+      </div>
       <LoadingComponent hide={!loading} />
-    </>
+    </div>
   );
 };

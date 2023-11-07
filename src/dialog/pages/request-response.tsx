@@ -26,7 +26,9 @@ const RequestResponse = ({ data }: Props) => {
         }
       />
       {data.msg.message.split(/<br\s?\/?>/g).map((msg) => (
-        <p style={{ wordBreak: 'break-word' }}>{msg}</p>
+        <div className="caption" style={{ wordBreak: 'break-word' }}>
+          {msg}
+        </div>
       ))}
 
       <ButtonComponent

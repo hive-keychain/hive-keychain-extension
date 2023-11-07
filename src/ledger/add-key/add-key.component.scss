@@ -1,65 +1,60 @@
-@font-face {
-  font-family: Futura;
-  src: url('/assets/fonts/Futura-Boo.otf');
-  font-weight: 400;
-}
+@import '../../common-style/common-style.scss';
+@import '../../common-ui/common-ui.scss';
+@import '../../popup/hive/hive-app.component.scss';
+@import '../../popup/evm/evm-app.component.scss';
 
 html {
   height: 100%;
-}
-body {
-  margin: 0px;
-  height: 100%;
-  #root {
-    display: flex;
+  body {
+    margin: 0px;
     height: 100%;
-    background: linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0%
-      no-repeat padding-box !important;
-    align-items: center;
-    justify-content: center;
-  }
-}
+    #root {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      .connect-ledger {
+        border: solid 1px grey;
+        border-radius: 8px;
+        width: 350px;
+        height: 600px;
+        @include background-top;
+        color: var(--main-font-color);
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        row-gap: 24px;
+        font-size: 16px;
 
-.connect-ledger {
-  border: solid 1px grey;
-  border-radius: 8px;
-  width: 350px;
-  height: 600px;
-  font-family: Futura !important;
-  font-weight: 400;
-  background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
-    padding-box;
-  color: white;
-  padding: 24px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  row-gap: 24px;
-  font-size: 16px;
+        .title-panel {
+          display: flex;
+          column-gap: 16px;
+          height: 48px;
+          padding: 16px 24px;
+          align-items: center;
+          .title {
+            color: var(--main-font-color);
+            @include poppins500(20px);
+          }
+          .svg-icon {
+            @include icon-size(50px);
+          }
+        }
 
-  .title-panel {
-    display: flex;
-    align-items: center;
-    img {
-      height: 50px;
-    }
-    .title {
-      font-size: 24px;
-      color: white;
-      margin-left: 8px;
-    }
-  }
-
-  .add-key {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    row-gap: 16px;
-    .caption {
-      font-size: 18px;
-    }
-    .fill-space {
-      flex: 1;
+        .add-key {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          row-gap: 16px;
+          .caption {
+            @include caption();
+          }
+          .fill-space {
+            flex: 1;
+          }
+        }
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import { RequestId, RequestPowerDown } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
@@ -20,6 +21,7 @@ const PowerDown = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_title_powerdown')}
       {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
         content={`${data.hive_power} ${CurrencyUtils.getCurrencyLabel(

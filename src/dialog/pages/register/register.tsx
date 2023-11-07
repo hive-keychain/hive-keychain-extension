@@ -54,12 +54,13 @@ const Register = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div className="register-page">
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_register')} />
-      <p
+      <div
+        className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_register'),
-        }}></p>
+        }}></div>
       <InputComponent
         value={password}
         onChange={setPassword}
@@ -77,7 +78,7 @@ const Register = ({ data }: Props) => {
       />
       <p>{signupError}</p>
       <ButtonComponent label={'popup_html_submit'} onClick={signup} />
-    </>
+    </div>
   );
 };
 

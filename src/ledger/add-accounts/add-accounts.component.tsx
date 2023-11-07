@@ -1,12 +1,15 @@
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -44,6 +47,19 @@ const AddAccountsComponent = () => {
   const [accountsForm, setAccountsForm] = useState<ImportAccountFrom[]>([]);
   const [step, setStep] = useState(SynchronizeLedgerStep.DISCOVER_ACCOUNTS);
   const [message, setMessage] = useState('');
+
+  const [theme, setTheme] = useState<Theme>();
+  useEffect(() => {
+    initTheme();
+  }, []);
+
+  const initTheme = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
 
   useEffect(() => {
     init();
@@ -291,9 +307,9 @@ const AddAccountsComponent = () => {
   };
 
   return (
-    <div className="connect-ledger">
+    <div className={`theme ${theme} connect-ledger`}>
       <div className="title-panel">
-        <img src="/assets/images/iconhive.png" />
+        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage(step)}</div>
       </div>
 

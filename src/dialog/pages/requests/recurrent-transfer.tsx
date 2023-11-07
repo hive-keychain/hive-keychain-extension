@@ -4,6 +4,7 @@ import {
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
@@ -31,7 +32,10 @@ const RecurrentTransfer = (props: Props) => {
   }
   const renderUsername = () => {
     return !accounts ? (
-      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+      <>
+        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <Separator type={'horizontal'} fullSize />
+      </>
     ) : (
       <></>
     );
@@ -66,6 +70,7 @@ const RecurrentTransfer = (props: Props) => {
       {...props}>
       {renderUsername()}
       <RequestItem title="dialog_to" content={`@${data.to}`} />
+      <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
         content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
@@ -73,13 +78,18 @@ const RecurrentTransfer = (props: Props) => {
           rpc.testnet,
         )}`}
       />
+      <Separator type={'horizontal'} fullSize />
 
       {data.memo && data.memo.length ? (
-        <RequestItem title="dialog_memo" content={`${memoField}`} />
+        <>
+          <RequestItem title="dialog_memo" content={`${memoField}`} />
+          <Separator type={'horizontal'} fullSize />
+        </>
       ) : (
         <></>
       )}
       <RequestItem title="dialog_recurrence" content={getRecurrence()} />
+      <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_executions"
         content={chrome.i18n.getMessage('dialog_executions_times', [

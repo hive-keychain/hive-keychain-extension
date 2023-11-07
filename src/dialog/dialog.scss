@@ -1,14 +1,20 @@
 @import '../common-style/common-style.scss';
+@import '../common-ui/common-ui.scss';
 @import './components/collapsible-item/collapsible-item.scss';
 @import './components/dialog-header/dialog-header.component.scss';
 @import './components/operation/operation.scss';
 @import './components/request-username/request-username.scss';
 @import './pages/pages.scss';
 
-@font-face {
-  font-family: Futura;
-  src: url('/assets/fonts/Futura-Boo.otf');
-  font-weight: 400;
+.theme {
+  &.light {
+    @include spread-map($light);
+  }
+  &.dark {
+    @include spread-map($dark);
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
 }
 
 html {
@@ -22,22 +28,33 @@ html {
       height: 100%;
     }
     .dialog {
-      font-family: Futura !important;
-      height: 100%;
-      background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
-          padding-box,
-        linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
-          padding-box !important;
-      color: white;
-      padding: 32px;
-      box-sizing: border-box;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      color: var(--main-font-color);
+      @include background-top;
+      padding: 32px;
+      box-sizing: border-box;
       font-size: 16px;
 
-      pre {
-        font-family: Futura !important;
-        margin: 0;
+      .title-panel {
+        display: flex;
+        column-gap: 16px;
+        height: 48px;
+        padding: 16px 24px;
+        align-items: center;
+        .title {
+          color: var(--main-font-color);
+          @include poppins500(20px);
+        }
+        .svg-icon {
+          @include icon-size(50px);
+        }
+      }
+
+      .caption {
+        @include caption();
+        padding: unset;
       }
 
       ::-webkit-scrollbar-track {
@@ -56,7 +73,7 @@ html {
         border-radius: 4px;
         -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-        background-color: #e31337;
+        background-color: $red;
       }
     }
   }

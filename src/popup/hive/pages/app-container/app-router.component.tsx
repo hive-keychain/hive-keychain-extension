@@ -1,4 +1,4 @@
-import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem-page/ecosystem.component';
+import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import React from 'react';

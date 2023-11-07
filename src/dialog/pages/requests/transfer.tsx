@@ -1,6 +1,7 @@
 import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
@@ -33,7 +34,10 @@ const Transfer = (props: Props) => {
 
   const renderUsername = () => {
     return !accounts ? (
-      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+      <>
+        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <Separator type={'horizontal'} fullSize />
+      </>
     ) : (
       <></>
     );
@@ -48,6 +52,7 @@ const Transfer = (props: Props) => {
       {...props}>
       {renderUsername()}
       <RequestItem title="dialog_to" content={`@${data.to}`} />
+      <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
         content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
@@ -55,6 +60,7 @@ const Transfer = (props: Props) => {
           rpc.testnet,
         )}`}
       />
+      <Separator type={'horizontal'} fullSize />
       <RequestBalance
         username={anonymousProps.username}
         rpc={props.rpc}
@@ -62,7 +68,10 @@ const Transfer = (props: Props) => {
         currency={data.currency}
       />
       {data.memo && data.memo.length ? (
-        <RequestItem title="dialog_memo" content={`${memoField}`} />
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestItem title="dialog_memo" content={`${memoField}`} />
+        </>
       ) : (
         <></>
       )}

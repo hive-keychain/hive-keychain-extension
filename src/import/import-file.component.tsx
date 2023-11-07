@@ -29,15 +29,23 @@ const ImportFile = ({
   accept,
   callBackCommand,
 }: PropsType) => {
-  const [theme, setTheme] = useState<Theme>();
   const [selectedFile, setSelectedFile] = useState<File>();
   const [feedback, setFeedBack] = useState<any>();
 
   const inputEl = useRef<HTMLInputElement>(null);
 
+  const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
     init();
   }, []);
+
+  const init = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
 
   const handleFileUpload = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -81,14 +89,6 @@ const ImportFile = ({
 
   const handleOpenFileInput = () => {
     inputEl.current?.click();
-  };
-
-  const init = async () => {
-    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-      LocalStorageKeyEnum.ACTIVE_THEME,
-    ]);
-
-    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
   };
 
   return (

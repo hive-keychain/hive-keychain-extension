@@ -41,17 +41,12 @@ const RequestItem = ({
 }: Props) => {
   return (
     <>
-      <h3>{chrome.i18n.getMessage(title)}</h3>
-
-      {pre ? (
-        <div className="operation_item_content">
-          <pre>{content}</pre>
+      <React.Fragment key={title}>
+        <div className="field">
+          <div className="label">{chrome.i18n.getMessage(title)}</div>
+          <div className={`value`}>{content}</div>
         </div>
-      ) : (
-        <div className={`operation_item_content ${red ? 'operation-red' : ''}`}>
-          {renderContent(content, type, red)}
-        </div>
-      )}
+      </React.Fragment>
     </>
   );
 };
