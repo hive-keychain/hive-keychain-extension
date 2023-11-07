@@ -28,7 +28,7 @@ const SettingsMenuItems = (logout: () => void): MenuItem[] => {
       label: 'popup_html_contact_support',
       icon: NewIcons.MENU_SUPPORT,
       action: () => {
-        chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
+        chrome.tabs.create({ url: 'https://discord.gg/3Sex2qYtXP' });
       },
     },
     {

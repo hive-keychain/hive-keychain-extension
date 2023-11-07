@@ -3,11 +3,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  row-gap: 8px;
   .using-proxy {
-    font-size: 16px;
-    padding: 0px 24px;
-    box-sizing: border-box;
-    margin-bottom: 12px;
+    @include caption();
   }
   .proposal-list {
     flex-direction: column;

@@ -439,7 +439,7 @@ const WalletHistory = ({
                       onClick={() => toggleFilterType(filterOperationType)}>
                       {chrome.i18n.getMessage(
                         `popup_html_filter_type_${filterOperationType}`,
-                      )}
+                      )}{' '}
                     </div>
                   ),
                 )}

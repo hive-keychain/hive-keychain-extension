@@ -107,7 +107,8 @@ const ConfirmationPage = ({
         <ButtonComponent
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
-          onClick={handleClickOnCancel}></ButtonComponent>
+          onClick={handleClickOnCancel}
+          type={ButtonType.ALTERNATIVE}></ButtonComponent>
         <ButtonComponent
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}

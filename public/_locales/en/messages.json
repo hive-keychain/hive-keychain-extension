@@ -3611,7 +3611,7 @@
     "description": "Message container success title"
   },
   "accept_terms_and_condition": {
-    "message": "I have read and agreed to the Hive Keychain <a href='https://hive-keychain.com/#/terms'>Terms of Service</a>, and <a href='https://hive-keychain.com/#/privacy'>Privacy Policy</a>",
+    "message": "I have read and agreed to the Hive Keychain <a target='__blank' href='https://hive-keychain.com/#/terms'>Terms of Service</a>, and <a target='__blank' href='https://hive-keychain.com/#/privacy'>Privacy Policy</a>",
     "description": "Accept terms and conditions text"
   },
   "delete_label": {

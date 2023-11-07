@@ -124,7 +124,7 @@ const AuthorizedOperations = ({
                     className="operation"
                     key={operation}>
                     <div className="left-panel">
-                      <div className="website">dApp : {website}</div>
+                      <div className="website">{website}</div>
                       <div className="operation-name">
                         {chrome.i18n.getMessage(
                           `popup_${operation

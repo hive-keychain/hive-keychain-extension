@@ -44,13 +44,9 @@
 }
 
 @mixin link {
-  color: white;
-  text-decoration: none;
-  border-bottom: white 2px dotted;
-  &:hover {
-    border-bottom: $red 2px dotted;
-    color: $red;
-  }
+  color: $red;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 @mixin input-label {
@@ -255,6 +251,7 @@
   justify-content: center;
   row-gap: 8px;
   .text {
+    color: var(--main-font-color);
     font-size: 14px;
     text-align: center;
   }

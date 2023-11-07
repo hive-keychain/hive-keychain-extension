@@ -48,6 +48,7 @@
         justify-content: center;
         height: 30px;
         box-sizing: border-box;
+        color: var(--main-font-color);
         cursor: pointer;
         &.selected,
         &:hover {

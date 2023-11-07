@@ -1,5 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import { ErrorFallback } from 'src/common-ui/error-fallback/error-fallback.component';
@@ -19,6 +19,21 @@ export const MultichainContainer = () => {
     init();
   }, []);
 
+  const handleKeyPress = useCallback((event) => {
+    if (event.ctrlKey && event.key === 't') {
+      setTheme((previous) => {
+        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // remove the event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
   const init = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
       LocalStorageKeyEnum.ACTIVE_THEME,
@@ -29,6 +44,9 @@ export const MultichainContainer = () => {
     setChain(res.ACTIVE_CHAIN ?? Chain.HIVE);
 
     setReady(true);
+
+    // attach the event listener
+    document.addEventListener('keydown', handleKeyPress);
   };
 
   useEffect(() => {

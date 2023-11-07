@@ -64,6 +64,10 @@ $caption-font-size: 15px;
   flex: 1;
 }
 
+a {
+  @include link;
+}
+
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: unset;
   box-shadow: unset;
@@ -80,6 +84,6 @@ $caption-font-size: 15px;
 
 ::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
+  height: 0px;
   background-color: transparent;
 }

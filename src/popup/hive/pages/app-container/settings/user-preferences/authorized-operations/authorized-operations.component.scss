@@ -38,11 +38,11 @@
         flex-direction: column;
         row-gap: 6px;
         .website {
-          @include poppins400(12px);
+          @include poppins400(13px);
           color: var(--main-font-color);
         }
         .operation-name {
-          @include poppins400(12px);
+          @include poppins400(13px);
           color: $light-grey;
           padding-left: 10px;
         }
