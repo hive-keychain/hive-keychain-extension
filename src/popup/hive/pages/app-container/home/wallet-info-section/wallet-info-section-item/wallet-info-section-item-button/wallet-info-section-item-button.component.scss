@@ -14,8 +14,7 @@
     color: var(--main-font-color);
   }
   .action-button {
-    height: 24px;
-    width: 24px;
+    @include icon-size(30px);
   }
 
   &:hover {
