@@ -24,18 +24,22 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
       } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}>
       <CheckboxComponent {...props} />
       {props.hint && (
-        <div className="hint">
-          {props.skipHintTranslation
-            ? props.hint
-            : chrome.i18n.getMessage(props.hint)}
-        </div>
+        <div
+          className="hint"
+          dangerouslySetInnerHTML={{
+            __html: props.skipHintTranslation
+              ? props.hint
+              : chrome.i18n.getMessage(props.hint),
+          }}></div>
       )}
       {props.text && (
-        <div className="text">
-          {props.skipTextTranslation
-            ? props.hint
-            : chrome.i18n.getMessage(props.text)}
-        </div>
+        <div
+          className="text"
+          dangerouslySetInnerHTML={{
+            __html: props.skipTextTranslation
+              ? props.text
+              : chrome.i18n.getMessage(props.text),
+          }}></div>
       )}
     </div>
   );
