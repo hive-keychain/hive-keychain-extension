@@ -82,6 +82,7 @@ const AddByAuth = ({
         type={InputType.TEXT}
         onEnterPress={submitForm}
       />
+      <div className="fill-space"></div>
       <ButtonComponent
         dataTestId="submit-button"
         label={'popup_html_submit'}

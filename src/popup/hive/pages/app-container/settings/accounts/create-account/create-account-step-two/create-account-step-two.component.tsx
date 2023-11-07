@@ -8,7 +8,9 @@ import {
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import {
@@ -342,6 +344,7 @@ const CreateAccountStepTwo = ({
             <ButtonComponent
               label="html_popup_copy"
               onClick={() => copyAllKeys()}
+              type={ButtonType.ALTERNATIVE}
             />
             <ButtonComponent
               label="html_popup_create"

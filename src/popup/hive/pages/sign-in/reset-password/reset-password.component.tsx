@@ -42,6 +42,8 @@ const ResetPasswordPage = ({
           }}></p>
       </div>
 
+      <div className="fill-space"></div>
+
       <ButtonComponent
         dataTestId="reset-password-confirm-button"
         label="popup_html_confirm"

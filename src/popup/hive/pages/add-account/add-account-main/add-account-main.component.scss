@@ -2,15 +2,14 @@
   display: flex;
   flex-direction: column;
   row-gap: 32px;
-  padding: 0px 24px;
   .caption {
-    color: var(--main-font-color);
-    @include poppins400(12px);
+    @include caption();
   }
 
   .button-container {
     display: flex;
     flex-direction: column;
     row-gap: 12px;
+    padding: 0 24px;
   }
 }

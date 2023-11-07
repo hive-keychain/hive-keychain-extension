@@ -6,6 +6,9 @@
 
   .caption {
     @include caption();
+    a {
+      color: $red;
+    }
   }
 
   .form-container {

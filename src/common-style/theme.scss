@@ -23,9 +23,9 @@ $dark: (
   --wallet-card-border: $blue-border,
   --wallet-card-darker-border: $blue-border,
   --wallet-card-opened-border: $blue-border,
-  --wallet-icon-border-color: white,
-  --wallet-icon-color: white,
-  --wallet-icon-secondary-color: white,
+  --wallet-icon-border-color: $red,
+  --wallet-icon-color: $red,
+  --wallet-icon-secondary-color: $red,
   --wallet-item-icon-background: #e313371a,
   --wallet-history-icon-color: $red,
   //top bar
@@ -75,6 +75,8 @@ $dark: (
   --swap-history-button-background: $darker-blue,
   --swap-history-button-border-color: $blue-border,
   --swap-item-icon-background: #e313371a,
+  // Create account
+  --create-account-price-color: lightgrey,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -153,6 +155,8 @@ $light: (
   --swap-history-button-border-color: $light-grey-border,
   --swap-history-button-background: white,
   --swap-item-icon-background: #e313371a,
+  // Create account
+  --create-account-price-color: $dark-blue,
 );
 
 @mixin spread-map($map: ()) {
