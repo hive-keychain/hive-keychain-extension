@@ -29,7 +29,8 @@ const RequestResponse = ({ data }: Props) => {
       {data.msg.message.split(/<br\s?\/?>/g).map((msg) => (
         <p style={{ wordBreak: 'break-word' }}>{msg}</p>
       ))}
-      {/* {data.msg.data.type === KeychainRequestTypes.swap && (
+      {
+        /* {data.msg.data.type === KeychainRequestTypes.swap && (
         <ButtonComponent
           label={'html_popup_token_swaps_history'}
           additionalClass="almost-bottom"
@@ -38,8 +39,9 @@ const RequestResponse = ({ data }: Props) => {
             window.close();
           }}
         />
-      )} */}{' '}
-      //TODO: Show history directly
+      )} */
+        //TODO: Show history directly
+      }
       <ButtonComponent
         label={'dialog_ok'}
         fixToBottom
