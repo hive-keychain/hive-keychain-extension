@@ -181,7 +181,6 @@ const Home = ({
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const scrolled = event.currentTarget.scrollTop;
-
     if (scrolled > scrollTop) {
       setShowBottomBar(false);
     } else {
@@ -190,8 +189,8 @@ const Home = ({
     setScrollTop(scrolled);
 
     if (
-      event.currentTarget.scrollHeight - event.currentTarget.scrollTop ===
-      event.currentTarget.clientHeight
+      event.currentTarget.clientHeight + event.currentTarget.scrollTop + 1 >
+      event.currentTarget.scrollHeight
     ) {
       setShowBottomBar(true);
     }
