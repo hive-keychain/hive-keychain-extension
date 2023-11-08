@@ -3637,5 +3637,9 @@
   "popup_html_pending_savings_withdrawal": {
     "message": "Withdrawing $1 $2",
     "description": "Savings"
+  },
+  "popup_html_favorite_user_nickname": {
+    "message": "Nickname",
+    "description": "Favorite user nickname"
   }
 }

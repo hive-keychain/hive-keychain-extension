@@ -89,6 +89,9 @@ const FavoriteAccountsItem = ({
               className="edit-label"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
+              placeholder={chrome.i18n.getMessage(
+                'popup_html_favorite_user_nickname',
+              )}
             />
 
             <SVGIcon
