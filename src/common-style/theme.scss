@@ -18,6 +18,7 @@ $dark: (
   --buy-card-background: $dark-blue,
   --buy-card-border: $blue-border,
   --buy-card-hovered-shadow: $black-shadow,
+  --buy-logo-font-color: white,
   //wallet
   --wallet-card-background: $darker-blue,
   --wallet-card-border: $blue-border,
@@ -98,6 +99,7 @@ $light: (
   --buy-card-background: white,
   --buy-card-border: $dark-grey-border,
   --buy-card-hovered-shadow: $white-shadow,
+  --buy-logo-font-color: black,
   // wallet
   --wallet-card-background: white,
   --wallet-card-border: $light-grey-border,

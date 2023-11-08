@@ -5,7 +5,7 @@
     <path fill="url(#b)" d="M67 14h72v21H67z"/>
   </mask>
   <g mask="url(#c)">
-    <path fill="#fff" d="M67 15h72v20H67z"/>
+    <path fill="var(--buy-logo-font-color)" d="M67 15h72v20H67z"/>
   </g>
   <defs>
     <pattern id="a" width="1" height="1" patternContentUnits="objectBoundingBox">

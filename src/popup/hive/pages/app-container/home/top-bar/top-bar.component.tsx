@@ -1,3 +1,4 @@
+import { sleep } from '@hiveio/dhive/lib/utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -72,6 +73,7 @@ const TopBar = ({
         activeAccount.account.reward_vesting_balance,
         activeAccount.keys.posting!,
       );
+      await sleep(3000);
       refreshActiveAccount();
       if (claimSuccessful) {
         const rewardHp =

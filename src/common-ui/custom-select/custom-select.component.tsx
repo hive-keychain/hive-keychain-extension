@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -33,6 +33,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
 
   const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    setFilteredOptions(filter(query));
+  }, [query]);
 
   const filter = (query: string) => {
     return itemProps.options.filter(

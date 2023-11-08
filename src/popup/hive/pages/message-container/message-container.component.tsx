@@ -1,14 +1,19 @@
 import { MessageType } from '@reference-data/message-type.enum';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { resetMessage } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
 
+const DEFAULT_TIMEOUT = 3000;
+
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
+  useEffect(() => {
+    setTimeout(() => close(), DEFAULT_TIMEOUT);
+  }, []);
+
   const close = () => {
     resetMessage();
   };

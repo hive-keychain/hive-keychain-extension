@@ -535,6 +535,7 @@ const TokenSwaps = ({
                       />
                     )}
                     <CustomTooltip
+                      color="grey"
                       message={getTokenUSDPrice(
                         estimateValue,
                         endToken?.value.symbol,

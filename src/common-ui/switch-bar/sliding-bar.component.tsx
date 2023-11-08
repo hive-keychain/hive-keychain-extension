@@ -9,9 +9,7 @@ interface SlidingBarValue {
 interface SlidingBarProps {
   onChange: (value: any) => void;
   selectedValue: any;
-
   values: SlidingBarValue[];
-
   hint?: string;
   skipHintTranslation?: boolean;
   dataTestId?: string;
@@ -43,7 +41,7 @@ export const SlidingBarComponent = (props: SlidingBarProps) => {
               }}
             />
             <label className="tab" htmlFor={`radio-${index}`}>
-              {props.skipHintTranslation
+              {v.skipLabelTranslation
                 ? v.label
                 : chrome.i18n.getMessage(v.label)}
             </label>
