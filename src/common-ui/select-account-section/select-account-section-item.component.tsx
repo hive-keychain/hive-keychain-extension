@@ -27,10 +27,11 @@ export const SelectAccountSectionItemComponent = ({
 }: AccountItemProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
 
-  const copyUsernameToClipboard = (event: SyntheticEvent) => {
+  const copyUsernameToClipboard = async (event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    navigator.clipboard.writeText(item.value);
+    await navigator.clipboard.writeText(item.value);
+    closeDropdown();
     if (setInfoMessage) {
       setInfoMessage('popup_html_text_copied', [item.value]);
     }
