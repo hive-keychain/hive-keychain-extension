@@ -16,11 +16,7 @@
 
     .more {
       @include icon-size(18px);
-    }
-
-    .more.opened {
-      padding-right: unset;
-      transform: rotate(180deg);
+      @include open-close-rotate();
     }
   }
 

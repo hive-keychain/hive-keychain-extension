@@ -101,7 +101,7 @@ const ProposalItem = ({
         </div>
         <SVGIcon
           dataTestId={`proposal-item-icon-expandable-${proposal.creator}`}
-          className={`more ${isExpandablePanelOpened ? 'opened' : 'closed'}`}
+          className={`more ${isExpandablePanelOpened ? 'open' : 'closed'}`}
           icon={NewIcons.GOVERNANCE_PROPOSAL_EXPAND_COLLAPSE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
         />
