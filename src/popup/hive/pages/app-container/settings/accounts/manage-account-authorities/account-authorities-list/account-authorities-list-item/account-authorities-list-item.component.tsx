@@ -51,7 +51,10 @@ const AccountAuthoritiesListItem = ({
       ),
       fields: [
         { label: 'popup_html_username', value: `@${authorizedAccountName}` },
-        { label: 'popup_html_role', value: `${role}` },
+        {
+          label: 'popup_html_role',
+          value: chrome.i18n.getMessage(`popup_html_authority_${role}`),
+        },
       ],
       title: 'popup_html_remove_account_authority',
       afterConfirmAction: async () => {

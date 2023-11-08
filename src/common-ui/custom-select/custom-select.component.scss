@@ -11,7 +11,7 @@
     border-radius: 66px !important;
 
     .selected-item {
-      @include poppins500(14px);
+      @include poppins500(15px);
       user-select: none;
       color: var(--main-font-color);
     }
@@ -39,6 +39,7 @@
           height: 40px;
           width: 40px;
           border-radius: 50%;
+          margin-left: 12px;
         }
       }
     }
@@ -61,6 +62,7 @@
       top: 60px;
       background-color: var(--input-background);
       border-radius: 16px;
+      @include poppins500(14px);
       .custom-select-dropdown {
         .filter-input {
           border: unset !important;
@@ -68,6 +70,7 @@
           border-bottom: 1px solid var(--input-border);
           padding: 6px;
           input {
+            @include poppins500(14px);
             font-size: 14px;
           }
         }
