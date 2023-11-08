@@ -49,7 +49,8 @@ const ClearAllData = ({
         <ButtonComponent
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
-          onClick={goBack}></ButtonComponent>
+          onClick={goBack}
+          type={ButtonType.ALTERNATIVE}></ButtonComponent>
         <ButtonComponent
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
