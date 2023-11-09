@@ -3641,5 +3641,13 @@
   "popup_html_favorite_user_nickname": {
     "message": "Nickname",
     "description": "Favorite user nickname"
+  },
+  "dialog_import_file_chose_file": {
+    "message": "Choose a file",
+    "description": "Import file button title"
+  },
+  "dialog_import_file_chose_another_file": {
+    "message": "Choose another file",
+    "description": "Import file button title"
   }
 }

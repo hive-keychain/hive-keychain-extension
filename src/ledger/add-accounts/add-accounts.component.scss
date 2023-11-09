@@ -27,20 +27,7 @@ html {
         font-size: 16px;
         position: relative;
 
-        .title-panel {
-          display: flex;
-          column-gap: 16px;
-          height: 48px;
-          padding: 16px 24px;
-          align-items: center;
-          .title {
-            color: var(--main-font-color);
-            @include poppins500(20px);
-          }
-          .svg-icon {
-            @include icon-size(50px);
-          }
-        }
+        @include dialogs-title-panel();
 
         .caption {
           @include caption();

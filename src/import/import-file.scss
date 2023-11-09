@@ -33,6 +33,11 @@ html {
         row-gap: 24px;
         font-size: 16px;
 
+        @include dialogs-title-panel();
+        .caption {
+          @include caption();
+        }
+
         .feedback {
           a {
             color: $red;
@@ -43,10 +48,17 @@ html {
           display: flex;
           flex-direction: column;
           row-gap: 16px;
+          flex: 1;
 
           .file-input {
             visibility: hidden;
           }
+        }
+        .button-panel {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          column-gap: 8px;
         }
       }
     }

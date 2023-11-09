@@ -31,8 +31,8 @@ const importSettings = async () => {
     const win: chrome.windows.CreateData = {
       url: chrome.runtime.getURL('import-preferences.html'),
       type: 'popup',
-      height: 566,
-      width: 350,
+      height: 600,
+      width: 435,
       left: currentWindow.width! - 350 + currentWindow.left!,
       top: currentWindow.top,
     };

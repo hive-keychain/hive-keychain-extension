@@ -37,18 +37,7 @@ html {
         @include background-top;
         color: var(--main-font-color);
 
-        .title-panel {
-          display: flex;
-          align-items: center;
-          .svg-icon {
-            @include icon-size(50px);
-          }
-          .title {
-            font-size: 24px;
-            color: white;
-            margin-left: 8px;
-          }
-        }
+        @include dialogs-title-panel();
 
         .link-device {
           display: flex;

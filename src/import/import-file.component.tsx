@@ -103,13 +103,6 @@ const ImportFile = ({
           __html: chrome.i18n.getMessage(text),
         }}></div>
       <div className="upload-panel">
-        <ButtonComponent
-          type={ButtonType.IMPORTANT}
-          label="Choose a file"
-          onClick={handleOpenFileInput}
-          skipLabelTranslation={true}
-          height="small"></ButtonComponent>
-
         {selectedFile && selectedFile.name && (
           <InputComponent
             type={InputType.TEXT}
@@ -126,23 +119,34 @@ const ImportFile = ({
           className="file-input"
           onChange={handleFileUpload}
         />
+        {feedback && (
+          <div
+            className="feedback"
+            dangerouslySetInnerHTML={{
+              __html: chrome.i18n.getMessage(feedback.message, feedback.params),
+            }}></div>
+        )}
       </div>
 
-      {selectedFile && (
+      <div className="button-panel">
         <ButtonComponent
-          onClick={importKeysFromFile}
-          label="popup_html_import"
-          type={ButtonType.IMPORTANT}
+          type={!selectedFile ? ButtonType.IMPORTANT : ButtonType.ALTERNATIVE}
+          label={
+            !selectedFile
+              ? 'dialog_import_file_chose_file'
+              : 'dialog_import_file_chose_another_file'
+          }
+          onClick={handleOpenFileInput}
           height="small"></ButtonComponent>
-      )}
 
-      {feedback && (
-        <div
-          className="feedback"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(feedback.message, feedback.params),
-          }}></div>
-      )}
+        {selectedFile && (
+          <ButtonComponent
+            onClick={importKeysFromFile}
+            label="popup_html_import"
+            type={ButtonType.IMPORTANT}
+            height="small"></ButtonComponent>
+        )}
+      </div>
     </div>
   );
 };
