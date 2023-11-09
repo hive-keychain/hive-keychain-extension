@@ -4,7 +4,10 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { RootState } from 'src/popup/hive/store';
@@ -66,39 +69,34 @@ const WrongKeyPopup = ({
   };
 
   return (
-    <div className="wrong-key-popup">
-      <div className="overlay"></div>
-      <div className="wrong-key-popup-container">
-        <div className="title">
-          {chrome.i18n.getMessage('html_popup_wrong_key_title', [
-            wrongKeysFound.length !== 1 ? 's' : '',
-          ])}
-        </div>
-        <div
-          className="introduction"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
-              'html_popup_wrong_key_introduction',
-              [
-                accountFound,
-                wrongKeysFound.join(', '),
-                wrongKeysFound.length !== 1 ? 's' : '',
-                wrongKeysFound.length !== 1 ? 's' : '',
-              ],
-            ),
-          }}></div>
-        <div className="buttons-container fix-to-bottom">
-          <ButtonComponent
-            label="popup_html_wrong_key_popup_replace"
-            onClick={loadAccountGotoManage}
-          />
-          <ButtonComponent
-            label="popup_html_wrong_key_popup_do_nothing"
-            onClick={skipKeyCheckOnAccount}
-          />
-        </div>
+    <PopupContainer className="wrong-key-popup">
+      <div className="popup-title">
+        {chrome.i18n.getMessage('html_popup_wrong_key_title', [
+          wrongKeysFound.length !== 1 ? 's' : '',
+        ])}
       </div>
-    </div>
+      <div
+        className="caption"
+        dangerouslySetInnerHTML={{
+          __html: chrome.i18n.getMessage('html_popup_wrong_key_introduction', [
+            accountFound,
+            wrongKeysFound.join(', '),
+            wrongKeysFound.length !== 1 ? 's' : '',
+            wrongKeysFound.length !== 1 ? 's' : '',
+          ]),
+        }}></div>
+      <div className="popup-footer">
+        <ButtonComponent
+          label="popup_html_wrong_key_popup_do_nothing"
+          onClick={skipKeyCheckOnAccount}
+          type={ButtonType.ALTERNATIVE}
+        />
+        <ButtonComponent
+          label="popup_html_wrong_key_popup_replace"
+          onClick={loadAccountGotoManage}
+        />
+      </div>
+    </PopupContainer>
   );
 };
 

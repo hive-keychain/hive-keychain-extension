@@ -38,7 +38,6 @@ import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SelectOption } from 'src/common-ui/select/custom-select.component';
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
@@ -197,7 +196,7 @@ const TokenSwaps = ({
         imgBackup,
       };
     });
-    let endList: SelectOption[] = [
+    let endList: OptionItem[] = [
       {
         value: { symbol: BaseCurrencies.HIVE.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HIVE.toUpperCase(),
@@ -238,8 +237,8 @@ const TokenSwaps = ({
 
   const calculateEstimate = async (
     amount: string,
-    startToken: SelectOption,
-    endToken: SelectOption,
+    startToken: OptionItem,
+    endToken: OptionItem,
     swapConfig: SwapConfig,
   ) => {
     if (startToken === endToken) {

@@ -1,0 +1,49 @@
+.popup-container {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+
+  .overlay {
+    height: 100%;
+    width: 100%;
+    opacity: 0.8;
+    background: $dark-blue;
+    position: fixed;
+    margin: -36px;
+  }
+  .popup-content {
+    z-index: 3;
+    @include small-card();
+    flex-direction: column;
+    row-gap: 24px;
+
+    .popup-title {
+      @include poppins500(20px);
+      color: var(--main-font-color);
+    }
+
+    .caption {
+      @include caption();
+    }
+
+    .popup-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      column-gap: 8px;
+      flex: 1;
+      width: 100%;
+
+      .submit-button.alternative {
+        background: var(--popup-alternative-button-color) !important;
+        border-color: var(--popup-alternative-button-border-color);
+      }
+    }
+  }
+}
