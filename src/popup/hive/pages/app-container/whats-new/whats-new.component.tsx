@@ -79,7 +79,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   else
     return (
       <PopupContainer data-testid="whats-new-popup" className="whats-new">
-        <div className="whats-new-title">
+        <div className="popup-title">
           {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
         </div>
         {images && (
@@ -111,11 +111,10 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             ))}
           </Carousel>
         )}
-
-        <div className="button-panel">
+        <div className="popup-footer">
           {pageIndex > 0 && (
             <ButtonComponent
-              type={ButtonType.IMPORTANT}
+              type={ButtonType.ALTERNATIVE}
               label="popup_html_whats_new_previous"
               onClick={() => previous()}
             />
@@ -131,7 +130,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
           {pageIndex < content.features[locale].length - 1 && (
             <ButtonComponent
               dataTestId="button-next-page"
-              type={ButtonType.IMPORTANT}
+              type={ButtonType.ALTERNATIVE}
               label="popup_html_whats_new_next"
               onClick={() => next()}
             />

@@ -99,6 +99,12 @@ const Home = ({
       .version.split('.')
       .splice(0, 2)
       .join('.');
+
+    // TODO to remove
+    console.log('ici');
+    setWhatsNewContent(versionLog);
+    setDisplayWhatsNew(true);
+
     if (
       extensionVersion !== lastVersionSeen &&
       versionLog?.version === extensionVersion

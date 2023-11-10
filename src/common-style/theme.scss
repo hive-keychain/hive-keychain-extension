@@ -81,6 +81,8 @@ $dark: (
   --swap-item-icon-background: #e313371a,
   // Create account
   --create-account-price-color: lightgrey,
+  // What's new
+  --carousel-dot-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -164,6 +166,8 @@ $light: (
   --swap-item-icon-background: #e313371a,
   // Create account
   --create-account-price-color: $dark-blue,
+  // What's new
+  --carousel-dot-color: lightgrey,
 );
 
 @mixin spread-map($map: ()) {
