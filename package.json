@@ -49,7 +49,7 @@
     "@hiveio/hive-js": "2.0.4",
     "@ledgerhq/hw-transport": "6.28.8",
     "@ledgerhq/hw-transport-webusb": "^6.27.19",
-    "axios": "0.25.0",
+    "axios": "1.6.0",
     "crypto-js": "4.1.1",
     "flatlist-react": "1.5.0",
     "hive-keychain-commons": "^1.2.2",
