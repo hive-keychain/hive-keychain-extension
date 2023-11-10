@@ -11,6 +11,7 @@ export const anonymous_requests = [
   KeychainRequestTypes.custom,
   KeychainRequestTypes.signBuffer,
   KeychainRequestTypes.recurrentTransfer,
+  KeychainRequestTypes.swap,
 ];
 
 // Get the key needed for each type of transaction
