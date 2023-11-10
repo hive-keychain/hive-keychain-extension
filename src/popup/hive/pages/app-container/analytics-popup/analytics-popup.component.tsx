@@ -3,6 +3,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -38,35 +39,32 @@ const AnalyticsPopup = ({
   };
 
   return (
-    <div
-      data-testid="analytics-popup"
-      className={`analytics-popup 
-        `}>
-      <div className="overlay"></div>
-      <div className="popup-container">
-        <div className="why-analytics">
-          {chrome.i18n.getMessage('popup_html_analytics_title')}
-        </div>
-        <div className="text">
-          {chrome.i18n.getMessage('popup_html_analytics_message')}
-        </div>
-        <CheckboxComponent
-          onChange={() => setAccepted(!accepted)}
-          checked={accepted}
-          title="popup_html_analytics_accept_to_share"
-        />
-        <div className="pp">
-          {chrome.i18n.getMessage('popup_html_analytics_privacy_policy_text') +
-            ' '}
-          <a href="https://hive-keychain.com/#/privacy" target="__blank">
-            {chrome.i18n.getMessage('popup_html_analytics_privacy_policy')}
-          </a>
-        </div>
-        <div className="buttons-panel">
-          <ButtonComponent onClick={save} label={'popup_html_analytics_save'} />
-        </div>
+    <PopupContainer className={`analytics-popup`}>
+      <div className="popup-title">
+        {chrome.i18n.getMessage('popup_html_analytics_title')}
       </div>
-    </div>
+      <div className="caption">
+        {chrome.i18n.getMessage('popup_html_analytics_message')}
+      </div>
+      <CheckboxComponent
+        onChange={() => setAccepted(!accepted)}
+        checked={accepted}
+        title="popup_html_analytics_accept_to_share"
+      />
+      <div className="pp">
+        {chrome.i18n.getMessage('popup_html_analytics_privacy_policy_text') +
+          ' '}
+        <a
+          className="privacy-policy-link"
+          href="https://hive-keychain.com/#/privacy"
+          target="__blank">
+          {chrome.i18n.getMessage('popup_html_analytics_privacy_policy')}
+        </a>
+      </div>
+      <div className="popup-footer">
+        <ButtonComponent onClick={save} label={'popup_html_analytics_save'} />
+      </div>
+    </PopupContainer>
   );
 };
 
