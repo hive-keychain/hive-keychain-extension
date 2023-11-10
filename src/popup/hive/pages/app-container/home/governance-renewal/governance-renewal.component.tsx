@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -73,36 +74,35 @@ const GovernanceRenewal = ({
   };
 
   return (
-    <div className={`governance-renewal ${forceHide ? 'force-hide' : ''}`}>
-      <div className="overlay"></div>
-      <div className="governance-renewal-container">
-        <div className="title">
-          {chrome.i18n.getMessage('html_popup_governance_renewal_title')}
+    <PopupContainer
+      className={`governance-renewal ${forceHide ? 'force-hide' : ''}`}>
+      <div className="popup-title">
+        {chrome.i18n.getMessage('html_popup_governance_renewal_title')}
+      </div>
+      <div
+        className="caption"
+        dangerouslySetInnerHTML={{
+          __html: chrome.i18n.getMessage(
+            'html_popup_governance_renewal_introduction',
+          ),
+        }}></div>
+      {selectedAccounts && (
+        <div className="list">
+          {accountNames.map((name) => (
+            <CheckboxComponent
+              key={name}
+              checked={selectedAccounts[name]}
+              onChange={() => toggleAccount(name)}
+              title={`@${name}`}
+              skipTranslation
+            />
+          ))}
         </div>
-        <div
-          className="introduction"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
-              'html_popup_governance_renewal_introduction',
-            ),
-          }}></div>
-        {selectedAccounts && (
-          <div className="list">
-            {accountNames.map((name) => (
-              <CheckboxComponent
-                key={name}
-                checked={selectedAccounts[name]}
-                onChange={() => toggleAccount(name)}
-                title={`@${name}`}
-                skipTranslation
-              />
-            ))}
-          </div>
-        )}
-        <a className="read-more-link" onClick={() => navigateToArticle()}>
-          {chrome.i18n.getMessage('html_popup_governance_expiration_read_more')}
-        </a>
-
+      )}
+      <a className="read-more-link" onClick={() => navigateToArticle()}>
+        {chrome.i18n.getMessage('html_popup_governance_expiration_read_more')}
+      </a>
+      <div className="popup-footer">
         <ButtonComponent
           label={
             hasAccountsSelected
@@ -112,7 +112,7 @@ const GovernanceRenewal = ({
           onClick={() => handleSubmitButton()}
         />
       </div>
-    </div>
+    </PopupContainer>
   );
 };
 

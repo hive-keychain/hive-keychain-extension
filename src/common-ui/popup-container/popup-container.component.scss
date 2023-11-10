@@ -30,6 +30,7 @@
 
     .caption {
       @include caption();
+      padding: 0 24px;
     }
 
     .popup-footer {
