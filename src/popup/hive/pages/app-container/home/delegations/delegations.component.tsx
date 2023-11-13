@@ -77,7 +77,6 @@ const Delegations = ({
       currency: currencyLabels.hp,
     },
     resolver: (values, context, options) => {
-      console.log(values);
       const resolver = joiResolver<Joi.ObjectSchema<DelegationForm>>(rules, {
         context: { maxAmount: available },
         errors: { render: true },
