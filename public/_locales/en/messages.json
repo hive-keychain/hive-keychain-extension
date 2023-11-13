@@ -3649,5 +3649,9 @@
   "dialog_import_file_chose_another_file": {
     "message": "Choose another file",
     "description": "Import file button title"
+  },
+  "html_popup_sign_up_need_accept_pp": {
+    "message": "You need to accept the terms and condition and privacy policies before continuing",
+    "description": "Need to accept pp on sign up page"
   }
 }

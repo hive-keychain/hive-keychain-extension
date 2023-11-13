@@ -32,6 +32,10 @@ const SignUp = ({
   }, []);
 
   const submitMk = (): any => {
+    if (!accepted) {
+      setErrorMessage('html_popup_sign_up_need_accept_pp');
+      return;
+    }
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
         setMk(newPassword, true);
