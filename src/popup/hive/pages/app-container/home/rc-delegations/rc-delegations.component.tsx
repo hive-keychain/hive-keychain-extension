@@ -80,10 +80,14 @@ const RCDelegations = ({
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<DelegationForm>>(rules, {
-        context: { maxAmount: available },
+        context: { maxAmount: parseFloat(available?.gigaRcValue!) },
         errors: { render: true },
       });
-      return resolver(values, { maxAmount: available }, options);
+      return resolver(
+        values,
+        { maxAmount: parseFloat(available?.gigaRcValue!) },
+        options,
+      );
     },
   });
 
