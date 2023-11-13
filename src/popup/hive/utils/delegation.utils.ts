@@ -12,8 +12,10 @@ const getDelegators = async (name: string) => {
     `hive/delegators/${name}`,
   )) as Delegator[];
   return delegators
-    .filter((e) => e.vesting_shares !== 0)
-    .sort((a, b) => b.vesting_shares - a.vesting_shares);
+    ? delegators
+        .filter((e) => e.vesting_shares !== 0)
+        .sort((a, b) => b.vesting_shares - a.vesting_shares)
+    : null;
 };
 
 const getDelegatees = async (name: string) => {

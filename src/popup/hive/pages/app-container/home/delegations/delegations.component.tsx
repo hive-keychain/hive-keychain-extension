@@ -69,6 +69,7 @@ const Delegations = ({
   setTitleContainerProperties,
   loadPendingOutgoingUndelegations,
 }: PropsFromRedux) => {
+  const [available, setAvailable] = useState<number>();
   const { control, handleSubmit, setValue, watch } = useForm<DelegationForm>({
     defaultValues: {
       username: formParams.username ? formParams.username : activeAccount.name,
@@ -76,6 +77,7 @@ const Delegations = ({
       currency: currencyLabels.hp,
     },
     resolver: (values, context, options) => {
+      console.log(values);
       const resolver = joiResolver<Joi.ObjectSchema<DelegationForm>>(rules, {
         context: { maxAmount: available },
         errors: { render: true },
@@ -83,8 +85,6 @@ const Delegations = ({
       return resolver(values, { maxAmount: available }, options);
     },
   });
-
-  const [available, setAvailable] = useState<string | number>('...');
 
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
   const [totalOutgoing, setTotalOutgoing] = useState<string | number>('...');
@@ -181,7 +181,7 @@ const Delegations = ({
   }, [delegations]);
 
   const setToMax = () => {
-    setValue('amount', Number(available));
+    setValue('amount', available!);
   };
 
   const goToIncomings = () => {
@@ -199,7 +199,9 @@ const Delegations = ({
   };
 
   const handleButtonClick = (form: DelegationForm) => {
-    if (parseFloat(form.amount.toString()) > parseFloat(available.toString())) {
+    if (
+      parseFloat(form.amount.toString()) > parseFloat(available!.toString())
+    ) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
@@ -327,7 +329,7 @@ const Delegations = ({
           {chrome.i18n.getMessage('popup_html_available')}
         </div>
         <div className="value">
-          {FormatUtils.formatCurrencyValue(available)} {currencyLabels.hp}
+          {FormatUtils.formatCurrencyValue(available!)} {currencyLabels.hp}
         </div>
       </div>
 
@@ -338,7 +340,7 @@ const Delegations = ({
         <Separator type="horizontal" />
         <div className="form-fields">
           <FormInputComponent
-            name="receiverUsername"
+            name="username"
             control={control}
             dataTestId="input-username"
             type={InputType.TEXT}
@@ -378,7 +380,7 @@ const Delegations = ({
               ? 'popup_html_cancel_delegation'
               : 'popup_html_delegate_to_user'
           }
-          onClick={() => handleSubmit(handleButtonClick)}
+          onClick={handleSubmit(handleButtonClick)}
           requiredKey={KeychainKeyTypesLC.active}
         />
       </FormContainer>

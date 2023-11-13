@@ -9,9 +9,15 @@ export const loadDelegators =
   (username: string): AppThunk =>
   async (dispatch) => {
     try {
+      const delegators = await DelegationUtils.getDelegators(username);
+      if (!delegators) {
+        dispatch(
+          setErrorMessage('popup_html_error_retrieving_incoming_delegations'),
+        );
+      }
       const action: ActionPayload<DelegationsPayload> = {
         type: ActionType.FETCH_DELEGATORS,
-        payload: { incoming: await DelegationUtils.getDelegators(username) },
+        payload: { incoming: delegators },
       };
       dispatch(action);
     } catch (e) {
