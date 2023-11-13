@@ -1,5 +1,6 @@
 import { Currency } from '@interfaces/bittrex.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { TokenOperationType } from '@popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -7,7 +8,6 @@ import Icon from 'src/common-ui/icon/icon.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { RootState } from 'src/popup/hive/store';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';

@@ -1,13 +1,17 @@
+import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -31,6 +35,19 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
+
+interface TokenTransferForm {
+  receiverUsername: string;
+  symbol: string;
+  amount: number;
+  memo: string;
+}
+
+const tokenOperationRules = FormUtils.createRules<TokenTransferForm>({
+  receiverUsername: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$balance')),
+});
 
 const TokensTransfer = ({
   activeAccount,
@@ -48,19 +65,32 @@ const TokensTransfer = ({
   removeFromLoadingList,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [receiverUsername, setReceiverUsername] = useState(
-    formParams.receiverUsername ? formParams.receiverUsername : '',
-  );
-  const [amount, setAmount] = useState(
-    formParams.amount ? formParams.amount : '',
+  const [balance, setBalance] = useState<number>(
+    formParams.balance
+      ? parseFloat(formParams.balance)
+      : parseFloat(tokenBalance.balance),
   );
 
-  const balance = formParams.balance
-    ? formParams.balance
-    : tokenBalance.balance;
-  const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
+  const { control, handleSubmit, setValue, watch } = useForm<TokenTransferForm>(
+    {
+      defaultValues: {
+        receiverUsername: formParams.receiverUsername
+          ? formParams.receiverUsername
+          : '',
+        amount: formParams.amount ? formParams.amount : '',
+        symbol: formParams.symbol ? formParams.symbol : tokenBalance.symbol,
+        memo: formParams.memo ? formParams.memo : '',
+      },
+      resolver: (values, context, options) => {
+        const resolver = joiResolver<Joi.ObjectSchema<TokenTransferForm>>(
+          tokenOperationRules,
+          { context: { balance: balance }, errors: { render: true } }, //TODO set render to false
+        );
+        return resolver(values, { balance: balance }, options);
+      },
+    },
+  );
 
-  const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
     useState<AutoCompleteValues>({ categories: [] });
 
@@ -83,51 +113,47 @@ const TokensTransfer = ({
   };
 
   const setAmountToMaxValue = () => {
-    setAmount(balance.toString());
+    setValue('amount', parseFloat(balance.toString()));
   };
 
   const getFormParams = () => {
-    return {
-      receiverUsername: receiverUsername,
-      amount: amount,
-      symbol: symbol,
-      balance: balance,
-      memo: memo,
-    };
+    return control;
   };
 
-  const handleClickOnSend = async () => {
+  const handleClickOnSend = async (form: TokenTransferForm) => {
     if (
-      String(receiverUsername).trim().length === 0 ||
-      amount.toString().trim().length === 0
+      String(form.receiverUsername).trim().length === 0 ||
+      form.amount.toString().trim().length === 0
     ) {
       setErrorMessage('popup_accounts_fill');
       return;
     }
 
-    if (parseFloat(amount.toString()) < 0) {
+    if (parseFloat(form.amount.toString()) < 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
-    if (parseFloat(amount.toString()) > parseFloat(balance.toString())) {
+    if (parseFloat(form.amount.toString()) > parseFloat(balance.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
 
-    if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
+    if (!(await AccountUtils.doesAccountExist(form.receiverUsername))) {
       setErrorMessage('popup_no_such_account');
       return;
     }
 
-    const formattedAmount = `${parseFloat(amount.toString()).toFixed(
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(
       tokenInfo.precision,
-    )} ${symbol}`;
+    )} ${form.symbol}`;
 
-    let memoField = memo;
-    if (memo.length) {
-      if (memo.startsWith('#')) {
-        memoField = `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`;
+    let memoField = form.memo;
+    if (form.memo.length) {
+      if (form.memo.startsWith('#')) {
+        memoField = `${form.memo} (${chrome.i18n.getMessage(
+          'popup_encrypted',
+        )})`;
         if (!activeAccount.keys.memo) {
           setErrorMessage('popup_html_memo_key_missing');
           return;
@@ -139,20 +165,20 @@ const TokensTransfer = ({
 
     const fields = [
       { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
-      { label: 'popup_html_transfer_to', value: `@${receiverUsername}` },
+      { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
       { label: 'popup_html_transfer_amount', value: formattedAmount },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
     let warningMessage = await TransferUtils.getExchangeValidationWarning(
-      receiverUsername,
-      symbol,
-      memo.length > 0,
+      form.receiverUsername,
+      form.symbol,
+      form.memo.length > 0,
     );
 
-    if (phishing.includes(receiverUsername)) {
+    if (phishing.includes(form.receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        receiverUsername,
+        form.receiverUsername,
       ]);
     }
 
@@ -164,17 +190,17 @@ const TokensTransfer = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         try {
-          let memoParam = memo;
-          if (memo.length) {
-            if (memo.startsWith('#')) {
+          let memoParam = form.memo;
+          if (form.memo.length) {
+            if (form.memo.startsWith('#')) {
               if (!activeAccount.keys.memo) {
                 setErrorMessage('popup_html_memo_key_missing');
                 return;
               } else {
                 memoParam = HiveUtils.encodeMemo(
-                  memo,
+                  form.memo,
                   activeAccount.keys.memo.toString(),
-                  await AccountUtils.getPublicMemo(receiverUsername),
+                  await AccountUtils.getPublicMemo(form.receiverUsername),
                 );
               }
             }
@@ -188,9 +214,9 @@ const TokensTransfer = ({
             ),
           );
           const transactionStatus = await TokensUtils.sendToken(
-            symbol,
-            receiverUsername,
-            amount,
+            form.symbol,
+            form.receiverUsername,
+            form.amount.toString(),
             memoParam,
             activeAccount.keys.active!,
             activeAccount.name!,
@@ -202,12 +228,12 @@ const TokensTransfer = ({
             if (transactionStatus.confirmed) {
               navigateTo(Screen.HOME_PAGE, true);
               await FavoriteUserUtils.saveFavoriteUser(
-                receiverUsername,
+                form.receiverUsername,
                 activeAccount,
               );
 
               setSuccessMessage('popup_html_transfer_successful', [
-                `@${receiverUsername}`,
+                `@${form.receiverUsername}`,
                 formattedAmount,
               ]);
             } else {
@@ -230,51 +256,66 @@ const TokensTransfer = ({
     <div
       data-testid={`${Screen.TOKENS_TRANSFER}-page`}
       className="transfer-tokens-page">
-      <SummaryPanelComponent
-        bottom={balance}
-        bottomRight={symbol}
-        bottomLeft={'popup_html_balance'}></SummaryPanelComponent>
+      <BalanceSectionComponent
+        value={balance}
+        unit={watch('symbol')}
+        label="popup_html_balance"
+      />
 
-      <div className="disclaimer">
+      <div className="caption">
         {chrome.i18n.getMessage('popup_html_tokens_send_text')}
       </div>
-      <InputComponent
-        dataTestId="input-username"
-        type={InputType.TEXT}
-        logo={NewIcons.INPUT_AT}
-        placeholder="popup_html_username"
-        value={receiverUsername}
-        onChange={setReceiverUsername}
-        autocompleteValues={autocompleteFavoriteUsers}
-      />
-      <div className="value-panel">
-        <div className="value-input-panel">
-          <InputComponent
+
+      <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
+        <FormInputComponent
+          control={control}
+          name="receiverUsername"
+          dataTestId="input-username"
+          type={InputType.TEXT}
+          logo={NewIcons.INPUT_AT}
+          placeholder="popup_html_username"
+          label="popup_html_username"
+          autocompleteValues={autocompleteFavoriteUsers}
+        />
+        <div className="value-panel">
+          <FormInputComponent
+            classname="currency-fake-input"
+            dataTestId="currency-input"
+            control={control}
+            name="symbol"
+            type={InputType.TEXT}
+            label="popup_html_currency"
+            disabled
+          />
+          <FormInputComponent
             dataTestId="amount-input"
+            name="amount"
+            control={control}
             type={InputType.NUMBER}
+            min={0}
             placeholder="0.000"
+            label="popup_html_transfer_amount"
             skipPlaceholderTranslation={true}
-            value={amount}
-            onChange={setAmount}
             rightActionClicked={setAmountToMaxValue}
+            rightActionIcon={NewIcons.INPUT_MAX}
           />
         </div>
-        <div className="symbol">{symbol}</div>
-      </div>
 
-      <InputComponent
-        dataTestId="input-memo-optional"
-        type={InputType.TEXT}
-        placeholder="popup_html_memo_optional"
-        value={memo}
-        onChange={setMemo}
-      />
-      <OperationButtonComponent
-        dataTestId="button-send-tokens-transfer"
-        requiredKey={KeychainKeyTypesLC.active}
-        label={'popup_html_send_transfer'}
-        onClick={handleClickOnSend}
-      />
+        <FormInputComponent
+          control={control}
+          name="memo"
+          dataTestId="input-memo-optional"
+          type={InputType.TEXT}
+          placeholder="popup_html_memo_optional"
+          label="popup_html_memo_optional"
+        />
+        <OperationButtonComponent
+          dataTestId="button-send-tokens-transfer"
+          requiredKey={KeychainKeyTypesLC.active}
+          label={'popup_html_send_transfer'}
+          onClick={handleSubmit(handleClickOnSend)}
+        />
+      </FormContainer>
     </div>
   );
 };

@@ -18,6 +18,11 @@
   background-position-y: 15%;
 }
 
+@mixin background-top-0-percent {
+  @include background;
+  background-position-y: 15%;
+}
+
 @mixin pageLayout {
   display: flex;
   flex-direction: column;

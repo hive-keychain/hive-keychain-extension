@@ -1,14 +1,18 @@
+import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
+import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -31,12 +35,24 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FormUtils } from 'src/utils/form.utils';
 
 export enum TokenOperationType {
   STAKE = 'stake',
   UNSTAKE = 'unstake',
   DELEGATE = 'delegate',
 }
+
+interface TokenOperationForm {
+  receiverUsername: string;
+  symbol: string;
+  amount: number;
+}
+
+const tokenOperationRules = FormUtils.createRules<TokenOperationForm>({
+  receiverUsername: Joi.string().required(),
+  amount: Joi.number().required().positive().max(Joi.ref('$balance')),
+});
 
 const TokensOperation = ({
   operationType,
@@ -54,34 +70,26 @@ const TokensOperation = ({
   setTitleContainerProperties,
   goBack,
 }: PropsFromRedux) => {
-  const [receiverUsername, setReceiverUsername] = useState(
-    formParams.receiverUsername
-      ? formParams.receiverUsername
-      : operationType === TokenOperationType.DELEGATE
-      ? ''
-      : activeAccount.name,
-  );
-  const [amount, setAmount] = useState(
-    formParams.amount ? formParams.amount : '',
-  );
-  let balance: number | string;
-  switch (operationType) {
-    case TokenOperationType.UNSTAKE:
-      balance =
-        parseFloat(tokenBalance.stake) -
-        parseFloat(tokenBalance.pendingUnstake);
-      break;
-    case TokenOperationType.STAKE:
-      balance = tokenBalance.balance;
-      break;
-    case TokenOperationType.DELEGATE:
-      balance =
-        parseFloat(tokenBalance.stake) -
-        parseFloat(tokenBalance.pendingUnstake);
-      break;
-  }
-
-  const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
+  const [balance, setBalance] = useState<number>();
+  const { control, handleSubmit, setValue, watch } =
+    useForm<TokenOperationForm>({
+      defaultValues: {
+        receiverUsername: formParams.receiverUsername
+          ? formParams.receiverUsername
+          : operationType === TokenOperationType.DELEGATE
+          ? ''
+          : activeAccount.name,
+        amount: formParams.amount ? formParams.amount : '',
+        symbol: formParams.symbol ? formParams.symbol : tokenBalance.symbol,
+      },
+      resolver: (values, context, options) => {
+        const resolver = joiResolver<Joi.ObjectSchema<TokenOperationForm>>(
+          tokenOperationRules,
+          { context: { balance: balance }, errors: { render: true } }, //TODO set render to false
+        );
+        return resolver(values, { balance: balance }, options);
+      },
+    });
 
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
     useState<AutoCompleteValues>({ categories: [] });
@@ -92,6 +100,23 @@ const TokensOperation = ({
       isBackButtonEnabled: true,
     });
     loadAutocompleteFavoriteUsers();
+    switch (operationType) {
+      case TokenOperationType.UNSTAKE:
+        setBalance(
+          parseFloat(tokenBalance.stake) -
+            parseFloat(tokenBalance.pendingUnstake),
+        );
+        break;
+      case TokenOperationType.STAKE:
+        setBalance(parseFloat(tokenBalance.balance));
+        break;
+      case TokenOperationType.DELEGATE:
+        setBalance(
+          parseFloat(tokenBalance.stake) -
+            parseFloat(tokenBalance.pendingUnstake),
+        );
+        break;
+    }
   }, []);
 
   const loadAutocompleteFavoriteUsers = async () => {
@@ -104,36 +129,31 @@ const TokensOperation = ({
   };
 
   const setAmountToMaxValue = () => {
-    setAmount(parseFloat(balance.toString()));
+    setValue('amount', parseFloat(balance!.toString()));
   };
 
   const getFormParams = () => {
-    return {
-      receiverUsername: receiverUsername,
-      amount: amount.toString(),
-      symbol: symbol,
-      balance: balance,
-    };
+    return control;
   };
 
-  const handleClickOnSend = async () => {
-    if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
+  const handleClickOnSend = async (form: TokenOperationForm) => {
+    if (!(await AccountUtils.doesAccountExist(form.receiverUsername))) {
       setErrorMessage('popup_no_such_account');
       return;
     }
 
-    if (parseFloat(amount.toString()) <= 0) {
+    if (parseFloat(form.amount.toString()) <= 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
-    if (parseFloat(amount.toString()) > parseFloat(balance.toString())) {
+    if (parseFloat(form.amount.toString()) > parseFloat(balance!.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const formattedAmount = `${parseFloat(amount.toString()).toFixed(
-      8,
-    )} ${symbol}`;
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(8)} ${
+      form.symbol
+    }`;
 
     const fields = [
       { label: 'popup_html_transfer_amount', value: formattedAmount },
@@ -142,7 +162,7 @@ const TokensOperation = ({
     if (operationType === TokenOperationType.DELEGATE) {
       fields.unshift({
         label: 'popup_html_transfer_to',
-        value: `@${receiverUsername}`,
+        value: `@${form.receiverUsername}`,
       });
     }
 
@@ -166,26 +186,26 @@ const TokensOperation = ({
           switch (operationType) {
             case TokenOperationType.DELEGATE:
               tokenOperationResult = await TokensUtils.delegateToken(
-                receiverUsername,
-                symbol,
-                amount.toString(),
+                form.receiverUsername,
+                form.symbol,
+                form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
               );
               break;
             case TokenOperationType.STAKE:
               tokenOperationResult = await TokensUtils.stakeToken(
-                receiverUsername,
-                symbol,
-                amount.toString(),
+                form.receiverUsername,
+                form.symbol,
+                form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
               );
               break;
             case TokenOperationType.UNSTAKE:
               tokenOperationResult = await TokensUtils.unstakeToken(
-                symbol,
-                amount.toString(),
+                form.symbol,
+                form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
               );
@@ -198,7 +218,7 @@ const TokensOperation = ({
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(
-                receiverUsername,
+                form.receiverUsername,
                 activeAccount,
               );
               setSuccessMessage(`popup_html_${operationType}_tokens_success`);
@@ -237,11 +257,14 @@ const TokensOperation = ({
     <div
       data-testid={`${Screen.TOKENS_OPERATION}-page`}
       className="transfer-tokens-page">
-      <SummaryPanelComponent
-        bottom={balance}
-        bottomRight={symbol}
-        bottomLeft={'popup_html_balance'}></SummaryPanelComponent>
-      <div className="disclaimer">
+      {balance && (
+        <BalanceSectionComponent
+          value={balance}
+          unit={watch('symbol')}
+          label="popup_html_balance"
+        />
+      )}
+      <div className="caption">
         {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
       </div>
       {operationType === TokenOperationType.UNSTAKE &&
@@ -253,37 +276,51 @@ const TokensOperation = ({
             )}
           </div>
         )}
-      {operationType === TokenOperationType.DELEGATE && (
-        <InputComponent
-          dataTestId="input-username"
-          type={InputType.TEXT}
-          logo={NewIcons.INPUT_AT}
-          placeholder="popup_html_username"
-          value={receiverUsername}
-          onChange={setReceiverUsername}
-          autocompleteValues={autocompleteFavoriteUsers}
-        />
-      )}
-      <div className="value-panel">
-        <div className="value-input-panel">
-          <InputComponent
-            dataTestId="amount-input"
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={amount}
-            onChange={setAmount}
-            rightActionClicked={setAmountToMaxValue}
-          />
+
+      <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
+        <div className="form-fields">
+          {operationType === TokenOperationType.DELEGATE && (
+            <FormInputComponent
+              control={control}
+              name="receiverUsername"
+              dataTestId="input-username"
+              type={InputType.TEXT}
+              logo={NewIcons.INPUT_AT}
+              placeholder="popup_html_username"
+              autocompleteValues={autocompleteFavoriteUsers}
+            />
+          )}
+          <div className="value-panel">
+            <FormInputComponent
+              classname="currency-fake-input"
+              dataTestId="currency-input"
+              control={control}
+              name="symbol"
+              type={InputType.TEXT}
+              label="popup_html_currency"
+              disabled
+            />
+            <FormInputComponent
+              dataTestId="amount-input"
+              name="amount"
+              control={control}
+              type={InputType.NUMBER}
+              min={0}
+              placeholder="0.000"
+              label="popup_html_transfer_amount"
+              skipPlaceholderTranslation={true}
+              rightActionClicked={setAmountToMaxValue}
+              rightActionIcon={NewIcons.INPUT_MAX}
+            />
+          </div>
         </div>
-        <div className="symbol">{symbol}</div>
-      </div>
-      <OperationButtonComponent
-        dataTestId={`token-button-operation-${operationType}`}
-        requiredKey={KeychainKeyTypesLC.active}
-        label={getSubmitButtonLabel()}
-        onClick={handleClickOnSend}
-      />
+        <OperationButtonComponent
+          dataTestId={`token-button-operation-${operationType}`}
+          requiredKey={KeychainKeyTypesLC.active}
+          label={getSubmitButtonLabel()}
+          onClick={handleSubmit(handleClickOnSend)}
+        />
+      </FormContainer>
     </div>
   );
 };

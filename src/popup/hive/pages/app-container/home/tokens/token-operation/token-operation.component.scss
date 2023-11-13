@@ -1,5 +1,18 @@
 .transfer-tokens-page {
+  @include background-top-0-percent();
+  @include pageLayoutRowGap();
+  row-gap: 10px;
+  .caption {
+    @include caption();
+  }
   .cooldown-message {
-    font-size: 18px;
+    @include caption();
+  }
+
+  .value-panel {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+    justify-content: center;
   }
 }

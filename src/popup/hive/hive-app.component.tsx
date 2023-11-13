@@ -321,7 +321,7 @@ const HiveApp = ({
   );
 };
 
-export const mapStateToProps = (state: RootState) => {
+const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],

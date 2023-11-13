@@ -1,5 +1,6 @@
 import Joi, { PartialSchemaMap } from 'joi';
 import { FieldError } from 'react-hook-form';
+import Logger from 'src/utils/logger.utils';
 
 const FormValidationError: Record<string, string> = {
   ['string.empty']: 'validation_error_mandatory',
@@ -10,6 +11,7 @@ const FormValidationError: Record<string, string> = {
 };
 
 const parseJoiError = (error: FieldError) => {
+  Logger.error('Error in form: ', error);
   let errMessage = chrome.i18n.getMessage(
     FormValidationError[error.type],
     error.ref?.value ? [error.ref.value] : [],
