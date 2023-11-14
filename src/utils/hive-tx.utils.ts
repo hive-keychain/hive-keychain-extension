@@ -137,24 +137,18 @@ const confirmTransaction = async (transactionId: string) => {
   const MAX_RETRY_COUNT = 6;
   let retryCount = 0;
   do {
-    response = await call('transaction_status_api.find_transaction', {
-      transaction_id: transactionId,
+    response = await call('account_history_api.get_transaction', {
+      id: transactionId,
+      include_reversible: false,
     });
     await AsyncUtils.sleep(1000);
     retryCount++;
-  } while (
-    ['within_mempool', 'unknown'].includes(response.result.status) &&
-    retryCount < MAX_RETRY_COUNT
-  );
-  if (
-    ['within_reversible_block', 'within_irreversible_block'].includes(
-      response.result.status,
-    )
-  ) {
+  } while (!response.result && retryCount < MAX_RETRY_COUNT);
+  if (response.result) {
     Logger.info('Transaction confirmed');
     return true;
   } else {
-    Logger.error(`Transaction failed with status: ${response.result.status}`);
+    Logger.error(`Transaction failed with status: ${response.error.message}`);
     return false;
   }
 };
