@@ -27,9 +27,10 @@
         max-height: 50%;
       }
       .total {
+        @include poppins500(16px);
+        color: var(--main-font-color);
         display: flex;
         justify-content: space-between;
-        font-size: 20px;
         margin-bottom: 4px;
         .label {
           max-width: 60%;
@@ -37,7 +38,9 @@
       }
 
       .list {
-        margin: 0px -24px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
         margin: 0px -24px;
         max-height: calc(100% - 24px);
       }
