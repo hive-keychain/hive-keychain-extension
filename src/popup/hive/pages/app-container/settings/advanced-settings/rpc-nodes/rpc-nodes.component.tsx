@@ -13,7 +13,10 @@ import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
-import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -36,13 +39,6 @@ interface RpcListItem {
   label: string;
   value: string;
   rpc: Rpc;
-  canDelete: boolean;
-}
-
-interface SelectOption {
-  panelType: string;
-  label: string;
-  value: string;
   canDelete: boolean;
 }
 
@@ -81,12 +77,13 @@ const RpcNodes = ({
 
   // Hive Engine RPC
   const [hiveEngineRpcOptions, setHiveEngineRpcOptions] = useState<
-    SelectOption[]
+    OptionItem[]
   >([]);
   const [newHERpc, setNewHERpc] = useState('');
   const [isNewHERpcPanelOpened, setIsNewHERpcPanelOpened] = useState(false);
   const [setNewHeRpcAsActive, setSetNewHeRpcAsActive] = useState(false);
-  const deleteHeRpc = async (option: SelectOption, event: any) => {
+
+  const deleteHeRpc = async (option: OptionItem, event: any) => {
     event.preventDefault();
     event.stopPropagation();
     await HiveEngineConfigUtils.deleteCustomRpc(option.value);
@@ -95,14 +92,15 @@ const RpcNodes = ({
 
   // Hive Engine account history
   const [accountHistoryApiOptions, setAccountHistoryApiOptions] = useState<
-    SelectOption[]
+    OptionItem[]
   >([]);
   const [isNewAccountHistoryPanelOpened, setIsNewAccountHistoryPanelOpened] =
     useState(false);
   const [newAccountHistory, setNewAccountHistory] = useState('');
   const [setNewAccountHistoryAsActive, setSetNewAccountHistoryAsActive] =
     useState(false);
-  const deleteAccountHistoryApi = async (option: SelectOption, event: any) => {
+
+  const deleteAccountHistoryApi = async (option: OptionItem, event: any) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -120,6 +118,7 @@ const RpcNodes = ({
       customRpcs,
       DefaultHiveEngineRpcs,
     );
+
     const rpcOpts = rpcFullList.map((rpc) => {
       return {
         panelType: 'rpc',
@@ -191,7 +190,7 @@ const RpcNodes = ({
   };
 
   const deleteCustomHiveRPC = async (
-    item: SelectOption,
+    item: OptionItem,
     event: BaseSyntheticEvent,
   ) => {
     event.preventDefault();
@@ -289,7 +288,10 @@ const RpcNodes = ({
                 selectedItem={
                   {
                     value: activeRpc.uri,
-                    label: activeRpc.uri,
+                    label: activeRpc.uri
+                      .replace('http://', '')
+                      .replace('https://', '')
+                      .split('/')[0],
                     rpc: activeRpc,
                     canDelete: !RpcUtils.isDefault(activeRpc),
                   } as RpcListItem
@@ -362,10 +364,13 @@ const RpcNodes = ({
               selectedItem={
                 {
                   value: activeHERpc,
-                  label: activeHERpc,
-                } as SelectOption
+                  label: activeHERpc
+                    .replace('http://', '')
+                    .replace('https://', '')
+                    .split('/')[0],
+                } as OptionItem
               }
-              setSelectedItem={(item: SelectOption) => {
+              setSelectedItem={(item: OptionItem) => {
                 setHEActiveRpc(item.value);
               }}
               background="white"
@@ -414,10 +419,13 @@ const RpcNodes = ({
               selectedItem={
                 {
                   value: activeAccountHistoryApi,
-                  label: activeAccountHistoryApi,
-                } as SelectOption
+                  label: activeAccountHistoryApi
+                    .replace('http://', '')
+                    .replace('https://', '')
+                    .split('/')[0],
+                } as OptionItem
               }
-              setSelectedItem={(item: SelectOption) => {
+              setSelectedItem={(item: OptionItem) => {
                 setHEActiveAccountHistoryApi(item.value);
               }}
               background="white"

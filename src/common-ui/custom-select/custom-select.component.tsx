@@ -36,7 +36,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
 
   useEffect(() => {
     setFilteredOptions(filter(query));
-  }, [query]);
+  }, [query, itemProps.options]);
 
   const filter = (query: string) => {
     return itemProps.options.filter(
