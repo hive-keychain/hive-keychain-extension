@@ -4,13 +4,16 @@
   overflow: hidden;
   flex: 1;
 
+  .pending-disclaimer {
+    @include caption;
+  }
   .list-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
     row-gap: 32px;
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
     .panel {
       flex: 1;
       padding: 0 24px;
@@ -18,68 +21,35 @@
       .tooltip-container {
         width: 100%;
       }
+      &.pending-undelegations {
+        flex: unset;
+        height: max-content;
+        max-height: 50%;
+      }
       .total {
+        @include poppins500(16px);
+        color: var(--main-font-color);
         display: flex;
         justify-content: space-between;
-        font-size: 20px;
         margin-bottom: 4px;
         .label {
           max-width: 60%;
         }
-        .value {
-          display: flex;
-          flex-direction: column;
-
-          .hp-value {
-            font-style: italic;
-          }
-        }
       }
 
       .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
         margin: 0px -24px;
-        margin-top: 16px;
         max-height: calc(100% - 24px);
 
-        .item {
+        .rc-hp-value {
           display: flex;
-          font-size: 18px;
-          justify-content: space-between;
-          padding: 0px 24px;
-          height: 60px;
-          align-items: center;
-          cursor: pointer;
-
-          &:nth-child(odd) {
-            background-color: $red-transparent;
-          }
-
-          .value {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            justify-content: center;
-            row-gap: 4px;
-            margin-top: 4px;
-
-            span {
-              line-height: 1;
-            }
-          }
-
-          .actions {
-            display: none;
-            column-gap: 12px;
-            .icon {
-              height: 20px;
-              cursor: pointer;
-            }
-          }
-          &:hover {
-            .actions {
-              display: flex;
-            }
-          }
+          flex-direction: column;
+          row-gap: 4px;
+          @include poppins400(12px);
+          color: var(--main-font-color);
         }
       }
     }

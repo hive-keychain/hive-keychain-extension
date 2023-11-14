@@ -2,6 +2,7 @@ import {
   RcDelegation,
   RCDelegationValue,
 } from '@interfaces/rc-delegation.interface';
+import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-delegation-item.component';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -79,59 +80,6 @@ const IncomingOutgoingRcPage = ({
     } as RCDelegationValue);
   }, []);
 
-  const goToEdit = (rcDelegation: RcDelegation) => {
-    navigateToWithParams(Screen.RC_DELEGATIONS_PAGE, {
-      formParams: rcDelegation,
-    });
-  };
-
-  const cancelDelegation = async (rcDelegation: RcDelegation) => {
-    const fields = [
-      {
-        label: 'popup_html_rc_delegation_to',
-        value: `@${rcDelegation.delegatee}`,
-      },
-      {
-        label: 'popup_html_rc_delegation_value',
-        value: `${RcDelegationsUtils.rcToGigaRc(
-          Number(rcDelegation.value),
-        )} G RC (≈ ${RcDelegationsUtils.rcToHp(
-          rcDelegation.value,
-          globalProperties,
-        )} ${currencyLabels.hp})`,
-      },
-    ];
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_cancel_rc_delegation_confirm_text',
-      ),
-      fields: fields,
-      title: 'popup_html_cancel_rc_delegation_title',
-      afterConfirmAction: async () => {
-        addToLoadingList('html_popup_cancel_delegate_rc_operation');
-        let success;
-
-        success = await RcDelegationsUtils.cancelDelegation(
-          rcDelegation.delegatee,
-          activeAccount.name!,
-          activeAccount.keys.posting!,
-        );
-
-        removeFromLoadingList('html_popup_cancel_delegate_rc_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-
-          setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
-            `@${rcDelegation.delegatee}`,
-          ]);
-        } else {
-          setErrorMessage('popup_html_cancel_rc_delegation_failed');
-        }
-      },
-    });
-  };
-
   return (
     <div
       className="incoming-outgoing-rc-page"
@@ -161,43 +109,58 @@ const IncomingOutgoingRcPage = ({
           </div>
 
           <div className="list">
-            {delegationList.map((delegation, index) => (
-              <div className="item" key={`rcdelegation-${index}`}>
-                <div className="username">@{delegation.delegatee}</div>
-                <div className="value">
-                  <span className="rc-value">
-                    {RcDelegationsUtils.formatRcWithUnit(
-                      delegation.value,
-                      false,
-                    )}
-                  </span>
-                  <span className="hp-value">
-                    ≈{' '}
-                    {RcDelegationsUtils.rcToHp(
-                      delegation.value,
-                      globalProperties,
-                    )}{' '}
-                    {currencyLabels.hp}
-                  </span>
-                </div>
-                <div className="actions">
-                  {delegationType === DelegationType.OUTGOING && (
-                    <img
-                      className="icon edit-delegation"
-                      src="/assets/images/edit.png"
-                      onClick={() => goToEdit(delegation)}
-                    />
-                  )}
-                  {delegationType === DelegationType.OUTGOING && (
-                    <img
-                      className="icon erase-delegation"
-                      src="/assets/images/clear.png"
-                      onClick={() => cancelDelegation(delegation)}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+            {delegationList.map(
+              (delegation, index) => (
+                <RcIncomingOutgoingItemComponent
+                  key={`delegation-${index}`}
+                  amount={delegation.value}
+                  rcDelegation={delegation}
+                  delegationType={
+                    delegation.delegator === activeAccount.name
+                      ? DelegationType.OUTGOING
+                      : DelegationType.INCOMING
+                  }
+                  username={
+                    delegation.delegator === activeAccount.name
+                      ? delegation.delegatee
+                      : delegation.delegator
+                  }
+                />
+              ),
+              // <div className="delegation-row">
+              //   <div className="item" key={`rcdelegation-${index}`}>
+              //     <div className="username">@{delegation.delegatee}</div>
+
+              //     <div className="item-details">
+              //       <div className="value">
+              //         <span className="rc-value">
+              //           {RcDelegationsUtils.formatRcWithUnit(
+              //             delegation.value,
+              //             false,
+              //           )}
+              //         </span>
+              //         <span className="hp-value">
+              //           ≈{' '}
+              //           {RcDelegationsUtils.rcToHp(
+              //             delegation.value,
+              //             globalProperties,
+              //           )}{' '}
+              //           {currencyLabels.hp}
+              //         </span>
+              //       </div>
+              //       {delegationType !== DelegationType.INCOMING && (
+              //         <SVGIcon
+              //           icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+              //           className={`expand-collapse-icon ${
+              //             isExpanded ? 'open' : 'closed'
+              //           }`}
+              //           onClick={() => setIsExpanded(!isExpanded)}
+              //         />
+              //       )}
+              //     </div>
+              //   </div>
+              // </div>
+            )}
           </div>
         </div>
       </div>

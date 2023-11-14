@@ -26,6 +26,7 @@
       box-sizing: border-box;
       .value {
         @include poppins400(12px);
+        color: var(--main-font-color);
       }
       .expand-collapse-icon {
         @include open-close-rotate();

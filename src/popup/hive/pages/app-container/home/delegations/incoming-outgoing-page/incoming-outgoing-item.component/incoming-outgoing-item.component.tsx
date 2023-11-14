@@ -197,13 +197,15 @@ const IncomingOutgoing = ({
                   />
                 </div>
               )}
-              <SVGIcon
-                icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
-                className={`expand-collapse-icon ${
-                  isExpanded ? 'open' : 'closed'
-                }`}
-                onClick={toggleExpandablePanel}
-              />
+              {delegationType !== DelegationType.INCOMING && (
+                <SVGIcon
+                  icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                  className={`expand-collapse-icon ${
+                    isExpanded ? 'open' : 'closed'
+                  }`}
+                  onClick={toggleExpandablePanel}
+                />
+              )}
             </div>
           </div>
           {isExpanded && (
