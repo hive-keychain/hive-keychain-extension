@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -21,6 +22,7 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import FormatUtils from 'src/utils/format.utils';
 
 interface TokenIncomingOutgoingProps {
   delegationType: DelegationType;
@@ -45,6 +47,7 @@ const TokenIncomingOutgoing = ({
 }: PropsType) => {
   const [editModeActivated, setEditModeActivated] = useState(false);
   const [value, setValue] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const cancelDelegation = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -155,56 +158,90 @@ const TokenIncomingOutgoing = ({
     });
   };
 
+  const toggleExpandablePanel = () => {
+    if (!editModeActivated) setIsExpanded(!isExpanded);
+  };
+
   return (
     <div className="delegation-row" key={username}>
-      <div className="to-from">@{username}</div>
-      <div className="right-panel">
-        {!editModeActivated && (
-          <div
-            className="value"
-            onDoubleClick={() => {
-              if (delegationType === DelegationType.OUTGOING) enterEditMode();
-            }}>
-            {amount} {symbol}
+      {username && (
+        <>
+          <div className="item">
+            <div className="username">{`@${username}`}</div>
+            <div className="item-details">
+              {!editModeActivated && (
+                <div
+                  className="value"
+                  onDoubleClick={() => {
+                    if (delegationType === DelegationType.OUTGOING)
+                      enterEditMode();
+                  }}>
+                  {FormatUtils.withCommas(amount)} {symbol}
+                </div>
+              )}
+              {editModeActivated && (
+                <div className="edit-panel">
+                  <input
+                    className="edit-label"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder={chrome.i18n.getMessage(
+                      'popup_html_favorite_user_nickname',
+                    )}
+                  />
+
+                  <SVGIcon
+                    onClick={() => saveChanges()}
+                    icon={NewIcons.FAVORITE_ACCOUNTS_SAVE}
+                    className="edit-button"
+                  />
+                  <SVGIcon
+                    onClick={() => cancelEdit()}
+                    icon={NewIcons.FAVORITE_ACCOUNTS_CANCEL}
+                    className="edit-button"
+                  />
+                </div>
+              )}
+              {delegationType !== DelegationType.INCOMING && (
+                <SVGIcon
+                  icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                  className={`expand-collapse-icon ${
+                    isExpanded ? 'open' : 'closed'
+                  }`}
+                  onClick={toggleExpandablePanel}
+                />
+              )}
+            </div>
           </div>
-        )}
-        {editModeActivated && (
-          <InputComponent
-            min={0}
-            value={value}
-            type={InputType.NUMBER}
-            onChange={setValue}
-            placeholder=""></InputComponent>
-        )}
-        {delegationType === DelegationType.OUTGOING && !editModeActivated && (
-          <img
-            className="icon edit-delegation"
-            src="/assets/images/edit.png"
-            onClick={enterEditMode}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && !editModeActivated && (
-          <img
-            className="icon erase-delegation"
-            src="/assets/images/clear.png"
-            onClick={cancelDelegation}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && editModeActivated && (
-          <img
-            className={'icon always-displayed submit'}
-            src="/assets/images/submit.png"
-            onClick={saveChanges}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && editModeActivated && (
-          <img
-            className="icon always-displayed cancel"
-            src="/assets/images/delete.png"
-            onClick={cancelEdit}
-          />
-        )}
-      </div>
+          {isExpanded && (
+            <div className="expanded-panel">
+              {!editModeActivated && (
+                <>
+                  <Separator type="horizontal" />
+                  <div className="expandable-panel-content">
+                    <div
+                      className="delegation-item-button edit"
+                      onClick={() => enterEditMode()}>
+                      <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_EDIT} />
+                      <span className="label">
+                        {chrome.i18n.getMessage('html_popup_button_edit_label')}
+                      </span>
+                    </div>
+                    <div
+                      className="delegation-item-button delete"
+                      onClick={() => cancelDelegation()}>
+                      <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_DELETE} />
+                      <span className="label">
+                        {chrome.i18n.getMessage('delete_label')}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
