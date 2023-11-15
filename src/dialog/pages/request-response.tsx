@@ -17,7 +17,7 @@ const RequestResponse = ({ data }: Props) => {
     }, 3000);
   }
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <DialogHeader
         title={
           data.msg.success
@@ -30,14 +30,14 @@ const RequestResponse = ({ data }: Props) => {
           {msg}
         </div>
       ))}
-
+      <div className="fill-space" />
       <ButtonComponent
         label={'dialog_ok'}
         onClick={() => {
           window.close();
         }}
       />
-    </>
+    </div>
   );
 };
 

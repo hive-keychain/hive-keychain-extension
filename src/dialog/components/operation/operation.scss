@@ -10,10 +10,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
 
     .fields {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
       row-gap: 16px;
       max-height: 324px;
       overflow: auto;
