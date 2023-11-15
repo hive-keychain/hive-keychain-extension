@@ -83,6 +83,9 @@ $dark: (
   --create-account-price-color: lightgrey,
   // What's new
   --carousel-dot-color: white,
+  // Tooltip
+  --tooltip-text-color: $dark-blue,
+  --tooltip-background-color: #fffffff2,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -168,6 +171,9 @@ $light: (
   --create-account-price-color: $dark-blue,
   // What's new
   --carousel-dot-color: lightgrey,
+  // Tooltip
+  --tooltip-text-color: white,
+  --tooltip-background-color: $dark-blue,
 );
 
 @mixin spread-map($map: ()) {

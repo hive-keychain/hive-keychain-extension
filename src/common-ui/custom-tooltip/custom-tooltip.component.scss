@@ -1,7 +1,5 @@
 /* Custom properties */
 :root {
-  --tooltip-text-color: black;
-  --tooltip-background-color: #fffffff2;
   --tooltip-arrow-size: 6px;
 }
 
@@ -21,16 +19,6 @@ $tooltip-arrow-size: 6px;
     padding: 12px;
     width: 150px;
     text-align: center;
-
-    &.white {
-      background: white;
-      color: #000;
-    }
-
-    &.grey {
-      background: $lighter-grey;
-      color: white;
-    }
 
     @include inter400(14px);
     &::before {
