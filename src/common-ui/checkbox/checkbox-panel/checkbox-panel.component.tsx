@@ -14,6 +14,7 @@ interface CheckboxPanelProps extends CheckboxProps {
   skipHintTranslation?: boolean;
   text?: string;
   skipTextTranslation?: boolean;
+  children?: JSX.Element;
 }
 
 export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
@@ -23,23 +24,28 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
         props.backgroundType ?? BackgroundType.FILLED
       } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}>
       <CheckboxComponent {...props} />
-      {props.hint && (
-        <div
-          className="hint"
-          dangerouslySetInnerHTML={{
-            __html: props.skipHintTranslation
-              ? props.hint
-              : chrome.i18n.getMessage(props.hint),
-          }}></div>
-      )}
-      {props.text && (
-        <div
-          className="text"
-          dangerouslySetInnerHTML={{
-            __html: props.skipTextTranslation
-              ? props.text
-              : chrome.i18n.getMessage(props.text),
-          }}></div>
+      {props.children && props.children}
+      {!props.children && (
+        <>
+          {props.hint && (
+            <div
+              className="hint"
+              dangerouslySetInnerHTML={{
+                __html: props.skipHintTranslation
+                  ? props.hint
+                  : chrome.i18n.getMessage(props.hint),
+              }}></div>
+          )}
+          {props.text && (
+            <div
+              className="text"
+              dangerouslySetInnerHTML={{
+                __html: props.skipTextTranslation
+                  ? props.text
+                  : chrome.i18n.getMessage(props.text),
+              }}></div>
+          )}
+        </>
       )}
     </div>
   );

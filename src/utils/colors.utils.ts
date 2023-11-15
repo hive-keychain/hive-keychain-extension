@@ -10,7 +10,7 @@ const rgbToHex = (r: any, g: any, b: any) => {
 const getBackgroundColor = (src: string) => {
   var canvas = document.createElement('canvas');
   var context = canvas.getContext('2d');
-  if (!context) return;
+  if (!context) return '#0000002b';
   var img = new Image();
   img.onerror = () => {
     img.onerror = null;
@@ -25,7 +25,7 @@ const getBackgroundColor = (src: string) => {
   try {
     var imageData = context.getImageData(0, 0, img.width, img.height);
   } catch (err) {
-    return;
+    return '#0000002b';
   }
   var data = imageData.data;
 

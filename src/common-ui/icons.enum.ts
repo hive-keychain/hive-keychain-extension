@@ -145,6 +145,8 @@ export enum NewIcons {
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
 
+  MENU_TOKENS = 'menu/tokens',
+
   MENU_GOVERNANCE = 'menu/governance',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',

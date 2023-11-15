@@ -1,8 +1,7 @@
 .tokens-filter {
   @include pageLayoutRowGap;
-  .disclaimer {
-    padding: 0px 24px;
-    font-size: 18px;
+  .caption {
+    @include caption();
     a {
       @include link;
     }
@@ -10,9 +9,8 @@
 
   overflow: hidden;
 
-  .input-container {
-    padding: 0px 24px;
-    box-sizing: border-box;
+  .input-filter {
+    margin: 0px 16px;
   }
 
   .tokens-list {
@@ -26,6 +24,10 @@
       column-gap: 16px;
       padding: 0px 24px;
 
+      .checkbox-panel {
+        width: 100%;
+      }
+
       .switch-container {
         margin-top: 8px;
       }
@@ -34,17 +36,39 @@
         display: flex;
         flex-direction: column;
         .name {
-          font-size: 18px;
+          @include poppins600(14px);
+          color: var(--main-font-color);
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
-          max-width: 240px;
         }
-        .issued-by {
-          font-size: 16px;
-        }
-        .supply {
-          font-size: 14px;
+        .extra-info {
+          display: flex;
+          flex-direction: column;
+
+          .details {
+            display: flex;
+            align-items: center;
+            column-gap: 8px;
+          }
+
+          .logo-container {
+            @include icon-size(24px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 4px;
+            .logo {
+              @include icon-size(20px);
+            }
+          }
+
+          .issued-by,
+          .supply {
+            @include poppins400(12px);
+            color: var(--main-font-color);
+          }
         }
       }
     }
