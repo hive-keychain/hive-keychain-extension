@@ -37,6 +37,9 @@
           @include poppins400(13px);
           overflow-wrap: anywhere;
           text-align: right;
+          ul {
+            margin: 0;
+          }
           &.xs-font {
             font-size: 11px;
           }

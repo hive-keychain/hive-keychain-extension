@@ -12,7 +12,7 @@ type Props = {
   type?: RequestItemType;
 };
 
-const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
+const renderContent = (content: any, type: RequestItemType) => {
   switch (type) {
     case RequestItemType.STRING:
       return content;
@@ -34,7 +34,6 @@ const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
 const RequestItem = ({
   title,
   content,
-  red,
   type = RequestItemType.STRING,
 }: Props) => {
   return (
@@ -42,7 +41,7 @@ const RequestItem = ({
       <React.Fragment key={title}>
         <div className="field">
           <div className="label">{chrome.i18n.getMessage(title)}</div>
-          <div className={`value`}>{content}</div>
+          <div className={`value`}>{renderContent(content, type)}</div>
         </div>
       </React.Fragment>
     </>
