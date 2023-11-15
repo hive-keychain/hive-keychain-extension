@@ -323,16 +323,19 @@ const Delegations = ({
         />
       </div>
 
-      {available && (
-        <div className="available-panel">
-          <div className="label">
-            {chrome.i18n.getMessage('popup_html_available')}
-          </div>
-          <div className="value">
-            {FormatUtils.formatCurrencyValue(available!)} {currencyLabels.hp}
-          </div>
+      <div className="available-panel">
+        <div className="label">
+          {chrome.i18n.getMessage('popup_html_available')}
         </div>
-      )}
+        <div className="value">
+          {available && (
+            <>
+              {FormatUtils.formatCurrencyValue(available!)} {currencyLabels.hp}
+            </>
+          )}
+          {!available && <>...</>}
+        </div>
+      </div>
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
           {chrome.i18n.getMessage('popup_html_delegations_text')}
