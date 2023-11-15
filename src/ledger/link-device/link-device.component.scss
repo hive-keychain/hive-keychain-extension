@@ -26,30 +26,38 @@ html {
       justify-content: center;
 
       .link-ledger-device {
+        border: solid 1px grey;
+        border-radius: 8px;
         width: 350px;
         height: 600px;
+        color: var(--main-font-color);
         padding: 24px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         row-gap: 24px;
         font-size: 16px;
-        @include background-top;
-        color: var(--main-font-color);
-
+        position: relative;
+        @include background-top();
         @include dialogs-title-panel();
-
+        .confirmation {
+          margin-top: 20px;
+          display: flex;
+          column-gap: 5px;
+          flex-direction: row;
+        }
         .link-device {
           display: flex;
           flex: 1;
           flex-direction: column;
           row-gap: 16px;
-          .caption {
-            @include caption();
-          }
-          .fill-space {
-            flex: 1;
-          }
+        }
+        .caption {
+          @include caption();
+          padding: 0;
+        }
+        .fill-space {
+          flex: 1;
         }
       }
     }

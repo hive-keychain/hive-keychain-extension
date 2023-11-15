@@ -42,13 +42,18 @@ const LinkLedgerDevice = () => {
         </div>
       </div>
 
-      <div className="link-ledger-device">
+      <div className="link-device">
         <div
           className="caption"
           dangerouslySetInnerHTML={{
             __html: chrome.i18n.getMessage('ledger_link_device_caption'),
           }}></div>
-        {done ? chrome.i18n.getMessage('ledger_link_device_linked') : ''}
+        {done && (
+          <div className="confirmation">
+            <SVGIcon icon={NewIcons.CHECK} />
+            {chrome.i18n.getMessage('ledger_link_device_linked')}
+          </div>
+        )}
         <div className="fill-space"></div>
 
         <ButtonComponent
