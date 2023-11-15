@@ -28,6 +28,7 @@ export const TabsComponent = ({ tabs }: TabsProps) => {
         onChange={setSelectedTab}
         selectedValue={selectedTab}
         values={values}
+        id="tabs"
       />
       <div className="tab-container">{tabs[selectedTab].content}</div>
     </>

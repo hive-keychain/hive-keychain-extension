@@ -31,19 +31,11 @@
     cursor: pointer;
     transition: color 0.15s ease-in;
 
-    label {
-      @include poppins500(13px);
-    }
-  }
+    @include poppins500(13px);
+    color: var(--main-font-color);
 
-  input[type='radio'] {
-    & + label {
-      color: var(--main-font-color);
-    }
-    &:checked {
-      & + label {
-        color: white;
-      }
+    &.selected {
+      color: white;
     }
   }
 

@@ -5,16 +5,18 @@
 
   .info-panel {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     column-gap: 16px;
     row-gap: 16px;
   }
 
   .label-title {
-    font-weight: bold;
+    @include poppins600(14px);
+    color: var(--main-font-color);
   }
 
   .smaller-text {
-    font-size: 12px;
+    @include poppins500(12px);
+    color: var(--main-font-color);
   }
 }

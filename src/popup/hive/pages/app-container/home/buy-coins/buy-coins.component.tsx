@@ -42,6 +42,7 @@ const BuyCoins = ({
       data-testid={`${Screen.BUY_COINS_PAGE}-page`}>
       <SlidingBarComponent
         dataTestId="buy-coins"
+        id="buy-coins"
         onChange={changeSelectedCurrency}
         selectedValue={selectedCurrency}
         values={[

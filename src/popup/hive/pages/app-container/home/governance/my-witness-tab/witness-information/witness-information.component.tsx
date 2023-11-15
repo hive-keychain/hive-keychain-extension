@@ -10,9 +10,9 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import {
   addToLoadingList,
@@ -195,18 +195,27 @@ const WitnessInformation = ({
   return (
     <div className="witness-information">
       <div className="top-panel">
-        <SwitchComponent
+        <SlidingBarComponent
+          dataTestId="witness"
+          id="witness"
           onChange={changeSelectedScreen}
           selectedValue={selectedScreen}
-          leftValue={WitnessInfoScreen.INFO}
-          rightValue={WitnessInfoScreen.PARAMS}
-          leftValueLabel={'html_popup_witness_information_info_label'}
-          rightValueLabel={'html_popup_witness_information_params_label'}
+          values={[
+            {
+              value: WitnessInfoScreen.INFO,
+              label: 'html_popup_witness_information_info_label',
+            },
+            {
+              value: WitnessInfoScreen.PARAMS,
+              label: 'html_popup_witness_information_params_label',
+            },
+          ]}
         />
       </div>
       <div className="witness-profile-container">
         <div className="witness-profile">
           <img
+            className="witness-image"
             src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
             onError={(e: any) => {
               e.target.onError = null;
@@ -217,15 +226,19 @@ const WitnessInformation = ({
             <div className="witness-name">@{activeAccount.name!}</div>
             {witnessRanking && (
               <div className="witness-ranking">
-                {witnessRanking?.active_rank}
-                {chrome.i18n.getMessage(
-                  FormatUtils.getOrdinalLabelTranslation(
-                    witnessRanking?.active_rank!,
-                  ),
-                )}{' '}
+                {witnessRanking.active_rank && (
+                  <>
+                    {witnessRanking?.active_rank}
+                    {chrome.i18n.getMessage(
+                      FormatUtils.getOrdinalLabelTranslation(
+                        witnessRanking?.active_rank!,
+                      ),
+                    )}{' '}
+                  </>
+                )}
                 {/* {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '} */}
-                {(witnessRanking?.active_rank as any).toString() !==
-                  (witnessRanking?.rank as any).toString() && (
+                {(witnessRanking?.active_rank as any)?.toString() !==
+                  (witnessRanking?.rank as any)?.toString() && (
                   <div>
                     {'('}
                     {witnessRanking?.rank}
@@ -237,9 +250,9 @@ const WitnessInformation = ({
           </div>
         </div>
         {witnessInfo.isDisabled && (
-          <Icon
-            additionalClassName="witness-disabled"
-            name={Icons.WITNESS_DISABLED}
+          <SVGIcon
+            className="witness-disabled"
+            icon={NewIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
             tooltipMessage="popup_html_witness_information_witness_disabled_text"
             tooltipPosition="left"
           />
@@ -251,6 +264,7 @@ const WitnessInformation = ({
       {selectedScreen === WitnessInfoScreen.PARAMS && (
         <>
           <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
+          <div className="fill-space"></div>
           <div className="bottom-panel">
             <div className="buttons-container">
               <OperationButtonComponent
@@ -258,6 +272,7 @@ const WitnessInformation = ({
                 onClick={() => gotoNextPage()}
                 label={'html_popup_button_edit_label'}
                 additionalClass="padding-top"
+                type={ButtonType.ALTERNATIVE}
               />
               {!witnessInfo.isDisabled && (
                 <OperationButtonComponent

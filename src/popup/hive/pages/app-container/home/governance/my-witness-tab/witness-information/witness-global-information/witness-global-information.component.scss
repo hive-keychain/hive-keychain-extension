@@ -5,17 +5,16 @@
 
   .info-panel {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    column-gap: 16px;
-    row-gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    column-gap: 8px;
+    row-gap: 8px;
 
     .witness-info-data .info-last-update {
-      font-size: 13px;
-      color: white;
-      font-style: italic;
+      @include poppins500(12px);
+      color: var(--main-font-color);
 
       &.warning-red-color {
-        color: $red-dark;
+        color: $red;
       }
     }
   }
@@ -26,13 +25,11 @@
     row-gap: 16px;
     align-items: stretch;
     justify-content: center;
-    padding: 16px;
-    border: 1px solid white;
-    border-radius: 4px;
-    box-sizing: border-box;
-
+    @include small-card();
+    margin: unset;
+    color: var(--main-font-color);
     .title {
-      font-size: 18px;
+      @include poppins600(14px);
       align-self: center;
     }
 
@@ -40,13 +37,12 @@
       display: flex;
       align-items: center;
       justify-content: space-evenly;
-      .hp-value {
-        font-size: 16x;
-      }
+      @include poppins500(13px);
+      color: var(--main-font-color);
+      width: 100%;
       .usd-value {
-        color: lightgrey;
-        font-style: italic;
-        font-size: 14px;
+        color: var(--main-font-color);
+        @include poppins400(12px);
       }
     }
   }

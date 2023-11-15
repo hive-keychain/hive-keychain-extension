@@ -8,7 +8,9 @@ import {
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -101,13 +103,19 @@ const EditMyWitness = ({
     <div className="edit-my-witness-component">
       <div className="field">
         <InputComponent
+          label="popup_html_currency"
+          type={InputType.TEXT}
+          value={BaseCurrencies.HIVE.toUpperCase()}
+          onChange={() => null}
+          disabled
+        />
+        <InputComponent
           label="popup_html_witness_information_account_creation_fee_label"
           type={InputType.TEXT}
           placeholder="popup_html_witness_information_account_creation_fee_placeholder_text"
           value={formParams.accountCreationFee}
           onChange={(value) => handleFormParams('accountCreationFee', value)}
         />
-        <div className="as-fake-input">{BaseCurrencies.HIVE.toUpperCase()}</div>
       </div>
       <InputComponent
         label="popup_html_witness_information_maximum_block_size_label"
@@ -138,14 +146,15 @@ const EditMyWitness = ({
         onChange={(value) => handleFormParams('url', value)}
       />
       <div className="bottom-panel">
+        <ButtonComponent
+          label={'popup_html_button_label_cancel'}
+          onClick={() => goBackPage()}
+          type={ButtonType.ALTERNATIVE}
+        />
         <OperationButtonComponent
           requiredKey={KeychainKeyTypesLC.active}
           onClick={() => handleUpdateWitnessProps()}
           label={'popup_html_operation_button_save'}
-        />
-        <ButtonComponent
-          label={'popup_html_button_label_cancel'}
-          onClick={() => goBackPage()}
         />
       </div>
     </div>

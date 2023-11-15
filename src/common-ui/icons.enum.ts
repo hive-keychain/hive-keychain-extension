@@ -99,6 +99,7 @@ export enum NewIcons {
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
 
+  GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
   GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE = 'governance/update-downvote-witness',
   GOVERNANCE_PROPOSAL_BUDGET = 'governance/proposal/budget',

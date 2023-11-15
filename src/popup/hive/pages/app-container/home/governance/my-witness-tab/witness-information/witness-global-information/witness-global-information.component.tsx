@@ -2,7 +2,6 @@ import { WitnessInfo } from '@interfaces/witness.interface';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import { Icons } from 'src/common-ui/icons.enum';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
@@ -37,7 +36,6 @@ const WitnessGlobalInformation = ({
         <WitnessInfoDataComponent
           label={'html_popup_witness_global_information_last_block_label'}
           value={witnessInfo.lastBlock}
-          valueIcon={Icons.OPEN_IN_NEW}
           valueOnClickAction={() => gotoUrl(witnessInfo.lastBlockUrl)}
         />
         <WitnessInfoDataComponent
