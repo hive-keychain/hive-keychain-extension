@@ -357,7 +357,7 @@
     box-sizing: border-box;
 
     .username {
-      @include poppins400(12px);
+      @include poppins400(14px);
       color: var(--main-font-color);
       flex: 1;
     }
@@ -367,7 +367,7 @@
       column-gap: 16px;
       box-sizing: border-box;
       .value {
-        @include poppins400(12px);
+        @include poppins400(14px);
         color: var(--main-font-color);
       }
       .expand-collapse-icon {

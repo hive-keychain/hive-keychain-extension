@@ -39,7 +39,6 @@
           height: 40px;
           width: 40px;
           border-radius: 50%;
-          margin-left: 12px;
         }
       }
     }
@@ -100,6 +99,7 @@
           height: 40px;
           width: 40px;
           border-radius: 50%;
+          margin-left: 10px;
         }
 
         .item-label {
@@ -129,6 +129,10 @@
             display: block;
           }
         }
+      }
+
+      &::-webkit-scrollbar {
+        width: 3px;
       }
     }
   }

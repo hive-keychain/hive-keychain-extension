@@ -33,6 +33,11 @@ html {
           @include caption();
         }
 
+        .error {
+          @include caption();
+          color: $red;
+        }
+
         .account-discovery {
           display: flex;
           flex: 1;

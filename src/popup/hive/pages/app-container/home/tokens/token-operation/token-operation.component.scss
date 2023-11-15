@@ -1,7 +1,7 @@
 .transfer-tokens-page {
   @include background-top-0-percent();
   @include pageLayoutRowGap();
-  row-gap: 10px;
+  row-gap: 24px;
   .caption {
     @include caption();
   }
