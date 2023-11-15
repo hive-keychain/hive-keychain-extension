@@ -137,10 +137,14 @@ const confirmTransaction = async (transactionId: string) => {
   const MAX_RETRY_COUNT = 6;
   let retryCount = 0;
   do {
-    response = await call('account_history_api.get_transaction', {
-      id: transactionId,
-      include_reversible: false,
-    });
+    try {
+      response = await call('account_history_api.get_transaction', {
+        id: transactionId,
+        include_reversible: false,
+      });
+    } catch (e) {
+      response = { error: e };
+    }
     await AsyncUtils.sleep(1000);
     retryCount++;
   } while (!response.result && retryCount < MAX_RETRY_COUNT);
