@@ -58,27 +58,43 @@ const Operation = ({
 
   return (
     <div className="operation">
-      <div>
-        <DialogHeader title={title} />
-        {header && (
-          <div
-            className={`operation-header ${redHeader ? 'operation-red' : ''}`}>
-            {header}
+      <div
+        style={{
+          height: canWhitelist ? '70%' : '85%',
+          overflow: 'scroll',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+        <div>
+          <DialogHeader title={title} />
+          {header && (
+            <div
+              className={`operation-header ${
+                redHeader ? 'operation-red' : ''
+              }`}>
+              {header}
+            </div>
+          )}
+          {accounts && (
+            <RequestUsername
+              accounts={accounts}
+              username={username!}
+              setUsername={setUsername!}
+            />
+          )}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            flex: 1,
+            flexDirection: 'column',
+          }}>
+          <div className="operation-body">
+            <div className="fields">{...children}</div>
           </div>
-        )}
-        {accounts && (
-          <RequestUsername
-            accounts={accounts}
-            username={username!}
-            setUsername={setUsername!}
-          />
-        )}
+        </div>
       </div>
-
-      <div className="operation-body">
-        <div className="fields">{...children}</div>
-      </div>
-
       {canWhitelist && (
         <CheckboxPanelComponent
           onChange={setKeep}

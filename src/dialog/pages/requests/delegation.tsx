@@ -31,6 +31,7 @@ const Delegation = (props: Props) => {
       {...props}
       {...anonymousProps}>
       {renderUsername()}
+      <Separator type={'horizontal'} fullSize />
       <RequestItem title="dialog_delegatee" content={`@${data.delegatee}`} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem

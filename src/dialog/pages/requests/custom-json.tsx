@@ -37,6 +37,7 @@ const CustomJson = (props: Props) => {
       {...props}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       {renderUsername()}
+      <Separator type={'horizontal'} fullSize />
       <RequestItem title="dialog_key" content={data.method} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem title="dialog_id" content={data.id} />

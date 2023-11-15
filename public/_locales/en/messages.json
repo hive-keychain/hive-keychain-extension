@@ -997,7 +997,7 @@
     "description": "When website request a vote"
   },
   "dialog_data": {
-    "message": "Data <span class='small'>(click to show)</span>",
+    "message": "Data",
     "description": "When website request a custom json"
   },
   "dialog_to": {
@@ -1005,7 +1005,7 @@
     "description": "When website request a transfer"
   },
   "dialog_tx": {
-    "message": "Transaction (click to show)",
+    "message": "Transaction",
     "description": "When website request signing a tx"
   },
   "dialog_amount": {
@@ -1029,7 +1029,7 @@
     "description": "When website request a post"
   },
   "dialog_body": {
-    "message": "Body <span class='small'>(click to show)</span>",
+    "message": "Body",
     "description": "When website request a post"
   },
   "dialog_period": {
@@ -1037,7 +1037,7 @@
     "description": "When website request a proposal creation"
   },
   "dialog_meta": {
-    "message": "JSON Metadata (Click to show)",
+    "message": "JSON Metadata",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -1049,11 +1049,11 @@
     "description": "When website request a post"
   },
   "dialog_options": {
-    "message": "Options <span class='small'>(click to show)</span>",
+    "message": "Options",
     "description": "When website request a post"
   },
   "dialog_operations": {
-    "message": "Operations (click to show)",
+    "message": "Operations",
     "description": "When website request a generic broadcast"
   },
   "dialog_max_payout": {
@@ -1096,10 +1096,10 @@
     "message": "Confirm"
   },
   "dialog_options_toggle": {
-    "message": "Options <span class='small'>(click to show)</span>"
+    "message": "Options"
   },
   "dialog_data_toggle": {
-    "message": "Data <span class='small'>(click to show)</span>"
+    "message": "Data"
   },
   "dialog_header_unlock": {
     "message": "Unlock Keychain",

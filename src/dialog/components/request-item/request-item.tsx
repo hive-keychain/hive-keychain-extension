@@ -8,7 +8,6 @@ export enum RequestItemType {
 type Props = {
   title: string;
   content: string | string[];
-  pre?: boolean; // set pre to true if we are showing a pretty printed json
   red?: boolean; // show balance red
   type?: RequestItemType;
 };
@@ -35,7 +34,6 @@ const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
 const RequestItem = ({
   title,
   content,
-  pre,
   red,
   type = RequestItemType.STRING,
 }: Props) => {
