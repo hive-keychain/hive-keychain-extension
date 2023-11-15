@@ -97,6 +97,7 @@ export enum NewIcons {
 
   GLOBAL_ARROW = 'global/arrow',
   GLOBAL_DELETE = 'global/delete',
+  GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',

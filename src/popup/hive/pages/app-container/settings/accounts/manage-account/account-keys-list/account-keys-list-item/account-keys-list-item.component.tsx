@@ -2,8 +2,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -123,7 +122,7 @@ const AccountKeysListItem = ({
               message="popup_html_wrong_key_tooltip_text"
               position={'bottom'}
               additionalClassName="tool-tip-custom">
-              <Icon name={Icons.ERROR} />
+              <SVGIcon icon={NewIcons.GLOBAL_ERROR} />
             </CustomTooltip>
           )}
         </div>
