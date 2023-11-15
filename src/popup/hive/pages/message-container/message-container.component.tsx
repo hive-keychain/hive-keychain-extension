@@ -11,7 +11,9 @@ const DEFAULT_TIMEOUT = 3000;
 
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   useEffect(() => {
-    setTimeout(() => close(), DEFAULT_TIMEOUT);
+    if (errorMessage.type !== MessageType.ERROR) {
+      setTimeout(() => close(), DEFAULT_TIMEOUT);
+    }
   }, []);
 
   const close = () => {

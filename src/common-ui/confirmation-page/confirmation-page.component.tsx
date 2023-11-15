@@ -41,7 +41,7 @@ const ConfirmationPage = ({
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
-      isBackButtonEnabled: false,
+      isBackButtonEnabled: true,
       onBackAdditional: handleClickOnCancel,
       onCloseAdditional: handleClickOnCancel,
     });

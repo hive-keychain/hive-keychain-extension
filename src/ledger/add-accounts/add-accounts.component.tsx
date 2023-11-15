@@ -322,7 +322,7 @@ const AddAccountsComponent = () => {
           <div className="caption">
             {chrome.i18n.getMessage('ledger_account_discovery_caption')}
           </div>
-          <div>{chrome.i18n.getMessage(message)}</div>
+          <div className="error">{chrome.i18n.getMessage(message)}</div>
           <div className="fill-space"></div>
           <ButtonComponent
             label="synchronize_ledger_button"

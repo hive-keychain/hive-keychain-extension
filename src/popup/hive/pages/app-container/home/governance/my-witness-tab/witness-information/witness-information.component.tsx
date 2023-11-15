@@ -254,7 +254,7 @@ const WitnessInformation = ({
             className="witness-disabled"
             icon={NewIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
             tooltipMessage="popup_html_witness_information_witness_disabled_text"
-            tooltipPosition="left"
+            tooltipPosition="right"
           />
         )}
       </div>

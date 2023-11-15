@@ -11,10 +11,6 @@
     @include link();
   }
 
-  .custom-checkbox {
-    align-items: unset !important;
-  }
-
   &.force-hide {
     display: none;
   }
