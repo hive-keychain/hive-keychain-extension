@@ -7,7 +7,11 @@
   &.has-expandable-content {
     cursor: pointer;
   }
-
+  .history-tooltip {
+    .tooltip {
+      font-size: 12px;
+    }
+  }
   .information-panel {
     display: flex;
     flex-direction: row;
@@ -34,7 +38,7 @@
       flex: 1;
       margin-right: 12px;
       .detail {
-        @include poppins400(12px);
+        @include poppins400(13px);
         color: var(--main-font-color);
         flex: 1;
       }
@@ -60,7 +64,7 @@
       max-height: 500px;
       transition: max-height 0.25s ease-in;
       margin-top: 8px;
-      @include poppins400(12px);
+      @include poppins400(13px);
       color: var(--main-font-color);
       padding: 0px 12px 12px 12px;
     }
