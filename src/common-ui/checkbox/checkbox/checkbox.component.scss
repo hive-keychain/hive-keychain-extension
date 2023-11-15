@@ -17,8 +17,10 @@
     background: var(--checkbox-background);
 
     .svg-icon {
-      width: 12px;
-      height: 12px;
+      @include icon-size(12px);
+      div {
+        display: flex;
+      }
     }
   }
   .label {

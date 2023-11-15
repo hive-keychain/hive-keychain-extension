@@ -1,19 +1,50 @@
 .token-incoming-outgoing-page {
   @include pageLayoutRowGap;
   row-gap: 32px;
-  padding: 0px 24px;
+  overflow: hidden;
+  flex: 1;
 
+  .pending-disclaimer,
   .cooldown-message {
-    font-size: 18px;
+    @include caption;
   }
-
-  .total {
+  .list-panel {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    font-size: 20px;
-  }
+    flex-direction: column;
+    row-gap: 32px;
+    height: 100%;
+    overflow-y: auto;
+    .panel {
+      flex: 1;
+      padding: 0 24px;
+      height: 100%;
+      .tooltip-container {
+        width: 100%;
+      }
+      &.pending-undelegations {
+        flex: unset;
+        height: max-content;
+        max-height: 50%;
+      }
+      .total {
+        @include poppins500(16px);
+        color: var(--main-font-color);
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+        .label {
+          max-width: 60%;
+        }
+      }
 
-  .list {
-    margin: 0px -24px;
+      .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        margin: 0px -24px;
+        max-height: calc(100% - 24px);
+      }
+    }
   }
 }

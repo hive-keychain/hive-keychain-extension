@@ -13,6 +13,7 @@ interface SlidingBarProps {
   hint?: string;
   skipHintTranslation?: boolean;
   dataTestId?: string;
+  id: string;
 }
 
 export const SlidingBarComponent = (props: SlidingBarProps) => {
@@ -33,14 +34,18 @@ export const SlidingBarComponent = (props: SlidingBarProps) => {
             <input
               style={{}}
               type="radio"
-              id={`radio-${index}`}
+              id={`${props.id}-radio-${index}`}
               name="tabs"
               checked={v.value === props.selectedValue}
               onChange={() => {
                 props.onChange(v.value);
               }}
             />
-            <label className="tab" htmlFor={`radio-${index}`}>
+            <label
+              className={`tab ${
+                v.value === props.selectedValue ? 'selected' : ''
+              }`}
+              htmlFor={`${props.id}-radio-${index}`}>
               {v.skipLabelTranslation
                 ? v.label
                 : chrome.i18n.getMessage(v.label)}

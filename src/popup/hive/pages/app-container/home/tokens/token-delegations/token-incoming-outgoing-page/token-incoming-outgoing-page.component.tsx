@@ -84,27 +84,31 @@ const TokenIncomingOutgoingPage = ({
             )}
           </div>
         )}
-      <div className="total">
-        <div className="label">{chrome.i18n.getMessage(header)}</div>
-        <div className="value">
-          {total} {tokenBalance.symbol}
-        </div>
-      </div>
 
-      <div className="list">
-        {delegationList.map((delegation, index) => (
-          <TokenIncomingOutgoingItemComponent
-            key={index}
-            delegationType={delegationType}
-            username={
-              delegationType === DelegationType.INCOMING
-                ? delegation.from
-                : delegation.to
-            }
-            amount={delegation.quantity}
-            symbol={tokenBalance.symbol}
-          />
-        ))}
+      <div className="list-panel">
+        <div className="panel">
+          <div className="total">
+            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="value">
+              {total} {tokenBalance.symbol}
+            </div>
+          </div>
+          <div className="list">
+            {delegationList.map((delegation, index) => (
+              <TokenIncomingOutgoingItemComponent
+                key={index}
+                delegationType={delegationType}
+                username={
+                  delegationType === DelegationType.INCOMING
+                    ? delegation.from
+                    : delegation.to
+                }
+                amount={delegation.quantity}
+                symbol={tokenBalance.symbol}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

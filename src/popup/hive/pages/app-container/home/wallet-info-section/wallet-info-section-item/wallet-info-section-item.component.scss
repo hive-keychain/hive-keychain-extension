@@ -88,6 +88,9 @@
       display: flex;
       align-items: center;
       column-gap: 4px;
+      .go-to-page-icon {
+        @include icon-size(16px);
+      }
     }
   }
 }

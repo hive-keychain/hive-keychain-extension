@@ -224,35 +224,22 @@ const walletInfoSectionItem = ({
                 )}
               {tokenInfo.delegationEnabled && (
                 <div
-                  data-testid={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
-                  className="delegation-line"
-                  onClick={goToTokenIncomingDelegations}>
-                  {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
-                  {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.delegationsIn),
-                    tokenInfo.precision,
-                  )}
-                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                    <SVGIcon icon={NewIcons.TOKEN_OUTGOING_DELEGATION} />
-                  )}
-                </div>
-              )}
-              {tokenInfo.delegationEnabled && (
-                <div
                   data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                   className="delegation-line"
-                  onClick={goToTokenOutgoingDelegations}>
+                  onClick={goToTokenIncomingDelegations}>
                   <div>
-                    {chrome.i18n.getMessage('popup_html_token_delegation_out')}{' '}
-                    :{' '}
+                    {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
                     {FormatUtils.trimUselessZero(
                       parseFloat(tokenBalance.delegationsIn),
                       tokenInfo.precision,
                     )}
-                    {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                      <SVGIcon icon={NewIcons.TOKEN_OUTGOING_DELEGATION} />
-                    )}
                   </div>
+                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                    <SVGIcon
+                      className="go-to-page-icon"
+                      icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                    />
+                  )}
                 </div>
               )}
               {tokenInfo.delegationEnabled &&
@@ -272,7 +259,10 @@ const walletInfoSectionItem = ({
                       )}
                     </div>
                     {parseFloat(tokenBalance.delegationsOut) > 0 && (
-                      <SVGIcon icon={NewIcons.TOKEN_OUTGOING_DELEGATION} />
+                      <SVGIcon
+                        className="go-to-page-icon"
+                        icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                      />
                     )}
                   </div>
                 )}

@@ -99,6 +99,7 @@ export enum NewIcons {
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
 
+  GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
   GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE = 'governance/update-downvote-witness',
   GOVERNANCE_PROPOSAL_BUDGET = 'governance/proposal/budget',
@@ -214,6 +215,7 @@ export enum NewIcons {
   WALLET_TOKEN_DELEGATIONS = 'wallet/tokens/delegations',
   WALLET_TOKEN_STAKE = 'wallet/tokens/stake',
   WALLET_TOKEN_UNSTAKE = 'wallet/tokens/unstake',
+  WALLET_TOKEN_GO_TO_DETAILED_PAGE = 'wallet/tokens/go-to-detailed-page',
 
   WALLET_HISTORY_FILTER_BUTTON = 'wallet/history/filter-button',
   WALLET_HISTORY_CLAIM_ACCOUNT = 'wallet/history/claim-account',

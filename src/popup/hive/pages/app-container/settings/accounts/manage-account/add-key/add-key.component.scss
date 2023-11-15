@@ -1,8 +1,9 @@
 .add-key-page {
+  @include pageLayoutRowGap;
   padding: 0px 24px;
-  .introduction {
-    font-size: 16px;
-    margin-bottom: 32px;
+  padding-bottom: 24px;
+  .caption {
+    @include caption;
   }
 
   .add-using-ledger {

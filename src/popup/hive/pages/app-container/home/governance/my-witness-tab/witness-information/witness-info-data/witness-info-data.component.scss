@@ -1,18 +1,18 @@
 .witness-info-data {
   display: flex;
   flex-direction: column;
-  border: 1px solid white;
-  border-radius: 4px;
-  padding: 8px;
+  @include small-card();
+  margin: unset;
+  align-items: flex-start;
 
   .label {
-    font-weight: bold;
-    font-size: 17px;
+    color: var(--main-font-color);
+    @include poppins600(14px);
   }
 
   .value {
-    font-size: 14px;
-
+    @include poppins500(12px);
+    color: var(--main-font-color);
     &.clickable {
       display: flex;
       flex-direction: row;

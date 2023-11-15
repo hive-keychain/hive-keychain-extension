@@ -50,14 +50,14 @@ const AddKey = ({
     <div
       className="add-key-page"
       data-testid={`${Screen.SETTINGS_ADD_KEY}-page`}>
-      <p
+      <div
         data-testid="add-key-page-paragraph-introduction"
-        className="introduction"
+        className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_add_key_text', [
             keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
-        }}></p>
+        }}></div>
 
       <InputComponent
         dataTestId="input-private-key"
@@ -73,6 +73,8 @@ const AddKey = ({
           {chrome.i18n.getMessage('popup_html_add_using_ledger')}
         </div>
       )}
+
+      <div className="fill-space"></div>
 
       <ButtonComponent
         dataTestId="import-keys-button"
