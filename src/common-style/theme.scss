@@ -54,6 +54,7 @@ $dark: (
   --checkbox-color: white,
   --checkbox-background: transparent,
   --autocomplete-background: $darker-blue,
+  --placeholder-color: rgba(153, 158, 166, 0.5),
   // Buttons
   --button-background-color: $red,
   --button-alternative-background-color: $darker-blue,
@@ -143,6 +144,7 @@ $light: (
   --checkbox-color: $darker-blue,
   --checkbox-background: #e6eef6,
   --autocomplete-background: #f7f8f9,
+  --placeholder-color: rgba(92, 100, 113, 0.5),
   // Buttons
   --button-background-color: $red,
   --button-alternative-background-color: white,
