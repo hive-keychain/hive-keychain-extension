@@ -79,6 +79,7 @@ const GenericTransaction = ({
           <div className="detail">{detail}</div>
           <CustomTooltip
             dataTestId="scustom-tool-tip"
+            additionalClassName="history-tooltip"
             message={moment(transaction.timestamp).format(
               'YYYY/MM/DD , hh:mm:ss a',
             )}
