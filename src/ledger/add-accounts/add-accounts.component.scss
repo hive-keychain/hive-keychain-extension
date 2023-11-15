@@ -14,7 +14,7 @@ html {
       align-items: center;
       justify-content: center;
       .connect-ledger {
-        border: solid 1px grey;
+        border: solid 1px var(--card-border);
         border-radius: 8px;
         width: 350px;
         height: 600px;

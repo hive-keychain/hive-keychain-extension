@@ -3,8 +3,10 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -128,7 +130,9 @@ const AddAccountsComponent = () => {
 
   const toggleAccount = (account: LocalAccount) => {
     if (isSelected(account)) {
-      setAccountsForm(accountsForm.filter((a) => a.name === account.name));
+      setAccountsForm((oldAccountForms) =>
+        oldAccountForms.filter((a) => a.name !== account.name),
+      );
     } else {
       const accounts = [...accountsForm];
       accounts.push({
@@ -333,7 +337,7 @@ const AddAccountsComponent = () => {
           </div>
           <div className="list">
             {selectableAccounts.map((sa) => (
-              <CheckboxComponent
+              <CheckboxPanelComponent
                 key={sa.name}
                 title={sa.name}
                 skipTranslation
@@ -357,7 +361,7 @@ const AddAccountsComponent = () => {
           </div>
           <div className="username">@{accountsForm[currentAccount].name}</div>
           <div className="missing-keys">
-            <CheckboxComponent
+            <CheckboxPanelComponent
               checked={accountsForm[currentAccount].useMasterKey}
               onChange={(value) => setUseMasterKey(value, currentAccount)}
               title="ledger_add_key_use_master_key"
@@ -420,6 +424,7 @@ const AddAccountsComponent = () => {
               <ButtonComponent
                 label="popup_html_previous"
                 onClick={() => setCurrentAccount(currentAccount - 1)}
+                type={ButtonType.ALTERNATIVE}
               />
             )}
 
