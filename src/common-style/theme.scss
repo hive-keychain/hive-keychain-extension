@@ -87,6 +87,8 @@ $dark: (
   // Tooltip
   --tooltip-text-color: $dark-blue,
   --tooltip-background-color: #fffffff2,
+  // Carousel
+  --carousel-arrow-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -176,6 +178,8 @@ $light: (
   // Tooltip
   --tooltip-text-color: white,
   --tooltip-background-color: $dark-blue,
+  // Carousel
+  --carousel-arrow-color: $dark-blue,
 );
 
 @mixin spread-map($map: ()) {

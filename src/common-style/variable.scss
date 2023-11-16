@@ -89,3 +89,13 @@ a {
   height: 0px;
   background-color: transparent;
 }
+
+.carousel {
+  .control-previous.control-arrow:before {
+    border-right-color: var(--carousel-arrow-color);
+  }
+
+  .control-next.control-arrow:before {
+    border-left-color: var(--carousel-arrow-color);
+  }
+}
