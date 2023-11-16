@@ -1,0 +1,37 @@
+.category {
+  display: flex;
+  flex-direction: column;
+  .title {
+    @include poppins500(20px);
+    color: var(--main-font-color);
+  }
+  .dapp {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+    padding: 16px;
+    row-gap: 4px;
+    height: 200px;
+    margin: 0px 10px;
+    cursor: pointer;
+    .logo {
+      height: 56px;
+      width: 56px;
+      border-radius: 50%;
+    }
+    .label {
+      @include poppins400(14px);
+      color: var(--main-font-color);
+    }
+    .description {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+    }
+  }
+}
