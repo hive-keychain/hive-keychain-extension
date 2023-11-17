@@ -89,6 +89,8 @@ $dark: (
   --tooltip-background-color: #fffffff2,
   // Carousel
   --carousel-arrow-color: white,
+  // Select Account
+  --select-account-background: $dark-background,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -180,6 +182,8 @@ $light: (
   --tooltip-background-color: $dark-blue,
   // Carousel
   --carousel-arrow-color: $dark-blue,
+  // Select Account
+  --select-account-background: $light-background,
 );
 
 @mixin spread-map($map: ()) {

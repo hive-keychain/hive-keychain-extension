@@ -3,13 +3,13 @@
     border: unset !important;
     border: 1px solid var(--select-border-color) !important;
     border-radius: 16px !important;
-    background: transparent;
+    background: var(--select-account-background);
 
     &:hover,
     &:focus {
       border: 1px solid var(--select-border-color) !important;
       border-radius: 16px !important;
-      background: transparent;
+      background: var(--select-account-background);
     }
 
     &.white {
