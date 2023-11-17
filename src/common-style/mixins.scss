@@ -431,3 +431,13 @@
     }
   }
 }
+
+@mixin overlay {
+  height: 100%;
+  width: 100%;
+  opacity: 0.8;
+  background: $dark-blue;
+  position: fixed;
+  top: 0;
+  left: 0;
+}

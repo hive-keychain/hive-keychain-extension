@@ -142,6 +142,20 @@
       width: 100%;
     }
   }
+
+  .overlay {
+    display: none;
+    @include overlay;
+    z-index: 4;
+  }
+  &:has(.react-dropdown-select-dropdown) {
+    .select-account-select {
+      z-index: 5;
+    }
+    .overlay {
+      display: block;
+    }
+  }
 }
 
 .css-wmy1p7-ReactDropdownSelect {

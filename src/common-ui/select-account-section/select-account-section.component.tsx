@@ -168,6 +168,7 @@ const SelectAccountSection = ({
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />
+          <div className="overlay"></div>
         </div>
       )}
     </>
