@@ -11,11 +11,12 @@ import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
+import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 
 export const Ecosystem = ({ setTitleContainerProperties }: any) => {
   const { chain } = useChainContext();
 
-  const [dappCategories, setDappCategories] = useState<DAppCategory[]>();
+  const [tabs, setTabs] = useState<Tab[]>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -27,20 +28,28 @@ export const Ecosystem = ({ setTitleContainerProperties }: any) => {
 
   const init = async () => {
     const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain);
-    setDappCategories(categories);
+
+    const tempTabs: any = [];
+    for (const category of categories) {
+      tempTabs.push({
+        title: `ecosystem_category_${category.category}`,
+        content: (
+          <EcosystemCategory
+            category={category}
+            key={`category-${category.category}`}
+          />
+        ),
+      });
+    }
+    setTabs(tempTabs);
   };
 
   return (
     <div className="ecosystem-page">
-      {dappCategories && (
-        <FormContainer>
-          {dappCategories.map((cat, index) => (
-            <EcosystemCategory category={cat} key={`category-${index}`} />
-          ))}
-        </FormContainer>
-      )}
-
-      {!dappCategories && <LoadingComponent />}
+      <FormContainer>
+        {tabs && <TabsComponent tabs={tabs}></TabsComponent>}
+        {!tabs && <LoadingComponent />}
+      </FormContainer>
     </div>
   );
 };

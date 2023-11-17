@@ -1,6 +1,8 @@
 .category {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 8px;
+  row-gap: 8px;
   .title {
     @include poppins500(20px);
     color: var(--main-font-color);
@@ -18,7 +20,6 @@
     padding: 16px;
     row-gap: 4px;
     height: 200px;
-    margin: 0px 10px;
     cursor: pointer;
     .logo {
       height: 56px;

@@ -3559,7 +3559,7 @@
     "description": "Ecosystem"
   },
   "ecosystem_category_finance": {
-    "message": "Finance",
+    "message": "Defi",
     "description": "Ecosystem"
   },
   "ecosystem_category_gaming": {
@@ -3572,6 +3572,10 @@
   },
   "ecosystem_category_tool": {
     "message": "Tool",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_all": {
+    "message": "All",
     "description": "Ecosystem"
   },
   "popup_html_theme": {
