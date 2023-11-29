@@ -189,15 +189,23 @@ const AccountKeysList = ({
         <div className="qr-code">
           <div className="overlay"></div>
           <div className="qr-code-popup">
-            <div className="qr-code-disclaimer">
-              <span>{chrome.i18n.getMessage('popup_html_qr_disclaimer1')}</span>
-              <span>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</span>
+            <div>
+              <h3>{chrome.i18n.getMessage('popup_html_qr_title')}</h3>
+              <div className="qr-code-disclaimer">
+                <span>
+                  {chrome.i18n.getMessage('popup_html_qr_disclaimer1')}
+                </span>
+                <span>
+                  {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
+                </span>
+              </div>
             </div>
             <div className="qr-code-container">
               <div ref={qrCodeRef}></div>
               <QRCode
                 data-testid="qrcode"
                 className="qrcode"
+                size={240}
                 value={`keychain://add_account=${AccountUtils.generateQRCode(
                   account!,
                 )}`}

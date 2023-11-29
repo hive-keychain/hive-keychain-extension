@@ -24,6 +24,11 @@
   left: 0;
   z-index: 2;
 
+  h3 {
+    margin-top: 0;
+    text-align: center;
+    color: var(--main-font-color);
+  }
   .overlay {
     background: $dark-background;
     opacity: 0.8;
@@ -57,7 +62,7 @@
       border-radius: 20px;
       border: 4px solid var(--qrcode-border-color);
       padding: 12px;
-      max-width: 256px;
+      max-width: 240px;
       display: flex;
       flex-direction: column;
       row-gap: 8px;
