@@ -12,43 +12,41 @@ const set = async (autoLock: Autolock) => {
     (autoLock.type === AutoLockType.DEVICE_LOCK ||
       autoLock.type === AutoLockType.IDLE_LOCK)
   ) {
-    Logger.info(
-      `hive-keychain: setting up ${autoLock.type} listener ${
-        autoLock.type === AutoLockType.IDLE_LOCK ? `(${autoLock.mn}mn)` : ''
-      }`,
-    );
+    Logger.info(`Setting up ${autoLock.type} listener`);
     if (autoLock.type === AutoLockType.IDLE_LOCK) {
-      chrome.idle.setDetectionInterval(autoLock.mn * 60);
+      Logger.log(`Idle time = ${autoLock.mn}mn`);
+      chrome.idle.setDetectionInterval(parseInt(autoLock.mn + '') * 60);
     }
   }
 };
 /* istanbul ignore next */
 const start = async () => {
   Logger.info('Starting autolock');
-  chrome.idle.onStateChanged.addListener(async (state: any) => {
-    const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-    );
-    if (!autoLock) return;
-    if (
-      (autoLock.type === AutoLockType.DEVICE_LOCK &&
-        state === AutoLockType.DEVICE_LOCK) ||
-      (autoLock.type === AutoLockType.IDLE_LOCK && state !== 'active')
-    ) {
-      Logger.info(
-        `hive-keychain: locking because ${
-          autoLock.type === AutoLockType.DEVICE_LOCK
-            ? 'computer locked'
-            : 'computer is idle'
-        }`,
-      );
-      MkModule.lock();
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.LOCK_APP,
-      });
-    }
-  });
 };
+
+chrome.idle.onStateChanged.addListener(async (state: any) => {
+  const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.AUTOLOCK,
+  );
+  if (!autoLock) return;
+  if (
+    (autoLock.type === AutoLockType.DEVICE_LOCK &&
+      state === AutoLockType.DEVICE_LOCK) ||
+    (autoLock.type === AutoLockType.IDLE_LOCK && state !== 'active')
+  ) {
+    Logger.info(
+      `Locking because ${
+        autoLock.type === AutoLockType.DEVICE_LOCK
+          ? 'computer locked'
+          : 'computer is idle'
+      }`,
+    );
+    MkModule.lock();
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.LOCK_APP,
+    });
+  }
+});
 
 const AutolockModule = {
   set,
