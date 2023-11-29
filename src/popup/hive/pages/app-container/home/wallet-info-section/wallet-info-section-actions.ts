@@ -73,12 +73,12 @@ export const WalletInfoSectionActions = (
   } else if (tokenSymbol === 'HP') {
     return [
       {
-        label: 'popup_html_delegate',
+        label: 'popup_html_delegate_short',
         icon: NewIcons.WALLET_HP_DELEGATIONS,
         nextScreen: Screen.DELEGATION_PAGE,
       },
       {
-        label: 'popup_html_delegate_rc',
+        label: 'popup_html_delegate_rc_short',
         icon: NewIcons.WALLET_RC_DELEGATIONS,
         nextScreen: Screen.RC_DELEGATIONS_PAGE,
       },

@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
   <path stroke="var(--wallet-icon-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".674" d="m7.376 8.524 6.692-2.23c3.003-1 4.634.638 3.641 3.64l-2.23 6.691c-1.498 4.5-3.957 4.5-5.455 0l-.662-1.986-1.986-.662c-4.501-1.497-4.501-3.948 0-5.453Z"/>
   <path stroke="var(--wallet-icon-secondary-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".674" d="m11 12.999 3-3"/>
+  <rect width="23.387" height="23.384" x=".307" y="-.307" stroke="var(--wallet-icon-border-color)" stroke-width=".613" rx="11.692" transform="matrix(1 0 0 -1 0 23.384)"/>
 </svg>

@@ -2,7 +2,7 @@
   display: flex;
   column-gap: 8px;
   padding: 8px 12px;
-  width: 116px;
+  width: 150px;
   min-height: 58px;
   border-radius: 13px;
   border: 1px solid var(--wallet-card-darker-border);
@@ -10,11 +10,8 @@
   align-items: center;
   justify-content: center;
   .title {
-    @include poppins400(12px);
+    @include poppins400(14px);
     color: var(--main-font-color);
-  }
-  .action-button {
-    @include icon-size(30px);
   }
 
   &:hover {

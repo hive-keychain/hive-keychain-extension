@@ -159,6 +159,14 @@
   "popup_html_delegate": {
     "message": "HP Delegations"
   },
+  "popup_html_delegate_short": {
+    "message": "HP Deleg.",
+    "description": "Keep short, 10 chars max including space and ."
+  },
+  "popup_html_delegate_rc_short": {
+    "message": "RC Deleg.",
+    "description": "Keep short, 10 chars max including space and ."
+  },
   "popup_html_estimation": {
     "message": "Estimated Account Value",
     "description": "on popup main page"
