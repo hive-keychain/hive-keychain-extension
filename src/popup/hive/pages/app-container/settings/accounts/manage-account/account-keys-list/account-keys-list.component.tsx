@@ -209,6 +209,8 @@ const AccountKeysList = ({
                 value={`keychain://add_account=${AccountUtils.generateQRCode(
                   account!,
                 )}`}
+                bgColor="var(--qrcode-background-color)"
+                fgColor="var(--qrcode-foreground-color)"
               />
             </div>
             <ButtonComponent

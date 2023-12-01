@@ -75,6 +75,8 @@ $dark: (
   --proposal-detail-icon: white,
   // QRCode
   --qrcode-border-color: white,
+  --qrcode-foreground-color: white,
+  --qrcode-background-color: $dark-blue,
   //Swaps
   --swap-history-button-icon-color: $red,
   --swap-history-button-background: $darker-blue,
@@ -167,7 +169,9 @@ $light: (
   // Governance
   --proposal-detail-icon: $dark-blue,
   //QRCode
-  --qrcode-border-color: black,
+  --qrcode-border-color: $dark-blue,
+  --qrcode-foreground-color: $dark-blue,
+  --qrcode-background-color: white,
   //Swaps
   --swap-history-button-icon-color: $red,
   --swap-history-button-border-color: $light-grey-border,
