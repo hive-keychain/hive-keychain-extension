@@ -1,4 +1,5 @@
 import { joiResolver } from '@hookform/resolvers/joi';
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
@@ -35,11 +36,9 @@ import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface DelegationForm {
   username: string;
@@ -58,6 +57,7 @@ const Delegations = ({
   delegations,
   globalProperties,
   formParams,
+  localAccounts,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -93,17 +93,18 @@ const Delegations = ({
   ] = useState<string | number>('...');
 
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState([]);
+    useState<AutoCompleteValues>();
 
   const [incomingError, setIncomingError] = useState<string | null>(null);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.FAVORITE_USERS,
-    );
-    setAutocompleteTransferUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
-    );
+    const autoCompleteListByCategories: AutoCompleteValues =
+      await FavoriteUserUtils.getAutocompleteListByCategories(
+        activeAccount.name!,
+        localAccounts,
+        { addExchanges: false },
+      );
+    setAutocompleteTransferUsernames(autoCompleteListByCategories);
   };
 
   useEffect(() => {
@@ -393,6 +394,7 @@ const Delegations = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    localAccounts: state.accounts,
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     delegations: state.delegations,

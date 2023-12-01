@@ -66,7 +66,7 @@ export const SelectAccountSectionItemComponent = ({
     else if (selectedAccount === item.value)
       return (
         <SVGIcon
-          icon={NewIcons.ACTIVE}
+          icon={NewIcons.SELECT_ACTIVE}
           className="active-icon"
           forceHover={hovered}
           hoverable

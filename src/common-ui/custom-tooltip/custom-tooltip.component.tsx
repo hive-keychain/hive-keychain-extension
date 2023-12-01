@@ -105,8 +105,8 @@ export const CustomTooltip = ({
   };
 
   const hide = () => {
+    clearTimeout(timeout);
     setTimeout(() => {
-      clearTimeout(timeout);
       setOpen(false);
     }, 250);
   };

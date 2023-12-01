@@ -116,7 +116,6 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
           />
           <CustomTooltip
             position="left"
-            delayShow={0}
             skipTranslation
             message={getTooltipMessage(swap)}>
             <SVGIcon
