@@ -3611,11 +3611,11 @@
     "description": "Form validation error: should be less than (or equal)"
   },
   "message_container_title_success": {
-    "message": "Yeah!",
+    "message": "Success!",
     "description": "Message container success title"
   },
   "message_container_title_fail": {
-    "message": "Grrr!",
+    "message": "Oops!",
     "description": "Message container fail title"
   },
   "message_container_title_warning": {
