@@ -61,6 +61,11 @@
         .option {
           display: flex;
           flex-direction: column;
+
+          .active-icon {
+            color: $red;
+          }
+
           &:hover {
             background-color: $red;
             .account-name,
