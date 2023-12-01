@@ -5,6 +5,7 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
@@ -85,65 +86,69 @@ const TokensFilter = ({
         placeholder="popup_html_search"
         value={filterValue}
         onChange={setFilterValue}
+        rightActionIcon={NewIcons.INPUT_SEARCH}
+        rightActionClicked={() => {}}
       />
 
       <div className="tokens-list">
-        <FlatList
-          list={filteredTokens}
-          renderItem={(token: Token) => (
-            <div
-              data-testid={`token-list-item-${token.symbol}`}
-              className="token"
-              key={token.symbol}>
-              <CheckboxPanelComponent
-                dataTestId={`checkbox-select-token-${token.symbol}`}
-                extraDataTestIdOnInput={`checkbox-checked-${token.symbol}`}
-                checked={!hiddenTokens.includes(token.symbol)}
-                onChange={() => {
-                  toggleHiddenToken(token.symbol);
-                }}>
-                <div
-                  data-testid="token-list-item-description"
-                  className="description">
-                  <div className="name">{token.name}</div>
-                  <div className="extra-info">
-                    <div className="details">
-                      <div className="logo-container">
-                        <img
-                          className="logo"
-                          src={
-                            token.metadata.icon ??
-                            '/assets/images/wallet/hive-engine.svg'
-                          }
-                          onError={({ currentTarget }) => {
-                            currentTarget.onerror = null;
-                            currentTarget.src =
-                              '/assets/images/wallet/hive-engine.svg';
-                          }}
-                        />
-                      </div>
-                      {token.issuer && (
-                        <div className="issued-by">
-                          {token.symbol}{' '}
-                          {chrome.i18n.getMessage('popup_token_issued_by', [
-                            token.issuer,
-                          ])}
+        {filteredTokens.length ? (
+          <FlatList
+            list={filteredTokens}
+            renderItem={(token: Token) => (
+              <div
+                data-testid={`token-list-item-${token.symbol}`}
+                className="token"
+                key={token.symbol}>
+                <CheckboxPanelComponent
+                  dataTestId={`checkbox-select-token-${token.symbol}`}
+                  extraDataTestIdOnInput={`checkbox-checked-${token.symbol}`}
+                  checked={!hiddenTokens.includes(token.symbol)}
+                  onChange={() => {
+                    toggleHiddenToken(token.symbol);
+                  }}>
+                  <div
+                    data-testid="token-list-item-description"
+                    className="description">
+                    <div className="name">{token.name}</div>
+                    <div className="extra-info">
+                      <div className="details">
+                        <div className="logo-container">
+                          <img
+                            className="logo"
+                            src={
+                              token.metadata.icon ??
+                              '/assets/images/wallet/hive-engine.svg'
+                            }
+                            onError={({ currentTarget }) => {
+                              currentTarget.onerror = null;
+                              currentTarget.src =
+                                '/assets/images/wallet/hive-engine.svg';
+                            }}
+                          />
                         </div>
-                      )}
-                    </div>
-                    <div className="supply">
-                      {chrome.i18n.getMessage('popup_token_supply')}
-                      {' : '}
-                      {FormatUtils.nFormatter(parseFloat(token.supply), 3)}/
-                      {FormatUtils.nFormatter(parseFloat(token.maxSupply), 3)}
+                        {token.issuer && (
+                          <div className="issued-by">
+                            {token.symbol}{' '}
+                            {chrome.i18n.getMessage('popup_token_issued_by', [
+                              token.issuer,
+                            ])}
+                          </div>
+                        )}
+                      </div>
+                      <div className="supply">
+                        {chrome.i18n.getMessage('popup_token_supply')}
+                        {' : '}
+                        {FormatUtils.nFormatter(parseFloat(token.supply), 3)}/
+                        {FormatUtils.nFormatter(parseFloat(token.maxSupply), 3)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CheckboxPanelComponent>
-            </div>
-          )}
-          renderOnScroll
-        />
+                </CheckboxPanelComponent>
+              </div>
+            )}
+            renderOnScroll
+          />
+        ) : null}
       </div>
     </div>
   );

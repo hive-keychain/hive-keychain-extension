@@ -36,7 +36,7 @@ export interface InputProps {
   rightActionIconClassname?: string;
 }
 
-const InputComponent = React.forwardRef((props: InputProps, ref) => {
+const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -89,6 +89,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref) => {
                 ? InputType.TEXT
                 : props.type
             }
+            ref={ref}
             placeholder={`${
               props.placeholder
                 ? props.skipPlaceholderTranslation

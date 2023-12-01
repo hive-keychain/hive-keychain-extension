@@ -1,6 +1,7 @@
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
   loadTokens,
   loadTokensMarket,
@@ -9,11 +10,14 @@ import {
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
-import { Separator } from 'src/common-ui/separator/separator.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { RootState } from 'src/popup/hive/store';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
@@ -31,6 +35,7 @@ const WalletInfoSection = ({
   allTokens,
   fetchConversionRequests,
   loadTokensMarket,
+  navigateTo,
   loadUserTokens,
   loadTokens,
 }: PropsFromRedux) => {
@@ -40,6 +45,9 @@ const WalletInfoSection = ({
 
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
+  const [tokenFilter, setTokenFilter] = useState('');
+  const [showSearchHE, setShowSearchHE] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const loadHiddenTokens = async () => {
     setHiddenTokens(
@@ -134,7 +142,6 @@ const WalletInfoSection = ({
           subValue={activeAccount.account.savings_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
         />
-
         <WalletInfoSectionItemComponent
           tokenSymbol="HBD"
           icon={NewIcons.WALLET_HBD_LOGO}
@@ -159,30 +166,76 @@ const WalletInfoSection = ({
                 '.'
           }
         />
+        <div className="hive-engine-separator">
+          <span>
+            <SVGIcon icon={NewIcons.HIVE_ENGINE} />
+            <p className="sub-value">Hive Engine</p>
+          </span>
+          <div className="line" />
+
+          <InputComponent
+            classname={`token-searchbar ${showSearchHE ? '' : 'hide'}`}
+            type={InputType.TEXT}
+            placeholder="popup_html_search"
+            onChange={(e) => {
+              setTokenFilter(e);
+            }}
+            value={tokenFilter}
+            rightActionIcon={NewIcons.WALLET_SEARCH}
+            rightActionClicked={() => {
+              setShowSearchHE(false);
+            }}
+            ref={inputRef}
+          />
+
+          <SVGIcon
+            icon={NewIcons.WALLET_SEARCH}
+            className={`token-search ${!showSearchHE ? '' : 'hide'}`}
+            onClick={() => {
+              setShowSearchHE(true);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 200);
+            }}
+          />
+
+          <SVGIcon
+            icon={NewIcons.SETTINGS}
+            onClick={() => {
+              navigateTo(Screen.TOKENS_FILTER);
+            }}
+          />
+        </div>
         {allTokens?.length > 0 &&
-          filteredTokenList &&
-          filteredTokenList.length > 0 && (
-            <>
-              <Separator type={'horizontal'} />
-              <FlatList
-                list={filteredTokenList}
-                renderItem={(token: TokenBalance) => (
-                  <WalletInfoSectionItemComponent
-                    key={`token-${token.symbol}`}
-                    tokenSymbol={token.symbol}
-                    tokenBalance={token}
-                    tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
-                    tokenMarket={market}
-                    icon={NewIcons.HIVE_ENGINE}
-                    addBackground
-                    mainValue={token.balance}
-                    mainValueLabel={token.symbol}
-                  />
-                )}
-                renderOnScroll
-              />
-            </>
-          )}
+        filteredTokenList &&
+        filteredTokenList.filter((e) =>
+          e.symbol.includes(tokenFilter.toUpperCase()),
+        ).length > 0 ? (
+          <>
+            {/* <Separator type={'horizontal'} /> */}
+            <FlatList
+              list={filteredTokenList.filter((e) =>
+                e.symbol.includes(tokenFilter.toUpperCase()),
+              )}
+              renderItem={(token: TokenBalance) => (
+                <WalletInfoSectionItemComponent
+                  key={`token-${token.symbol}`}
+                  tokenSymbol={token.symbol}
+                  tokenBalance={token}
+                  tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
+                  tokenMarket={market}
+                  icon={NewIcons.HIVE_ENGINE}
+                  addBackground
+                  mainValue={token.balance}
+                  mainValueLabel={token.symbol}
+                />
+              )}
+              renderOnScroll
+            />
+          </>
+        ) : (
+          <p></p>
+        )}
       </div>
     </div>
   );
@@ -206,6 +259,7 @@ const connector = connect(mapStateToProps, {
   loadTokensMarket,
   loadUserTokens,
   loadTokens,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

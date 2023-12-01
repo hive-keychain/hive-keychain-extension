@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 30 30">
-  <path stroke="var(--wallet-icon-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" d="M12.5 23.333h5c4.166 0 5.833-1.666 5.833-5.833v-5c0-4.167-1.666-5.833-5.833-5.833h-5c-4.167 0-5.833 1.666-5.833 5.833v5c0 4.166 1.666 5.833 5.833 5.833Z"/>
-  <path stroke="var(--wallet-icon-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" d="m10 14.375 2.083-1.875 2.084 1.875M12.084 12.5v5M10 19.166a15.791 15.791 0 0 0 10 0m-4.166-3.541 2.083 1.875L20 15.625M17.916 17.5v-5M20 10.812a15.791 15.791 0 0 0-10 0"/>
-  <rect width="29.5" height="29.5" x=".25" y=".25" stroke="var(--wallet-icon-border-color)" stroke-width=".5" rx="14.75"/>
-</svg>

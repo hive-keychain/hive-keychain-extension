@@ -19,11 +19,11 @@ const SettingsMenuItems = (logout: () => void): MenuItem[] => {
       icon: NewIcons.MENU_ADVANCED_SETTINGS,
       nextScreen: Screen.SETTINGS_ADVANCED,
     },
-    {
-      label: 'popup_html_tokens',
-      icon: NewIcons.MENU_TOKENS,
-      nextScreen: Screen.TOKENS_FILTER,
-    },
+    // {
+    //   label: 'popup_html_tokens',
+    //   icon: NewIcons.MENU_TOKENS,
+    //   nextScreen: Screen.TOKENS_FILTER,
+    // },
     {
       label: 'popup_html_governance',
       icon: NewIcons.MENU_GOVERNANCE,

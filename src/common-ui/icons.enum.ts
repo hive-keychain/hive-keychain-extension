@@ -110,6 +110,8 @@ export enum NewIcons {
   GOVERNANCE_PROPOSAL_UPVOTE = 'governance/proposal/upvote',
 
   HIVE_ENGINE = 'wallet/hive-engine',
+  SETTINGS = 'wallet/settings',
+  WALLET_SEARCH = 'wallet/search',
 
   INPUT_SHOW = 'input/show',
   INPUT_HIDE = 'input/hide',
