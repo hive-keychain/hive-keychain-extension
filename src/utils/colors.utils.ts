@@ -8,15 +8,19 @@ const rgbToHex = (r: any, g: any, b: any) => {
 };
 
 const getBackgroundColor = (src: string) => {
-  var canvas = document.createElement('canvas');
-  var context = canvas.getContext('2d');
-  if (!context) return '#0000002b';
   var img = new Image();
   img.onerror = () => {
     img.onerror = null;
     img.src = '/assets/images/hive-engine.svg';
   };
   img.src = src;
+  return getBackgroundColorFromImage(img);
+};
+
+const getBackgroundColorFromImage = (img: HTMLImageElement) => {
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  if (!context) return '#0000002b';
   canvas.width = img.width;
   canvas.height = img.height;
   context?.drawImage(img, 0, 0, img.width, img.height);
@@ -65,4 +69,5 @@ const getBackgroundColor = (src: string) => {
 
 export const ColorsUtils = {
   getBackgroundColor,
+  getBackgroundColorFromImage,
 };

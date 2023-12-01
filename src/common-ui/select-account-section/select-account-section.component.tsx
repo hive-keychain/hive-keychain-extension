@@ -12,6 +12,7 @@ import {
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SelectAccountSectionItemComponent } from 'src/common-ui/select-account-section/select-account-section-item.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -80,13 +81,10 @@ const SelectAccountSection = ({
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        <img
+        <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
+          alt={'/assets/images/accounts.png'}
         />
         <div
           className="selected-account-name"

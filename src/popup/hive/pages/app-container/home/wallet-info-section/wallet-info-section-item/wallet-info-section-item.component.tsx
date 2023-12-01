@@ -12,10 +12,10 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
-import { ColorsUtils } from 'src/utils/colors.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface WalletSectionInfoItemProps {
@@ -47,21 +47,17 @@ const walletInfoSectionItem = ({
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
-  const [backgroundColor, setBackgroundColor] = useState<string>();
   const reff = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     setActionButtons(
       WalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
     );
-
-    if (tokenInfo && addBackground) {
-      const bg = ColorsUtils.getBackgroundColor(
-        tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg',
-      );
-      setBackgroundColor(bg);
-    }
-  }, []);
+  };
 
   const toggleDropdown = () => {
     setIsExpanded(!isExpanded);
@@ -131,16 +127,11 @@ const walletInfoSectionItem = ({
           />
         )}
         {tokenInfo && (
-          <img
-            className={`currency-icon ${addBackground ? 'add-background' : ''}`}
-            src={
-              tokenInfo.metadata.icon ?? '/assets/images/wallet/hive-engine.svg'
-            }
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src = '/assets/images/wallet/hive-engine.svg';
-            }}
-            style={backgroundColor ? { background: backgroundColor } : {}}
+          <PreloadedImage
+            src={tokenInfo?.metadata.icon}
+            alt={'/assets/images/hive-engine.svg'}
+            className="currency-icon"
+            addBackground
           />
         )}
         <div className="main-value-label">{mainValueLabel}</div>
