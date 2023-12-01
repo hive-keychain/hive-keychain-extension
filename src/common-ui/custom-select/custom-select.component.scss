@@ -91,7 +91,7 @@
       .option {
         &:has(~ .option > .custom-select-item:hover) {
           .separator {
-            background: white;
+            background: var(--input-background);
           }
         }
         .custom-select-item {
