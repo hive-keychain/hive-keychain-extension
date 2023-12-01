@@ -24,7 +24,7 @@ export const EcosystemCategory = ({ category }: EcosystemCategoryProps) => {
   };
 
   return (
-    <div className="category">
+    <div className="ecosystem-category">
       {category.dapps.map((dapp, index) => (
         <div
           className="dapp"
