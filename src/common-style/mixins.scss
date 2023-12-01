@@ -441,3 +441,13 @@
   top: 0;
   left: 0;
 }
+
+@mixin radius-bound-dropdown-scrollbar {
+  overflow: hidden;
+  .custom-select-dropdown {
+    &::-webkit-scrollbar {
+      width: 3px;
+    }
+    overflow-y: scroll;
+  }
+}

@@ -61,6 +61,7 @@
       top: 60px;
       background-color: var(--input-background);
       border-radius: 16px;
+      @include radius-bound-dropdown-scrollbar;
       @include poppins500(14px);
       .custom-select-dropdown {
         .filter-input {
@@ -129,10 +130,6 @@
             display: block;
           }
         }
-      }
-
-      &::-webkit-scrollbar {
-        width: 3px;
       }
     }
   }
