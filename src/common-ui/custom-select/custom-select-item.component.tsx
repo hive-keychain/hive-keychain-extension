@@ -1,6 +1,7 @@
 import React, { BaseSyntheticEvent } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -39,14 +40,10 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           closeDropdown();
         }}>
         {item.img && (
-          <img
+          <PreloadedImage
             className="left-image"
             src={item.img}
-            onError={(e: any) => {
-              e.target.onError = null;
-              e.target.src =
-                item.imgBackup ?? '/assets/images/wallet/hive-engine.svg';
-            }}
+            alt={item.imgBackup}
           />
         )}
         <div className="item-label">{item.label}</div>
