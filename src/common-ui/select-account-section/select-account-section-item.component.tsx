@@ -2,6 +2,7 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { NewIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 interface AccountItemProps {
@@ -89,13 +90,10 @@ export const SelectAccountSectionItemComponent = ({
           handleItemClicked(item.value);
           closeDropdown();
         }}>
-        <img
+        <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${item.label}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
+          alt={'/assets/images/accounts.png'}
         />
         <div className="account-name">{item.label}</div>
         {renderCheckedAccount()}
