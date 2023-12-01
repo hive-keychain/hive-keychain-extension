@@ -161,7 +161,7 @@ const IncomingOutgoing = ({
     <div className="delegation-row" key={username}>
       {username && (
         <>
-          <div className="item">
+          <div className="item" onClick={toggleExpandablePanel}>
             <div className="username">{`@${username}`}</div>
             <div className="item-details">
               {!editModeActivated && (
