@@ -74,7 +74,7 @@ const IncomingOutgoingPage = ({
     }
 
     setTotalHP(FormatUtils.toHP(totalVests.toString(), globalProperties));
-  }, []);
+  }, [delegations]);
 
   return (
     <div

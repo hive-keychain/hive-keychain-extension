@@ -1,5 +1,10 @@
+import {
+  loadDelegatees,
+  loadDelegators,
+  loadPendingOutgoingUndelegations,
+} from '@popup/hive/actions/delegations.actions';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -13,6 +18,7 @@ import {
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
 import {
+  goBack,
   navigateTo,
   navigateToWithParams,
 } from 'src/popup/hive/actions/navigation.actions';
@@ -39,29 +45,35 @@ const IncomingOutgoing = ({
   globalProperties,
   currencyLabels,
   expirationDate,
-  maxAvailable,
   navigateToWithParams,
-  navigateTo,
   setErrorMessage,
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  loadDelegatees,
+  loadDelegators,
+  loadPendingOutgoingUndelegations,
+  goBack,
 }: PropsType) => {
   const [editModeActivated, setEditModeActivated] = useState(false);
   const [value, setValue] = useState('');
-  const [amountHP, setAmountHP] = useState(
-    FormatUtils.toHP(
-      amount.toString().replace(' VESTS', ''),
-      globalProperties,
-    ).toFixed(3),
-  );
+  const [amountHP, setAmountHP] = useState('...');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    setAmountHP(
+      FormatUtils.toHP(
+        amount.toString().replace(' VESTS', ''),
+        globalProperties,
+      ).toFixed(3),
+    );
+  }, [amount]);
 
   const toggleExpandablePanel = () => {
     if (!editModeActivated) setIsExpanded(!isExpanded);
   };
 
-  const cancelDelegation = () => {
+  const cancelDelegation = async () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
@@ -78,9 +90,10 @@ const IncomingOutgoing = ({
             '0.000000 VESTS',
             activeAccount.keys.active!,
           );
-          navigateTo(Screen.HOME_PAGE, true);
           if (success) {
             setSuccessMessage('popup_html_cancel_delegation_successful');
+            await refreshDelegations();
+            goBack();
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
           }
@@ -103,7 +116,7 @@ const IncomingOutgoing = ({
     setValue(amountHP);
   };
 
-  const saveChanges = () => {
+  const saveChanges = async () => {
     setEditModeActivated(false);
     setAmountHP(value);
 
@@ -136,9 +149,10 @@ const IncomingOutgoing = ({
               ' VESTS',
             activeAccount.keys.active!,
           );
-          navigateTo(Screen.HOME_PAGE, true);
           if (success) {
             setSuccessMessage('popup_html_delegation_successful');
+            await refreshDelegations();
+            goBack();
           } else {
             setErrorMessage('popup_html_delegation_fail');
           }
@@ -151,10 +165,15 @@ const IncomingOutgoing = ({
     });
   };
 
-  const setToMax = () => {
-    if (maxAvailable) {
-      setValue((parseFloat(amountHP) + parseFloat(maxAvailable)).toFixed(3));
-    }
+  const refreshDelegations = async () => {
+    return await new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        loadDelegators(activeAccount.name!);
+        loadDelegatees(activeAccount.name!);
+        loadPendingOutgoingUndelegations(activeAccount.name!);
+        resolve();
+      }, 3000);
+    });
   };
 
   return (
@@ -266,6 +285,10 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  loadDelegatees,
+  loadDelegators,
+  loadPendingOutgoingUndelegations,
+  goBack,
 });
 type PropsType = ConnectedProps<typeof connector> & IncomingOutgoingProps;
 

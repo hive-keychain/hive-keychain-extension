@@ -72,7 +72,7 @@ const Delegations = ({
   const [available, setAvailable] = useState<number>();
   const { control, handleSubmit, setValue, watch } = useForm<DelegationForm>({
     defaultValues: {
-      username: formParams.username ? formParams.username : activeAccount.name,
+      username: formParams.username ? formParams.username : '',
       amount: formParams.amount ? formParams.amount : '',
       currency: currencyLabels.hp,
     },
