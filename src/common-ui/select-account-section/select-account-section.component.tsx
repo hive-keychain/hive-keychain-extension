@@ -85,6 +85,7 @@ const SelectAccountSection = ({
           className="user-picture"
           src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
           alt={'/assets/images/accounts.png'}
+          placeholder={'/assets/images/accounts.png'}
         />
         <div
           className="selected-account-name"
