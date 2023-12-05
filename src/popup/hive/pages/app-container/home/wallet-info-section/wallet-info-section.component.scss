@@ -15,6 +15,12 @@
     grid-area: only;
   }
 
+  .no-token {
+    @include caption();
+    z-index: 1;
+    margin-top: -12px;
+  }
+
   .wallet-background {
     background: var(--wallet-card-background);
     grid-area: only;

@@ -129,9 +129,10 @@ const walletInfoSectionItem = ({
         {tokenInfo && (
           <PreloadedImage
             src={tokenInfo?.metadata.icon}
-            alt={'/assets/images/hive-engine.svg'}
             className="currency-icon"
             addBackground
+            symbol={tokenInfo.symbol}
+            useDefaultSVG={icon}
           />
         )}
         <div className="main-value-label">{mainValueLabel}</div>

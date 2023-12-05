@@ -208,15 +208,11 @@ const WalletInfoSection = ({
         </div>
         {allTokens?.length > 0 &&
         filteredTokenList &&
-        filteredTokenList.filter((e) =>
-          e.symbol.includes(tokenFilter.toUpperCase()),
-        ).length > 0 ? (
+        filteredTokenList.length > 0 ? (
           <>
             {/* <Separator type={'horizontal'} /> */}
             <FlatList
-              list={filteredTokenList.filter((e) =>
-                e.symbol.includes(tokenFilter.toUpperCase()),
-              )}
+              list={filteredTokenList}
               renderItem={(token: TokenBalance) => (
                 <WalletInfoSectionItemComponent
                   key={`token-${token.symbol}`}
@@ -231,10 +227,15 @@ const WalletInfoSection = ({
                 />
               )}
               renderOnScroll
+              searchBy="symbol"
+              searchTerm={tokenFilter}
+              searchCaseInsensitive
             />
           </>
         ) : (
-          <p></p>
+          <div className="no-token">
+            {chrome.i18n.getMessage('html_tokens_none_available')}
+          </div>
         )}
       </div>
     </div>

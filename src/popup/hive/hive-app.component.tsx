@@ -43,6 +43,7 @@ import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
+import { ColorsUtils } from 'src/utils/colors.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -184,6 +185,7 @@ const HiveApp = ({
   };
 
   const initApplication = async () => {
+    await ColorsUtils.downloadColors();
     loadCurrencyPrices();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();

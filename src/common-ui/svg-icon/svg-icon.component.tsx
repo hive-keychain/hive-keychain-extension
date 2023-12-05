@@ -16,6 +16,7 @@ interface ISVGIconProps {
   skipTooltipTranslation?: boolean;
   tooltipMessage?: string;
   tooltipPosition?: TooltipProps['position'];
+  background?: string;
 }
 
 export const SVGIcon = ({
@@ -44,6 +45,7 @@ export const SVGIcon = ({
     icon,
     hoverable,
     forceHover,
+    background,
   }: ISVGIconProps) => {
     return (
       <ReactSVG
@@ -55,6 +57,7 @@ export const SVGIcon = ({
           (hoverable && hovered) || forceHover ? 'hovered' : ''
         }`}
         src={`/assets/images/${icon}.svg`}
+        style={{ background: background }}
       />
     );
   };
