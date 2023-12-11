@@ -124,9 +124,9 @@ const IncomingOutgoing = ({
       cancelDelegation();
     }
 
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
-      currencyLabels.hp
-    }`;
+    const valueS = `${FormatUtils.formatCurrencyValue(
+      parseFloat(value.toString()),
+    )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [

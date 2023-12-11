@@ -210,9 +210,9 @@ const Delegations = ({
       cancelDelegation(form);
     }
 
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
-      currencyLabels.hp
-    }`;
+    const valueS = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [

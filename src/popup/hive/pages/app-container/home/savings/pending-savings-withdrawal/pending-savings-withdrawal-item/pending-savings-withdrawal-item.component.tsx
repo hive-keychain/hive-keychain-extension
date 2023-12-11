@@ -20,6 +20,7 @@ import {
 import { RootState } from 'src/popup/hive/store';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import FormatUtils from 'src/utils/format.utils';
 
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;
@@ -89,7 +90,11 @@ const PendingSavingsWithdrawalItem = ({
           <div>{moment(item.complete).format('L')}</div>
         </CustomTooltip>
         <div className="right-panel">
-          <span>{item.amount}</span>
+          <span>
+            {FormatUtils.formatCurrencyValue(
+              parseFloat(item.amount.toString()),
+            )}
+          </span>
           <SVGIcon
             className="delete-icon"
             icon={NewIcons.GLOBAL_DELETE}

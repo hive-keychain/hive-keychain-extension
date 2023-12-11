@@ -170,9 +170,11 @@ const TransferFunds = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
-      currencyLabels[form.selectedCurrency]
-    }`;
+
+    const formattedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+      3,
+    )} ${currencyLabels[form.selectedCurrency]}`;
 
     let memoField = form.memo;
     if (form.memo.length) {

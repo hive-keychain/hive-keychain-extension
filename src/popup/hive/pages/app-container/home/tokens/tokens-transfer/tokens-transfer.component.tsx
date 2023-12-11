@@ -36,6 +36,7 @@ import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface TokenTransferForm {
   receiverUsername: string;
@@ -144,7 +145,8 @@ const TokensTransfer = ({
       return;
     }
 
-    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(
+    const formattedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
       tokenInfo.precision,
     )} ${form.symbol}`;
 

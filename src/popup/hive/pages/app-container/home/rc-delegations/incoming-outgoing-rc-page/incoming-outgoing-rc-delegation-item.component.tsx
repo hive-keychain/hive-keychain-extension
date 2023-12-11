@@ -108,64 +108,6 @@ const RcIncomingOutgoingDelegationItem = ({
     });
   };
 
-  // const enterEditMode = () => {
-  //   setEditModeActivated(true);
-  //   setValue(amountHP);
-  // };
-
-  // const cancelEdit = () => {
-  //   setEditModeActivated(false);
-  //   setValue(amountHP);
-  // };
-
-  // const saveChanges = () => {
-  //   setEditModeActivated(false);
-  //   setAmountHP(value);
-
-  //   if (Number(value) <= 0) {
-  //     cancelDelegation(rcDelegation);
-  //   }
-
-  //   const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
-  //     currencyLabels.hp
-  //   }`;
-
-  //   navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-  //     message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
-  //       value,
-  //       `@${username}`,
-  //     ]),
-  //     title: 'popup_html_delegation',
-  //     fields: [
-  //       { label: 'popup_html_transfer_to', value: `@${username}` },
-  //       { label: 'popup_html_value', value: valueS },
-  //     ],
-  //     afterConfirmAction: async () => {
-  //       addToLoadingList('html_popup_delegation_operation');
-
-  //       try {
-  //         let success = await DelegationUtils.delegateVestingShares(
-  //           activeAccount.name!,
-  //           username!,
-  //           FormatUtils.fromHP(value.toString(), globalProperties).toFixed(6) +
-  //             ' VESTS',
-  //           activeAccount.keys.active!,
-  //         );
-  //         navigateTo(Screen.HOME_PAGE, true);
-  //         if (success) {
-  //           setSuccessMessage('popup_html_delegation_successful');
-  //         } else {
-  //           setErrorMessage('popup_html_delegation_fail');
-  //         }
-  //       } catch (err: any) {
-  //         setErrorMessage(err.message);
-  //       } finally {
-  //         removeFromLoadingList('html_popup_delegation_operation');
-  //       }
-  //     },
-  //   });
-  // };
-
   const goToEdit = (rcDelegation: RcDelegation) => {
     navigateToWithParams(Screen.RC_DELEGATIONS_PAGE, {
       formParams: rcDelegation,

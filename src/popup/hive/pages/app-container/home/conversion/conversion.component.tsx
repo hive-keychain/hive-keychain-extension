@@ -134,9 +134,9 @@ const Conversion = ({
       return;
     }
 
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
-      form.currency
-    }`;
+    const valueS = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${form.currency}`;
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
