@@ -207,32 +207,32 @@ const WalletInfoSection = ({
           />
         </div>
         {allTokens?.length > 0 &&
-        filteredTokenList &&
-        filteredTokenList.length > 0 ? (
-          <>
-            {/* <Separator type={'horizontal'} /> */}
-            <FlatList
-              list={filteredTokenList}
-              renderItem={(token: TokenBalance) => (
-                <WalletInfoSectionItemComponent
-                  key={`token-${token.symbol}`}
-                  tokenSymbol={token.symbol}
-                  tokenBalance={token}
-                  tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
-                  tokenMarket={market}
-                  icon={NewIcons.HIVE_ENGINE}
-                  addBackground
-                  mainValue={token.balance}
-                  mainValueLabel={token.symbol}
-                />
-              )}
-              renderOnScroll
-              searchBy="symbol"
-              searchTerm={tokenFilter}
-              searchCaseInsensitive
-            />
-          </>
-        ) : (
+          filteredTokenList &&
+          filteredTokenList.length > 0 && (
+            <>
+              <FlatList
+                list={filteredTokenList}
+                renderItem={(token: TokenBalance) => (
+                  <WalletInfoSectionItemComponent
+                    key={`token-${token.symbol}`}
+                    tokenSymbol={token.symbol}
+                    tokenBalance={token}
+                    tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
+                    tokenMarket={market}
+                    icon={NewIcons.HIVE_ENGINE}
+                    addBackground
+                    mainValue={token.balance}
+                    mainValueLabel={token.symbol}
+                  />
+                )}
+                renderOnScroll
+                searchBy="symbol"
+                searchTerm={tokenFilter}
+                searchCaseInsensitive
+              />
+            </>
+          )}
+        {filteredTokenList && filteredTokenList.length === 0 && (
           <div className="no-token">
             {chrome.i18n.getMessage('html_tokens_none_available')}
           </div>
