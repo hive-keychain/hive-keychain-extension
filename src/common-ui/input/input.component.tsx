@@ -135,7 +135,9 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               <SVGIcon
                 dataTestId="input-clear"
                 icon={NewIcons.INPUT_CLEAR}
-                className="input-img erase right"
+                className={`input-img erase right ${
+                  props.logoPosition === 'right' ? 'has-right-logo' : ''
+                }`}
                 onClick={() => props.onChange('')}
               />
             )}

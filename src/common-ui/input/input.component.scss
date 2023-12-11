@@ -56,8 +56,13 @@ $autoCompleteItemHeight: 30px;
       &.has-left-logo > input {
         padding-left: 24px;
       }
-      &.has-right-logo > input {
-        padding-right: 24px;
+      &.has-right-logo {
+        input {
+          padding-right: 60px !important;
+        }
+        .erase {
+          right: 32px !important;
+        }
       }
 
       &.password-type > input {
