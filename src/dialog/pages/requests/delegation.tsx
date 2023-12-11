@@ -6,6 +6,7 @@ import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   data: RequestDelegation & RequestId;
@@ -36,10 +37,9 @@ const Delegation = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
-        content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
-          data.unit,
-          rpc.testnet,
-        )}`}
+        content={`${FormatUtils.formatCurrencyValue(
+          data.amount,
+        )} ${CurrencyUtils.getCurrencyLabel(data.unit, rpc.testnet)}`}
       />
     </Operation>
   );

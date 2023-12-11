@@ -5,6 +5,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   data: RequestPowerDown & RequestId;
@@ -24,10 +25,9 @@ const PowerDown = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
-        content={`${data.hive_power} ${CurrencyUtils.getCurrencyLabel(
-          'HP',
-          rpc.testnet,
-        )}`}
+        content={`${FormatUtils.formatCurrencyValue(
+          data.hive_power,
+        )} ${CurrencyUtils.getCurrencyLabel('HP', rpc.testnet)}`}
       />
     </Operation>
   );

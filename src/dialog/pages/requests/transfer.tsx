@@ -8,6 +8,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   data: RequestTransfer & RequestId;
@@ -55,10 +56,9 @@ const Transfer = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
-        content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
-          data.currency,
-          rpc.testnet,
-        )}`}
+        content={`${FormatUtils.formatCurrencyValue(
+          data.amount,
+        )} ${CurrencyUtils.getCurrencyLabel(data.currency, rpc.testnet)}`}
       />
       <Separator type={'horizontal'} fullSize />
       <RequestBalance

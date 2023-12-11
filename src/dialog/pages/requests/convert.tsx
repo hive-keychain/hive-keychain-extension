@@ -5,6 +5,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   data: RequestConvert & RequestId;
@@ -36,7 +37,10 @@ const Convert = (props: Props) => {
       {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_amount" content={`${data.amount} ${unit}`} />
+      <RequestItem
+        title="dialog_amount"
+        content={`${FormatUtils.formatCurrencyValue(data.amount)} ${unit}`}
+      />
     </Operation>
   );
 };
