@@ -295,7 +295,10 @@ const PowerUpDown = ({
         <ResourceItemComponent
           icon={NewIcons.RESOURCE_ITEM_MANA}
           label="popup_html_current"
-          value={`${current} ${
+          value={`${FormatUtils.formatCurrencyValue(
+            current,
+            parseFloat(current.toString()) > 100000 ? 0 : 3,
+          )} ${
             powerType === PowerType.POWER_UP
               ? currencyLabels.hp
               : currencyLabels.hive
@@ -305,7 +308,10 @@ const PowerUpDown = ({
         <ResourceItemComponent
           icon={NewIcons.RESOURCE_ITEM_WALLET}
           label="popup_html_available"
-          value={`${available} ${
+          value={`${FormatUtils.formatCurrencyValue(
+            available,
+            parseFloat(available.toString()) > 100000 ? 0 : 3,
+          )} ${
             powerType === PowerType.POWER_UP
               ? currencyLabels.hive
               : currencyLabels.hp
