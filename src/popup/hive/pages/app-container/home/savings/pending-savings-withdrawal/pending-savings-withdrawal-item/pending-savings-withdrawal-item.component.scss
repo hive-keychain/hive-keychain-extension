@@ -1,6 +1,6 @@
 .pending-savings-withdraw-row {
   @include small-card();
-
+  color: var(--main-font-color);
   .left-panel {
     flex: 1;
     .label {
