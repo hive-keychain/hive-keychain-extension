@@ -2,6 +2,7 @@ import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
@@ -81,7 +82,12 @@ const PendingSavingsWithdrawalItem = ({
   return (
     <div className="pending-savings-withdraw-row">
       <>
-        <div className="left-panel">{moment(item.complete).format('L')}</div>
+        <CustomTooltip
+          additionalClassName="left-panel"
+          skipTranslation
+          message={moment(item.complete).format('YYYY/MM/DD hh:mm:ss')}>
+          <div>{moment(item.complete).format('L')}</div>
+        </CustomTooltip>
         <div className="right-panel">
           <span>{item.amount}</span>
           <SVGIcon
