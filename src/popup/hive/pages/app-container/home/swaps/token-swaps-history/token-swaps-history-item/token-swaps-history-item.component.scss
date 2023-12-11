@@ -51,9 +51,8 @@
         }
         &.token-to {
           flex: 3;
-        }
-        .approximate {
-          vertical-align: -30%;
+          display: flex;
+          column-gap: 4px;
         }
       }
 

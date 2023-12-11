@@ -95,7 +95,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
             {swap.amount} {swap.startToken}
           </span>{' '}
           <SVGIcon icon={NewIcons.SWAPS_BETWEEN} className="swap-between" />{' '}
-          <span className="token token-to">
+          <div className="token token-to">
             {swap.status === SwapStatus.COMPLETED ? (
               ''
             ) : (
@@ -108,7 +108,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
                 true,
               )}{' '}
             {swap.endToken}
-          </span>
+          </div>
           <SVGIcon
             icon={NewIcons.SWAPS_EXPAND}
             className={`expand-panel ${isOpen ? 'opened' : 'closed'}`}
