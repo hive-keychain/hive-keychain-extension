@@ -265,6 +265,7 @@ const TokensOperation = ({
           value={balance}
           unit={watch('symbol')}
           label="popup_html_balance"
+          decimals={tokenInfo.precision}
         />
       )}
       <div className="caption">

@@ -206,6 +206,7 @@ const Conversion = ({
         unit={watch('currency')}
         value={available}
         label="popup_html_balance"
+        decimals={3}
       />
 
       {totalPending > 0 && (
