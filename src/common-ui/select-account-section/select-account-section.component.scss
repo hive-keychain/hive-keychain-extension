@@ -4,6 +4,7 @@
     border: 1px solid var(--select-border-color) !important;
     border-radius: 16px !important;
     background: var(--select-account-background);
+    z-index: 5;
 
     &:hover,
     &:focus {
@@ -148,18 +149,28 @@
     }
   }
 
+  &.closed {
+    .react-dropdown-select-dropdown {
+      visibility: hidden;
+    }
+  }
+
   .overlay {
     display: none;
     @include overlay;
     z-index: 4;
-  }
-  &:has(.react-dropdown-select-dropdown) {
-    .select-account-select {
-      z-index: 5;
-    }
-    .overlay {
+
+    &.opened {
       display: block;
     }
+  }
+  &:has(.react-dropdown-select-dropdown) {
+    // .select-account-select {
+    //   z-index: 5;
+    // }
+    // .overlay {
+    //   display: block;
+    // }
   }
 }
 

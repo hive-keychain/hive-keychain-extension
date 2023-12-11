@@ -37,6 +37,8 @@ const SelectAccountSection = ({
 }: PropsFromRedux & Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
 
+  const [isOpened, setIsOpened] = useState(false);
+
   useEffect(() => {
     setOptions(
       accounts.map((account: LocalAccount) => {
@@ -56,6 +58,7 @@ const SelectAccountSection = ({
       (account: LocalAccount) => account.name === accountName,
     );
     loadActiveAccount(itemClicked!);
+    handleClickOnSelector();
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -72,6 +75,11 @@ const SelectAccountSection = ({
       ),
     );
   };
+
+  const handleClickOnSelector = () => {
+    setIsOpened(!isOpened);
+  };
+
   const customLabelRender = (
     selectProps: SelectRenderer<LocalAccountListItem>,
   ) => {
@@ -79,7 +87,7 @@ const SelectAccountSection = ({
       <div
         className={`selected-account-panel ${fullSize ? 'fullsize' : ''}`}
         onClick={() => {
-          selectProps.methods.dropDown('close');
+          handleClickOnSelector();
         }}>
         <PreloadedImage
           className="user-picture"
@@ -104,9 +112,10 @@ const SelectAccountSection = ({
     return (
       <SVGIcon
         className="custom-select-handle"
-        icon={
-          state.dropdown ? NewIcons.SELECT_ARROW_UP : NewIcons.SELECT_ARROW_DOWN
-        }
+        icon={isOpened ? NewIcons.SELECT_ARROW_UP : NewIcons.SELECT_ARROW_DOWN}
+        onClick={() => {
+          handleClickOnSelector();
+        }}
       />
     );
   };
@@ -157,8 +166,12 @@ const SelectAccountSection = ({
   return (
     <>
       {selectedLocalAccount && options && (
-        <div className={`select-account-section ${fullSize ? 'fullsize' : ''}`}>
+        <div
+          className={`select-account-section ${fullSize ? 'fullsize' : ''} ${
+            isOpened ? 'opened' : 'closed'
+          }`}>
           <Select
+            keepOpen
             values={[selectedLocalAccount as any]}
             options={options}
             onChange={() => undefined}
@@ -167,7 +180,7 @@ const SelectAccountSection = ({
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />
-          <div className="overlay"></div>
+          <div className={`overlay ${isOpened ? 'opened' : 'closed'}`}></div>
         </div>
       )}
     </>
