@@ -3291,7 +3291,7 @@
     "description": "Synchronize Ledger success message"
   },
   "popup_html_ledger_unknown_error": {
-    "message": "An unknown error happened. Please reboot your Ledger and try again",
+    "message": "An unknown error occured. Please reboot your Ledger and try again",
     "description": "Ledger unknown error"
   },
   "add_key_from_ledger_caption": {
