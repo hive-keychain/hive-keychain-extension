@@ -331,7 +331,7 @@ const RpcNodes = ({
               />
               <CheckboxComponent
                 dataTestId="checkbox-add-rpc-test-node"
-                title="TESTNET"
+                title="Testnet"
                 checked={addRpcNodeTestnet}
                 onChange={setAddRpcNodeTestnet}
                 skipTranslation={true}></CheckboxComponent>
