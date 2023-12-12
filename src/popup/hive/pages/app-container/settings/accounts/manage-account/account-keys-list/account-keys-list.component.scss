@@ -22,12 +22,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 6;
 
   h3 {
     margin-top: 0;
     text-align: center;
     color: var(--main-font-color);
+    @include poppins600(16px);
   }
   .overlay {
     background: $dark-background;
@@ -51,7 +52,7 @@
     .qr-code-disclaimer {
       @include caption;
       font-weight: 500;
-      font-size: 12px;
+      font-size: 14px;
       padding: 0;
       max-width: 256px;
       margin-bottom: -20px;

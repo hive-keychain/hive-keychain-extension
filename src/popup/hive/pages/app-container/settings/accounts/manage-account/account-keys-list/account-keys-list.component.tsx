@@ -193,7 +193,7 @@ const AccountKeysList = ({
               <h3>{chrome.i18n.getMessage('popup_html_qr_title')}</h3>
               <div className="qr-code-disclaimer">
                 <span>
-                  {chrome.i18n.getMessage('popup_html_qr_disclaimer1')}
+                  {chrome.i18n.getMessage('popup_html_qr_disclaimer1') + ' '}
                 </span>
                 <span>
                   {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
