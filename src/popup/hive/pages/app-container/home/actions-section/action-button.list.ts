@@ -20,7 +20,7 @@ export const ActionButtonList: ActionButton[] = [
     nextScreen: Screen.BUY_COINS_PAGE,
   },
   {
-    label: 'popup_html_token_swaps',
+    label: 'html_popup_swaps_process_swap',
     icon: NewIcons.BOTTOM_BAR_SWAPS,
     nextScreen: Screen.TOKEN_SWAP_PAGE,
   },
