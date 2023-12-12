@@ -168,7 +168,7 @@ const WalletInfoSection = ({
         />
         <div className="hive-engine-separator">
           <span>
-            <SVGIcon icon={NewIcons.HIVE_ENGINE} />
+            <SVGIcon icon={NewIcons.HIVE_ENGINE} className="no-pointer" />
             <p className="sub-value">Hive Engine</p>
           </span>
           <div className="line" />
@@ -200,7 +200,7 @@ const WalletInfoSection = ({
           />
 
           <SVGIcon
-            icon={NewIcons.SETTINGS}
+            icon={NewIcons.WALLET_SETTINGS}
             onClick={() => {
               navigateTo(Screen.TOKENS_FILTER);
             }}
@@ -234,7 +234,10 @@ const WalletInfoSection = ({
           )}
         {filteredTokenList && filteredTokenList.length === 0 && (
           <div className="no-token">
-            {chrome.i18n.getMessage('html_tokens_none_available')}
+            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+            <span className="text">
+              {chrome.i18n.getMessage('html_tokens_none_available')}
+            </span>
           </div>
         )}
       </div>

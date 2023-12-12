@@ -35,7 +35,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      --wallet-icon-color: #{$dark-red};
+      --wallet-icon-color: #{$red};
       --wallet-icon-border-color: var(--wallet-card-border);
       --wallet-icon-background: transparent;
       &:hover {
