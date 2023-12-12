@@ -175,6 +175,10 @@ const TransferFunds = ({
       currencyLabels[form.selectedCurrency]
     }`;
 
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${currencyLabels[form.selectedCurrency]}`;
+
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#') || form.encrypted) {
@@ -193,7 +197,7 @@ const TransferFunds = ({
     let fields = [
       { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
       { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
-      { label: 'popup_html_transfer_amount', value: formattedAmount },
+      { label: 'popup_html_transfer_amount', value: stringifiedAmount },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
@@ -291,7 +295,7 @@ const TransferFunds = ({
             if (!form.isRecurrent) {
               setSuccessMessage('popup_html_transfer_successful', [
                 `@${form.receiverUsername}`,
-                formattedAmount,
+                stringifiedAmount,
               ]);
             } else {
               isCancelRecurrent
@@ -303,7 +307,7 @@ const TransferFunds = ({
                     'popup_html_transfer_recurrent_successful',
                     [
                       `@${form.receiverUsername}`,
-                      formattedAmount,
+                      stringifiedAmount,
                       form.frequency.toString(),
                       form.iteration.toString(),
                     ],
