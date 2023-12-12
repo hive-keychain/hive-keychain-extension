@@ -118,7 +118,7 @@ const TokensTransfer = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   const handleClickOnSend = async (form: TokenTransferForm) => {

@@ -298,7 +298,7 @@ const Delegations = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   return (

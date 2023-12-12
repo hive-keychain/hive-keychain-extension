@@ -287,7 +287,7 @@ const SavingsPage = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   const setToMax = () => {

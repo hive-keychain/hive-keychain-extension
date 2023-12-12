@@ -188,7 +188,7 @@ const Conversion = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   const goToPendingConversion = () => {
