@@ -207,9 +207,9 @@ const SavingsPage = ({
       [currencyLabels[form.currency as keyof CurrencyLabels]],
     );
 
-    const valueS = `${FormatUtils.formatCurrencyValue(
-      parseFloat(form.amount.toString()),
-    )} ${currencyLabels[watch('currency') as keyof CurrencyLabels]}`;
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      currencyLabels[watch('currency') as keyof CurrencyLabels]
+    }`;
 
     let warning = TransferUtils.getTransferFromToSavingsValidationWarning(
       form.username,

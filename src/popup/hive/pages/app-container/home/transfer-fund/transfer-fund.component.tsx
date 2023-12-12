@@ -171,10 +171,9 @@ const TransferFunds = ({
       return;
     }
 
-    const formattedAmount = `${FormatUtils.formatCurrencyValue(
-      parseFloat(form.amount.toString()),
-      3,
-    )} ${currencyLabels[form.selectedCurrency]}`;
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      currencyLabels[form.selectedCurrency]
+    }`;
 
     let memoField = form.memo;
     if (form.memo.length) {
