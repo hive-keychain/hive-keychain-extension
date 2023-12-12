@@ -249,7 +249,7 @@ const PowerUpDown = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   const handleCancelButtonClick = (form: PowerUpDownForm) => {

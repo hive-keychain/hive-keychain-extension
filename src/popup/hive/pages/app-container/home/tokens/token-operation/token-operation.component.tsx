@@ -134,7 +134,7 @@ const TokensOperation = ({
   };
 
   const getFormParams = () => {
-    return control;
+    return watch();
   };
 
   const handleClickOnSend = async (form: TokenOperationForm) => {
