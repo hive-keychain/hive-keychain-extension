@@ -59,6 +59,7 @@ const TokenSwaps = ({
   setWarningMessage,
   price,
   tokenMarket,
+  formParams,
 }: PropsFromRedux) => {
   const [layerTwoDelayed, setLayerTwoDelayed] = useState(false);
   const [swapConfig, setSwapConfig] = useState({} as SwapConfig);
@@ -144,6 +145,20 @@ const TokenSwaps = ({
       // setErrorMessage(err.reason?.template, err.reason?.params);
     } finally {
       await tokenInitialization;
+
+      if (formParams.startToken) {
+        setStartToken(formParams.startToken);
+      }
+      if (formParams.endToken) {
+        setEndToken(formParams.endToken);
+      }
+      if (formParams.amount) {
+        setAmount(formParams.amount);
+      }
+      if (formParams.slipperage) {
+        setSlippage(formParams.slipperage);
+      }
+
       setLoading(false);
     }
   };
@@ -647,6 +662,9 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     price: state.currencyPrices,
     tokenMarket: state.tokenMarket,
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
   };
 };
 
