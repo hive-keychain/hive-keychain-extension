@@ -180,7 +180,11 @@ const SelectAccountSection = ({
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />
-          <div className={`overlay ${isOpened ? 'opened' : 'closed'}`}></div>
+          <div
+            className={`overlay ${isOpened ? 'opened' : 'closed'}`}
+            onClick={() => {
+              setIsOpened(false);
+            }}></div>
         </div>
       )}
     </>
