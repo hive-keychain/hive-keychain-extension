@@ -78,7 +78,7 @@ const HiveApp = ({
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
-  const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
+  const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
