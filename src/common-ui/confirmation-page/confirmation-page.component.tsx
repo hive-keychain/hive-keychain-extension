@@ -42,8 +42,16 @@ const ConfirmationPage = ({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
       isBackButtonEnabled: true,
-      onBackAdditional: handleClickOnCancel,
-      onCloseAdditional: handleClickOnCancel,
+      onBackAdditional: () => {
+        if (afterCancelAction) {
+          afterCancelAction();
+        }
+      },
+      onCloseAdditional: () => {
+        if (afterCancelAction) {
+          afterCancelAction();
+        }
+      },
     });
   }, []);
   const hasField = fields && fields.length !== 0;
