@@ -168,9 +168,9 @@ const PowerUpDown = ({
     const operationString = chrome.i18n.getMessage(
       powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
     );
-    const valueS = `${FormatUtils.formatCurrencyValue(
-      parseFloat(form.amount.toString()),
-    )} ${form.currency}`;
+    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+      form.currency
+    }`;
 
     const fields = [];
 

@@ -112,9 +112,7 @@ const TokenIncomingOutgoing = ({
       cancelDelegation();
     }
 
-    const valueString = `${FormatUtils.formatCurrencyValue(
-      parseFloat(value.toString()),
-    )} ${symbol}`;
+    const valueString = `${value} ${symbol}`;
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_delegate_tokens_confirm_text',
