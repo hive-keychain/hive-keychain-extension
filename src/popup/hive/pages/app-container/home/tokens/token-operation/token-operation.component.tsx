@@ -130,7 +130,7 @@ const TokensOperation = ({
   };
 
   const setAmountToMaxValue = () => {
-    setValue('amount', parseFloat(balance!.toString()));
+    setValue('amount', parseFloat(balance!.toFixed(tokenInfo.precision)));
   };
 
   const getFormParams = () => {
