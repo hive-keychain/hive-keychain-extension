@@ -28,6 +28,7 @@
     @include input-label;
     color: var(--main-font-color);
     margin-bottom: 0px;
+    padding-left: 3px;
   }
 
   &.disabled {
