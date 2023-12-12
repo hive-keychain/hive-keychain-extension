@@ -3,6 +3,7 @@
     .switch-panel {
       border-radius: 10px;
       background-color: $dark-background !important;
+      height: 21px;
       label {
         &::before {
           //   background-image: url('/public/assets/images/light-mode.svg') !important;
@@ -20,6 +21,7 @@
     .switch-panel {
       border-radius: 10px;
       background-color: $light-background !important;
+      height: 21px;
       label {
         &::before {
           background-image: url('/public/assets/images/light-mode.svg') !important;
