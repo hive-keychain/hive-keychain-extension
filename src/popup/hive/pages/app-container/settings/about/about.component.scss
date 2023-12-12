@@ -16,9 +16,8 @@
         opacity: 0.7;
       }
     }
-    @include poppins400(12px);
+    @include poppins500(14px);
     color: var(--main-font-color);
-    font-size: 14px;
     text-align: left;
     a {
       color: $red;
@@ -26,7 +25,7 @@
     }
   }
   .version {
-    @include poppins500(12px);
+    @include poppins500(13px);
     text-align: center;
     color: $red;
   }
