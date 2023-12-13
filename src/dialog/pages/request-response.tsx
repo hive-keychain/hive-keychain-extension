@@ -45,28 +45,6 @@ const RequestResponse = ({ data }: Props) => {
         />
       </div>
     </div>
-
-    // <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    //   <DialogHeader
-    //     title={
-    //       data.msg.success
-    //         ? `${chrome.i18n.getMessage('dialog_header_success')} !`
-    //         : `${chrome.i18n.getMessage('dialog_header_error')} !`
-    //     }
-    //   />
-    //   {data.msg.message.split(/<br\s?\/?>/g).map((msg) => (
-    //     <div className="caption" style={{ wordBreak: 'break-word' }}>
-    //       {msg}
-    //     </div>
-    //   ))}
-    //   <div className="fill-space" />
-    //   <ButtonComponent
-    //     label={'dialog_ok'}
-    //     onClick={() => {
-    //       window.close();
-    //     }}
-    //   />
-    // </div>
   );
 };
 
