@@ -34,10 +34,11 @@
           @include poppins500(14px);
         }
         .value {
-          user-select: text;
           @include poppins400(14px);
           overflow-wrap: anywhere;
+          max-width: 70%;
           text-align: right;
+          user-select: text;
           ul {
             margin: 0;
           }

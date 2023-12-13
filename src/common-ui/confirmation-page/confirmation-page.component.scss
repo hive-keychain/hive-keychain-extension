@@ -34,6 +34,8 @@
           @include poppins500(14px);
         }
         .value {
+          max-width: 70%;
+          text-align: right;
           user-select: text;
           @include poppins400(14px);
           &.xs-font {
