@@ -14,6 +14,9 @@
       display: flex;
       column-gap: 16px;
       align-items: baseline;
+      .value-input-panel {
+        width: 100%;
+      }
     }
   }
 }

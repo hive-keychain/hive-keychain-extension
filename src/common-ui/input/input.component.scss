@@ -1,5 +1,6 @@
 $autoCompleteItemHeight: 30px;
 .custom-input {
+  width: 100%;
   .label {
     @include input-label;
   }
