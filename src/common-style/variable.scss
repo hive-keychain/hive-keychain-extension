@@ -99,3 +99,7 @@ a {
     border-left-color: var(--carousel-arrow-color);
   }
 }
+
+#root {
+  user-select: none;
+}

@@ -26,6 +26,7 @@
       background: var(--card-background);
       border-radius: 20px;
       border: 1px solid var(--card-border);
+
       .field {
         display: flex;
         justify-content: space-between;
@@ -33,6 +34,7 @@
           @include poppins500(14px);
         }
         .value {
+          user-select: text;
           @include poppins400(14px);
           &.xs-font {
             font-size: 11px;

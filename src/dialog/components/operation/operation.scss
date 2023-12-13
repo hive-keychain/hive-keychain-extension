@@ -34,6 +34,7 @@
           @include poppins500(14px);
         }
         .value {
+          user-select: text;
           @include poppins400(14px);
           overflow-wrap: anywhere;
           text-align: right;
