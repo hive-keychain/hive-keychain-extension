@@ -17,6 +17,7 @@ const DialogError = ({ data }: Props) => {
       {data.msg.display_msg.split(/<br\s?\/?>/g).map((msg) => (
         <p style={{ wordBreak: 'break-word' }}>{msg}</p>
       ))}
+      <div className="fill-space"></div>
       <ButtonComponent
         label={'dialog_ok'}
         onClick={() => {
