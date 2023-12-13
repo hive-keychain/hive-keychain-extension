@@ -1,6 +1,7 @@
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
   data: ErrorMessage;
@@ -12,19 +13,25 @@ type ErrorMessage = {
 
 const DialogError = ({ data }: Props) => {
   return (
-    <>
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_error')} />
-      {data.msg.display_msg.split(/<br\s?\/?>/g).map((msg) => (
-        <p style={{ wordBreak: 'break-word' }}>{msg}</p>
-      ))}
-      <div className="fill-space"></div>
-      <ButtonComponent
-        label={'dialog_ok'}
-        onClick={() => {
-          window.close();
-        }}
-      />
-    </>
+    <div className="error-message-container">
+      <div className="message-card">
+        <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+        <div className="title">
+          {chrome.i18n.getMessage('message_container_title_fail')}
+        </div>
+        <div className="message">
+          {data.msg.display_msg.split(/<br\s?\/?>/g).map((msg, index) => (
+            <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
+              {msg}
+            </p>
+          ))}
+        </div>
+        <ButtonComponent
+          label="message_container_close_button"
+          onClick={close}
+        />
+      </div>
+    </div>
   );
 };
 
