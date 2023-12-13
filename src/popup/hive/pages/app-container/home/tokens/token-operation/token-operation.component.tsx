@@ -263,7 +263,7 @@ const TokensOperation = ({
   return (
     <div
       data-testid={`${Screen.TOKENS_OPERATION}-page`}
-      className="transfer-tokens-page">
+      className="tokens-operation-page">
       {balance && (
         <BalanceSectionComponent
           value={balance}
