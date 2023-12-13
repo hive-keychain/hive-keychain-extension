@@ -124,9 +124,13 @@ const IncomingOutgoing = ({
       cancelDelegation();
     }
 
-    const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
+    const formattedAmount = `${parseFloat(value.toString()).toFixed(3)} ${
       currencyLabels.hp
     }`;
+
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(value.toString()),
+    )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
@@ -136,7 +140,7 @@ const IncomingOutgoing = ({
       title: 'popup_html_delegation',
       fields: [
         { label: 'popup_html_transfer_to', value: `@${username}` },
-        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_value', value: stringifiedAmount },
       ],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');

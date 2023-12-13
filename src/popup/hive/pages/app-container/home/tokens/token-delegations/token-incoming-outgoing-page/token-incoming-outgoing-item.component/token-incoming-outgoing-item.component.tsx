@@ -112,7 +112,8 @@ const TokenIncomingOutgoing = ({
       cancelDelegation();
     }
 
-    const valueString = `${value} ${symbol}`;
+    const formattedAmount = `${value} ${symbol}`;
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_delegate_tokens_confirm_text',
@@ -120,7 +121,7 @@ const TokenIncomingOutgoing = ({
       title: 'popup_html_delegation',
       fields: [
         { label: 'popup_html_transfer_to', value: `@${username}` },
-        { label: 'popup_html_value', value: valueString },
+        { label: 'popup_html_value', value: formattedAmount },
       ],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');

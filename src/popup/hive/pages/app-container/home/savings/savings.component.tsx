@@ -207,9 +207,13 @@ const SavingsPage = ({
       [currencyLabels[form.currency as keyof CurrencyLabels]],
     );
 
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
       currencyLabels[watch('currency') as keyof CurrencyLabels]
     }`;
+
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${currencyLabels[watch('currency') as keyof CurrencyLabels]}`;
 
     let warning = TransferUtils.getTransferFromToSavingsValidationWarning(
       form.username,
@@ -228,7 +232,7 @@ const SavingsPage = ({
       title: operationString,
       skipTitleTranslation: true,
       fields: [
-        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_value', value: stringifiedAmount },
         { label: 'popup_html_username', value: `@${form.username}` },
       ],
       formParams: getFormParams(),
@@ -239,7 +243,7 @@ const SavingsPage = ({
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
               success = await SavingsUtils.deposit(
-                valueS,
+                formattedAmount,
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
@@ -248,7 +252,7 @@ const SavingsPage = ({
             case SavingOperationType.WITHDRAW:
               addToLoadingList('html_popup_withdraw_from_savings_operation');
               success = await SavingsUtils.withdraw(
-                valueS,
+                formattedAmount,
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
@@ -266,7 +270,7 @@ const SavingsPage = ({
               watch('type') === SavingOperationType.DEPOSIT
                 ? 'popup_html_deposit_success'
                 : 'popup_html_withdraw_success',
-              [`${form.amount} ${watch('currency').toUpperCase()}`],
+              [stringifiedAmount],
             );
           } else {
             setErrorMessage(

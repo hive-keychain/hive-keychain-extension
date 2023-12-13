@@ -134,9 +134,14 @@ const Conversion = ({
       return;
     }
 
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+    const formattedValue = `${parseFloat(form.amount.toString()).toFixed(3)} ${
       form.currency
     }`;
+
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${form.currency}`;
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
@@ -144,7 +149,7 @@ const Conversion = ({
           : 'popup_html_confirm_hive_to_hbd_conversion',
       ),
       fields: [
-        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_value', value: stringifiedAmount },
         { label: 'popup_html_username', value: `@${activeAccount.name!}` },
       ],
       title: title,
@@ -155,7 +160,7 @@ const Conversion = ({
           let success = await ConversionUtils.convert(
             activeAccount.name!,
             conversions,
-            valueS,
+            formattedValue,
             conversionType,
             activeAccount.keys.active!,
           );

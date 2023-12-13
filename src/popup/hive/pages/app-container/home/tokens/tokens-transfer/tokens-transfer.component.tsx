@@ -36,6 +36,7 @@ import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface TokenTransferForm {
   receiverUsername: string;
@@ -148,6 +149,11 @@ const TokensTransfer = ({
       tokenInfo.precision,
     )} ${form.symbol}`;
 
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+      tokenInfo.precision,
+    )} ${form.symbol}`;
+
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#')) {
@@ -166,7 +172,7 @@ const TokensTransfer = ({
     const fields = [
       { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
       { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
-      { label: 'popup_html_transfer_amount', value: formattedAmount },
+      { label: 'popup_html_transfer_amount', value: stringifiedAmount },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
@@ -234,7 +240,7 @@ const TokensTransfer = ({
 
               setSuccessMessage('popup_html_transfer_successful', [
                 `@${form.receiverUsername}`,
-                formattedAmount,
+                stringifiedAmount,
               ]);
             } else {
               setErrorMessage('popup_token_timeout');

@@ -36,6 +36,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 export enum TokenOperationType {
   STAKE = 'stake',
@@ -156,8 +157,13 @@ const TokensOperation = ({
       form.symbol
     }`;
 
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+      tokenInfo.precision,
+    )} ${form.symbol}`;
+
     const fields = [
-      { label: 'popup_html_transfer_amount', value: formattedAmount },
+      { label: 'popup_html_transfer_amount', value: stringifiedAmount },
     ];
 
     if (operationType === TokenOperationType.DELEGATE) {

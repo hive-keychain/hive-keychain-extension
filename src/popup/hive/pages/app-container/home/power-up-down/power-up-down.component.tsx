@@ -168,9 +168,13 @@ const PowerUpDown = ({
     const operationString = chrome.i18n.getMessage(
       powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
     );
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
       form.currency
     }`;
+
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${form.currency}`;
 
     const fields = [];
 
@@ -185,7 +189,7 @@ const PowerUpDown = ({
       });
     }
 
-    fields.push({ label: 'popup_html_amount', value: valueS });
+    fields.push({ label: 'popup_html_amount', value: stringifiedAmount });
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
@@ -207,13 +211,13 @@ const PowerUpDown = ({
               console.log(
                 activeAccount.name!,
                 form.receiver,
-                valueS,
+                formattedAmount,
                 activeAccount.keys.active!,
               );
               success = await PowerUtils.powerUp(
                 activeAccount.name!,
                 form.receiver,
-                valueS,
+                formattedAmount,
                 activeAccount.keys.active!,
               );
               break;

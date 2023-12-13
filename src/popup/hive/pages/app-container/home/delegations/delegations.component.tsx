@@ -210,19 +210,23 @@ const Delegations = ({
       cancelDelegation(form);
     }
 
-    const valueS = `${parseFloat(form.amount.toString()).toFixed(3)} ${
+    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
       currencyLabels.hp
     }`;
 
+    const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
+      parseFloat(form.amount.toString()),
+    )} ${currencyLabels.hp}`;
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
-        valueS,
+        stringifiedAmount,
         `@${form.username}`,
       ]),
       fields: [
         { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
         { label: 'popup_html_transfer_to', value: `@${form.username}` },
-        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_value', value: stringifiedAmount },
       ],
       title: 'popup_html_delegation',
       formParams: getFormParams(),
