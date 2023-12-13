@@ -33,6 +33,7 @@
     .description {
       @include poppins400(12px);
       color: var(--main-font-color);
+      text-align: center;
     }
   }
 }

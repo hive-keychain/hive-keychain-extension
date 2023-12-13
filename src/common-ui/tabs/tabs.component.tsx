@@ -30,7 +30,18 @@ export const TabsComponent = ({ tabs }: TabsProps) => {
         values={values}
         id="tabs"
       />
-      <div className="tab-container">{tabs[selectedTab].content}</div>
+
+      {tabs.map((tab, index) => (
+        <div
+          key={`tab-${tab.title}-${index}`}
+          className={`tab-container ${
+            selectedTab === index ? 'selected' : ''
+          }`}>
+          {tab.content}
+        </div>
+      ))}
+
+      {/* <div className="tab-container">{tabs[selectedTab].content}</div> */}
     </>
   );
 };
