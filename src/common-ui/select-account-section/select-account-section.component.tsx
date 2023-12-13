@@ -137,7 +137,10 @@ const SelectAccountSection = ({
                     draggableId={option.value}
                     index={index}>
                     {(provided) => (
-                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}>
                         <SelectAccountSectionItemComponent
                           key={`option-${option.value}`}
                           isLast={options.length === index}
