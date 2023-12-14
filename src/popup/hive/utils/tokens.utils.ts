@@ -1,7 +1,12 @@
 import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import {
+  PendingUnstaking,
+  Token,
+  TokenBalance,
+  TokenMarket,
+} from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
@@ -366,6 +371,19 @@ const getTokenInfo = async (symbol: string): Promise<Token> => {
   })[0];
 };
 
+const getPendingUnstakes = async (
+  account: string,
+): Promise<PendingUnstaking[]> => {
+  return HiveEngineUtils.get<PendingUnstaking[]>({
+    contract: 'tokens',
+    table: 'pendingUnstakes',
+    query: { account },
+    limit: 1000,
+    offset: 0,
+    indexes: [],
+  });
+};
+
 /* istanbul ignore next */
 /**
  * SSCJS request using HiveEngineConfigUtils.getApi().find.
@@ -421,6 +439,7 @@ const TokensUtils = {
   getHiveEngineTokenPrice,
   getTokenInfo,
   getTokenPrecision,
+  getPendingUnstakes,
 };
 
 export default TokensUtils;

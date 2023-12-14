@@ -3,6 +3,7 @@ import { Conversion } from '@interfaces/conversion.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
+  loadPendingUnstaking,
   loadTokens,
   loadTokensMarket,
   loadUserTokens,
@@ -38,6 +39,7 @@ const WalletInfoSection = ({
   navigateTo,
   loadUserTokens,
   loadTokens,
+  loadPendingUnstaking,
 }: PropsFromRedux) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
@@ -63,6 +65,7 @@ const WalletInfoSection = ({
       loadTokens();
       loadTokensMarket();
       loadUserTokens(activeAccount.name!);
+      loadPendingUnstaking(activeAccount.name!);
       fetchConversionRequests(activeAccount.name!);
 
       const delegatedVestingShares = parseFloat(
@@ -264,6 +267,7 @@ const connector = connect(mapStateToProps, {
   loadUserTokens,
   loadTokens,
   navigateTo,
+  loadPendingUnstaking,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

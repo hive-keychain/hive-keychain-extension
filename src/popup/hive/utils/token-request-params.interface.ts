@@ -3,7 +3,8 @@ type TokenRequestParamsTable =
   | 'tokens'
   | 'metrics'
   | 'balances'
-  | 'delegations';
+  | 'delegations'
+  | 'pendingUnstakes';
 
 export interface TokenRequestParams {
   contract: TokenRequestParamsContrat;

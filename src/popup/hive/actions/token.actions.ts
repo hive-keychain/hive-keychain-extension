@@ -1,6 +1,7 @@
 import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
+  PendingUnstaking,
   Token,
   TokenBalance,
   TokenMarket,
@@ -16,7 +17,6 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;
   try {
     tokens = await TokensUtils.getAllTokens();
-    
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({
@@ -42,6 +42,17 @@ export const loadTokensMarket = (): AppThunk => async (dispatch) => {
   };
   dispatch(action);
 };
+
+export const loadPendingUnstaking =
+  (account: string): AppThunk =>
+  async (dispatch) => {
+    const pendingUnstaking = await TokensUtils.getPendingUnstakes(account);
+    const action: ActionPayload<PendingUnstaking[]> = {
+      type: ActionType.LOAD_PENDING_UNSTAKING,
+      payload: pendingUnstaking,
+    };
+    dispatch(action);
+  };
 
 export const loadUserTokens =
   (account: string): AppThunk =>

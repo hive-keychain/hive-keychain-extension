@@ -3,6 +3,7 @@ import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
+import Decimal from 'decimal.js';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -70,6 +71,7 @@ const TokensOperation = ({
   removeFromLoadingList,
   setTitleContainerProperties,
   goBack,
+  pendingUnstaking,
 }: PropsFromRedux) => {
   const [balance, setBalance] = useState<number>();
   const { control, handleSubmit, setValue, watch } =
@@ -103,9 +105,25 @@ const TokensOperation = ({
     loadAutocompleteFavoriteUsers();
     switch (operationType) {
       case TokenOperationType.UNSTAKE:
+        const tokenUnstaking = pendingUnstaking!.filter(
+          (e) => e.symbol === tokenBalance.symbol,
+        );
+        const sumUnstaking = tokenUnstaking.reduce(
+          (a, b) =>
+            Decimal.sub(
+              a,
+              Decimal.div(parseFloat(b.quantity), tokenInfo.numberTransactions),
+            )
+              .add(parseFloat(b.quantityLeft))
+              .toNumber(),
+          0,
+        );
         setBalance(
-          parseFloat(tokenBalance.stake) -
-            parseFloat(tokenBalance.pendingUnstake),
+          Decimal.sub(parseFloat(tokenBalance.stake), sumUnstaking)
+            .times(Decimal.pow(10, tokenInfo.precision))
+            .floor()
+            .div(Decimal.pow(10, tokenInfo.precision))
+            .toNumber(),
         );
         break;
       case TokenOperationType.STAKE:
@@ -113,8 +131,10 @@ const TokensOperation = ({
         break;
       case TokenOperationType.DELEGATE:
         setBalance(
-          parseFloat(tokenBalance.stake) -
+          Decimal.sub(
+            parseFloat(tokenBalance.stake),
             parseFloat(tokenBalance.pendingUnstake),
+          ).toNumber(),
         );
         break;
     }
@@ -264,7 +284,7 @@ const TokensOperation = ({
     <div
       data-testid={`${Screen.TOKENS_OPERATION}-page`}
       className="tokens-operation-page">
-      {balance && (
+      {balance !== undefined && (
         <BalanceSectionComponent
           value={balance}
           unit={watch('symbol')}
@@ -347,6 +367,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     phishing: state.phishing,
     localAccounts: state.accounts,
+    pendingUnstaking: state.tokensPendingUnstaking,
   };
 };
 
