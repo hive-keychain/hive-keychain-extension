@@ -135,6 +135,32 @@ const hasStoredAccounts = async () => {
   );
 };
 
+const addAuthorizedKey = async (
+  activeAccount: ActiveAccount,
+  authorizedAccountName: string,
+  existingAccounts: LocalAccount[],
+  mk: string,
+  keyType: string,
+) => {
+  let authorizedAccount = existingAccounts.find(
+    (account: LocalAccount) => account.name === authorizedAccountName,
+  );
+
+  let localActiveAccount = existingAccounts.find(
+    (account: LocalAccount) => account.name === activeAccount.name,
+  );
+
+  if (!authorizedAccount || !localActiveAccount) return; // check error
+
+  localActiveAccount.keys[keyType.toLowerCase() as keyof Keys] =
+    authorizedAccount.keys.active;
+  localActiveAccount.keys[
+    `${keyType.toLowerCase()}Pubkey` as keyof Keys
+  ] = `@${authorizedAccountName}`;
+
+  return await AccountUtils.saveAccounts(existingAccounts, mk);
+};
+
 const addAuthorizedAccount = async (
   username: string,
   authorizedAccount: string,
@@ -590,6 +616,7 @@ const AccountUtils = {
   getUpdateAccountTransaction,
   addAccount,
   reorderAccounts,
+  addAuthorizedKey,
 };
 
 export const BackgroundAccountUtils = {

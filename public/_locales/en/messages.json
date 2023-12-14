@@ -3677,5 +3677,13 @@
   "html_tokens_issuer": {
     "message": "Issuer",
     "description": "Token issuer"
+  },
+  "html_add_available_authorities_caption": {
+    "message": "Alternatively, you can use an authorized account from the following list",
+    "description": "available authorities caption"
+  },
+  "html_popup_successfully_add_key": {
+    "message": "Successfully added key",
+    "description": "Message on successful key added"
   }
 }
