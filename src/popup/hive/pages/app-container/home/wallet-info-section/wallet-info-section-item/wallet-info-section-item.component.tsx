@@ -49,6 +49,8 @@ const walletInfoSectionItem = ({
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
   const reff = useRef<HTMLDivElement>(null);
 
+  const [hasButtonsInList, setHasButtonInList] = useState(false);
+
   useEffect(() => {
     init();
   }, []);
@@ -57,6 +59,20 @@ const walletInfoSectionItem = ({
     setActionButtons(
       WalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
     );
+
+    if (
+      tokenBalance?.delegationsOut &&
+      parseFloat(tokenBalance.delegationsOut) > 0
+    ) {
+      setHasButtonInList(true);
+    }
+
+    if (
+      tokenBalance?.delegationsIn &&
+      parseFloat(tokenBalance.delegationsIn) > 0
+    ) {
+      setHasButtonInList(true);
+    }
   };
 
   const toggleDropdown = () => {
@@ -160,116 +176,176 @@ const walletInfoSectionItem = ({
       {isExpanded && (
         <>
           {tokenInfo && tokenBalance && tokenMarket && (
-            <div className="token-info-panel">
-              <div
-                data-testid={`token-info-go-to-website-${tokenBalance.symbol}`}
-                className="token-description"
-                onClick={() => goToTokenWebsite(tokenInfo)}>
-                <div className="token-name-issuer">
-                  {tokenInfo.issuer && tokenInfo.issuer !== 'null' && (
-                    <span className="token-issuer">@{tokenInfo.issuer}</span>
-                  )}
+            <div
+              className={`token-info-panel ${
+                hasButtonsInList ? 'has-button-in-list' : ''
+              }`}>
+              {tokenInfo.issuer && tokenInfo.issuer !== 'null' && (
+                <>
+                  <div
+                    data-testid={`token-info-go-to-website-${tokenBalance.symbol}`}
+                    className="token-info-row"
+                    onClick={() => goToTokenWebsite(tokenInfo)}>
+                    <div className="label">
+                      {chrome.i18n.getMessage('html_tokens_issuer')}
+                    </div>
+                    <div className="value">
+                      <span className="token-issuer">@{tokenInfo.issuer}</span>
+                    </div>
+                    <div></div>
+                  </div>
+                  <Separator type="horizontal" />
+                </>
+              )}
+              <div className="token-info-row">
+                <div className="label">
+                  {chrome.i18n.getMessage('token_value')}
                 </div>
-              </div>
-              <div>
-                {chrome.i18n.getMessage('token_value')} : $
-                {TokensUtils.getHiveEngineTokenValue(
-                  tokenBalance,
-                  tokenMarket,
-                  hive,
-                ).toFixed(2)}{' '}
-                ($
-                {(
-                  TokensUtils.getHiveEngineTokenPrice(
+                <div className="value">
+                  $
+                  {TokensUtils.getHiveEngineTokenValue(
                     tokenBalance,
                     tokenMarket,
-                  ) * hive?.usd!
-                ).toFixed(2)}
-                /{chrome.i18n.getMessage('token').toLowerCase()})
+                    hive,
+                  ).toFixed(2)}{' '}
+                  ($
+                  {(
+                    TokensUtils.getHiveEngineTokenPrice(
+                      tokenBalance,
+                      tokenMarket,
+                    ) * hive?.usd!
+                  ).toFixed(2)}
+                  /{chrome.i18n.getMessage('token').toLowerCase()})
+                </div>
+                <div></div>
               </div>
-              <div>
-                {chrome.i18n.getMessage('liquid_balance')} :{' '}
-                {FormatUtils.trimUselessZero(
-                  parseFloat(tokenBalance.balance),
-                  tokenInfo.precision,
-                )}
-              </div>
-              {tokenInfo.stakingEnabled && (
-                <div>
-                  {chrome.i18n.getMessage('popup_html_token_staking')} :{' '}
+              <Separator type="horizontal" />
+              <div className="token-info-row">
+                <div className="label">
+                  {chrome.i18n.getMessage('liquid_balance')}
+                </div>
+                <div className="value">
                   {FormatUtils.trimUselessZero(
-                    parseFloat(tokenBalance.stake),
+                    parseFloat(tokenBalance.balance),
                     tokenInfo.precision,
                   )}
                 </div>
-              )}
-              {tokenInfo.stakingEnabled &&
-                parseFloat(tokenBalance.pendingUnstake) > 0 && (
-                  <div>
-                    {chrome.i18n.getMessage('popup_html_token_pending_unstake')}{' '}
-                    :{' '}
-                    {FormatUtils.trimUselessZero(
-                      parseFloat(tokenBalance.pendingUnstake),
-                      tokenInfo.precision,
-                    )}
-                  </div>
-                )}
-              {tokenInfo.delegationEnabled && (
-                <div
-                  data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
-                  className="delegation-line"
-                  onClick={goToTokenIncomingDelegations}>
-                  <div>
-                    {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
-                    {FormatUtils.trimUselessZero(
-                      parseFloat(tokenBalance.delegationsIn),
-                      tokenInfo.precision,
-                    )}
-                  </div>
-                  {parseFloat(tokenBalance.delegationsIn) > 0 && (
-                    <SVGIcon
-                      className="go-to-page-icon"
-                      icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
-                    />
-                  )}
-                </div>
-              )}
-              {tokenInfo.delegationEnabled &&
-                parseFloat(tokenBalance.delegationsOut) > 0 && (
-                  <div
-                    aria-label="button-go-to-outgoing-delegations"
-                    className="delegation-line"
-                    onClick={goToTokenOutgoingDelegations}>
-                    <div>
-                      {chrome.i18n.getMessage(
-                        'popup_html_token_delegation_out',
-                      )}{' '}
-                      :{' '}
+                <div></div>
+              </div>
+              {tokenInfo.stakingEnabled && (
+                <>
+                  <Separator type="horizontal" />
+                  <div className="token-info-row">
+                    <div className="label">
+                      {chrome.i18n.getMessage('popup_html_token_staking')}{' '}
+                    </div>
+                    <div className="value">
                       {FormatUtils.trimUselessZero(
-                        parseFloat(tokenBalance.delegationsOut),
+                        parseFloat(tokenBalance.stake),
                         tokenInfo.precision,
                       )}
                     </div>
-                    {parseFloat(tokenBalance.delegationsOut) > 0 && (
-                      <SVGIcon
-                        className="go-to-page-icon"
-                        icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
-                      />
-                    )}
+                    <div></div>
                   </div>
+                </>
+              )}
+              {tokenInfo.stakingEnabled &&
+                parseFloat(tokenBalance.pendingUnstake) > 0 && (
+                  <>
+                    <Separator type="horizontal" />
+                    <div className="token-info-row">
+                      <div className="label">
+                        {chrome.i18n.getMessage(
+                          'popup_html_token_pending_unstake',
+                        )}
+                      </div>
+                      <div className="value">
+                        {FormatUtils.trimUselessZero(
+                          parseFloat(tokenBalance.pendingUnstake),
+                          tokenInfo.precision,
+                        )}
+                      </div>
+                      <div></div>
+                    </div>
+                  </>
+                )}
+              {tokenInfo.delegationEnabled && (
+                <>
+                  <Separator type="horizontal" />
+                  <div
+                    data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
+                    className="token-info-row"
+                    onClick={goToTokenIncomingDelegations}>
+                    <div className="label">
+                      {chrome.i18n.getMessage('popup_html_token_delegation_in')}
+                    </div>
+                    <div className="value">
+                      {FormatUtils.trimUselessZero(
+                        parseFloat(tokenBalance.delegationsIn),
+                        tokenInfo.precision,
+                      )}
+                    </div>
+                    <div className="icon">
+                      {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                        <SVGIcon
+                          className="go-to-page-icon"
+                          icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+              {tokenInfo.delegationEnabled &&
+                parseFloat(tokenBalance.delegationsOut) > 0 && (
+                  <>
+                    <Separator type="horizontal" />
+                    <div
+                      aria-label="button-go-to-outgoing-delegations"
+                      className="token-info-row"
+                      onClick={goToTokenOutgoingDelegations}>
+                      <div className="label">
+                        {chrome.i18n.getMessage(
+                          'popup_html_token_delegation_out',
+                        )}
+                      </div>
+                      <div className="value">
+                        {' '}
+                        {FormatUtils.trimUselessZero(
+                          parseFloat(tokenBalance.delegationsOut),
+                          tokenInfo.precision,
+                        )}
+                      </div>
+                      <div className="icon">
+                        {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                          <SVGIcon
+                            className="go-to-page-icon"
+                            icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
               {tokenInfo.delegationEnabled &&
                 parseFloat(tokenBalance.pendingUndelegations) > 0 && (
-                  <div>
-                    {chrome.i18n.getMessage(
-                      'popup_html_token_pending_undelegation',
-                    )}{' '}
-                    : {tokenBalance.pendingUndelegations}
-                  </div>
+                  <>
+                    <Separator type="horizontal" />
+                    <div className="token-info-row">
+                      <div className="label">
+                        {chrome.i18n.getMessage(
+                          'popup_html_token_pending_undelegation',
+                        )}
+                      </div>
+                      <div className="value">
+                        {tokenBalance.pendingUndelegations}
+                      </div>
+                      <div></div>
+                    </div>
+                  </>
                 )}
             </div>
           )}
-          <Separator type={'horizontal'} />
           <div className="actions-panel">
             {actionButtons.map((ab, index) => (
               <WalletInfoSectionItemButton

@@ -69,7 +69,7 @@
   .actions-panel {
     display: flex;
     column-gap: 8px;
-    row-gap: 8px;
+    row-gap: 20px;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
@@ -84,12 +84,26 @@
     flex-direction: column;
     row-gap: 4px;
 
-    .delegation-line {
-      display: flex;
+    .token-info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       align-items: center;
-      column-gap: 4px;
-      .go-to-page-icon {
+      column-gap: 8px;
+
+      .label {
+        text-align: left;
+      }
+      .value {
+        text-align: right;
+      }
+      .icon {
         @include icon-size(16px);
+      }
+    }
+
+    &.has-button-in-list {
+      .token-info-row {
+        grid-template-columns: 1fr 1fr 16px;
       }
     }
   }
