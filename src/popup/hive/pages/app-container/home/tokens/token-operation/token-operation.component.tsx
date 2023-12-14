@@ -105,6 +105,7 @@ const TokensOperation = ({
     loadAutocompleteFavoriteUsers();
     switch (operationType) {
       case TokenOperationType.UNSTAKE:
+      case TokenOperationType.DELEGATE:
         const tokenUnstaking = pendingUnstaking!.filter(
           (e) => e.symbol === tokenBalance.symbol,
         );
@@ -118,24 +119,18 @@ const TokensOperation = ({
               .toNumber(),
           0,
         );
-        setBalance(
-          Decimal.sub(parseFloat(tokenBalance.stake), sumUnstaking)
-            .times(Decimal.pow(10, tokenInfo.precision))
-            .floor()
-            .div(Decimal.pow(10, tokenInfo.precision))
-            .toNumber(),
-        );
+        const available = Decimal.sub(
+          parseFloat(tokenBalance.stake),
+          sumUnstaking,
+        )
+          .times(Decimal.pow(10, tokenInfo.precision))
+          .floor()
+          .div(Decimal.pow(10, tokenInfo.precision))
+          .toNumber();
+        setBalance(available);
         break;
       case TokenOperationType.STAKE:
         setBalance(parseFloat(tokenBalance.balance));
-        break;
-      case TokenOperationType.DELEGATE:
-        setBalance(
-          Decimal.sub(
-            parseFloat(tokenBalance.stake),
-            parseFloat(tokenBalance.pendingUnstake),
-          ).toNumber(),
-        );
         break;
     }
   }, []);
