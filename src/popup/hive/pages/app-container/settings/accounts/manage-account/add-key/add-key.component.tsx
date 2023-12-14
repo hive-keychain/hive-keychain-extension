@@ -5,30 +5,44 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { addKey } from 'src/popup/hive/actions/account.actions';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from 'src/popup/hive/actions/message.actions';
 import { goBack } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
+import { ExtendedAccount } from '@hiveio/dhive';
+import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import { Screen } from '@reference-data/screen.enum';
+import ArrayUtils from 'src/utils/array.utils';
 
 const AddKey = ({
   keyType,
   activeAccountName,
-  goBack,
+  activeAccount,
+  localAccounts,
+  mk,
   addKey,
   setTitleContainerProperties,
   setErrorMessage,
+  refreshActiveAccount,
+  setSuccessMessage,
+  goBack,
   isLedgerSupported,
 }: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
+  const [availableAuths, setAvailableAuths] = useState<any[]>([]);
 
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_add_key',
       isBackButtonEnabled: true,
     });
-  });
+    loadAuthorizedAccounts();
+  }, []);
 
   const importKey = async () => {
     if (privateKey.trim().length === 0) {
@@ -44,6 +58,35 @@ const AddKey = ({
     chrome.tabs.create({
       url: `chrome-extension://${extensionId}/add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
     });
+  };
+
+  const loadAuthorizedAccounts = async () => {
+    activeAccount.account.posting;
+    const auths: any = (
+      activeAccount.account[
+        keyType.toLowerCase() as keyof ExtendedAccount
+      ] as any
+    ).account_auths.map((auth: any) => auth[0]);
+
+    setAvailableAuths(
+      ArrayUtils.findCommons(
+        auths,
+        localAccounts.map((la) => la.name),
+      ),
+    );
+  };
+
+  const addAuth = async (username: string) => {
+    await AccountUtils.addAuthorizedKey(
+      activeAccount,
+      username,
+      localAccounts,
+      mk,
+      keyType,
+    );
+    refreshActiveAccount();
+    setSuccessMessage('html_popup_successfully_add_key');
+    goBack();
   };
 
   return (
@@ -68,6 +111,31 @@ const AddKey = ({
         onEnterPress={importKey}
       />
 
+      {availableAuths.length > 0 && (
+        <div className="available-auths">
+          <div className="caption">
+            {chrome.i18n.getMessage('html_add_available_authorities_caption')}
+          </div>
+          <div className="auths">
+            {availableAuths.map((auth, index) => (
+              <div className="auth" key={`account-auth-item-${auth}-${index}`}>
+                <div className="item-account" onClick={() => addAuth(auth)}>
+                  <img
+                    className="account-img"
+                    src={`https://images.hive.blog/u/${auth}/avatar`}
+                    onError={(e: any) => {
+                      e.target.onError = null;
+                      e.target.src = '/assets/images/accounts.png';
+                    }}
+                  />
+                  <div className="account-name">{auth}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {keyType === KeyType.ACTIVE && isLedgerSupported && (
         <div className="add-using-ledger" onClick={navigateToUseLedger}>
           {chrome.i18n.getMessage('popup_html_add_using_ledger')}
@@ -90,6 +158,9 @@ const mapStateToProps = (state: RootState) => {
     keyType: state.navigation.stack[0].params as KeyType,
     activeAccountName: state.activeAccount.name,
     isLedgerSupported: state.appStatus.isLedgerSupported,
+    activeAccount: state.activeAccount,
+    localAccounts: state.accounts,
+    mk: state.mk,
   };
 };
 
@@ -98,6 +169,8 @@ const connector = connect(mapStateToProps, {
   addKey,
   setTitleContainerProperties,
   setErrorMessage,
+  setSuccessMessage,
+  refreshActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 
