@@ -1,3 +1,4 @@
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
@@ -67,6 +68,40 @@ const unstakeToken = (
     activeKey,
   );
 };
+
+/* istanbul ignore next */
+const cancelUnstakeToken = (
+  transactionId: string,
+  activeAccount: ActiveAccount,
+) => {
+  return HiveEngineUtils.sendOperation(
+    [
+      TokensUtils.getCancelUnstakeTokenOperation(
+        transactionId,
+        activeAccount.name!,
+      ),
+    ],
+    activeAccount.keys.active!,
+  );
+};
+
+const getCancelUnstakeTokenOperation = (
+  transactionId: string,
+  username: string,
+) => {
+  const json = {
+    contractName: 'tokens',
+    contractAction: 'cancelUnstake',
+    contractPayload: { txId: transactionId },
+  };
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
+  );
+};
+
 /* istanbul ignore next */
 const getUnstakeTokenOperation = (
   symbol: string,
@@ -440,6 +475,8 @@ const TokensUtils = {
   getTokenInfo,
   getTokenPrecision,
   getPendingUnstakes,
+  cancelUnstakeToken,
+  getCancelUnstakeTokenOperation,
 };
 
 export default TokensUtils;

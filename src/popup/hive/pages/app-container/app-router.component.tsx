@@ -1,6 +1,7 @@
 import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
+import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -112,6 +113,8 @@ const AppRouter = ({
         return <TokenSwapsComponent />;
       case Screen.TOKENS_SWAP_HISTORY:
         return <TokenSwapsHistoryComponent />;
+      case Screen.TOKENS_PENDING_UNSTAKE:
+        return <TokenPendingUnstakePage />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:

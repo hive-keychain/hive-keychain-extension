@@ -220,6 +220,9 @@ export enum NewIcons {
   WALLET_TOKEN_UNSTAKE = 'wallet/tokens/unstake',
   WALLET_TOKEN_GO_TO_DETAILED_PAGE = 'wallet/tokens/go-to-detailed-page',
 
+  WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX = 'wallet/tokens/pending-unstake/next-tx',
+  WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX_AMOUNT = 'wallet/tokens/pending-unstake/next-tx-amount',
+
   WALLET_HISTORY_FILTER_BUTTON = 'wallet/history/filter-button',
   WALLET_HISTORY_CLAIM_ACCOUNT = 'wallet/history/claim-account',
   WALLET_HISTORY_CLAIM_REWARDS = 'wallet/history/claim-rewards',

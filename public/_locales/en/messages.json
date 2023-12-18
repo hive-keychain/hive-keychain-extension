@@ -3685,5 +3685,41 @@
   "html_popup_successfully_add_key": {
     "message": "Successfully added key",
     "description": "Message on successful key added"
+  },
+  "html_popup_pending_unstake": {
+    "message": "Pending $1 unstake",
+    "description": "Pending unstake"
+  },
+  "html_popup_total_pending_unstake": {
+    "message": "Total pending unstake",
+    "description": "Total pending unstake"
+  },
+  "html_popup_next_unstake_transaction": {
+    "message": "Next transaction",
+    "description": "Next transaction unstake"
+  },
+  "html_popup_remaining_transaction": {
+    "message": "$1 transactions remaining",
+    "description": "remaining transaction unstake"
+  },
+  "html_popup_unstake_per_transaction": {
+    "message": "$1 $2",
+    "description": "remaining transaction unstake"
+  },
+  "html_popup_cancel_unstaking_message": {
+    "message": "Please confirm that you want to cancel your unstaking",
+    "description": "cancel unstake confirm message"
+  },
+  "html_popup_canceling_unstake_token": {
+    "message": "Canceling token unstake",
+    "description": "Loading message unstake"
+  },
+  "html_popup_cancel_unstake_token_success": {
+    "message": "Cancel token unstake successful",
+    "description": "Loading message unstake"
+  },
+  "html_popup_cancel_unstake_token_fail": {
+    "message": "Cancel token unstake has failed",
+    "description": "Loading message unstake"
   }
 }

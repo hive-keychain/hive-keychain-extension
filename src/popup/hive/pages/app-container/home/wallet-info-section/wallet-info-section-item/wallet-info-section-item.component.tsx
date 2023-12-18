@@ -43,6 +43,7 @@ const walletInfoSectionItem = ({
   subValue,
   subValueLabel,
   hive,
+  pendingUnstaking,
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -70,6 +71,13 @@ const walletInfoSectionItem = ({
     if (
       tokenBalance?.delegationsIn &&
       parseFloat(tokenBalance.delegationsIn) > 0
+    ) {
+      setHasButtonInList(true);
+    }
+
+    if (
+      tokenBalance?.pendingUnstake &&
+      parseFloat(tokenBalance.pendingUnstake) > 0
     ) {
       setHasButtonInList(true);
     }
@@ -119,6 +127,12 @@ const walletInfoSectionItem = ({
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
       tokenInfo: tokenInfo,
+    });
+  };
+  const goToPendingUnstakePage = () => {
+    navigateToWithParams(Screen.TOKENS_PENDING_UNSTAKE, {
+      tokenInfo: tokenInfo,
+      pendingUnstaking: pendingUnstaking,
     });
   };
 
@@ -253,7 +267,9 @@ const walletInfoSectionItem = ({
                 parseFloat(tokenBalance.pendingUnstake) > 0 && (
                   <>
                     <Separator type="horizontal" />
-                    <div className="token-info-row">
+                    <div
+                      className="token-info-row"
+                      onClick={goToPendingUnstakePage}>
                       <div className="label">
                         {chrome.i18n.getMessage(
                           'popup_html_token_pending_unstake',
@@ -265,7 +281,14 @@ const walletInfoSectionItem = ({
                           tokenInfo.precision,
                         )}
                       </div>
-                      <div></div>
+                      <div className="icon">
+                        {parseFloat(tokenBalance.pendingUnstake) > 0 && (
+                          <SVGIcon
+                            className="go-to-page-icon"
+                            icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                          />
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
@@ -365,6 +388,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     globalProperties: state.globalProperties,
     hive: state.currencyPrices.hive,
+    pendingUnstaking: state.tokensPendingUnstaking,
   };
 };
 
