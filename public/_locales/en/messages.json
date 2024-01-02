@@ -3721,5 +3721,60 @@
   "html_popup_cancel_unstake_token_fail": {
     "message": "Cancel token unstake has failed",
     "description": "Loading message unstake"
+  },
+  "popup_html_multisig": {
+    "message": "Multisig",
+    "description": "Multisig menu item"
+  },
+  "popup_html_multisig_intro": {
+    "message": "This is the long caption to introduce multisig feature and explain a lot of things",
+    "description": "Multisig page intro"
+  },
+  "popup_html_enable_multisig": {
+    "message": "Enable multisig",
+    "description": "Multisig page enable multisig"
+  },
+  "popup_html_enable_active_key_multisig": {
+    "message": "Enable active key multisig",
+    "description": "Multisig page enable active key multisig"
+  },
+  "popup_html_enable_posting_key_multisig": {
+    "message": "Enable posting key multisig",
+    "description": "Multisig page enable posting key multisig"
+  },
+  "multisig_dialog_accept_tx": {
+    "message": "Accept",
+    "description": "accept transaction coming from multisig"
+  },
+  "multisig_dialog_reject_tx": {
+    "message": "Reject",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_accept_reject_tx_caption": {
+    "message": "You received a signature request.",
+    "description": "Reject transaction coming from multisig"
+  },
+<<<<<<< HEAD
+  "multisig_dialog_transaction_signed_successfully": {
+    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_transaction_broadcasted": {
+    "message": "Transaction broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+=======
+>>>>>>> afde7d2d98e025f4a1b9ad2a130d8532350427b0
+  "multisig": {
+    "message": "Multisig",
+    "description": "Multisig"
+  },
+  "multisig_tx": {
+    "message": "Transaction",
+    "description": "Multisig transaction"
+  },
+  "multisig_initiator": {
+    "message": "Initiator",
+    "description": "Multisig transaction initiator"
   }
 }

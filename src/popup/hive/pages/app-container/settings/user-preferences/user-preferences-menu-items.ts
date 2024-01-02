@@ -24,6 +24,11 @@ const UserPreferencesMenuItems = (
       nextScreen: Screen.SETTINGS_FAVORITE_ACCOUNTS,
     },
     {
+      label: 'popup_html_multisig',
+      icon: NewIcons.MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS,
+      nextScreen: Screen.SETTINGS_MULTISIG,
+    },
+    {
       label: 'popup_html_theme',
       icon: NewIcons.MENU_USER_PREFERENCES_THEME,
       action: () => {

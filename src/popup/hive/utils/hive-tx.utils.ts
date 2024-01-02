@@ -198,11 +198,17 @@ const signTransaction = async (tx: Transaction, key: Key) => {
 
 const broadcastAndConfirmTransactionWithSignature = async (
   transaction: Transaction,
-  signature: string,
+  signature: string | string[],
   confirmation?: boolean,
 ): Promise<TransactionResult | undefined> => {
   let hiveTransaction = new HiveTransaction(transaction);
-  hiveTransaction.addSignature(signature);
+  if (typeof signature === 'string') {
+    hiveTransaction.addSignature(signature);
+  } else {
+    for (const si of signature) {
+      hiveTransaction.addSignature(si);
+    }
+  }
   let response;
   try {
     Logger.log(hiveTransaction);
