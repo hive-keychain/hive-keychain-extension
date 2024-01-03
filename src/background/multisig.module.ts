@@ -66,19 +66,18 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 const connectSocket = (multisigConfig: MultisigConfig) => {
   socket = io('http://localhost:5000', {
     transports: ['websocket'],
-    reconnection: false,
+    reconnection: true,
   });
 
   socket.on('connect', () => {
-    console.log('connect');
     keepAlive();
     initAccountsConnections(multisigConfig);
   });
   socket.on('error', (err) => {
-    console.log('error', err);
+    Logger.error('Error in socket', err);
   });
   socket.on('disconnect', (ev) => {
-    console.log('disconnect', ev);
+    Logger.info('Disconnected from socket');
   });
 
   socket.on(
@@ -195,15 +194,15 @@ const connectToBackend = async (
     SocketMessageCommand.SIGNER_CONNECT,
     signerConnectMessages,
     (signerConnectResponse: SignerConnectResponse) => {
-      console.log(signerConnectResponse);
       for (const signer of signerConnectMessages) {
         if (
           !(
             signerConnectResponse.errors &&
             Object.keys(signerConnectResponse.errors).includes(signer.publicKey)
           )
-        )
+        ) {
           connectedPublicKeys.push(signer);
+        }
       }
     },
   );
@@ -367,8 +366,6 @@ const requestSignTransactionFromUser = (
 };
 
 const decryptRequest = async (signer: Signer, key: string) => {
-  console.log(`trying to decrypt for signer ${signer.publicKey}`);
-
   return await MultisigUtils.decodeTransaction(
     signer.encryptedTransaction,
     key,
@@ -397,7 +394,7 @@ const openWindow = (data: MultisigData): void => {
         command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: data,
       } as BackgroundMessage);
-    }, 1000);
+    }, 250);
   });
 };
 

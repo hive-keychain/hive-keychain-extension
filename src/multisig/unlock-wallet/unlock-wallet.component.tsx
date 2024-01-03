@@ -16,7 +16,6 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
   const [password, setPassword] = useState('');
 
   const login = () => {
-    console.log('trying to login', password);
     chrome.runtime.sendMessage({
       command: BackgroundCommand.MULTISIG_UNLOCK_WALLET,
       value: password,
