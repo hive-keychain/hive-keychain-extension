@@ -4,6 +4,7 @@ import {
   MultisigData,
   MultisigDisplayMessageData,
   MultisigStep,
+  MultisigUnlockData,
 } from '@interfaces/multisig.interface';
 import { useThemeContext } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -12,12 +13,11 @@ import ReactDOM from 'react-dom';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
 
@@ -34,13 +34,11 @@ const MultisigDialog = () => {
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    console.log(backgroundMessage);
     if (
       backgroundMessage.command ===
       BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
       console.log(backgroundMessage);
-      chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
       const multisigData: MultisigData = backgroundMessage.value;
       setContent(renderContent(multisigData));
     }
@@ -50,12 +48,37 @@ const MultisigDialog = () => {
     chrome.runtime.onMessage.addListener(onReceivedDataFromBackground);
   }, []);
 
+  const handleCloseClick = () => {
+    window.close();
+  };
+
+  const sendAcceptRejectTransaction = (accepted: boolean) => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.MULTISIG_ACCEPT_RESPONSE,
+      value: accepted,
+    } as BackgroundMessage);
+    if (!accepted) window.close();
+  };
+
   const renderContent = (multisigData: MultisigData) => {
+    console.log(multisigData);
     switch (multisigData.multisigStep) {
-      case MultisigStep.DISPLAY_MESSAGE: {
+      case MultisigStep.SIGN_TRANSACTION_FEEDBACK: {
         setCaption('');
         const data = multisigData.data as MultisigDisplayMessageData;
-        return <div>display message{chrome.i18n.getMessage(data.message)}</div>;
+        chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
+        return (
+          <>
+            <div className="message">
+              {chrome.i18n.getMessage(data.message)}
+            </div>
+            <div className="fill-space"></div>
+            <ButtonComponent
+              label="popup_html_close"
+              onClick={handleCloseClick}
+            />
+          </>
+        );
       }
       case MultisigStep.ACCEPT_REJECT_TRANSACTION: {
         setCaption('multisig_dialog_accept_reject_tx_caption');
@@ -105,9 +128,23 @@ const MultisigDialog = () => {
 
       case MultisigStep.NOTIFY_TRANSACTION_BROADCASTED: {
         const data = multisigData.data as MultisigDisplayMessageData;
-        setCaption('multisig_accept_reject_tx_caption');
-        chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
-        return <div>{chrome.i18n.getMessage(data.message)}</div>;
+        setCaption('');
+        return (
+          <>
+            <div className="message">
+              {chrome.i18n.getMessage(data.message)}
+            </div>
+            <div className="fill-space"></div>
+            <ButtonComponent
+              label="popup_html_close"
+              onClick={handleCloseClick}
+            />
+          </>
+        );
+      }
+      case MultisigStep.UNLOCK_WALLET: {
+        const data = multisigData.data as MultisigUnlockData;
+        return <UnlockWalletComponent data={data} />;
       }
       default:
         Logger.info(`Step: ${multisigData.multisigStep} but nothing matches`);
@@ -115,17 +152,10 @@ const MultisigDialog = () => {
     }
   };
 
-  const sendAcceptRejectTransaction = (accepted: boolean) => {
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.MULTISIG_ACCEPT_RESPONSE,
-      value: accepted,
-    } as BackgroundMessage);
-  };
-
   return (
     <div className={`theme ${theme} multisig-dialog`}>
       <div className="title-panel">
-        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+        <img className="multisig-logo" src="/assets/images/multisig/logo.png" />
         <div className="title">{chrome.i18n.getMessage('multisig')}</div>
       </div>
       {content && (

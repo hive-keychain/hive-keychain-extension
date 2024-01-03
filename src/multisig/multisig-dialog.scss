@@ -36,6 +36,11 @@ html {
         font-size: 16px;
         overflow: auto;
 
+        .multisig-logo {
+          height: 30px;
+          width: auto;
+        }
+
         @include dialogs-title-panel();
         .caption {
           @include caption();
@@ -90,6 +95,43 @@ html {
           align-items: center;
           justify-content: space-between;
           column-gap: 8px;
+        }
+        .message {
+          @include caption();
+        }
+
+        .sign-in-page {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 55px 20px 32px;
+          row-gap: 36px;
+          .logo-white {
+            width: 228px;
+            height: auto;
+          }
+
+          .password-input {
+            width: 100%;
+          }
+
+          .action-panel {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            row-gap: 16px;
+            align-items: center;
+            .reset-password-link {
+              @include poppins600(12px);
+              color: var(--main-font-color);
+              cursor: pointer;
+              text-decoration: underline;
+              &:hover {
+                color: $red;
+              }
+            }
+          }
         }
       }
     }

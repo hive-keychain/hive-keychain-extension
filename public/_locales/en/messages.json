@@ -3754,7 +3754,6 @@
     "message": "You received a signature request.",
     "description": "Reject transaction coming from multisig"
   },
-<<<<<<< HEAD
   "multisig_dialog_transaction_signed_successfully": {
     "message": "Your transaction was signed. You will be notified when it will be broadcasted",
     "description": "Reject transaction coming from multisig"
@@ -3763,8 +3762,6 @@
     "message": "Transaction broadcasted",
     "description": "Reject transaction coming from multisig"
   },
-=======
->>>>>>> afde7d2d98e025f4a1b9ad2a130d8532350427b0
   "multisig": {
     "message": "Multisig",
     "description": "Multisig"

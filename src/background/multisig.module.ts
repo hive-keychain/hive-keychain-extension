@@ -1,4 +1,5 @@
 import { BackgroundMessage } from '@background/background-message.interface';
+import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { SignedTransaction } from '@hiveio/dhive';
 import {
@@ -6,6 +7,7 @@ import {
   MultisigAccountConfig,
   MultisigConfig,
   MultisigData,
+  MultisigDataType,
   MultisigDisplayMessageData,
   MultisigStep,
   NotifyTxBroadcastedMessage,
@@ -96,9 +98,9 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
       );
 
       chrome.runtime.sendMessage({
-        command: BackgroundCommand.MULTISIG_ACK_ACCEPT_RESPONSE,
+        command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: {
-          multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
+          multisigStep: MultisigStep.SIGN_TRANSACTION_FEEDBACK,
           data: {
             message: 'multisig_dialog_transaction_signed_successfully',
           } as MultisigDisplayMessageData,
@@ -137,17 +139,13 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
                 } as NotifyTxBroadcastedMessage,
                 () => {
                   Logger.info(`Notified`);
-                  chrome.runtime.sendMessage({
-                    command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
-                    value: {
-                      data: {
-                        multisigStep:
-                          MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
-                        message:
-                          'multisig_dialog_transaction_signed_successfully',
-                      } as MultisigDisplayMessageData,
-                    },
-                  } as BackgroundMessage);
+
+                  openWindow({
+                    multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
+                    data: {
+                      message: 'multisig_dialog_transaction_broadcasted',
+                    } as MultisigDisplayMessageData,
+                  });
                 },
               );
             }
@@ -234,7 +232,13 @@ const processSignatureRequest = async (
       (c) => c.publicKey === signer.publicKey,
     )?.username;
 
-    const mk = await MkUtils.getMkFromLocalStorage();
+    let mk = await MkModule.getMk();
+    let openNewWindow = true;
+    if (!mk) {
+      mk = await unlockWallet();
+      openNewWindow = false;
+    }
+
     const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(
       mk,
     );
@@ -245,17 +249,64 @@ const processSignatureRequest = async (
       ]?.toString()!;
 
     const decodedTransaction = await decryptRequest(signer, key);
-    // TODO add check
     if (decodedTransaction) {
       const signedTransaction = await requestSignTransactionFromUser(
         decodedTransaction,
         signer,
         signatureRequest,
         key,
+        openNewWindow,
       );
       return signedTransaction;
     } else return;
   }
+};
+
+const unlockWallet = async () => {
+  return new Promise((resolve, reject) => {
+    const onReceiveMK = async (
+      backgroundMessage: BackgroundMessage,
+      sender: chrome.runtime.MessageSender,
+      sendResp: (response?: any) => void,
+    ) => {
+      if (
+        backgroundMessage.command === BackgroundCommand.MULTISIG_UNLOCK_WALLET
+      ) {
+        if (backgroundMessage.value) {
+          try {
+            if (await MkUtils.login(backgroundMessage.value)) {
+              resolve(backgroundMessage.value);
+              chrome.runtime.onMessage.removeListener(onReceiveMK);
+            } else {
+              chrome.runtime.sendMessage({
+                command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+                value: {
+                  multisigStep: MultisigStep.UNLOCK_WALLET,
+                  data: { feedback: 'wrong_password' },
+                },
+              });
+            }
+          } catch (err) {
+            chrome.runtime.sendMessage({
+              command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+              value: {
+                multisigStep: MultisigStep.UNLOCK_WALLET,
+                data: { feedback: 'wrong_password' },
+              },
+            });
+          }
+        } else {
+          resolve(undefined);
+        }
+      }
+    };
+    chrome.runtime.onMessage.addListener(onReceiveMK);
+
+    openWindow({
+      multisigStep: MultisigStep.UNLOCK_WALLET,
+      data: {} as MultisigDataType,
+    });
+  });
 };
 
 const requestSignTransactionFromUser = (
@@ -263,6 +314,7 @@ const requestSignTransactionFromUser = (
   signer: Signer,
   signatureRequest: SignatureRequest,
   key: string,
+  openNewWindow?: boolean,
 ): Promise<SignedTransaction | undefined> => {
   return new Promise((resolve, reject) => {
     const onReceivedMultisigAcceptResponse = async (
@@ -289,14 +341,28 @@ const requestSignTransactionFromUser = (
     };
     chrome.runtime.onMessage.addListener(onReceivedMultisigAcceptResponse);
 
-    openWindow({
-      multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
-      data: {
-        signer,
-        signatureRequest,
-        decodedTransaction,
-      } as MultisigAcceptRejectTxData,
-    });
+    if (openNewWindow) {
+      openWindow({
+        multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
+        data: {
+          signer,
+          signatureRequest,
+          decodedTransaction,
+        } as MultisigAcceptRejectTxData,
+      });
+    } else {
+      chrome.runtime.sendMessage({
+        command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+        value: {
+          multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
+          data: {
+            signer,
+            signatureRequest,
+            decodedTransaction,
+          } as MultisigAcceptRejectTxData,
+        },
+      });
+    }
   });
 };
 

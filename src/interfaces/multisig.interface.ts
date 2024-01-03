@@ -148,8 +148,13 @@ export interface MultisigDisplayMessageData {
   message: string;
 }
 
+export interface MultisigUnlockData {
+  feedback?: string;
+}
+
 export enum MultisigStep {
   ACCEPT_REJECT_TRANSACTION = 'ACCEPT_REJECT_TRANSACTION',
   NOTIFY_TRANSACTION_BROADCASTED = 'NOTIFY_TRANSACTION_BROADCASTED',
-  DISPLAY_MESSAGE = 'DISPLAY_MESSAGE',
+  SIGN_TRANSACTION_FEEDBACK = 'SIGN_TRANSACTION_FEEDBACK',
+  UNLOCK_WALLET = 'UNLOCK_WALLET',
 }
