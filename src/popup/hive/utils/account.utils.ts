@@ -98,6 +98,15 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
     encyptedAccounts,
   );
 };
+
+const getAccountFromLocalStorage = async (
+  username: string,
+): Promise<LocalAccount | undefined> => {
+  const mk = await MkUtils.getMkFromLocalStorage();
+  const accounts = await getAccountsFromLocalStorage(mk);
+  return accounts.find((acc) => acc.name === username);
+};
+
 /* istanbul ignore next */
 const getAccountsFromLocalStorage = async (
   mk: string,
@@ -584,9 +593,16 @@ const reorderAccounts = (
   return list;
 };
 
+const getAccountFromKey = async (key: Key) => {
+  const pubKey = KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
+  const accountName = (await KeysUtils.getKeyReferences([pubKey!]))[0];
+  return AccountUtils.getExtendedAccount(accountName[0]);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
+  getAccountFromLocalStorage,
   saveAccounts,
   hasStoredAccounts,
   addAuthorizedAccount,
@@ -617,6 +633,7 @@ const AccountUtils = {
   addAccount,
   reorderAccounts,
   addAuthorizedKey,
+  getAccountFromKey,
 };
 
 export const BackgroundAccountUtils = {

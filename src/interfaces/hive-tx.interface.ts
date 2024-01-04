@@ -9,6 +9,7 @@ export interface TransactionResult {
 export interface HiveTxBroadcastResult {
   status: string;
   tx_id: string;
+  isUsingMultisig?: boolean;
 }
 
 export interface HiveTxBroadcastSuccessResponse {

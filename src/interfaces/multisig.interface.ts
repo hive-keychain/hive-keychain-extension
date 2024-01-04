@@ -1,3 +1,5 @@
+import { ExtendedAccount } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 
 export interface MultisigAccountKeyConfig {
@@ -150,6 +152,15 @@ export interface MultisigDisplayMessageData {
 
 export interface MultisigUnlockData {
   feedback?: string;
+}
+
+export interface MultisigRequestSignatures {
+  transaction: any;
+  key: Key;
+  initiatorAccount: ExtendedAccount;
+  transactionAccount: ExtendedAccount;
+  signature: string;
+  method: KeychainKeyTypes;
 }
 
 export enum MultisigStep {

@@ -9,8 +9,11 @@ import {
   MultisigData,
   MultisigDataType,
   MultisigDisplayMessageData,
+  MultisigRequestSignatures,
   MultisigStep,
   NotifyTxBroadcastedMessage,
+  RequestSignatureMessage,
+  RequestSignatureSigner,
   SignTransactionMessage,
   SignatureRequest,
   Signer,
@@ -19,14 +22,15 @@ import {
   SocketMessageCommand,
 } from '@interfaces/multisig.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { MultisigUtils } from 'src/utils/multisig.utils';
 
 let socket: Socket;
 
@@ -49,6 +53,34 @@ const start = async () => {
   ) {
     Logger.info('Some accounts need connection');
     connectSocket(multisigConfig);
+    chrome.runtime.onMessage.addListener(
+      async (
+        backgroundMessage: BackgroundMessage,
+        sender: chrome.runtime.MessageSender,
+        sendResp: (response?: any) => void,
+      ) => {
+        if (
+          backgroundMessage.command ===
+          BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
+        ) {
+          const data = backgroundMessage.value as MultisigRequestSignatures;
+          const message = await requestSignatures(data);
+          socket.emit(
+            SocketMessageCommand.REQUEST_SIGNATURE,
+            message,
+            (message: string) => {
+              Logger.log(message);
+              chrome.runtime.sendMessage({
+                command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
+                value: {
+                  message: 'multisig_signature_request_sent',
+                },
+              });
+            },
+          );
+        }
+      },
+    );
   } else {
     Logger.info('Multisig hasnt been enabled for any account');
   }
@@ -218,8 +250,66 @@ const keepAlive = () => {
   }, 20 * 1000);
 };
 
-const requestSignatures = () => {
-  //TODO to implement
+const requestSignatures = async (
+  data: MultisigRequestSignatures,
+): Promise<RequestSignatureMessage> => {
+  return new Promise(async (resolve, reject) => {
+    const potentialSigners = await MultisigUtils.getPotentialSigners(
+      data.initiatorAccount,
+      data.key,
+      data.method,
+    );
+
+    console.log({ tx: data.transaction });
+
+    const signers: RequestSignatureSigner[] = [];
+    for (const [receiverPubKey, weight] of potentialSigners) {
+      signers.push({
+        encryptedTransaction: await encodeTransaction(
+          data.transaction,
+          data.key!.toString(),
+          receiverPubKey,
+        ),
+        publicKey: receiverPubKey,
+        weight: weight.toString(),
+      });
+    }
+
+    const publicKey = KeysUtils.getPublicKeyFromPrivateKeyString(
+      data.key!.toString(),
+    )!;
+
+    const keyAuths =
+      data.method === KeychainKeyTypes.active
+        ? data.initiatorAccount.active.key_auths
+        : data.initiatorAccount.posting.key_auths;
+
+    const keyAuth = keyAuths.find(
+      ([key, weight]) => key.toString() === publicKey.toString(),
+    );
+
+    const transactionAccountThreshold =
+      data.method === KeychainKeyTypes.active
+        ? data.initiatorAccount.active.weight_threshold
+        : data.initiatorAccount.posting.weight_threshold;
+
+    const request: RequestSignatureMessage = {
+      initialSigner: {
+        publicKey: publicKey,
+        signature: data.signature,
+        username: data.initiatorAccount.name,
+        weight: keyAuth![1],
+      },
+      signatureRequest: {
+        expirationDate: data.transaction.expiration,
+        keyType: data.method,
+        signers: signers,
+        threshold: transactionAccountThreshold,
+      },
+    };
+
+    resolve(request);
+  });
 };
 
 const processSignatureRequest = async (
@@ -369,6 +459,18 @@ const decryptRequest = async (signer: Signer, key: string) => {
   return await MultisigUtils.decodeTransaction(
     signer.encryptedTransaction,
     key,
+  );
+};
+
+const encodeTransaction = async (
+  transaction: any,
+  key: string,
+  receiverPublicKey: string,
+): Promise<string> => {
+  return await MultisigUtils.encodeTransaction(
+    transaction,
+    key,
+    receiverPublicKey,
   );
 };
 

@@ -1,6 +1,7 @@
 import { KeychainApi } from '@api/keychain';
+import { BackgroundMessage } from '@background/background-message.interface';
 import Hive from '@engrave/ledger-app-hive';
-import { Operation, Transaction } from '@hiveio/dhive';
+import { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastResult,
@@ -8,7 +9,12 @@ import {
   TransactionResult,
 } from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
+import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import {
   Transaction as HiveTransaction,
   config as HiveTxConfig,
@@ -42,13 +48,17 @@ const sendOperation = async (
     key,
   );
   if (transactionResult) {
-    return {
-      id: transactionResult.tx_id,
-      tx_id: transactionResult.tx_id,
-      confirmed: confirmation
-        ? await confirmTransaction(transactionResult.tx_id)
-        : false,
-    } as TransactionResult;
+    if (transactionResult.isUsingMultisig) {
+      return { id: '0', tx_id: '0', confirmed: true };
+    } else {
+      return {
+        id: transactionResult.tx_id,
+        tx_id: transactionResult.tx_id,
+        confirmed: confirmation
+          ? await confirmTransaction(transactionResult.tx_id)
+          : false,
+      } as TransactionResult;
+    }
   } else {
     return null;
   }
@@ -74,7 +84,37 @@ const createSignAndBroadcastTransaction = async (
     Config.transactions.expirationTimeInMinutes * MINUTE,
   );
 
-  if (KeysUtils.isUsingLedger(key)) {
+  const username = MultisigUtils.getUsernameFromTransaction(transaction);
+  const transactionAccount = await AccountUtils.getExtendedAccount(
+    username!.toString(),
+  );
+  const initiatorAccount = await AccountUtils.getAccountFromKey(key);
+  const method = await KeysUtils.isKeyActiveOrPosting(key, initiatorAccount);
+
+  const isUsingMultisig = await KeysUtils.isUsingMultisig(
+    key,
+    transactionAccount,
+    initiatorAccount,
+    method,
+  );
+
+  if (isUsingMultisig) {
+    const signedTransaction = await signTransaction(transaction, key);
+    if (!signedTransaction) {
+      throw new Error('html_popup_error_while_signing_transaction');
+    }
+
+    const response = await useMultisig(
+      transaction,
+      key,
+      initiatorAccount,
+      transactionAccount,
+      method,
+      signedTransaction?.signatures[0],
+    );
+    console.log(response);
+    return { status: response as string, tx_id: '' } as HiveTxBroadcastResult;
+  } else if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
     try {
       hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
@@ -256,6 +296,44 @@ const getData = async (
       )}`,
     );
   }
+};
+
+const useMultisig = async (
+  transaction: Transaction,
+  key: Key,
+  initiatorAccount: ExtendedAccount,
+  transactionAccount: ExtendedAccount,
+  method: KeychainKeyTypes,
+  signature: string,
+) => {
+  return new Promise((resolve, reject) => {
+    const handleResponseFromBackground = (
+      backgroundMessage: BackgroundMessage,
+      sender: chrome.runtime.MessageSender,
+      sendResp: (response?: any) => void,
+    ) => {
+      if (
+        backgroundMessage.command ===
+        BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE
+      ) {
+        chrome.runtime.onMessage.removeListener(handleResponseFromBackground);
+        resolve(backgroundMessage.value);
+      }
+    };
+    chrome.runtime.onMessage.addListener(handleResponseFromBackground);
+
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
+      value: {
+        transaction: transaction,
+        key: key,
+        initiatorAccount: initiatorAccount,
+        transactionAccount: transactionAccount,
+        method: method,
+        signature: signature,
+      } as MultisigRequestSignatures,
+    } as BackgroundMessage);
+  });
 };
 
 export const HiveTxUtils = {

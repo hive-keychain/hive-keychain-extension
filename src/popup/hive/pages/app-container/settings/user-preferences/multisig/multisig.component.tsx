@@ -1,6 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { MultisigAccountConfig } from '@interfaces/multisig.interface';
 import HiveUtils from '@popup/hive/utils/hive.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,7 +10,6 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import { MultisigUtils } from 'src/utils/multisig.utils';
 
 const defaultConfig: MultisigAccountConfig = {
   isEnabled: false,

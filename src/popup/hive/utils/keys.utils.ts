@@ -1,5 +1,6 @@
 import { Account, ExtendedAccount, PrivateKey } from '@hiveio/dhive';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -95,6 +96,91 @@ const isUsingLedger = (key: Key): boolean => {
   return KeysUtils.getKeyType(key, null) === PrivateKeyType.LEDGER;
 };
 
+const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
+  const localAccount = await AccountUtils.getAccountFromLocalStorage(
+    account.name,
+  );
+
+  console.log(localAccount, key);
+
+  if (localAccount?.keys.active === key) {
+    return KeychainKeyTypes.active;
+  } else {
+    return KeychainKeyTypes.posting;
+  }
+};
+
+const isUsingMultisig = async (
+  key: Key,
+  transactionAccount: ExtendedAccount,
+  initiatorAccount: ExtendedAccount,
+  method: KeychainKeyTypes,
+): Promise<boolean> => {
+  switch (method) {
+    case KeychainKeyTypes.active: {
+      const accAuth = transactionAccount.active.account_auths.find(
+        ([auth, w]) => auth === initiatorAccount.name,
+      );
+      const keyAuth = transactionAccount.active.key_auths.find(
+        ([keyAuth, w]) =>
+          keyAuth ===
+          KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString()),
+      );
+      if (
+        (accAuth && accAuth[1] < transactionAccount.active.weight_threshold) ||
+        (keyAuth && keyAuth[1] < transactionAccount.active.weight_threshold)
+      ) {
+        return true;
+      }
+    }
+    case KeychainKeyTypes.posting:
+      {
+        const accAuth = transactionAccount.posting.account_auths.find(
+          ([auth, w]) => auth === initiatorAccount.name,
+        );
+        const keyAuth = transactionAccount.posting.key_auths.find(
+          ([keyAuth, w]) => keyAuth === key,
+        );
+        if (
+          (accAuth &&
+            accAuth[1] < transactionAccount.posting.weight_threshold) ||
+          (keyAuth && keyAuth[1] < transactionAccount.posting.weight_threshold)
+        ) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  // const localAccount = await AccountUtils.getAccountFromLocalStorage(transaction);
+
+  // let publicKey =
+  //   localAccount?.keys.active === key ? localAccount.keys.activePubkey : null;
+
+  // let authority = extendedAccount.active.key_auths.find(([a, w]) => {
+  //   return a.toString() === publicKey?.toString();
+  // });
+
+  // if (authority) {
+  //   const [auth, weight] = authority;
+  //   if (weight < extendedAccount.active.weight_threshold) {
+  //     return true;
+  //   }
+  // }
+
+  // authority = extendedAccount.posting.key_auths.find(
+  //   ([a, w]) => a.toString() === publicKey?.toString(),
+  // );
+  // if (authority) {
+  //   const [auth, weight] = authority;
+  //   if (weight < extendedAccount.posting.weight_threshold) {
+  //     return true;
+  //   }
+  // }
+  // return false;
+  return true;
+};
+
 const getKeyReferences = (keys: string[]) => {
   return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
 };
@@ -170,9 +256,11 @@ export const KeysUtils = {
   hasPosting,
   hasMemo,
   isUsingLedger,
+  isUsingMultisig,
   getKeyReferences,
   getKeyType,
   requireManualConfirmation,
   isExportable,
   checkWrongKeyOnAccount,
+  isKeyActiveOrPosting,
 };
