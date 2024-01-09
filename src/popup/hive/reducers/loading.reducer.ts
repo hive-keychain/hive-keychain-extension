@@ -21,20 +21,25 @@ export interface LoadingPayload {
   privateKeyType?: PrivateKeyType;
 }
 
+export interface SetCaptionPayload {
+  caption: string;
+}
+
 export const LoadingReducer = (
   state: LoadingState = { loadingOperations: [], caption: undefined },
-  { type, payload }: ActionPayload<LoadingPayload>,
+  { type, payload }: ActionPayload<LoadingPayload | SetCaptionPayload>,
 ): LoadingState => {
   switch (type) {
-    case ActionType.ADD_TO_LOADING_LIST:
+    case ActionType.ADD_TO_LOADING_LIST: {
+      const loadingPayload = payload as LoadingPayload;
       if (
         state.loadingOperations.find(
-          (loadingItem) => loadingItem.name === payload?.operation,
+          (loadingItem) => loadingItem.name === loadingPayload?.operation,
         )
       ) {
         const newState = { loadingOperations: [...state.loadingOperations] };
         for (let loadingOperation of newState.loadingOperations) {
-          if (loadingOperation.name === payload?.operation) {
+          if (loadingOperation.name === loadingPayload?.operation) {
             loadingOperation.done = false;
           }
         }
@@ -42,33 +47,32 @@ export const LoadingReducer = (
       } else {
         const newState: LoadingState = {
           loadingOperations: [...state.loadingOperations],
+          caption: state.caption,
         };
         newState.loadingOperations.push({
-          name: payload!.operation!,
-          operationParams: payload!.operationParams,
-          hideDots: payload!.hideDots,
+          name: loadingPayload!.operation!,
+          operationParams: loadingPayload!.operationParams,
+          hideDots: loadingPayload!.hideDots,
           done: false,
         });
         if (
-          payload?.privateKeyType &&
-          payload.privateKeyType === PrivateKeyType.LEDGER
+          loadingPayload?.privateKeyType &&
+          loadingPayload.privateKeyType === PrivateKeyType.LEDGER
         ) {
           newState.caption = 'popup_html_validate_transaction_on_ledger';
-        } else if (
-          payload?.privateKeyType &&
-          payload.privateKeyType === PrivateKeyType.MULTISIG
-        ) {
-          newState.caption = 'multisig_processing_tx_through_multisig_server';
         }
         return newState;
       }
+    }
 
-    case ActionType.REMOVE_FROM_LOADING_LIST:
+    case ActionType.REMOVE_FROM_LOADING_LIST: {
+      const loadingPayload = payload as LoadingPayload;
       const newState: LoadingState = {
         loadingOperations: [...state.loadingOperations],
+        caption: state.caption,
       };
       for (let loadingOperation of newState.loadingOperations) {
-        if (loadingOperation.name === payload?.operation) {
+        if (loadingOperation.name === loadingPayload?.operation) {
           loadingOperation.done = true;
         }
       }
@@ -78,6 +82,15 @@ export const LoadingReducer = (
       )
         ? newState
         : { loadingOperations: [], caption: undefined };
+    }
+    case ActionType.ADD_CAPTION_TO_LOADING_PAGE: {
+      const setCaptionPayload = payload as SetCaptionPayload;
+      const newState: LoadingState = {
+        loadingOperations: [...state.loadingOperations],
+        caption: setCaptionPayload.caption,
+      };
+      return newState;
+    }
     default:
       return state;
   }

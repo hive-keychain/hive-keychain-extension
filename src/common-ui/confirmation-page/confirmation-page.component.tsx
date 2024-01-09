@@ -1,3 +1,4 @@
+import { addCaptionToLoading } from '@popup/hive/actions/loading.actions';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
@@ -41,6 +42,7 @@ const ConfirmationPage = ({
   method,
   goBack,
   setTitleContainerProperties,
+  addCaptionToLoading,
 }: PropsType) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
@@ -96,6 +98,10 @@ const ConfirmationPage = ({
 
   const handleClickOnConfirm = () => {
     AnalyticsUtils.sendRequestEvent(title);
+
+    if (willUseMultisig) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
     afterConfirmAction();
   };
 
@@ -193,6 +199,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   goBack,
   setTitleContainerProperties,
+  addCaptionToLoading,
 });
 type PropsType = ConnectedProps<typeof connector> & ConfirmationPageParams;
 
