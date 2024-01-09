@@ -126,7 +126,10 @@ const ConfirmationPage = ({
         )}
         {willUseMultisig && (
           <div data-testid="use-multisig-message" className="multisig-message">
-            {chrome.i18n.getMessage('multisig_disclaimer_message')}
+            <img src="/assets/images/multisig/logo.png" className="logo" />
+            <div className="message">
+              {chrome.i18n.getMessage('multisig_disclaimer_message')}
+            </div>
           </div>
         )}
         {hasField && (

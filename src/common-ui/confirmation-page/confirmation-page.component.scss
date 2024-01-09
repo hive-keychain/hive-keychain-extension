@@ -16,7 +16,17 @@
     }
 
     .multisig-message {
-      @include caption;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 8px;
+      .message {
+        @include caption;
+      }
+      .logo {
+        height: 24px;
+        width: auto;
+      }
     }
 
     .fields {
