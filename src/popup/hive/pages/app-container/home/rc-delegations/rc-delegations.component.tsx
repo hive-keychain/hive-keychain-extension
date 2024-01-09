@@ -1,8 +1,11 @@
 import { joiResolver } from '@hookform/resolvers/joi';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
-  RcDelegation,
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
+import {
   RCDelegationValue,
+  RcDelegation,
 } from '@interfaces/rc-delegation.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -10,8 +13,9 @@ import { Screen } from '@reference-data/screen.enum';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -45,6 +49,11 @@ interface DelegationForm {
   gigaRcValue: string;
   hpValue: string;
   currency: string;
+}
+
+export interface IncomingOutgoingRCDelegationParams {
+  delegationType: DelegationType;
+  delegations: RcDelegation[];
 }
 
 const rules = FormUtils.createRules<DelegationForm>({
@@ -174,6 +183,7 @@ const RCDelegations = ({
     ];
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.posting,
       message: chrome.i18n.getMessage(
         isCancel
           ? 'popup_html_cancel_rc_delegation_confirm_text'
@@ -235,7 +245,7 @@ const RCDelegations = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const loadAutocompleteTransferUsernames = async () => {

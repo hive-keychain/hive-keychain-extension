@@ -1,6 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import Decimal from 'decimal.js';
@@ -10,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -189,6 +193,7 @@ const TokensOperation = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         `popup_html_${operationType}_tokens_confirm_text`,
       ),
@@ -259,7 +264,7 @@ const TokensOperation = ({
           removeFromLoadingList(`popup_html_${operationType}_tokens`);
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getSubmitButtonLabel = () => {

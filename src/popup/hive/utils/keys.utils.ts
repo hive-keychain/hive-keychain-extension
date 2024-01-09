@@ -101,8 +101,6 @@ const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
     account.name,
   );
 
-  console.log(localAccount, key);
-
   if (localAccount?.keys.active === key) {
     return KeychainKeyTypes.active;
   } else {
@@ -110,12 +108,12 @@ const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
   }
 };
 
-const isUsingMultisig = async (
+const isUsingMultisig = (
   key: Key,
   transactionAccount: ExtendedAccount,
   initiatorAccount: ExtendedAccount,
   method: KeychainKeyTypes,
-): Promise<boolean> => {
+): boolean => {
   switch (method) {
     case KeychainKeyTypes.active: {
       const accAuth = transactionAccount.active.account_auths.find(
@@ -152,32 +150,6 @@ const isUsingMultisig = async (
       return false;
   }
 
-  // const localAccount = await AccountUtils.getAccountFromLocalStorage(transaction);
-
-  // let publicKey =
-  //   localAccount?.keys.active === key ? localAccount.keys.activePubkey : null;
-
-  // let authority = extendedAccount.active.key_auths.find(([a, w]) => {
-  //   return a.toString() === publicKey?.toString();
-  // });
-
-  // if (authority) {
-  //   const [auth, weight] = authority;
-  //   if (weight < extendedAccount.active.weight_threshold) {
-  //     return true;
-  //   }
-  // }
-
-  // authority = extendedAccount.posting.key_auths.find(
-  //   ([a, w]) => a.toString() === publicKey?.toString(),
-  // );
-  // if (authority) {
-  //   const [auth, weight] = authority;
-  //   if (weight < extendedAccount.posting.weight_threshold) {
-  //     return true;
-  //   }
-  // }
-  // return false;
   return true;
 };
 
@@ -185,8 +157,26 @@ const getKeyReferences = (keys: string[]) => {
   return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
 };
 
-const getKeyType = (privateKey: Key, publicKey?: Key): PrivateKeyType => {
-  if (privateKey?.toString().startsWith('#')) {
+const getKeyType = (
+  privateKey: Key,
+  publicKey?: Key,
+  transactionAccount?: ExtendedAccount,
+  initiatorAccount?: ExtendedAccount,
+  method?: KeychainKeyTypes,
+): PrivateKeyType => {
+  if (
+    transactionAccount &&
+    initiatorAccount &&
+    method &&
+    KeysUtils.isUsingMultisig(
+      privateKey,
+      transactionAccount,
+      initiatorAccount,
+      method,
+    )
+  ) {
+    return PrivateKeyType.MULTISIG;
+  } else if (privateKey?.toString().startsWith('#')) {
     return PrivateKeyType.LEDGER;
   } else if (publicKey?.toString().startsWith('@')) {
     return PrivateKeyType.AUTHORIZED_ACCOUNT;

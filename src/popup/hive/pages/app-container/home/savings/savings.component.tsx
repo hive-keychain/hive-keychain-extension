@@ -1,6 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import Joi from 'joi';
@@ -221,6 +224,7 @@ const SavingsPage = ({
     );
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         watch('type') === SavingOperationType.WITHDRAW
           ? 'popup_html_confirm_savings_withdraw'

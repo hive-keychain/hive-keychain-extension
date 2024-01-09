@@ -1,6 +1,8 @@
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent, {
   ButtonType,
@@ -22,6 +24,7 @@ export interface ConfirmationPageParams {
   afterConfirmAction: () => {};
   afterCancelAction?: () => {};
   formParams?: any;
+  method: KeychainKeyTypes | null;
 }
 
 const ConfirmationPage = ({
@@ -34,9 +37,13 @@ const ConfirmationPage = ({
   skipWarningTranslation,
   title,
   skipTitleTranslation,
+  activeAccount,
+  method,
   goBack,
   setTitleContainerProperties,
 }: PropsType) => {
+  const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
+  const [hasField] = useState(fields && fields.length !== 0);
   useEffect(() => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
@@ -53,8 +60,39 @@ const ConfirmationPage = ({
         }
       },
     });
+
+    checkForMultsig();
   }, []);
-  const hasField = fields && fields.length !== 0;
+
+  const checkForMultsig = async () => {
+    let useMultisig = false;
+    switch (method) {
+      case KeychainKeyTypes.active: {
+        if (activeAccount.keys.active) {
+          useMultisig = KeysUtils.isUsingMultisig(
+            activeAccount.keys.active,
+            activeAccount.account,
+            activeAccount.account,
+            method,
+          );
+          setWillUseMultisig(useMultisig);
+        }
+        break;
+      }
+      case KeychainKeyTypes.posting: {
+        if (activeAccount.keys.posting) {
+          useMultisig = KeysUtils.isUsingMultisig(
+            activeAccount.keys.posting,
+            activeAccount.account,
+            activeAccount.account,
+            method,
+          );
+          setWillUseMultisig(useMultisig);
+        }
+        break;
+      }
+    }
+  };
 
   const handleClickOnConfirm = () => {
     AnalyticsUtils.sendRequestEvent(title);
@@ -84,6 +122,11 @@ const ConfirmationPage = ({
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
+          </div>
+        )}
+        {willUseMultisig && (
+          <div data-testid="use-multisig-message" className="multisig-message">
+            {chrome.i18n.getMessage('multisig_disclaimer_message')}
           </div>
         )}
         {hasField && (
@@ -139,6 +182,8 @@ const mapStateToProps = (state: RootState) => {
     afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
+    method: state.navigation.stack[0].params.method as KeychainKeyTypes,
+    activeAccount: state.activeAccount,
   };
 };
 

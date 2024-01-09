@@ -4,12 +4,13 @@ import {
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
@@ -86,6 +87,8 @@ const WitnessInformation = ({
 
   const disableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
+      fields: [],
       message: chrome.i18n.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
@@ -133,10 +136,11 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
   const enableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
@@ -145,7 +149,7 @@ const WitnessInformation = ({
       fields: [
         {
           label: 'popup_html_witness_information_signing_key_label',
-          value: lastSigningKey,
+          value: lastSigningKey!,
           valueClassName: 'xs-font',
         },
       ],
@@ -185,7 +189,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const changeSelectedScreen = (selectedValue: WitnessInfoScreen) => {

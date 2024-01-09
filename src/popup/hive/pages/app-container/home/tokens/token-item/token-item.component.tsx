@@ -35,7 +35,7 @@ const TokenItem = ({
       tokenBalance,
       operationType: TokenOperationType.STAKE,
       tokenInfo: tokenInfo,
-    });
+    } as any);
   };
 
   const unstake = () => {
@@ -43,7 +43,7 @@ const TokenItem = ({
       tokenBalance,
       operationType: TokenOperationType.UNSTAKE,
       tokenInfo: tokenInfo,
-    });
+    } as any);
   };
 
   const delegate = () => {
@@ -51,7 +51,7 @@ const TokenItem = ({
       tokenBalance,
       operationType: TokenOperationType.DELEGATE,
       tokenInfo: tokenInfo,
-    });
+    } as any);
   };
 
   const goToOutgoingDelegations = () => {
@@ -59,7 +59,7 @@ const TokenItem = ({
       tokenBalance: tokenBalance,
       delegationType: DelegationType.OUTGOING,
       tokenInfo: tokenInfo,
-    });
+    } as any);
   };
 
   const goToIncomingDelegations = () => {
@@ -67,7 +67,7 @@ const TokenItem = ({
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
       tokenInfo: tokenInfo,
-    });
+    } as any);
   };
 
   const goToTokenWebsite = () => {
@@ -113,7 +113,7 @@ const TokenItem = ({
           dataTestId={`icon-token-history-${tokenBalance.symbol}`}
           name={Icons.HISTORY}
           onClick={() =>
-            navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
+            navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance } as any)
           }
           additionalClassName="history"></Icon>
         <Icon
@@ -123,7 +123,7 @@ const TokenItem = ({
             navigateToWithParams(Screen.TOKENS_TRANSFER, {
               tokenBalance,
               tokenInfo,
-            })
+            } as any)
           }
           additionalClassName="send"></Icon>
         <Icon

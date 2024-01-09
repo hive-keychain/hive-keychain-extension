@@ -1,6 +1,7 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -80,10 +81,12 @@ const AccountKeysListItem = ({
     const keyTypeLabel = chrome.i18n.getMessage(keyType.toLowerCase());
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: null,
       message: chrome.i18n.getMessage('html_popup_delete_key_confirm', [
         keyTypeLabel,
         activeAccount.name!,
       ]),
+      fields: [],
       title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
         let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
@@ -99,7 +102,7 @@ const AccountKeysListItem = ({
         removeKey(keyType);
         goBack();
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const goToAccount = (publicKey: Key) => {

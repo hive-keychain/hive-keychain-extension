@@ -54,6 +54,11 @@ export const LoadingReducer = (
           payload.privateKeyType === PrivateKeyType.LEDGER
         ) {
           newState.caption = 'popup_html_validate_transaction_on_ledger';
+        } else if (
+          payload?.privateKeyType &&
+          payload.privateKeyType === PrivateKeyType.MULTISIG
+        ) {
+          newState.caption = 'multisig_processing_tx_through_multisig_server';
         }
         return newState;
       }

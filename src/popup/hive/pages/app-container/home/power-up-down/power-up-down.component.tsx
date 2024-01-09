@@ -1,12 +1,16 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -192,6 +196,7 @@ const PowerUpDown = ({
     fields.push({ label: 'popup_html_amount', value: stringifiedAmount });
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_power_up_down_message',
         [operationString.toLowerCase()],
@@ -251,7 +256,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_power_down_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const setToMax = () => {
@@ -264,6 +269,8 @@ const PowerUpDown = ({
 
   const handleCancelButtonClick = (form: PowerUpDownForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      title: '',
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_power_down_message',
       ),
@@ -296,7 +303,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_cancel_power_down_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (

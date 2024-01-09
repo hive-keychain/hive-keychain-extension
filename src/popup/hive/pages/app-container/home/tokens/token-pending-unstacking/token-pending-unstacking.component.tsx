@@ -17,9 +17,11 @@ import { RootState } from '@popup/hive/store';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -71,6 +73,7 @@ const TokenPendingUnstake = ({
     ];
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('html_popup_cancel_unstaking_message'),
       title: 'html_popup_pending_unstake',
       titleParams: [tokenInfo.symbol],
@@ -98,7 +101,7 @@ const TokenPendingUnstake = ({
           removeFromLoadingList('html_popup_canceling_unstake_token');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (

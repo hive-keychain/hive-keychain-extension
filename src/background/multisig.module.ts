@@ -53,37 +53,42 @@ const start = async () => {
   ) {
     Logger.info('Some accounts need connection');
     connectSocket(multisigConfig);
-    chrome.runtime.onMessage.addListener(
-      async (
-        backgroundMessage: BackgroundMessage,
-        sender: chrome.runtime.MessageSender,
-        sendResp: (response?: any) => void,
-      ) => {
-        if (
-          backgroundMessage.command ===
-          BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
-        ) {
-          const data = backgroundMessage.value as MultisigRequestSignatures;
-          const message = await requestSignatures(data);
-          socket.emit(
-            SocketMessageCommand.REQUEST_SIGNATURE,
-            message,
-            (message: string) => {
-              Logger.log(message);
-              chrome.runtime.sendMessage({
-                command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
-                value: {
-                  message: 'multisig_signature_request_sent',
-                },
-              });
-            },
-          );
-        }
-      },
-    );
   } else {
     Logger.info('Multisig hasnt been enabled for any account');
   }
+
+  setupPopupListener();
+};
+
+const setupPopupListener = () => {
+  chrome.runtime.onMessage.addListener(
+    async (
+      backgroundMessage: BackgroundMessage,
+      sender: chrome.runtime.MessageSender,
+      sendResp: (response?: any) => void,
+    ) => {
+      if (
+        backgroundMessage.command ===
+        BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
+      ) {
+        const data = backgroundMessage.value as MultisigRequestSignatures;
+        const message = await requestSignatures(data);
+        socket.emit(
+          SocketMessageCommand.REQUEST_SIGNATURE,
+          message,
+          (message: string) => {
+            Logger.log(message);
+            chrome.runtime.sendMessage({
+              command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
+              value: {
+                message: 'multisig_signature_request_sent',
+              },
+            });
+          },
+        );
+      }
+    },
+  );
 };
 
 const initAccountsConnections = async (multisigConfig: MultisigConfig) => {

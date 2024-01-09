@@ -3773,5 +3773,21 @@
   "multisig_initiator": {
     "message": "Initiator",
     "description": "Multisig transaction initiator"
+  },
+  "multisig_key_is_ledger_hint": {
+    "message": "Your key uses Ledger. It is not compatible with our version of Multisig",
+    "description": "Explanation of why Ledger cannot work with multisig"
+  },
+  "multisig_processing_tx_through_multisig_server": {
+    "message": "Your transaction will be processed using the multisig server",
+    "description": "Using multisig to process transaction"
+  },
+  "multisig_transaction_sent_to_signers": {
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "description": "Tx sent to multisig backend success message"
+  },
+  "multisig_disclaimer_message": {
+    "message": "Multisig detected : This transaction will be sent to the Hive Multisig server",
+    "description": "Message to inform user that multisig will be used"
   }
 }

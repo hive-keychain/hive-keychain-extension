@@ -2,6 +2,7 @@ import { AuthorityType } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
@@ -45,6 +46,7 @@ const AccountAuthoritiesListItem = ({
     authorizedAccountName: string,
   ) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: null,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_remove_account_authority_message',
         [role, authorizedAccountName],
@@ -88,7 +90,7 @@ const AccountAuthoritiesListItem = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return authority.account_auths.length > 0 ? (

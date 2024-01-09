@@ -1,6 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { MultisigAccountConfig } from '@interfaces/multisig.interface';
 import HiveUtils from '@popup/hive/utils/hive.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -26,6 +27,8 @@ const Multisig = ({
     useState<MultisigAccountConfig>(defaultConfig);
 
   const [localAccount, setLocalAccount] = useState<LocalAccount>();
+  const [isActiveLedger, setIsActiveLedger] = useState(false);
+  const [isPostingLedger, setIsPostingLedger] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -46,6 +49,12 @@ const Multisig = ({
     setLocalAccount(
       accounts.find((account) => account.name === activeAccount.name!),
     );
+    if (activeAccount.keys.active) {
+      setIsActiveLedger(KeysUtils.isUsingLedger(activeAccount.keys.active));
+    }
+    if (activeAccount.keys.posting) {
+      setIsPostingLedger(KeysUtils.isUsingLedger(activeAccount.keys.posting));
+    }
   };
 
   const saveMultisigEnabled = async (newValue: boolean) => {
@@ -119,18 +128,30 @@ const Multisig = ({
           />
           {multisigAccountConfig.isEnabled && (
             <>
-              <CheckboxPanelComponent
-                dataTestId="checkbox-multisig-active-key-enabled"
-                title="popup_html_enable_active_key_multisig"
-                checked={multisigAccountConfig?.active?.isEnabled || false}
-                onChange={(newValue) => saveMultisigEnabledActive(newValue)}
-              />
-              <CheckboxPanelComponent
-                dataTestId="checkbox-multisig-public-key-enabled"
-                title="popup_html_enable_posting_key_multisig"
-                checked={multisigAccountConfig?.posting?.isEnabled || false}
-                onChange={(newValue) => saveMultisigEnabledPosting(newValue)}
-              />
+              {activeAccount.keys.active && (
+                <CheckboxPanelComponent
+                  dataTestId="checkbox-multisig-active-key-enabled"
+                  title="popup_html_enable_active_key_multisig"
+                  checked={multisigAccountConfig?.active?.isEnabled || false}
+                  onChange={(newValue) => saveMultisigEnabledActive(newValue)}
+                  disabled={isActiveLedger}
+                  hint={
+                    isActiveLedger ? 'multisig_key_is_ledger_hint' : undefined
+                  }
+                />
+              )}
+              {activeAccount.keys.posting && (
+                <CheckboxPanelComponent
+                  dataTestId="checkbox-multisig-public-key-enabled"
+                  title="popup_html_enable_posting_key_multisig"
+                  checked={multisigAccountConfig?.posting?.isEnabled || false}
+                  onChange={(newValue) => saveMultisigEnabledPosting(newValue)}
+                  disabled={isPostingLedger}
+                  hint={
+                    isPostingLedger ? 'multisig_key_is_ledger_hint' : undefined
+                  }
+                />
+              )}
             </>
           )}
         </>

@@ -7,8 +7,10 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { PendingSavingsWithdrawalItemComponent } from 'src/popup/hive/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 import { RootState } from 'src/popup/hive/store';
 
-interface PendingSavingsWithdrawalProps {
+export interface PendingSavingsWithdrawalProps {
   currentWithdrawLabel?: string;
+  currency: string;
+  savingsPendingWithdrawalList: SavingsWithdrawal[];
 }
 
 const PendingSavingsWithdrawal = ({

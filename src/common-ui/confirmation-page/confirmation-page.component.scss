@@ -15,6 +15,10 @@
       color: $red;
     }
 
+    .multisig-message {
+      @include caption;
+    }
+
     .fields {
       display: flex;
       flex-direction: column;
