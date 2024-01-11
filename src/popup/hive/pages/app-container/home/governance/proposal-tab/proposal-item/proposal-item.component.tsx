@@ -53,6 +53,9 @@ const ProposalItem = ({
   };
 
   const toggleSupport = async (proposal: Proposal) => {
+    if (usingProxy) {
+      return;
+    }
     if (proposal.voted) {
       addToLoadingList('popup_html_unvoting_for_proposal');
       const success = await ProposalUtils.unvoteProposal(
