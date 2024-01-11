@@ -47,9 +47,10 @@ const sendOperation = async (
     operations,
     key,
   );
+  console.log(transactionResult);
   if (transactionResult) {
     if (transactionResult.isUsingMultisig) {
-      return { id: '0', tx_id: '0', confirmed: true };
+      return { id: '0', tx_id: '0', isUsingMultisig: true };
     } else {
       return {
         id: transactionResult.tx_id,
@@ -112,8 +113,11 @@ const createSignAndBroadcastTransaction = async (
       method,
       signedTransaction?.signatures[0],
     );
-    console.log(response);
-    return { status: response as string, tx_id: '' } as HiveTxBroadcastResult;
+    return {
+      status: response as string,
+      tx_id: '',
+      isUsingMultisig: true,
+    } as HiveTxBroadcastResult;
   } else if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
     try {

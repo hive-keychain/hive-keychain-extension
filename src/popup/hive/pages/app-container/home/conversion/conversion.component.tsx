@@ -172,11 +172,16 @@ const Conversion = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            setSuccessMessage(
-              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-                ? 'popup_html_hbd_to_hive_conversion_success'
-                : 'popup_html_hive_to_hbd_conversion_success',
-            );
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else {
+              setSuccessMessage(
+                conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                  ? 'popup_html_hbd_to_hive_conversion_success'
+                  : 'popup_html_hive_to_hbd_conversion_success',
+              );
+            }
           } else {
             setErrorMessage(
               conversionType === ConversionType.CONVERT_HBD_TO_HIVE

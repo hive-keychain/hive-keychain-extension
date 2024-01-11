@@ -39,6 +39,11 @@ const connectedPublicKeys: SignerConnectMessage[] = [];
 const start = async () => {
   Logger.info(`Starting multisig`);
 
+  socket = io('http://localhost:5000', {
+    transports: ['websocket'],
+    reconnection: true,
+  });
+
   const multisigConfig: MultisigConfig =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.MULTISIG_CONFIG,
@@ -73,19 +78,30 @@ const setupPopupListener = () => {
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
         const message = await requestSignatures(data);
-        socket.emit(
-          SocketMessageCommand.REQUEST_SIGNATURE,
-          message,
-          (message: string) => {
-            Logger.log(message);
-            chrome.runtime.sendMessage({
-              command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
-              value: {
-                message: 'multisig_signature_request_sent',
+        try {
+          const emit = socket.volatile.emit(
+            SocketMessageCommand.REQUEST_SIGNATURE,
+            message,
+            withTimeout(
+              (message: string) => {
+                Logger.log(message);
+                chrome.runtime.sendMessage({
+                  command:
+                    BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
+                  value: {
+                    message: 'multisig_signature_request_sent',
+                  },
+                });
               },
-            });
-          },
-        );
+              () => {
+                console.log('timeout');
+              },
+            ),
+          );
+          console.log(emit);
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
   );
@@ -101,11 +117,6 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 };
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
-  socket = io('http://localhost:5000', {
-    transports: ['websocket'],
-    reconnection: true,
-  });
-
   socket.on('connect', () => {
     keepAlive();
     initAccountsConnections(multisigConfig);
@@ -503,6 +514,27 @@ const openWindow = (data: MultisigData): void => {
       } as BackgroundMessage);
     }, 250);
   });
+};
+
+const withTimeout = (
+  onSuccess: any,
+  onTimeout: any,
+  timeout: number = 5000,
+) => {
+  let called = false;
+
+  const timer = setTimeout(() => {
+    if (called) return;
+    called = true;
+    onTimeout();
+  }, timeout);
+
+  return (...args: any) => {
+    if (called) return;
+    called = true;
+    clearTimeout(timer);
+    onSuccess.apply(this, args);
+  };
 };
 
 export const MultisigModule = {

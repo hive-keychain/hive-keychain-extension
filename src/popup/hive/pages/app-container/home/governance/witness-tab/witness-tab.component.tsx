@@ -117,7 +117,11 @@ const WitnessTab = ({
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
         if (success) {
-          setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
+          if (success.isUsingMultisig) {
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else {
+            setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
+          }
         } else {
           setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         }
@@ -141,7 +145,11 @@ const WitnessTab = ({
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
         if (success) {
-          setSuccessMessage('popup_success_wit', [`${witness.name}`]);
+          if (success.isUsingMultisig) {
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else {
+            setSuccessMessage('popup_success_wit', [`${witness.name}`]);
+          }
         } else {
           setErrorMessage('popup_error_wit', [`${witness.name}`]);
         }

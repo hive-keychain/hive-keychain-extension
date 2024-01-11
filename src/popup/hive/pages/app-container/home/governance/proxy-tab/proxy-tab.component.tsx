@@ -41,15 +41,18 @@ const ProxyTab = ({
       ),
     );
     try {
-      if (
-        await ProxyUtils.setAsProxy(
-          proxyUsername,
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        setSuccessMessage('popup_success_proxy', [proxyUsername]);
-        refreshActiveAccount();
+      const success = await ProxyUtils.setAsProxy(
+        proxyUsername,
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          setSuccessMessage('popup_success_proxy', [proxyUsername]);
+          refreshActiveAccount();
+        }
       } else {
         setErrorMessage('html_popup_set_as_proxy_error');
       }
@@ -72,14 +75,17 @@ const ProxyTab = ({
       ),
     );
     try {
-      if (
-        await ProxyUtils.removeProxy(
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        refreshActiveAccount();
-        setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+      const success = await ProxyUtils.removeProxy(
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          refreshActiveAccount();
+          setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+        }
       } else {
         setErrorMessage('html_popup_clear_proxy_error');
       }

@@ -48,13 +48,14 @@ const ProposalVotingSection = ({
   };
 
   const handleVoteForProposalClicked = async () => {
-    if (
-      await ProposalUtils.voteForKeychainProposal(
-        activeAccount.name!,
-        activeAccount.keys.active!,
-      )
-    ) {
-      setSuccessMessage('popup_html_kc_proposal_vote_successful');
+    const success = await ProposalUtils.voteForKeychainProposal(
+      activeAccount.name!,
+      activeAccount.keys.active!,
+    );
+    if (success) {
+      if (success.isUsingMultisig) {
+        setSuccessMessage('multisig_transaction_sent_to_signers');
+      } else setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');
     }

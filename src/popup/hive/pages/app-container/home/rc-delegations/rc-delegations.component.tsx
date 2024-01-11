@@ -222,8 +222,9 @@ const RCDelegations = ({
               form.delegatee,
               activeAccount,
             );
-
-            if (!isCancel) {
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else if (!isCancel) {
               setSuccessMessage('popup_html_rc_delegation_successful', [
                 `@${form.delegatee}`,
               ]);

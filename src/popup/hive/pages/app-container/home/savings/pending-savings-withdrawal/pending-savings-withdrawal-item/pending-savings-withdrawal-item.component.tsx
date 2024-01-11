@@ -65,10 +65,14 @@ const PendingSavingsWithdrawalItem = ({
           );
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
-            setSuccessMessage('popup_html_cancel_withdraw_savings_successful', [
-              item.amount,
-              currency,
-            ]);
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else {
+              setSuccessMessage(
+                'popup_html_cancel_withdraw_savings_successful',
+                [item.amount, currency],
+              );
+            }
           } else {
             setErrorMessage('popup_html_cancel_withdraw_savings_fail', [
               currency,

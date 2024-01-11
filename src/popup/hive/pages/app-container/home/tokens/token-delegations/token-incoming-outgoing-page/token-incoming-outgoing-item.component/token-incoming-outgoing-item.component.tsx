@@ -78,6 +78,7 @@ const TokenIncomingOutgoing = ({
           );
           if (tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
+
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);

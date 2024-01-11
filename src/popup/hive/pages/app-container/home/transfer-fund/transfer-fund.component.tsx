@@ -297,7 +297,9 @@ const TransferFunds = ({
               activeAccount,
             );
 
-            if (!form.isRecurrent) {
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else if (!form.isRecurrent) {
               setSuccessMessage('popup_html_transfer_successful', [
                 `@${form.receiverUsername}`,
                 stringifiedAmount,
