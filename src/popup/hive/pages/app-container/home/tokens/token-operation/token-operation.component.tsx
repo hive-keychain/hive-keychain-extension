@@ -238,8 +238,10 @@ const TokensOperation = ({
               );
               break;
           }
-
-          if (tokenOperationResult && tokenOperationResult.broadcasted) {
+          if (tokenOperationResult && tokenOperationResult.isUsingMultisig) {
+            navigateTo(Screen.HOME_PAGE, true);
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else if (tokenOperationResult && tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList(`popup_html_${operationType}_tokens`);
             removeFromLoadingList('html_popup_confirm_transaction_operation');
