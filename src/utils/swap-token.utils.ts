@@ -109,7 +109,7 @@ const processSwap = async (
       0,
       activeAccount.keys.active!,
     );
-    return status?.tx_id;
+    return status;
   } else {
     const tokenInfo = await TokensUtils.getTokenInfo(startToken);
     const status = await TokensUtils.sendToken(
@@ -120,7 +120,7 @@ const processSwap = async (
       activeAccount.keys.active!,
       activeAccount.name!,
     );
-    return status.tx_id;
+    return status;
   }
 };
 

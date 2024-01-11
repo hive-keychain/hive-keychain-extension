@@ -373,6 +373,8 @@ const TokenSwaps = ({
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
+            activeAccount.account,
+            activeAccount.account,
           ),
           [startToken?.value.symbol, swapConfig.account],
         );
@@ -391,7 +393,14 @@ const TokenSwaps = ({
             'html_popup_swap_sending_token_to_swap_account',
           );
 
-          if (success) {
+          if (success && success.isUsingMultisig) {
+            await SwapTokenUtils.saveLastUsed(
+              startToken?.value,
+              endToken?.value,
+            );
+            setSuccessMessage('swap_multisig_transaction_sent_to_signers');
+            goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
+          } else if (success && success.tx_id) {
             await SwapTokenUtils.saveLastUsed(
               startToken?.value,
               endToken?.value,

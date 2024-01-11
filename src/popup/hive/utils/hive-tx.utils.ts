@@ -47,7 +47,6 @@ const sendOperation = async (
     operations,
     key,
   );
-  console.log(transactionResult);
   if (transactionResult) {
     if (transactionResult.isUsingMultisig) {
       return { id: '0', tx_id: '0', isUsingMultisig: true };
