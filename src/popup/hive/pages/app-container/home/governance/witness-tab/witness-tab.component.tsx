@@ -1,5 +1,8 @@
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import FlatList from 'flatlist-react';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -11,6 +14,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
@@ -41,6 +45,7 @@ const WitnessTab = ({
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  addCaptionToLoading,
 }: PropsFromRedux & WitnessTabProps) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
@@ -50,10 +55,25 @@ const WitnessTab = ({
   const [votedWitnesses, setVotedWitnesses] = useState<string[]>([]);
 
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
+  const [keyType, setKeyType] = useState<PrivateKeyType>();
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (activeAccount) {
+      setKeyType(
+        KeysUtils.getKeyType(
+          activeAccount.keys.active!,
+          activeAccount.keys.activePubkey!,
+          activeAccount.account,
+          activeAccount.account,
+          KeychainKeyTypes.active,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const init = async () => {
     setRemainingVotes(
@@ -103,6 +123,11 @@ const WitnessTab = ({
     if (usingProxy) {
       return;
     }
+
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       try {
         addToLoadingList('html_popup_unvote_witness_operation');
@@ -318,6 +343,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  addCaptionToLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

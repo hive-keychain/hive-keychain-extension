@@ -1,4 +1,7 @@
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Proposal } from '@interfaces/proposal.interface';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,6 +9,7 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { NewIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
@@ -31,13 +35,29 @@ const ProposalItem = ({
   setSuccessMessage,
   activeAccount,
   onVoteUnvoteSuccessful,
+  addCaptionToLoading,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
   const [usingProxy, setUsingProxy] = useState(false);
+  const [keyType, setKeyType] = useState<PrivateKeyType>();
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (activeAccount) {
+      setKeyType(
+        KeysUtils.getKeyType(
+          activeAccount.keys.active!,
+          activeAccount.keys.activePubkey!,
+          activeAccount.account,
+          activeAccount.account,
+          KeychainKeyTypes.active,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const init = async () => {
     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
@@ -56,6 +76,11 @@ const ProposalItem = ({
     if (usingProxy) {
       return;
     }
+
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+
     if (proposal.voted) {
       addToLoadingList('popup_html_unvoting_for_proposal');
       const success = await ProposalUtils.unvoteProposal(
@@ -221,6 +246,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
+  addCaptionToLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector> & ProposalItemProps;
 

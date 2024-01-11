@@ -1,5 +1,9 @@
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import React, { useState } from 'react';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -8,6 +12,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
@@ -26,20 +31,33 @@ const ProxyTab = ({
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  addCaptionToLoading,
 }: PropsFromRedux) => {
   const [proxyUsername, setProxyUsername] = useState('');
+  const [keyType, setKeyType] = useState<PrivateKeyType>();
+
+  useEffect(() => {
+    if (activeAccount) {
+      setKeyType(
+        KeysUtils.getKeyType(
+          activeAccount.keys.active!,
+          activeAccount.keys.activePubkey!,
+          activeAccount.account,
+          activeAccount.account,
+          KeychainKeyTypes.active,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const setAsProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList(
-      'popup_html_setting_proxy',
-      KeysUtils.getKeyType(
-        activeAccount.keys.active!,
-        activeAccount.keys.activePubkey!,
-      ),
-    );
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+    addToLoadingList('popup_html_setting_proxy', keyType);
     try {
       const success = await ProxyUtils.setAsProxy(
         proxyUsername,
@@ -67,13 +85,10 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList(
-      'popup_html_clearing_proxy',
-      KeysUtils.getKeyType(
-        activeAccount.keys.active!,
-        activeAccount.keys.activePubkey!,
-      ),
-    );
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+    addToLoadingList('popup_html_clearing_proxy', keyType);
     try {
       const success = await ProxyUtils.removeProxy(
         activeAccount.name!,
@@ -159,6 +174,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  addCaptionToLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
