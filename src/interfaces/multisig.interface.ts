@@ -19,6 +19,7 @@ export interface MultisigConfig {
 }
 
 export enum SocketMessageCommand {
+  DISCONNECT_SIGNER = 'disconnect_signer',
   SIGNER_CONNECT = 'signer_connect',
   REQUEST_SIGNATURE = 'request_signature',
   REQUEST_SIGN_TRANSACTION = 'request_sign_transaction',
@@ -168,4 +169,12 @@ export enum MultisigStep {
   NOTIFY_TRANSACTION_BROADCASTED = 'NOTIFY_TRANSACTION_BROADCASTED',
   SIGN_TRANSACTION_FEEDBACK = 'SIGN_TRANSACTION_FEEDBACK',
   UNLOCK_WALLET = 'UNLOCK_WALLET',
+}
+
+export interface ConnectDisconnectMessage {
+  account: string;
+  connect: boolean;
+  message?: string;
+  publicKey?: string;
+  keyType?: KeychainKeyTypes;
 }

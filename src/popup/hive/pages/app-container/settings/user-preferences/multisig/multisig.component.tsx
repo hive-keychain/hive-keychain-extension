@@ -1,8 +1,13 @@
+import { BackgroundMessage } from '@background/background-message.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { MultisigAccountConfig } from '@interfaces/multisig.interface';
+import {
+  ConnectDisconnectMessage,
+  MultisigAccountConfig,
+} from '@interfaces/multisig.interface';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -57,13 +62,27 @@ const Multisig = ({
     }
   };
 
-  const saveMultisigEnabled = async (newValue: boolean) => {
+  const saveMultisigEnabled = async (isEnabled: boolean) => {
     const newConfig = {
       ...multisigAccountConfig,
-      isEnabled: newValue,
+      isEnabled: isEnabled,
+      active: {
+        ...multisigAccountConfig.active,
+        isEnabled: false,
+      },
+      posting: {
+        ...multisigAccountConfig.posting,
+        isEnabled: false,
+      },
     };
     setMultisigAccountConfig(newConfig);
     await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    if (!isEnabled) {
+      notifyBackground({
+        account: activeAccount.name!,
+        connect: isEnabled,
+      });
+    }
   };
 
   const saveMultisigEnabledActive = async (isEnabled: boolean) => {
@@ -85,6 +104,12 @@ const Multisig = ({
 
     setMultisigAccountConfig(newConfig);
     await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    notifyBackground({
+      account: activeAccount.name!,
+      connect: isEnabled,
+      publicKey: publicKey,
+      message: message,
+    });
   };
 
   const saveMultisigEnabledPosting = async (isEnabled: boolean) => {
@@ -105,6 +130,19 @@ const Multisig = ({
     };
     setMultisigAccountConfig(newConfig);
     await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    notifyBackground({
+      account: activeAccount.name!,
+      connect: isEnabled,
+      publicKey: publicKey,
+      message: message,
+    });
+  };
+
+  const notifyBackground = (message: ConnectDisconnectMessage) => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS,
+      value: message,
+    } as BackgroundMessage);
   };
 
   return (

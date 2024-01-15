@@ -3,6 +3,7 @@ import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { SignedTransaction } from '@hiveio/dhive';
 import {
+  ConnectDisconnectMessage,
   MultisigAcceptRejectTxData,
   MultisigAccountConfig,
   MultisigConfig,
@@ -34,7 +35,7 @@ import Logger from 'src/utils/logger.utils';
 
 let socket: Socket;
 
-const connectedPublicKeys: SignerConnectMessage[] = [];
+let connectedPublicKeys: SignerConnectMessage[] = [];
 
 const start = async () => {
   Logger.info(`Starting multisig`);
@@ -63,6 +64,45 @@ const start = async () => {
   }
 
   setupPopupListener();
+  setupRefreshConnections();
+};
+
+const setupRefreshConnections = () => {
+  chrome.runtime.onMessage.addListener(
+    async (
+      backgroundMessage: BackgroundMessage,
+      sender: chrome.runtime.MessageSender,
+      sendResp: (response?: any) => void,
+    ) => {
+      if (
+        backgroundMessage.command ===
+        BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS
+      ) {
+        const value = backgroundMessage.value as ConnectDisconnectMessage;
+        const multisigConfig: MultisigConfig =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.MULTISIG_CONFIG,
+          );
+        const accountMultisigConfig = multisigConfig[value.account];
+        if (value.connect) {
+          connectToBackend(value.account, accountMultisigConfig);
+        } else {
+          if (value.publicKey) {
+            disconnectFromBackend(value.account, value.publicKey);
+          } else {
+            disconnectFromBackend(
+              value.account,
+              accountMultisigConfig.active.publicKey,
+            );
+            disconnectFromBackend(
+              value.account,
+              accountMultisigConfig.posting.publicKey,
+            );
+          }
+        }
+      }
+    },
+  );
 };
 
 const setupPopupListener = () => {
@@ -216,6 +256,19 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
   }
 };
 
+const disconnectFromBackend = async (
+  accountName: string,
+  publicKey: string,
+) => {
+  Logger.info(
+    `Trying to disconnect @${accountName} (${publicKey}) from backend`,
+  );
+  connectedPublicKeys = connectedPublicKeys.filter(
+    (pk) => pk.username === accountName && pk.publicKey === publicKey,
+  );
+  // TODO : send message to backend
+};
+
 const connectToBackend = async (
   accountName: string,
   accountConfig: MultisigAccountConfig,
@@ -224,14 +277,24 @@ const connectToBackend = async (
     `Trying to connect @${accountName} to the multisig backend server`,
   );
   const signerConnectMessages: SignerConnectMessage[] = [];
-  if (accountConfig.active?.isEnabled) {
+  if (
+    accountConfig.active?.isEnabled &&
+    !connectedPublicKeys
+      .map((cpk) => cpk.publicKey)
+      .includes(accountConfig.active?.publicKey?.toString())
+  ) {
     signerConnectMessages.push({
       username: accountName,
       publicKey: accountConfig.active.publicKey,
       message: accountConfig.active.message,
     });
   }
-  if (accountConfig.posting?.isEnabled) {
+  if (
+    accountConfig.posting?.isEnabled &&
+    !connectedPublicKeys
+      .map((cpk) => cpk.publicKey)
+      .includes(accountConfig.posting?.publicKey?.toString())
+  ) {
     signerConnectMessages.push({
       username: accountName,
       publicKey: accountConfig.posting.publicKey,
