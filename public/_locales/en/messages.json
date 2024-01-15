@@ -1791,7 +1791,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency_hint": {
-    "message": "Frequency (in hours). Minimum 24 hours",
+    "message": "In hours, minimum 24 hours",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_successful": {
@@ -1859,7 +1859,7 @@
     "decription": "In transfer page"
   },
   "popup_html_recurrent_transfer_iterations_hint": {
-    "message": "Iterations. Minimum 2",
+    "message": "Minimum 2",
     "decription": "In transfer page"
   },
   "popup_html_confirm_savings_withdraw": {

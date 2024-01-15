@@ -1,4 +1,5 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
+import { loadUserTokens } from '@popup/hive/actions/token.actions';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { NewIcons } from 'src/common-ui/icons.enum';
@@ -31,6 +32,7 @@ const TopBar = ({
   loadGlobalProperties,
   setErrorMessage,
   setSuccessMessage,
+  loadUserTokens,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -56,6 +58,7 @@ const TopBar = ({
     setRotateLogo(true);
     refreshActiveAccount();
     loadGlobalProperties();
+    loadUserTokens(activeAccount.name!);
     setTimeout(() => setRotateLogo(false), 1000);
   };
 
@@ -155,6 +158,7 @@ const connector = connect(mapStateToProps, {
   loadGlobalProperties,
   setErrorMessage,
   setSuccessMessage,
+  loadUserTokens,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
