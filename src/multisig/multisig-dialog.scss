@@ -46,6 +46,15 @@ html {
           @include caption();
         }
 
+        .card {
+          @include small-card();
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          row-gap: 16px;
+        }
+
         .fields-container {
           display: flex;
           flex-direction: column;

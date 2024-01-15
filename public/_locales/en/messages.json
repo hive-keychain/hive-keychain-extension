@@ -3774,6 +3774,14 @@
     "message": "Initiator",
     "description": "Multisig transaction initiator"
   },
+  "multisig_requested_signer_username": {
+    "message": "Requested signer",
+    "description": "Multisig transaction requested signer"
+  },
+  "multisig_requested_signer_public_key": {
+    "message": "Requested public key",
+    "description": "Multisig transaction requested signer"
+  },
   "multisig_key_is_ledger_hint": {
     "message": "Your key uses Ledger. It is not compatible with our version of Multisig",
     "description": "Explanation of why Ledger cannot work with multisig"

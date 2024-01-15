@@ -142,6 +142,7 @@ export type MultisigDataType =
   | MultisigDisplayMessageData;
 
 export interface MultisigAcceptRejectTxData {
+  username: string;
   decodedTransaction: any;
   signer: Signer;
   signatureRequest: SignatureRequest;
@@ -149,6 +150,8 @@ export interface MultisigAcceptRejectTxData {
 
 export interface MultisigDisplayMessageData {
   message: string;
+  success?: boolean;
+  signer: Signer;
 }
 
 export interface MultisigUnlockData {

@@ -5,6 +5,7 @@ import {
   MultisigDisplayMessageData,
   MultisigStep,
   MultisigUnlockData,
+  Signer,
 } from '@interfaces/multisig.interface';
 import { useThemeContext } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -13,8 +14,10 @@ import ReactDOM from 'react-dom';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
@@ -28,6 +31,7 @@ const MultisigDialog = () => {
   const [content, setContent] = useState<JSX.Element>();
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [signer, setSigner] = useState<Signer>();
 
   const onReceivedDataFromBackground = (
     backgroundMessage: BackgroundMessage,
@@ -38,9 +42,9 @@ const MultisigDialog = () => {
       backgroundMessage.command ===
       BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
-      console.log(backgroundMessage);
       const multisigData: MultisigData = backgroundMessage.value;
-      setContent(renderContent(multisigData));
+      if (!signer || multisigData.data.signer.id === signer.id)
+        setContent(renderContent(multisigData));
     }
   };
 
@@ -61,14 +65,17 @@ const MultisigDialog = () => {
   };
 
   const renderContent = (multisigData: MultisigData) => {
-    console.log(multisigData);
     switch (multisigData.multisigStep) {
       case MultisigStep.SIGN_TRANSACTION_FEEDBACK: {
         setCaption('');
         const data = multisigData.data as MultisigDisplayMessageData;
         chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
         return (
-          <>
+          <div className="card">
+            <SVGIcon
+              icon={
+                data.success ? NewIcons.MESSAGE_SUCCESS : NewIcons.MESSAGE_ERROR
+              }></SVGIcon>
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
             </div>
@@ -77,16 +84,28 @@ const MultisigDialog = () => {
               label="popup_html_close"
               onClick={handleCloseClick}
             />
-          </>
+          </div>
         );
       }
       case MultisigStep.ACCEPT_REJECT_TRANSACTION: {
         setCaption('multisig_dialog_accept_reject_tx_caption');
         const data = multisigData.data as MultisigAcceptRejectTxData;
+        setSigner(data.signer);
         return (
           <>
             <div className="fields-container">
               <div className="fields">
+                <RequestItem
+                  title="multisig_requested_signer_username"
+                  content={`@${data.username}`}
+                />
+                <Separator type={'horizontal'} fullSize />
+                <RequestItem
+                  title="multisig_requested_signer_public_key"
+                  content={`@${data.signer.publicKey}`}
+                  xsFont
+                />
+                <Separator type={'horizontal'} fullSize />
                 <RequestItem
                   title="multisig_initiator"
                   content={`@${data.signatureRequest.initiator}`}
@@ -130,7 +149,11 @@ const MultisigDialog = () => {
         const data = multisigData.data as MultisigDisplayMessageData;
         setCaption('');
         return (
-          <>
+          <div className="card">
+            <SVGIcon
+              icon={
+                data.success ? NewIcons.MESSAGE_SUCCESS : NewIcons.MESSAGE_ERROR
+              }></SVGIcon>
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
             </div>
@@ -139,7 +162,7 @@ const MultisigDialog = () => {
               label="popup_html_close"
               onClick={handleCloseClick}
             />
-          </>
+          </div>
         );
       }
       case MultisigStep.UNLOCK_WALLET: {

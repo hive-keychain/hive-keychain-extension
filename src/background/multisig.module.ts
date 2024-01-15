@@ -190,6 +190,8 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
           multisigStep: MultisigStep.SIGN_TRANSACTION_FEEDBACK,
           data: {
             message: 'multisig_dialog_transaction_signed_successfully',
+            success: true,
+            signer: signer,
           } as MultisigDisplayMessageData,
         },
       } as BackgroundMessage);
@@ -231,6 +233,8 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
                     multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
                     data: {
                       message: 'multisig_dialog_transaction_broadcasted',
+                      success: true,
+                      signer: signer,
                     } as MultisigDisplayMessageData,
                   });
                 },
@@ -338,8 +342,6 @@ const requestSignatures = async (
       data.key,
       data.method,
     );
-
-    console.log({ tx: data.transaction });
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
@@ -484,7 +486,7 @@ const requestSignTransactionFromUser = (
   key: string,
   openNewWindow?: boolean,
 ): Promise<SignedTransaction | undefined> => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const onReceivedMultisigAcceptResponse = async (
       backgroundMessage: BackgroundMessage,
       sender: chrome.runtime.MessageSender,
@@ -509,10 +511,13 @@ const requestSignTransactionFromUser = (
     };
     chrome.runtime.onMessage.addListener(onReceivedMultisigAcceptResponse);
 
+    const usernames = await KeysUtils.getKeyReferences([signer.publicKey]);
+
     if (openNewWindow) {
       openWindow({
         multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
         data: {
+          username: usernames[0],
           signer,
           signatureRequest,
           decodedTransaction,
@@ -524,6 +529,7 @@ const requestSignTransactionFromUser = (
         value: {
           multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
           data: {
+            username: usernames[0],
             signer,
             signatureRequest,
             decodedTransaction,
