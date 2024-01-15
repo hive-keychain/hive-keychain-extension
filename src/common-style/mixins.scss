@@ -60,6 +60,7 @@
   color: var(--main-font-color);
   margin-bottom: 4px;
   padding-left: 6px;
+  align-items: baseline;
   @include poppins600(14px);
   .hint {
     @include poppins300($input-font-size - 2px);
