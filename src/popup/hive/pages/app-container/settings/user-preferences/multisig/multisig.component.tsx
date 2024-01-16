@@ -107,8 +107,8 @@ const Multisig = ({
     notifyBackground({
       account: activeAccount.name!,
       connect: isEnabled,
-      publicKey: publicKey,
-      message: message,
+      publicKey: multisigAccountConfig.active.publicKey,
+      message: multisigAccountConfig.active.message,
     });
   };
 
@@ -133,8 +133,8 @@ const Multisig = ({
     notifyBackground({
       account: activeAccount.name!,
       connect: isEnabled,
-      publicKey: publicKey,
-      message: message,
+      publicKey: multisigAccountConfig.posting.publicKey,
+      message: multisigAccountConfig.posting.message,
     });
   };
 

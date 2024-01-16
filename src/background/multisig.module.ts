@@ -87,7 +87,7 @@ const setupRefreshConnections = () => {
         if (value.connect) {
           connectToBackend(value.account, accountMultisigConfig);
         } else {
-          if (value.publicKey) {
+          if (value.publicKey && value.publicKey.length > 0) {
             disconnectFromBackend(value.account, value.publicKey);
           } else {
             disconnectFromBackend(
@@ -270,7 +270,7 @@ const disconnectFromBackend = async (
   connectedPublicKeys = connectedPublicKeys.filter(
     (pk) => pk.username === accountName && pk.publicKey === publicKey,
   );
-  // TODO : send message to backend
+  socket.emit(SocketMessageCommand.SIGNER_DISCONNECT, publicKey);
 };
 
 const connectToBackend = async (

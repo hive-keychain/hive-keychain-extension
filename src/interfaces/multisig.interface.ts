@@ -19,7 +19,7 @@ export interface MultisigConfig {
 }
 
 export enum SocketMessageCommand {
-  DISCONNECT_SIGNER = 'disconnect_signer',
+  SIGNER_DISCONNECT = 'signer_disconnect',
   SIGNER_CONNECT = 'signer_connect',
   REQUEST_SIGNATURE = 'request_signature',
   REQUEST_SIGN_TRANSACTION = 'request_sign_transaction',
