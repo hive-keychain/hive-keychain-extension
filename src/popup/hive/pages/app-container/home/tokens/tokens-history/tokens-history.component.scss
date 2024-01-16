@@ -3,7 +3,8 @@
   overflow: hidden;
 
   .custom-input {
-    margin: 0px 16px;
+    padding: 0px 16px;
+    box-sizing: border-box;
   }
 
   .item-list {
@@ -11,5 +12,9 @@
     @include form-panel;
     row-gap: 8px;
     max-height: 476px;
+  }
+
+  .empty-history-panel {
+    @include no-data-panel();
   }
 }

@@ -84,7 +84,7 @@ export const loadTokenHistory =
 
     let start = 0;
     let previousTokenHistoryLength = 0;
-
+    const limit = 500;
     do {
       previousTokenHistoryLength = tokenHistory.length;
       let result: TokenTransaction[] = await HiveEngineUtils.getHistory(
@@ -93,7 +93,7 @@ export const loadTokenHistory =
         start,
       );
 
-      start += 1000;
+      start += limit;
       tokenHistory = [...tokenHistory, ...result];
     } while (previousTokenHistoryLength !== tokenHistory.length);
 

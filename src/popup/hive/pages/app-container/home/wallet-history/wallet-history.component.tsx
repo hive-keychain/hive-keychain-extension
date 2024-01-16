@@ -22,8 +22,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -489,19 +488,19 @@ const WalletHistory = ({
               return <div></div>;
             } else {
               return (
-                <div className="empty-list">
-                  <Icon name={Icons.INBOX}></Icon>
-                  <div className="labels">
-                    <span>
+                <div className="empty-history-panel">
+                  <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+                  <div className="text">
+                    <div>
                       {chrome.i18n.getMessage(
                         'popup_html_transaction_list_is_empty',
                       )}
-                    </span>
-                    <span>
+                    </div>
+                    <div>
                       {chrome.i18n.getMessage(
                         'popup_html_transaction_list_is_empty_try_clear_filter',
                       )}
-                    </span>
+                    </div>
                   </div>
                 </div>
               );
