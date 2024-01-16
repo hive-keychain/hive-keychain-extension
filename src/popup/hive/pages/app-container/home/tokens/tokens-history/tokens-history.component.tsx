@@ -14,9 +14,11 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
@@ -113,6 +115,21 @@ const TokensHistory = ({
             key={transaction._id}
             transaction={transaction}></TokenHistoryItemComponent>
         ))}
+        {displayedTransactions.length === 0 && (
+          <div className="empty-history-panel">
+            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+            <div className="text">
+              <div>
+                {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+              </div>
+              <div>
+                {chrome.i18n.getMessage(
+                  'popup_html_transaction_list_is_empty_try_clear_filter',
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {loading && (
           <div className="rotating-logo-container">
             <RotatingLogoComponent></RotatingLogoComponent>
