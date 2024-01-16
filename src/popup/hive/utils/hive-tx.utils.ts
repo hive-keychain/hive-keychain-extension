@@ -1,5 +1,6 @@
 import { KeychainApi } from '@api/keychain';
 import { BackgroundMessage } from '@background/background-message.interface';
+import { MultisigModule } from '@background/multisig.module';
 import Hive from '@engrave/ledger-app-hive';
 import { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {
@@ -103,15 +104,29 @@ const createSignAndBroadcastTransaction = async (
     if (!signedTransaction) {
       throw new Error('html_popup_error_while_signing_transaction');
     }
+    let response;
+    try {
+      if (document) {
+        response = await useMultisig(
+          transaction,
+          key,
+          initiatorAccount,
+          transactionAccount,
+          method,
+          signedTransaction?.signatures[0],
+        );
+      }
+    } catch (err) {
+      response = await useMultisigThroughBackgroundOnly(
+        transaction,
+        key,
+        initiatorAccount,
+        transactionAccount,
+        method,
+        signedTransaction?.signatures[0],
+      );
+    }
 
-    const response = await useMultisig(
-      transaction,
-      key,
-      initiatorAccount,
-      transactionAccount,
-      method,
-      signedTransaction?.signatures[0],
-    );
     return {
       status: response as string,
       tx_id: '',
@@ -299,6 +314,27 @@ const getData = async (
       )}`,
     );
   }
+};
+
+const useMultisigThroughBackgroundOnly = async (
+  transaction: Transaction,
+  key: Key,
+  initiatorAccount: ExtendedAccount,
+  transactionAccount: ExtendedAccount,
+  method: KeychainKeyTypes,
+  signature: string,
+) => {
+  return MultisigModule.requestSignatures(
+    {
+      transaction: transaction,
+      key: key,
+      initiatorAccount: initiatorAccount,
+      transactionAccount: transactionAccount,
+      method: method,
+      signature: signature,
+    } as MultisigRequestSignatures,
+    false,
+  );
 };
 
 const useMultisig = async (

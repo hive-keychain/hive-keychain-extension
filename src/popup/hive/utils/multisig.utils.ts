@@ -234,7 +234,11 @@ import { Key } from '@interfaces/keys.interface';
 import { MultisigAccountConfig } from '@interfaces/multisig.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import {
+  KeychainKeyTypes,
+  KeychainRequestData,
+  KeychainRequestTypes,
+} from 'hive-keychain-commons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -351,6 +355,47 @@ const getPublicKeys = async (username: string, keyType: KeychainKeyTypes) => {
   return undefined;
 };
 
+const getTxKeyType = (data: KeychainRequestData) => {
+  switch (data.type) {
+    case KeychainRequestTypes.addAccount:
+    case KeychainRequestTypes.broadcast:
+      return null;
+    case KeychainRequestTypes.vote:
+    case KeychainRequestTypes.post:
+      return KeychainKeyTypes.posting;
+    case KeychainRequestTypes.updateProposalVote:
+    case KeychainRequestTypes.transfer:
+    case KeychainRequestTypes.createProposal:
+    case KeychainRequestTypes.removeProposal:
+    case KeychainRequestTypes.delegation:
+    case KeychainRequestTypes.powerUp:
+    case KeychainRequestTypes.powerDown:
+    case KeychainRequestTypes.witnessVote:
+    case KeychainRequestTypes.proxy:
+    case KeychainRequestTypes.convert:
+    case KeychainRequestTypes.recurrentTransfer:
+    case KeychainRequestTypes.sendToken:
+    case KeychainRequestTypes.createClaimedAccount:
+      return KeychainKeyTypes.active;
+    case KeychainRequestTypes.decode:
+    case KeychainRequestTypes.encode:
+    case KeychainRequestTypes.encodeWithKeys:
+    case KeychainRequestTypes.custom:
+    case KeychainRequestTypes.signBuffer:
+    case KeychainRequestTypes.signTx:
+      return data.method;
+
+    case KeychainRequestTypes.addAccountAuthority:
+    case KeychainRequestTypes.removeAccountAuthority:
+    case KeychainRequestTypes.addKeyAuthority:
+    case KeychainRequestTypes.removeKeyAuthority:
+      return data.role;
+
+    default:
+      return null;
+  }
+};
+
 export const MultisigUtils = {
   getUsernameFromTransaction,
   saveMultisigConfig,
@@ -358,4 +403,5 @@ export const MultisigUtils = {
   decodeTransaction,
   encodeTransaction,
   getPotentialSigners,
+  getTxKeyType,
 };

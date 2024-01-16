@@ -14,8 +14,9 @@ import './../analytics/analytics/gtag';
 
 const App = () => {
   const [data, setData] = useState<any>({});
-
   const [theme, setTheme] = useState<Theme>();
+  const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
+
   useEffect(() => {
     initTheme();
   }, []);

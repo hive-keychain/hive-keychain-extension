@@ -1,3 +1,4 @@
+import getMessage from '@background/utils/i18n.utils';
 import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -10,6 +11,12 @@ export const createMessage = (
   fail_message?: string | null,
   publicKey?: Key,
 ) => {
+  let message;
+  if (result.isUsingMultisig) {
+    message = getMessage('multisig_transaction_sent_to_signers');
+  } else {
+    message = !err ? success_message : fail_message;
+  }
   const { request_id, ...data } = datas;
   return {
     command: DialogCommand.ANSWER_REQUEST,
@@ -18,7 +25,7 @@ export const createMessage = (
       error: err,
       result: result,
       data: data,
-      message: !err ? success_message : fail_message,
+      message: message,
       request_id,
       publicKey,
     },

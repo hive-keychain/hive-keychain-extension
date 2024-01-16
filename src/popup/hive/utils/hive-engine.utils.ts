@@ -153,6 +153,7 @@ const getHistory = async (
     let resolved = false;
     fetch(url)
       .then((res) => {
+        console.log(res);
         if (res && res.status === 200) {
           resolved = true;
           return res.json();

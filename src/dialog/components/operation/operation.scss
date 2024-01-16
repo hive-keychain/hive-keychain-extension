@@ -5,6 +5,23 @@
   height: 100%;
   margin: 0px -16px;
   row-gap: 16px;
+
+  .multisig-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    padding: 0 30px;
+    .message {
+      @include caption;
+      padding: 0px;
+    }
+    .logo {
+      height: 24px;
+      width: auto;
+    }
+  }
+
   .operation-header {
     padding: 0 12px 12px 12px;
   }

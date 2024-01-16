@@ -117,34 +117,44 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
-        const message = await requestSignatures(data);
-        try {
-          const emit = socket.volatile.emit(
-            SocketMessageCommand.REQUEST_SIGNATURE,
-            message,
-            withTimeout(
-              (message: string) => {
-                Logger.log(message);
-                chrome.runtime.sendMessage({
-                  command:
-                    BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
-                  value: {
-                    message: 'multisig_signature_request_sent',
-                  },
-                });
-              },
-              () => {
-                console.log('timeout');
-              },
-            ),
-          );
-          console.log(emit);
-        } catch (err) {
-          console.log(err);
-        }
+        requestSignatures(data, true);
       }
     },
   );
+};
+
+const requestSignatures = async (
+  data: MultisigRequestSignatures,
+  useRuntimeMessages?: boolean,
+) => {
+  const message = await getRequestSignatureMessage(data);
+  try {
+    const emit = socket.volatile.emit(
+      SocketMessageCommand.REQUEST_SIGNATURE,
+      message,
+      withTimeout(
+        (message: string) => {
+          Logger.log(message);
+          if (useRuntimeMessages) {
+            chrome.runtime.sendMessage({
+              command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
+              value: {
+                message: 'multisig_signature_request_sent',
+              },
+            });
+          } else {
+            return 'multisig_signature_request_sent';
+          }
+        },
+        () => {
+          console.log('timeout');
+        },
+      ),
+    );
+    console.log(emit);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
@@ -333,7 +343,7 @@ const keepAlive = () => {
   }, 20 * 1000);
 };
 
-const requestSignatures = async (
+const getRequestSignatureMessage = async (
   data: MultisigRequestSignatures,
 ): Promise<RequestSignatureMessage> => {
   return new Promise(async (resolve, reject) => {
@@ -609,4 +619,5 @@ const withTimeout = (
 export const MultisigModule = {
   start,
   processSignatureRequest,
+  requestSignatures,
 };
