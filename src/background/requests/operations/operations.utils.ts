@@ -1,9 +1,8 @@
-import getMessage from '@background/utils/i18n.utils';
 import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
-export const createMessage = (
+export const createMessage = async (
   err: any,
   result: any,
   datas: KeychainRequestData & RequestId,
@@ -13,7 +12,9 @@ export const createMessage = (
 ) => {
   let message;
   if (result.isUsingMultisig) {
-    message = getMessage('multisig_transaction_sent_to_signers');
+    message = await chrome.i18n.getMessage(
+      'multisig_transaction_sent_to_signers',
+    );
   } else {
     message = !err ? success_message : fail_message;
   }

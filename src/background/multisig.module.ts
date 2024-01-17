@@ -127,34 +127,35 @@ const requestSignatures = async (
   data: MultisigRequestSignatures,
   useRuntimeMessages?: boolean,
 ) => {
-  const message = await getRequestSignatureMessage(data);
-  try {
-    const emit = socket.volatile.emit(
-      SocketMessageCommand.REQUEST_SIGNATURE,
-      message,
-      withTimeout(
-        (message: string) => {
-          Logger.log(message);
-          if (useRuntimeMessages) {
-            chrome.runtime.sendMessage({
-              command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
-              value: {
-                message: 'multisig_signature_request_sent',
-              },
-            });
-          } else {
-            return 'multisig_signature_request_sent';
-          }
-        },
-        () => {
-          console.log('timeout');
-        },
-      ),
-    );
-    console.log(emit);
-  } catch (err) {
-    console.log(err);
-  }
+  return new Promise(async (resolve, reject) => {
+    const message = await getRequestSignatureMessage(data);
+    try {
+      socket.volatile.emit(
+        SocketMessageCommand.REQUEST_SIGNATURE,
+        message,
+        withTimeout(
+          async (message: string) => {
+            Logger.log(message);
+            if (useRuntimeMessages) {
+              chrome.runtime.sendMessage({
+                command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
+                value: {
+                  message: 'multisig_transaction_sent_to_signers',
+                },
+              });
+            } else {
+              resolve('multisig_transaction_sent_to_signers');
+            }
+          },
+          () => {
+            console.log('timeout');
+          },
+        ),
+      );
+    } catch (err) {
+      console.log({ err });
+    }
+  });
 };
 
 const initAccountsConnections = async (multisigConfig: MultisigConfig) => {

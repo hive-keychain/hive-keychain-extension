@@ -14,7 +14,7 @@ export const decodeMessage = async (
   } catch (err) {
     error = err;
   } finally {
-    return createMessage(
+    return await createMessage(
       error,
       decoded,
       data,

@@ -88,7 +88,7 @@ export const broadcastTransfer = async (
   } catch (e: any) {
     console.log(e);
     if (typeof e === 'string') {
-      const message = createMessage(
+      const message = await createMessage(
         true,
         null,
         data,
@@ -104,7 +104,7 @@ export const broadcastTransfer = async (
       );
     }
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,

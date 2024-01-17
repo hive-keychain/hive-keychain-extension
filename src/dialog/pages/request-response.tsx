@@ -12,9 +12,10 @@ type ResultMessage = {
 };
 
 const RequestResponse = ({ data }: Props) => {
+  console.log(data);
   if (data.msg.success) {
     setTimeout(() => {
-      window.close();
+      // window.close();
     }, 3000);
   }
   return (
