@@ -193,7 +193,7 @@ const Operation = ({
 
       <LoadingComponent
         hide={!loading}
-        caption={'multisig_transmitting_to_multisig'}
+        caption={useMultisig ? 'multisig_transmitting_to_multisig' : undefined}
       />
     </div>
   );

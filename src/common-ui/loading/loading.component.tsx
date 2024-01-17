@@ -16,7 +16,9 @@ const Loading = ({ hide, operations, caption }: Props) => {
       <RotatingLogoComponent></RotatingLogoComponent>
       {caption && (
         <>
-          <div className="caption">{chrome.i18n.getMessage(caption)}</div>
+          <div className="loading-caption">
+            {chrome.i18n.getMessage(caption)}
+          </div>
         </>
       )}
       {!caption && (
