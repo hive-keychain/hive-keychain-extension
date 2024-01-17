@@ -7,8 +7,9 @@ import {
   MultisigUnlockData,
   Signer,
 } from '@interfaces/multisig.interface';
-import { useThemeContext } from '@popup/theme.context';
+import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ButtonComponent, {
@@ -21,11 +22,12 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
 
 const MultisigDialog = () => {
-  const { theme } = useThemeContext();
+  const [theme, setTheme] = useState<Theme>();
 
   const [caption, setCaption] = useState('');
   const [content, setContent] = useState<JSX.Element>();
@@ -50,7 +52,16 @@ const MultisigDialog = () => {
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(onReceivedDataFromBackground);
+    initTheme();
   }, []);
+
+  const initTheme = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
 
   const handleCloseClick = () => {
     window.close();
