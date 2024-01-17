@@ -208,12 +208,6 @@ const PowerUpDown = ({
           switch (powerType) {
             case PowerType.POWER_UP:
               addToLoadingList('html_popup_power_up_operation');
-              console.log(
-                activeAccount.name!,
-                form.receiver,
-                formattedAmount,
-                activeAccount.keys.active!,
-              );
               success = await PowerUtils.powerUp(
                 activeAccount.name!,
                 form.receiver,
