@@ -7,12 +7,12 @@ import {
   RequestSwap,
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
+import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
+import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { KeychainError } from 'src/keychain-error';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
-import TokensUtils from 'src/utils/tokens.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastSwap = async (
   requestHandler: RequestsHandler,

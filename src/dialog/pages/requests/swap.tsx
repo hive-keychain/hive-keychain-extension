@@ -2,6 +2,7 @@ import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RequestId, RequestSwap } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
+import HiveUtils from '@popup/hive/utils/hive.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -11,7 +12,6 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import RequestTokenBalance from 'src/dialog/components/request-token-balance/request-token-balance';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import DialogError from 'src/dialog/pages/error';
-import HiveUtils from 'src/utils/hive.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
 type Props = {
