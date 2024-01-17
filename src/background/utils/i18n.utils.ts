@@ -10,9 +10,7 @@ const getMessage = async (name: string, options?: string[]) => {
   } catch (e) {
     const urlEn = chrome.runtime.getURL(`_locales/en/messages.json`);
     const file = await (await fetch(urlEn)).json();
-    res = file[name]
-      ? withOptions(file[name].message, options)
-      : `[Missing ${name} locale]`;
+    res = file[name] ? withOptions(file[name].message, options) : name;
   } finally {
     return res;
   }

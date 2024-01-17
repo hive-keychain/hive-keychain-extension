@@ -1,3 +1,4 @@
+import { KeychainRequest } from 'hive-keychain-commons';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -8,7 +9,7 @@ type Props = {
 };
 
 type ResultMessage = {
-  msg: { message: string; success: boolean };
+  msg: { message: string; success: boolean; data: KeychainRequest };
 };
 
 const RequestResponse = ({ data }: Props) => {
