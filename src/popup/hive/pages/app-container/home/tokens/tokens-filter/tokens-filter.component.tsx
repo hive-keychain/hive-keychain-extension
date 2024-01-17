@@ -5,7 +5,7 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
@@ -86,7 +86,7 @@ const TokensFilter = ({
         placeholder="popup_html_search"
         value={filterValue}
         onChange={setFilterValue}
-        rightActionIcon={NewIcons.INPUT_SEARCH}
+        rightActionIcon={SVGIcons.INPUT_SEARCH}
         rightActionClicked={() => {}}
       />
 

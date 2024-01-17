@@ -11,7 +11,7 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -23,7 +23,7 @@ interface WalletSectionInfoItemProps {
   tokenInfo?: Token;
   tokenBalance?: TokenBalance;
   tokenMarket?: TokenMarket[];
-  icon: NewIcons;
+  icon: SVGIcons;
   addBackground?: boolean;
   mainValue: string | Asset | number;
   mainValueLabel: string;
@@ -180,7 +180,7 @@ const walletInfoSectionItem = ({
         </div>
         {isExpanded && (
           <SVGIcon
-            icon={NewIcons.WALLET_HISTORY_BUTTON}
+            icon={SVGIcons.WALLET_HISTORY_BUTTON}
             className={`history-icon`}
             onClick={($event) => handleHistoryClick($event, tokenBalance)}
             hoverable
@@ -285,7 +285,7 @@ const walletInfoSectionItem = ({
                         {parseFloat(tokenBalance.pendingUnstake) > 0 && (
                           <SVGIcon
                             className="go-to-page-icon"
-                            icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                            icon={SVGIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
                           />
                         )}
                       </div>
@@ -312,7 +312,7 @@ const walletInfoSectionItem = ({
                       {parseFloat(tokenBalance.delegationsIn) > 0 && (
                         <SVGIcon
                           className="go-to-page-icon"
-                          icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                          icon={SVGIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
                         />
                       )}
                     </div>
@@ -343,7 +343,7 @@ const walletInfoSectionItem = ({
                         {parseFloat(tokenBalance.delegationsOut) > 0 && (
                           <SVGIcon
                             className="go-to-page-icon"
-                            icon={NewIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
+                            icon={SVGIcons.WALLET_TOKEN_GO_TO_DETAILED_PAGE}
                           />
                         )}
                       </div>

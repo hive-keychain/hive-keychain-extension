@@ -5,7 +5,7 @@ import moment from 'moment';
 import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -46,13 +46,13 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     switch (status) {
       case SwapStatus.PENDING:
       case SwapStatus.STARTED:
-        return NewIcons.SWAPS_STATUS_PROCESSING;
+        return SVGIcons.SWAPS_STATUS_PROCESSING;
       case SwapStatus.COMPLETED:
-        return NewIcons.SWAPS_STATUS_FINISHED;
+        return SVGIcons.SWAPS_STATUS_FINISHED;
       case SwapStatus.CANCELED_DUE_TO_ERROR:
       case SwapStatus.FUNDS_RETURNED:
       case SwapStatus.REFUNDED_SLIPPAGE:
-        return NewIcons.SWAPS_STATUS_CANCELED;
+        return SVGIcons.SWAPS_STATUS_CANCELED;
     }
   };
 
@@ -63,13 +63,13 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
   const getStepIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return NewIcons.SWAPS_STATUS_FINISHED;
+        return SVGIcons.SWAPS_STATUS_FINISHED;
       case 'pending':
-        return NewIcons.SWAPS_STATUS_PROCESSING;
+        return SVGIcons.SWAPS_STATUS_PROCESSING;
       case 'failed':
-        return NewIcons.SWAPS_STATUS_CANCELED;
+        return SVGIcons.SWAPS_STATUS_CANCELED;
       default:
-        return NewIcons.SWAPS_STATUS_PROCESSING;
+        return SVGIcons.SWAPS_STATUS_PROCESSING;
     }
   };
 
@@ -89,12 +89,12 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
       <div className="history-item-information">
         <div className="swap-details">
           <div className="swap-item-icon-container">
-            <SVGIcon icon={NewIcons.SWAPS_ITEM} className="swap-item-icon" />
+            <SVGIcon icon={SVGIcons.SWAPS_ITEM} className="swap-item-icon" />
           </div>
           <span className="token token-from">
             {swap.amount} {swap.startToken}
           </span>{' '}
-          <SVGIcon icon={NewIcons.SWAPS_BETWEEN} className="swap-between" />{' '}
+          <SVGIcon icon={SVGIcons.SWAPS_BETWEEN} className="swap-between" />{' '}
           <div className="token token-to">
             {swap.status === SwapStatus.COMPLETED ? (
               ''
@@ -110,7 +110,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
             {swap.endToken}
           </div>
           <SVGIcon
-            icon={NewIcons.SWAPS_EXPAND}
+            icon={SVGIcons.SWAPS_EXPAND}
             className={`expand-panel ${isOpen ? 'opened' : 'closed'}`}
             onClick={() => setIsOpen(!isOpen)}
           />

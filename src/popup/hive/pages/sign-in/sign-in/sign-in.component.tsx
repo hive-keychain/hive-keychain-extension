@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -45,7 +45,7 @@ const SignIn = ({
 
   return (
     <div data-testid="sign-in-page" className="sign-in-page">
-      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_FULL_LOGO} />
+      <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
       <div className="introduction-panel">
         <span className="introduction big first">
           {chrome.i18n.getMessage('popup_html_unlock1')}

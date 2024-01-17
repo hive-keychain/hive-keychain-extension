@@ -1,6 +1,6 @@
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export interface CheckboxProps {
@@ -31,7 +31,7 @@ const getCheckbox = (props: CheckboxProps) => {
       data-testid={props.extraDataTestIdOnInput}
       onClick={() => handleClick(props)}>
       <div className="custom-checkbox">
-        {props.checked && <SVGIcon icon={NewIcons.CHECKBOX_CHECKED} />}
+        {props.checked && <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} />}
       </div>
       <div className="label">
         {props.skipTranslation

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -36,7 +36,7 @@ const LinkLedgerDevice = () => {
   return (
     <div className={`theme ${theme} link-ledger-device`}>
       <div className="title-panel">
-        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">
           {chrome.i18n.getMessage('ledger_link_device')}
         </div>
@@ -50,7 +50,6 @@ const LinkLedgerDevice = () => {
           }}></div>
         {done && (
           <div className="confirmation">
-            <SVGIcon icon={NewIcons.CHECK} />
             {chrome.i18n.getMessage('ledger_link_device_linked')}
           </div>
         )}

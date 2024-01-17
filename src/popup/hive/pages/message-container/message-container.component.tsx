@@ -2,7 +2,7 @@ import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { resetMessage } from 'src/popup/hive/actions/message.actions';
 import { RootState } from 'src/popup/hive/store';
@@ -23,13 +23,13 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const getIcon = (errorType: MessageType) => {
     switch (errorType) {
       case MessageType.SUCCESS:
-        return NewIcons.MESSAGE_SUCCESS;
+        return SVGIcons.MESSAGE_SUCCESS;
       case MessageType.ERROR:
-        return NewIcons.MESSAGE_ERROR;
+        return SVGIcons.MESSAGE_ERROR;
       case MessageType.WARNING:
-        return NewIcons.MESSAGE_WARNING;
+        return SVGIcons.MESSAGE_WARNING;
       default:
-        return NewIcons.MESSAGE_SUCCESS;
+        return SVGIcons.MESSAGE_SUCCESS;
     }
   };
 

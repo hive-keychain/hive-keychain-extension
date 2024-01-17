@@ -8,7 +8,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -249,7 +249,7 @@ const Conversion = ({
               label="popup_html_amount"
               min={0}
               rightActionClicked={setToMax}
-              rightActionIcon={NewIcons.INPUT_MAX}
+              rightActionIcon={SVGIcons.INPUT_MAX}
             />
           </div>
         </div>

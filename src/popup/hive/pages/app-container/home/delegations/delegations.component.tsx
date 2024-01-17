@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -311,7 +311,7 @@ const Delegations = ({
       data-testid={`${Screen.DELEGATION_PAGE}-page`}>
       <div className="resources">
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_DELEGATION_INCOMING}
+          icon={SVGIcons.RESOURCE_ITEM_DELEGATION_INCOMING}
           label="popup_html_total_incoming"
           value={`+${FormatUtils.withCommas(totalIncoming.toString())}
               ${currencyLabels.hp}`}
@@ -319,7 +319,7 @@ const Delegations = ({
           additionalClass="blue"
         />
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_DELEGATION_OUTGOING}
+          icon={SVGIcons.RESOURCE_ITEM_DELEGATION_OUTGOING}
           label="popup_html_total_outgoing"
           value={`-${FormatUtils.withCommas(totalOutgoing.toString())}
               ${currencyLabels.hp}`}
@@ -352,7 +352,7 @@ const Delegations = ({
             control={control}
             dataTestId="input-username"
             type={InputType.TEXT}
-            logo={NewIcons.INPUT_AT}
+            logo={SVGIcons.INPUT_AT}
             placeholder="popup_html_username"
             label="popup_html_username"
             autocompleteValues={autocompleteTransferUsernames}
@@ -376,7 +376,7 @@ const Delegations = ({
               label="popup_html_transfer_amount"
               placeholder="0.000"
               skipPlaceholderTranslation={true}
-              rightActionIcon={NewIcons.INPUT_MAX}
+              rightActionIcon={SVGIcons.INPUT_MAX}
               rightActionClicked={setToMax}
             />
           </div>

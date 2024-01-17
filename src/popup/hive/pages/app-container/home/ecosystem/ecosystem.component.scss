@@ -10,4 +10,8 @@
       width: 64px;
     }
   }
+
+  .error-ecosystem {
+    @include no-data-panel();
+  }
 }

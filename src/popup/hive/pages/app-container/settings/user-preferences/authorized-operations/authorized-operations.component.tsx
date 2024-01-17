@@ -3,7 +3,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
@@ -106,7 +106,7 @@ const AuthorizedOperations = ({
           dataTestId="input-filter-box"
           type={InputType.TEXT}
           placeholder="popup_html_search"
-          logo={NewIcons.INPUT_SEARCH}
+          logo={SVGIcons.INPUT_SEARCH}
           logoPosition="right"
           value={filterValue}
           onChange={(value) => setFilterValue(value)}
@@ -137,7 +137,7 @@ const AuthorizedOperations = ({
                     <SVGIcon
                       dataTestId={`icon-delete-authorized-${operation}-${website}`}
                       onClick={() => handleEraseButtonClick(website, operation)}
-                      icon={NewIcons.GLOBAL_DELETE}
+                      icon={SVGIcons.GLOBAL_DELETE}
                       className="operation-action"></SVGIcon>
                   </div>
                 )

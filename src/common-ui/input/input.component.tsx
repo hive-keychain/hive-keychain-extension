@@ -2,7 +2,7 @@ import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteBox } from 'src/common-ui/autocomplete/autocomplete-box.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
@@ -10,7 +10,7 @@ import { InputType } from './input-type.enum';
 
 export interface InputProps {
   value: any;
-  logo?: Icons | string | NewIcons;
+  logo?: string | SVGIcons;
   logoPosition?: 'left' | 'right';
   label?: string;
   placeholder?: string;
@@ -32,7 +32,7 @@ export interface InputProps {
   onChange: (value: any) => void;
   onEnterPress?(): any;
   rightActionClicked?(): any;
-  rightActionIcon?: NewIcons;
+  rightActionIcon?: SVGIcons;
   rightActionIconClassname?: string;
 }
 
@@ -114,7 +114,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             props.type === InputType.PASSWORD &&
             !isPasswordDisplay && (
               <SVGIcon
-                icon={NewIcons.INPUT_SHOW}
+                icon={SVGIcons.INPUT_SHOW}
                 className="input-img display-password right"
                 onClick={() => setPasswordDisplayed(true)}
               />
@@ -123,7 +123,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             props.type === InputType.PASSWORD &&
             isPasswordDisplay && (
               <SVGIcon
-                icon={NewIcons.INPUT_HIDE}
+                icon={SVGIcons.INPUT_HIDE}
                 className="input-img display-password right"
                 onClick={() => setPasswordDisplayed(false)}
               />
@@ -134,7 +134,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             props.value.length > 0 && (
               <SVGIcon
                 dataTestId="input-clear"
-                icon={NewIcons.INPUT_CLEAR}
+                icon={SVGIcons.INPUT_CLEAR}
                 className={`input-img erase right ${
                   props.logoPosition === 'right' ? 'has-right-logo' : ''
                 }`}
@@ -150,7 +150,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
           )}
           {props.logo && (
             <SVGIcon
-              icon={props.logo as NewIcons}
+              icon={props.logo as SVGIcons}
               className={`input-img ${props.logoPosition ?? 'left'}`}
             />
           )}

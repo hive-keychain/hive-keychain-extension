@@ -2,7 +2,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -122,7 +122,7 @@ const AccountKeysListItem = ({
               message="popup_html_wrong_key_tooltip_text"
               position={'bottom'}
               additionalClassName="tool-tip-custom">
-              <SVGIcon icon={NewIcons.GLOBAL_ERROR} />
+              <SVGIcon icon={SVGIcons.GLOBAL_ERROR} />
             </CustomTooltip>
           )}
         </div>
@@ -132,7 +132,7 @@ const AccountKeysListItem = ({
               keyName,
             )}`}
             onClick={() => handleClickOnRemoveKey()}
-            icon={NewIcons.GLOBAL_DELETE}
+            icon={SVGIcons.GLOBAL_DELETE}
             className="remove-button"></SVGIcon>
         )}
         {!privateKey && !publicKey && (
@@ -141,7 +141,7 @@ const AccountKeysListItem = ({
             onClick={() =>
               navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)
             }
-            icon={NewIcons.GLOBAL_ADD_CIRCLE}
+            icon={SVGIcons.GLOBAL_ADD_CIRCLE}
             className="add-key-icon"></SVGIcon>
         )}
       </div>

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import {
   setErrorMessage,
@@ -78,10 +78,11 @@ const ProposalVotingSection = ({
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
       onClick={() => setIsOpen(!isOpen)}>
-      <Icon
-        additionalClassName="close"
+      <SVGIcon
+        className="close"
         onClick={handleClose}
-        name={Icons.CLOSE}></Icon>
+        icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+      />
       <div className="text">
         {chrome.i18n.getMessage('popup_html_proposal_request')}
       </div>

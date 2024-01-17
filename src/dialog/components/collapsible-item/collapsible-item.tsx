@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
@@ -23,7 +23,7 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
           dangerouslySetInnerHTML={{
             __html: chrome.i18n.getMessage(title),
           }}></div>
-        <SVGIcon icon={NewIcons.SELECT_ARROW_DOWN} />
+        <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>
       <div className={collapsed ? 'hide' : ''}>
         {pre ? (

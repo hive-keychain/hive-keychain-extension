@@ -12,7 +12,7 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import {
@@ -175,7 +175,7 @@ const CreateAccountStepOne = ({
       <InputComponent
         onChange={setAccountName}
         value={accountName}
-        logo={NewIcons.INPUT_AT}
+        logo={SVGIcons.INPUT_AT}
         placeholder="popup_html_username"
         label="popup_html_username"
         type={InputType.TEXT}

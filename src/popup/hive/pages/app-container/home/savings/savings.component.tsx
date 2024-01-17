@@ -11,7 +11,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -326,7 +326,7 @@ const SavingsPage = ({
     <div className="savings-page" data-testid={`${Screen.SAVINGS_PAGE}-page`}>
       <div className="resources">
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_SAVINGS}
+          icon={SVGIcons.RESOURCE_ITEM_SAVINGS}
           label="popup_html_savings_current"
           value={`${savings} ${
             currencyLabels[watch('currency') as keyof CurrencyLabels]
@@ -334,7 +334,7 @@ const SavingsPage = ({
           additionalClass="blue"
         />
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_WALLET}
+          icon={SVGIcons.RESOURCE_ITEM_WALLET}
           label="popup_html_savings_available"
           value={`${liquid} ${
             currencyLabels[watch('currency') as keyof CurrencyLabels]
@@ -384,7 +384,7 @@ const SavingsPage = ({
             control={control}
             dataTestId="input-username"
             type={InputType.TEXT}
-            logo={NewIcons.INPUT_AT}
+            logo={SVGIcons.INPUT_AT}
             placeholder="popup_html_username"
             label="popup_html_username"
             autocompleteValues={autocompleteFavoriteUsers}
@@ -415,7 +415,7 @@ const SavingsPage = ({
               skipPlaceholderTranslation
               min={0}
               rightActionClicked={setToMax}
-              rightActionIcon={NewIcons.INPUT_MAX}
+              rightActionIcon={SVGIcons.INPUT_MAX}
             />
           </div>
         </div>

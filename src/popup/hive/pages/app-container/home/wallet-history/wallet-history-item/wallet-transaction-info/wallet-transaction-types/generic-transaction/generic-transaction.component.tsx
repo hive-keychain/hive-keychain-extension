@@ -4,7 +4,7 @@ import React, { BaseSyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
@@ -32,27 +32,27 @@ const GenericTransaction = ({
       case 'transfer':
       case 'recurrent_transfer':
       case 'fill_recurrent_transfer':
-        return NewIcons.WALLET_HISTORY_TRANSFER;
+        return SVGIcons.WALLET_HISTORY_TRANSFER;
       case 'claim_reward_balance':
-        return NewIcons.WALLET_HISTORY_CLAIM_REWARDS;
+        return SVGIcons.WALLET_HISTORY_CLAIM_REWARDS;
       case 'savings':
-        return NewIcons.WALLET_HISTORY_SAVINGS;
+        return SVGIcons.WALLET_HISTORY_SAVINGS;
       case 'power_up_down': {
         switch (transaction.subType) {
           case 'transfer_to_vesting':
-            return NewIcons.WALLET_HISTORY_POWER_UP;
+            return SVGIcons.WALLET_HISTORY_POWER_UP;
           case 'withdraw_vesting':
-            return NewIcons.WALLET_HISTORY_POWER_DOWN;
+            return SVGIcons.WALLET_HISTORY_POWER_DOWN;
         }
       }
       case 'delegate_vesting_shares':
-        return NewIcons.WALLET_HISTORY_HP_DELEGATIONS;
+        return SVGIcons.WALLET_HISTORY_HP_DELEGATIONS;
       case 'claim_account':
-        return NewIcons.WALLET_HISTORY_CLAIM_ACCOUNT;
+        return SVGIcons.WALLET_HISTORY_CLAIM_ACCOUNT;
       case 'convert':
-        return NewIcons.WALLET_HISTORY_CONVERT;
+        return SVGIcons.WALLET_HISTORY_CONVERT;
       default:
-        return NewIcons.WALLET_HIVE_LOGO;
+        return SVGIcons.WALLET_HIVE_LOGO;
     }
   };
 
@@ -91,7 +91,7 @@ const GenericTransaction = ({
           </CustomTooltip>
           {expandableContent && (
             <SVGIcon
-              icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+              icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
               className={`expand-collapse ${
                 isExpandablePanelOpened ? 'open' : 'closed'
               }`}

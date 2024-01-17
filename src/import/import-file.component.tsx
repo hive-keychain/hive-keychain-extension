@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -94,7 +94,7 @@ const ImportFile = ({
   return (
     <div className={`theme ${theme} import-file`}>
       <div className="title-panel">
-        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage(title)}</div>
       </div>
       <div
