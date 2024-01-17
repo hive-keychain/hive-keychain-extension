@@ -221,6 +221,10 @@ const getRewardFund = async (): Promise<RewardFund> => {
   return HiveTxUtils.getData('condenser_api.get_reward_fund', ['post']);
 };
 
+const isLayer1Token = (token: string) => {
+  return ['HIVE', 'HBD'].includes(token);
+};
+
 const HiveUtils = {
   getVP,
   getVotingDollarsPerAccount,
@@ -235,6 +239,7 @@ const HiveUtils = {
   getAccountPrice,
   getCurrentMedianHistoryPrice,
   getRewardFund,
+  isLayer1Token,
 };
 
 export default HiveUtils;

@@ -1,7 +1,7 @@
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 
@@ -16,7 +16,7 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   return (
     <div data-testid={`${Screen.SETTINGS_ABOUT}-page`} className="about-page">
       <div
-        data-testid={`${Icons.INFO}-page-content`}
+        data-testid={`${SVGIcons.MENU_ABOUT}-page-content`}
         className="content"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_about_text'),

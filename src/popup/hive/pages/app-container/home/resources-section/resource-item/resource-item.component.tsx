@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
 interface ResourceItemProps {
-  icon: NewIcons;
+  icon: SVGIcons;
   label: string;
   value: string;
   tooltipText?: string;

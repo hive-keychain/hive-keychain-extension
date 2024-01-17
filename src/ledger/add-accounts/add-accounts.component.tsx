@@ -7,7 +7,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -313,7 +313,7 @@ const AddAccountsComponent = () => {
   return (
     <div className={`theme ${theme} connect-ledger`}>
       <div className="title-panel">
-        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage(step)}</div>
       </div>
 

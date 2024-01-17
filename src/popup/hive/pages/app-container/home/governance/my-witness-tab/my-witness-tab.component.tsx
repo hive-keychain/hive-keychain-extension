@@ -1,9 +1,9 @@
 import { Witness } from '@interfaces/witness.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { EditMyWitnessComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/edit-my-witness/edit-my-witness.component';
 import { WitnessInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
@@ -71,7 +71,7 @@ const MyWitnessTab = ({
       )}
       {hasError && (
         <div aria-label="error-witness" className="error-witness">
-          <Icon name={Icons.ERROR}></Icon>
+          <SVGIcon className="error-icon" icon={SVGIcons.MESSAGE_ERROR} />
           <span>
             {chrome.i18n.getMessage(
               'popup_html_error_retrieving_witness_information',

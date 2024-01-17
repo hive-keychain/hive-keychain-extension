@@ -1,5 +1,5 @@
 import React from 'react';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export enum ButtonType {
@@ -12,7 +12,7 @@ export interface ButtonProps {
   label: string;
   skipLabelTranslation?: boolean;
   labelParams?: string[];
-  logo?: NewIcons;
+  logo?: SVGIcons;
   type?: ButtonType;
   dataTestId?: string;
   additionalClass?: string;

@@ -22,7 +22,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -160,7 +160,7 @@ const WalletHistory = ({
       title: 'popup_html_wallet_history',
       isBackButtonEnabled: true,
       rightAction: {
-        icon: NewIcons.WALLET_HISTORY_FILTER_BUTTON,
+        icon: SVGIcons.WALLET_HISTORY_FILTER_BUTTON,
         callback: toggleFilter,
         className: 'wallet-filter-button',
       },
@@ -417,7 +417,7 @@ const WalletHistory = ({
               placeholder="popup_html_search"
               value={filter.filterValue}
               onChange={updateFilterValue}
-              logo={NewIcons.INPUT_SEARCH}
+              logo={SVGIcons.INPUT_SEARCH}
               logoPosition="right"
             />
           </div>
@@ -489,7 +489,7 @@ const WalletHistory = ({
             } else {
               return (
                 <div className="empty-history-panel">
-                  <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+                  <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                   <div className="text">
                     <div>
                       {chrome.i18n.getMessage(
@@ -514,7 +514,7 @@ const WalletHistory = ({
               <span className="label">
                 {chrome.i18n.getMessage('popup_html_load_more')}
               </span>
-              <SVGIcon icon={NewIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
+              <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
             </div>
           )}
         {loading && (

@@ -3,12 +3,12 @@ import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/
 import { PowerType } from '@popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { TokenOperationType } from '@popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { Screen } from '@reference-data/screen.enum';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {
   label: string;
   labelParams?: string[];
-  icon: NewIcons;
+  icon: SVGIcons;
   nextScreen: Screen;
   nextScreenParams?: any;
 }
@@ -22,13 +22,13 @@ export const WalletInfoSectionActions = (
     return [
       {
         label: 'popup_html_send',
-        icon: NewIcons.WALLET_SEND,
+        icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
       {
         label: 'popup_html_convert',
-        icon: NewIcons.WALLET_CONVERT,
+        icon: SVGIcons.WALLET_CONVERT,
         nextScreen: Screen.CONVERSION_PAGE,
         nextScreenParams: {
           conversionType: ConversionType.CONVERT_HBD_TO_HIVE,
@@ -36,7 +36,7 @@ export const WalletInfoSectionActions = (
       },
       {
         label: 'popup_html_savings',
-        icon: NewIcons.WALLET_SAVINGS,
+        icon: SVGIcons.WALLET_SAVINGS,
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
@@ -45,19 +45,19 @@ export const WalletInfoSectionActions = (
     return [
       {
         label: 'popup_html_send',
-        icon: NewIcons.WALLET_SEND,
+        icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },
       },
       {
         label: 'popup_html_pu',
-        icon: NewIcons.WALLET_POWER_UP,
+        icon: SVGIcons.WALLET_POWER_UP,
         nextScreen: Screen.POWER_UP_PAGE,
         nextScreenParams: { powerType: PowerType.POWER_UP },
       },
       {
         label: 'popup_html_convert',
-        icon: NewIcons.WALLET_CONVERT,
+        icon: SVGIcons.WALLET_CONVERT,
         nextScreen: Screen.CONVERSION_PAGE,
         nextScreenParams: {
           conversionType: ConversionType.CONVERT_HIVE_TO_HBD,
@@ -65,7 +65,7 @@ export const WalletInfoSectionActions = (
       },
       {
         label: 'popup_html_savings',
-        icon: NewIcons.WALLET_SAVINGS,
+        icon: SVGIcons.WALLET_SAVINGS,
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },
       },
@@ -74,17 +74,17 @@ export const WalletInfoSectionActions = (
     return [
       {
         label: 'popup_html_delegate_short',
-        icon: NewIcons.WALLET_HP_DELEGATIONS,
+        icon: SVGIcons.WALLET_HP_DELEGATIONS,
         nextScreen: Screen.DELEGATION_PAGE,
       },
       {
         label: 'popup_html_delegate_rc_short',
-        icon: NewIcons.WALLET_RC_DELEGATIONS,
+        icon: SVGIcons.WALLET_RC_DELEGATIONS,
         nextScreen: Screen.RC_DELEGATIONS_PAGE,
       },
       {
         label: 'dialog_title_powerdown',
-        icon: NewIcons.WALLET_POWER_DOWN,
+        icon: SVGIcons.WALLET_POWER_DOWN,
         nextScreen: Screen.POWER_DOWN_PAGE,
         nextScreenParams: { powerType: PowerType.POWER_DOWN },
       },
@@ -98,7 +98,7 @@ export const WalletInfoSectionActions = (
         tokenBalance,
         tokenInfo,
       },
-      icon: NewIcons.WALLET_SEND,
+      icon: SVGIcons.WALLET_SEND,
     });
     if (tokenInfo?.stakingEnabled) {
       actions.push({
@@ -109,7 +109,7 @@ export const WalletInfoSectionActions = (
           operationType: TokenOperationType.STAKE,
           tokenInfo: tokenInfo,
         },
-        icon: NewIcons.WALLET_TOKEN_STAKE,
+        icon: SVGIcons.WALLET_TOKEN_STAKE,
       });
       actions.push({
         label: 'popup_html_token_unstake',
@@ -119,7 +119,7 @@ export const WalletInfoSectionActions = (
           operationType: TokenOperationType.UNSTAKE,
           tokenInfo: tokenInfo,
         },
-        icon: NewIcons.WALLET_TOKEN_UNSTAKE,
+        icon: SVGIcons.WALLET_TOKEN_UNSTAKE,
       });
     }
     if (tokenInfo?.delegationEnabled) {
@@ -131,7 +131,7 @@ export const WalletInfoSectionActions = (
           operationType: TokenOperationType.DELEGATE,
           tokenInfo: tokenInfo,
         },
-        icon: NewIcons.WALLET_TOKEN_DELEGATIONS,
+        icon: SVGIcons.WALLET_TOKEN_DELEGATIONS,
       });
     }
 

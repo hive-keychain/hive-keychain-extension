@@ -17,7 +17,7 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -307,7 +307,7 @@ const RpcNodes = ({
                 onClick={() =>
                   setIsAddRpcPanelDisplayed(!isAddRpcPanelDisplayed)
                 }>
-                <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
+                <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
               </div>
             </div>
           )}
@@ -316,7 +316,7 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
-                  icon={NewIcons.MENU_RPC_SAVE_BUTTON}
+                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveNewHiveRpc()}
                 />
               </div>
@@ -381,7 +381,7 @@ const RpcNodes = ({
                 isNewHERpcPanelOpened ? 'close-button' : 'add-button'
               }`}
               onClick={() => setIsNewHERpcPanelOpened(!isNewHERpcPanelOpened)}>
-              <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
+              <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
             </div>
           </div>
           {isNewHERpcPanelOpened && (
@@ -389,7 +389,7 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
-                  icon={NewIcons.MENU_RPC_SAVE_BUTTON}
+                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveHiveEngineRpc()}
                 />
               </div>
@@ -440,7 +440,7 @@ const RpcNodes = ({
                   !isNewAccountHistoryPanelOpened,
                 )
               }>
-              <SVGIcon icon={NewIcons.MENU_RPC_ADD_BUTTON} />
+              <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
             </div>
           </div>
           {isNewAccountHistoryPanelOpened && (
@@ -448,7 +448,7 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
-                  icon={NewIcons.MENU_RPC_SAVE_BUTTON}
+                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveAccountHistory()}
                 />
               </div>

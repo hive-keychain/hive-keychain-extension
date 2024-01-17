@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ResourceItemComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { RootState } from 'src/popup/hive/store';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
@@ -59,7 +59,7 @@ const ResourcesSection = ({
         label={'popup_html_vm'}
         value={`${votingMana}%`}
         secondaryValue={votingValue}
-        icon={NewIcons.RESOURCE_ITEM_MANA}
+        icon={SVGIcons.RESOURCE_ITEM_MANA}
         tooltipText={manaReadyIn}
         additionalClass="blue"
       />
@@ -67,7 +67,7 @@ const ResourcesSection = ({
         ariaLabel="resource-item-resource-credits"
         label={'popup_html_rc'}
         value={`${rc}%`}
-        icon={NewIcons.RESOURCE_ITEM_RC}
+        icon={SVGIcons.RESOURCE_ITEM_RC}
         tooltipText={rcReadyIn}
         additionalClass="red"
       />

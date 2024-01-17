@@ -20,7 +20,7 @@ import Decimal from 'decimal.js';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -129,7 +129,7 @@ const TokenPendingUnstake = ({
                   </div>
                   <div className="middle">
                     <SVGIcon
-                      icon={NewIcons.WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX}
+                      icon={SVGIcons.WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX}
                       tooltipMessage={'html_popup_next_unstake_transaction'}
                     />
                     <span>
@@ -142,7 +142,7 @@ const TokenPendingUnstake = ({
                     <SVGIcon
                       className="next-tx-amount"
                       icon={
-                        NewIcons.WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX_AMOUNT
+                        SVGIcons.WALLET_TOKEN_PENDING_UNSTAKE_NEXT_TX_AMOUNT
                       }
                       tooltipMessage={'html_popup_next_unstake_transaction'}
                     />
@@ -175,7 +175,7 @@ const TokenPendingUnstake = ({
                 </span>
                 <SVGIcon
                   className="cancel-unstake"
-                  icon={NewIcons.GLOBAL_DELETE}
+                  icon={SVGIcons.GLOBAL_DELETE}
                   onClick={() => {
                     cancelUnstake(unstaking);
                   }}

@@ -976,6 +976,19 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
+
+  "dialog_slippage": {
+    "message": "Slippage",
+    "description": "When website requests a swap"
+  },
+  "dialog_steps": {
+    "message": "Steps",
+    "description": "When website requests a swap"
+  },
+  "dialog_swap": {
+    "message": "Swap",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -1147,6 +1160,10 @@
   "dialog_public_keys": {
     "message": "Public keys",
     "description": "Website request title"
+  },
+  "dialog_title_swap": {
+    "message": "Swap",
+    "description": "When website requests a swap"
   },
   "dialog_title_sign": {
     "message": "Sign Message",
@@ -3530,6 +3547,10 @@
     "message": "The swap server is currently unavailable, please try again later",
     "description": "Swap server not responding error"
   },
+  "bgd_ops_swap_start_success": {
+    "message": "The swap started successfully! You will get your tokens in a few moments.",
+    "description": "Success on swap request"
+  },
   "service_unavailable_message": {
     "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
     "description": "General service unavailable page message"
@@ -3721,5 +3742,9 @@
   "html_popup_cancel_unstake_token_fail": {
     "message": "Cancel token unstake has failed",
     "description": "Loading message unstake"
+  },
+  "html_popup_ecosystem_retrieving_error": {
+    "message": "There was an error while retrieving the ecosystem. Please try again later",
+    "description": "Ecosystem retrieving error"
   }
 }

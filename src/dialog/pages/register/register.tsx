@@ -3,7 +3,6 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { Icons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
@@ -64,14 +63,12 @@ const Register = ({ data }: Props) => {
       <InputComponent
         value={password}
         onChange={setPassword}
-        logo={Icons.PASSWORD}
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
       />
       <InputComponent
         value={password2}
         onChange={setPassword2}
-        logo={Icons.PASSWORD}
         placeholder="popup_html_confirm"
         type={InputType.PASSWORD}
         onEnterPress={signup}

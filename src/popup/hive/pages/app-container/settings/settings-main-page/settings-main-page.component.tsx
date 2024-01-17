@@ -3,7 +3,7 @@ import { resetNav } from '@popup/hive/actions/navigation.actions';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WitnessVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/witness-voting-section/witness-voting-section.component';
@@ -40,19 +40,19 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
       <div className="link-panel">
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.MENU_BOTTOM_BAR_DISCORD}
+          icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
           onClick={goToDiscord}
           hoverable
         />
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.MENU_BOTTOM_BAR_HIVE}
+          icon={SVGIcons.MENU_BOTTOM_BAR_HIVE}
           onClick={goToPeakD}
           hoverable
         />
         <SVGIcon
           className="network-icon"
-          icon={NewIcons.MENU_BOTTOM_BAR_TWITTER}
+          icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
           onClick={goToTwitter}
           hoverable
         />

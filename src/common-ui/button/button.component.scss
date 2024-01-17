@@ -48,5 +48,9 @@
     bottom: 32px;
     left: 24px;
     width: calc(100% - 48px);
+
+    &.almost-bottom {
+      bottom: 104px;
+    }
   }
 }

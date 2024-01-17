@@ -30,6 +30,7 @@ import { recurrentTransfer } from '@background/requests/operations/ops/recurrent
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
+import { broadcastSwap } from '@background/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
@@ -133,6 +134,9 @@ export const performOperation = async (
         break;
       case KeychainRequestTypes.recurrentTransfer:
         message = await recurrentTransfer(requestHandler, data);
+        break;
+      case KeychainRequestTypes.swap:
+        message = await broadcastSwap(requestHandler, data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

@@ -12,6 +12,11 @@ const getPrices = async () => {
         LocalStorageKeyEnum.LAST_PRICE,
         prices,
       );
+    } else {
+      Logger.error('Cannot fetch prices from API. Using last known price...');
+      prices = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.LAST_PRICE,
+      );
     }
   } catch (err) {
     Logger.error(
