@@ -1,13 +1,17 @@
 import { KeyType } from '@interfaces/keys.interface';
 import { QueryParams } from '@interfaces/query-params.interface';
+import { Theme } from '@popup/theme.context';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import AccountUtils from 'src/utils/account.utils';
-import { ErrorUtils } from 'src/utils/error.utils';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import './add-key.component.scss';
 
 const AddKeyComponent = () => {
   const [username, setUsername] = useState('');
@@ -15,6 +19,19 @@ const AddKeyComponent = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  const [theme, setTheme] = useState<Theme>();
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
 
   useEffect(() => {
     const queryParamsTable = window.location.search.replace('?', '').split('&');
@@ -51,9 +68,9 @@ const AddKeyComponent = () => {
   };
 
   return (
-    <div className="connect-ledger">
+    <div className={`theme ${theme} connect-ledger`}>
       <div className="title-panel">
-        <img src="/assets/images/iconhive.png" />
+        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">
           {chrome.i18n.getMessage('add_key_from_ledger')}
         </div>

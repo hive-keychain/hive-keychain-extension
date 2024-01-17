@@ -1,0 +1,13 @@
+.unlock-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  flex: 1;
+
+  .button-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+  }
+}

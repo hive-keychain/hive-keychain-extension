@@ -1,0 +1,72 @@
+.whats-new {
+  .carousel-root {
+    flex: 1;
+
+    .thumbs-wrapper {
+      display: none;
+    }
+    .carousel-slider {
+      height: 100%;
+      .control-dots {
+        top: 0px;
+        bottom: unset;
+
+        .dot {
+          background: var(--carousel-dot-color);
+          box-shadow: unset;
+          opacity: 1;
+          &.selected {
+            background: $red;
+          }
+        }
+      }
+      .slider-wrapper {
+        height: 100%;
+        margin-top: 36px;
+      }
+
+      .carousel-item {
+        display: flex;
+        flex-direction: column;
+        row-gap: 16px;
+        .title {
+          @include poppins500(16px);
+          color: var(--main-font-color);
+          padding: 0px 24px;
+          text-align: center;
+        }
+
+        .description {
+          @include poppins500(16px);
+          color: var(--main-font-color);
+          padding: 0px 16px;
+          flex: 1;
+          text-align: center;
+        }
+
+        .read-more-link {
+          @include link();
+        }
+
+        .extra-information {
+          @include poppins400(14px);
+          color: var(--main-font-color);
+          padding: 0px 16px;
+        }
+
+        .image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            border-radius: 8px;
+            border: 1px solid $red;
+            height: auto;
+            max-width: 240px;
+            max-height: 240px;
+          }
+        }
+      }
+    }
+  }
+}

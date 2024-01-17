@@ -1,0 +1,22 @@
+.conversion-page {
+  @include pageLayoutRowGap;
+  row-gap: 20px;
+
+  .text {
+    @include form-container-text;
+  }
+
+  .pending-conversion-panel {
+    @include pending-panel;
+  }
+
+  .amount-panel {
+    display: flex;
+    column-gap: 16px;
+    align-items: baseline;
+
+    .currency-fake-input {
+      width: 100px;
+    }
+  }
+}

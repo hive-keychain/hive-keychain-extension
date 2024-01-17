@@ -1,17 +1,33 @@
+import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import DialogError from 'src/dialog/pages/error';
-import Register from 'src/dialog/pages/register';
+import Register from 'src/dialog/pages/register/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
-import SignTransaction from 'src/dialog/pages/sign-transaction';
-import Unlock from 'src/dialog/pages/unlock';
+import SignTransaction from 'src/dialog/pages/sign-transaction/sign-transaction';
+import Unlock from 'src/dialog/pages/unlock/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './../analytics/analytics/gtag';
-import './dialog.scss';
 
 const App = () => {
   const [data, setData] = useState<any>({});
+
+  const [theme, setTheme] = useState<Theme>();
+  useEffect(() => {
+    initTheme();
+  }, []);
+
+  const initTheme = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
+
   const initGoogleAnalytics = () => {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function gtag() {
@@ -71,7 +87,9 @@ const App = () => {
     }
   };
 
-  return <div className="dialog">{renderDialogContent(data)}</div>;
+  return (
+    <div className={`theme ${theme} dialog`}>{renderDialogContent(data)}</div>
+  );
 };
 
 export default App;

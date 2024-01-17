@@ -1,7 +1,5 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
-import { DEFAULT_FILTER } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
-import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -9,7 +7,9 @@ import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { DEFAULT_FILTER } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
+import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
@@ -202,7 +202,7 @@ const hiveTxUtils = {
 
 /**
  * Note: for now this mock is related to
- * src/utils/currency-prices.utils.ts
+ * src/popup/hive/utils/currency-prices.utils.ts
  * > getBittrexCurrency
  */
 const mockFetch = (data: any, status: number, reject?: boolean) => {

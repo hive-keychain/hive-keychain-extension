@@ -3,6 +3,7 @@ import {
   signBuffer,
 } from '@background/requests/operations/ops/sign-buffer';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
   KeychainKeyTypes,
@@ -14,7 +15,6 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { KeychainError } from 'src/keychain-error';
-import { KeysUtils } from 'src/utils/keys.utils';
 
 describe('sign-buffer tests:\n', () => {
   const data = {

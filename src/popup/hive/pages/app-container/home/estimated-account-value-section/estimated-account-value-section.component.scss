@@ -1,0 +1,35 @@
+.estimated-account-value-section {
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  .label-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    .label {
+      @include poppins400(14px);
+      color: $light-grey;
+      text-align: center;
+      cursor: help;
+    }
+    .icon {
+      height: 16px;
+      width: 16px;
+    }
+  }
+  .value {
+    @include poppins700(32px);
+    color: var(--home-account-value-color);
+    text-align: center;
+  }
+  .account-value-explanation-section {
+    font-size: 18px;
+  }
+}
+.estimated-account-value-tooltip {
+  max-width: 200px !important;
+  font-size: 15px !important;
+}

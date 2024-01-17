@@ -1,8 +1,8 @@
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
-import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
@@ -20,9 +20,9 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import TransferUtils from 'src/utils/transfer.utils';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -33,7 +33,7 @@ describe('transfer-fund.component tests:\n', () => {
     describe('Having all keys:\n', () => {
       beforeEach(async () => {
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
         );
         await act(async () => {
@@ -501,7 +501,7 @@ describe('transfer-fund.component tests:\n', () => {
         delete cloneLocalAccounts[0].keys.memo;
         delete cloneLocalAccounts[0].keys.memoPubkey;
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {
@@ -561,7 +561,7 @@ describe('transfer-fund.component tests:\n', () => {
         delete cloneLocalAccounts[0].keys.active;
         delete cloneLocalAccounts[0].keys.activePubkey;
         await reactTestingLibrary.renderWithConfiguration(
-          <App />,
+          <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
           {
             app: {

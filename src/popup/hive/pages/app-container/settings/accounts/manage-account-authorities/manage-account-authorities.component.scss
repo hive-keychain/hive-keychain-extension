@@ -1,0 +1,10 @@
+.settings-manage-account-authorities {
+  @include pageLayoutRowGap();
+  row-gap: 16px;
+  justify-content: flex-start;
+  overflow-y: auto;
+
+  .text {
+    @include caption();
+  }
+}

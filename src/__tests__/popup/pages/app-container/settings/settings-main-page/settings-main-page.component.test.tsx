@@ -1,6 +1,3 @@
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
-import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -9,6 +6,9 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import SettingsMenuItems from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 describe('settings-main-page.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -17,7 +17,7 @@ describe('settings-main-page.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
@@ -28,14 +28,14 @@ describe('settings-main-page.component tests:\n', () => {
     for (let i = 0; i < SettingsMenuItems.length; i++) {
       expect(
         screen.getByTestId(
-          dataTestIdButton.menuPreFix + SettingsMenuItems[i].icon,
+          dataTestIdButton.menuPreFix + SettingsMenuItems(() => {})[i].icon,
         ),
       ).toBeInTheDocument();
     }
   });
   it('Must open each menu item', async () => {
-    const filteredCopyItems = SettingsMenuItems.filter(
-      (menuItem) => menuItem.icon !== Icons.SUPPORT,
+    const filteredCopyItems = SettingsMenuItems(() => {}).filter(
+      (menuItem) => menuItem.icon !== NewIcons.CONTACT_SUPPORT,
     );
     for (let i = 0; i < filteredCopyItems.length; i++) {
       await act(async () => {

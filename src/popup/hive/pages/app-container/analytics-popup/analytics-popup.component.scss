@@ -1,0 +1,12 @@
+.analytics-popup {
+  .why-analytics {
+    @include caption();
+  }
+
+  .pp {
+    @include caption();
+    .privacy-policy-link {
+      @include link();
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { SignFromLedgerRequestMessage } from 'src/dialog/pages/sign-transaction';
+import { SignFromLedgerRequestMessage } from 'src/dialog/pages/sign-transaction/sign-transaction';
 import { KeychainError } from 'src/keychain-error';
 
 const signTransactionFromLedger = (data: SignFromLedgerRequestMessage) => {

@@ -1,0 +1,14 @@
+@import './tokens.component.scss';
+@import './token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component.scss';
+@import './token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component.scss';
+
+@import './token-item/token-item.component.scss';
+
+@import './token-operation/token-operation.component.scss';
+@import './tokens-filter/tokens-filter.component.scss';
+@import './tokens-history/tokens-history.component.scss';
+@import './tokens-history/token-history-item/token-history-item.component.scss';
+
+@import './tokens-settings/tokens-settings.component.scss';
+@import './tokens-transfer/tokens-transfer.component.scss';
+@import './token-pending-unstacking/token-pending-unstacking.component.scss';

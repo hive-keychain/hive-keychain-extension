@@ -1,14 +1,16 @@
 import { Switch } from 'pretty-checkbox-react';
 import React from 'react';
-import './switch.component.scss';
+import { NewIcons } from 'src/common-ui/icons.enum';
 
 interface SwitchProps {
   onChange: (value: any) => void;
   selectedValue: any;
   leftValue: any;
   rightValue: any;
-  leftValueLabel: string;
-  rightValueLabel: string;
+  leftValueIcon?: NewIcons;
+  rightValueIcon?: NewIcons;
+  leftValueLabel?: string;
+  rightValueLabel?: string;
   skipLeftTranslation?: boolean;
   skipRightTranslation?: boolean;
   hint?: string;
@@ -20,11 +22,13 @@ const SwitchComponent = (props: SwitchProps) => {
   return (
     <div className="switch-container">
       <div className="switch-panel">
-        <span>
-          {props.skipLeftTranslation
-            ? props.leftValueLabel
-            : chrome.i18n.getMessage(props.leftValueLabel)}
-        </span>
+        {props.leftValueLabel && (
+          <span>
+            {props.skipLeftTranslation
+              ? props.leftValueLabel
+              : chrome.i18n.getMessage(props.leftValueLabel)}
+          </span>
+        )}
         <Switch
           data-testid={`switch-${props.dataTestId}`}
           style={{ fontSize: 18 }}
@@ -37,11 +41,13 @@ const SwitchComponent = (props: SwitchProps) => {
           className={
             props.selectedValue === props.rightValue ? 'checked' : 'not-checked'
           }></Switch>
-        <span>
-          {props.skipRightTranslation
-            ? props.rightValueLabel
-            : chrome.i18n.getMessage(props.rightValueLabel)}
-        </span>
+        {props.rightValueLabel && (
+          <span>
+            {props.skipRightTranslation
+              ? props.rightValueLabel
+              : chrome.i18n.getMessage(props.rightValueLabel)}
+          </span>
+        )}
       </div>
 
       {props.hint && (

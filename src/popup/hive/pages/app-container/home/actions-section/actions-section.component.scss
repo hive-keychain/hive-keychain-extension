@@ -1,0 +1,24 @@
+.actions-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0px 24px;
+  position: fixed;
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  bottom: 0;
+  background: var(--bottom-bar-background);
+  border-radius: 24px 24px 0px 0px;
+  border: 1px solid var(--bottom-bar-border);
+  border-bottom: 0;
+  left: 16px;
+  height: 90px;
+  box-shadow: 0px 8px 26px 0px rgba(0, 0, 0, 0.08);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+  z-index: 2;
+  &.down {
+    bottom: -90px;
+  }
+}

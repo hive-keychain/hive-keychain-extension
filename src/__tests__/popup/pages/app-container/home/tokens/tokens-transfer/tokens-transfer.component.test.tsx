@@ -1,7 +1,8 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { Token } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
-import App from '@popup/App';
-import { ActionButtonList } from '@popup/pages/app-container/home/actions-section/action-button.list';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -15,9 +16,8 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import AccountUtils from 'src/utils/account.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
-import TokensUtils from 'src/utils/tokens.utils';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 describe('tokens-transfer.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -36,7 +36,7 @@ describe('tokens-transfer.component tests:\n', () => {
   describe('Having balances:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {

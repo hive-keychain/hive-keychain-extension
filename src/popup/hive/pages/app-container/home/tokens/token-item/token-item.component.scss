@@ -1,0 +1,101 @@
+.token-item {
+  .token-icon {
+    height: 36px;
+    width: 36px;
+  }
+  .token {
+    display: grid;
+    grid-template-columns: 42px 1fr 32px 32px 32px;
+    font-size: 18px;
+    align-items: center;
+
+    padding: 0px 16px;
+    min-height: 64px;
+    cursor: pointer;
+
+    .symbol-balance {
+      margin-left: 8px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 2px;
+    }
+
+    .history,
+    .send {
+      height: 24px;
+      width: 24px;
+      cursor: pointer;
+    }
+    .send,
+    .more {
+      justify-self: flex-end;
+    }
+
+    .more.opened {
+      transform: rotate(180deg) 0.5s;
+    }
+  }
+  .expandable-panel {
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+    overflow: hidden;
+    font-size: 14px;
+
+    &.opened {
+      max-height: 500px;
+      transition: max-height 0.5s ease-in;
+    }
+
+    .token-info {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 24px;
+      font-size: 16px;
+      row-gap: 4px;
+
+      .token-description {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        cursor: pointer;
+        margin-bottom: 8px;
+        .token-name-issuer {
+          display: flex;
+          flex-direction: column;
+          padding-top: 1px;
+          .token-issuer {
+            font-size: 16px;
+            font-style: italic;
+          }
+          .token-name {
+            font-size: 18px;
+          }
+        }
+      }
+
+      .delegation-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        .icon-component {
+          @include icon-size(20px);
+        }
+      }
+    }
+    .button-panel {
+      display: flex;
+      column-gap: 16px;
+      justify-content: center;
+      height: 50px;
+      align-items: center;
+      .action-button {
+        padding: 4px;
+        padding-top: 6px;
+        border-radius: 8px;
+        border: 1px solid white;
+        min-width: 70px;
+      }
+    }
+  }
+}

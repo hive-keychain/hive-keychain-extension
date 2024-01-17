@@ -6,7 +6,7 @@ import {
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 

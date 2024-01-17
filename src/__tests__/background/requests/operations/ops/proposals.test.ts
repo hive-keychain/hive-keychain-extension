@@ -5,6 +5,7 @@ import {
   broadcastUpdateProposalVote,
 } from '@background/requests/operations/ops/proposals';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
@@ -17,7 +18,6 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('proposals tests:\n', () => {
   const data = {

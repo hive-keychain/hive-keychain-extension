@@ -1,0 +1,114 @@
+.proposal-item {
+  display: flex;
+  flex-direction: column;
+  @include small-card();
+  padding: 20px;
+  align-items: unset;
+  row-gap: 8px;
+
+  .title {
+    cursor: pointer;
+    display: flex;
+    column-gap: 8px;
+    @include poppins400(14px);
+    justify-content: space-between;
+    color: var(--main-font-color);
+
+    .more {
+      @include icon-size(18px);
+      @include open-close-rotate();
+    }
+  }
+
+  .additional-info {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+    color: var(--main-font-color);
+    .upvote-button {
+      .svg-icon {
+        @include icon-size(20px);
+        &.not-voted {
+          --proposal-upvote-icon: #969696;
+        }
+        &.voted {
+          --proposal-upvote-icon: #{$red};
+        }
+      }
+    }
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      @include poppins400(12px);
+      .creator {
+        display: flex;
+        align-items: center;
+        img {
+          height: 24px;
+          width: 24px;
+          border-radius: 50%;
+          margin-right: 8px;
+        }
+        cursor: pointer;
+      }
+    }
+  }
+
+  .expandable-panel {
+    justify-content: space-between;
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+
+    display: flex;
+    align-items: center;
+    @include poppins400(10px);
+    color: var(--main-font-color);
+
+    &.opened {
+      max-height: 500px;
+      transition: max-height 0.5s ease-in;
+    }
+
+    .extra-info {
+      flex: 1;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 4px;
+      & > div {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+
+        .svg-icon {
+          @include icon-size(20px);
+        }
+      }
+    }
+
+    .funded-chip {
+      border: 1px solid;
+      border-radius: 16px;
+      padding: 4px 8px 2px 8px;
+      font-size: 14px;
+      min-width: 64px;
+      text-align: center;
+      vertical-align: middle;
+
+      &.totally_funded,
+      &.partially_funded {
+        background: $red;
+        border-color: $red;
+        color: white;
+      }
+
+      &.not_funded {
+        border-color: var(--card-border);
+        background: var(--card-background);
+        color: var(--main-font-color);
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
-import AccountUtils from 'src/utils/account.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 
 describe('proxy.utils tests:\n', () => {
   afterEach(() => {

@@ -33,10 +33,19 @@ const getMinValue = (list: any[], property?: string) => {
   return min;
 };
 
+const findCommons = (listA: any[], listB: any[]) => {
+  const commons = [];
+  for (const item of listA) {
+    if (listB.includes(item)) commons.push(item);
+  }
+  return commons;
+};
+
 const ArrayUtils = {
   mergeWithoutDuplicate,
   getMaxValue,
   getMinValue,
+  findCommons,
 };
 
 export default ArrayUtils;

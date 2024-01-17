@@ -1,0 +1,71 @@
+.witness-information {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0px 24px;
+  font-size: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  row-gap: 8px;
+
+  .witness-disabled {
+    width: 40px;
+  }
+
+  .top-panel {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 16px;
+  }
+
+  .witness-profile-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @include small-card();
+    padding: unset;
+    margin: unset;
+    color: var(--main-font-color);
+    width: fit-content;
+
+    .witness-profile {
+      display: flex;
+      justify-content: flex-start;
+      padding: 8px 10px;
+
+      .witness-image {
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+      }
+
+      .info-container {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: column;
+        padding-left: 8px;
+        .witness-name {
+          @include poppins600(14px);
+          color: var(--main-font-color);
+        }
+
+        .witness-ranking {
+          @include poppins500(11px);
+          color: var(--main-font-color);
+        }
+      }
+    }
+  }
+
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 8px;
+  }
+
+  .bottom-panel {
+    display: flex;
+    column-gap: 16px;
+  }
+}

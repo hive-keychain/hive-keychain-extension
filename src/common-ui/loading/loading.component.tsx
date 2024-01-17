@@ -1,9 +1,8 @@
-import { Icons } from '@popup/icons.enum';
-import { LoadingOperation } from '@popup/reducers/loading.reducer';
 import React from 'react';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Icon from 'src/common-ui/icon/icon.component';
+import { Icons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import './loading.component.scss';
+import { LoadingOperation } from 'src/popup/hive/reducers/loading.reducer';
 
 type Props = {
   operations?: LoadingOperation[];
@@ -39,10 +38,7 @@ const Loading = ({ hide, operations, caption }: Props) => {
               {!operation.hideDots && (
                 <span>
                   {operation.done ? (
-                    <Icon
-                      name={Icons.DONE}
-                      type={IconType.STROKED}
-                      additionalClassName="done"></Icon>
+                    <Icon name={Icons.DONE} additionalClassName="done"></Icon>
                   ) : (
                     '...'
                   )}

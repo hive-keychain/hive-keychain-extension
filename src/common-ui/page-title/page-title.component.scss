@@ -1,23 +1,25 @@
 .title-section {
   display: flex;
   column-gap: 16px;
-  user-select: none;
-  padding: 0px 24px;
+  height: 48px;
+  padding: 16px 24px;
   align-items: center;
   .title {
+    user-select: none;
     flex: 1;
-    text-transform: uppercase;
-    color: white;
-    font-size: 20px;
+    color: var(--main-font-color);
     pointer-events: none;
     height: 28px;
-    line-height: 30px;
     overflow: hidden;
+    text-align: center;
+    @include poppins500(20px);
   }
 
   .icon-button {
-    color: white;
-    cursor: pointer;
-    font-size: 28px;
+    &.wallet-filter-button {
+      @include small-card;
+      padding: 6px 16px;
+      @include icon-size(18px);
+    }
   }
 }

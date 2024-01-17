@@ -1,0 +1,54 @@
+.top-bar {
+  height: 56px;
+  padding: 14px 18px 0px 0px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  column-gap: 8px;
+
+  .logo {
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+
+    &.rotate {
+      animation: rotation 1s linear;
+    }
+  }
+
+  .claim-button {
+    --claim-rewards-color: #{$red};
+    --claim-rewards-background-color: white;
+    --claim-rewards-border-color: #{$light-grey-border};
+
+    &:hover {
+      --claim-rewards-background-color: #{$red};
+      --claim-rewards-color: white;
+      --claim-rewards-border-color: #{$red};
+    }
+  }
+  .button {
+    cursor: pointer;
+    &.settings-button {
+      margin-top: 4px;
+    }
+  }
+
+  .lock-button {
+    margin-right: 32px;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

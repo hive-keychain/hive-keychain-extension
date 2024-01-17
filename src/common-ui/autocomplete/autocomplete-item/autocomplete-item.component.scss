@@ -1,13 +1,14 @@
-@import '/src/popup/variable.scss';
-
 .autocomplete-item {
-  font-weight: 400;
+  @include poppins500(14px);
   height: 30px;
   cursor: pointer;
-  padding-left: 16px;
   display: flex;
   align-items: center;
+  padding-left: 20px;
   &:hover {
-    background-color: $red-dark;
+    background-color: $red;
+    color: white;
+    margin-left: -20px;
+    padding-left: 40px;
   }
 }

@@ -1,80 +1,58 @@
-@import '/src/popup/variable.scss';
-
 .operation {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  .operation-red {
-    color: $red;
+  margin: 0px -16px;
+  row-gap: 16px;
+  .operation-header {
+    padding: 0 12px 12px 12px;
   }
-  .operation_body {
+  .operation-body {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 10px 32px;
-    margin-left: -32px;
-    margin-right: -32px;
-    min-height: 100px;
-  }
-
-  h3 {
-    font-size: 16px;
-    line-height: 16px;
-    text-transform: uppercase;
-    margin-bottom: 0.5em;
-  }
-
-  .operation_item_content {
-    font-style: italic;
-    overflow-wrap: break-word;
-
-    ul {
-      margin-block-start: 0;
-      padding-inline-start: 14px;
-      .small {
-        font-size: 12px;
-      }
-    }
-  }
-
-  .operation_header {
-    font-size: 18px;
-    margin-bottom: 0.5em;
-    text-align: center;
-  }
-  .operation_footer {
-    display: flex;
-    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
-    align-self: flex-end;
-    padding: 20px 32px;
-    margin: 20px -32px -32px -32px;
-    &.no-whitelist {
-      padding: 20px 32px;
-    }
-    .operation_buttons {
+
+    .fields {
       display: flex;
+      flex-direction: column;
       width: 100%;
-      flex-direction: row;
-      justify-content: space-around;
-      align-items: center;
-      column-gap: 16px;
-    }
-
-    .hide {
-      display: none;
-    }
-
-    .checkbox_container {
-      height: auto;
-      margin-bottom: 20px;
-      .title {
-        text-transform: none;
-        font-size: 15px;
-        text-align: justify;
+      box-sizing: border-box;
+      row-gap: 16px;
+      overflow: auto;
+      padding: 16px 24px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      .field {
+        display: flex;
+        justify-content: space-between;
+        column-gap: 16px;
+        .label {
+          @include poppins500(14px);
+        }
+        .value {
+          @include poppins400(14px);
+          overflow-wrap: anywhere;
+          max-width: 70%;
+          text-align: right;
+          user-select: text;
+          ul {
+            margin: 0;
+          }
+          &.xs-font {
+            font-size: 11px;
+          }
+        }
       }
     }
+  }
+
+  .operation-buttons {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
   }
 }

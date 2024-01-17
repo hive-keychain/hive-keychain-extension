@@ -1,0 +1,49 @@
+.witness-global-information {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  .info-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    column-gap: 8px;
+    row-gap: 8px;
+
+    .witness-info-data .info-last-update {
+      @include poppins500(12px);
+      color: var(--main-font-color);
+
+      &.warning-red-color {
+        color: $red;
+      }
+    }
+  }
+
+  .witness-rewards-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    align-items: stretch;
+    justify-content: center;
+    @include small-card();
+    margin: unset;
+    color: var(--main-font-color);
+    .title {
+      @include poppins600(14px);
+      align-self: center;
+    }
+
+    .rewards-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      @include poppins500(13px);
+      color: var(--main-font-color);
+      width: 100%;
+      .usd-value {
+        color: var(--main-font-color);
+        @include poppins400(12px);
+      }
+    }
+  }
+}

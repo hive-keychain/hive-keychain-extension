@@ -4,6 +4,8 @@ import {
   broadcastPowerUp,
 } from '@background/requests/operations/ops/power';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -17,8 +19,6 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('power tests:\n', () => {
   const data = {
