@@ -4,13 +4,13 @@ import {
   CustomTooltip,
   TooltipProps,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface ISVGIconProps {
   dataTestId?: string;
   onClick?: (...params: any) => void;
   className?: string;
-  icon: NewIcons;
+  icon: SVGIcons;
   hoverable?: boolean;
   forceHover?: boolean;
   skipTooltipTranslation?: boolean;

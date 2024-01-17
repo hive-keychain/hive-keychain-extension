@@ -2,7 +2,7 @@ import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserListName } from '@interfaces/favorite-user.interface';
 import React, { SyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
@@ -80,7 +80,7 @@ const FavoriteAccountsItem = ({
             </div>
           </div>
           {isExpanded && !isEditMode && (
-            <SVGIcon icon={NewIcons.GLOBAL_ARROW} />
+            <SVGIcon icon={SVGIcons.GLOBAL_ARROW} />
           )}
         </div>
         {isEditMode && (
@@ -96,12 +96,12 @@ const FavoriteAccountsItem = ({
 
             <SVGIcon
               onClick={() => save()}
-              icon={NewIcons.FAVORITE_ACCOUNTS_SAVE}
+              icon={SVGIcons.FAVORITE_ACCOUNTS_SAVE}
               className="edit-button"
             />
             <SVGIcon
               onClick={() => cancel()}
-              icon={NewIcons.FAVORITE_ACCOUNTS_CANCEL}
+              icon={SVGIcons.FAVORITE_ACCOUNTS_CANCEL}
               className="edit-button"
             />
           </div>
@@ -114,7 +114,7 @@ const FavoriteAccountsItem = ({
             <div
               className="favorite-item-button edit"
               onClick={($event) => edit($event, favorite)}>
-              <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_EDIT} />
+              <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
               <span className="label">
                 {chrome.i18n.getMessage('html_popup_button_edit_label')}
               </span>
@@ -122,7 +122,7 @@ const FavoriteAccountsItem = ({
             <div
               className="favorite-item-button delete"
               onClick={($event) => deleteFavorite($event, listName, favorite)}>
-              <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_DELETE} />
+              <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
               <span className="label">
                 {chrome.i18n.getMessage('delete_label')}
               </span>

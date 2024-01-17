@@ -1,6 +1,6 @@
 import { useThemeContext } from '@popup/theme.context';
 import React, { useEffect, useState } from 'react';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 
@@ -11,7 +11,7 @@ interface PreloadedImageProps {
   placeholder?: string;
   addBackground?: boolean;
   symbol?: string;
-  useDefaultSVG?: NewIcons;
+  useDefaultSVG?: SVGIcons;
 }
 
 export const PreloadedImage = ({

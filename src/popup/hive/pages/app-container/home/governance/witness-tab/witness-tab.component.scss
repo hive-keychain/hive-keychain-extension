@@ -114,4 +114,8 @@
       }
     }
   }
+
+  .error-witness {
+    @include no-data-panel();
+  }
 }

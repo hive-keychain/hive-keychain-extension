@@ -1,6 +1,6 @@
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
@@ -22,7 +22,7 @@ const RequestResponse = ({ data }: Props) => {
       <div className="message-card">
         <SVGIcon
           icon={
-            data.msg.success ? NewIcons.MESSAGE_SUCCESS : NewIcons.MESSAGE_ERROR
+            data.msg.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
           }
         />
         <div className="title">

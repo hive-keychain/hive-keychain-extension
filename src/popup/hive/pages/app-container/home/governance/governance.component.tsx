@@ -19,7 +19,6 @@ const Governance = ({
   activeAccount,
 }: PropsFromRedux) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
 
   const [tabs, setTabs] = useState<Tab[]>([]);
 
@@ -33,46 +32,40 @@ const Governance = ({
 
   const init = async () => {
     let requestResult;
-    try {
-      requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
-      if (!!requestResult && requestResult !== '') {
-        const ranking: Witness[] = requestResult;
-
-        const tempTabs: Tab[] = [
-          {
-            title: 'popup_html_witness',
-            content: (
-              <WitnessTabComponent ranking={ranking} hasError={hasError} />
-            ),
-          },
-          {
-            title: 'popup_html_proxy',
-            content: <ProxyTabComponent />,
-          },
-          {
-            title: 'popup_html_proposal',
-            content: <ProposalTabComponent />,
-          },
-        ];
-        if (
-          ranking &&
-          ranking.length > 0 &&
-          ranking.find((witness) => witness.name === activeAccount.name!) !==
-            undefined
-        ) {
-          tempTabs.push({
-            title: 'popup_html_my_witness_page',
-            content: <MyWitnessTabComponent ranking={ranking} />,
-          });
-        }
-        setTabs(tempTabs);
-      } else {
-        setHasError(true);
-        throw new Error('Witness-ranks data error');
-      }
-    } catch (err) {
+    requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
+    const ranking: Witness[] = requestResult;
+    let hasError = false;
+    if (!requestResult || requestResult.length === 0) {
+      hasError = true;
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
     }
+    const tempTabs: Tab[] = [
+      {
+        title: 'popup_html_witness',
+        content: <WitnessTabComponent ranking={ranking} hasError={hasError} />,
+      },
+      {
+        title: 'popup_html_proxy',
+        content: <ProxyTabComponent />,
+      },
+      {
+        title: 'popup_html_proposal',
+        content: <ProposalTabComponent />,
+      },
+    ];
+    if (
+      ranking &&
+      ranking.length > 0 &&
+      ranking.find((witness) => witness.name === activeAccount.name!) !==
+        undefined
+    ) {
+      tempTabs.push({
+        title: 'popup_html_my_witness_page',
+        content: <MyWitnessTabComponent ranking={ranking} />,
+      });
+    }
+    setTabs(tempTabs);
+
     setIsLoading(false);
   };
 

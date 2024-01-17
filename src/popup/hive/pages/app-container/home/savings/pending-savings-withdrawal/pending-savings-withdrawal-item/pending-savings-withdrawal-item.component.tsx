@@ -3,7 +3,7 @@ import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addToLoadingList,
@@ -97,7 +97,7 @@ const PendingSavingsWithdrawalItem = ({
           </span>
           <SVGIcon
             className="delete-icon"
-            icon={NewIcons.GLOBAL_DELETE}
+            icon={SVGIcons.GLOBAL_DELETE}
             onClick={cancelCurrentWithdrawSavingItem}
           />
         </div>

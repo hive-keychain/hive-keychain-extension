@@ -1,6 +1,6 @@
 import React, { BaseSyntheticEvent } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -50,12 +50,12 @@ export function CustomSelectItemComponent<T extends OptionItem>({
         {onDelete && canDelete && !isSelected && (
           <SVGIcon
             className="right-action-icon"
-            icon={NewIcons.SELECT_DELETE}
+            icon={SVGIcons.SELECT_DELETE}
             onClick={(event) => handleDeleteClick(event)}
           />
         )}
         {isSelected && (
-          <SVGIcon icon={NewIcons.SELECT_ACTIVE} className="active-icon" />
+          <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="active-icon" />
         )}
       </div>
       {!isLast && <Separator type={'horizontal'} />}

@@ -4,7 +4,7 @@ import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -70,7 +70,7 @@ const AddKeyComponent = () => {
   return (
     <div className={`theme ${theme} connect-ledger`}>
       <div className="title-panel">
-        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">
           {chrome.i18n.getMessage('add_key_from_ledger')}
         </div>

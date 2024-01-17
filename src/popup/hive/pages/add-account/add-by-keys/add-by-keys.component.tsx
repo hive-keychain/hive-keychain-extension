@@ -2,7 +2,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
@@ -77,7 +77,7 @@ const AddByKeys = ({
           dataTestId="input-username"
           value={username}
           onChange={setUsername}
-          logo={NewIcons.INPUT_AT}
+          logo={SVGIcons.INPUT_AT}
           label="popup_html_username"
           placeholder="popup_html_username"
           type={InputType.TEXT}

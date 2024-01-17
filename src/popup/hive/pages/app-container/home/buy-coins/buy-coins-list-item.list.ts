@@ -1,10 +1,10 @@
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 
 interface Exchange {
   name: string;
-  image: NewIcons;
+  image: SVGIcons;
   link: string;
   username: string;
   acceptedCoins: string[];
@@ -13,21 +13,21 @@ interface Exchange {
 export const exchanges: Exchange[] = [
   {
     name: 'Binance',
-    image: NewIcons.BUY_BINANCE,
+    image: SVGIcons.BUY_BINANCE,
     link: 'https://www.binance.com/en/trade/HIVE_BTC',
     username: 'bdhivesteem',
     acceptedCoins: ['HIVE'],
   },
   {
     name: 'Upbit',
-    image: NewIcons.BUY_UPBIT,
+    image: SVGIcons.BUY_UPBIT,
     link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE',
     username: 'user.dunamu',
     acceptedCoins: ['HIVE', 'HBD'],
   },
   {
     name: 'Gateio',
-    image: NewIcons.BUY_GATEIO,
+    image: SVGIcons.BUY_GATEIO,
     link: 'https://www.gate.io/trade/HIVE_USDT',
     username: 'gateiodeposit',
     acceptedCoins: ['HIVE'],
@@ -39,21 +39,21 @@ export const exchanges: Exchange[] = [
   // },
   {
     name: 'Ionomy',
-    image: NewIcons.BUY_IONOMY,
+    image: SVGIcons.BUY_IONOMY,
     link: 'https://exchange.ionomy.com/en/markets/btc-hive',
     username: 'ionomy',
     acceptedCoins: ['HIVE', 'HBD'],
   },
   {
     name: 'Huobi',
-    image: NewIcons.BUY_HUOBI,
+    image: SVGIcons.BUY_HUOBI,
     link: 'https://www.huobi.com/en-us/exchange/hive_usdt/',
     username: 'huobi-pro',
     acceptedCoins: ['HIVE'],
   },
   {
     name: 'Mexc',
-    image: NewIcons.BUY_MEXC,
+    image: SVGIcons.BUY_MEXC,
     link: 'https://www.mexc.com/exchange/HIVE_USDT',
     username: 'mxchive',
     acceptedCoins: ['HIVE'],
@@ -75,7 +75,7 @@ export const exchanges: Exchange[] = [
 
 interface Platform {
   name: string;
-  image: NewIcons;
+  image: SVGIcons;
   link: string;
   description: string;
 }
@@ -95,7 +95,7 @@ export const BuyCoinsListItem = (
         list: [
           {
             name: 'Transak',
-            image: NewIcons.BUY_TRANSAK,
+            image: SVGIcons.BUY_TRANSAK,
             link: `https://global.transak.com?apiKey=${Config.transak.apiKey}&defaultCryptoCurrency=HIVE&exchangeScreenTitle=Buy%20HIVEs&isFeeCalculationHidden=true&walletAddress=${username}`,
             description: 'html_popup_transak_description',
           },
