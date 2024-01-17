@@ -3721,5 +3721,9 @@
   "html_popup_cancel_unstake_token_fail": {
     "message": "Cancel token unstake has failed",
     "description": "Loading message unstake"
+  },
+  "html_popup_ecosystem_retrieving_error": {
+    "message": "There was an error while retrieving the ecosystem. Please try again later",
+    "description": "Ecosystem retrieving error"
   }
 }

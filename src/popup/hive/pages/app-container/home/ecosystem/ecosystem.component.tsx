@@ -9,14 +9,18 @@ import { useChainContext } from '@popup/multichain.context';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 
-export const Ecosystem = ({ setTitleContainerProperties }: any) => {
+export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
   const { chain } = useChainContext();
 
   const [tabs, setTabs] = useState<Tab[]>();
+  const [loading, setLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -28,28 +32,45 @@ export const Ecosystem = ({ setTitleContainerProperties }: any) => {
 
   const init = async () => {
     const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain);
-
-    const tempTabs: any = [];
-    for (const category of categories) {
-      tempTabs.push({
-        title: `ecosystem_category_${category.category}`,
-        content: (
-          <EcosystemCategory
-            category={category}
-            key={`category-${category.category}`}
-          />
-        ),
-      });
+    setLoading(true);
+    if (categories) {
+      const tempTabs: any = [];
+      for (const category of categories) {
+        tempTabs.push({
+          title: `ecosystem_category_${category.category}`,
+          content: (
+            <EcosystemCategory
+              category={category}
+              key={`category-${category.category}`}
+            />
+          ),
+        });
+      }
+      setTabs(tempTabs);
+    } else {
+      setHasError(true);
     }
-    setTabs(tempTabs);
+    setLoading(false);
   };
 
   return (
     <div className="ecosystem-page">
-      <FormContainer>
-        {tabs && <TabsComponent tabs={tabs}></TabsComponent>}
-        {!tabs && <LoadingComponent />}
-      </FormContainer>
+      {!hasError && (
+        <FormContainer>
+          {tabs && <TabsComponent tabs={tabs}></TabsComponent>}
+          {loading && <LoadingComponent />}
+        </FormContainer>
+      )}
+      {hasError && (
+        <div className="error-ecosystem">
+          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+          <div className="text">
+            <div>
+              {chrome.i18n.getMessage('html_popup_ecosystem_retrieving_error')}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
