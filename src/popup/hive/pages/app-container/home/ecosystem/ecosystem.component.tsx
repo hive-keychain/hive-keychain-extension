@@ -31,8 +31,8 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
   }, []);
 
   const init = async () => {
-    const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain);
     setLoading(true);
+    const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain);
     if (categories) {
       const tempTabs: any = [];
       for (const category of categories) {
@@ -50,16 +50,20 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
     } else {
       setHasError(true);
     }
-    setLoading(false);
+    setTimeout(() => setLoading(false), 1000);
   };
 
   return (
     <div className="ecosystem-page">
       {!hasError && (
-        <FormContainer>
-          {tabs && <TabsComponent tabs={tabs}></TabsComponent>}
+        <>
+          {tabs && (
+            <FormContainer>
+              <TabsComponent tabs={tabs}></TabsComponent>
+            </FormContainer>
+          )}
           {loading && <LoadingComponent />}
-        </FormContainer>
+        </>
       )}
       {hasError && (
         <div className="error-ecosystem">
