@@ -1,15 +1,10 @@
-import { Icons } from '@popup/icons.enum';
 import React from 'react';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import './button.component.scss';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export enum ButtonType {
-  STROKED = 'stroked',
-  RAISED = 'raised',
   IMPORTANT = 'important',
-  DEFAULT = 'default',
-  REVERSE = 'reverse',
-  NO_BORDER = 'no-border',
+  ALTERNATIVE = 'alternative',
 }
 
 export interface ButtonProps {
@@ -17,11 +12,11 @@ export interface ButtonProps {
   label: string;
   skipLabelTranslation?: boolean;
   labelParams?: string[];
-  logo?: Icons | string;
+  logo?: NewIcons;
   type?: ButtonType;
-  fixToBottom?: boolean;
   dataTestId?: string;
   additionalClass?: string;
+  height?: 'tall' | 'medium' | 'small';
 }
 
 const ButtonComponent = (props: ButtonProps) => {
@@ -29,22 +24,15 @@ const ButtonComponent = (props: ButtonProps) => {
     <button
       data-testid={props.dataTestId}
       className={`submit-button ${
-        props.type ? props.type : ButtonType.DEFAULT
-      } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${
-        props.additionalClass ?? ''
-      }`}
+        props.type ? props.type : ButtonType.IMPORTANT
+      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'}`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation
           ? props.label
           : chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
       </div>
-      {props.logo && (
-        <Icon
-          name={props.logo}
-          type={IconType.OUTLINED}
-          additionalClassName="logo"></Icon>
-      )}
+      {props.logo && <SVGIcon icon={props.logo} className="logo" />}
     </button>
   );
 };

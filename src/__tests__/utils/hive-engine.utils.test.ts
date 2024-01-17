@@ -1,7 +1,7 @@
+import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
 import { CustomJsonOperation } from '@hiveio/dhive';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { KeychainError } from 'src/keychain-error';
-import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 
 describe('hive-engine.utils tests:\n', () => {
   const constants = {

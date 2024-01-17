@@ -1,0 +1,21 @@
+.checkbox-panel {
+  display: flex;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+
+  &.has-hint {
+    flex-direction: column;
+  }
+
+  .text {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+  .hint {
+    @include poppins400(14px);
+    color: $lighter-grey;
+    margin-left: 32px;
+  }
+}

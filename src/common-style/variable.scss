@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Josefin+Sans:wght@500&family=Poppins:wght@300;400;500;600;700&family=Inter&display=swap');
+
+// Colors
+$dark-red: #a5112c;
+$red: #e31337;
+$light-red: #fbe8ec;
+$dark-blue: #212838;
+$darker-blue: #293144;
+$light-blue: #347abc2b;
+$lighter-blue: #e6eef6;
+$light-grey: #929292;
+$dark-grey: #7f8288;
+$darker-grey: #484848;
+$light-background: #e5edf5;
+$dark-background: #212838;
+$light-green: #dff6e1;
+$red-shadow: rgba(227, 19, 55, 0.21);
+$white-shadow: #29314236;
+$black-shadow: #000000;
+$alternative-white: #fafcfd;
+
+$lighter-grey: #818a9f;
+$extra-light-grey: #eaeaea;
+
+$success: rgb(1, 106, 1);
+
+//border
+$light-grey-border: #e3e1e1;
+$lighter-grey-border: #e9edf3;
+$dark-grey-border: #b4c0cf;
+$darker-grey-border: #cdcdcd;
+
+$blue-border: #364360;
+
+$border-width: 0.847;
+$border-width-low-resolution: 1.4;
+
+// OLD STYLE REMOVE WHEN DONE
+//colors
+
+$red-dark: rgba(163, 17, 42, 1);
+$grey-transparent: rgba(255, 255, 255, 0.2);
+$black: #212529;
+$red-transparent: rgba(227, 19, 55, 0.32);
+$black-transparent: rgba(33, 37, 41, 0.68);
+$grey: #7e8c9a;
+$white-transparent: #ffffff6e;
+$grey-dark: #6c757e;
+$message-container-success: $black;
+$message-container-warning: orange;
+$message-container-info: black;
+$message-container-error: $red-dark;
+
+//sizes
+$input-font-size: 14px;
+$input-height: 36px;
+$input-logo-size: 20px;
+$input-hint-font-size: 15px;
+$caption-font-size: 14px;
+
+.divider {
+  flex: 1;
+}
+
+.fill-space {
+  flex: 1;
+}
+
+a {
+  @include link;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: unset;
+  box-shadow: unset;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #e31337;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background-color: transparent;
+}
+
+.carousel {
+  .control-previous.control-arrow:before {
+    border-right-color: var(--carousel-arrow-color);
+  }
+
+  .control-next.control-arrow:before {
+    border-left-color: var(--carousel-arrow-color);
+  }
+}
+
+#root {
+  user-select: none;
+}

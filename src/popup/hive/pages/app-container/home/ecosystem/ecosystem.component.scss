@@ -1,0 +1,13 @@
+.ecosystem-page {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+  @include background-higher-top;
+
+  .tabs {
+    .tab,
+    .glider {
+      width: 64px;
+    }
+  }
+}

@@ -2,11 +2,14 @@
   position: fixed;
   right: 16px;
   bottom: 16px;
-  height: 24px;
-  width: 24px;
-  background: white;
-  color: black;
+  height: 46px;
+  width: 46px;
+  background: $red;
   border-radius: 50%;
-  padding: 4px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2px;
+  box-sizing: border-box;
 }

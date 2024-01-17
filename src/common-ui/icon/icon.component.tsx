@@ -1,20 +1,13 @@
-import { Icons } from '@popup/icons.enum';
 import React from 'react';
 import {
   CustomTooltip,
   CustomTooltipPosition,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import './icon.component.scss';
-
-export enum IconType {
-  OUTLINED = '-outlined',
-  STROKED = '',
-}
+import { Icons } from 'src/common-ui/icons.enum';
 
 interface IconProps {
   onClick?: (params: any) => void;
   name: Icons | string;
-  type?: IconType;
   additionalClassName?: string;
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
@@ -22,21 +15,22 @@ interface IconProps {
   ariaLabel?: string;
   rotate?: boolean;
   dataTestId?: string;
+  containerAdditionalClassname?: string;
 }
 
 const getIconTemplate = (props: IconProps) => {
   return (
-    <span
-      aria-label={props.ariaLabel}
-      data-testid={props.dataTestId}
-      className={`icon-component material-icons ${
-        props.type ?? IconType.OUTLINED
-      } ${props.additionalClassName ?? ''} ${
-        props.onClick ? 'clickable' : ''
-      } ${props.rotate ? 'rotate' : ''}`}
-      onClick={props.onClick}>
-      {props.name}
-    </span>
+    <div
+      className={`icon-container ${props.containerAdditionalClassname ?? ''}`}>
+      <img
+        src={`assets/images/${props.name}.svg`}
+        data-testid={props.dataTestId}
+        className={`${props.additionalClassName ?? ''} ${
+          props.onClick ? 'clickable' : ''
+        }`}
+        onClick={props.onClick}
+      />
+    </div>
   );
 };
 

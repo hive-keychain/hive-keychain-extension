@@ -1,10 +1,17 @@
 import { BackgroundMessage } from '@background/background-message.interface';
-import React, { useRef, useState } from 'react';
+import { Theme } from '@popup/theme.context';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { NewIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
 interface PropsType {
@@ -26,6 +33,19 @@ const ImportFile = ({
   const [feedback, setFeedBack] = useState<any>();
 
   const inputEl = useRef<HTMLInputElement>(null);
+
+  const [theme, setTheme] = useState<Theme>();
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.ACTIVE_THEME,
+    ]);
+
+    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
 
   const handleFileUpload = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -72,9 +92,9 @@ const ImportFile = ({
   };
 
   return (
-    <div className="import-file">
+    <div className={`theme ${theme} import-file`}>
       <div className="title-panel">
-        <img src="/assets/images/iconhive.png" />
+        <SVGIcon icon={NewIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage(title)}</div>
       </div>
       <div
@@ -83,36 +103,50 @@ const ImportFile = ({
           __html: chrome.i18n.getMessage(text),
         }}></div>
       <div className="upload-panel">
-        <ButtonComponent
-          label="Choose a file"
-          onClick={handleOpenFileInput}
-          skipLabelTranslation={true}></ButtonComponent>
-
+        {selectedFile && selectedFile.name && (
+          <InputComponent
+            type={InputType.TEXT}
+            onChange={() => null}
+            value={selectedFile?.name}
+            disabled
+          />
+        )}
         <input
           ref={inputEl}
           type="file"
           accept={accept}
           id="file"
+          className="file-input"
           onChange={handleFileUpload}
         />
-        <span id="file_span">{selectedFile?.name}</span>
+        {feedback && (
+          <div
+            className="feedback"
+            dangerouslySetInnerHTML={{
+              __html: chrome.i18n.getMessage(feedback.message, feedback.params),
+            }}></div>
+        )}
       </div>
 
-      {selectedFile && (
+      <div className="button-panel">
         <ButtonComponent
-          onClick={importKeysFromFile}
-          label="popup_html_import"
-          type={ButtonType.RAISED}
-          fixToBottom></ButtonComponent>
-      )}
+          type={!selectedFile ? ButtonType.IMPORTANT : ButtonType.ALTERNATIVE}
+          label={
+            !selectedFile
+              ? 'dialog_import_file_chose_file'
+              : 'dialog_import_file_chose_another_file'
+          }
+          onClick={handleOpenFileInput}
+          height="small"></ButtonComponent>
 
-      {feedback && (
-        <div
-          className="feedback"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(feedback.message, feedback.params),
-          }}></div>
-      )}
+        {selectedFile && (
+          <ButtonComponent
+            onClick={importKeysFromFile}
+            label="popup_html_import"
+            type={ButtonType.IMPORTANT}
+            height="small"></ButtonComponent>
+        )}
+      </div>
     </div>
   );
 };

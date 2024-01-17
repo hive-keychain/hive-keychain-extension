@@ -1,0 +1,11 @@
+.favorite-accounts-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  row-gap: 16px;
+  overflow: hidden;
+
+  .intro {
+    @include caption();
+  }
+}

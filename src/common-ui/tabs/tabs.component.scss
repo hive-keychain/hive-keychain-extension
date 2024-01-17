@@ -1,0 +1,9 @@
+.tab-container {
+  overflow: hidden;
+  flex: 1;
+  display: none;
+  &.selected {
+    display: flex;
+    padding-bottom: 24px;
+  }
+}

@@ -1,0 +1,12 @@
+.add-by-auth-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+  padding: 0px 24px;
+  flex: 1;
+  margin-bottom: 24px;
+
+  .caption {
+    @include caption();
+  }
+}

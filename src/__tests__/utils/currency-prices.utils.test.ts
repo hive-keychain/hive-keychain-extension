@@ -1,7 +1,7 @@
 import { KeychainApi } from '@api/keychain';
+import CurrencyPricesUtils from '@hiveapp/utils/currency-prices.utils';
 import bittrexData from 'src/__tests__/utils-for-testing/data/bittrex-data/bittrex-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 
 describe('currency-prices-utils tests', () => {
   afterAll(() => {

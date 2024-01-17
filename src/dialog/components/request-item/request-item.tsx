@@ -8,12 +8,11 @@ export enum RequestItemType {
 type Props = {
   title: string;
   content: string | string[];
-  pre?: boolean; // set pre to true if we are showing a pretty printed json
   red?: boolean; // show balance red
   type?: RequestItemType;
 };
 
-const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
+const renderContent = (content: any, type: RequestItemType) => {
   switch (type) {
     case RequestItemType.STRING:
       return content;
@@ -35,23 +34,16 @@ const renderContent = (content: any, type: RequestItemType, red?: boolean) => {
 const RequestItem = ({
   title,
   content,
-  pre,
-  red,
   type = RequestItemType.STRING,
 }: Props) => {
   return (
     <>
-      <h3>{chrome.i18n.getMessage(title)}</h3>
-
-      {pre ? (
-        <div className="operation_item_content">
-          <pre>{content}</pre>
+      <React.Fragment key={title}>
+        <div className="field">
+          <div className="label">{chrome.i18n.getMessage(title)}</div>
+          <div className={`value`}>{renderContent(content, type)}</div>
         </div>
-      ) : (
-        <div className={`operation_item_content ${red ? 'operation-red' : ''}`}>
-          {renderContent(content, type, red)}
-        </div>
-      )}
+      </React.Fragment>
     </>
   );
 };

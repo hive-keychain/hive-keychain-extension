@@ -1,6 +1,5 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -16,7 +15,8 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import AccountUtils from 'src/utils/account.utils';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('add-key.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -30,7 +30,7 @@ describe('add-key.component tests:\n', () => {
     delete clonedLocalAccount.keys.active;
     delete clonedLocalAccount.keys.activePubkey;
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
       {
         app: {

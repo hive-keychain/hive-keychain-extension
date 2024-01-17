@@ -1,6 +1,8 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -12,8 +14,6 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import TokensUtils from 'src/utils/tokens.utils';
 
 describe('send-token tests:\n', () => {
   const data = {

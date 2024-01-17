@@ -1,4 +1,3 @@
-import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,6 +6,7 @@ import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-test
 import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 describe('estimated-account-value-section.component tests:\n', () => {
   afterEach(() => {
@@ -18,7 +18,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     const accountValue = '999.99';
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {
@@ -54,7 +54,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
   describe('with no response from hive', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

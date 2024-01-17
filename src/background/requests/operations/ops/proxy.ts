@@ -8,10 +8,10 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import Logger from 'src/utils/logger.utils';
-import ProxyUtils from 'src/utils/proxy.utils';
 
 export const broadcastProxy = async (
   requestHandler: RequestsHandler,

@@ -1,0 +1,52 @@
+.rc-delegations-page {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+
+  .text {
+    @include form-container-text;
+  }
+
+  .resources {
+    @include resources-panel;
+  }
+
+  .available-panel {
+    @include available-card-panel;
+    margin-top: -10px;
+    margin-bottom: 30px;
+  }
+
+  .amount-panel {
+    display: flex;
+    column-gap: 16px;
+    align-items: baseline;
+
+    .currency-fake-input {
+      width: 100px;
+    }
+  }
+  .preset-button-panels {
+    display: flex;
+    gap: 16px;
+    .preset-button {
+      width: 90px;
+      height: 42px;
+      border: 1px solid var(--input-border);
+      border-radius: 40px;
+      background: var(--card-background);
+      color: var(--main-font-color);
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+      display: flex;
+      padding-top: 2px;
+      box-sizing: border-box;
+      @include poppins500(13px);
+      cursor: pointer;
+      &:hover {
+        background: $red;
+        color: white;
+      }
+    }
+  }
+}

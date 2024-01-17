@@ -1,3 +1,4 @@
+import { TokenTransactionUtils } from '@hiveapp/utils/token-transaction.utils';
 import {
   CommentCurationTransaction,
   DelegateTokenTransaction,
@@ -5,7 +6,6 @@ import {
   StakeTokenTransaction,
   TransferTokenTransaction,
 } from '@interfaces/tokens.interface';
-import { TokenTransactionUtils } from 'src/utils/token-transaction.utils';
 
 describe('token-transaction.utils tests:\n', () => {
   afterEach(() => {

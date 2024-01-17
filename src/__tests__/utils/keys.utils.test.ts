@@ -1,7 +1,7 @@
+import { KeysUtils } from '@hiveapp/utils/keys.utils';
 import { Account } from '@hiveio/dhive';
 import { Keys } from '@interfaces/keys.interface';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { KeysUtils } from 'src/utils/keys.utils';
 
 describe('keys.utils tests:\n', () => {
   describe('getPublicKeyFromPrivateKeyString tests:\n', () => {

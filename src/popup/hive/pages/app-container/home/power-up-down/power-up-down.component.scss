@@ -1,0 +1,46 @@
+.power-up-page {
+  @include pageLayoutRowGap();
+
+  .resources {
+    @include resources-panel;
+  }
+
+  .text {
+    @include form-container-text;
+    padding: 0px 12px;
+  }
+
+  .power-down-panel {
+    @include pending-panel;
+
+    .power-down-text {
+      flex: 1;
+    }
+
+    .icon-button {
+      display: none;
+      height: 20px;
+      width: 20px;
+    }
+
+    &:hover {
+      .icon-button {
+        display: block;
+      }
+    }
+  }
+
+  .amount-panel {
+    display: flex;
+    column-gap: 16px;
+    align-items: baseline;
+
+    .amount-input {
+      flex: 1;
+    }
+
+    .currency-fake-input {
+      width: 100px;
+    }
+  }
+}

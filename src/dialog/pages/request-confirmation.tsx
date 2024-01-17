@@ -33,7 +33,6 @@ import SignTx from 'src/dialog/pages/requests/sign-tx';
 import Transfer from 'src/dialog/pages/requests/transfer';
 import Vote from 'src/dialog/pages/requests/vote';
 import WitnessVote from 'src/dialog/pages/requests/witness-vote';
-import './unlock.scss';
 
 type Props = {
   data: RequestMessage;

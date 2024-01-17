@@ -1,0 +1,145 @@
+.custom-select-container {
+  .label {
+    @include input-label;
+  }
+  .custom-select {
+    border: unset !important;
+    border: 1px solid var(--input-border) !important;
+    background: transparent;
+    min-width: 120px;
+    height: 52px;
+    border-radius: 66px !important;
+
+    .selected-item {
+      @include poppins500(15px);
+      user-select: none;
+      color: var(--main-font-color);
+    }
+
+    &.white {
+      background: var(--select-background-color);
+      &:hover,
+      &:focus {
+        background: var(--select-background-color);
+      }
+    }
+
+    .react-dropdown-select-content {
+      .selected-item {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        padding: 6px 6px;
+        padding-left: 12px;
+        box-sizing: border-box;
+        width: 100%;
+        font-size: $input-font-size;
+
+        .left-image {
+          height: 40px;
+          width: 40px;
+          border-radius: 50%;
+        }
+      }
+    }
+
+    .react-dropdown-select-dropdown-handle {
+      width: 24px !important;
+      vertical-align: middle;
+      margin-left: unset !important;
+      .custom-select-handle {
+        height: 10px;
+        width: 10px;
+      }
+    }
+
+    .react-dropdown-select-dropdown {
+      border-radius: 8px;
+      width: 100%;
+      max-height: 210px;
+      border: 1px solid var(--input-border);
+      top: 60px;
+      background-color: var(--input-background);
+      border-radius: 16px;
+      @include radius-bound-dropdown-scrollbar;
+      @include poppins500(14px);
+      .custom-select-dropdown {
+        .filter-input {
+          border: unset !important;
+          border-radius: unset !important;
+          border-bottom: 1px solid var(--input-border);
+          padding: 6px;
+          input {
+            @include poppins500(14px);
+            font-size: 14px;
+          }
+        }
+
+        .option {
+          display: flex;
+          flex-direction: column;
+          &:hover {
+            background-color: $red;
+            color: white;
+            .account-name,
+            .active-icon {
+              color: var(--main-font-color) !important;
+            }
+          }
+        }
+      }
+      .option {
+        &:has(~ .option > .custom-select-item:hover) {
+          .separator {
+            background: var(--input-background);
+          }
+        }
+        .custom-select-item {
+          display: flex;
+          align-items: center;
+          column-gap: 12px;
+          padding: 10px 6px;
+          box-sizing: border-box;
+
+          .left-image {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+          }
+
+          .item-label {
+            flex: 1;
+            color: var(--main-font-color);
+          }
+          .active-icon {
+            svg {
+              height: 20px;
+              width: 20px;
+              color: $red;
+            }
+          }
+          .right-action-icon {
+            display: none;
+          }
+          &:hover {
+            .item-label {
+              color: white;
+            }
+            .sepa .active-icon {
+              svg {
+                color: white;
+              }
+            }
+            .right-action-icon {
+              display: block;
+            }
+            + .separator {
+              background: $red;
+            }
+          }
+        }
+      }
+    }
+  }
+}

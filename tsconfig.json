@@ -13,7 +13,9 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
+      "@common-style/*": ["./src/common-style/*"],
       "@popup/*": ["./src/popup/*"],
+      "@hiveapp/*": ["src/popup/hive/*"],
       "@background/*": ["./src/background/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@reference-data/*": ["./src/reference-data/*"],

@@ -1,6 +1,6 @@
-import * as loadingActions from '@popup/actions/loading.actions';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import * as loadingActions from 'src/popup/hive/actions/loading.actions';
 
 describe('loading.actions tests:/n', () => {
   describe('addToLoadingList tests:\n', () => {

@@ -1,7 +1,7 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import AccountUtils from 'src/utils/account.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const createActiveAccount = async (
   userAccount: ExtendedAccount,

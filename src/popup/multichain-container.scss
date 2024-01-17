@@ -1,0 +1,13 @@
+@import './hive/hive-app.component.scss';
+@import './evm/evm-app.component.scss';
+
+.theme {
+  &.light {
+    @include spread-map($light);
+  }
+  &.dark {
+    @include spread-map($dark);
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
+}

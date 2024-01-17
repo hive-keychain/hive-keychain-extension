@@ -1,0 +1,28 @@
+.response-message-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  .message-card {
+    margin: 0px 24px;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    row-gap: 12px;
+    .title {
+      text-align: center;
+      @include dmSans700(20px);
+      color: $red;
+    }
+    .message {
+      text-align: center;
+      @include dmSans400(15px);
+      color: var(--main-font-color);
+    }
+  }
+}

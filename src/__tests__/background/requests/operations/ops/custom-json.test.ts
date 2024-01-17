@@ -1,6 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainKeyTypes,
@@ -13,7 +14,6 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('custom-json tests:\n', () => {
   const data = {

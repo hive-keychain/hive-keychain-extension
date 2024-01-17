@@ -4,9 +4,11 @@ import {
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { useEffect, useState } from 'react';
-import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
-import { getPhishingAccounts } from 'src/utils/phishing.utils';
-import TransferUtils from 'src/utils/transfer.utils';
+import CurrencyUtils, {
+  BaseCurrencies,
+} from 'src/popup/hive/utils/currency.utils';
+import { getPhishingAccounts } from 'src/popup/hive/utils/phishing.utils';
+import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 
 export const useTransferCheck = (
   data: RequestTransfer | RequestSendToken,

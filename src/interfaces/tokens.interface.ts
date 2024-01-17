@@ -120,3 +120,15 @@ export interface UserTokens {
   loading: boolean;
   list: TokenBalance[];
 }
+
+export interface PendingUnstaking {
+  _id: number;
+  account: string;
+  symbol: string;
+  quantity: string;
+  quantityLeft: string;
+  nextTransactionTimestamp: number;
+  numberTransactionsLeft: number;
+  millisecPerPeriod: string;
+  txID: string;
+}

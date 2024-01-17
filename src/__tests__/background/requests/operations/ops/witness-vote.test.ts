@@ -1,6 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainKeyTypesLC,
@@ -13,7 +14,6 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('witness-vote tests:\n', () => {
   const data = {

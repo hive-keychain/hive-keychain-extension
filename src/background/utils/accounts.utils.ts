@@ -1,6 +1,6 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import EncryptUtils from 'src/utils/encrypt.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getAccountsFromFileData = (
