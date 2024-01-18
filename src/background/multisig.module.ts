@@ -236,18 +236,10 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
                 SocketMessageCommand.NOTIFY_TRANSACTION_BROADCASTED,
                 {
                   signatureRequestId: signatureRequest.id,
+                  txId: txResult.tx_id,
                 } as NotifyTxBroadcastedMessage,
                 () => {
                   Logger.info(`Notified`);
-
-                  openWindow({
-                    multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
-                    data: {
-                      message: 'multisig_dialog_transaction_broadcasted',
-                      success: true,
-                      signer: signer,
-                    } as MultisigDisplayMessageData,
-                  });
                 },
               );
             }
@@ -261,8 +253,20 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
 
   socket.on(
     SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
-    (signatureRequest: SignatureRequest) => {
+    async (signatureRequest: SignatureRequest, txId: string) => {
       Logger.log(`signature request ${signatureRequest.id} was broadcasted`);
+      const transaction = await HiveTxUtils.getTransaction(txId);
+      delete transaction.signatures;
+      console.log(transaction);
+      openWindow({
+        multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
+        data: {
+          message: 'multisig_dialog_transaction_broadcasted',
+          success: true,
+          txId: txId,
+          transaction: transaction,
+        } as MultisigDisplayMessageData,
+      });
     },
   );
 
@@ -503,10 +507,13 @@ const requestSignTransactionFromUser = (
       sender: chrome.runtime.MessageSender,
       sendResp: (response?: any) => void,
     ) => {
+      console.log(backgroundMessage.value);
       if (
-        backgroundMessage.command === BackgroundCommand.MULTISIG_ACCEPT_RESPONSE
+        backgroundMessage.command ===
+          BackgroundCommand.MULTISIG_ACCEPT_RESPONSE &&
+        backgroundMessage.value?.multisigData.data.signer.id === signer.id
       ) {
-        if (backgroundMessage.value) {
+        if (backgroundMessage.value.accepted) {
           const signedTransaction = await HiveTxUtils.signTransaction(
             decodedTransaction,
             key,

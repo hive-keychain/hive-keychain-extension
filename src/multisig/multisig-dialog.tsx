@@ -5,7 +5,6 @@ import {
   MultisigDisplayMessageData,
   MultisigStep,
   MultisigUnlockData,
-  Signer,
 } from '@interfaces/multisig.interface';
 import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -33,7 +32,9 @@ const MultisigDialog = () => {
   const [content, setContent] = useState<JSX.Element>();
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [signer, setSigner] = useState<Signer>();
+  const [initialMultisigData, setInitialMultisigData] =
+    useState<MultisigData>();
+  const [multisigData, setMultisigData] = useState<MultisigData>();
 
   const onReceivedDataFromBackground = (
     backgroundMessage: BackgroundMessage,
@@ -45,8 +46,8 @@ const MultisigDialog = () => {
       BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
-      if (!signer || multisigData.data.signer.id === signer.id)
-        setContent(renderContent(multisigData));
+      console.log(multisigData);
+      setMultisigData(multisigData);
     }
   };
 
@@ -54,6 +55,23 @@ const MultisigDialog = () => {
     chrome.runtime.onMessage.addListener(onReceivedDataFromBackground);
     initTheme();
   }, []);
+
+  useEffect(() => {
+    processData(multisigData);
+  }, [multisigData]);
+
+  const processData = (multisigData?: MultisigData) => {
+    if (multisigData) {
+      if (!initialMultisigData) {
+        setInitialMultisigData(multisigData);
+        setContent(renderContent(multisigData));
+      } else if (
+        initialMultisigData.data.signer?.id === multisigData.data.signer?.id
+      ) {
+        setContent(renderContent(multisigData));
+      }
+    }
+  };
 
   const initTheme = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -67,10 +85,13 @@ const MultisigDialog = () => {
     window.close();
   };
 
-  const sendAcceptRejectTransaction = (accepted: boolean) => {
+  const sendAcceptRejectTransaction = (
+    accepted: boolean,
+    multisigData: MultisigData,
+  ) => {
     chrome.runtime.sendMessage({
       command: BackgroundCommand.MULTISIG_ACCEPT_RESPONSE,
-      value: accepted,
+      value: { accepted, multisigData },
     } as BackgroundMessage);
     if (!accepted) window.close();
   };
@@ -101,7 +122,6 @@ const MultisigDialog = () => {
       case MultisigStep.ACCEPT_REJECT_TRANSACTION: {
         setCaption('multisig_dialog_accept_reject_tx_caption');
         const data = multisigData.data as MultisigAcceptRejectTxData;
-        setSigner(data.signer);
         return (
           <>
             <div className="fields-container">
@@ -139,7 +159,7 @@ const MultisigDialog = () => {
                 type={ButtonType.ALTERNATIVE}
                 label="multisig_dialog_reject_tx"
                 onClick={() => {
-                  sendAcceptRejectTransaction(false);
+                  sendAcceptRejectTransaction(false, multisigData);
                 }}
                 height="small"></ButtonComponent>
 
@@ -147,7 +167,7 @@ const MultisigDialog = () => {
                 label="multisig_dialog_accept_tx"
                 type={ButtonType.IMPORTANT}
                 onClick={() => {
-                  sendAcceptRejectTransaction(true);
+                  sendAcceptRejectTransaction(true, multisigData);
                 }}
                 height="small"></ButtonComponent>
             </div>
@@ -168,6 +188,13 @@ const MultisigDialog = () => {
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
             </div>
+            <a href={`https://hivehub.dev/tx/${data.txId}`}>{data.txId}</a>
+            <Separator type={'horizontal'} fullSize />
+            <CollaspsibleItem
+              title="dialog_tx"
+              content={JSON.stringify(data.transaction)}
+              pre
+            />
             <div className="fill-space"></div>
             <ButtonComponent
               label="popup_html_close"
@@ -190,7 +217,7 @@ const MultisigDialog = () => {
     <div className={`theme ${theme} multisig-dialog`}>
       <div className="title-panel">
         <img className="multisig-logo" src="/assets/images/multisig/logo.png" />
-        <div className="title">{chrome.i18n.getMessage('multisig')}</div>
+        <div className="title">{chrome.i18n.getMessage('multisig')} </div>
       </div>
       {content && (
         <>

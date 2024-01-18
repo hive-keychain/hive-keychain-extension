@@ -233,6 +233,7 @@ import { SignedTransaction } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { MultisigAccountConfig } from '@interfaces/multisig.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import {
   KeychainKeyTypes,
@@ -300,7 +301,6 @@ const getPotentialSigners = async (
 ) => {
   const authority =
     method === KeychainKeyTypes.active ? account?.active : account?.posting;
-  console.log(authority);
   let receivers: [string, number][] = [];
   if (authority) {
     for (let i = 0; i < authority.account_auths.length; i++) {
@@ -319,21 +319,9 @@ const getPotentialSigners = async (
     }
   }
 
-  return receivers;
-};
-
-const getAccountAuthorities = async (account: ExtendedAccount) => {
-  if (!account) {
-    return undefined;
-  }
-  const keys: any = {
-    account: account.name,
-    owner: account.owner,
-    active: account.active,
-    posting: account.posting,
-    memo_key: account.memo_key,
-  };
-  return keys;
+  return receivers.filter(
+    (r) => r[0] !== KeysUtils.getPublicKeyFromPrivateKeyString(key!),
+  );
 };
 
 const getPublicKeys = async (username: string, keyType: KeychainKeyTypes) => {

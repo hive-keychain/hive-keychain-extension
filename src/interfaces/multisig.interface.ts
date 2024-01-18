@@ -151,7 +151,9 @@ export interface MultisigAcceptRejectTxData {
 export interface MultisigDisplayMessageData {
   message: string;
   success?: boolean;
-  signer: Signer;
+  signer?: Signer;
+  txId?: string;
+  transaction?: any;
 }
 
 export interface MultisigUnlockData {

@@ -376,7 +376,12 @@ const useMultisig = async (
   });
 };
 
+const getTransaction = (txId: string) => {
+  return HiveTxUtils.getData('condenser_api.get_transaction', [txId]);
+};
+
 export const HiveTxUtils = {
+  getTransaction,
   sendOperation,
   createSignAndBroadcastTransaction,
   // confirmTransaction,
