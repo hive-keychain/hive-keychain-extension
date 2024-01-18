@@ -3,7 +3,7 @@ import { MultisigUnlockData } from '@interfaces/multisig.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -24,7 +24,7 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
 
   return (
     <div className="sign-in-page">
-      <SVGIcon className="logo-white" icon={NewIcons.KEYCHAIN_FULL_LOGO} />
+      <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
 
       <InputComponent
         classname="password-input"

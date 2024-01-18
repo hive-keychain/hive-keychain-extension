@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -85,7 +85,7 @@ const MultisigDialog = () => {
           <div className="card">
             <SVGIcon
               icon={
-                data.success ? NewIcons.MESSAGE_SUCCESS : NewIcons.MESSAGE_ERROR
+                data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
@@ -163,7 +163,7 @@ const MultisigDialog = () => {
           <div className="card">
             <SVGIcon
               icon={
-                data.success ? NewIcons.MESSAGE_SUCCESS : NewIcons.MESSAGE_ERROR
+                data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
