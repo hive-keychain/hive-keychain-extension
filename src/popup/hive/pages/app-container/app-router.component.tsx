@@ -28,7 +28,6 @@ import { TokenIncomingOutgoingPageComponent } from 'src/popup/hive/pages/app-con
 import { TokensOperationComponent } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { TokensFilterComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-filter/tokens-filter.component';
 import { TokensHistoryComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/tokens-history.component';
-import { TokensSettingsComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
 import { TokensTransferComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
 import { TransferFundsComponent } from 'src/popup/hive/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
@@ -96,12 +95,8 @@ const AppRouter = ({
       case Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingRcPageComponent />;
       //Tokens
-      // case Screen.TOKENS_PAGE:
-      //   return <TokensComponent />;
       case Screen.TOKENS_HISTORY:
         return <TokensHistoryComponent />;
-      case Screen.TOKENS_SETTINGS:
-        return <TokensSettingsComponent />;
       case Screen.TOKENS_TRANSFER:
         return <TokensTransferComponent />;
       case Screen.TOKENS_OPERATION:

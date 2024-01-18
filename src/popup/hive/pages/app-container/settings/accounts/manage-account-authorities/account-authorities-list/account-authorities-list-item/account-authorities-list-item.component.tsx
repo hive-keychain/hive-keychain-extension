@@ -3,7 +3,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import {
@@ -129,7 +129,7 @@ const AccountAuthoritiesListItem = ({
                 </div>
                 <SVGIcon
                   className="delete-button"
-                  icon={NewIcons.GLOBAL_DELETE}
+                  icon={SVGIcons.GLOBAL_DELETE}
                   onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}
                 />
               </div>

@@ -13,7 +13,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -213,12 +213,6 @@ const PowerUpDown = ({
           switch (powerType) {
             case PowerType.POWER_UP:
               addToLoadingList('html_popup_power_up_operation');
-              console.log(
-                activeAccount.name!,
-                form.receiver,
-                formattedAmount,
-                activeAccount.keys.active!,
-              );
               success = await PowerUtils.powerUp(
                 activeAccount.name!,
                 form.receiver,
@@ -318,7 +312,7 @@ const PowerUpDown = ({
     <div className="power-up-page" data-testid={`${Screen.POWER_UP_PAGE}-page`}>
       <div className="resources">
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_MANA}
+          icon={SVGIcons.RESOURCE_ITEM_MANA}
           label="popup_html_current"
           value={`${FormatUtils.formatCurrencyValue(
             current,
@@ -331,7 +325,7 @@ const PowerUpDown = ({
           additionalClass="blue"
         />
         <ResourceItemComponent
-          icon={NewIcons.RESOURCE_ITEM_WALLET}
+          icon={SVGIcons.RESOURCE_ITEM_WALLET}
           label="popup_html_available"
           value={`${FormatUtils.formatCurrencyValue(
             available,
@@ -362,7 +356,7 @@ const PowerUpDown = ({
               </div>
               <SVGIcon
                 className="icon-button"
-                icon={NewIcons.GLOBAL_DELETE}
+                icon={SVGIcons.GLOBAL_DELETE}
                 onClick={handleCancelButtonClick}
               />
             </div>
@@ -379,7 +373,7 @@ const PowerUpDown = ({
               control={control}
               name="receiver"
               type={InputType.TEXT}
-              logo={NewIcons.INPUT_AT}
+              logo={SVGIcons.INPUT_AT}
               placeholder="popup_html_receiver"
               label="popup_html_receiver"
               autocompleteValues={autocompleteFavoriteUsers}
@@ -405,7 +399,7 @@ const PowerUpDown = ({
               skipPlaceholderTranslation
               label="popup_html_amount"
               rightActionClicked={setToMax}
-              rightActionIcon={NewIcons.INPUT_MAX}
+              rightActionIcon={SVGIcons.INPUT_MAX}
             />
           </div>
         </div>

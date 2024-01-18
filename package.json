@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.6.3",
+  "version": "3.0.0",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -59,7 +59,7 @@
     "crypto-js": "4.1.1",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.2.2",
+    "hive-keychain-commons": "^1.2.3",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "joi": "17.6.0",
     "locate-path": "7.1.1",
@@ -99,7 +99,7 @@
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.23.2",
     "@babel/preset-react": "^7.22.15",
-    "@hiveio/dhive": "1.2.3",
+    "@hiveio/dhive": "^1.2.7",
     "@hot-loader/react-dom": "17.0.2",
     "@svgr/webpack": "^8.0.1",
     "@testing-library/jest-dom": "5.16.5",

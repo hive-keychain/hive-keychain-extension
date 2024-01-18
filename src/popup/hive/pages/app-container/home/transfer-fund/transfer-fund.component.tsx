@@ -17,7 +17,7 @@ import {
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import {
@@ -108,7 +108,7 @@ const TransferFunds = ({
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<TransferForm>>(
         transferFormRules,
-        { context: { balance: balance }, errors: { render: true } }, //TODO set render to false
+        { context: { balance: balance }, errors: { render: true } },
       );
       return resolver(values, { balance: balance }, options);
     },
@@ -351,7 +351,7 @@ const TransferFunds = ({
               control={control}
               dataTestId="input-username"
               type={InputType.TEXT}
-              logo={NewIcons.INPUT_AT}
+              logo={SVGIcons.INPUT_AT}
               placeholder="popup_html_username"
               label="popup_html_username"
               autocompleteValues={autocompleteFavoriteUsers}
@@ -388,7 +388,7 @@ const TransferFunds = ({
                   skipPlaceholderTranslation
                   min={0}
                   rightActionClicked={setAmountToMaxValue}
-                  rightActionIcon={NewIcons.INPUT_MAX}
+                  rightActionIcon={SVGIcons.INPUT_MAX}
                 />
               </div>
             </div>
@@ -405,8 +405,8 @@ const TransferFunds = ({
               }
               rightActionIcon={
                 watch('encrypted')
-                  ? NewIcons.INPUT_ENCRYPT
-                  : NewIcons.INPUT_DECRYPT
+                  ? SVGIcons.INPUT_ENCRYPT
+                  : SVGIcons.INPUT_DECRYPT
               }
             />
             <CheckboxFormComponent

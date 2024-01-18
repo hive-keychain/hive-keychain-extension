@@ -5,7 +5,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
@@ -147,7 +147,7 @@ const RcIncomingOutgoingDelegationItem = ({
               </div>
               {delegationType !== DelegationType.INCOMING && (
                 <SVGIcon
-                  icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                  icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
                   className={`expand-collapse-icon ${
                     isExpanded ? 'open' : 'closed'
                   }`}
@@ -165,7 +165,7 @@ const RcIncomingOutgoingDelegationItem = ({
                     <div
                       className="delegation-item-button edit"
                       onClick={() => goToEdit(rcDelegation)}>
-                      <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_EDIT} />
+                      <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
                       <span className="label">
                         {chrome.i18n.getMessage('html_popup_button_edit_label')}
                       </span>
@@ -173,7 +173,7 @@ const RcIncomingOutgoingDelegationItem = ({
                     <div
                       className="delegation-item-button delete"
                       onClick={() => cancelDelegation(rcDelegation)}>
-                      <SVGIcon icon={NewIcons.FAVORITE_ACCOUNTS_DELETE} />
+                      <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                       <span className="label">
                         {chrome.i18n.getMessage('delete_label')}
                       </span>

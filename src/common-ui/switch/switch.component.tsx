@@ -1,14 +1,14 @@
 import { Switch } from 'pretty-checkbox-react';
 import React from 'react';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface SwitchProps {
   onChange: (value: any) => void;
   selectedValue: any;
   leftValue: any;
   rightValue: any;
-  leftValueIcon?: NewIcons;
-  rightValueIcon?: NewIcons;
+  leftValueIcon?: SVGIcons;
+  rightValueIcon?: SVGIcons;
   leftValueLabel?: string;
   rightValueLabel?: string;
   skipLeftTranslation?: boolean;

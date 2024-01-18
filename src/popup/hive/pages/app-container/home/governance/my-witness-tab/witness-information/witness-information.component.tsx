@@ -11,7 +11,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -260,7 +260,7 @@ const WitnessInformation = ({
         {witnessInfo.isDisabled && (
           <SVGIcon
             className="witness-disabled"
-            icon={NewIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
+            icon={SVGIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
             tooltipMessage="popup_html_witness_information_witness_disabled_text"
             tooltipPosition="right"
           />

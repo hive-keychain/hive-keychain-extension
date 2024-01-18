@@ -7,8 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import Icon from 'src/common-ui/icon/icon.component';
-import { Icons, NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -98,20 +97,23 @@ const WitnessTab = ({
   }, [activeAccount]);
 
   useEffect(() => {
-    setFilteredRanking(
-      ranking.filter((witness) => {
-        return (
-          (witness.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-            witness.rank?.toLowerCase().includes(filterValue.toLowerCase())) &&
-          ((displayVotedOnly && votedWitnesses.includes(witness.name)) ||
-            !displayVotedOnly) &&
-          ((hideNonActive &&
-            witness.signing_key !==
-              'STM1111111111111111111111111111111114T1Anm') ||
-            !hideNonActive)
-        );
-      }),
-    );
+    if (ranking)
+      setFilteredRanking(
+        ranking.filter((witness) => {
+          return (
+            (witness.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
+              witness.rank
+                ?.toLowerCase()
+                .includes(filterValue.toLowerCase())) &&
+            ((displayVotedOnly && votedWitnesses.includes(witness.name)) ||
+              !displayVotedOnly) &&
+            ((hideNonActive &&
+              witness.signing_key !==
+                'STM1111111111111111111111111111111114T1Anm') ||
+              !hideNonActive)
+          );
+        }),
+      );
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
   const initProxyVotes = async (proxy: string) => {
@@ -215,7 +217,7 @@ const WitnessTab = ({
             <SVGIcon
               dataTestId={`link-to-witness-page-${witness.name}`}
               onClick={() => chrome.tabs.create({ url: witness.url })}
-              icon={NewIcons.GOVERNANCE_WITNESS_LINK}
+              icon={SVGIcons.GOVERNANCE_WITNESS_LINK}
               className="link-to-witness-page"></SVGIcon>
           )}
         </div>
@@ -229,7 +231,7 @@ const WitnessTab = ({
               ? 'using-proxy-button'
               : '')
           }
-          icon={NewIcons.GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE}
+          icon={SVGIcons.GOVERNANCE_WITNESS_UPVOTE_DOWNVOTE}
           onClick={() => handleVotedButtonClick(witness)}
           tooltipPosition="left"
           tooltipMessage={
@@ -276,57 +278,57 @@ const WitnessTab = ({
         /> */}
       </div>
 
-      <div className="ranking-container">
-        <div className="ranking-filter">
-          <InputComponent
-            dataTestId="input-ranking-filter"
-            type={InputType.TEXT}
-            logo={NewIcons.INPUT_SEARCH}
-            logoPosition="left"
-            placeholder="popup_html_search"
-            value={filterValue}
-            onChange={setFilterValue}
-          />
-          <div className="switches-panel">
-            <CheckboxPanelComponent
-              dataTestId="switches-panel-witness-voted_only"
-              title="html_popup_witness_display_voted_only"
-              checked={displayVotedOnly}
-              onChange={() => {
-                setDisplayVotedOnly(!displayVotedOnly);
-              }}></CheckboxPanelComponent>
-            <CheckboxPanelComponent
-              dataTestId="switches-panel-witness-hide_inactive"
-              title="html_popup_witness_hide_inactive"
-              checked={hideNonActive}
-              onChange={() => {
-                setHideNonActive(!hideNonActive);
-              }}></CheckboxPanelComponent>
+      {!hasError && (
+        <div className="ranking-container">
+          <div className="ranking-filter">
+            <InputComponent
+              dataTestId="input-ranking-filter"
+              type={InputType.TEXT}
+              logo={SVGIcons.INPUT_SEARCH}
+              logoPosition="left"
+              placeholder="popup_html_search"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+            <div className="switches-panel">
+              <CheckboxPanelComponent
+                dataTestId="switches-panel-witness-voted_only"
+                title="html_popup_witness_display_voted_only"
+                checked={displayVotedOnly}
+                onChange={() => {
+                  setDisplayVotedOnly(!displayVotedOnly);
+                }}></CheckboxPanelComponent>
+              <CheckboxPanelComponent
+                dataTestId="switches-panel-witness-hide_inactive"
+                title="html_popup_witness_hide_inactive"
+                checked={hideNonActive}
+                onChange={() => {
+                  setHideNonActive(!hideNonActive);
+                }}></CheckboxPanelComponent>
+            </div>
+          </div>
+
+          <div aria-label="ranking" className="ranking">
+            <FlatList
+              list={filteredRanking}
+              renderItem={renderWitnessItem}
+              renderOnScroll
+            />
           </div>
         </div>
-
-        <div aria-label="ranking" className="ranking">
-          <FlatList
-            list={filteredRanking}
-            renderItem={renderWitnessItem}
-            renderOnScroll
-            renderWhenEmpty={() => {
-              return (
-                hasError && (
-                  <div aria-label="error-witness" className="error-witness">
-                    <Icon name={Icons.ERROR}></Icon>
-                    <span>
-                      {chrome.i18n.getMessage(
-                        'popup_html_error_retrieving_witness_ranking',
-                      )}
-                    </span>
-                  </div>
-                )
-              );
-            }}
-          />
+      )}
+      {hasError && (
+        <div className="error-witness">
+          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+          <div className="text">
+            <div>
+              {chrome.i18n.getMessage(
+                'popup_html_error_retrieving_witness_ranking',
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export const ErrorFallback = ({ error, theme, chain }: any) => {
@@ -18,7 +18,7 @@ export const ErrorFallback = ({ error, theme, chain }: any) => {
 
   return (
     <div className="error-page">
-      <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+      <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
       <div className="title">
         {chrome.i18n.getMessage('error_message_title')}
       </div>

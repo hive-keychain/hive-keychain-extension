@@ -60,7 +60,10 @@ const WitnessVotingSection = ({
   };
   let voteForAccount: string | undefined = undefined;
   if (activeAccount.account.proxy.length === 0) {
-    for (const acc of ['stoodkev', 'cedricguillas']) {
+    for (const acc of [
+      'stoodkev',
+      // 'cedricguillas'
+    ]) {
       if (!activeAccount.account.witness_votes.includes(acc)) {
         voteForAccount = acc;
         break;

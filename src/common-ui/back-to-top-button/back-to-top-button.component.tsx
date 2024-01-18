@@ -1,5 +1,5 @@
 import React from 'react';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 interface BackToTopButtonProps {
@@ -15,7 +15,7 @@ export const BackToTopButton = (props: BackToTopButtonProps) => {
 
   return (
     <div className="back-to-top" onClick={scrollToTop}>
-      <SVGIcon icon={NewIcons.WALLET_HISTORY_TOP} />
+      <SVGIcon icon={SVGIcons.WALLET_HISTORY_TOP} />
     </div>
   );
 };

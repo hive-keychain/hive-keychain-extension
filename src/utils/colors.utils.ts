@@ -27,7 +27,7 @@ const downloadColors = async () => {
 };
 
 const getBackgroundColorFromBackend = (symbol: string, theme: Theme) => {
-  return imgColors[symbol] + ThemeOpacity[theme];
+  return imgColors ? imgColors[symbol] + ThemeOpacity[theme] : '00FFFFFF';
 };
 
 const getBackgroundColorFromImage = (img: HTMLImageElement) => {

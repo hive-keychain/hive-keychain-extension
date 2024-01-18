@@ -6,7 +6,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addCaptionToLoading,
@@ -136,7 +136,7 @@ const ProposalItem = ({
         <SVGIcon
           dataTestId={`proposal-item-icon-expandable-${proposal.creator}`}
           className={`more ${isExpandablePanelOpened ? 'open' : 'closed'}`}
-          icon={NewIcons.GOVERNANCE_PROPOSAL_EXPAND_COLLAPSE}
+          icon={SVGIcons.GOVERNANCE_PROPOSAL_EXPAND_COLLAPSE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
         />
       </div>
@@ -170,7 +170,7 @@ const ProposalItem = ({
               ' ' +
               (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
             }
-            icon={NewIcons.GOVERNANCE_PROPOSAL_UPVOTE}
+            icon={SVGIcons.GOVERNANCE_PROPOSAL_UPVOTE}
             tooltipPosition="left"
             tooltipMessage={
               !activeAccount.keys.active
@@ -197,13 +197,13 @@ const ProposalItem = ({
             skipTranslation>
             <div className="extra-info">
               <div className="value">
-                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_UPVOTE_VALUE} />
+                <SVGIcon icon={SVGIcons.GOVERNANCE_PROPOSAL_UPVOTE_VALUE} />
                 <div data-testid="proposal-item-extra-info-value">
                   {proposal.totalVotes}
                 </div>
               </div>
               <div>
-                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_DURATION} />
+                <SVGIcon icon={SVGIcons.GOVERNANCE_PROPOSAL_DURATION} />
                 <div>
                   {chrome.i18n.getMessage('popup_html_days_remaining', [
                     FormatUtils.withCommas(
@@ -216,7 +216,7 @@ const ProposalItem = ({
                 </div>
               </div>
               <div>
-                <SVGIcon icon={NewIcons.GOVERNANCE_PROPOSAL_BUDGET} />
+                <SVGIcon icon={SVGIcons.GOVERNANCE_PROPOSAL_BUDGET} />
                 <div>
                   {FormatUtils.withCommas(proposal.dailyPay.toString())}/
                   {chrome.i18n.getMessage('day')}

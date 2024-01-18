@@ -6,7 +6,7 @@ import { ISwap } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
@@ -87,7 +87,7 @@ const TokenSwapsHistory = ({
               className={`swap-history-refresh ${
                 shouldRefresh ? 'rotate' : ''
               }`}
-              icon={NewIcons.SWAPS_HISTORY_REFRESH}
+              icon={SVGIcons.SWAPS_HISTORY_REFRESH}
               onClick={refresh}
             />
           </>
@@ -105,7 +105,7 @@ const TokenSwapsHistory = ({
           })}
         {history.length === 0 && (
           <div className="empty-history-panel">
-            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <span className="text">
               {chrome.i18n.getMessage('swap_no_history')}
             </span>

@@ -1,7 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -43,7 +43,7 @@ export const SelectAccountSectionItemComponent = ({
         <div className="icons-wrapper">
           {selectedAccount === item.value && !hovered && (
             <SVGIcon
-              icon={NewIcons.SELECT_ACTIVE}
+              icon={SVGIcons.SELECT_ACTIVE}
               className="active-icon"
               forceHover={hovered}
               hoverable
@@ -52,12 +52,12 @@ export const SelectAccountSectionItemComponent = ({
           {hovered && (
             <div className="hovered-icons">
               <SVGIcon
-                icon={NewIcons.SELECT_COPY}
+                icon={SVGIcons.SELECT_COPY}
                 className="copy-icon"
                 onClick={(event) => copyUsernameToClipboard(event)}
               />
               <span {...dragHandle}>
-                <SVGIcon icon={NewIcons.SELECT_DRAG} className="drag-icon" />
+                <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
               </span>
             </div>
           )}
@@ -66,7 +66,7 @@ export const SelectAccountSectionItemComponent = ({
     else if (selectedAccount === item.value)
       return (
         <SVGIcon
-          icon={NewIcons.SELECT_ACTIVE}
+          icon={SVGIcons.SELECT_ACTIVE}
           className="active-icon"
           forceHover={hovered}
           hoverable

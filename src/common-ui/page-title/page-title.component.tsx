@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   goBack,
@@ -17,7 +17,7 @@ export interface PageTitleProps {
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
   rightAction?: {
-    icon: NewIcons;
+    icon: SVGIcons;
     callback: () => void;
     className?: string;
   };
@@ -66,7 +66,7 @@ const PageTitle = ({
         <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
-          icon={NewIcons.TOP_BAR_BACK_BTN}
+          icon={SVGIcons.TOP_BAR_BACK_BTN}
           className="icon-button"
         />
       )}
@@ -86,7 +86,7 @@ const PageTitle = ({
         <SVGIcon
           dataTestId="icon-close-page"
           onClick={handleCloseButtonClick}
-          icon={NewIcons.TOP_BAR_CLOSE_BTN}
+          icon={SVGIcons.TOP_BAR_CLOSE_BTN}
         />
       )}
     </div>

@@ -11,7 +11,7 @@ import {
 } from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SelectAccountSectionItemComponent } from 'src/common-ui/select-account-section/select-account-section-item.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -112,7 +112,7 @@ const SelectAccountSection = ({
     return (
       <SVGIcon
         className="custom-select-handle"
-        icon={isOpened ? NewIcons.SELECT_ARROW_UP : NewIcons.SELECT_ARROW_DOWN}
+        icon={isOpened ? SVGIcons.SELECT_ARROW_UP : SVGIcons.SELECT_ARROW_DOWN}
         onClick={() => {
           handleClickOnSelector();
         }}

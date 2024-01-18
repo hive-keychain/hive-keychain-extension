@@ -17,7 +17,7 @@ import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 
@@ -38,19 +38,19 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.COMMENT_AUTHOR_REWARD:
       case OperationsHiveEngine.COMMENT_CURATION_REWARD:
       case OperationsHiveEngine.MINING_LOTTERY:
-        return NewIcons.WALLET_HISTORY_CLAIM_REWARDS;
+        return SVGIcons.WALLET_HISTORY_CLAIM_REWARDS;
       case OperationsHiveEngine.TOKENS_TRANSFER:
-        return NewIcons.WALLET_HISTORY_TRANSFER;
+        return SVGIcons.WALLET_HISTORY_TRANSFER;
       case OperationsHiveEngine.TOKEN_UNSTAKE_START:
       case OperationsHiveEngine.TOKEN_UNSTAKE_DONE:
-        return NewIcons.WALLET_HISTORY_UNSTAKE;
+        return SVGIcons.WALLET_HISTORY_UNSTAKE;
       case OperationsHiveEngine.TOKEN_STAKE:
-        return NewIcons.WALLET_HISTORY_STAKE;
+        return SVGIcons.WALLET_HISTORY_STAKE;
       case OperationsHiveEngine.TOKEN_UNDELEGATE_START:
       case OperationsHiveEngine.TOKEN_UNDELEGATE_DONE:
-        return NewIcons.WALLET_HISTORY_TOKEN_DELEGATIONS;
+        return SVGIcons.WALLET_HISTORY_TOKEN_DELEGATIONS;
       default:
-        return NewIcons.WALLET_HISTORY_TRANSFER;
+        return SVGIcons.WALLET_HISTORY_TRANSFER;
     }
   };
 
@@ -221,7 +221,7 @@ const TokenHistoryItem = ({
             </CustomTooltip>
             {getMemo() && (
               <SVGIcon
-                icon={NewIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
                 onClick={() => setIsMemoOpened(!isMemoOpened)}
                 className={`expand-collapse ${
                   isMemoOpened ? 'open' : 'closed'

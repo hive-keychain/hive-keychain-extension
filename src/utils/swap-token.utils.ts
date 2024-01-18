@@ -43,8 +43,6 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
   return userTokenList;
 };
 
-const getSwapTokenEndList = () => {};
-
 const getEstimate = async (
   startToken: string,
   endToken: string,
@@ -189,7 +187,6 @@ const setAsInitiated = async (swapId: ISwap['id']) => {
 
 export const SwapTokenUtils = {
   getSwapTokenStartList,
-  getSwapTokenEndList,
   processSwap,
   getEstimate,
   saveEstimate,

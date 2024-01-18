@@ -2,7 +2,7 @@ import { sleep } from '@hiveio/dhive/lib/utils';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -117,20 +117,20 @@ const TopBar = ({
     <div className="top-bar">
       <SVGIcon
         dataTestId="clickable-settings"
-        icon={NewIcons.MENU_BUTTON}
+        icon={SVGIcons.MENU_BUTTON}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         className="button settings-button"
       />
       <SVGIcon
         className={`logo ${rotateLogo ? 'rotate' : ''}`}
-        icon={NewIcons.TOP_BAR_KEYCHAIN_LOGO}
+        icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
       {hasRewardToClaim && (
         <SVGIcon
-          icon={NewIcons.TOP_BAR_CLAIM_REWARDS_BTN}
+          icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
           dataTestId="reward-claim-icon"
           className="claim-button"
           onClick={() => claim()}

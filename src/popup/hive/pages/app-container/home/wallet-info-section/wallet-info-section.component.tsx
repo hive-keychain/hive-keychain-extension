@@ -15,7 +15,7 @@ import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -139,7 +139,7 @@ const WalletInfoSection = ({
       <div className="wallet-info-section">
         <WalletInfoSectionItemComponent
           tokenSymbol="HIVE"
-          icon={NewIcons.WALLET_HIVE_LOGO}
+          icon={SVGIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
           mainValueLabel={currencyLabels.hive}
           subValue={activeAccount.account.savings_balance}
@@ -147,7 +147,7 @@ const WalletInfoSection = ({
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HBD"
-          icon={NewIcons.WALLET_HBD_LOGO}
+          icon={SVGIcons.WALLET_HBD_LOGO}
           mainValue={activeAccount.account.hbd_balance}
           mainValueLabel={currencyLabels.hbd}
           subValue={activeAccount.account.savings_hbd_balance}
@@ -155,7 +155,7 @@ const WalletInfoSection = ({
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HP"
-          icon={NewIcons.WALLET_HP_LOGO}
+          icon={SVGIcons.WALLET_HP_LOGO}
           mainValue={FormatUtils.toHP(
             activeAccount.account.vesting_shares as string,
             globalProperties.globals,
@@ -171,7 +171,7 @@ const WalletInfoSection = ({
         />
         <div className="hive-engine-separator">
           <span>
-            <SVGIcon icon={NewIcons.HIVE_ENGINE} className="no-pointer" />
+            <SVGIcon icon={SVGIcons.HIVE_ENGINE} className="no-pointer" />
             <p className="sub-value">Hive Engine</p>
           </span>
           <div className="line" />
@@ -184,7 +184,7 @@ const WalletInfoSection = ({
               setTokenFilter(e);
             }}
             value={tokenFilter}
-            rightActionIcon={NewIcons.WALLET_SEARCH}
+            rightActionIcon={SVGIcons.WALLET_SEARCH}
             rightActionClicked={() => {
               setShowSearchHE(false);
             }}
@@ -192,7 +192,7 @@ const WalletInfoSection = ({
           />
 
           <SVGIcon
-            icon={NewIcons.WALLET_SEARCH}
+            icon={SVGIcons.WALLET_SEARCH}
             className={`token-search ${!showSearchHE ? '' : 'hide'}`}
             onClick={() => {
               setShowSearchHE(true);
@@ -203,7 +203,7 @@ const WalletInfoSection = ({
           />
 
           <SVGIcon
-            icon={NewIcons.WALLET_SETTINGS}
+            icon={SVGIcons.WALLET_SETTINGS}
             onClick={() => {
               navigateTo(Screen.TOKENS_FILTER);
             }}
@@ -222,7 +222,7 @@ const WalletInfoSection = ({
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
                     tokenMarket={market}
-                    icon={NewIcons.HIVE_ENGINE}
+                    icon={SVGIcons.HIVE_ENGINE}
                     addBackground
                     mainValue={token.balance}
                     mainValueLabel={token.symbol}
@@ -237,7 +237,7 @@ const WalletInfoSection = ({
           )}
         {filteredTokenList && filteredTokenList.length === 0 && (
           <div className="no-token">
-            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <span className="text">
               {chrome.i18n.getMessage('html_tokens_none_available')}
             </span>

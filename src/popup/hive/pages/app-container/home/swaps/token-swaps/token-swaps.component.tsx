@@ -35,7 +35,7 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -202,8 +202,8 @@ const TokenSwaps = ({
       } else {
         img =
           token.symbol === BaseCurrencies.HIVE.toUpperCase()
-            ? `/assets/images/wallet/${NewIcons.HIVE}-logo.svg`
-            : `/assets/images/wallet/${NewIcons.HBD}-logo.svg`;
+            ? `/assets/images/wallet/hive-logo.svg`
+            : `/assets/images/wallet/hbd-logo.svg`;
       }
       return {
         value: token,
@@ -216,12 +216,12 @@ const TokenSwaps = ({
       {
         value: { symbol: BaseCurrencies.HIVE.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HIVE.toUpperCase(),
-        img: `/assets/images/wallet/${NewIcons.HIVE}-logo.svg`,
+        img: `/assets/images/wallet/hive-logo.svg`,
       },
       {
         value: { symbol: BaseCurrencies.HBD.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HBD.toUpperCase(),
-        img: `/assets/images/wallet/${NewIcons.HBD}-logo.svg`,
+        img: `/assets/images/wallet/hbd-logo.svg`,
       },
       ...allTokens
         .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
@@ -506,7 +506,7 @@ const TokenSwaps = ({
               </div>
               <SVGIcon
                 className="swap-history-button"
-                icon={NewIcons.SWAPS_HISTORY}
+                icon={SVGIcons.SWAPS_HISTORY}
                 onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
               />
             </div>
@@ -533,7 +533,7 @@ const TokenSwaps = ({
                       rightActionClicked={() =>
                         setAmount(startToken?.value.balance)
                       }
-                      rightActionIcon={NewIcons.INPUT_MAX}
+                      rightActionIcon={SVGIcons.INPUT_MAX}
                     />
                   </div>
                   <span className="available">
@@ -544,7 +544,7 @@ const TokenSwaps = ({
                   </span>
                 </div>
                 <SVGIcon
-                  icon={NewIcons.SWAPS_SWITCH}
+                  icon={SVGIcons.SWAPS_SWITCH}
                   onClick={swapStartAndEnd}
                   className="swap-icon"
                 />
@@ -580,7 +580,7 @@ const TokenSwaps = ({
                         rightActionIconClassname={
                           loadingEstimate ? 'rotate' : ''
                         }
-                        rightActionIcon={NewIcons.SWAPS_ESTIMATE_REFRESH}
+                        rightActionIcon={SVGIcons.SWAPS_ESTIMATE_REFRESH}
                         rightActionClicked={() => {
                           if (!estimate) return;
                           calculateEstimate(
@@ -621,7 +621,7 @@ const TokenSwaps = ({
                       {chrome.i18n.getMessage('swap_advanced_parameters')}
                     </div>
                     <SVGIcon
-                      icon={NewIcons.GLOBAL_ARROW}
+                      icon={SVGIcons.GLOBAL_ARROW}
                       onClick={() =>
                         setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
                       }
@@ -657,7 +657,7 @@ const TokenSwaps = ({
 
         {underMaintenance && (
           <div className="maintenance-mode">
-            <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <div className="text">
               {chrome.i18n.getMessage('swap_under_maintenance')}
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { NewIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
@@ -15,7 +15,7 @@ const DialogError = ({ data }: Props) => {
   return (
     <div className="error-message-container">
       <div className="message-card">
-        <SVGIcon icon={NewIcons.MESSAGE_ERROR} />
+        <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
         <div className="title">
           {chrome.i18n.getMessage('message_container_title_fail')}
         </div>
