@@ -189,12 +189,16 @@ const MultisigDialog = () => {
               {chrome.i18n.getMessage(data.message)}
             </div>
             <a href={`https://hivehub.dev/tx/${data.txId}`}>{data.txId}</a>
-            <Separator type={'horizontal'} fullSize />
-            <CollaspsibleItem
-              title="dialog_tx"
-              content={JSON.stringify(data.transaction)}
-              pre
-            />
+            <div className="fields-container">
+              <div className="fields">
+                <CollaspsibleItem
+                  title="dialog_tx"
+                  content={JSON.stringify(data.transaction, undefined, 2)}
+                  pre
+                />
+              </div>
+            </div>
+
             <div className="fill-space"></div>
             <ButtonComponent
               label="popup_html_close"
