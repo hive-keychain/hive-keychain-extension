@@ -36,7 +36,7 @@ const Loading = ({ hide, operations, caption }: Props) => {
                   ),
                 }}></span>
               {!operation.hideDots && (
-                <span>{!operation.done ? 'OK' : '...'}</span>
+                <span>{!operation.done ? ' OK' : '...'}</span>
               )}
             </div>
           ))}

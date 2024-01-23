@@ -11,7 +11,7 @@ export const createMessage = async (
   publicKey?: Key,
 ) => {
   let message;
-  if (result.isUsingMultisig) {
+  if (result.isUsingMultisig && result.tx_id?.length === 0) {
     message = await chrome.i18n.getMessage(
       'multisig_transaction_sent_to_signers',
     );

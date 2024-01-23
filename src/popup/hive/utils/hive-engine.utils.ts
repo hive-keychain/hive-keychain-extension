@@ -20,7 +20,7 @@ const sendOperation = async (
   if (transactionResult) {
     if (transactionResult.isUsingMultisig) {
       return {
-        tx_id: '0',
+        tx_id: transactionResult.tx_id,
         broadcasted: false,
         confirmed: false,
         isUsingMultisig: true,

@@ -144,7 +144,10 @@ const requestSignatures = async (
                 },
               });
             } else {
-              resolve('multisig_transaction_sent_to_signers');
+              // resolve('multisig_transaction_sent_to_signers');
+              // in this case try to wait for broadcast notification
+              const txId = await waitForBroadcastToBeDone();
+              resolve(txId);
             }
           },
           () => {
@@ -257,7 +260,6 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
       Logger.log(`signature request ${signatureRequest.id} was broadcasted`);
       const transaction = await HiveTxUtils.getTransaction(txId);
       delete transaction.signatures;
-      console.log(transaction);
       openWindow({
         multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
         data: {
@@ -622,6 +624,25 @@ const withTimeout = (
     clearTimeout(timer);
     onSuccess.apply(this, args);
   };
+};
+
+const waitForBroadcastToBeDone = async () => {
+  return new Promise((resolve, reject) => {
+    const broadcastedListener = async (
+      signatureRequest: SignatureRequest,
+      txId: string,
+    ) => {
+      socket.off(
+        SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+        broadcastedListener,
+      );
+      resolve(txId);
+    };
+    socket.on(
+      SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+      broadcastedListener,
+    );
+  });
 };
 
 export const MultisigModule = {
