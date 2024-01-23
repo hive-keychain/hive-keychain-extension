@@ -19,8 +19,8 @@ export const MultichainContainer = () => {
     init();
   }, []);
 
-  const handleKeyPress = useCallback((event) => {
-    if (event.ctrlKey && event.key === 't') {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
       setTheme((previous) => {
         return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
       });
