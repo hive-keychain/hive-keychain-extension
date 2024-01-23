@@ -46,7 +46,6 @@ const MultisigDialog = () => {
       BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
-      console.log(multisigData);
       setMultisigData(multisigData);
     }
   };

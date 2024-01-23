@@ -134,7 +134,6 @@ const createSignAndBroadcastTransaction = async (
         method,
         signedTransaction?.signatures[0],
       );
-      console.log(response);
       return {
         status: 'ok' as string,
         tx_id: response,
