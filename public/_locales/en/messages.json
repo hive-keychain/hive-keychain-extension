@@ -3746,5 +3746,9 @@
   "html_popup_ecosystem_retrieving_error": {
     "message": "There was an error while retrieving the ecosystem. Please try again later",
     "description": "Ecosystem retrieving error"
+  },
+  "html_popup_click_to_refresh": {
+    "message": "Click to refresh",
+    "description": "explanation for keychain icon click"
   }
 }

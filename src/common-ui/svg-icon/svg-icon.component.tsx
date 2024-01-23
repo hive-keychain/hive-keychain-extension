@@ -16,6 +16,7 @@ interface ISVGIconProps {
   skipTooltipTranslation?: boolean;
   tooltipMessage?: string;
   tooltipPosition?: TooltipProps['position'];
+  tooltipDelayShow?: number;
   background?: string;
 }
 
@@ -29,6 +30,7 @@ export const SVGIcon = ({
   skipTooltipTranslation,
   tooltipMessage,
   tooltipPosition,
+  tooltipDelayShow,
 }: ISVGIconProps) => {
   const [hovered, setHovered] = useState(false);
 
@@ -67,7 +69,7 @@ export const SVGIcon = ({
       <CustomTooltip
         message={tooltipMessage}
         position={tooltipPosition}
-        delayShow={500}
+        delayShow={tooltipDelayShow ?? 500}
         skipTranslation={skipTooltipTranslation}>
         {getIconTemplate({
           dataTestId,
