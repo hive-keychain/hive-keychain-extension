@@ -151,12 +151,12 @@ const requestSignatures = async (
             }
           },
           () => {
-            console.log('timeout');
+            Logger.info('timeout in socketio');
           },
         ),
       );
     } catch (err) {
-      console.log({ err });
+      Logger.error({ err });
     }
   });
 };
@@ -509,7 +509,6 @@ const requestSignTransactionFromUser = (
       sender: chrome.runtime.MessageSender,
       sendResp: (response?: any) => void,
     ) => {
-      console.log(backgroundMessage.value);
       if (
         backgroundMessage.command ===
           BackgroundCommand.MULTISIG_ACCEPT_RESPONSE &&
