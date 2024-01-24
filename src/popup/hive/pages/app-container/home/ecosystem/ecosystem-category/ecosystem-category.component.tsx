@@ -1,12 +1,14 @@
 import React from 'react';
 
 export interface DApp {
+  id: number;
   name: string;
   description: string;
   icon: string;
   url: string;
   appendUsername?: boolean;
   categories: string[];
+  order: number;
 }
 
 export interface DAppCategory {
