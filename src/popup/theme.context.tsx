@@ -14,11 +14,15 @@ export enum ThemeOpacity {
 export type ThemeContextType = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 };
 
 export const ThemeContext = createContext<ThemeContextType>({
   theme: Theme.DARK,
   setTheme: (theme) => {
+    Logger.log('no theme provider');
+  },
+  toggleTheme: () => {
     Logger.log('no theme provider');
   },
 });

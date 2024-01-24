@@ -65,10 +65,16 @@ export const MultichainContainer = () => {
       );
   }, [theme]);
 
+  const toggleTheme = () => {
+    setTheme((oldTheme) => {
+      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+    });
+  };
+
   return (
     <div>
       {ready && chain && theme && (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
           <ChainContext.Provider value={{ chain, setChain }}>
             <div className={`theme ${theme}`}>
               <ChainComponentWithBoundary theme={theme} chain={chain} />

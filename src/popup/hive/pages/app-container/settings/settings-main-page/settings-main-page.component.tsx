@@ -1,8 +1,9 @@
 import { forgetMk } from '@popup/hive/actions/mk.actions';
 import { resetNav } from '@popup/hive/actions/navigation.actions';
+import { useThemeContext } from '@popup/theme.context';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -11,6 +12,8 @@ import { RootState } from 'src/popup/hive/store';
 import SettingsMenuItems from './settings-main-page-menu-items';
 
 const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
+  const { toggleTheme } = useThemeContext();
+
   const goToDiscord = () => {
     chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
   };
@@ -35,6 +38,12 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}
+        rightAction={{
+          icon: SVGIcons.MENU_USER_PREFERENCES_THEME,
+          callback: toggleTheme,
+          className: 'menu-toggle-theme',
+        }}
+        isCloseButtonDisabled
         menuItems={SettingsMenuItems(logout)}></MenuComponent>
       <WitnessVotingSectionComponent />
       <div className="link-panel">
