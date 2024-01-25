@@ -1,5 +1,7 @@
 import React from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LoadingOperation } from 'src/popup/hive/reducers/loading.reducer';
 
 type Props = {
@@ -34,7 +36,16 @@ const Loading = ({ hide, operations, caption }: Props) => {
                   ),
                 }}></span>
               {!operation.hideDots && (
-                <span>{!operation.done ? 'OK' : '...'}</span>
+                <div>
+                  {operation.done ? (
+                    <SVGIcon
+                      className="icon-done"
+                      icon={SVGIcons.MESSAGE_SUCCESS}
+                    />
+                  ) : (
+                    '...'
+                  )}
+                </div>
               )}
             </div>
           ))}
