@@ -3295,6 +3295,10 @@
     "message": "No account found on your Ledger. Make sure your added at least one and try again.",
     "description": "synchronize ledger caption"
   },
+  "no_account_found_on_portolfio_error": {
+    "message": "No account found on your Portfolio. Make sure your added at least one and try again.",
+    "description": "portfolio section, loading accounts"
+  },
   "all_ledger_accounts_already_imported": {
     "message": "All the accounts on your Ledger have already been linked to Keychain",
     "description": "while synchronizing ledger"
@@ -3390,6 +3394,10 @@
   "ledger_import_account_has_ledger": {
     "message": "We detected an account using Ledger within the accounts you imported. To be able to use it please click <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>here</a> to link your Ledger.",
     "description": "link device error"
+  },
+  "portfolio": {
+    "message": "Keychain Portfolio",
+    "description": "portfolio button click"
   },
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",

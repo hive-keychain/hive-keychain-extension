@@ -1,0 +1,98 @@
+@import '../common-style/common-style.scss';
+@import '../common-ui/common-ui.scss';
+@import '../popup/hive/hive-app.component.scss';
+@import '../popup/evm/evm-app.component.scss';
+
+.theme {
+  &.light {
+    @include spread-map($light);
+  }
+  &.dark {
+    @include spread-map($dark);
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
+}
+
+html {
+  height: 100%;
+  body {
+    margin: 0px;
+    height: 100%;
+    #root {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+
+      .portfolio {
+        border: solid 1px grey;
+        border-radius: 8px;
+        width: 800px;
+        height: 600px;
+        color: var(--main-font-color);
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        row-gap: 24px;
+        font-size: 16px;
+        position: relative;
+        @include background-top();
+        @include dialogs-title-panel();
+        .confirmation {
+          margin-top: 20px;
+          display: flex;
+          column-gap: 5px;
+          flex-direction: row;
+        }
+        .link-device {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          row-gap: 16px;
+        }
+        .caption {
+          @include caption();
+          padding: 0;
+        }
+        .fill-space {
+          flex: 1;
+        }
+        .rotating-logo-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex: 1;
+        }
+        .portfolio-accounts-panel {
+          display: flex;
+          flex-direction: column;
+          row-gap: 16px;
+          align-items: stretch;
+          justify-content: center;
+          @include small-card();
+          margin: unset;
+          color: var(--main-font-color);
+          .title {
+            @include poppins600(14px);
+            align-self: center;
+          }
+
+          .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            @include poppins500(13px);
+            color: var(--main-font-color);
+            width: 100%;
+            .usd-value {
+              color: var(--main-font-color);
+              @include poppins400(12px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
