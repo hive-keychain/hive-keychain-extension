@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -20,6 +21,13 @@ const EstimatedAccountValueSection = ({
     );
   }, [activeAccount, currencyPrices, globalProperties]);
 
+  const onButtonClick = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/portfolio.html`,
+    });
+  };
+
   return (
     <>
       <div className="estimated-account-value-section">
@@ -34,8 +42,20 @@ const EstimatedAccountValueSection = ({
             </div>
           </CustomTooltip>
         </div>
-        <div data-testid="estimated-account-div-value" className="value">
-          {accountValue ? `$ ${accountValue}` : '...'}
+        <div className="estimated-value-button-container">
+          <div data-testid="estimated-account-div-value" className="value">
+            {accountValue ? `$ ${accountValue}` : '...'}
+          </div>
+          <div
+            data-testid="button-container-portfolio"
+            className="button-container spacing">
+            <ButtonComponent
+              //TODO add labels to translate & remove skip trans
+              skipLabelTranslation
+              label="P"
+              onClick={onButtonClick}
+            />
+          </div>
         </div>
       </div>
     </>

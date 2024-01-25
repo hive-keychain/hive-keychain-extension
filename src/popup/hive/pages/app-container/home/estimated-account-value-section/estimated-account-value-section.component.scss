@@ -20,6 +20,13 @@
       width: 16px;
     }
   }
+  .estimated-value-button-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .spacing {
+    margin-left: 10px;
+  }
   .value {
     @include poppins700(32px);
     color: var(--home-account-value-color);
