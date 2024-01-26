@@ -92,6 +92,25 @@ html {
             }
           }
         }
+
+        .avatar-username-container {
+          display: flex;
+          flex-direction: row;
+          align-items: 'center';
+          align-content: 'center';
+          .account-name {
+            @include poppins500(14px);
+            user-select: none;
+            color: var(--select-font-color);
+            margin-left: 10px;
+            align-self: center;
+          }
+          .user-picture {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+          }
+        }
       }
     }
   }

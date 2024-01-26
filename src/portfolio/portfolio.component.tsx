@@ -11,8 +11,10 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 //TODO important each 0 value, place a - no value. Tokens & currencies.
 
@@ -178,27 +180,42 @@ const PortfolioComponent = () => {
   const [globalProperties, setGlobalProperties] =
     useState<GlobalProperties | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // const [columnsData, setColumnsData] = useState<any>([]); //TODO see if types needed at all
+  // const [columns, setColumns] = useState([]); //TODO see if types needed at all
+  const [data, setData] = useState<{ nodes: ExtendedAccount[] }>({ nodes: [] });
+  const [extraColumns, setExtraColumns] = useState<
+    { label: string; renderCell: (item: any) => void }[]
+  >([]);
+  const [themeTable, setThemeTable] = useState<any>();
+
+  const getCOLUMNS = (globalProperties: GlobalProperties) => [
+    { label: 'Account', renderCell: (item: ExtendedAccount) => item.name },
+    {
+      label: 'HP',
+      renderCell: (item: ExtendedAccount) =>
+        FormatUtils.withCommas(
+          FormatUtils.toHP(
+            item.vesting_shares as string,
+            globalProperties.globals,
+          ).toFixed(6),
+        ),
+    },
+    { label: 'HIVE', renderCell: (item: ExtendedAccount) => item.balance },
+    {
+      label: 'HBD',
+      renderCell: (item: ExtendedAccount) => item.hbd_balance,
+    },
+  ];
 
   //testing data react tables
-  const themeTable = useTheme([
-    getTheme(),
-    {
-      HeaderRow: `
-        background-color: #eaf5fd;
-      `,
-      Row: `
-        &:nth-of-type(odd) {
-          background-color: #d2e9fb;
-        }
-
-        &:nth-of-type(even) {
-          background-color: #eaf5fd;
-        }
-      `,
-    },
-  ]);
-  const data = { nodes };
+  // const themeTable = useTheme([
+  //   getTheme(),
+  //   {
+  //     Table: `
+  //        --data-table-library_grid-template-columns:  25% 25% 25% 25% 25% minmax(150px, 1fr);
+  //     `,
+  //   },
+  // ]);
+  // const data = { nodes };
 
   useEffect(() => {
     init();
@@ -222,7 +239,7 @@ const PortfolioComponent = () => {
       );
       setExtendedAccountsList(extAccounts);
       console.log({ extAccounts }); //TODO remove line
-      // loadGlobalProps();
+      loadGlobalProps();
       setIsLoading(false);
     }
   };
@@ -237,47 +254,107 @@ const PortfolioComponent = () => {
       ]);
       const props = { globals, price, rewardFund };
       setGlobalProperties(props);
-      setIsLoading(false);
     } catch (error) {
       console.log('Error getting globals!', error);
     }
   };
 
-  //DATA set
-  // useEffect(() => {
-  //   if (extendedAccountsList.length > 0) {
-  //     // const COLUMNS = [
-  //     //   { label: "Task", renderCell: (item: ExtendedAccount) => item.name },
-  //     //   {
-  //     //     label: "Deadline",
-  //     //     renderCell: (item) =>
-  //     //       item.deadline.toLocaleDateString("en-US", {
-  //     //         year: "numeric",
-  //     //         month: "2-digit",
-  //     //         day: "2-digit",
-  //     //       }),
-  //     //   },
-  //     //   { label: "Type", renderCell: (item) => item.type },
-  //     //   {
-  //     //     label: "Complete",
-  //     //     renderCell: (item) => item.isComplete.toString(),
-  //     //   },
-  //     //   { label: "Tasks", renderCell: (item) => item.nodes?.length },
-  //     // ];
-  //     setColumnsData([
-  //       { label: 'Account', renderCell: (item: ExtendedAccount) => item.name },
-  //     ]);
-  //     setIsLoading(false);
-  //   }
-  // }, [extendedAccountsList, globalProperties]);
+  const getLabelCell = (key: string) => {
+    switch (key) {
+      case 'vesting_shares':
+        return 'HP';
+      case 'name':
+        return 'ACCOUNT';
+      case 'balance':
+        return 'HIVE';
+      case 'hbd_balance':
+        return 'HBD';
+      default:
+        return key;
+    }
+  };
 
-  //TODO added for testing
-  // useEffect(() => {
-  //   if (columnsData.length) {
-  //     console.log({ columnsData });
-  //   }
-  // }, [columnsData]);
-  //End block to remove
+  const getRenderCell = (item: any, key: string) => {
+    if (key === 'name') {
+      return (
+        <div className="avatar-username-container">
+          <PreloadedImage
+            className="user-picture"
+            src={`https://images.hive.blog/u/${item[key]}/avatar`}
+            alt={'/assets/images/accounts.png'}
+            placeholder={'/assets/images/accounts.png'}
+          />
+          <div className="account-name">{String(item[key])}</div>
+        </div>
+      );
+    } else {
+      return String(item[key]);
+    }
+  };
+
+  //DATA set
+  useEffect(() => {
+    if (extendedAccountsList.length > 0 && globalProperties?.globals) {
+      // setColumns([
+      //   { label: 'Account', renderCell: (item: ExtendedAccount) => item.name },
+      //   {
+      //     label: 'HP',
+      //     renderCell: (item: ExtendedAccount) =>
+      //       FormatUtils.withCommas(
+      //         FormatUtils.toHP(
+      //           item.vesting_shares as string,
+      //           globalProperties.globals,
+      //         ).toFixed(6),
+      //       ),
+      //   },
+      //   { label: 'HIVE', renderCell: (item: ExtendedAccount) => item.balance },
+      //   {
+      //     label: 'HBD',
+      //     renderCell: (item: ExtendedAccount) => item.hbd_balance,
+      //   },
+      // ]);
+      const keysToUse = ['name', 'vesting_shares', 'hbd_balance', 'balance'];
+      setData({
+        nodes: extendedAccountsList,
+      });
+      const extra = Object.keys(extendedAccountsList[0])
+        .filter((k) => keysToUse.includes(k))
+        .map((key) => {
+          return {
+            label: getLabelCell(key),
+            renderCell: (item: any) => getRenderCell(item, key),
+          };
+        });
+      setExtraColumns(extra);
+      const dynamicPercentages = keysToUse
+        .slice(0, keysToUse.length - 1)
+        .map((k) => `25%`)
+        .join(' ');
+      setThemeTable(
+        useTheme([
+          getTheme(),
+          {
+            Table: `
+             --data-table-library_grid-template-columns:  ${dynamicPercentages} minmax(200px, 1fr);
+          `,
+            HeaderRow: `
+          background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
+        `,
+            Row: `
+          &:nth-of-type(odd) {
+            background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
+          }
+  
+          &:nth-of-type(even) {
+            background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
+          }
+        `,
+          },
+        ]),
+      );
+      setIsLoading(false);
+    }
+  }, [extendedAccountsList, globalProperties]);
 
   return (
     <div className={`theme ${theme} portfolio`}>
@@ -290,12 +367,12 @@ const PortfolioComponent = () => {
           <RotatingLogoComponent />
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && data && globalProperties && extraColumns && (
         <CompactTable
-          columns={COLUMNS}
+          columns={extraColumns}
           data={data}
           theme={themeTable}
-          layout={{ fixedHeader: true }}
+          layout={{ horizontalScroll: true, fixedHeader: true, custom: true }}
         />
       )}
     </div>
