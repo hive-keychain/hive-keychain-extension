@@ -93,6 +93,11 @@ html {
           }
         }
 
+        .text {
+          @include poppins500(13px);
+          color: var(--main-font-color);
+        }
+
         .avatar-username-container {
           display: flex;
           flex-direction: row;
