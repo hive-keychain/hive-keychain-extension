@@ -155,6 +155,53 @@ const sendBackImportedFileContent = async (fileContent: any) => {
           importedSettings.current_rpc,
         );
       }
+      if (importedSettings.hidden_tokens) {
+        const currentHiddenTokens =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.HIDDEN_TOKENS,
+          );
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HIDDEN_TOKENS,
+          ArrayUtils.mergeWithoutDuplicate(
+            currentHiddenTokens ?? [],
+            importedSettings.hidden_tokens,
+          ),
+        );
+      }
+
+      if (importedSettings.HIVE_ENGINE_ACTIVE_CONFIG) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
+          importedSettings.HIVE_ENGINE_ACTIVE_CONFIG,
+        );
+      }
+
+      if (importedSettings.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API) {
+        const currentHECustomAccountHistoryApi =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
+          );
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
+          ArrayUtils.mergeWithoutDuplicate(
+            currentHECustomAccountHistoryApi ?? [],
+            importedSettings.hidden_tokens,
+          ),
+        );
+      }
+      if (importedSettings.HIVE_ENGINE_CUSTOM_RPC_LIST) {
+        const currentHECustomRpcList =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
+          );
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
+          ArrayUtils.mergeWithoutDuplicate(
+            currentHECustomRpcList ?? [],
+            importedSettings.hidden_tokens,
+          ),
+        );
+      }
     }
     chrome.runtime.sendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
