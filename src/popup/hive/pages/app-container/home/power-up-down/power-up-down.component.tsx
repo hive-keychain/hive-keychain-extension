@@ -267,7 +267,7 @@ const PowerUpDown = ({
         addToLoadingList('html_popup_cancel_power_down_operation');
         try {
           let success = await PowerUtils.powerDown(
-            form.receiver,
+            activeAccount.name!,
             `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
               6,
             )} VESTS`,
