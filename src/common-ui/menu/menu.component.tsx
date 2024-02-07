@@ -35,7 +35,7 @@ const Menu = ({
       isCloseButtonDisabled: isCloseButtonDisabled,
       rightAction: rightAction,
     });
-  }, []);
+  }, [rightAction]);
 
   const handleMenuItemClick = (menuItem: MenuItem) => {
     if (menuItem.nextScreen) {
