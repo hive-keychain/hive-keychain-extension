@@ -23,6 +23,7 @@ export enum SVGIcons {
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
+  GLOBAL_EXPAND_COLLAPSE = 'global/expand-collapse',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
@@ -85,6 +86,7 @@ export enum SVGIcons {
   MENU_USER_PREFERENCES_AUTOMATED_TASKS = 'menu/user-preferences/automated-tasks',
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
+  MENU_USER_PREFERENCES_NOTIFICATIONS = 'menu/user-preferences/notifications',
 
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
@@ -97,6 +99,8 @@ export enum SVGIcons {
   MESSAGE_ERROR = 'message/error',
   MESSAGE_WARNING = 'message/warning',
   MESSAGE_SUCCESS = 'message/success',
+
+  NOTIFICATIONS_ADD = 'notifications/add',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',

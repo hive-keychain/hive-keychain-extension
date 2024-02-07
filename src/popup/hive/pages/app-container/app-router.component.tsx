@@ -2,6 +2,7 @@ import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosyst
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
+import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications.component';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -156,6 +157,8 @@ const AppRouter = ({
         return <AutomatedTasksComponent />;
       case Screen.SETTINGS_FAVORITE_ACCOUNTS:
         return <FavoriteAccountsComponent />;
+      case Screen.SETTINGS_NOTIFICATIONS:
+        return <NotificationsConfigComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:

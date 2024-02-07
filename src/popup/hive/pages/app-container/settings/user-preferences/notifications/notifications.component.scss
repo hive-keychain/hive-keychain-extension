@@ -1,0 +1,66 @@
+.notifications-config-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  row-gap: 24px;
+  .caption {
+    @include caption();
+  }
+
+  .active-panel {
+    margin: 0px 16px;
+  }
+
+  .form-fields {
+    .add-panel {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+
+      .add-button {
+        width: 50px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid var(--card-border);
+        background: transparent;
+        cursor: pointer;
+        color: var(--main-font-color);
+        .svg-icon {
+          height: 18px;
+          width: 18px;
+        }
+        &:hover {
+          background: $red;
+          color: white;
+        }
+      }
+    }
+
+    .criteria {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+
+      .title-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .expand-detail-icon {
+          @include icon-size(18px);
+          @include open-close-rotate();
+        }
+      }
+
+      .field-row {
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8px;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+  }
+}

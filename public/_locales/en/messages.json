@@ -3750,5 +3750,21 @@
   "html_popup_click_to_refresh": {
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
+  },
+  "html_popup_settings_notifications": {
+    "message": "Notifications",
+    "description": "Notifications"
+  },
+  "html_popup_settings_notifications_caption": {
+    "message": "This is the configuration page for PeakD notification picture",
+    "description": "Notification caption introducing the feature"
+  },
+  "html_popup_settings_notifications_active": {
+    "message": "Active",
+    "description": "Notification system active for this account"
+  },
+  "html_popup_settings_notifications_condition": {
+    "message": "Condition",
+    "description": "Condition"
   }
 }
