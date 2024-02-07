@@ -278,8 +278,36 @@ const PortfolioComponent = () => {
         },
       );
 
-      console.log({ portfolioUserData }); //TODO remove line
-      const keysToUse = Object.keys(portfolioUserData[0]).map((key) => key);
+      const sortedPortfolioUserData = portfolioUserData.sort(
+        (a, b) => Object.keys(b).length - Object.keys(a).length,
+      );
+
+      const keysToUse = Object.keys(sortedPortfolioUserData[0]).map(
+        (key) => key,
+      );
+
+      console.log({ portfolioUserData, keysToUse, sortedPortfolioUserData }); //TODO remove line
+
+      const filteredKeysToUse = keysToUse.filter(
+        (key) =>
+          key !== 'name' &&
+          key !== 'balance' &&
+          key !== 'vesting_shares' &&
+          key !== 'hbd_balance',
+      );
+
+      const totalTokens = filteredKeysToUse.map((key) => {
+        const obj: { [key: string]: any } = {};
+        obj[key] = sortedPortfolioUserData.reduce((acc: number, curr: any) => {
+          if (curr[key]) {
+            return (acc += curr[key]);
+          }
+        }, 0);
+        return obj;
+      });
+
+      console.log({ filteredKeysToUse, totalTokens });
+
       setData({
         nodes: [
           ...portfolioUserData,
