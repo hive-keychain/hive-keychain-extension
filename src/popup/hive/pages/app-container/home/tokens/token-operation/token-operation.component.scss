@@ -1,0 +1,20 @@
+.tokens-operation-page {
+  @include background-top-0-percent();
+  @include pageLayoutRowGap();
+  row-gap: 24px;
+  .caption {
+    @include caption();
+  }
+  .cooldown-message {
+    @include caption();
+  }
+
+  .value-panel {
+    display: flex;
+    column-gap: 8px;
+    justify-content: center;
+    .currency-fake-input {
+      width: 180px;
+    }
+  }
+}

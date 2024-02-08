@@ -1,6 +1,7 @@
 import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import MkModule from '@background/mk.module';
 import init from '@background/requests/init';
+import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainKeyTypesLC,
@@ -25,7 +26,6 @@ import * as LogicUnlockWallet from 'src/background/requests/logic/unlockWallet.l
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { anonymous_requests } from 'src/utils/requests.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 
 describe('init tests:\n', () => {
   const _accounts = {

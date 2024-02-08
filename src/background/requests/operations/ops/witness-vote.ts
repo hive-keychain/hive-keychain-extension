@@ -9,9 +9,9 @@ import {
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeychainError } from 'src/keychain-error';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
-import WitnessUtils from 'src/utils/witness.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
 export const broadcastWitnessVote = async (
   requestHandler: RequestsHandler,

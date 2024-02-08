@@ -1,4 +1,4 @@
-import { Icons } from '@popup/icons.enum';
+import { Icons } from 'src/common-ui/icons.enum';
 
 const dataTestIdComponent = {
   settingsMainPage: 'settings-main-page-component',

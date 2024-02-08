@@ -1,0 +1,43 @@
+.action-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  row-gap: 8px;
+  user-select: none;
+  width: 55px;
+
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 54px;
+    border: 1px solid var(--bottom-bar-border);
+    border-radius: 0px 0px 74px 74px;
+    border-top: 0px;
+
+    .icon {
+      @include icon-size(24px);
+    }
+  }
+
+  &:hover {
+    .icon-container {
+      background: $red;
+      -webkit-box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
+      -moz-box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
+      box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
+      .icon {
+        --bottom-bar-icon-color: white;
+      }
+    }
+  }
+
+  .label {
+    color: $lighter-grey;
+    text-align: center;
+    @include poppins500(14px);
+  }
+}

@@ -1,0 +1,37 @@
+.token-swaps-history {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  row-gap: 16px;
+
+  .history {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    overflow: auto;
+    box-sizing: border-box;
+    padding-bottom: 16px;
+
+    .empty-history-panel {
+      @include no-data-panel();
+    }
+  }
+
+  .refresh-panel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 24px;
+    @include poppins400(13px);
+    color: $red;
+
+    .swap-history-refresh {
+      margin-left: 8px;
+      &.rotate {
+        @include rotate-logo-mixin();
+      }
+    }
+  }
+}

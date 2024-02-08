@@ -1,12 +1,12 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import { Transfer } from '@interfaces/transaction.interface';
-import { store } from '@popup/store';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import transactionHistory from 'src/__tests__/utils-for-testing/data/history/transactions/transaction-history';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { store } from 'src/popup/hive/store';
 import Logger from 'src/utils/logger.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 
 describe('transaction.utils tests:\n', () => {
   afterEach(() => {

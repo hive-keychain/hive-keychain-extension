@@ -4,9 +4,9 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
-import TokensUtils from 'src/utils/tokens.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 
 export const broadcastSendToken = async (
   requestHandler: RequestsHandler,

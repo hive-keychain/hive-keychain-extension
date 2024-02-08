@@ -1,0 +1,73 @@
+.rpc-nodes-page {
+  @include pageLayoutRowGap;
+  .introduction {
+    @include caption();
+  }
+
+  .rpc-form-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    margin: 0px 32px;
+    padding-bottom: 24px;
+
+    .rpc-section {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      .title {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+      }
+
+      .select-rpc-panel {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        .custom-select-container {
+          flex: 1;
+          .selected-item {
+            @include poppins400(14px);
+          }
+          .custom-select {
+            height: 56px !important;
+            border-radius: 22px !important;
+          }
+        }
+        .round-button {
+          cursor: pointer;
+          @include small-card;
+          padding: 12px;
+          border-radius: 50%;
+          margin: 0px;
+          width: 18px;
+          transition: 0.5s ease-in-out;
+          &.close-button {
+            rotate: 45deg;
+          }
+          .svg-icon {
+            @include icon-size(18px);
+          }
+        }
+      }
+      .add-rpc-panel {
+        display: flex;
+        flex-direction: column;
+        row-gap: 14px;
+        @include small-card;
+        align-items: unset;
+        margin: 0px;
+        margin-top: -8px;
+        .custom-input-content input {
+          @include poppins600(14px);
+        }
+        .add-rpc-caption {
+          @include poppins600(14px);
+          display: flex;
+          justify-content: space-between;
+          color: var(--main-font-color);
+        }
+      }
+    }
+  }
+}

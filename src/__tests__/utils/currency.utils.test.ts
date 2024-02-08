@@ -1,4 +1,4 @@
-import CurrencyUtils from 'src/utils/currency.utils';
+import CurrencyUtils from '@hiveapp/utils/currency.utils';
 
 describe('currency.utils tests:\n', () => {
   describe('getCurrencyLabels tests:\n', () => {

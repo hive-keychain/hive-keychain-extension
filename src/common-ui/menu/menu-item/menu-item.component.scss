@@ -1,0 +1,32 @@
+.menu-item {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  padding: 0 24px;
+  cursor: pointer;
+  box-sizing: border-box;
+  user-select: none;
+  column-gap: 12px;
+
+  .icon {
+    padding: 8px 12px;
+    border-radius: 50px;
+    height: 40px;
+    width: 44px;
+  }
+
+  .menu-label {
+    @include poppins500(15px);
+    color: var(--main-font-color);
+  }
+
+  &:hover {
+    background-color: $red;
+    .menu-label {
+      color: white;
+    }
+    --menu-icon-border-color: white;
+    --menu-icon-color: white;
+  }
+}

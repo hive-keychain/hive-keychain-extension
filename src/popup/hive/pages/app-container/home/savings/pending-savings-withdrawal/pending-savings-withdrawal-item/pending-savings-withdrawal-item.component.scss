@@ -1,0 +1,37 @@
+.pending-savings-withdraw-row {
+  @include small-card();
+  color: var(--main-font-color);
+  .left-panel {
+    flex: 1;
+    .label {
+      max-width: 50%;
+    }
+  }
+
+  .right-panel {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+
+    .value {
+      color: var(--main-font-color);
+      display: flex;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .delete-icon {
+      cursor: pointer;
+      display: none;
+      height: 20px;
+      width: 20px;
+      margin-left: 8px;
+    }
+  }
+
+  &:hover {
+    .delete-icon {
+      display: block;
+    }
+  }
+}

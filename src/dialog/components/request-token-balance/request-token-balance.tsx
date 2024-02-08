@@ -2,6 +2,7 @@ import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import React, { useEffect, useState } from 'react';
 import Config from 'src/config';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import FormatUtils from 'src/utils/format.utils';
 import SSC from 'sscjs';
 
 type Props = {
@@ -28,9 +29,19 @@ const RequestTokenBalance = ({
       .then((tokens: any) => {
         const token = tokens.find((e: any) => e.symbol === currency);
         const bal = token ? token.balance : '0';
-        const newBal = (parseFloat(bal) - amount).toFixed(3);
-        setBalance(`${bal} ${currency}`);
-        setNewBalance(`${newBal} ${currency}`);
+        const newBal = parseFloat(bal) - amount;
+        setBalance(
+          `${FormatUtils.formatCurrencyValue(
+            bal,
+            token.precision,
+          )} ${currency}`,
+        );
+        setNewBalance(
+          `${FormatUtils.formatCurrencyValue(
+            newBal,
+            token.precision,
+          )} ${currency}`,
+        );
       });
   }, [username]);
 

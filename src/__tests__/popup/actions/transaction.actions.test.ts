@@ -1,8 +1,8 @@
-import * as transactionActions from '@popup/actions/transaction.actions';
+import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialStateWAccountsWActiveAccountStore } from 'src/__tests__/utils-for-testing/initial-states';
-import TransactionUtils from 'src/utils/transaction.utils';
+import * as transactionActions from 'src/popup/hive/actions/transaction.actions';
 
 describe('transaction.actions tests:\n', () => {
   afterEach(() => {

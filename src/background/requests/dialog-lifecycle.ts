@@ -6,7 +6,8 @@ export const createPopup = (
   requestHandler: RequestsHandler,
   popupHtml = 'dialog.html',
 ) => {
-  let width = 350;
+  let width = 435;
+  let height = 600;
   requestHandler.setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
   if (requestHandler.data.windowId) {
@@ -20,7 +21,7 @@ export const createPopup = (
       {
         url: chrome.runtime.getURL(popupHtml),
         type: 'popup',
-        height: 566,
+        height: height,
         width: width,
         left: w.width! - width + w.left!,
         top: w.top,
@@ -31,7 +32,7 @@ export const createPopup = (
         chrome.windows.update(
           win.id!,
           {
-            height: 566,
+            height: height,
             width: width,
             top: w.top,
             left: w.width! - width + w.left!,

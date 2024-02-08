@@ -1,4 +1,4 @@
-import TransferUtils from 'src/utils/transfer.utils';
+import TransferUtils from '@hiveapp/utils/transfer.utils';
 
 describe('transfer.utils tests:\n', () => {
   afterEach(() => {

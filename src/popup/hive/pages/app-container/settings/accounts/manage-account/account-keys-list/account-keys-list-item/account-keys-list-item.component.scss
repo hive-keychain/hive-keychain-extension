@@ -1,0 +1,58 @@
+.account-keys-list-item {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid var(--card-border);
+  background: var(--card-background);
+  .top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .key-name-container {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      .key-name {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+      }
+    }
+
+    .remove-button {
+      cursor: pointer;
+    }
+  }
+
+  .keys-panel-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+
+    .key-field {
+      @include poppins400(12px);
+      cursor: pointer;
+      color: var(--main-font-color);
+      &.wrong-key {
+        color: $red;
+      }
+    }
+
+    .tool-tip-custom {
+      margin-top: -40px !important;
+    }
+
+    .using-authorized-account {
+      cursor: pointer;
+      @include poppins400(12px);
+      color: var(--main-font-color);
+    }
+  }
+
+  .add-key-icon {
+    text-align: center;
+    cursor: pointer;
+  }
+}

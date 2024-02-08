@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './collapsible-item.scss';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
   title: string;
@@ -12,11 +13,18 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <>
-      <h3
-        dangerouslySetInnerHTML={{ __html: chrome.i18n.getMessage(title) }}
+      <div
+        className="collapsible-title"
         onClick={() => {
           setCollapsed(!collapsed);
-        }}></h3>
+        }}>
+        <div
+          className="label"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(title),
+          }}></div>
+        <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
+      </div>
       <div className={collapsed ? 'hide' : ''}>
         {pre ? (
           <div className="operation_item_content">

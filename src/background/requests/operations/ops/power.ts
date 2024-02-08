@@ -8,11 +8,11 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import Logger from 'src/utils/logger.utils';
-import { PowerUtils } from 'src/utils/power.utils';
 
 export const broadcastPowerUp = async (
   requestHandler: RequestsHandler,

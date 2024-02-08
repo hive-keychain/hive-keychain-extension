@@ -1,0 +1,22 @@
+.transfer-funds-page {
+  @include pageLayoutRowGap;
+  flex: 1;
+  overflow: hidden;
+
+  .form-container {
+    .recurrent-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 4px;
+    }
+
+    .value-panel {
+      display: flex;
+      column-gap: 16px;
+      align-items: baseline;
+      .value-input-panel {
+        width: 100%;
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { GovernanceUtils } from '@hiveapp/utils/governance.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import AccountUtils from 'src/utils/account.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('governance utils test', () => {

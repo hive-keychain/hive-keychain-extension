@@ -1,4 +1,4 @@
-import { isPasswordValid } from 'src/utils/password.utils';
+import { isPasswordValid } from '@hiveapp/utils/password.utils';
 
 describe('password.utils tests;\n', () => {
   test('Checking a password with a length<8 must return false', () => {

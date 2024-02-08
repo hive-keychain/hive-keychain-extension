@@ -1,0 +1,66 @@
+.add-key-page {
+  @include pageLayoutRowGap;
+  padding: 0px 24px;
+  padding-bottom: 24px;
+  .caption {
+    @include caption;
+  }
+
+  .add-using-ledger {
+    margin-top: 32px;
+    @include caption;
+    font-size: 16px;
+    text-decoration: underline;
+    cursor: pointer;
+    &:hover {
+      color: $red-dark;
+    }
+  }
+
+  .available-auths {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .caption {
+      @include caption();
+    }
+    .auths {
+      @include poppins500(14px);
+      color: var(--main-font-color);
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      .auth {
+        @include small-card;
+
+        .item-account {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          height: 100%;
+          padding-left: 8px;
+          cursor: pointer;
+          flex: 1;
+
+          .account-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+          }
+          .account-name {
+            padding-left: 8px;
+            padding-right: 8px;
+            color: var(--main-font-color);
+          }
+        }
+
+        &:hover {
+          background: $red;
+          .account-name {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

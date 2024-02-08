@@ -13,9 +13,9 @@ import {
   TokenTransaction,
 } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
-import { WalletHistoryFilter } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
+import { WalletHistoryFilter } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
 
 export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;

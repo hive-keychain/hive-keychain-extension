@@ -1,6 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { convert } from '@background/requests/operations/ops/convert';
 import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -12,7 +13,6 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('convert tests:\n', () => {
   const requestHandler = new RequestsHandler();

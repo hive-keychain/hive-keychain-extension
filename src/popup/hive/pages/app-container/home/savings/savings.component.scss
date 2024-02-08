@@ -1,0 +1,21 @@
+.savings-page {
+  @include pageLayoutRowGap;
+
+  .text {
+    @include form-container-text;
+  }
+
+  .resources {
+    @include resources-panel;
+  }
+
+  .pending-savings-panel {
+    @include pending-panel;
+  }
+
+  .amount-panel {
+    display: flex;
+    column-gap: 16px;
+    align-items: baseline;
+  }
+}

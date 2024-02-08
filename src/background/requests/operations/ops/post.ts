@@ -2,7 +2,7 @@ import { createMessage } from '@background/requests/operations/operations.utils'
 import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
-import { BloggingUtils } from 'src/utils/blogging.utils';
+import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 import Logger from 'src/utils/logger.utils';
 
 // TODO : when compatible

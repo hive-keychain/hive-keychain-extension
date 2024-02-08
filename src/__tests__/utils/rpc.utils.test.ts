@@ -1,9 +1,9 @@
+import RpcUtils from '@hiveapp/utils/rpc.utils';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import axios from 'axios';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 
 describe('rpc.utils tests:\n', () => {
   afterEach(() => {

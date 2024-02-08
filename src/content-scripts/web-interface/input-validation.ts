@@ -294,6 +294,16 @@ const convert = Joi.object({
   rpc,
 });
 
+const swap = Joi.object({
+  username: Joi.string().allow(null),
+  amount: Joi.number().required(),
+  startToken: Joi.string().required(),
+  endToken: Joi.string().required(),
+  slippage: Joi.number().required(),
+  rpc,
+  steps: Joi.array(),
+});
+
 const recurrentTransfer = Joi.object({
   username,
   to: username,
@@ -311,7 +321,12 @@ const recurrentTransfer = Joi.object({
   rpc,
 });
 
+const encodeMultisig = Joi.object({
+  username,
+});
+
 const schemas = {
+  encodeMultisig,
   decode,
   encode,
   encodeWithKeys,
@@ -340,6 +355,7 @@ const schemas = {
   addAccount,
   convert,
   recurrentTransfer,
+  swap,
 };
 
 export const commonRequestParams = {

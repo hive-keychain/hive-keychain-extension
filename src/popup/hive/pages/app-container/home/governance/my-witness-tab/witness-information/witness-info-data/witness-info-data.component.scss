@@ -1,0 +1,28 @@
+.witness-info-data {
+  display: flex;
+  flex-direction: column;
+  @include small-card();
+  margin: unset;
+  align-items: flex-start;
+
+  .label {
+    color: var(--main-font-color);
+    @include poppins600(14px);
+  }
+
+  .value {
+    @include poppins500(12px);
+    color: var(--main-font-color);
+    &.clickable {
+      display: flex;
+      flex-direction: row;
+      row-gap: 4px;
+      align-items: center;
+      cursor: pointer;
+      padding-bottom: 0px !important;
+    }
+    .icon-component {
+      @include icon-size(13px);
+    }
+  }
+}

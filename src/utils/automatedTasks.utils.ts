@@ -2,7 +2,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getClaims = async (username: string) => {
