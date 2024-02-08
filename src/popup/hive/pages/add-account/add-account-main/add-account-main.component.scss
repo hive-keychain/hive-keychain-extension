@@ -1,0 +1,15 @@
+.add-account-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+  .caption {
+    @include caption();
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    padding: 0 24px;
+  }
+}

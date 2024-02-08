@@ -1,0 +1,22 @@
+.witness-information-parameters {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  .info-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    column-gap: 16px;
+    row-gap: 16px;
+  }
+
+  .label-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .smaller-text {
+    @include poppins500(12px);
+    color: var(--main-font-color);
+  }
+}

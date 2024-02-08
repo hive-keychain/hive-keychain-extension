@@ -1,0 +1,37 @@
+.edit-my-witness-component {
+  flex: 1;
+  padding: 0px 24px;
+  font-size: 16px;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  .field {
+    display: flex;
+    align-items: flex-end;
+    column-gap: 16px;
+  }
+
+  .label-title-container {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  .as-fake-input {
+    @include fake-input;
+  }
+
+  .label-title {
+    font-weight: bold;
+    padding-top: 8px;
+  }
+
+  .bottom-panel {
+    margin-top: 16px;
+    display: flex;
+    column-gap: 16px;
+  }
+}

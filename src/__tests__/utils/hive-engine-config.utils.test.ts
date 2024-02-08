@@ -1,10 +1,10 @@
+import { HiveEngineConfigUtils } from '@hiveapp/utils/hive-engine-config.utils';
 import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
   HiveEngineConfig,
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('hive-engine-config.utils.ts tests:/n', () => {

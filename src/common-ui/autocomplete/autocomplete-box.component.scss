@@ -1,24 +1,29 @@
-@import '/src/popup/variable.scss';
-
+@import './autocomplete-item/autocomplete-item.component.scss';
 $autoCompleteItemHeight: 30px;
 .autocomplete-panel {
   position: absolute;
+  top: 46px;
   width: 100%;
   z-index: 2;
   font-size: $input-font-size;
-  background-color: $black;
-  color: white;
+  background-color: var(--autocomplete-background);
+  border: 1px solid var(--input-border);
+  border-radius: 24px;
+  color: var(--main-font-color);
   box-sizing: border-box;
-  max-height: $autoCompleteItemHeight * 5;
+  min-height: $autoCompleteItemHeight * 2;
+  max-height: $autoCompleteItemHeight * 8;
   overflow: auto;
 
+  &:empty {
+    display: none;
+  }
+
   .category {
+    margin-left: 20px;
     padding-top: 8px;
     .title {
-      font-weight: bold;
-      margin-left: 10px;
-      font-size: 18px;
-      font-style: italic;
+      @include poppins600(16px);
     }
   }
 }

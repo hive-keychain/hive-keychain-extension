@@ -1,22 +1,30 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import './menu.component.scss';
+import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
+import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
+import { RootState } from 'src/popup/hive/store';
 
 interface MenuProps {
   title: string;
   isBackButtonEnable: boolean;
+  isCloseButtonDisabled?: boolean;
   menuItems: MenuItem[];
+  rightAction?: {
+    icon: SVGIcons;
+    callback: () => void;
+    className: string;
+  };
 }
 
 const Menu = ({
   title,
   isBackButtonEnable,
+  isCloseButtonDisabled,
   menuItems,
+  rightAction,
   navigateTo,
   setTitleContainerProperties,
 }: PropsType) => {
@@ -24,8 +32,10 @@ const Menu = ({
     setTitleContainerProperties({
       title: title,
       isBackButtonEnabled: isBackButtonEnable,
+      isCloseButtonDisabled: isCloseButtonDisabled,
+      rightAction: rightAction,
     });
-  });
+  }, [rightAction]);
 
   const handleMenuItemClick = (menuItem: MenuItem) => {
     if (menuItem.nextScreen) {
@@ -39,25 +49,12 @@ const Menu = ({
     <div className="menu-page">
       <div className="menu">
         {menuItems.map((menuItem, index) => (
-          <div
-            data-testid={'menu-settings-button-' + menuItem.icon}
+          <MenuItemComponent
+            menuItem={menuItem}
             key={index}
-            className="menu-item"
-            onClick={() => handleMenuItemClick(menuItem)}>
-            {menuItem.importedIcon && (
-              <img className="icon" src={`/assets/images/${menuItem.icon}`} />
-            )}
-            {!menuItem.importedIcon && (
-              <Icon
-                name={menuItem.icon!}
-                type={IconType.OUTLINED}
-                additionalClassName="icon"></Icon>
-            )}
-
-            <div className="menu-label">
-              {chrome.i18n.getMessage(menuItem.label)}
-            </div>
-          </div>
+            handleMenuItemClick={handleMenuItemClick}
+            isLast={menuItems.length - 1 === index}
+          />
         ))}
       </div>
     </div>

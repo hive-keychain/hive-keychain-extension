@@ -1,0 +1,22 @@
+.pending-savings-withdrawal-page {
+  @include pageLayoutRowGap;
+  row-gap: 32px;
+  overflow: hidden;
+  flex: 1;
+
+  .list-panel {
+    @include form-panel;
+    .pending-disclaimer {
+      @include form-container-text;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+    }
+    .pending-savings-withdraw-row {
+      margin: unset;
+    }
+  }
+}

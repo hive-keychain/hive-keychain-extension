@@ -1,0 +1,17 @@
+.governance-renewal {
+  .list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    @include small-card-no-padding;
+    padding: 16px;
+  }
+
+  .read-more-link {
+    @include link();
+  }
+
+  &.force-hide {
+    display: none;
+  }
+}

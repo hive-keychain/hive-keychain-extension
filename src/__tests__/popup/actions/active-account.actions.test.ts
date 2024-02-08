@@ -1,3 +1,4 @@
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { sleep } from '@hiveio/dhive/lib/utils';
@@ -10,8 +11,7 @@ import {
   initialStateNoKeys,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import * as activeAccountActions from 'src/popup/actions/active-account.actions';
-import AccountUtils from 'src/utils/account.utils';
+import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 
 describe('active-account.actions tests:\n', () => {
   afterEach(() => {

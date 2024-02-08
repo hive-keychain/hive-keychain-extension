@@ -1,5 +1,3 @@
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -10,6 +8,8 @@ import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-test
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('authorized-operations.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -19,7 +19,7 @@ describe('authorized-operations.component tests:\n', () => {
   describe('No operations cases:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
@@ -48,7 +48,7 @@ describe('authorized-operations.component tests:\n', () => {
   describe('Having operations cases:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

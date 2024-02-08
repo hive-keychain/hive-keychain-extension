@@ -1,0 +1,75 @@
+.splashscreen {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  row-gap: 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--background-color);
+  z-index: 99;
+
+  .logo {
+    z-index: 2;
+  }
+
+  .overlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    background-color: var(--background-color);
+
+    & > div {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      background-image: var(--background);
+      background-repeat: no-repeat;
+      // opacity: 0.4;
+      &.top {
+        background-position-y: -44%;
+      }
+      &.bottom {
+        background-position-y: 135%;
+      }
+    }
+  }
+
+  .caption {
+    font-size: 32px;
+    color: var(--splashscreen-text-color);
+  }
+  .loading-animation-container {
+    display: flex;
+    margin-top: -20px;
+    width: 140px;
+    height: auto;
+    justify-content: space-around;
+    .first,
+    .second,
+    .third {
+      border-radius: 50%;
+      width: 1em;
+      height: 1em;
+      transform-origin: 50% 100%;
+      animation: bounce 2s linear infinite;
+    }
+
+    .ball {
+      display: flex;
+      margin: 1.5em;
+      width: 1em;
+      height: 1em;
+      background: var(--splashscreen-text-color);
+      &.second {
+        animation-delay: 0.1s;
+      }
+      &.third {
+        animation-delay: 0.2s;
+      }
+    }
+  }
+}

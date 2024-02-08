@@ -1,7 +1,7 @@
 import { KeychainApi } from '@api/keychain';
-import * as phishinActions from '@popup/actions/phishing.actions';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import * as phishinActions from 'src/popup/hive/actions/phishing.actions';
 
 describe('phishing.actions tests:\n', () => {
   afterEach(() => {

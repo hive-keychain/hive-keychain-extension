@@ -1,0 +1,20 @@
+.tokens-history {
+  @include pageLayoutRowGap;
+  overflow: hidden;
+
+  .custom-input {
+    padding: 0px 16px;
+    box-sizing: border-box;
+  }
+
+  .item-list {
+    overflow: auto;
+    @include form-panel;
+    row-gap: 8px;
+    max-height: 476px;
+  }
+
+  .empty-history-panel {
+    @include no-data-panel();
+  }
+}

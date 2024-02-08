@@ -1,24 +1,24 @@
 html {
   height: 100%;
+  height: 600px;
+  width: 435px;
 }
 
 body {
   margin: 0px;
   height: 100%;
+  height: 600px;
+  width: 435px;
 }
 #root {
   display: block;
   height: 100%;
+  height: 600px;
+  width: 435px;
 }
 
 .predialog {
-  font-family: Futura !important;
   height: 100%;
-  background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
-      padding-box,
-    linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
-      padding-box !important;
-  color: white;
   padding: 32px;
   box-sizing: border-box;
   display: flex;

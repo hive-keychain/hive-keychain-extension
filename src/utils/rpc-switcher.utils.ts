@@ -1,13 +1,13 @@
 import { Rpc } from '@interfaces/rpc.interface';
-import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
-} from '@popup/actions/rpc-switcher';
-import { store } from '@popup/store';
+} from '@popup/hive/actions/rpc-switcher';
+import { store } from '@popup/hive/store';
+import RpcUtils from '@popup/hive/utils/rpc.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 
 export const useWorkingRPC = async (activeRpc?: Rpc) => {
   const switchAuto = await LocalStorageUtils.getValueFromLocalStorage(

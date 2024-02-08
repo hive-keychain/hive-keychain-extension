@@ -1,0 +1,18 @@
+.home-page {
+  @include background-top;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  .react-dropdown-select-dropdown-handle {
+    margin-left: -10px !important;
+  }
+  .home-page-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    flex: 1;
+    overflow-y: auto;
+  }
+}

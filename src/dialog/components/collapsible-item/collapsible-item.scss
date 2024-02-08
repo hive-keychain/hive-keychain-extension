@@ -5,3 +5,11 @@ pre {
   white-space: -o-pre-wrap; /* Opera 7 */
   word-wrap: break-word;
 }
+
+.collapsible-title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-direction: row;
+  cursor: pointer;
+}

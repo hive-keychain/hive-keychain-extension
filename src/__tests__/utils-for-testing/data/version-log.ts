@@ -2,7 +2,7 @@ import {
   Feature,
   Features,
   WhatsNewContent,
-} from '@popup/pages/app-container/whats-new/whats-new.interface';
+} from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 
 const versionLog2_2 = {
   url: 'https://hive-keychain.com',

@@ -1,5 +1,3 @@
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
@@ -10,6 +8,8 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('keychainify.component tests:\n', () => {
   afterEach(() => {
@@ -19,7 +19,7 @@ describe('keychainify.component tests:\n', () => {
   });
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
-      <App />,
+      <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
       {
         app: {

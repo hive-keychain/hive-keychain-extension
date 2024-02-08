@@ -1,8 +1,11 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
-import AccountUtils from 'src/utils/account.utils';
-import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import CurrencyUtils, {
+  BaseCurrencies,
+} from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   amount: number;
@@ -27,12 +30,17 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
       currency,
       rpc.testnet,
     );
-    const currentBalance = (
-      (cur === BaseCurrencies.HIVE
-        ? account.balance
-        : account.hbd_balance) as string
-    ).split(' ')[0];
-    const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
+    const currentBalance = FormatUtils.formatCurrencyValue(
+      (
+        (cur === BaseCurrencies.HIVE
+          ? account.balance
+          : account.hbd_balance) as string
+      ).split(' ')[0],
+    );
+    const newBalance = FormatUtils.formatCurrencyValue(
+      parseFloat(currentBalance) - amount,
+      3,
+    );
     setBalance(`${currentBalance} ${currencyParsed}`);
     setNewBalance(`${newBalance} ${currencyParsed}`);
   };

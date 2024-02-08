@@ -1,0 +1,179 @@
+.select-account-section {
+  .select-account-select {
+    border: unset !important;
+    border: 1px solid var(--select-border-color) !important;
+    border-radius: 16px !important;
+    background: var(--select-account-background);
+    z-index: 5;
+
+    &:hover,
+    &:focus {
+      border: 1px solid var(--select-border-color) !important;
+      border-radius: 16px !important;
+      background: var(--select-account-background);
+    }
+
+    &.white {
+      background: var(--select-background-color);
+      &:hover,
+      &:focus {
+        background: var(--select-background-color);
+      }
+    }
+
+    //commons
+    .selected-account-name,
+    .account-name {
+      @include poppins500(14px);
+      user-select: none;
+      color: var(--select-font-color);
+    }
+    .user-picture {
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+    }
+
+    .react-dropdown-select-content {
+      .selected-account-panel {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        padding: 6px 6px;
+        box-sizing: border-box;
+        width: 100%;
+      }
+    }
+
+    .react-dropdown-select-dropdown-handle {
+      width: 24px !important;
+      margin-top: -2px;
+      vertical-align: middle;
+      margin-left: unset !important;
+      .custom-select-handle {
+        height: 10px;
+        width: 10px;
+      }
+    }
+
+    .react-dropdown-select-dropdown {
+      @include radius-bound-dropdown-scrollbar;
+      .custom-select-dropdown {
+        .option {
+          display: flex;
+          flex-direction: column;
+
+          .active-icon {
+            color: $red;
+          }
+
+          &:hover {
+            background-color: $red;
+            .account-name,
+            .active-icon {
+              color: white !important;
+            }
+          }
+        }
+      }
+      width: auto;
+      border: 1px solid var(--select-border-color);
+      top: 50px;
+      background-color: var(--select-dropdown-bg-color);
+      border-radius: 16px;
+      right: -1px;
+      left: unset !important;
+      .select-account-item {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+        padding: 10px 6px;
+        box-sizing: border-box;
+
+        .copy-username-button {
+          display: none;
+        }
+
+        .account-name {
+          width: 120px;
+        }
+        .icons-wrapper {
+          width: 50px;
+          display: flex;
+          justify-content: space-between;
+          .hovered-icons {
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+            flex-direction: row;
+          }
+          .active-icon,
+          .drag-icon,
+          .copy-icon {
+            height: 20px;
+            width: 20px;
+          }
+          .copy-icon {
+            margin-right: 7px;
+          }
+          .active-icon {
+            margin-left: 27px;
+          }
+        }
+      }
+    }
+  }
+
+  &.fullsize {
+    margin: 0px 20px;
+    height: 68px;
+    .select-account-select {
+      height: 68px;
+    }
+    .selected-account-name,
+    .account-name {
+      @include poppins500(15px);
+      flex: 1;
+    }
+    .active-icon {
+      margin-right: 10px;
+    }
+    .user-picture {
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+    }
+    .react-dropdown-select-dropdown {
+      top: 72px;
+      width: 100%;
+    }
+  }
+
+  &.closed {
+    .react-dropdown-select-dropdown {
+      visibility: hidden;
+    }
+  }
+
+  .overlay {
+    display: none;
+    @include overlay;
+    z-index: 4;
+
+    &.opened {
+      display: block;
+    }
+  }
+  &:has(.react-dropdown-select-dropdown) {
+    // .select-account-select {
+    //   z-index: 5;
+    // }
+    // .overlay {
+    //   display: block;
+    // }
+  }
+}
+
+.css-wmy1p7-ReactDropdownSelect {
+  box-shadow: none !important;
+}

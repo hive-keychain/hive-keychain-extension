@@ -1,0 +1,121 @@
+.witness-tab {
+  @include pageLayoutRowGap;
+  row-gap: 8px;
+  height: 100%;
+  .remaining-votes,
+  .using-proxy,
+  .link-to-arcange {
+    @include caption();
+    cursor: pointer;
+  }
+
+  .rotating-logo {
+    align-self: center;
+  }
+
+  .ranking-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    row-gap: 16px;
+    .ranking-filter {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      margin: 0px 24px;
+
+      .switches-panel {
+        display: flex;
+        column-gap: 8px;
+        margin: 0px 18px;
+      }
+    }
+
+    .ranking {
+      display: flex;
+      height: 100%;
+      overflow: auto;
+      flex-direction: column;
+      row-gap: 8px;
+
+      .error-witness {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        row-gap: 16px;
+        padding: 32px 24px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+
+      .ranking-item {
+        @include small-card;
+        color: var(--main-font-color);
+        .rank {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .active-rank {
+            font-size: 16px;
+            width: 30px;
+          }
+          .including-inactive {
+            width: 30px;
+            font-size: 12px;
+          }
+        }
+
+        .rank,
+        .action {
+          text-align: center;
+        }
+        .not-voted {
+          --upvote-downvote-color: #969696;
+        }
+        .voted {
+          --upvote-downvote-color: #{$red};
+        }
+        .name {
+          display: flex;
+          align-items: center;
+          column-gap: 4px;
+          flex: 1;
+
+          .link-to-witness-page {
+            cursor: pointer;
+            height: 15px;
+            width: 15px;
+          }
+
+          &.not-active {
+            .witness-name {
+              text-decoration: line-through;
+            }
+          }
+        }
+
+        .tooltip-container {
+          height: 20px;
+        }
+
+        .action {
+          height: 20px;
+          width: 20px;
+          justify-self: center;
+          cursor: pointer;
+
+          &.using-proxy {
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+
+  .error-witness {
+    @include no-data-panel();
+  }
+}

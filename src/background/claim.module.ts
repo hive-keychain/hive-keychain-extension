@@ -6,14 +6,14 @@ import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.inte
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
-import AccountUtils from 'src/utils/account.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
+import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
-import { RewardsUtils } from 'src/utils/rewards.utils';
-import { SavingsUtils } from 'src/utils/savings.utils';
 
 const start = async () => {
   if (!!process.env.STOP_AUTOLOCK) return;

@@ -8,9 +8,9 @@ import {
 } from '@interfaces/keychain.interface';
 import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import { CustomJsonUtils } from 'src/utils/custom-json.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastCustomJson = async (

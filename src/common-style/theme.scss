@@ -1,0 +1,197 @@
+$dark: (
+  --background: url('assets/images/background/dark.svg'),
+  --main-font-color: white,
+  --main-font-color-inverted: $dark-blue,
+  --background-color: $dark-background,
+  --splashscreen-text-color: white,
+  --separator-color: $blue-border,
+  // Home page
+  --home-account-value-color: white,
+  // Resource section
+  --resource-item-icon-color: $dark-blue,
+  --resource-item-icon-bg-color: #21283814,
+  --resource-item-bg-color: white,
+  // Card
+  --card-background: $darker-blue,
+  --card-border: $blue-border,
+  // Buy page
+  --buy-card-background: $dark-blue,
+  --buy-card-border: $blue-border,
+  --buy-card-hovered-shadow: $black-shadow,
+  --buy-logo-font-color: white,
+  //wallet
+  --wallet-card-background: $darker-blue,
+  --wallet-card-border: $blue-border,
+  --wallet-card-darker-border: $blue-border,
+  --wallet-card-opened-border: $blue-border,
+  --wallet-icon-border-color: $red,
+  --wallet-icon-color: $red,
+  --wallet-icon-secondary-color: $red,
+  --wallet-item-icon-background: #e313371a,
+  --wallet-history-icon-color: $red,
+  //top bar
+  --keychain-logo-color: white,
+  --topbar-button-color: white,
+  // Select
+  --select-font-color: white,
+  --select-icon-color: white,
+  --select-border-color: $blue-border,
+  --select-dropdown-bg-color: $darker-blue,
+  --select-background-color: $darker-blue,
+  // Menu
+  --menu-background: $darker-blue,
+  --menu-border-color: $blue-border,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $blue-border,
+  --network-icon-bg-color: $darker-blue,
+  // Bottom Bar
+  --bottom-bar-border: $blue-border,
+  --bottom-bar-icon-color: $red,
+  --bottom-bar-background: $darker-blue,
+  // Inputs
+  --input-background: $darker-blue,
+  --input-border: $blue-border,
+  --checkbox-color: white,
+  --checkbox-background: transparent,
+  --autocomplete-background: $darker-blue,
+  --placeholder-color: rgba(153, 158, 166, 0.5),
+  // Buttons
+  --button-background-color: $red,
+  --button-alternative-background-color: $darker-blue,
+  --button-alternative-border-color: $blue-border,
+  --button-alternative-shadow-color: $black-shadow,
+  --popup-alternative-button-color: $darker-blue,
+  --popup-alternative-button-border-color: $blue-border,
+
+  // Favorite accounts
+  --favorite-account-btn-border: $blue-border,
+  --favorite-account-btn-icon: white,
+  --favorite-account-save-color: white,
+  // Forms
+  --form-panel-background: $darker-blue,
+  // Available card
+  --available-card-label-color: white,
+  // Governance
+  --proposal-detail-icon: white,
+  // QRCode
+  --qrcode-border-color: white,
+  --qrcode-foreground-color: white,
+  --qrcode-background-color: $dark-blue,
+  //Swaps
+  --swap-history-button-icon-color: $red,
+  --swap-history-button-background: $darker-blue,
+  --swap-history-button-border-color: $blue-border,
+  --swap-item-icon-background: #e313371a,
+  // Create account
+  --create-account-price-color: lightgrey,
+  // What's new
+  --carousel-dot-color: white,
+  // Tooltip
+  --tooltip-text-color: $dark-blue,
+  --tooltip-background-color: #fffffff2,
+  // Carousel
+  --carousel-arrow-color: white,
+  // Select Account
+  --select-account-background: $dark-background,
+);
+$light: (
+  --background: url('assets/images/background/light.svg'),
+  --main-font-color: $dark-blue,
+  --main-font-color-inverted: white,
+  --background-color: $light-background,
+  --splashscreen-text-color: $dark-blue,
+  --separator-color: $extra-light-grey,
+  // Home page
+  --home-account-value-color: $darker-grey,
+  // Resource section
+  --resource-item-icon-color: white,
+  --resource-item-icon-bg-color: #ffffff2b,
+  --resource-item-bg-color: $dark-blue,
+  // Card
+  --card-background: white,
+  --card-border: $dark-grey-border,
+  // Buy page
+  --buy-card-background: white,
+  --buy-card-border: $dark-grey-border,
+  --buy-card-hovered-shadow: $white-shadow,
+  --buy-logo-font-color: black,
+  // wallet
+  --wallet-card-background: white,
+  --wallet-card-border: $light-grey-border,
+  --wallet-card-darker-border: $darker-grey-border,
+  --wallet-card-opened-border: $darker-grey-border,
+  --wallet-icon-border-color: $darker-grey-border,
+  --wallet-icon-color: $red,
+  --wallet-icon-secondary-color: $red,
+  --wallet-item-icon-background: #e313371a,
+  --wallet-history-icon-color: $red,
+  // Top
+  --keychain-logo-color: $blue-border,
+  --topbar-button-color: $darker-blue,
+  // Select account section
+  --select-font-color: $darker-grey,
+  --select-icon-color: $darker-grey,
+  --select-border-color: white,
+  --select-dropdown-bg-color: white,
+  --select-background-color: white,
+  // Menu
+  --menu-background: white,
+  --menu-border-color: #f3f3f3,
+  --menu-icon-color: $red,
+  --menu-icon-border-color: $light-grey-border,
+  --network-icon-bg-color: white,
+  // Bottom Bar
+  --bottom-bar-border: $lighter-grey-border,
+  --bottom-bar-icon-color: $red,
+  --bottom-bar-background: white,
+  // Inputs
+  --input-background: white,
+  --input-border: $lighter-grey-border,
+  --checkbox-color: $darker-blue,
+  --checkbox-background: #e6eef6,
+  --autocomplete-background: #f7f8f9,
+  --placeholder-color: rgba(92, 100, 113, 0.5),
+  // Buttons
+  --button-background-color: $red,
+  --button-alternative-background-color: white,
+  --button-alternative-border-color: white,
+  --button-alternative-shadow-color: $white-shadow,
+  --popup-alternative-button-color: $alternative-white,
+  --popup-alternative-button-border-color: $lighter-blue,
+  // Favorite accounts
+  --favorite-account-btn-border: $light-grey-border,
+  --favorite-account-btn-icon: $dark-blue,
+  --favorite-account-save-color: $dark-blue,
+  // Forms
+  --form-panel-background: white,
+  // Available card
+  --available-card-label-color: $darker-blue,
+  // Governance
+  --proposal-detail-icon: $dark-blue,
+  //QRCode
+  --qrcode-border-color: $dark-blue,
+  --qrcode-foreground-color: $dark-blue,
+  --qrcode-background-color: white,
+  //Swaps
+  --swap-history-button-icon-color: $red,
+  --swap-history-button-border-color: $light-grey-border,
+  --swap-history-button-background: white,
+  --swap-item-icon-background: #e313371a,
+  // Create account
+  --create-account-price-color: $dark-blue,
+  // What's new
+  --carousel-dot-color: lightgrey,
+  // Tooltip
+  --tooltip-text-color: white,
+  --tooltip-background-color: $dark-blue,
+  // Carousel
+  --carousel-arrow-color: $dark-blue,
+  // Select Account
+  --select-account-background: $light-background,
+);
+
+@mixin spread-map($map: ()) {
+  @each $key, $value in $map {
+    #{$key}: $value;
+  }
+}

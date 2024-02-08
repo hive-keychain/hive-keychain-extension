@@ -1,38 +1,43 @@
-@import '/src/popup/variable.scss';
-
 .confirmation-page {
   @include pageLayoutRowGap;
   .confirmation-top {
     display: flex;
     flex-direction: column;
     row-gap: 16px;
+    padding: 0px 24px;
     .introduction {
-      font-size: 18px;
-      padding: 0px 24px;
+      padding: 0px 32px;
+      @include caption;
     }
 
     .warning-message {
-      font-size: 18px;
+      @include caption;
       color: $red;
-      padding: 0px 24px;
     }
 
     .fields {
       display: flex;
       flex-direction: column;
       row-gap: 16px;
-      background: $grey-transparent;
       max-height: 324px;
       overflow: auto;
       padding: 16px 24px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+
       .field {
+        display: flex;
+        justify-content: space-between;
         .label {
-          font-size: 18px;
-          font-weight: bold;
+          @include poppins500(14px);
         }
         .value {
-          font-size: 16px;
-
+          max-width: 70%;
+          text-align: right;
+          user-select: text;
+          @include poppins400(14px);
           &.xs-font {
             font-size: 11px;
           }
