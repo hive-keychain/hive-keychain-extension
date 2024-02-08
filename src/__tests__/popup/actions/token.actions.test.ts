@@ -1,3 +1,5 @@
+import { HiveEngineUtils } from '@hiveapp/utils/hive-engine.utils';
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
@@ -7,10 +9,8 @@ import {
   initialEmptyStateStore,
   initialStateJustTokens,
 } from 'src/__tests__/utils-for-testing/initial-states';
-import * as tokenActions from 'src/popup/actions/token.actions';
-import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
+import * as tokenActions from 'src/popup/hive/actions/token.actions';
 import Logger from 'src/utils/logger.utils';
-import TokensUtils from 'src/utils/tokens.utils';
 
 describe('token.actions tests:\n', () => {
   afterEach(() => {

@@ -1,9 +1,9 @@
+import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { TokenMarket } from '@interfaces/tokens.interface';
 import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-market';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import TokensUtils from 'src/utils/tokens.utils';
 
 describe('tokens.utils tests:\n', () => {
   afterEach(() => {

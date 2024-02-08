@@ -1,0 +1,454 @@
+@mixin background {
+  background-image: var(--background);
+  background-repeat: no-repeat;
+}
+
+@mixin background-bottom {
+  @include background;
+  background-position-y: 135%;
+}
+
+@mixin background-top {
+  @include background;
+  background-position-y: 30%;
+}
+
+@mixin background-higher-top {
+  @include background;
+  background-position-y: 15%;
+}
+
+@mixin background-top-0-percent {
+  @include background;
+  background-position-y: 15%;
+}
+
+@mixin pageLayout {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+@mixin pageLayoutRowGap {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  height: 100%;
+}
+
+@mixin open-close-rotate {
+  &.open {
+    transform: rotate(-180deg);
+    transition: 0.3s ease-out;
+  }
+  &.closed {
+    transform: rotate(0deg);
+    transition: 0.3s ease-in;
+  }
+}
+
+@mixin link {
+  color: $red;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@mixin input-label {
+  display: flex;
+  column-gap: 8px;
+  color: var(--main-font-color);
+  margin-bottom: 4px;
+  padding-left: 6px;
+  align-items: baseline;
+  @include poppins600(14px);
+  .hint {
+    @include poppins300($input-font-size - 2px);
+  }
+}
+
+@mixin fake-input {
+  font-size: $input-font-size;
+  padding: 7px;
+  background: transparent;
+  border: var(--input-border) solid 1px !important;
+  color: var(--main-font-color);
+  cursor: not-allowed;
+  padding: 0px 8px;
+  flex: 1;
+  text-align: center;
+}
+
+@mixin caption() {
+  padding: 0px 30px;
+  @include poppins400($caption-font-size);
+  color: var(--main-font-color);
+}
+
+@mixin form-container-text {
+  padding: 0px 12px;
+  @include poppins400($caption-font-size);
+  color: var(--main-font-color);
+}
+
+@mixin fields-panel {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  flex: 1;
+}
+
+@mixin resources-panel {
+  display: flex;
+  column-gap: 6px;
+  margin: 20px 0px;
+  justify-content: center;
+  padding: 0px 24px;
+}
+
+@mixin available-card-panel {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+
+  .label {
+    @include poppins500(14px);
+    color: var(--available-card-label-color);
+    opacity: 0.7;
+  }
+  .value {
+    @include poppins700(18px);
+    color: var(--main-font-color);
+  }
+
+  padding: 6px 16px;
+
+  margin: 0px 16px;
+  align-items: flex-start;
+}
+
+@mixin icon-size($size) {
+  height: $size;
+  width: $size;
+}
+
+@mixin dmSans400($fontSize) {
+  font-family: DM Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
+}
+@mixin dmSans700($fontSize) {
+  font-family: DM Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
+}
+
+@mixin josefin500($fontSize) {
+  font-family: Josefin Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+@mixin josefin700($fontSize) {
+  font-family: Josefin Sans;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+@mixin poppins300($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 147%;
+}
+@mixin poppins400($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+@mixin poppins500($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 147%;
+}
+@mixin poppins600($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+@mixin poppins700($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 147%;
+}
+
+@mixin non-clickable {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@mixin form-panel {
+  overflow: auto;
+  background: var(--form-panel-background);
+  border: 1px solid var(--card-border);
+  border-radius: 40px 40px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  padding: 20px;
+  flex: 1;
+
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    flex: 1;
+  }
+}
+
+@mixin inter400($fontSize) {
+  text-align: center;
+  font-family: Inter;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14px; /* 116.667% */
+}
+
+@mixin small-card {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  @include poppins500(14px);
+  padding: 16px;
+  margin: 0px 16px;
+  display: flex;
+  align-items: center;
+}
+
+@mixin small-card-no-padding {
+  @include small-card();
+  padding: 0;
+}
+
+@mixin no-data-panel {
+  @include small-card();
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 8px;
+  .text {
+    color: var(--main-font-color);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .svg-icon {
+    @include icon-size(72px);
+    svg {
+      @include icon-size(72px);
+    }
+  }
+}
+
+@mixin pending-panel {
+  @include small-card();
+  color: var(--main-font-color);
+  cursor: pointer;
+}
+
+@mixin tab-style($nbTab) {
+  .react-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .react-tabs__tab-panel--selected {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+
+  .react-tabs__tab-list {
+    display: grid;
+    grid-template-columns: repeat($nbTab, 1fr);
+    margin: 0 0 16px !important;
+
+    .react-tabs__tab {
+      text-align: center;
+      font-size: 18px;
+      background: $black-transparent;
+      color: white;
+      user-select: none;
+    }
+
+    .react-tabs__tab--selected {
+      background: $red-dark;
+      border: unset;
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+@mixin flex-column-full-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+@mixin rotate-logo-mixin {
+  animation: rotate-stop 2s infinite linear;
+  transform: rotate();
+}
+
+@mixin dialogs-title-panel {
+  .title-panel {
+    display: flex;
+    align-items: center;
+    .svg-icon {
+      @include icon-size(50px);
+    }
+    .title {
+      font-size: 20px;
+      color: var(--main-font-color);
+      margin-left: 8px;
+    }
+  }
+}
+
+@mixin delegation-row {
+  @include small-card();
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-content: center;
+  padding: 6px;
+
+  .item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 16px;
+    width: 100%;
+    box-sizing: border-box;
+
+    .username {
+      @include poppins400(14px);
+      color: var(--main-font-color);
+      flex: 1;
+    }
+    .item-details {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      box-sizing: border-box;
+      .value {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+      }
+      .expand-collapse-icon {
+        @include open-close-rotate();
+        @include icon-size(18px);
+      }
+      .edit-panel {
+        display: flex;
+        align-items: center;
+        column-gap: 4px;
+
+        .edit-label {
+          border: unset;
+          border-bottom: 1px solid var(--card-border);
+          min-width: unset;
+          outline: none !important;
+          width: 100px;
+          margin-right: 8px;
+          background: transparent;
+          color: var(--main-font-color);
+          &:focus {
+            border: unset;
+            border-bottom: 1px solid var(--card-border);
+          }
+        }
+      }
+    }
+  }
+
+  .expanded-panel {
+    display: flex;
+    flex-direction: column;
+
+    .expandable-panel-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 20px;
+      padding: 12px 42px;
+
+      .delegation-item-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8px;
+        border-radius: 13px;
+        border: 1px solid var(--card-border);
+        padding: 8px 24px;
+        cursor: pointer;
+        .label {
+          @include josefin500(14px);
+          color: var(--main-font-color);
+        }
+        &:hover {
+          box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
+        }
+        .svg-icon {
+          @include icon-size(30px);
+        }
+      }
+    }
+  }
+}
+
+@mixin overlay {
+  height: 100%;
+  width: 100%;
+  opacity: 0.8;
+  background: $dark-blue;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+@mixin radius-bound-dropdown-scrollbar {
+  overflow: hidden;
+  .custom-select-dropdown {
+    &::-webkit-scrollbar {
+      width: 3px;
+    }
+    overflow-y: scroll;
+  }
+}

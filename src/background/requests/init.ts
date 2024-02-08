@@ -10,8 +10,9 @@ import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
-import EncryptUtils from 'src/utils/encrypt.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
@@ -19,7 +20,6 @@ import {
   anonymous_requests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 import * as Logic from './logic';
 
 export default async (

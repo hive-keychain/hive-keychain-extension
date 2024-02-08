@@ -1,5 +1,4 @@
 import React from 'react';
-import './autocomplete-item.component.scss';
 
 interface AutocompleteProps {
   value: string;

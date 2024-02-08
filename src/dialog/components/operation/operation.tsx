@@ -4,13 +4,10 @@ import React, { useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import CheckboxComponent, {
-  LabelAlignment,
-} from 'src/common-ui/checkbox/checkbox.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
-import './operation.scss';
 
 type Props = {
   title: string;
@@ -61,58 +58,78 @@ const Operation = ({
 
   return (
     <div className="operation">
-      <div>
-        <DialogHeader title={title} />
-        {header && (
-          <div
-            className={`operation_header ${redHeader ? 'operation-red' : ''}`}>
-            {header}
-          </div>
-        )}
-        {accounts && (
-          <RequestUsername
-            accounts={accounts}
-            username={username!}
-            setUsername={setUsername!}
-          />
-        )}
-      </div>
-
-      <div className="operation_body">{...children}</div>
-      <div className={`operation_footer ${canWhitelist ? '' : 'no-whitelist'}`}>
-        <div className={`whitelist_operation`}>
-          {canWhitelist && (
-            <CheckboxComponent
-              onChange={setKeep}
-              checked={keep}
-              skipTranslation
-              alignment={LabelAlignment.CENTER}
-              title={
-                checkboxLabelOverride ||
-                chrome.i18n.getMessage('dialog_no_prompt', [
-                  data.type,
-                  data.username!,
-                  domain,
-                ])
-              }
+      <div
+        style={{
+          height: canWhitelist ? '70%' : '85%',
+          overflow: 'scroll',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+        <div>
+          <DialogHeader title={title} />
+          {header && (
+            <div
+              className={`operation-header ${
+                redHeader ? 'operation-red' : ''
+              }`}>
+              {header}
+            </div>
+          )}
+          {accounts && (
+            <RequestUsername
+              accounts={accounts}
+              username={username!}
+              setUsername={setUsername!}
             />
           )}
         </div>
-        <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            flex: 1,
+            flexDirection: 'column',
+          }}>
+          <div className="operation-body">
+            <div className="fields">{...children}</div>
+          </div>
+        </div>
+      </div>
+      {canWhitelist && (
+        <CheckboxPanelComponent
+          onChange={setKeep}
+          checked={keep}
+          skipTranslation
+          title={
+            checkboxLabelOverride ||
+            chrome.i18n.getMessage('dialog_no_prompt', [
+              data.type,
+              data.username!,
+              domain,
+            ])
+          }
+        />
+      )}
+
+      {!loading && (
+        <div className={`operation-buttons `}>
           <ButtonComponent
             label="dialog_cancel"
-            type={ButtonType.STROKED}
+            type={ButtonType.ALTERNATIVE}
             onClick={() => {
               window.close();
             }}
+            height="small"
           />
           <ButtonComponent
-            type={ButtonType.RAISED}
+            type={ButtonType.IMPORTANT}
             label="dialog_confirm"
             onClick={onConfirm || genericOnConfirm}
+            height="small"
           />
         </div>
-      </div>
+      )}
+
       <LoadingComponent hide={!loading} />
     </div>
   );

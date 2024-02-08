@@ -1,0 +1,36 @@
+.account-authorities-list {
+  @include pageLayoutRowGap;
+  padding-top: 12px;
+
+  .authorities-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+
+    .key-field {
+      font-size: 12px;
+      cursor: pointer;
+
+      &.hidden {
+        font-size: 16px;
+      }
+    }
+
+    .using-authorized-account {
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .no-authorities-found {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      text-align: center;
+      margin-top: 16px;
+      color: var(--main-font-color);
+    }
+  }
+
+  scroll-behavior: smooth;
+}

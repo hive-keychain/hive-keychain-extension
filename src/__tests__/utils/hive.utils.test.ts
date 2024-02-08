@@ -1,4 +1,8 @@
 import { KeychainApi } from '@api/keychain';
+import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
+import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
 import { AssertionError } from 'assert';
@@ -11,10 +15,6 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
-import { ConversionUtils } from 'src/utils/conversion.utils';
-import { DelegationUtils } from 'src/utils/delegation.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import HiveUtils from 'src/utils/hive.utils';
 
 describe('hive.utils tests:\n', () => {
   async function resetClient() {

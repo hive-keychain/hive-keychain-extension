@@ -1,0 +1,9 @@
+.currency-icon {
+  &.is-svg {
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

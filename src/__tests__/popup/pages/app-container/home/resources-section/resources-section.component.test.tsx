@@ -1,7 +1,6 @@
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { RC } from '@interfaces/active-account.interface';
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +11,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import HiveUtils from 'src/utils/hive.utils';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 describe('resources-section.component tests:\n', () => {
   afterEach(() => {
@@ -31,7 +31,7 @@ describe('resources-section.component tests:\n', () => {
   describe('existing data\n:', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
     });
@@ -86,7 +86,7 @@ describe('resources-section.component tests:\n', () => {
     } as RC;
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {

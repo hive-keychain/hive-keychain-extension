@@ -1,0 +1,61 @@
+.authorized-operations-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 16px;
+  padding: 0px 24px;
+  .introduction {
+    @include caption();
+  }
+
+  .no_pref {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 16px;
+    color: var(--main-font-color);
+  }
+
+  .select-account-section {
+    margin: unset;
+  }
+
+  .preferences {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    .operation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 20px;
+      box-sizing: border-box;
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        row-gap: 6px;
+        .website {
+          @include poppins400(13px);
+          color: var(--main-font-color);
+        }
+        .operation-name {
+          @include poppins400(13px);
+          color: $light-grey;
+          padding-left: 10px;
+        }
+      }
+      .operation-action {
+        display: none;
+      }
+
+      &:hover {
+        .operation-action {
+          display: block;
+        }
+      }
+    }
+  }
+}

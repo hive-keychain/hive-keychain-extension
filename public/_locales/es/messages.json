@@ -8,11 +8,27 @@
     "description": "Extension description, as shown in the store."
   },
   "popup_html_wrong_key": {
-    "message": "Clave incorrecta. Por favor usa $1",
+    "message": "Llave incorrecta. Por favor usa $1",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_active": {
+    "message": "Llave incorrecta. Use la llave activa",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_posting": {
+    "message": "Llave incorrecta. Use la llave de publicación",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_memo": {
+    "message": "Llave incorrecta. Use la llave memo",
     "description": "while using wrong private key"
   },
   "common_yes": {
     "message": "Sí",
+    "description": "Generic"
+  },
+  "common_and": {
+    "message": "y",
     "description": "Generic"
   },
   "common_no": {
@@ -71,8 +87,16 @@
     "message": "El monedero <strong>HIVE</strong> definitivo.<br/><br/>Administra los activos HIVE y conéctate a aplicaciones HIVE.<br/><br/>Simple. Ligero. Seguro.",
     "description": "Text on registration page"
   },
-  "popup_html_unlock": {
-    "message": "El monedero <strong>HIVE</strong> definitivo.<br/><br/>Administra los activos HIVE y conéctate a aplicaciones HIVE.<br/><br/>Simple. Ligero. Seguro.",
+  "popup_html_unlock1": {
+    "message": "La billetera definitiva de HIVE",
+    "description": "Text on unlock page"
+  },
+  "popup_html_unlock2": {
+    "message": "Gestiona los activos y conéctate a las aplicaciones de HIVE",
+    "description": "Text on unlock page"
+  },
+  "popup_html_unlock3": {
+    "message": "Simple. Ligero. Seguro.",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {
@@ -90,6 +114,10 @@
   "popup_html_password": {
     "message": "Contraseña",
     "description": "Placeholder in input for password"
+  },
+  "popup_html_new_label": {
+    "message": "Etiqueta Nueva",
+    "description": "Placeholder in input for new favorite label item"
   },
   "popup_html_signin": {
     "message": "Inicia sesión"
@@ -129,7 +157,15 @@
     "message": "Power Down"
   },
   "popup_html_delegate": {
-    "message": "Delegaciones"
+    "message": "Delegaciones de HP"
+  },
+  "popup_html_delegate_short": {
+    "message": "Deleg HP.",
+    "description": "Keep short, 10 chars max including space and ."
+  },
+  "popup_html_delegate_rc_short": {
+    "message": "Deleg RC.",
+    "description": "Keep short, 10 chars max including space and ."
   },
   "popup_html_estimation": {
     "message": "Valor aproximado de la cuenta",
@@ -144,7 +180,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Testigo",
+    "message": "Testigos",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -160,7 +196,7 @@
     "description": "Upon clicking on History"
   },
   "popup_html_setup_text": {
-    "message": "Introduce el nombre de tu cuenta Hive y la contraseña maestra o la clave privada o activa de esa cuenta a continuación. Tu contraseña maestra NO se guardará y sólo se utilizará para generar tus claves privadas.<br/><br/>Puedes añadir / eliminar cuentas o claves de Hive en cualquier momento. Si necesitas crear una nueva cuenta Hive, puedes hacerlo en <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
+    "message": "Introduce el nombre de tu cuenta Hive y la contraseña maestra o la llave privada o activa de esa cuenta a continuación. Tu contraseña maestra NO se guardará y solo se utilizará para generar tus llaves privadas.<br/><br/>Puedes añadir / eliminar cuentas o llaves de Hive en cualquier momento. Si necesitas crear una nueva cuenta de Hive, puedes hacerlo en <a href=\"https://signup.hive.io\" target=\"_blank\" >signup.hive.io</a>.",
     "description": "When adding new account"
   },
   "popup_html_setup": {
@@ -176,7 +212,7 @@
     "description": "placeholder for entering username"
   },
   "popup_html_import_keys": {
-    "message": "Importar Claves",
+    "message": "Importar llaves",
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
@@ -199,6 +235,58 @@
     "message": "Clave activa",
     "description": "When adding an account via master key"
   },
+  "popup_html_operation_button_save": {
+    "message": "Guardar",
+    "description": "When using operation button to save data"
+  },
+  "popup_html_authority_active": {
+    "message": "Autoridad Activa",
+    "description": "on manage authorities list item"
+  },
+  "popup_html_master": {
+    "message": "Llave Maestra",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_authority_posting": {
+    "message": "Autoridad de Posteo",
+    "description": "on manage authorities list item"
+  },
+  "popup_html_owner": {
+    "message": "Llave Propietaria",
+    "description": "When using owner key"
+  },
+  "popup_html_role": {
+    "message": "Rol",
+    "description": "placeholder for entering role"
+  },
+  "popup_html_manage_account_authority_weight_label": {
+    "message": "Peso",
+    "description": "On Accounts > Manage Authorities"
+  },
+  "popup_html_manage_accounts_authorities_text": {
+    "message": "Las cuentas con autorización otorgadas pueden realizar operaciones en su nombre. La mayoría de las veces, estas autorizaciones están vinculadas a un dApp o juego y solo autorizan a la autoridad de publicación. Recomendamos dar dichas autorizaciones solo cuando sea necesario y cuando el destinatario sea de confianza.",
+    "description": "Accounts > Manage Authorities"
+  },
+  "popup_html_confirm_remove_account_authority_message": {
+    "message": "Por favor, confirme que desea eliminar la autorización de @$2's $1 en su cuenta.",
+    "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
+  },
+  "popup_html_remove_account_authority": {
+    "message": "Eliminar Autoridad",
+    "description": "while confirming remove account authority"
+  },
+  "html_popup_remove_authorized_account_operation": {
+    "message": "Eliminando cuenta autorizada",
+    "description": "remove authority operation"
+  },
+  "popup_html_remove_account_authority_successful": {
+    "message": "Se ha eliminado con éxito una la autoridad de una cuenta",
+    "description": "Success message remove account authority"
+  },
+  "popup_html_remove_account_authority_fail": {
+    "message": "Error al eliminar la autoridad de una cuenta",
+    "description": "Failed message remove account authority"
+  },
   "popup_html_memo": {
     "message": "Memo key",
     "description": "When adding an account via master key"
@@ -220,7 +308,7 @@
     "description": "Generic button"
   },
   "popup_html_settings": {
-    "message": "Configuraciones",
+    "message": "Menú",
     "description": "on settings page"
   },
   "popup_html_add_account": {
@@ -258,6 +346,14 @@
   "popup_html_operations": {
     "message": "Operaciones",
     "description": "on settings page"
+  },
+  "popup_html_favorite_accounts": {
+    "message": "Cuentas favoritas",
+    "description": "on settings page"
+  },
+  "popup_html_favorite_accounts_no_favorites": {
+    "message": "No hay favoritos guardados para esta cuenta",
+    "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
     "message": "Popup de operaciones",
@@ -320,19 +416,51 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "El equipo de Hive Keychain está dirigido por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, un desarrollador y testigo de Hive y consiste en un total de 3 desarrolladores a tiempo completo por el momento. También nos beneficiamos de la ayuda de <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, el Director Creativo de Splinterlands y muchos otros miembros de la comunidad.<br><br>Mientras que el proyecto se financia actualmente a través del Fondo Descentralizado de Hive (DHF), la idea original y los fondos fueron proporcionados por <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> y <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (testigos) a través de su negocio conjunto de Splinterlands, un juego de cartas coleccionables basado en blockchain, construido sobre la cadena de bloques de Hive. Asegúrate de verlo en <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterland.io</a>!<br/><br/>Para más información sobre nuestros productos (extensiones del navegador y aplicaciones móviles), visita nuestra <a href='https://hive-keychain.com' target='__blank'>página de inicio</a>.",
+    "message": "<ul><li><span class='text'>El equipo de Hive Keychain está dirigido por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, un desarrollador full-stack y testigo de Hive, y por dos desarrolladores más a tiempo completo, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> y <a href=\"https://peakd.com/@theghost1980\" target=\"_blank\">@theghost1980</a>, y <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, nuestro Community Manager. Nuestro trabajo es financiado por el DHF.</span></li><div class='separator horizontal'></div><li><span class='text'>Además de la extensión, proporcionamos billeteras móviles de Hive en Android y iOS, varias herramientas en Hive y Keychain Store, una aplicación móvil para negocios que quieran añadir Hive y HBD como métodos de pago.</span></li><div class='separator horizontal'></div><li><span class='text'>Para más información sobre nuestros productos (extensiones de navegador y aplicaciones móviles), visite nuestro <a href='https://hive-keychain.com' target='__blank'>sitio web</a>.</></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
     "message": "Eliminar del Keychain",
     "description": "on manage accounts"
   },
+  "popup_html_disable_witness": {
+    "message": "Desactivar testigo",
+    "description": "on manage accounts"
+  },
+  "popup_html_enable_witness": {
+    "message": "Activar testigo",
+    "description": "on manage accounts"
+  },
+  "popup_html_witness_rank_label": {
+    "message": "rango",
+    "description": "on my witness"
+  },
   "popup_html_delete_account_confirmation_message": {
     "message": "Estás a punto de eliminar @$1 de Keychain. Esto no se puede deshacer sin reimportar tus claves. Por favor, confirma para continuar.",
     "description": "on manage accounts"
   },
+  "popup_html_disable_witness_account_confirmation_message": {
+    "message": "Está a punto de desactivar @$1 cuenta de testigos. Por favor, confirme para continuar.",
+    "description": "on my witness"
+  },
+  "popup_html_enable_witness_account_confirmation_message": {
+    "message": "Está a punto de habilitar la cuenta de testigo de @$1. Por favor, confirme para continuar.",
+    "description": "on my witness"
+  },
   "popup_html_show_qr": {
     "message": "Mostrar código QR",
+    "description": "on manage accounts"
+  },
+  "popup_html_qr_title": {
+    "message": "¡Exporta tus llaves!",
+    "description": "on manage accounts"
+  },
+  "popup_html_qr_disclaimer1": {
+    "message": "Este código QR contiene todas las llaves privadas de esta cuenta y solo debe ser utilizado para importar sus llaves a la aplicación móvil de Hive Keychain.",
+    "description": "on manage accounts"
+  },
+  "popup_html_qr_disclaimer2": {
+    "message": "¡NO COMPARTAS esto con nadie!",
     "description": "on manage accounts"
   },
   "popup_html_hide_qr": {
@@ -341,6 +469,10 @@
   },
   "popup_html_set_new_rpc_as_active": {
     "message": "Establecer nuevo nodo RPC como activo",
+    "description": "in add rpc node screen"
+  },
+  "popup_html_set_new_account_history_as_active": {
+    "message": "Establecer la nueva API del historial de cuenta como activa",
     "description": "in add rpc node screen"
   },
   "popup_html_notif_pref": {
@@ -354,6 +486,10 @@
   "popup_html_no_pref": {
     "message": "Ninguna operación en la lista blanca",
     "description": "on preferences"
+  },
+  "popup_html_nothing_found_using_filter": {
+    "message": "No se ha encontrado nada, intente vaciar los filtros",
+    "description": "on multiple pages where filter is used"
   },
   "popup_html_add_rpc": {
     "message": "Añadir RPC",
@@ -376,7 +512,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Añade la <span></span> clave privada a tu cuenta. También puedes añadirla ingresando tu clave maestra.",
+    "message": "Añade la <span>$1</span> llave privada a tu cuenta. También puedes añadirla ingresando tu llave maestra.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -390,6 +526,10 @@
   "popup_html_copy_username_tooltip_text": {
     "message": "Haz clic aquí para copiar el nombre de usuario",
     "description": "after clicking on copy username to clipboard button on home page"
+  },
+  "popup_html_wrong_key_tooltip_text": {
+    "message": "Esta llave no parece coincidir con tu cuenta. No podrás realizar transacciones con ella. Si la has cambiado, elimina esta llave y reemplázala con la nueva.",
+    "description": "after hoover on red wrong key -> manage accounts -> account keys list item"
   },
   "popup_html_change_password_text": {
     "message": "Introduce tu contraseña antigua para confirmar y luego elige una nueva contraseña.",
@@ -420,7 +560,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
-    "message": "Por favor, añade tu clave de memo para cifrar y descifrar mensajes.",
+    "message": "Por favor, añade tu llave de memo para cifrar y descifrar mensajes.",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_transfer_confirm_text": {
@@ -463,8 +603,84 @@
     "message": "Votos restantes: $1",
     "description": "On witness page"
   },
+  "popup_html_witness_information_signing_key_label": {
+    "message": "Llave de firma",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_witness_disabled_text": {
+    "message": "¡Testigo deshabilitado actualmente!",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_label": {
+    "message": "Tarifa de creación de cuenta",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_fee_label": {
+    "message": "Tarifa",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_placeholder_text": {
+    "message": "Ej: 1.000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_block_size_placeholder_text": {
+    "message": "Tamaño, ejemplo: 65536",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_maximum_block_size_label": {
+    "message": "Tamaño de bloque",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_label": {
+    "message": "Tasa de Interés",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_placeholder_text": {
+    "message": "Ej: 2000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_base_label": {
+    "message": "Tasa de cambio base",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_quote_label": {
+    "message": "Cotización de la tarifa de cambio",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_url_label": {
+    "message": "Enlace",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_rewards_label": {
+    "message": "Recompensas",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_time_frame_label": {
+    "message": "Tiempo transcurrido",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_week_label": {
+    "message": "Últimos 7 días",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_month_label": {
+    "message": "Últimos 30 días",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_year_label": {
+    "message": "Último año",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_all_time_label": {
+    "message": "Todo el tiempo",
+    "description": "On My witness page"
+  },
   "popup_html_tokens_available": {
     "message": "Tokens disponibles",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_settings": {
+    "message": "Configuración de tokens",
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
@@ -527,6 +743,10 @@
     "message": "Total saliente",
     "description": "Main page > Delegate > Click on Outgoing"
   },
+  "popup_html_button_label_cancel": {
+    "message": "Cancelar",
+    "description": "when using a cancel button"
+  },
   "popup_html_total_incoming": {
     "message": "Total entrante",
     "description": "Main page > Delegate > Click on Incoming"
@@ -539,9 +759,21 @@
     "message": "Añade tu clave privada de memo para leer este memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
+  "popup_html_manage_accounts_authorities": {
+    "message": "Administrar Autorizaciones",
+    "description": "on settings page"
+  },
+  "popup_html_manage_no_accounts_authorities": {
+    "message": "No se ha dado ninguna autoridad a otras cuentas",
+    "description": "On Accounts > Manage Authorities"
+  },
   "popup_account_password_is_public_key": {
-    "message": "¡Esta es una clave pública! Por favor, introduce una clave privada o tu clave maestra.",
+    "message": "¡Esta es una llave pública! Por favor, introduce una llave privada o tu llave maestra.",
     "description": "If entered password is public key"
+  },
+  "popup_html_public_key_needed": {
+    "message": "Por favor, introduzca una llave pública",
+    "description": "If entered is private key"
   },
   "popup_accounts_already_registered": {
     "message": "¡Ya has registrado una cuenta por @$1!",
@@ -560,7 +792,7 @@
     "description": "when adding new account but not filling all fields"
   },
   "popup_accounts_no_key_selected": {
-    "message": "No has seleccionado ninguna clave. Por favor, selecciona al menos una.",
+    "message": "No has seleccionado ninguna llave. Por favor, selecciona al menos una.",
     "description": "when trying to save keys on selecting keys page"
   },
   "popup_accounts_err_claim": {
@@ -568,8 +800,12 @@
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
   "popup_missing_key": {
-    "message": "¡Por favor añade tu clave $1 para realizar esta operación!",
+    "message": "¡Por favor añade tu llave $1 para realizar esta operación!",
     "description": "When trying to perform an operation without a stored private $1 key"
+  },
+  "popup_missing_key_proposal": {
+    "message": "Por favor, añada su llave activa para votar por las propuestas.",
+    "description": "When voting for a proposal"
   },
   "popup_password_mismatch": {
     "message": "¡Sus contraseñas no coinciden!",
@@ -668,7 +904,7 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "La transacción ha expirado sin respuesta. Por favor, comprueba el saldo de tu token antes de intentar enviarlo de nuevo.",
+    "message": "No pudimos verificar esta transacción en Hive Engine. Esto podría significar que Hive Engine está desactualizado, espera a que la operación aparezca en tu historial, o contacta con el equipo de Hive Engine en Discord.",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
@@ -680,12 +916,20 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Removió su voto exitosamente @$1 como un witness.",
-    "description": "on witness page when unvoting a witness"
+    "message": "Se actualizó correctamente la cuenta de testigo @$1.",
+    "description": "on witness when updating a witness"
+  },
+  "popup_success_witness_account_update": {
+    "message": "Se ha actualizado correctamente la cuenta de testigo.",
+    "description": "on my witness on success updating"
   },
   "popup_error_wit": {
     "message": "Error al votar por @$1 como testigo.",
     "description": "on witness page "
+  },
+  "popup_error_witness_account_update": {
+    "message": "Error al actualizar la cuenta de testigo @$1.",
+    "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
     "message": "Error al anular el voto para @$1 como testigo.",
@@ -727,6 +971,22 @@
     "message": "IDs de propuesta",
     "description": "When website request a proposal vote"
   },
+  "dialog_id": {
+    "message": "ID",
+    "description": "When website request a custom json"
+  },
+  "dialog_slippage": {
+    "message": "Deslizamiento",
+    "description": "When website requests a swap"
+  },
+  "dialog_steps": {
+    "message": "Pasos",
+    "description": "When website requests a swap"
+  },
+  "dialog_swap": {
+    "message": "Intercambio",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Aprobar",
     "description": "When website request a witness vote"
@@ -760,7 +1020,7 @@
     "description": "When website request a vote"
   },
   "dialog_data": {
-    "message": "Datos <span class='small'>(clic para mostrar)</span>",
+    "message": "Datos",
     "description": "When website request a custom json"
   },
   "dialog_to": {
@@ -768,7 +1028,7 @@
     "description": "When website request a transfer"
   },
   "dialog_tx": {
-    "message": "Transacción (clic para mostrar)",
+    "message": "Transacción",
     "description": "When website request signing a tx"
   },
   "dialog_amount": {
@@ -792,7 +1052,7 @@
     "description": "When website request a post"
   },
   "dialog_body": {
-    "message": "Cuerpo <span class='small'>(clic para mostrar)</span>",
+    "message": "Cuerpo",
     "description": "When website request a post"
   },
   "dialog_period": {
@@ -800,7 +1060,7 @@
     "description": "When website request a proposal creation"
   },
   "dialog_meta": {
-    "message": "Metadatos JSON (clic para mostrar)",
+    "message": "Metadata JSON",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -812,11 +1072,11 @@
     "description": "When website request a post"
   },
   "dialog_options": {
-    "message": "Opciones <span class='small'>(clic para mostrar)</span>",
+    "message": "Opciones",
     "description": "When website request a post"
   },
   "dialog_operations": {
-    "message": "Operaciones (clic para mostrar)",
+    "message": "Operaciones",
     "description": "When website request a generic broadcast"
   },
   "dialog_max_payout": {
@@ -859,10 +1119,10 @@
     "message": "Confirmar"
   },
   "dialog_options_toggle": {
-    "message": "Opciones <span class='small'>(clic para mostrar)</span>"
+    "message": "Opciones"
   },
   "dialog_data_toggle": {
-    "message": "Datos <span class='small'>(clic para mostrar)</span>"
+    "message": "Datos"
   },
   "dialog_header_unlock": {
     "message": "Desbloquear llavero",
@@ -890,6 +1150,18 @@
   "dialog_title_encode": {
     "message": "Codificar el mensaje",
     "description": "Website request title"
+  },
+  "dialog_title_encode_multisig": {
+    "message": "Codificar Multifirma",
+    "description": "Website request title"
+  },
+  "dialog_public_keys": {
+    "message": "Llaves públicas",
+    "description": "Website request title"
+  },
+  "dialog_title_swap": {
+    "message": "Intercambio",
+    "description": "When website requests a swap"
   },
   "dialog_title_sign": {
     "message": "Firmar Mensaje",
@@ -964,7 +1236,7 @@
     "description": "When a website request a verification using posting key and you dont want it to pop all the time"
   },
   "dialog_no_prompt": {
-    "message": "No volver a pedir que se envíen transacciones $1 desde la cuenta @$2 el $3",
+    "message": "No volver a pedir que se envíen transacciones $1 desde la cuenta @$2 en $3",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
   "dialog_desc_verify": {
@@ -1081,7 +1353,7 @@
     "message": "Hubo un error en la transmisión de esta transacción:"
   },
   "bgd_ops_add_account_error": {
-    "message": "Se ha producido un error al añadir esta cuenta. Por favor verifica las claves."
+    "message": "Se ha producido un error al añadir esta cuenta. Por favor verifica las llaves."
   },
   "bgd_ops_add_account_error_invalid": {
     "message": "El nombre de usuario de esta cuenta no existe."
@@ -1178,20 +1450,20 @@
     "message": "Enviar"
   },
   "dialog_title_add_key_auth": {
-    "message": "Añadir Clave"
+    "message": "Añadir Llave"
   },
   "dialog_title_remove_key_auth": {
-    "message": "Eliminar Clave"
+    "message": "Eliminar Llave"
   },
   "dialog_title_recurrent_transfer": {
     "message": "Transferencia recurrente"
   },
   "bgd_ops_add_key_auth": {
-    "message": "$1 ha sido añadido como una clave $2 para la cuenta @$3 con un peso de $4.",
+    "message": "$1 ha sido añadido como una llave $2 para la cuenta @$3 con un peso de $4.",
     "description": "Succesfully added a new keypair"
   },
   "bgd_ops_remove_key_auth": {
-    "message": "$1 ha sido eliminado como clave $2 para la cuenta @$3.",
+    "message": "$1 ha sido eliminado como llave $2 para la cuenta @$3.",
     "description": "succesfully removed a keypair"
   },
   "bgd_ops_recurrent_transfer": {
@@ -1203,7 +1475,7 @@
     "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
-    "message": "Usar claves/pwd",
+    "message": "Usar llaves/pwd",
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
@@ -1230,17 +1502,17 @@
     "description": "When trying to add an account via authority"
   },
   "import_html_title": {
-    "message": "Importar Claves",
+    "message": "Importar Llaves",
     "description": "Title of import keys popup"
   },
   "import_html_text": {
     "message": "Importa tus claves desde otra instancia de Keychain utilizando un archivo .kc.<br/><br/>Necesitas utilizar la misma contraseña maestra en ambas instancias para descifrar las claves."
   },
   "import_html_success": {
-    "message": "¡Has importado correctamente tus claves!"
+    "message": "¡Has importado correctamente tus llaves!"
   },
   "import_html_error": {
-    "message": "Hubo un error importando tus claves.<br/>Asegúrate de que estás utilizando la misma clave maestra que cuando exportaste el archivo."
+    "message": "Hubo un error importando tus llaves.<br/>Asegúrate de que estás utilizando la misma llave maestra que cuando exportaste el archivo."
   },
   "import_permissions_html_title": {
     "message": "Importar ajustes"
@@ -1254,6 +1526,10 @@
   "popup_warning_phishing": {
     "message": "@$1 ha sido listado como una cuenta potencial de phishing, comprueba la ortografía y asegúrate de que es la cuenta a la que deseas transferir.",
     "description": "When trying to transfer to a blacklisted account"
+  },
+  "popup_warning_private_key_in_memo": {
+    "message": "Enviando una llave privada como memo es un enorme riesgo para la seguridad.",
+    "description": "When trying to use memo with a private key"
   },
   "popup_warning_exchange_deposit": {
     "message": "Esta cuenta de exchange no acepta depósitos de $1.",
@@ -1275,6 +1551,10 @@
     "message": "Comprar HBD",
     "description": "When clicking on the Hbd arrow menu"
   },
+  "popup_html_convert": {
+    "message": "Convertir",
+    "description": "Convert"
+  },
   "popup_html_convert_hbd": {
     "message": "Convertir HBD",
     "description": "When clicking on the Hbd arrow menu"
@@ -1290,6 +1570,14 @@
   "popup_html_convert_hive_intro": {
     "message": "Depositas la garantía (HIVE), luego recibes HBD por adelantado con un valor de la mitad de la cantidad de esa garantía (menos una cuota del 5%). Tu pago final oficial es en 3,5 días. En ese punto te es devuelto el remanente de la garantía (HIVE).",
     "description": "When clicking on the HIVE arrow menu"
+  },
+  "popup_html_proposal_funded_option_hive": {
+    "message": "Convertir a HBD",
+    "description": "When converting"
+  },
+  "popup_html_proposal_funded_option_hbd": {
+    "message": "Convirtiendo a HIVE",
+    "description": "When converting"
   },
   "popup_html_save_hive": {
     "message": "Ahorros HIVE",
@@ -1316,7 +1604,7 @@
     "description": "On savings menu"
   },
   "popup_html_withdraw_success": {
-    "message": "Comenzó con éxito un retiro de $1 de los ahorros",
+    "message": "Comenzó con éxito un retiro de $1 desde los ahorros",
     "description": "On savings menu"
   },
   "popup_html_withdraw_fail": {
@@ -1329,6 +1617,10 @@
   },
   "popup_html_savings_current": {
     "message": "Ahorros",
+    "description": "On savings menu"
+  },
+  "popup_html_savings_current_withdrawing": {
+    "message": "Retirando",
     "description": "On savings menu"
   },
   "popup_html_withdraw_text": {
@@ -1348,7 +1640,7 @@
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
-    "message": "$1 ahorros",
+    "message": "Ahorros",
     "description": "Saving page title"
   },
   "popup_html_buy_intro": {
@@ -1364,7 +1656,7 @@
     "description": "When accessing the buy HIVE/HBD page"
   },
   "dialog_keys": {
-    "message": "Claves privadas",
+    "message": "Llaves privadas",
     "description": "When adding an account by request"
   },
   "dialog_new_account": {
@@ -1378,6 +1670,10 @@
   "popup_html_automated_intro": {
     "message": "Configura tareas automatizadas que se ejecutarán cada hora si se ajustan a tus condiciones.",
     "description": "When on automated tasks page"
+  },
+  "popup_html_favorite_accounts_intro": {
+    "message": "Configura las cuentas que más usas, al hacer transferencias, operaciones de Hive Engine, operaciones con exchanges y más.",
+    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Reclamar recompensas",
@@ -1395,6 +1691,10 @@
     "message": "Reclama un ticket de cuenta gratis cuando tu porcentaje de RC supere el $1%. Dependiendo de tu Hive Power, esto puede consumir una gran parte de tu RC.",
     "description": "When on automated tasks page"
   },
+  "popup_html_insufficient_hp_claim_accounts": {
+    "message": "HP insuficiente para reclamar cuentas.",
+    "description": "When on automated tasks page"
+  },
   "popup_html_proposal_request": {
     "message": "Apoya la propuesta de desarrollo de Keychain",
     "description": "When user doesnt vote for proposal"
@@ -1408,19 +1708,19 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "¡Retiro de voto exitoso!",
+    "message": "¡Has eliminado correctamente tu voto!",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "Hubo un error al votar la propuesta. Inténtalo de nuevo más tarde",
+    "message": "¡Se ha producido un error al votar una propuesta!",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "Hubo un error al retirar el voto a la propuesta. Inténtalo de nuevo más tarde",
+    "message": "¡Hubo un error al eliminar el voto de la propuesta!",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Opciones avanzadas",
+    "message": "Configuración avanzada",
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
@@ -1459,9 +1759,17 @@
     "message": "Por favor, confirma que quieres cancelar esta delegación.",
     "description": "while confirming power up and down"
   },
+  "popup_html_confirm_cancel_withdraw_savings_message": {
+    "message": "Por favor, confirma que deseas cancelar el retiro de $1 desde los ahorros.",
+    "description": "while confirming savings withdraw"
+  },
   "popup_html_cancel_delegation": {
     "message": "Cancelar delegación",
     "description": "while confirming power up and down"
+  },
+  "popup_html_cancel_withdraw_savings": {
+    "message": "Cancelar el retiro",
+    "description": "while confirming savings withdraw"
   },
   "popup_html_power_up_down_fail": {
     "message": "Hubo un error al ejecutar $1. Inténtalo de nuevo más tarde. Si el error persiste, ponte en contacto con soporte.",
@@ -1496,7 +1804,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency_hint": {
-    "message": "Frecuencia (en horas). Mínimo 24 horas",
+    "message": "En horas, mínimo 24 horas",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_successful": {
@@ -1564,7 +1872,7 @@
     "decription": "In transfer page"
   },
   "popup_html_recurrent_transfer_iterations_hint": {
-    "message": "Iteraciones. Mínimo 2",
+    "message": "Mínimo 2",
     "decription": "In transfer page"
   },
   "popup_html_confirm_savings_withdraw": {
@@ -1600,8 +1908,16 @@
     "description": "Governance"
   },
   "popup_html_proposal": {
-    "message": "Propuesta",
+    "message": "Propuestas",
     "description": "Governance"
+  },
+  "popup_html_my_witness_page": {
+    "message": "Mi Testigo",
+    "description": "Governance"
+  },
+  "popup_html_witness_page_expand_more_tooltip": {
+    "message": "Haga clic para ver la información completa de la cuenta de testigo",
+    "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
     "message": "Sólo votado por",
@@ -1609,6 +1925,10 @@
   },
   "html_popup_witness_vote_error_proxy": {
     "message": "Un proxy está configurado actualmente, por favor borra el proxy antes de votar por un testigo",
+    "description": "Governance"
+  },
+  "html_popup_proposal_vote_error_proxy": {
+    "message": "Un proxy está configurado actualmente, por favor borra el proxy antes de votar por una propuesta",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {
@@ -1634,6 +1954,10 @@
   "html_popup_clear_proxy": {
     "message": "Borrar proxy",
     "description": "Governance"
+  },
+  "html_popup_set_as_proxy_error": {
+    "message": "Error mientras se establecía @$1 como proxy",
+    "description": "Proxy"
   },
   "html_popup_clear_proxy_error": {
     "message": "Error al eliminar el proxy",
@@ -1664,7 +1988,7 @@
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Vota @stoodkev como testigo",
+    "message": "Votar $1 como testigo",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -1675,8 +1999,16 @@
     "message": "Ya has votado por 30 testigos. Por favor, elimina uno antes de votar por @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
+  "html_popup_vote_witness_error_30_votes": {
+    "message": "Ya has votado por 30 testigos. Por favor, elimina uno antes de votar por uno nuevo",
+    "description": "Error message when vote for stoodkev as witness with 30 votes"
+  },
   "html_popup_vote_stoodkev_witness_success": {
     "message": "Votado con éxito @stoodkev como testigo. ¡Gracias por tu apoyo!",
+    "description": "Success message when vote for stoodkev as witness"
+  },
+  "html_popup_vote_cedricguillas_witness_success": {
+    "message": "Votó con éxito a @cedricguillas como testigo. ¡Gracias por tu apoyo!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_conversion_operation": {
@@ -1691,6 +2023,10 @@
     "message": "Cancelando delegación",
     "description": "delegation operation"
   },
+  "html_popup_cancel_withdraw_savings_operation": {
+    "message": "Cancelando retiro desde ahorros",
+    "description": "savings operation"
+  },
   "html_popup_vote_witness_operation": {
     "message": "Votar a testigo",
     "description": "vote witness operation"
@@ -1698,6 +2034,66 @@
   "html_popup_unvote_witness_operation": {
     "message": "Retirar voto a un testigo",
     "description": "unvote witness operation"
+  },
+  "html_popup_update_witness_operation": {
+    "message": "Actualizando cuenta de testigo",
+    "description": "When updating witness account"
+  },
+  "html_popup_witness_information_info_label": {
+    "message": "Info",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_votes_label": {
+    "message": "Votos",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_vote_value_label": {
+    "message": "Valor del voto",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_global_information_votes_label": {
+    "message": "Cantidad de votos",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_blocks_missed_label": {
+    "message": "Bloques perdidos",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_updated_label": {
+    "message": "Actualizado $1",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_version_label": {
+    "message": "Versión",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_last_block_label": {
+    "message": "Último bloque",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_price_feed_label": {
+    "message": "Price Feed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_st_label": {
+    "message": "",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_nd_label": {
+    "message": "",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_rd_label": {
+    "message": "",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_th_label": {
+    "message": "",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_information_params_label": {
+    "message": "Parámetros",
+    "description": "When displaying my witness account"
   },
   "html_popup_confirm_transaction_operation": {
     "message": "Confirmando la transacción",
@@ -1764,7 +2160,7 @@
     "description": "Confirmation message when deleting key"
   },
   "html_popup_delete_key": {
-    "message": "Eliminar clave",
+    "message": "Eliminar llave",
     "description": "confirmation title while deleting key"
   },
   "html_popup_using_authorized_account": {
@@ -1774,6 +2170,14 @@
   "popup_html_cancel_delegation_successful": {
     "message": "Se ha cancelado una delegación correctamente",
     "description": "Success message cancel delegation"
+  },
+  "popup_html_cancel_withdraw_savings_successful": {
+    "message": "Cancelado con éxito un retiro de $1 $2 desde ahorros",
+    "description": "Success message cancel withdraw"
+  },
+  "popup_html_cancel_withdraw_savings_fail": {
+    "message": "Error al cancelar un retiro de $1 desde ahorros",
+    "description": "Failed message cancel withdraw"
   },
   "popup_html_cancel_delegation_fail": {
     "message": "No se pudo cancelar una delegación",
@@ -1794,6 +2198,10 @@
   "popup_html_transfer_tokens": {
     "message": "Transferir Tokens",
     "description": "Transfer tokens"
+  },
+  "popup_html_cancel_withdraw": {
+    "message": "Cancelar retiro desde ahorros",
+    "description": "Cancel withdraw savings"
   },
   "popup_html_fill_form_error": {
     "message": "Por favor rellena el formulario",
@@ -1912,7 +2320,11 @@
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Retiro de $1 de ahorros",
+    "message": "Iniciado el retiro de $1 desde ahorros",
+    "description": "Wallet information withdraw from savings"
+  },
+  "popup_html_wallet_info_fill_withdraw_savings": {
+    "message": "Retirado con éxito $1 desde los ahorros",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
@@ -1946,6 +2358,14 @@
   "popup_html_wallet_info_fill_collateralized_convert_request": {
     "message": "Conversión completada: $1 => $2",
     "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_create_claimed_account": {
+    "message": "Cuenta reclamada @$1",
+    "description": "Wallet information created claimed account"
+  },
+  "popup_html_wallet_info_account_create": {
+    "message": "Pagar $1 para crear @$2",
+    "description": "Wallet information create account"
   },
   "popup_html_filter_in": {
     "message": "Entrada",
@@ -2019,6 +2439,10 @@
     "message": "Se ha producido un error al recuperar la clasificación del testigo. Por favor, inténtalo más tarde.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
+  "popup_html_error_retrieving_witness_information": {
+    "message": "Se ha producido un error al recuperar la información del testigo. Por favor, inténtalo más tarde.",
+    "description": "Error while retrieving witness information, hivesql not down"
+  },
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "Se ha producido un error al recuperar las delegaciones entrantes. Inténtalo de nuevo más tarde.",
     "description": "Error while retrieving witness ranking, hivesql not down"
@@ -2036,19 +2460,19 @@
     "description": "token action"
   },
   "popup_html_token_staking": {
-    "message": "Staking",
+    "message": "Staked",
     "description": "token action"
   },
   "popup_html_token_pending_unstake": {
-    "message": "Unstake pendiente",
+    "message": "Retiro de stake pendiente",
     "description": "token action"
   },
   "popup_html_token_delegation_out": {
-    "message": "Delegación saliente",
+    "message": "Delegaciones salientes",
     "description": "token action"
   },
   "popup_html_token_delegation_in": {
-    "message": "Delegación entrante",
+    "message": "Delegaciones entrantes",
     "description": "token action"
   },
   "popup_html_token_pending_undelegation": {
@@ -2228,7 +2652,7 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_issue": {
-    "message": "Emitido $1",
+    "message": "Recibido $1",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_pegged_buy": {
@@ -2242,5 +2666,1082 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Hacer unstake de este token tomará $1 día(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_enable_autoclaim_savings": {
+    "message": "Reclamar interés de ahorro",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_savings_info": {
+    "message": "Para reclamar su interés de ahorro, Keychain depositará o retirará 0,001 HBD de/a sus ahorros cada 30 días",
+    "description": "When on automated tasks page"
+  },
+  "html_popup_new_account_history": {
+    "message": "Nueva API de historial de cuenta",
+    "description": "Tokens setting page =>  add account history api"
+  },
+  "html_popup_new_rpc": {
+    "message": "Nuevo nodo RPC",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_new_rpc_save_success": {
+    "message": "Nuevo nodo RPC guardado correctamente",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_url_not_valid": {
+    "message": "La URL no es válida",
+    "description": "Tokens setting page"
+  },
+  "html_popup_new_account_history_save_success": {
+    "message": "La nueva API del historial de cuenta fue guardada con éxito",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_rpc_already_exist": {
+    "message": "Este RPC ya está en su lista",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "popup_html_transfer_recurrent_exchange_warning": {
+    "message": "La mayoría de los Exchanges no aceptan transferencias recurrentes. Si continúa, es posible que se pierdan sus fondos.",
+    "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
+  },
+  "popup_html_transfer_recurrent_missing_field": {
+    "message": "Iteración y frecuencia son obligatorios",
+    "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "popup_html_whats_new": {
+    "message": "Novedades en v$1",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_next": {
+    "message": "Siguiente",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_previous": {
+    "message": "Anterior",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_got_it": {
+    "message": "¡Entendido!",
+    "description": "What's new popup button"
+  },
+  "html_popup_tokens_timeout": {
+    "message": "Este nodo no está respondiendo. Por favor, vaya a la configuración del token y cambie el nodo RPC de Hive Engine",
+    "description": "Token timeout error"
+  },
+  "popup_html_create_account_buy_account": {
+    "message": "Comprar cuenta",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account_with_claim_tokens": {
+    "message": "Usar tickets reclamados",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account": {
+    "message": "Crear cuenta",
+    "description": "Create account"
+  },
+  "popup_html_master_password": {
+    "message": "Contraseña maestra",
+    "description": "General"
+  },
+  "html_popup_create_account_username_too_short": {
+    "message": "El nombre de usuario es muy corto. Necesita un mínimo de 4 caracteres",
+    "description": "General"
+  },
+  "html_popup_create_account_username_already_used": {
+    "message": "El nombre de usuario ya está en uso. Por favor, elige uno nuevo",
+    "description": "General"
+  },
+  "html_popup_create_account_account_name_not_valid": {
+    "message": "El nombre de la cuenta no es válido",
+    "description": "General"
+  },
+  "html_popup_create_account_safely_copied_keys": {
+    "message": "He copiado mis llaves de manera segura y las he guardado fuera del Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_create_account_storage_understanding": {
+    "message": "Entiendo que Keychain no debe ser considerado como el lugar principal para guardar mis llaves",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_copy": {
+    "message": "Copiar",
+    "description": "General"
+  },
+  "html_popup_create": {
+    "message": "Crear",
+    "description": "General"
+  },
+  "html_popup_price": {
+    "message": "Precio",
+    "description": "General"
+  },
+  "html_popup_next": {
+    "message": "Siguiente",
+    "description": "General"
+  },
+  "html_popup_ticket": {
+    "message": "$1 ticket de creación de cuenta",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_account_creation_not_enough_found": {
+    "message": "No tienes HIVE suficiente para comprar una cuenta",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_create_account_buy_method_message": {
+    "message": "Acepto pagar $1 HIVE con la cuenta @$2 para crear esta cuenta",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_claim_account_method_message": {
+    "message": "Acepto utilizar un ticket de creación de cuenta de @$1 para crear esta cuenta",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_need_accept_terms_condition": {
+    "message": "Necesitas aceptar los términos y condiciones antes de crear una cuenta",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_successful": {
+    "message": "Su cuenta ha sido creada correctamente y añadida a Keychain",
+    "description": "Create account successful message"
+  },
+  "html_popup_creating_account": {
+    "message": "Creando cuenta",
+    "description": "Creating account message"
+  },
+  "html_popup_create_account_failed": {
+    "message": "La creación de tu cuenta ha fallado. Por favor, inténtalo de nuevo más tarde",
+    "description": "Create account failed message"
+  },
+  "html_popup_read_more": {
+    "message": "Leer más",
+    "description": "read more"
+  },
+  "popup_html_total_pending_undelegate": {
+    "message": "Retiro pendientes de delegaciones",
+    "description": "Total pending undelegate"
+  },
+  "popup_html_pending_undelegation": {
+    "message": "Retiros pendientes de delegaciones salientes",
+    "description": "Pending undelegate"
+  },
+  "popup_html_undelegation_pending_until_message": {
+    "message": "Después de ser cancelado, las delegaciones tardan 5 días en volver a tu saldo disponible de Hive Power",
+    "description": "Delegation list item pending until date"
+  },
+  "popup_html_withdraw_savings_until_message": {
+    "message": "Retirar desde los ahorros tarda 3 días. Cancela la operación si deseas mantener tus $1 en los ahorros.",
+    "description": "Withdraw saving list item pending until date"
+  },
+  "html_popup_governance_renewal_title": {
+    "message": "Renovación de gobernanza",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_wrong_key_title": {
+    "message": "Llave incorrecta$1 encontrada",
+    "description": "Wrong key popup"
+  },
+  "html_popup_wrong_key_introduction": {
+    "message": "Su cuenta @$1 tiene una <strong>$2</strong> llave$3 errónea. ¿Desea actualizar la llave$4 ahora mismo?",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renewal_introduction": {
+    "message": "Tus votos de gobernanza están a punto de experar para las siguientes cuentas.<br/>Si quieres mantenerlos activos, haz clic en el botón de renovar. Para cancelar el vencimiento, le ayudaremos a votar/desvotar la propuesta de retorno. Si prefiere revisar sus votos manualmente, desmarque la casilla para ignorar.",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renew": {
+    "message": "Renovar",
+    "description": "Governance expiration renew"
+  },
+  "html_popup_governance_ignore": {
+    "message": "Ignorar",
+    "description": "Governance expiration ignore"
+  },
+  "html_popup_governance_expiration_read_more": {
+    "message": "Lea más sobre el vencimiento de la gobernanza",
+    "description": "Governance expiration description"
+  },
+  "html_popup_governance_renewing": {
+    "message": "Renovando",
+    "description": "Governance expiration description"
+  },
+  "popup_html_transfer_to_saving_to_exchange_error": {
+    "message": "Estás intentando transferir a los ahorros de un exchange. Es posible que no puedan recuperar tu transferencia. Por favor, utiliza una transferencia regular",
+    "description": "Transfer to savings of exchange platform warning message"
+  },
+  "popup_html_transfer_from_saving_to_exchange_error": {
+    "message": "Estás intentando retirar tus ahorros a un exchange. Es posible que no puedan recuperar tu transferencia. Por favor, utiliza una transferencia regular",
+    "description": "Transfer from savings to an exchange platform warning message"
+  },
+  "popup_html_buy": {
+    "message": "Comprar",
+    "description": "Main page buy button"
+  },
+  "html_popup_transak_description": {
+    "message": "Transak te ayuda a comprar HIVE usando fiat. Soporta tarjetas de crédito, transferencias bancarias, Apple Pay y MobiKwik en más de 100 países (las opciones varían según el país). Recibirás tu HIVE directamente en tu monedero Hive Keychain.",
+    "description": "Buy coin, transak description"
+  },
+  "html_popup_blocktrades_description": {
+    "message": "Con Blocktrades, cambia rápidamente entre otras criptomonedas importantes y HIVE/HBD.",
+    "description": "Buy coin, blocktrades description"
+  },
+  "html_popup_exchanges": {
+    "message": "Exchanges",
+    "description": "Buy coin exchanges"
+  },
+  "popup_html_pending": {
+    "message": "Pendiente",
+    "description": "Global"
+  },
+  "popup_html_pending_currency": {
+    "message": "Conversiones pendientes",
+    "description": "Global"
+  },
+  "popup_html_pending_currency_timestamp": {
+    "message": "Esta conversión se completará en $1 a $2",
+    "description": "Global"
+  },
+  "popup_html_pending_conversions": {
+    "message": "Tiene $1 pendiente $2 conversion(es)",
+    "description": "Global"
+  },
+  "popup_html_analytics": {
+    "message": "Analíticas",
+    "description": "Analytics menu item"
+  },
+  "popup_html_analytics_allow_ga": {
+    "message": "Recopilar datos de uso",
+    "description": "Allow google analytics checkbox label"
+  },
+  "popup_html_analytics_allow_ga_hint": {
+    "message": "Permítanos grabar su actividad en Google Analytics para ayudarnos a mejorar la experiencia de usuario en Hive Keychain",
+    "description": "Allow google analytics hint"
+  },
+  "popup_html_analytics_save": {
+    "message": "Guardar",
+    "description": "accept button on analytics popup"
+  },
+  "popup_html_wrong_key_popup_replace": {
+    "message": "Reemplazar",
+    "description": "replace key button on wrong key popup"
+  },
+  "popup_html_wrong_key_popup_do_nothing": {
+    "message": "No hacer nada",
+    "description": "do nothing button on wrong key popup"
+  },
+  "popup_html_analytics_accept_to_share": {
+    "message": "Acepto compartir mis datos de uso con Keychain",
+    "description": "accept on analytics popup"
+  },
+  "popup_html_analytics_thank_you": {
+    "message": "Gracias por su ayuda",
+    "description": "Thank you for your help"
+  },
+  "popup_html_analytics_title": {
+    "message": "Ayúdanos a mejorar Keychain",
+    "description": "Analytics popup title"
+  },
+  "popup_html_analytics_message": {
+    "message": "Habilitar Keychain para reunir datos anónimos no sensibles sobre el uso de la extensión. Estos datos se utilizarán para mejorar su experiencia de usuario. Puede deshabilitarlo en cualquier momento en la sección 'Configuración avanzada'.",
+    "description": "Analytics popup message"
+  },
+  "popup_html_analytics_privacy_policy_text": {
+    "message": "Al continuar, aceptas nuestros",
+    "description": "Followed by 'Privacy Policy'"
+  },
+  "popup_html_analytics_privacy_policy": {
+    "message": "Política de privacidad",
+    "description": "By continuing, your are accepting our [...]"
+  },
+  "popup_html_delegate_rc": {
+    "message": "Delegaciones de RC"
+  },
+  "popup_html_rc_delegations_text": {
+    "message": "Puedes delegar tus Créditos de Recurso (RC) a otro usuario. Haz clic en la cantidad de salida para revisar o hacer cambios.",
+    "description": "Main page > Delegate RC"
+  },
+  "popup_html_username_missing": {
+    "message": "Falta el nombre de usuario",
+    "description": "In any form, when username is missing"
+  },
+  "html_popup_delegate_rc_operation": {
+    "message": "Delegando RC",
+    "description": "delegate rc operation"
+  },
+  "html_popup_cancel_delegate_rc_operation": {
+    "message": "Cancelando delegación de RC",
+    "description": "cancel delegate rc operation"
+  },
+  "popup_html_rc_delegation_confirm_text": {
+    "message": "Por favor, confirme su delegación de RC.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_confirm_text": {
+    "message": "Por favor, confirme que desea cancelar su delegación de RC.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_title": {
+    "message": "Delegación de RC",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_title": {
+    "message": "Cancelar delegación de RC",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_successful": {
+    "message": "Has delegado RC con éxito a $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_successful": {
+    "message": "Has cancelado con éxito tu delegación a $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_failed": {
+    "message": "La cancelación de la delegación ha fallado",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_to": {
+    "message": "A"
+  },
+  "popup_html_rc_delegation_value": {
+    "message": "Valor"
+  },
+  "popup_html_rc_delegation_failed": {
+    "message": "Delegación de Rc fallida",
+    "description": "RC delegation failed"
+  },
+  "popup_html_survey_no_thanks": {
+    "message": "No gracias",
+    "description": "No thanks button on survey popup"
+  },
+  "popup_html_survey_help_us": {
+    "message": "¡Vamos allá!",
+    "description": "Help us button on survey popup"
+  },
+  "popup_html_public_key_not_matching": {
+    "message": "La llave pública no coincide con la llave pública en la blockchain. Podría haber sido actualizada",
+    "description": "select keys => public not matching"
+  },
+  "popup_html_add_using_ledger": {
+    "message": "Añadir usando Ledger",
+    "description": "Add using ledger link"
+  },
+  "popup_html_ledger_not_detected": {
+    "message": "Ledger no detectado. Asegúrese de que su Ledger está conectado y la aplicación de Hive se está ejecutando",
+    "description": "Ledger not detected error message"
+  },
+  "popup_html_ledger_detected": {
+    "message": "Ledger detectado",
+    "description": "Ledger detected message"
+  },
+  "html_ledger_not_supported": {
+    "message": "Ledger no compatible",
+    "description": "Ledger not detected error message"
+  },
+  "html_ledger_not_available": {
+    "message": "Ledger no disponible",
+    "description": "Ledger not available error message"
+  },
+  "html_ledger_not_detected": {
+    "message": "No hemos podido detectar su Ledger. Si ya está conectado y desbloqueado, por favor navega a la Configuración Avanzada de Keychain y usa la opción Link Ledger.",
+    "description": "Ledger not available error message"
+  },
+  "html_ledger_no_device_selected": {
+    "message": "Ningún dispositivo Ledger seleccionado",
+    "description": "Ledger not selected error message"
+  },
+  "html_ledger_unknown_error": {
+    "message": "Error desconocido",
+    "description": "Ledger unknown error"
+  },
+  "html_popup_using_ledger": {
+    "message": "Llave guardada en Ledger",
+    "description": "key using ledger label"
+  },
+  "html_ledger_error_while_signing": {
+    "message": "Error al firmar la transacción con Ledger",
+    "description": "Error while signing transaction with Ledger"
+  },
+  "html_ledger_error_while_connecting": {
+    "message": "Error al conectar con el Ledger. Por favor, asegúrese de que su Ledger está conectado y la aplicación Hive está ejecutándose",
+    "description": "Error while connecting to Ledger"
+  },
+  "html_popup_witness_already_voted": {
+    "message": "Ya has votado en este testigo",
+    "description": "Error if trying to vote for a witness that has alreay been voted for"
+  },
+  "html_popup_button_edit_label": {
+    "message": "Editar",
+    "description": "when using a button as to edit"
+  },
+  "html_popup_witness_not_voted": {
+    "message": "No votaste por este testigo, no existe un voto a retirar",
+    "description": "Error if trying to unvote a witness that has not been voted for"
+  },
+  "html_popup_witness_not_existing": {
+    "message": "El testigo por el que intentaste votar no existe",
+    "description": "Error if trying to vote a witness that doesn't exist"
+  },
+  "bgd_ops_hive_engine_confirmation_error": {
+    "message": "La operación en Hive Engine regresó con el siguiente error:  <br/><br/> Error: $1",
+    "description": "Error while confirming transaction on hive engine"
+  },
+  "hive_engine_overdraw_balance_error": {
+    "message": "Su saldo $1 es insuficiente",
+    "description": "Error if trying to send too much of a token"
+  },
+  "hive_engine_not_existing_token_error": {
+    "message": "El token $1 no existe",
+    "description": "Error if trying to send a token that doesn't exist"
+  },
+  "hive_engine_not_existing_user_error": {
+    "message": "@$1 no existe",
+    "description": "Error if trying to send a token that doesn't exist"
+  },
+  "transaction_wrong_format_decimal_error": {
+    "message": "Formato incorrecto. Debe tener $1 decimales",
+    "description": "Error if formating is not correct, wrong decimal number"
+  },
+  "error_while_broadcasting": {
+    "message": "Su transacción devolvió un error <br/><br/>Error: $1",
+    "description": "Generic error while broadcasting transaction"
+  },
+  "recurrent_transfer_recurrence_error": {
+    "message": "No se puede establecer una transferencia de recurrencia que sea menor de $1 horas",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_recurrence_max_duration_error": {
+    "message": "No se puede establecer una transferencia que dure más de $1 días",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_iterations_error": {
+    "message": "Las ejecuciones deben ser al menos 2, si establece las ejecuciones a 1 la transferencia recurrente se ejecutará inmediatamente y se eliminará a sí misma. Deberías usar una operación de transferencia normal",
+    "description": "Recurrent transfer recurrence"
+  },
+  "set_same_proxy_error": {
+    "message": "Este usuario ya está configurado como su proxy.",
+    "description": "Proxy already set"
+  },
+  "power_down_hp_not_sufficient_error": {
+    "message": "La cuenta no tiene suficiente Hive Power para disminuir tu poder",
+    "description": "Error while trying to power down"
+  },
+  "already_has_authority_error": {
+    "message": "Ya tiene autoridad",
+    "description": "Error if account already has authority"
+  },
+  "missing_authority_error": {
+    "message": "Falta la autoridad",
+    "description": "Error if account is missing authority"
+  },
+  "nothing_to_remove_error": {
+    "message": "No hay nada que eliminar",
+    "description": "Error if account has no authority to remove"
+  },
+  "html_popup_error_while_signing_transaction": {
+    "message": "Ocurrió un error al firmar la transacción",
+    "description": "Generic error during signature"
+  },
+  "network_error_timeout": {
+    "message": "Error de red: tiempo de espera",
+    "description": "When network timeout"
+  },
+  "html_popup_waiting_for_ledger_confirmation": {
+    "message": "Esperando por la confirmación de Ledger",
+    "description": "loading message while waiting for cnfirmation on ledger"
+  },
+  "html_sign_with_ledger": {
+    "message": "Registrarse en Ledger",
+    "description": "sign on ledger dialog title"
+  },
+  "html_popup_error_while_broadcasting": {
+    "message": "Error al transmitir la transacción",
+    "description": "error while broadcasting the transaction"
+  },
+  "html_popup_broadcasting_transaction": {
+    "message": "Transmitiendo transacción",
+    "description": "message while broadcasting the transaction"
+  },
+  "sign_buffer_ledger_error": {
+    "message": "Ledger no es compatible actualmente con la función Firmar Mensaje",
+    "description": "Error message if trying to sign a buffer with Ledger"
+  },
+  "error_ledger_denied_by_user": {
+    "message": "Transacción rechazada",
+    "description": "Transaction rejected on Ledger"
+  },
+  "error_ledger_locked": {
+    "message": "Por favor, desbloquee su Ledger",
+    "description": "Transaction rejected on Ledger because it is locked"
+  },
+  "error_ledger_failed_to_parse_transaction": {
+    "message": "Ledger no pudo analizar la transacción. Contáctenos en Discord",
+    "description": "transaction parsing failed on Ledger"
+  },
+  "error_ledger_bad_state": {
+    "message": "Ledger detectó un error y cambió a modo bloqueado. Por favor, reinicie su dispositivo y vuelva a intentarlo",
+    "description": "Bad state error on Ledger"
+  },
+  "error_ledger_internal_error": {
+    "message": "Error interno de Ledger. Intente reiniciar su dispositivo y vuelva a intentarlo",
+    "description": "Internal error on Ledger"
+  },
+  "error_ledger_sign_hash": {
+    "message": "Hubo un error al firmando la transacción a ciegas.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_app_not_supported": {
+    "message": "Parece que tu aplicación no es compatible. Asegúrate de que la aplicación de Hive se está ejecutando en tu Ledger.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_version_not_supported": {
+    "message": "La versión de tu aplicación Ledger's Hive puede estar desactualizada. Actualízala e inténtalo de nuevo.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_no_hash_sign_policy": {
+    "message": "La firma a ciegas no está autorizada en tu dispositivo. Por favor, activa 'Firmar Hash' en la configuración de la aplicación Hive.",
+    "description": "when user hasn't allowed hash sign policyon his ledger"
+  },
+  "error_ledger_hive_app_not_opened": {
+    "message": "Por favor, abre la aplicación Hive en tu Ledger.",
+    "description": "when user hasn't allowed hash sign policyon his ledger"
+  },
+  "popup_html_need_active_key_for_claim_savings": {
+    "message": "Necesitas añadir tu llave activa a Keychain para reclamar los ahorros",
+    "description": "automated tasks => need active key claim savings"
+  },
+  "popup_html_need_active_key_for_claim_accounts": {
+    "message": "Necesitas añadir tu llave activa a Keychain para reclamar cuentas",
+    "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_need_posting_key_to_claim_rewards": {
+    "message": "Necesitas añadir tu llave activa a Keychain para reclamar cuentas",
+    "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_cant_automatically_claim_ledger": {
+    "message": "No puede reclamar automáticamente porque su llave está guardada en Ledger",
+    "description": "automated tasks => cant claim with Ledger"
+  },
+  "popup_html_not_enough_rc_to_claim_account": {
+    "message": "No tienes RC suficiente para comprar una cuenta.",
+    "description": "automated tasks => need more RC to claim account"
+  },
+  "popup_html_validate_transaction_on_ledger": {
+    "message": "Confirma la transacción en tu Ledger",
+    "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "popup_html_add_account_with_ledger": {
+    "message": "Añadir desde Ledger",
+    "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "add_key_from_ledger": {
+    "message": "Enlazar llave",
+    "description": "Title of add key from ledger page"
+  },
+  "add_accounts_from_ledger": {
+    "message": "Añadir cuentas desde Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "add_accounts_from_ledger_finished": {
+    "message": "Añadir cuentas desde Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "synchronize_ledger_button": {
+    "message": "Enlazar Ledger",
+    "description": "Synchronize Ledger button"
+  },
+  "ledger_select_account_caption": {
+    "message": "Selecciona las cuentas que deseas importar",
+    "description": "Select account caption"
+  },
+  "ledger_add_missing_keys_caption": {
+    "message": "Algunas de las llaves faltan para esta cuenta. Por favor, añádelas manualmente para poder usar completamente su cuenta, u omita este paso.",
+    "description": "Select account caption"
+  },
+  "ledger_add_key_use_master_key": {
+    "message": "Usar llave maestra",
+    "description": "Ledger add using master key"
+  },
+  "ledger_select_accounts": {
+    "message": "Seleccionar cuentas",
+    "description": "Ledger add using master key"
+  },
+  "popup_html_next": {
+    "message": "Siguiente",
+    "description": "General word"
+  },
+  "popup_html_previous": {
+    "message": "Anterior",
+    "description": "General word"
+  },
+  "select_account_from_ledger": {
+    "message": "Seleccionar cuentas",
+    "description": "Select accounts to import from Ledger"
+  },
+  "ledger_add_missing_keys_to": {
+    "message": "Agregar llaves",
+    "description": "Add missing keys when import account from Ledger"
+  },
+  "ledger_account_discovery_caption": {
+    "message": "Vincula tu Ledger para usar tus cuentas en Keychain",
+    "description": "synchronize ledger caption"
+  },
+  "no_account_found_on_ledger_error": {
+    "message": "No se ha encontrado ninguna cuenta en tu Ledger. Asegúrate de que has añadido al menos una y vuelve a intentarlo.",
+    "description": "synchronize ledger caption"
+  },
+  "all_ledger_accounts_already_imported": {
+    "message": "Todas las cuentas de tu Ledger ya han sido vinculadas a Keychain",
+    "description": "while synchronizing ledger"
+  },
+  "add_accounts_from_ledger_sucessful": {
+    "message": "Su cuenta(s) se ha añadido correctamente a Keychain",
+    "description": "Synchronize Ledger success message"
+  },
+  "add_key_from_ledger_sucessful": {
+    "message": "Llave vinculada con éxito a Keychain. Ahora puede cerrar esta pestaña.",
+    "description": "Synchronize Ledger success message"
+  },
+  "popup_html_ledger_unknown_error": {
+    "message": "Ha ocurrido un error desconocido. Por favor, reinicie su Ledger y vuelva a intentarlo",
+    "description": "Ledger unknown error"
+  },
+  "add_key_from_ledger_caption": {
+    "message": "Vincula tu Ledger a Keychain para usar esta llave",
+    "description": "Ledger add key"
+  },
+  "ledger_discover_key": {
+    "message": "Confirmar",
+    "description": "Discover key on Ledger"
+  },
+  "popup_html_token_swaps": {
+    "message": "Intercambios",
+    "description": "Token swaps"
+  },
+  "html_popup_swaps_slipperage": {
+    "message": "Deslizamiento",
+    "description": "Token swaps : Slippage"
+  },
+  "html_popup_swaps_process_swap": {
+    "message": "Intercambiar",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_final_price": {
+    "message": "≈ $1 $2",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_slippage_definition": {
+    "message": "En cada paso del swap, comprobamos si el resultado final es superior a la estimación menos el deslizamiento. Si no es así, se cancelará el intercambio y se devolverán los fondos. Tenga en cuenta que algunos swaps requieren varias operaciones y sus fondos pueden ser devueltos en un token diferente.",
+    "description": "Token swaps : process"
+  },
+  "local": {
+    "message": "Local",
+    "description": "generic word"
+  },
+  "encode_with_memo_key_in_ledger": {
+    "message": "Tu llave de memo está almacenada en Ledger. Ledger actualmente no soporta la codificación del memo",
+    "description": "Error while trying to encode a memo with memo key in ledger"
+  },
+  "decode_with_memo_key_in_ledger": {
+    "message": "Tu llave de memo está almacenada en Ledger. Ledger actualmente no soporta la decodificación del memo",
+    "description": "Error while trying to decode a memo with memo key in ledger"
+  },
+  "ledger_signing_hash": {
+    "message": "Keychain está solicitando a Ledger que firme el siguiente hash. Asegúrese de que corresponde a lo que se muestra en su Ledger. <br /> $1",
+    "description": "Ledger signing hash confirmation"
+  },
+  "token_value": {
+    "message": "Valor total",
+    "description": "Value of token in USD"
+  },
+  "token": {
+    "message": "Token",
+    "description": "Value of token in USD"
+  },
+  "liquid_balance": {
+    "message": "Saldo líquido",
+    "description": "Value of token in USD"
+  },
+  "ledger_link_device": {
+    "message": "Vincular dispositivo",
+    "description": "link button"
+  },
+  "ledger_link_ledger_device": {
+    "message": "Vincular dispositivo Ledger",
+    "description": "link button"
+  },
+  "ledger_link_device_caption": {
+    "message": "Vincula tu dispositivo con tu navegador para poder usarlo dentro de Keychain",
+    "description": "link device caption"
+  },
+  "ledger_link_device_linked": {
+    "message": "Dispositivo vinculado con éxito a Ledger",
+    "description": "link device success"
+  },
+  "ledger_reboot_with_ledger_live_error": {
+    "message": "Se ha detectado un error en tu Ledger. Por favor, usa Ledger Live para reiniciar tu Ledger e inténtalo de nuevo",
+    "description": "link device error"
+  },
+  "ledger_import_account_has_ledger": {
+    "message": "Hemos detectado una cuenta usando Ledger dentro de las cuentas que importaste. Para poder usarlo, por favor haz clic <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>aquí</a> para vincular tu Ledger.",
+    "description": "link device error"
+  },
+  "broadcast_error_transaction_expired": {
+    "message": "Su transacción ha expirado. Por favor, intente transmitirla de nuevo.",
+    "description": "transaction expireed error"
+  },
+  "html_popup_swap_token_confirm_title": {
+    "message": "Confirmar el intercambio de tokens",
+    "description": "Confirm token swap"
+  },
+  "html_popup_swap_token_confirm_message": {
+    "message": "Estás a punto de iniciar un intercambio de tokens usando Keychain. Puedes rastrear su estado desde la pantalla de historial de intercambio.",
+    "description": "confirm token swap message"
+  },
+  "html_popup_swap_swap_id": {
+    "message": "ID de intercambio",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_from": {
+    "message": "Intercambiando desde",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_to": {
+    "message": "Intercambiando a",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_amount": {
+    "message": "Estimación de intercambio",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_expected_amount": {
+    "message": "Cantidad esperada",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_slipperage": {
+    "message": "Deslizamiento",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_to_swap_account": {
+    "message": "Enviado $1 a @$2",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_successful": {
+    "message": "¡Su intercambio está en camino! ¡Gracias por usar nuestro servicio!",
+    "description": "token swap"
+  },
+  "html_popup_swap_error_sending_token": {
+    "message": "Hubo un error al enviar tokens a @$1.",
+    "description": "token swap general error message"
+  },
+  "local_accounts": {
+    "message": "Cuentas locales",
+    "description": "General word"
+  },
+  "users": {
+    "message": "Usuarios",
+    "description": "General word"
+  },
+  "exchanges": {
+    "message": "Exchanges",
+    "description": "General word"
+  },
+  "html_popup_token_swaps_history": {
+    "message": "Historial de intercambios",
+    "description": "token swap history"
+  },
+  "swap_refresh_countdown": {
+    "message": "Actualizando en $1s",
+    "description": "swap token auto refresh"
+  },
+  "swap_status_started": {
+    "message": "En proceso",
+    "description": "swap status"
+  },
+  "swap_status_completed": {
+    "message": "Completado",
+    "description": "swap status"
+  },
+  "swap_status_pending": {
+    "message": "Pendiente",
+    "description": "swap status"
+  },
+  "swap_status_canceled_due_to_error": {
+    "message": "Cancelado",
+    "description": "swap status"
+  },
+  "swap_status_returned": {
+    "message": "Devuelto",
+    "description": "swap status"
+  },
+  "swap_status_refunded": {
+    "message": "Reembolsado",
+    "description": "swap status"
+  },
+  "swap_copied_to_clipboard": {
+    "message": "¡Copiado al portapapeles!",
+    "description": "on preferences when clicking on swap id"
+  },
+  "swap_advanced_parameters": {
+    "message": "Parámetros avanzados",
+    "description": "Swap advanced parameters"
+  },
+  "swap_no_history": {
+    "message": "Tu historial de intercambios está vacío",
+    "description": "History swap empty"
+  },
+  "swap_under_maintenance": {
+    "message": "El Intercambio de Keychain está en mantenimiento, por favor inténtalo de nuevo más tarde",
+    "description": "Keychain swap under maintenance"
+  },
+  "swap_start_end_token_should_be_different": {
+    "message": "Por favor, elija dos tokens diferentes",
+    "description": "Start and end tokens should be differents"
+  },
+  "swap_not_enough_volume_error": {
+    "message": "No hay volumen suficiente en este par de tokens para realizar este intercambio",
+    "description": "Operation impossible because not enough volume"
+  },
+  "swap_min_slippage_error": {
+    "message": "El deslizamiento debe ser de al menos $1%",
+    "description": "Minimum slippage error"
+  },
+  "swap_caption": {
+    "message": "Keychain compara todos los diferentes proveedores para asegurarse de que obtiene sus tokens con la mejor tarifa posible.",
+    "description": "Caption"
+  },
+  "swap_no_token": {
+    "message": "No tienes HIVE, HBD o algún token de Hive-Engine para intercambiar de momento.",
+    "description": "Caption"
+  },
+  "swap_fee": {
+    "message": "Tarifa",
+    "description": "Swap Fee"
+  },
+  "swap_last_update": {
+    "message": "Última actualización: $1",
+    "description": "swap last update"
+  },
+  "swap_see_transaction": {
+    "message": "Ver transacción",
+    "description": "swap see transaction"
+  },
+  "hive_tx_network_error": {
+    "message": "Error de tiempo de espera de la red: ¡Por favor, compruebe su conexión!",
+    "description": "General word"
+  },
+  "not_enough_rc": {
+    "message": "No tienes suficiente RC para transmitir esta operación. Por favor, espera a que tu RC se rellenen o haga un Power Up.",
+    "description": "Need more RC"
+  },
+  "swap_no_estimate_error": {
+    "message": "Necesitas un estimado para poder procesar",
+    "description": "No estimate error"
+  },
+  "swap_server_unavailable": {
+    "message": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde",
+    "description": "Swap server not responding error"
+  },
+  "bgd_ops_swap_start_success": {
+    "message": "¡El intercambio comenzó con éxito! Recibirás tus tokens en unos momentos.",
+    "description": "Success on swap request"
+  },
+  "service_unavailable_message": {
+    "message": "Este servicio no está disponible temporalmente. Estamos trabajando en arreglar el problema, disculpe las molestias.",
+    "description": "General service unavailable page message"
+  },
+  "swap_autorefresh": {
+    "message": "Actualizando en $1s",
+    "description": "Swap autorefresh"
+  },
+  "swap_transfer_not_sent": {
+    "message": "Transferencia no enviada",
+    "description": "When transfer not sent, swap status"
+  },
+  "swap_cannot_switch_tokens": {
+    "message": "No se pueden cambiar los tokens porque usted no tiene $1",
+    "description": "When trying to switch tokens (invert start and end)"
+  },
+  "swap_layer_two_delayed": {
+    "message": "Hive Engine está actualmente desactualizado. El intercambio puede tardar más de lo habitual y tiene una mayor probabilidad de abortar debido al deslizamiento.",
+    "description": "When layer two is delayed"
+  },
+  "swap_min_hive_value_error": {
+    "message": "El valor mínimo debe ser equivalente a 1 HIVE (actualmente $1 HIVE)",
+    "description": "When equilavent hive value is too small"
+  },
+  "tx_missing_active_auth": {
+    "message": "La llave activa es incorrecta. Actualice su llave e inténtelo de nuevo.",
+    "description": "Error message from blockchain: Active key incorrect"
+  },
+  "tx_missing_posting_auth": {
+    "message": "La llave de posteo es incorrecta. Actualice su llave e inténtelo de nuevo.",
+    "description": "Error message from blockchain: Posting key incorrect"
+  },
+  "ecosystem": {
+    "message": "Ecosistema",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_social": {
+    "message": "Social",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_finance": {
+    "message": "Defi",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_gaming": {
+    "message": "Juegos",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_nft": {
+    "message": "NFT",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_tool": {
+    "message": "Herramienta",
+    "description": "Ecosystem"
+  },
+  "ecosystem_category_all": {
+    "message": "Todo",
+    "description": "Ecosystem"
+  },
+  "popup_html_theme": {
+    "message": "Tema",
+    "description": "Theme"
+  },
+  "popup_html_logout": {
+    "message": "Cerrar sesión",
+    "description": "Logout"
+  },
+  "validation_error_mandatory": {
+    "message": "Este campo es obligatorio",
+    "description": "Form validation error: required"
+  },
+  "validation_error_greater_than_value": {
+    "message": "El valor debe ser mayor de $1",
+    "description": "Form validation error: should be greater than"
+  },
+  "validation_error_less_or_equal_value": {
+    "message": "El valor debe ser menor o igual a $1",
+    "description": "Form validation error: should be less than (or equal)"
+  },
+  "message_container_title_success": {
+    "message": "Éxito!",
+    "description": "Message container success title"
+  },
+  "message_container_title_fail": {
+    "message": "¡Ups!",
+    "description": "Message container fail title"
+  },
+  "message_container_title_warning": {
+    "message": "¡Ups!",
+    "description": "Message container fail title"
+  },
+  "message_container_close_button": {
+    "message": "Cerrar",
+    "description": "Message container success title"
+  },
+  "accept_terms_and_condition": {
+    "message": "He leído y estoy de acuerdo con los <a target='__blank' href='https://hive-keychain.com/#/terms'>Términos de Servicio</a> y las <a target='__blank' href='https://hive-keychain.com/#/privacy'>Políticas de Privacidad</a> de Hive Keychain",
+    "description": "Accept terms and conditions text"
+  },
+  "delete_label": {
+    "message": "Borrar",
+    "description": "General message: delete"
+  },
+  "html_popup_copy_error": {
+    "message": "Copiar error",
+    "description": "Copy error message"
+  },
+  "error_message_title": {
+    "message": "¡Ups! Hubo un error",
+    "description": "there was an error"
+  },
+  "popup_html_currency": {
+    "message": "Moneda",
+    "description": "Currency"
+  },
+  "popup_html_savings_operation_type": {
+    "message": "Tipo de operación",
+    "description": "Savings operation type (withdrawal/deposit)"
+  },
+  "popup_html_pending_savings_withdrawal": {
+    "message": "Retirando $1 $2",
+    "description": "Savings"
+  },
+  "popup_html_favorite_user_nickname": {
+    "message": "Nombre de usuario",
+    "description": "Favorite user nickname"
+  },
+  "dialog_import_file_chose_file": {
+    "message": "Elegir un archivo",
+    "description": "Import file button title"
+  },
+  "dialog_import_file_chose_another_file": {
+    "message": "Elegir otro archivo",
+    "description": "Import file button title"
+  },
+  "html_popup_sign_up_need_accept_pp": {
+    "message": "Necesitas aceptar los términos y condiciones, y las políticas de privacidad antes de continuar",
+    "description": "Need to accept pp on sign up page"
+  },
+  "html_tokens_none_available": {
+    "message": "No tienes ningún token de Hive Engine. Puedes comprar alguno a través de nuestra función de intercambio.",
+    "description": "When no token available"
+  },
+  "html_tokens_issuer": {
+    "message": "Emisor",
+    "description": "Token issuer"
+  },
+  "html_add_available_authorities_caption": {
+    "message": "Alternativamente, puede utilizar una cuenta autorizada de la siguiente lista",
+    "description": "available authorities caption"
+  },
+  "html_popup_successfully_add_key": {
+    "message": "Llave añadida con éxito",
+    "description": "Message on successful key added"
+  },
+  "html_popup_pending_unstake": {
+    "message": "Unstake $1 pendiente",
+    "description": "Pending unstake"
+  },
+  "html_popup_total_pending_unstake": {
+    "message": "Total pendiente de unstake",
+    "description": "Total pending unstake"
+  },
+  "html_popup_next_unstake_transaction": {
+    "message": "Transacción siguiente",
+    "description": "Next transaction unstake"
+  },
+  "html_popup_remaining_transaction": {
+    "message": "$1 transacciones restantes",
+    "description": "remaining transaction unstake"
+  },
+  "html_popup_unstake_per_transaction": {
+    "message": "$1 $2",
+    "description": "remaining transaction unstake"
+  },
+  "html_popup_cancel_unstaking_message": {
+    "message": "Por favor, confirma que quieres cancelar tu unstake",
+    "description": "cancel unstake confirm message"
+  },
+  "html_popup_canceling_unstake_token": {
+    "message": "Cancelando unstake del token",
+    "description": "Loading message unstake"
+  },
+  "html_popup_cancel_unstake_token_success": {
+    "message": "Cancelación de unstake exitosa",
+    "description": "Loading message unstake"
+  },
+  "html_popup_cancel_unstake_token_fail": {
+    "message": "Cancelación de unstake fallida",
+    "description": "Loading message unstake"
+  },
+  "html_popup_ecosystem_retrieving_error": {
+    "message": "Se ha producido un error al cargar el ecosistema. Inténtalo de nuevo más tarde",
+    "description": "Ecosystem retrieving error"
+  },
+  "html_popup_click_to_refresh": {
+    "message": "Pulse para actualizar",
+    "description": "explanation for keychain icon click"
   }
 }

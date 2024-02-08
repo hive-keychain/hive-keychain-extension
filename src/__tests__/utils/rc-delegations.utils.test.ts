@@ -1,5 +1,5 @@
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 

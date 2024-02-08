@@ -1,3 +1,5 @@
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { Asset } from '@hiveio/dhive';
 import { FundedOption } from '@interfaces/proposal.interface';
 import moment from 'moment';
@@ -5,8 +7,6 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
 
 describe('proposal.utils tests:\n', () => {
   const constants = {

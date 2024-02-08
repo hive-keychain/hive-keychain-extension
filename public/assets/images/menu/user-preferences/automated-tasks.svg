@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="40" fill="none" viewBox="0 0 45 40">
+  <rect width="43.37" height="38.948" x=".423" y="-.423" stroke="var(--menu-icon-border-color)" stroke-width="var(--menu-icon-border-width)" rx="19.474" transform="matrix(1 0 0 -1 0 38.948)"/>
+  <path stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.27" d="M22.278 17.66h3.937m-8.43 0 .562.563 1.688-1.688m2.243 6.375h3.937m-8.43 0 .562.563 1.688-1.688"/>
+  <path stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.27" d="M19.75 27.5h4.5c3.75 0 5.25-1.5 5.25-5.25v-4.5c0-3.75-1.5-5.25-5.25-5.25h-4.5c-3.75 0-5.25 1.5-5.25 5.25v4.5c0 3.75 1.5 5.25 5.25 5.25Z"/>
+</svg>

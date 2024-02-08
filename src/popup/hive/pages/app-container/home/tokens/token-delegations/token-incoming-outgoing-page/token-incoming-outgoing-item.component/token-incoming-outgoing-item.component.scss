@@ -1,0 +1,11 @@
+.delegation-row {
+  @include delegation-row();
+
+  .pending-undelegation {
+    display: flex;
+    flex: 1;
+    .expiration-date {
+      flex: 1;
+    }
+  }
+}

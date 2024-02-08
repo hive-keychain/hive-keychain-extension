@@ -10,6 +10,7 @@ export interface Keys {
 }
 
 export enum KeyType {
+  OWNER = 'OWNER',
   ACTIVE = 'ACTIVE',
   POSTING = 'POSTING',
   MEMO = 'MEMO',

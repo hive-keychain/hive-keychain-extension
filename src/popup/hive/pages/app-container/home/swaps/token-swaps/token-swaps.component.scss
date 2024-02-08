@@ -1,0 +1,117 @@
+.token-swaps {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+  overflow: hidden;
+  flex: 1;
+  flex-flow: column wrap;
+
+  .caption {
+    @include caption();
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+
+    .fee {
+      @include poppins400($caption-font-size);
+      color: var(--main-font-color);
+    }
+
+    .swap-history-button:hover {
+      --swap-history-button-icon-color: white;
+      --swap-history-button-border-color: #{$red};
+      --swap-history-button-background: #{$red};
+    }
+  }
+
+  .form-container {
+    row-gap: 16px;
+    .form-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      row-gap: 6px;
+      .start-token,
+      .end-token {
+        display: flex;
+        flex-direction: column;
+        input::-webkit-input-placeholder {
+          font-size: 14px;
+        }
+        .left-image {
+          height: 20px !important;
+          width: 20px !important;
+          border-radius: unset !important;
+        }
+
+        .inputs {
+          display: grid;
+          align-items: flex-end;
+          grid-template-columns: 1fr 1fr;
+          column-gap: 12px;
+        }
+        .available {
+          color: var(--main-font-color);
+          font-style: italic;
+          font-size: 14px;
+          margin-top: 4px;
+          margin-left: 20px;
+        }
+      }
+
+      .swap-icon {
+        align-self: center;
+      }
+
+      .end-token {
+        .final-value {
+          font-size: 18px;
+          font-style: italic;
+          padding-top: 6px;
+        }
+      }
+
+      .advanced-parameters {
+        margin-top: 5px;
+        color: var(--main-font-color);
+        font-size: 18px;
+        .title-panel {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          user-select: none;
+          column-gap: 8px;
+          align-items: center;
+
+          .advanced-parameters-toggle {
+            @include open-close-rotate();
+          }
+        }
+        .advanced-parameters-container {
+          padding-top: 8px;
+          padding-bottom: 8px;
+        }
+      }
+    }
+  }
+
+  .maintenance-mode {
+    @include no-data-panel();
+  }
+
+  .rotating-logo {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+}

@@ -6,13 +6,13 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
-import { KeychainError } from 'src/keychain-error';
 import {
   AccountCreationType,
   AccountCreationUtils,
-} from 'src/utils/account-creation.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+} from '@popup/hive/utils/account-creation.utils';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastCreateClaimedAccount = async (

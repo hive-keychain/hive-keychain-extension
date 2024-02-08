@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+  <path stroke="var(--favorite-account-save-color)" stroke-linecap="round" stroke-linejoin="round" d="M10 18.333c4.583 0 8.333-3.75 8.333-8.334 0-4.583-3.75-8.333-8.333-8.333s-8.333 3.75-8.333 8.333c0 4.584 3.75 8.334 8.333 8.334Z"/>
+  <path stroke="var(--favorite-account-save-color)" stroke-linecap="round" stroke-linejoin="round" d="m6.458 10 2.359 2.36 4.725-4.717"/>
+</svg>

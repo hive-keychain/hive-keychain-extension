@@ -1,0 +1,17 @@
+.survey {
+  .caption {
+    font-size: 14px !important;
+  }
+
+  .image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      border-radius: 8px;
+      border: 1px solid white;
+      height: auto;
+      width: 240px;
+    }
+  }
+}

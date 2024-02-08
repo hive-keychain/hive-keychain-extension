@@ -1,6 +1,6 @@
+import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
+import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import App from '@popup/App';
-import { Icons } from '@popup/icons.enum';
 import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -13,8 +13,8 @@ import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-te
 import dataTestIdSpan from 'src/__tests__/utils-for-testing/data-testid/data-testid-span';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { DelegationUtils } from 'src/utils/delegation.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import { Icons } from 'src/common-ui/icons.enum';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 describe('delegations.component tests:\n', () => {
   afterEach(() => {
@@ -25,7 +25,7 @@ describe('delegations.component tests:\n', () => {
   describe('handling errors on load:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
           app: {
@@ -63,7 +63,7 @@ describe('delegations.component tests:\n', () => {
   describe('no errors on load:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
-        <App />,
+        <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {

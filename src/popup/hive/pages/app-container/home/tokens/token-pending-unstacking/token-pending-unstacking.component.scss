@@ -1,0 +1,76 @@
+.pending-unstake-token-page {
+  display: flex;
+  .panel {
+    flex: 1;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    overflow: hidden;
+    .total {
+      @include poppins500(16px);
+      color: var(--main-font-color);
+      display: flex;
+      justify-content: space-between;
+      .label {
+        max-width: 60%;
+      }
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      margin: 0px -24px;
+      max-height: calc(100% - 24px);
+      overflow: auto;
+      margin-bottom: 16px;
+      .unstaking-row {
+        @include small-card();
+        color: var(--main-font-color);
+        column-gap: 8px;
+        .left {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          .top {
+          }
+          .bottom,
+          .middle {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            column-gap: 8px;
+            opacity: 0.6;
+            font-style: italic;
+            font-size: 11px;
+
+            .svg-icon {
+              @include icon-size(16px);
+              div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+
+              &.next-tx-amount {
+                transform: rotate(-90deg);
+              }
+            }
+          }
+        }
+        .right {
+        }
+
+        .cancel-unstake {
+          display: none;
+        }
+        &:hover {
+          .cancel-unstake {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

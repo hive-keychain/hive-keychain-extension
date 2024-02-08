@@ -1,0 +1,17 @@
+.automated-tasks-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  row-gap: 10px;
+  padding: 0px 24px;
+  padding-bottom: 16px;
+
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+  .intro {
+    @include caption();
+  }
+}

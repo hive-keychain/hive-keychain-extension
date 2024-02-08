@@ -1,0 +1,9 @@
+.wallet-history-item {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  @include small-card-no-padding();
+  color: var(--main-font-color);
+  align-items: unset;
+  border-radius: 22px;
+}

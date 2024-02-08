@@ -6,6 +6,8 @@ import {
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
 import { RequestsHandler } from '@background/requests/request-handler';
+import AccountUtils from '@hiveapp/utils/account.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
@@ -25,8 +27,6 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { KeychainError } from 'src/keychain-error';
-import AccountUtils from 'src/utils/account.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 describe('authority tests:\n', () => {
   const commonValues = {

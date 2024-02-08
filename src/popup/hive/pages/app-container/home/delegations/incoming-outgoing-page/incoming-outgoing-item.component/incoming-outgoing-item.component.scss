@@ -1,0 +1,15 @@
+.delegation-row {
+  @include delegation-row();
+
+  .pending-undelegation {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    padding: 0px 16px;
+    box-sizing: border-box;
+    color: var(--main-font-color);
+    .expiration-date {
+      flex: 1;
+    }
+  }
+}

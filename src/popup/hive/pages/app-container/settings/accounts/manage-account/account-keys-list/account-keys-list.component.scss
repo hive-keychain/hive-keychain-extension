@@ -1,0 +1,71 @@
+.account-keys-list {
+  @include pageLayoutRowGap;
+  padding: 0px 24px;
+  padding-bottom: 24px;
+
+  .keys-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    padding: 0px 8px;
+  }
+
+  scroll-behavior: smooth;
+}
+
+.qr-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+
+  h3 {
+    margin-top: 0;
+    text-align: center;
+    color: var(--main-font-color);
+    @include poppins600(16px);
+  }
+  .overlay {
+    background: #2e374a;
+    opacity: 0.8;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+
+  .qr-code-popup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    z-index: 2;
+    border-radius: 20px;
+    row-gap: 32px;
+
+    .qr-code-disclaimer {
+      @include caption;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 0;
+      max-width: 256px;
+      margin-bottom: -20px;
+      text-align: justify;
+    }
+
+    .qr-code-container {
+      border-radius: 20px;
+      border: 4px solid var(--qrcode-border-color);
+      padding: 12px;
+      max-width: 240px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

@@ -1,9 +1,5 @@
 import React from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
-import './request-username.scss';
+import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 
 type Props = {
   accounts: string[];
@@ -14,41 +10,14 @@ type Props = {
 const RequestUsername = ({ accounts, username, setUsername }: Props) => {
   const accountsList = accounts.map((e) => ({ label: e, value: e }));
 
-  const customLabelRender = (
-    selectProps: SelectRenderer<typeof accountsList[0]>,
-  ) => {
-    return (
-      <div
-        className="selected-account-panel"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="selected-account-name">{username}</div>
-      </div>
-    );
-  };
-
-  const customItemRender = (
-    selectProps: SelectItemRenderer<typeof accountsList[0]>,
-  ) => {
-    return (
-      <div>
-        <div className="account-name">{selectProps.item.label}</div>
-      </div>
-    );
-  };
-  if (!accountsList.length) return null;
-
   return (
     <div className="select-account-section">
-      <Select
-        values={[{ label: username, value: username }]}
-        options={accountsList!}
-        onChange={(e) => {
-          setUsername(e[0].value);
-        }}
-        contentRenderer={customLabelRender}
-        className="select-account-select"
+      <ComplexeCustomSelect
+        selectedItem={{ label: username, value: username }}
+        options={accountsList}
+        setSelectedItem={(item) => setUsername(item.value)}
+        label="popup_html_username"
+        background="white"
       />
     </div>
   );

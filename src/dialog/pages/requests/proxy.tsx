@@ -1,6 +1,7 @@
 import { RequestId, RequestProxy } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
@@ -30,6 +31,8 @@ const Proxy = (props: Props) => {
       {...props}
       {...anonymousProps}>
       {renderUsername()}
+      <Separator type={'horizontal'} fullSize />
+
       <RequestItem
         title="popup_proxy"
         content={

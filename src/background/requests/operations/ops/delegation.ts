@@ -8,10 +8,10 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import { DelegationUtils } from 'src/utils/delegation.utils';
-import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastDelegation = async (

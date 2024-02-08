@@ -1,0 +1,54 @@
+.incoming-outgoing-page {
+  @include pageLayoutRowGap;
+  row-gap: 24px;
+  overflow: hidden;
+  flex: 1;
+
+  .pending-disclaimer {
+    @include caption;
+  }
+  .list-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    height: 100%;
+    overflow: hidden;
+    .panel {
+      flex: 1;
+      padding: 0 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      overflow: hidden;
+      .tooltip-container {
+        width: 100%;
+      }
+      &.pending-undelegations {
+        flex: unset;
+        height: max-content;
+        max-height: 50%;
+      }
+      .total {
+        @include poppins500(16px);
+        color: var(--main-font-color);
+        display: flex;
+        justify-content: space-between;
+        .label {
+          max-width: 60%;
+        }
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        margin: 0px -24px;
+        max-height: calc(100% - 24px);
+        overflow: auto;
+        margin-bottom: 16px;
+      }
+    }
+  }
+}

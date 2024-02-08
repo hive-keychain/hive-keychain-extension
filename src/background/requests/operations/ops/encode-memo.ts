@@ -6,7 +6,7 @@ import {
   RequestEncode,
   RequestId,
 } from '@interfaces/keychain.interface';
-import AccountUtils from 'src/utils/account.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 export const encodeMessage = async (
   requestHandler: RequestsHandler,
   data: RequestEncode & RequestId,

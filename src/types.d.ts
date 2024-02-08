@@ -7,3 +7,11 @@ interface Window {
   dataLayer: Array<any>;
   gtag: (a: string, b: any, c?: any) => void;
 }
+
+declare module '*.svg' {
+  import React = require('react');
+
+  export const ReactComponent: React.SFC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
+}

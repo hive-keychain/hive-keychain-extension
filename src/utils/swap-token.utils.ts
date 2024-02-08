@@ -3,14 +3,14 @@ import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
+import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { IStep, ISwap, SwapStatus } from 'hive-keychain-commons';
-import { BaseCurrencies } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import TokensUtils from 'src/utils/tokens.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 
 const getSwapTokenStartList = async (account: ExtendedAccount) => {
   let userTokenList: TokenBalance[] = await TokensUtils.getUserBalance(
@@ -42,8 +42,6 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
 
   return userTokenList;
 };
-
-const getSwapTokenEndList = () => {};
 
 const getEstimate = async (
   startToken: string,
@@ -189,7 +187,6 @@ const setAsInitiated = async (swapId: ISwap['id']) => {
 
 export const SwapTokenUtils = {
   getSwapTokenStartList,
-  getSwapTokenEndList,
   processSwap,
   getEstimate,
   saveEstimate,

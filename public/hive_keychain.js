@@ -981,6 +981,53 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
+  /**
+   * Request swap
+   * @example
+   * // Let's swap 5 HIVE to DEC
+   * // Estimated steps can be obtained via KeychainSDK.swaps.getEstimation()
+   *
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestSwap('keychain', 'HIVE', 'DEC', 5, 1, estimatedSteps, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} startToken Incoming token
+   * @param {String} endToken Outgoing token
+   * @param {number} amount Amount of tokens to be swapped
+   * @param {number} slippage Max slippage
+   * @param {Object} steps Steps returned by KeychainSDK.swaps.getEstimation(), of type IStep[]
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestSwap: function (
+    username,
+    startToken,
+    endToken,
+    amount,
+    slippage,
+    steps,
+    callback,
+    rpc,
+  ) {
+    const request = {
+      type: 'swap',
+      username,
+      startToken,
+      endToken,
+      amount,
+      slippage,
+      steps,
+      rpc,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
   // Send the customEvent
   dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;

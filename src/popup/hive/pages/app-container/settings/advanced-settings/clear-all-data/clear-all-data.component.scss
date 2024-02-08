@@ -1,0 +1,16 @@
+.clear-all-data-page {
+  @include pageLayoutRowGap;
+  padding: 0px 24px;
+  .introduction {
+    @include caption();
+  }
+
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+  }
+}

@@ -1,0 +1,6 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="none" viewBox="0 0 35 35">
+  <circle cx="17.5" cy="17.5" r="17.125" fill="var(--claim-rewards-background-color)" stroke="var(--claim-rewards-border-color)" stroke-width=".75"/>
+  <path stroke="var(--claim-rewards-color)" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.27" d="M22.977 16.5h-12v6c0 2.25.75 3 3 3h6c2.25 0 3-.75 3-3v-6Zm1.148-2.25V15c0 .825-.398 1.5-1.5 1.5h-11.25c-1.148 0-1.5-.675-1.5-1.5v-.75c0-.825.352-1.5 1.5-1.5h11.25c1.102 0 1.5.675 1.5 1.5Z"/>
+  <path stroke="var(--claim-rewards-color)" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.27" d="M16.73 12.75h-4.14a.702.702 0 0 1 .023-.974l1.065-1.065a.72.72 0 0 1 1.012 0l2.04 2.04Zm4.673 0h-4.14l2.04-2.04a.72.72 0 0 1 1.012 0l1.065 1.066c.27.27.278.697.023.975Zm-6.698 3.75v3.855c0 .6.66.953 1.163.63l.705-.465a.75.75 0 0 1 .825 0l.667.45a.748.748 0 0 0 1.163-.622V16.5h-4.523Z"/>
+</svg>

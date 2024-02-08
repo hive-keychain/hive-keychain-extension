@@ -14,9 +14,9 @@ import {
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
-import AccountUtils from 'src/utils/account.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastAddAccountAuthority = async (

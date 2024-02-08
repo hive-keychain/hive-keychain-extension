@@ -1,3 +1,7 @@
+import AccountUtils, {
+  AccountErrorMessages,
+} from '@hiveapp/utils/account.utils';
+import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
@@ -10,9 +14,7 @@ import rcAccounts from 'src/__tests__/utils-for-testing/data/rc-accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import { KeychainError } from 'src/keychain-error';
-import AccountUtils, { AccountErrorMessages } from 'src/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('account.utils tests:\n', () => {
