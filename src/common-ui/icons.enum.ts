@@ -54,6 +54,9 @@ export enum SVGIcons {
   MENU_BUTTON = 'top-bar/menu-button',
   MENU_ABOUT = 'menu/about',
 
+  MENU_THEME_DARK = 'menu/theme/dark-theme',
+  MENU_THEME_LIGHT = 'menu/theme/light-theme',
+
   MENU_ACCOUNTS = 'menu/accounts',
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
