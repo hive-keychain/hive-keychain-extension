@@ -2,7 +2,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
@@ -45,6 +45,8 @@ const PortfolioComponent = () => {
   const [tokensBalanceList, setTokensBalanceList] = useState<TokenBalance[][]>(
     [],
   );
+  const [allTokens, setAllTokens] = useState<Token[]>([]);
+  const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
 
   useEffect(() => {
     init();
@@ -71,7 +73,37 @@ const PortfolioComponent = () => {
       loadGlobalProps();
       loadCurrencyPrices();
       loadUserTokens(localAccounts);
+      loadTokens();
+      loadTokensMarket();
       // setIsLoading(false);
+    }
+  };
+
+  const loadTokensMarket = async () => {
+    try {
+      const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
+      setTokenMarket(tokensMarket);
+      console.log({ tokensMarket });
+    } catch (error) {
+      console.log('Error loading tokens market', { error });
+    }
+  };
+
+  const loadTokens = async () => {
+    let tokens;
+    try {
+      tokens = await TokensUtils.getAllTokens();
+      console.log({ tokens });
+    } catch (err: any) {
+      console.log('Error getting tokens', { err });
+      //TODO add handlers for this or just console? //html_popup_tokens_timeout
+      // if (err.message.includes('timeout')) {
+      //   dispatch({
+      //     type: ActionType.SET_MESSAGE,
+      //     payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
+      //   });
+      // }
+      // throw err;
     }
   };
 
@@ -139,6 +171,9 @@ const PortfolioComponent = () => {
   const getRenderCell = (item: any, key: string) => {
     //TODO bellow check & add missing keys per item/object/div
     //TODO add to translations if needed or check if already there.
+
+    // console.log({ key, i: item[key] }); //TODO remove line
+
     if (!item[key]) return <div>-</div>;
 
     if (key === 'name') {
@@ -146,7 +181,7 @@ const PortfolioComponent = () => {
         return (
           <div
             className="avatar-username-container"
-            key={'totals-last-row-table'}>
+            key={'totals-last-row-table-totals'}>
             <div className="account-name">TOTALS</div>
           </div>
         );
@@ -154,13 +189,13 @@ const PortfolioComponent = () => {
         return (
           <div
             className="avatar-username-container"
-            key={'totals-last-row-table'}>
+            key={'totals-last-row-table-total-usd'}>
             <div className="account-name">USD VALUE</div>
           </div>
         );
       }
       return (
-        <div className="avatar-username-container">
+        <div className="avatar-username-container" key={'avatar-username'}>
           <PreloadedImage
             className="user-picture"
             src={`https://images.hive.blog/u/${item[key]}/avatar`}
@@ -172,7 +207,11 @@ const PortfolioComponent = () => {
       );
     } else {
       const formatedValue = getFormatedValue(String(item[key]), key);
-      return <div className="text">{formatedValue}</div>;
+      return (
+        <div className="text" key={`value-cell-${formatedValue}`}>
+          {formatedValue}
+        </div>
+      );
     }
   };
 
@@ -282,6 +321,20 @@ const PortfolioComponent = () => {
         (a, b) => Object.keys(b).length - Object.keys(a).length,
       );
 
+      //TODO ask Cedric:
+      //  - how to concile which tokens to show as columns.
+      //  - right now I am just taking the account who has the most tokens and getting all those keys.
+      //  - but what if another account has other tokens?
+      //  - one idea is after getting the account with most tokens, compare that list, map against each tokenBalance & add those tokens(keys) not found in the first one.
+      //  - order alphabetically & use.
+      //    - About the USD values:
+      //      - I can see the function takes into account delegations, stake, unstake.. to give a value.
+      //      - so basically I should also calculate each one of those, as the sum of each account and have one totalBalanceList, something like bellow:
+      //        [
+      //          {} as tokenBalance
+      //        ].
+      //      - note: all with accounts '' as that's not needed.
+
       const keysToUse = Object.keys(sortedPortfolioUserData[0]).map(
         (key) => key,
       );
@@ -298,15 +351,65 @@ const PortfolioComponent = () => {
 
       const totalTokens = filteredKeysToUse.map((key) => {
         const obj: { [key: string]: any } = {};
-        obj[key] = sortedPortfolioUserData.reduce((acc: number, curr: any) => {
-          if (curr[key]) {
-            return (acc += curr[key]);
-          }
-        }, 0);
+        obj[key] = (sortedPortfolioUserData as any).reduce(
+          (acc: number, curr: any) => {
+            if (curr[key]) {
+              // console.log({ val: curr[key], asNum: parseFloat(curr[key]) }); //TODO remove line
+              return (acc += parseFloat(curr[key]));
+            } else {
+              return acc;
+            }
+          },
+          0,
+        );
         return obj;
       });
 
-      console.log({ filteredKeysToUse, totalTokens });
+      let totalTokensAsPlainObjects: { [key: string]: any } = {};
+      for (const [key, value] of Object.entries(totalTokens!)) {
+        totalTokensAsPlainObjects = { ...totalTokensAsPlainObjects, ...value };
+      }
+
+      //calculate each total token value USD
+      const totalTokenUSDValue = Object.entries(totalTokensAsPlainObjects).map(
+        (key, value) => {
+          let obj: { [key: string]: any } = {};
+          obj[key[0]] = 0;
+          if (key[1] > 0) {
+            obj[key[0]] = TokensUtils.getHiveEngineTokenValue(
+              {
+                account: '',
+                balance: key[1].toString(),
+                symbol: key[0],
+                pendingUndelegations: '0',
+                pendingUnstake: '0',
+                delegationsIn: '0',
+                delegationsOut: '0',
+                stake: '0',
+                _id: 0,
+              } as TokenBalance,
+              tokenMarket,
+              currencyPrices.hive!,
+            ).toFixed(4);
+          }
+          return obj;
+        },
+      );
+
+      let totalTokensUSDAsPlainObjects: { [key: string]: any } = {};
+      for (const [key, value] of Object.entries(totalTokenUSDValue!)) {
+        totalTokensUSDAsPlainObjects = {
+          ...totalTokensUSDAsPlainObjects,
+          ...value,
+        };
+      }
+
+      console.log({
+        filteredKeysToUse,
+        totalTokens,
+        totalTokensAsPlainObjects,
+        totalTokensUSDAsPlainObjects,
+      });
 
       setData({
         nodes: [
@@ -316,6 +419,7 @@ const PortfolioComponent = () => {
             balance: totalBalance,
             hbd_balance: totalHBDBalance,
             vesting_shares: totalHP,
+            ...totalTokensAsPlainObjects,
           } as any,
           {
             name: 'totals_usd',
@@ -332,6 +436,7 @@ const PortfolioComponent = () => {
                 globalProperties.globals,
               ) * (currencyPrices.hive.usd ?? 1),
             ),
+            ...totalTokensUSDAsPlainObjects,
           } as any,
         ],
       });
