@@ -87,10 +87,10 @@ const SavingsPage = ({
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<SavingsForm>>(rules, {
-        context: { maxAmount: liquid },
+        context: { maxAmount: maxAmount },
         errors: { render: true },
       });
-      return resolver(values, { maxAmount: liquid }, options);
+      return resolver(values, { maxAmount: maxAmount }, options);
     },
   });
 
@@ -104,6 +104,8 @@ const SavingsPage = ({
   >();
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
     useState<AutoCompleteValues>({ categories: [] });
+
+  const [maxAmount, setMaxAmount] = useState<number>(0);
 
   const currencyOptions = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -143,8 +145,17 @@ const SavingsPage = ({
     const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
     const hive = FormatUtils.toNumber(activeAccount.account.balance);
 
-    setLiquid(watch('currency') === 'hive' ? hive : hbd);
-    setSavings(watch('currency') === 'hive' ? hiveSavings : hbdSavings);
+    const liquidValue = watch('currency') === 'hive' ? hive : hbd;
+    const savingsValue =
+      watch('currency') === 'hive' ? hiveSavings : hbdSavings;
+
+    setLiquid(liquidValue);
+    setSavings(savingsValue);
+    setMaxAmount(
+      watch('type') === SavingOperationType.DEPOSIT
+        ? Number(liquidValue)
+        : Number(savingsValue),
+    );
   }, [watch('currency')]);
 
   useEffect(() => {
@@ -160,6 +171,16 @@ const SavingsPage = ({
     }
     setText(text);
   }, [watch('currency'), watch('type')]);
+
+  useEffect(() => {
+    if (typeof liquid === 'number' && typeof savings === 'number') {
+      setMaxAmount(
+        watch('type') === SavingOperationType.DEPOSIT
+          ? Number(liquid)
+          : Number(savings),
+      );
+    }
+  }, [watch('type')]);
 
   const fetchCurrentWithdrawingList = async () => {
     const savingsPendingWithdrawalList =
