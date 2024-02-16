@@ -20,13 +20,9 @@ export const NotificationConfigItemComponent = ({
 }: Props) => {
   const [isOpen, setOpen] = useState<boolean>(false);
 
-  const handleToggleCriteria = (operation: string, active: boolean) => {
-    setOpen(active);
-  };
-
   return (
     <div className="criteria">
-      <div className="title-panel">
+      <div className="operation-panel">
         <div>{configFormItem.operation}</div>
         <SVGIcon
           icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
@@ -40,6 +36,7 @@ export const NotificationConfigItemComponent = ({
           {configFormItem.conditions &&
             configFormItem.conditions.map((configFormItemCondition) => (
               <NotificationConfigItemConditionComponent
+                key={`item-condition-${configFormItemCondition.field}-${configFormItemCondition.id}`}
                 configForm={configForm}
                 configFormItem={configFormItem}
                 configFormItemCondition={configFormItemCondition}

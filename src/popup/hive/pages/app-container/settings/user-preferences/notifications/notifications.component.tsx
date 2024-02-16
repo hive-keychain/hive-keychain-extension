@@ -43,10 +43,6 @@ const NotificationConfigPage = () => {
   const [selectedAccount, setSelectedAccount] = useState<string>('');
 
   useEffect(() => {
-    // setTitleContainerProperties({
-    //   title: 'html_popup_settings_notifications',
-    //   isBackButtonEnabled: true,
-    // });
     init();
   }, []);
 
@@ -96,8 +92,13 @@ const NotificationConfigPage = () => {
   const updateConfigForm = (
     itemId: number,
     conditionId: number,
-    data: any,
-  ) => {};
+    data: {updatedField: string, newValue: string},
+  ) => {
+    const newForm = {...configForm};
+    const item = newForm.find((i) => i.id === itemId);
+    const test = newForm[itemId].conditions[conditionId];
+    newForm[itemId].conditions?[conditionId][data.updatedField] = newValue;
+  };
 
   const addNewCriteria = () => {};
 
@@ -108,6 +109,12 @@ const NotificationConfigPage = () => {
       <div
         data-testid={`${Screen.SETTINGS_NOTIFICATIONS}-page`}
         className={`notifications-config-page`}>
+        <div className="title-panel">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">
+            {chrome.i18n.getMessage('html_popup_settings_notifications')}
+          </div>
+        </div>
         <div className="caption">
           {chrome.i18n.getMessage('html_popup_settings_notifications_caption')}
         </div>
@@ -155,9 +162,8 @@ const NotificationConfigPage = () => {
               </div>
               {configForm?.map((configFormItem, index) => {
                 return (
-                  <>
+                  <React.Fragment key={`config-item-${index}`}>
                     <NotificationConfigItemComponent
-                      key={`config-item-${index}`}
                       configForm={configForm}
                       configFormItem={configFormItem}
                       updateConfig={updateConfigForm}
@@ -166,7 +172,7 @@ const NotificationConfigPage = () => {
                       NotificationsUtils.defaultActiveSubs.length - 1 && (
                       <Separator type={'horizontal'} fullSize />
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </div>

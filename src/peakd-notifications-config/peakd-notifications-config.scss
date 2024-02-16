@@ -48,6 +48,13 @@ html {
           @include small-card();
           align-items: stretch;
           max-width: 700px;
+
+          .react-dropdown-select-dropdown-handle {
+            margin-top: -10px;
+          }
+          .custom-select {
+            height: 48px;
+          }
         }
       }
     }
