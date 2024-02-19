@@ -17,9 +17,13 @@
     border: 1px solid var(--bottom-bar-border);
     border-radius: 0px 0px 74px 74px;
     border-top: 0px;
+    transition: 0.225s linear;
 
     .icon {
       @include icon-size(24px);
+      svg path {
+        stroke: $red;
+      }
     }
   }
 
@@ -29,8 +33,8 @@
       -webkit-box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
       -moz-box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
       box-shadow: 0px 4px 10px 0px rgba(227, 19, 53, 0.3);
-      .icon {
-        --bottom-bar-icon-color: white;
+      .icon svg path {
+        stroke: white;
       }
     }
   }

@@ -105,3 +105,8 @@ a {
 #root {
   user-select: none;
 }
+
+rect,
+path {
+  transition: fill 0.225s linear;
+}
