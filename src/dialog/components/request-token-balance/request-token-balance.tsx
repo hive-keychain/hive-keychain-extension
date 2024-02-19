@@ -29,7 +29,7 @@ const RequestTokenBalance = ({
       .then((tokens: any) => {
         const token = tokens.find((e: any) => e.symbol === currency);
         const bal = token ? token.balance : '0';
-        const newBal = parseFloat(bal) - amount;
+        const newBal = parseFloat(bal.replace(/,/g, '')) - amount;
         setBalance(
           `${FormatUtils.formatCurrencyValue(
             bal,
