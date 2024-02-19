@@ -18,6 +18,9 @@
       text-align: center;
       @include dmSans700(20px);
       color: $red;
+      &.success {
+        color: $green-success;
+      }
     }
     .message {
       text-align: center;

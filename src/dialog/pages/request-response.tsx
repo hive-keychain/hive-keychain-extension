@@ -26,7 +26,7 @@ const RequestResponse = ({ data }: Props) => {
             data.msg.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
           }
         />
-        <div className="title">
+        <div className={`title ${data.msg.success ? 'success' : ''}`}>
           {chrome.i18n.getMessage(
             data.msg.success
               ? 'message_container_title_success'
@@ -41,6 +41,7 @@ const RequestResponse = ({ data }: Props) => {
           ))}
         </div>
         <ButtonComponent
+          additionalClass={data.msg.success ? 'success-button' : ''}
           label="message_container_close_button"
           onClick={close}
         />
