@@ -1,6 +1,4 @@
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import Config from 'src/config';
-import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 
 interface Exchange {
   name: string;
@@ -14,14 +12,14 @@ export const exchanges: Exchange[] = [
   {
     name: 'Binance',
     image: SVGIcons.BUY_BINANCE,
-    link: 'https://www.binance.com/en/trade/HIVE_BTC',
+    link: 'https://www.binance.com/en/trade/HIVE_BTC?ref=39968277',
     username: 'bdhivesteem',
     acceptedCoins: ['HIVE'],
   },
   {
     name: 'Upbit',
     image: SVGIcons.BUY_UPBIT,
-    link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE',
+    link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE&ref=R64298',
     username: 'user.dunamu',
     acceptedCoins: ['HIVE', 'HBD'],
   },
@@ -73,56 +71,8 @@ export const exchanges: Exchange[] = [
   // },
 ];
 
-interface Platform {
-  name: string;
-  image: SVGIcons;
-  link: string;
-  description: string;
-}
-
-interface BuyCoinsListItemInterface {
-  list: Platform[];
-  exchanges: Exchange[];
-}
-
-export const BuyCoinsListItem = (
-  type: BuyCoinType,
-  username: string,
-): BuyCoinsListItemInterface => {
-  switch (type) {
-    case BuyCoinType.BUY_HIVE:
-      return {
-        list: [
-          {
-            name: 'Transak',
-            image: SVGIcons.BUY_TRANSAK,
-            link: `https://global.transak.com?apiKey=${Config.transak.apiKey}&defaultCryptoCurrency=HIVE&exchangeScreenTitle=Buy%20HIVEs&isFeeCalculationHidden=true&walletAddress=${username}`,
-            description: 'html_popup_transak_description',
-          },
-          // {
-          //   name: 'Blocktrades',
-          //   image: 'blocktrades.svg',
-          //   link: `https://blocktrades.us/en/trade?affiliate_id=dfccdbcb-6093-4e4a-992d-689bf46e2523&input_coin_type=btc&output_coin_type=hive&output_coin_amount=10&receive_address=${username}`,
-          //   description: 'html_popup_blocktrades_description',
-          // },
-        ],
-        exchanges: exchanges.filter((exchange) =>
-          exchange.acceptedCoins?.includes('HIVE'),
-        ),
-      };
-    case BuyCoinType.BUY_HDB:
-      return {
-        list: [
-          // {
-          //   name: 'Blocktrades',
-          //   image: 'blocktrades.svg',
-          //   link: `https://blocktrades.us/en/trade?affiliate_id=dfccdbcb-6093-4e4a-992d-689bf46e2523&input_coin_type=btc&output_coin_type=hbd&output_coin_amount=10&receive_address=${username}`,
-          //   description: 'html_popup_blocktrades_description',
-          // },
-        ],
-        exchanges: exchanges.filter((exchange) =>
-          exchange.acceptedCoins?.includes('HBD'),
-        ),
-      };
-  }
+export const getExchangeListItems = (): Exchange[] => {
+  return exchanges.filter((exchange) =>
+    exchange.acceptedCoins?.includes('HIVE'),
+  );
 };

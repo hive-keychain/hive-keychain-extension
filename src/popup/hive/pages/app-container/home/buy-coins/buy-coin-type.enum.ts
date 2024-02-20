@@ -1,4 +1,4 @@
 export enum BuyCoinType {
-  BUY_HIVE = 'popup_html_buy_hive',
-  BUY_HDB = 'popup_html_buy_hbd',
+  BUY = 'popup_html_buy_hive',
+  EXCHANGES = 'html_popup_exchanges',
 }

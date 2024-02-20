@@ -1546,7 +1546,7 @@
     "description": "When wallet is disabled on exchange."
   },
   "popup_html_buy_hive": {
-    "message": "Buy HIVE",
+    "message": "Buy & Sell",
     "description": "When clicking on the Hive arrow menu"
   },
   "popup_html_buy_hbd": {
@@ -2878,7 +2878,7 @@
     "description": "Transfer from savings to an exchange platform warning message"
   },
   "popup_html_buy": {
-    "message": "Buy",
+    "message": "Buy/Sell",
     "description": "Main page buy button"
   },
   "html_popup_transak_description": {

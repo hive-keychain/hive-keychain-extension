@@ -1,7 +1,12 @@
-const get = async (url: string): Promise<any> => {
+const get = async (
+  url: string,
+  params?: { [p: string]: string },
+): Promise<any> => {
   return await new Promise((resolve, reject) => {
     try {
-      fetch(url, {
+      const urlWithOptions =
+        url + (params ? `?${new URLSearchParams(params)}` : '');
+      fetch(urlWithOptions, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -47,7 +52,12 @@ const post = async (url: string, body: any): Promise<any> => {
   });
 };
 
+const buildUrl = (baseURL: string, url: string) => {
+  return `${baseURL}/${url}`;
+};
+
 export const BaseApi = {
   get,
   post,
+  buildUrl,
 };
