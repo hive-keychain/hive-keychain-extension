@@ -18,7 +18,7 @@ export type NotificationConfigForm = NotificationConfigFormItem[];
 export interface NotificationConfigFormItem {
   id: number;
   operation: OperationName | VirtualOperationName;
-  conditions?: NotificationConfigFormCondition[];
+  conditions: NotificationConfigFormCondition[];
 }
 
 export interface NotificationConfigFormCondition {

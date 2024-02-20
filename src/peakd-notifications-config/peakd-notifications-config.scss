@@ -35,8 +35,6 @@ html {
         align-items: center;
         justify-content: center;
         .notifications-config-page {
-          width: 350px;
-          height: 600px;
           color: var(--main-font-color);
           box-sizing: border-box;
           display: flex;
@@ -47,7 +45,7 @@ html {
           @include dialogs-title-panel();
           @include small-card();
           align-items: stretch;
-          max-width: 700px;
+          max-width: 1000px;
 
           .react-dropdown-select-dropdown-handle {
             margin-top: -10px;

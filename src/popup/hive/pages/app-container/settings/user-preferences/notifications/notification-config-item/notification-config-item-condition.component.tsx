@@ -72,7 +72,7 @@ export const NotificationConfigItemConditionComponent = ({
   };
 
   return (
-    <>
+    <div className="condition-configuration">
       <ComplexeCustomSelect
         options={conditionSelectOptions}
         selectedItem={
@@ -82,7 +82,11 @@ export const NotificationConfigItemConditionComponent = ({
             canDelete: false,
           } as OptionItem
         }
-        setSelectedItem={(item) => console.log(item)}
+        setSelectedItem={(item) =>
+          updateConfig(configFormItem.id, configFormItemCondition.id, {
+            field: item.value,
+          })
+        }
       />
       {
         <>
@@ -96,18 +100,23 @@ export const NotificationConfigItemConditionComponent = ({
               } as OptionItem
             }
             setSelectedItem={(item) =>
-              // updateCondition(operation, item.value)
-              console.log(item)
+              updateConfig(configFormItem.id, configFormItemCondition.id, {
+                operand: item.value,
+              })
             }
           />
 
           <InputComponent
             type={InputType.TEXT}
             value={configFormItemCondition.value}
-            onChange={(value) => console.log({ value })}
+            onChange={(value) =>
+              updateConfig(configFormItem.id, configFormItemCondition.id, {
+                value: value,
+              })
+            }
           />
         </>
       }
-    </>
+    </div>
   );
 };

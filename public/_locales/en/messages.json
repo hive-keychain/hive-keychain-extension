@@ -3766,5 +3766,13 @@
   "html_popup_settings_notifications_condition": {
     "message": "Condition",
     "description": "Condition"
+  },
+  "html_popup_reset_form": {
+    "message": "Reset",
+    "description": "Global word"
+  },
+  "html_popup_notification_default_config": {
+    "message": "Default config",
+    "description": "Notification default config"
   }
 }

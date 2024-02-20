@@ -1,6 +1,9 @@
+import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   NotificationConfig,
   NotificationConfigForm,
+  NotificationConfigFormCondition,
   NotificationConfigItem,
 } from '@interfaces/peakd-notifications.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
@@ -10,8 +13,10 @@ import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useState } from 'react';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import React, { useEffect, useRef, useState } from 'react';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import {
   BackgroundType,
   CheckboxPanelComponent,
@@ -24,6 +29,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -40,38 +46,58 @@ const NotificationConfigPage = () => {
 
   const [accountSelectOption, setAccountSelectOption] =
     useState<OptionItem[]>();
-  const [selectedAccount, setSelectedAccount] = useState<string>('');
+  const [selectedAccount, setSelectedAccount] = useState<LocalAccount>();
+
+  const [ready, setReady] = useState(false);
+
+  const [displayDefaultConfigButton, setDisplayDefaultConfigButton] =
+    useState(false);
+
+  const formFields = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     init();
   }, []);
 
   const init = async () => {
-    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-      LocalStorageKeyEnum.ACTIVE_THEME,
-    ]);
+    const { ACTIVE_THEME, active_account_name } =
+      await LocalStorageUtils.getMultipleValueFromLocalStorage([
+        LocalStorageKeyEnum.ACTIVE_THEME,
+        LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
+      ]);
 
-    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+    setTheme(ACTIVE_THEME ?? Theme.LIGHT);
+    setSelectedAccount(active_account_name);
 
-    await initSelectOptions();
-    const defaultAccount = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
-    );
-    setSelectedAccount(defaultAccount);
+    await initSelectOptions(active_account_name);
 
+    // const userConfig = await NotificationsUtils.getAccountConfig(
+    //   active_account_name,
+    // );
     const userConfig = await NotificationsUtils.getAccountConfig('muwave');
 
-    const conf: NotificationConfig = userConfig.config.filter(
-      (item: NotificationConfigItem) => item.operation,
+    console.log(userConfig);
+
+    let conf: NotificationConfig = [];
+    console.log(
+      NotificationsUtils.operationFieldList.map((field) => field.name).length,
     );
+    if (userConfig) {
+      conf = userConfig.config.filter(
+        (item: NotificationConfigItem) => item.operation,
+      );
+    } else {
+      setDisplayDefaultConfigButton(true);
+    }
 
     setConfig(conf);
-    setConfigForm(NotificationsUtils.initializeForm(conf));
+    const form = NotificationsUtils.initializeForm(conf);
+    setConfigForm([...form]);
 
     setActive(true);
   };
 
-  const initSelectOptions = async () => {
+  const initSelectOptions = async (activeUsername: string) => {
     const mk = await MkUtils.getMkFromLocalStorage();
     if (!mk) {
     } else {
@@ -80,110 +106,167 @@ const NotificationConfigPage = () => {
       for (const account of accounts) {
         options.push({
           label: account.name,
-          value: account.name,
+          value: account,
           canDelete: false,
           img: `https://images.hive.blog/u/${account.name}/avatar`,
         } as OptionItem);
       }
       setAccountSelectOption(options);
+      setSelectedAccount(accounts.find((a) => a.name === activeUsername));
+      setReady(true);
     }
+  };
+
+  const resetForm = () => {
+    init();
   };
 
   const updateConfigForm = (
     itemId: number,
     conditionId: number,
-    data: {updatedField: string, newValue: string},
+    data: Partial<NotificationConfigFormCondition>,
   ) => {
-    const newForm = {...configForm};
-    const item = newForm.find((i) => i.id === itemId);
-    const test = newForm[itemId].conditions[conditionId];
-    newForm[itemId].conditions?[conditionId][data.updatedField] = newValue;
+    if (configForm) {
+      const newForm: NotificationConfigForm = [...configForm];
+      const item = newForm.find((i) => i.id === itemId);
+      let condition = item?.conditions?.find((c) => c.id === conditionId);
+      if (conditionId !== null && condition) {
+        newForm[itemId].conditions[conditionId] = {
+          ...newForm[itemId].conditions[conditionId],
+          ...data,
+        };
+        setConfigForm(newForm);
+      } else if (conditionId === null) {
+        newForm[itemId].conditions.push(
+          data as NotificationConfigFormCondition,
+        );
+        setConfigForm(newForm);
+      }
+    }
   };
 
-  const addNewCriteria = () => {};
+  const addNewCriteria = () => {
+    if (newCriteria.length > 0 && configForm) {
+      const id = Math.max(...configForm.map((conf) => conf.id));
+      const newConfig: NotificationConfigForm = [...configForm];
+      newConfig.push({
+        id: id + 1,
+        conditions: [{ field: '', id: 0, operand: '', value: '' }],
+        operation: newCriteria as OperationName | VirtualOperationName,
+      });
+      setConfigForm(newConfig);
+      formFields.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
-  const saveConfig = () => {};
+  const saveConfig = async () => {
+    if (selectedAccount?.keys.posting) {
+      await NotificationsUtils.saveConfiguration(configForm!, selectedAccount!);
+    } else {
+      //TODO notify no posting key
+    }
+  };
+
+  const setDefaultConfig = () => {
+    // Set default config
+  };
 
   return (
     <div className={`theme ${theme} notifications-config-page-main-container`}>
-      <div
-        data-testid={`${Screen.SETTINGS_NOTIFICATIONS}-page`}
-        className={`notifications-config-page`}>
-        <div className="title-panel">
-          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-          <div className="title">
-            {chrome.i18n.getMessage('html_popup_settings_notifications')}
-          </div>
-        </div>
-        <div className="caption">
-          {chrome.i18n.getMessage('html_popup_settings_notifications_caption')}
-        </div>
-
-        {accountSelectOption && (
-          <ComplexeCustomSelect
-            options={accountSelectOption}
-            selectedItem={
-              {
-                label: `@${selectedAccount}`,
-                value: selectedAccount,
-              } as OptionItem
-            }
-            setSelectedItem={(item) => setSelectedAccount(item.value)}
-          />
-        )}
-
-        <div className="active-panel">
-          <CheckboxPanelComponent
-            checked={isActive}
-            onChange={setActive}
-            backgroundType={BackgroundType.FILLED}
-            title="html_popup_settings_notifications_active"
-          />
-        </div>
-
-        {isActive && (
-          <FormContainer onSubmit={saveConfig}>
-            <div className="form-fields">
-              <div className="add-panel">
-                <InputComponent
-                  onChange={setNewCriteria}
-                  value={newCriteria}
-                  type={InputType.TEXT}
-                  autocompleteValues={NotificationsUtils.operationFieldList.map(
-                    (field) => field.name,
-                  )}
-                />
-                <div className="add-button">
-                  <SVGIcon
-                    icon={SVGIcons.NOTIFICATIONS_ADD}
-                    onClick={addNewCriteria}
-                  />
-                </div>
-              </div>
-              {configForm?.map((configFormItem, index) => {
-                return (
-                  <React.Fragment key={`config-item-${index}`}>
-                    <NotificationConfigItemComponent
-                      configForm={configForm}
-                      configFormItem={configFormItem}
-                      updateConfig={updateConfigForm}
-                    />
-                    {index !==
-                      NotificationsUtils.defaultActiveSubs.length - 1 && (
-                      <Separator type={'horizontal'} fullSize />
-                    )}
-                  </React.Fragment>
-                );
-              })}
+      {ready && (
+        <div
+          data-testid={`${Screen.SETTINGS_NOTIFICATIONS}-page`}
+          className={`notifications-config-page`}>
+          <div className="title-panel">
+            <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+            <div className="title">
+              {chrome.i18n.getMessage('html_popup_settings_notifications')}
             </div>
-            <ButtonComponent
-              label="popup_html_save"
-              onClick={saveConfig}
-              height="small"
+          </div>
+          <div className="caption">
+            {chrome.i18n.getMessage(
+              'html_popup_settings_notifications_caption',
+            )}
+          </div>
+
+          {accountSelectOption && (
+            <ComplexeCustomSelect
+              options={accountSelectOption}
+              selectedItem={
+                {
+                  label: `@${selectedAccount?.name}`,
+                  value: selectedAccount,
+                } as OptionItem
+              }
+              setSelectedItem={(item) => setSelectedAccount(item.value)}
             />
-          </FormContainer>
-        )}
-      </div>
+          )}
+
+          <div className="active-panel">
+            <CheckboxPanelComponent
+              checked={isActive}
+              onChange={setActive}
+              backgroundType={BackgroundType.FILLED}
+              title="html_popup_settings_notifications_active"
+            />
+          </div>
+          <ButtonComponent
+            additionalClass="default-config-button"
+            label="html_popup_notification_default_config"
+            onClick={setDefaultConfig}
+            type={ButtonType.ALTERNATIVE}
+            height="small"
+          />
+
+          {isActive && (
+            <FormContainer onSubmit={saveConfig}>
+              <div className="form-fields">
+                <div className="add-panel">
+                  <InputComponent
+                    onChange={setNewCriteria}
+                    value={newCriteria}
+                    type={InputType.TEXT}
+                    autocompleteValues={NotificationsUtils.operationFieldList.map(
+                      (field) => field.name,
+                    )}
+                  />
+                  <div className="add-button" onClick={addNewCriteria}>
+                    <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
+                  </div>
+                </div>
+                {configForm?.map((configFormItem, index) => {
+                  return (
+                    <React.Fragment key={`config-item-${index}`}>
+                      <NotificationConfigItemComponent
+                        configForm={configForm}
+                        configFormItem={configFormItem}
+                        updateConfig={updateConfigForm}
+                      />
+                      {index !== configForm.length - 1 && (
+                        <Separator type={'horizontal'} fullSize />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+              <div className="button-panel" ref={formFields}>
+                <ButtonComponent
+                  label="html_popup_reset_form"
+                  onClick={resetForm}
+                  height="small"
+                  type={ButtonType.ALTERNATIVE}
+                />
+                <ButtonComponent
+                  label="popup_html_save"
+                  onClick={saveConfig}
+                  height="small"
+                />
+              </div>
+            </FormContainer>
+          )}
+        </div>
+      )}
+      {!ready && <LoadingComponent />}
     </div>
   );
 };

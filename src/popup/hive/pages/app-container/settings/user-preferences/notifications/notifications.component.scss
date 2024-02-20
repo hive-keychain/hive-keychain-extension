@@ -11,6 +11,12 @@
     margin: 0px 16px;
   }
 
+  .default-config-button {
+    align-self: flex-end;
+    max-width: max-content;
+    padding: 0px 16px;
+  }
+
   .form-fields {
     .add-panel {
       display: flex;
@@ -43,24 +49,50 @@
       display: flex;
       flex-direction: column;
       row-gap: 16px;
+      cursor: pointer;
 
       .operation-panel {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        .left-panel {
+          display: flex;
+          align-items: center;
+          column-gap: 8px;
+          .svg-icon {
+            height: 18px;
+          }
+        }
         .expand-detail-icon {
           @include icon-size(18px);
           @include open-close-rotate();
         }
       }
 
-      .field-row {
-        display: grid;
-        align-items: center;
-        justify-content: center;
-        column-gap: 8px;
-        grid-template-columns: 1fr 1fr 1fr;
+      .conditions {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        width: 100%;
+
+        .condition-row {
+          display: flex;
+          align-items: center;
+          column-gap: 8px;
+          .condition-configuration {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            flex: 1;
+            column-gap: 8px;
+          }
+        }
       }
     }
+  }
+
+  .button-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
   }
 }

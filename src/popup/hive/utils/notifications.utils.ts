@@ -1,39 +1,43 @@
 import { PeakDNotificationsApi } from '@api/peakd-notifications';
+import { KeyType } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   NotificationConfig,
+  NotificationConfigConditions,
   NotificationConfigForm,
   NotificationConfigFormItem,
 } from '@interfaces/peakd-notifications.interface';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 
 const operationFieldList = [
-  {
-    name: 'account_create',
-    fields: [
-      'fee',
-      'creator',
-      'new_account_name',
-      'owner',
-      'active',
-      'posting',
-      'memo_key',
-      'json_metadata',
-    ],
-  },
-  {
-    name: 'account_create_with_delegation',
-    fields: [
-      'fee',
-      'delegation',
-      'creator',
-      'new_account_name',
-      'owner',
-      'active',
-      'posting',
-      'memo_key',
-      'json_metadata',
-      'extensions',
-    ],
-  },
+  // {
+  //   name: 'account_create',
+  //   fields: [
+  //     'fee',
+  //     'creator',
+  //     'new_account_name',
+  //     'owner',
+  //     'active',
+  //     'posting',
+  //     'memo_key',
+  //     'json_metadata',
+  //   ],
+  // },
+  // {
+  //   name: 'account_create_with_delegation',
+  //   fields: [
+  //     'fee',
+  //     'delegation',
+  //     'creator',
+  //     'new_account_name',
+  //     'owner',
+  //     'active',
+  //     'posting',
+  //     'memo_key',
+  //     'json_metadata',
+  //     'extensions',
+  //   ],
+  // },
   {
     name: 'account_update',
     fields: [
@@ -50,18 +54,18 @@ const operationFieldList = [
     name: 'account_witness_vote',
     fields: ['account', 'witness', 'approve'],
   },
-  {
-    name: 'cancel_transfer_from_savings',
-    fields: ['from', 'request_id'],
-  },
+  // {
+  //   name: 'cancel_transfer_from_savings',
+  //   fields: ['from', 'request_id'],
+  // },
   {
     name: 'change_recovery_account',
     fields: ['account_to_recover', 'new_recovery_account', 'extensions'],
   },
-  {
-    name: 'claim_reward_balance',
-    fields: ['account', 'reward_hive', 'reward_hbd', 'reward_vests'],
-  },
+  // {
+  //   name: 'claim_reward_balance',
+  //   fields: ['account', 'reward_hive', 'reward_hbd', 'reward_vests'],
+  // },
   { name: 'claim_account', fields: ['creator', 'fee', 'extensions'] },
   {
     name: 'comment',
@@ -75,119 +79,119 @@ const operationFieldList = [
       'json_metadata',
     ],
   },
-  {
-    name: 'comment_options',
-    fields: [
-      'author',
-      'permlink',
-      'max_accepted_payout',
-      'percent_hbd',
-      'allow_votes',
-      'allow_curation_rewards',
-      'extensions',
-    ],
-  },
-  { name: 'convert', fields: ['owner', 'requestid', 'amount'] },
-  {
-    name: 'create_claimed_account',
-    fields: [
-      'creator',
-      'new_account_name',
-      'owner',
-      'active',
-      'posting',
-      'memo_key',
-      'json_metadata',
-      'extensions',
-    ],
-  },
-  { name: 'custom', fields: ['required_auths', 'id', 'data'] },
-  {
-    name: 'custom_binary',
-    fields: [
-      'required_owner_auths',
-      'required_active_auths',
-      'required_posting_auths',
-      'required_auths',
-      'id',
-      'data',
-    ],
-  },
+  // {
+  //   name: 'comment_options',
+  //   fields: [
+  //     'author',
+  //     'permlink',
+  //     'max_accepted_payout',
+  //     'percent_hbd',
+  //     'allow_votes',
+  //     'allow_curation_rewards',
+  //     'extensions',
+  //   ],
+  // },
+  // { name: 'convert', fields: ['owner', 'requestid', 'amount'] },
+  // {
+  //   name: 'create_claimed_account',
+  //   fields: [
+  //     'creator',
+  //     'new_account_name',
+  //     'owner',
+  //     'active',
+  //     'posting',
+  //     'memo_key',
+  //     'json_metadata',
+  //     'extensions',
+  //   ],
+  // },
+  // { name: 'custom', fields: ['required_auths', 'id', 'data'] },
+  // {
+  //   name: 'custom_binary',
+  //   fields: [
+  //     'required_owner_auths',
+  //     'required_active_auths',
+  //     'required_posting_auths',
+  //     'required_auths',
+  //     'id',
+  //     'data',
+  //   ],
+  // },
   {
     name: 'custom_json',
     fields: ['required_auths', 'required_posting_auths', 'id', 'json'],
   },
-  { name: 'decline_voting_rights', fields: ['account', 'decline'] },
+  // { name: 'decline_voting_rights', fields: ['account', 'decline'] },
   {
     name: 'delegate_vesting_shares',
     fields: ['delegator', 'delegatee', 'vesting_shares'],
   },
-  { name: 'delete_comment', fields: ['author', 'permlink'] },
-  {
-    name: 'escrow_approve',
-    fields: ['from', 'to', 'agent', 'who', 'escrow_id', 'approve'],
-  },
-  {
-    name: 'escrow_dispute',
-    fields: ['from', 'to', 'agent', 'who', 'escrow_id'],
-  },
-  {
-    name: 'escrow_release',
-    fields: [
-      'from',
-      'to',
-      'agent',
-      'who',
-      'receiver',
-      'escrow_id',
-      'hbd_amount',
-      'hive_amount',
-    ],
-  },
-  {
-    name: 'escrow_transfer',
-    fields: [
-      'from',
-      'to',
-      'agent',
-      'escrow_id',
-      'hbd_amount',
-      'hive_amount',
-      'fee',
-      'ratification_deadline',
-      'escrow_expiration',
-      'json_meta',
-    ],
-  },
+  // { name: 'delete_comment', fields: ['author', 'permlink'] },
+  // {
+  //   name: 'escrow_approve',
+  //   fields: ['from', 'to', 'agent', 'who', 'escrow_id', 'approve'],
+  // },
+  // {
+  //   name: 'escrow_dispute',
+  //   fields: ['from', 'to', 'agent', 'who', 'escrow_id'],
+  // },
+  // {
+  //   name: 'escrow_release',
+  //   fields: [
+  //     'from',
+  //     'to',
+  //     'agent',
+  //     'who',
+  //     'receiver',
+  //     'escrow_id',
+  //     'hbd_amount',
+  //     'hive_amount',
+  //   ],
+  // },
+  // {
+  //   name: 'escrow_transfer',
+  //   fields: [
+  //     'from',
+  //     'to',
+  //     'agent',
+  //     'escrow_id',
+  //     'hbd_amount',
+  //     'hive_amount',
+  //     'fee',
+  //     'ratification_deadline',
+  //     'escrow_expiration',
+  //     'json_meta',
+  //   ],
+  // },
   { name: 'feed_publish', fields: ['publisher', 'exchange_rate'] },
-  { name: 'limit_order_cancel', fields: ['owner', 'orderid'] },
-  {
-    name: 'limit_order_create',
-    fields: [
-      'owner',
-      'orderid',
-      'amount_to_sell',
-      'min_to_receive',
-      'fill_or_kill',
-      'expiration',
-    ],
-  },
-  {
-    name: 'limit_order_create2',
-    fields: [
-      'owner',
-      'orderid',
-      'amount_to_sell',
-      'exchange_rate',
-      'fill_or_kill',
-      'expiration',
-    ],
-  },
-  {
-    name: 'pow',
-    fields: ['worker_account', 'block_id', 'nonce', 'work', 'props'],
-  },
-  { name: 'pow2', fields: ['work', 'new_owner_key', 'props'] },
+  // { name: 'limit_order_cancel', fields: ['owner', 'orderid'] },
+  // {
+  //   name: 'limit_order_create',
+  //   fields: [
+  //     'owner',
+  //     'orderid',
+  //     'amount_to_sell',
+  //     'min_to_receive',
+  //     'fill_or_kill',
+  //     'expiration',
+  //   ],
+  // },
+  // {
+  //   name: 'limit_order_create2',
+  //   fields: [
+  //     'owner',
+  //     'orderid',
+  //     'amount_to_sell',
+  //     'exchange_rate',
+  //     'fill_or_kill',
+  //     'expiration',
+  //   ],
+  // },
+  // {
+  //   name: 'pow',
+  //   fields: ['worker_account', 'block_id', 'nonce', 'work', 'props'],
+  // },
+  // { name: 'pow2', fields: ['work', 'new_owner_key', 'props'] },
   {
     name: 'recover_account',
     fields: [
@@ -197,10 +201,10 @@ const operationFieldList = [
       'extensions',
     ],
   },
-  {
-    name: 'report_over_production',
-    fields: ['reporter', 'first_block', 'second_block'],
-  },
+  // {
+  //   name: 'report_over_production',
+  //   fields: ['reporter', 'first_block', 'second_block'],
+  // },
   {
     name: 'request_account_recovery',
     fields: [
@@ -210,14 +214,14 @@ const operationFieldList = [
       'extensions',
     ],
   },
-  {
-    name: 'reset_account',
-    fields: ['reset_account', 'account_to_reset', 'new_owner_authority'],
-  },
-  {
-    name: 'set_reset_account',
-    fields: ['account', 'current_reset_account', 'reset_account'],
-  },
+  // {
+  //   name: 'reset_account',
+  //   fields: ['reset_account', 'account_to_reset', 'new_owner_authority'],
+  // },
+  // {
+  //   name: 'set_reset_account',
+  //   fields: ['account', 'current_reset_account', 'reset_account'],
+  // },
   {
     name: 'set_withdraw_vesting_route',
     fields: ['from_account', 'to_account', 'percent', 'auto_vest'],
@@ -234,14 +238,14 @@ const operationFieldList = [
   { name: 'transfer_to_vesting', fields: ['from', 'to', 'amount'] },
   { name: 'vote', fields: ['voter', 'author', 'permlink', 'weight'] },
   { name: 'withdraw_vesting', fields: ['account', 'vesting_shares'] },
-  {
-    name: 'witness_update',
-    fields: ['owner', 'url', 'block_signing_key', 'props', 'fee'],
-  },
-  {
-    name: 'witness_set_properties',
-    fields: ['owner', 'props', 'extensions'],
-  },
+  // {
+  //   name: 'witness_update',
+  //   fields: ['owner', 'url', 'block_signing_key', 'props', 'fee'],
+  // },
+  // {
+  //   name: 'witness_set_properties',
+  //   fields: ['owner', 'props', 'extensions'],
+  // },
   {
     name: 'account_update2',
     fields: [
@@ -255,42 +259,42 @@ const operationFieldList = [
       'extensions',
     ],
   },
-  {
-    name: 'create_proposal',
-    fields: [
-      'creator',
-      'receiver',
-      'start_date',
-      'end_date',
-      'daily_pay',
-      'subject',
-      'permlink',
-      'extensions',
-    ],
-  },
-  {
-    name: 'update_proposal_votes',
-    fields: ['voter', 'proposal_ids', 'approve', 'extensions'],
-  },
-  {
-    name: 'remove_proposal',
-    fields: ['proposal_owner', 'proposal_ids', 'extensions'],
-  },
-  {
-    name: 'update_proposal',
-    fields: [
-      'proposal_id',
-      'creator',
-      'daily_pay',
-      'subject',
-      'permlink',
-      'extensions',
-    ],
-  },
-  {
-    name: 'collateralized_convert',
-    fields: ['owner', 'requestid', 'amount'],
-  },
+  // {
+  //   name: 'create_proposal',
+  //   fields: [
+  //     'creator',
+  //     'receiver',
+  //     'start_date',
+  //     'end_date',
+  //     'daily_pay',
+  //     'subject',
+  //     'permlink',
+  //     'extensions',
+  //   ],
+  // },
+  // {
+  //   name: 'update_proposal_votes',
+  //   fields: ['voter', 'proposal_ids', 'approve', 'extensions'],
+  // },
+  // {
+  //   name: 'remove_proposal',
+  //   fields: ['proposal_owner', 'proposal_ids', 'extensions'],
+  // },
+  // {
+  //   name: 'update_proposal',
+  //   fields: [
+  //     'proposal_id',
+  //     'creator',
+  //     'daily_pay',
+  //     'subject',
+  //     'permlink',
+  //     'extensions',
+  //   ],
+  // },
+  // {
+  //   name: 'collateralized_convert',
+  //   fields: ['owner', 'requestid', 'amount'],
+  // },
   {
     name: 'recurrent_transfer',
     fields: [
@@ -303,6 +307,77 @@ const operationFieldList = [
       'extensions',
     ],
   },
+  {
+    name: 'fill_convert_request',
+    fields: ['owner', 'amount_in', 'amount_out'],
+  },
+  {
+    name: 'author_reward',
+    fields: [
+      'author',
+      'permlink',
+      'hbd_payout',
+      'hive_payout',
+      'vesting_payout',
+      'curators_vesting_payout',
+    ],
+  },
+  {
+    name: 'curation_reward',
+    fields: ['curator', 'reward', 'comment_author', 'comment_permlink'],
+  },
+  {
+    name: 'comment_reward',
+    fields: [
+      'author',
+      'permlink',
+      'payout',
+      'author_rewards',
+      'total_payout_value',
+      'curator_payout_value',
+      'beneficiary_payout_value',
+    ],
+  },
+  { name: 'interest', fields: ['owner', 'interest'] },
+  {
+    name: 'fill_vesting_withdraw',
+    fields: ['from_account', 'to_account', 'withdrawn', 'deposited'],
+  },
+  {
+    name: 'fill_order',
+    fields: [
+      'current_owner',
+      'current_orderid',
+      'current_pays',
+      'open_owner',
+      'open_orderid',
+      'open_pays',
+    ],
+  },
+  {
+    name: 'fill_transfer_from_savings',
+    fields: ['from', 'to', 'amount', 'memo'],
+  },
+  { name: 'return_vesting_delegation', fields: ['account', 'vesting_shares'] },
+  {
+    name: 'comment_benefactor_reward',
+    fields: [
+      'benefactor',
+      'author',
+      'permlink',
+      'hbd_payout',
+      'hive_payout',
+      'vesting_payout',
+    ],
+  },
+  { name: 'producer_reward', fields: ['producer', 'vesting_shares'] },
+  {
+    name: 'changed_recovery_account',
+    fields: ['account', 'old_recovery_account', 'new_recovery_account'],
+  },
+  { name: 'fill_collateralized_convert_request', fields: [] },
+  { name: 'fill_recurrent_transfer', fields: [] },
+  { name: 'failed_recurrent_transfer', fields: [] },
 ];
 
 const operandList = [
@@ -386,6 +461,39 @@ const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
   return configForm as NotificationConfigForm;
 };
 
+const formatConfigForm = (form: NotificationConfigForm) => {
+  const config: NotificationConfig = [];
+  for (const item of form) {
+    const criteria = {
+      operation: item.operation,
+      conditions: {} as NotificationConfigConditions,
+    };
+    for (const condition of item.conditions) {
+      criteria.conditions[condition.field] = {
+        [condition.operand]: condition.value,
+      };
+    }
+    config.push(criteria);
+  }
+  return config;
+};
+
+const saveConfiguration = async (
+  form: NotificationConfigForm,
+  account: LocalAccount,
+) => {
+  const config = formatConfigForm(form);
+  return await CustomJsonUtils.send(
+    ['update_account', config],
+    account.name,
+    account.keys.posting!,
+    KeyType.POSTING,
+    'notify',
+  );
+};
+
+const getDefaultConfig = () => {};
+
 export const NotificationsUtils = {
   defaultActiveSubs,
   conditionNames,
@@ -394,4 +502,5 @@ export const NotificationsUtils = {
   getAccountConfig,
   operationFieldList,
   initializeForm,
+  saveConfiguration,
 };
