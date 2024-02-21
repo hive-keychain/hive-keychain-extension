@@ -16,9 +16,18 @@
   background-color: var(--background-color);
   @include background-bottom;
 }
-
+@-moz-document url-prefix() {
+  div:not(.scrollable) {
+    scrollbar-width: none;
+  }
+}
+.scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: $red transparent;
+}
 html {
   height: 100%;
+  scrollbar-width: 0;
   body {
     margin: 0px;
     height: 100%;
@@ -50,6 +59,7 @@ html {
         border-radius: 4px;
         background-color: transparent;
       }
+      scrollbar-width: none;
 
       ::-webkit-scrollbar {
         width: 6px;
