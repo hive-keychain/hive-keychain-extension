@@ -85,6 +85,22 @@
             flex: 1;
             column-gap: 8px;
           }
+          .svg-icon {
+            height: 20px;
+          }
+        }
+        .criteria-button-panel {
+          display: flex;
+          column-gap: 16px;
+          align-items: center;
+          justify-content: flex-start;
+          margin-top: 16px;
+          .new-condition-button,
+          .delete-criteria-button {
+            width: fit-content;
+            padding: 0px 16px;
+            align-self: flex-start;
+          }
         }
       }
     }

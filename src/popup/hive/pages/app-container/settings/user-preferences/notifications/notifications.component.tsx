@@ -1,6 +1,7 @@
 import { OperationName, VirtualOperationName } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
+  ConfigFormUpdateAction,
   NotificationConfig,
   NotificationConfigForm,
   NotificationConfigFormCondition,
@@ -122,36 +123,46 @@ const NotificationConfigPage = () => {
   };
 
   const updateConfigForm = (
-    itemId: number,
-    conditionId: number,
+    itemIndex: number,
+    conditionIndex: number,
     data: Partial<NotificationConfigFormCondition>,
+    action: ConfigFormUpdateAction,
   ) => {
     if (configForm) {
-      const newForm: NotificationConfigForm = [...configForm];
-      const item = newForm.find((i) => i.id === itemId);
-      let condition = item?.conditions?.find((c) => c.id === conditionId);
-      if (conditionId !== null && condition) {
-        newForm[itemId].conditions[conditionId] = {
-          ...newForm[itemId].conditions[conditionId],
-          ...data,
-        };
-        setConfigForm(newForm);
-      } else if (conditionId === null) {
-        newForm[itemId].conditions.push(
-          data as NotificationConfigFormCondition,
-        );
-        setConfigForm(newForm);
+      let newForm: NotificationConfigForm = [...configForm];
+      switch (action) {
+        case ConfigFormUpdateAction.ADD_NEW_CONDITION:
+          newForm[itemIndex].conditions.push(
+            data as NotificationConfigFormCondition,
+          );
+          break;
+        case ConfigFormUpdateAction.DELETE_CONDITION: {
+          newForm[itemIndex].conditions.splice(conditionIndex, 1);
+          break;
+        }
+        case ConfigFormUpdateAction.DELETE_CRITERIA: {
+          newForm.splice(itemIndex, 1);
+          break;
+        }
+        case ConfigFormUpdateAction.UPDATE_DATA: {
+          newForm[itemIndex].conditions[conditionIndex] = {
+            ...newForm[itemIndex].conditions[conditionIndex],
+            ...data,
+          };
+          break;
+        }
       }
+      setConfigForm(newForm);
     }
   };
 
   const addNewCriteria = () => {
     if (newCriteria.length > 0 && configForm) {
-      const id = Math.max(...configForm.map((conf) => conf.id));
+      // const id = Math.max(...configForm.map((conf) => conf.id));
       const newConfig: NotificationConfigForm = [...configForm];
       newConfig.push({
-        id: id + 1,
-        conditions: [{ field: '', id: 0, operand: '', value: '' }],
+        // id: id + 1,
+        conditions: [{ field: '', operand: '', value: '' }],
         operation: newCriteria as OperationName | VirtualOperationName,
       });
       setConfigForm(newConfig);
@@ -168,7 +179,7 @@ const NotificationConfigPage = () => {
   };
 
   const setDefaultConfig = () => {
-    // Set default config
+    setConfigForm(NotificationsUtils.getDefaultConfig());
   };
 
   return (
@@ -234,15 +245,16 @@ const NotificationConfigPage = () => {
                     <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
                   </div>
                 </div>
-                {configForm?.map((configFormItem, index) => {
+                {configForm?.map((configFormItem, configFormItemIndex) => {
                   return (
-                    <React.Fragment key={`config-item-${index}`}>
+                    <React.Fragment key={`config-item-${configFormItemIndex}`}>
                       <NotificationConfigItemComponent
                         configForm={configForm}
                         configFormItem={configFormItem}
                         updateConfig={updateConfigForm}
+                        configFormItemIndex={configFormItemIndex}
                       />
-                      {index !== configForm.length - 1 && (
+                      {configFormItemIndex !== configForm.length - 1 && (
                         <Separator type={'horizontal'} fullSize />
                       )}
                     </React.Fragment>

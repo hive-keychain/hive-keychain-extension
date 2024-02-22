@@ -3774,5 +3774,13 @@
   "html_popup_notification_default_config": {
     "message": "Default config",
     "description": "Notification default config"
+  },
+  "html_popup_add_new_condition": {
+    "message": "Add new condition",
+    "description": "Add new condition"
+  },
+  "html_popup_delete_criteria": {
+    "message": "Delete criteria",
+    "description": "Delete criteria"
   }
 }

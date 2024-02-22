@@ -6,6 +6,7 @@ import {
   NotificationConfigConditions,
   NotificationConfigForm,
   NotificationConfigFormItem,
+  NotificationOperationName,
 } from '@interfaces/peakd-notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 
@@ -437,14 +438,14 @@ const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
 
   config.forEach((configItem, indexConfigItem) => {
     const configFormItem: NotificationConfigFormItem = {
-      id: indexConfigItem,
+      // id: indexConfigItem,
       operation: configItem.operation,
       conditions: [],
     };
     if (configItem.conditions) {
       Object.keys(configItem.conditions).forEach((field, indexCondition) => {
         configFormItem.conditions?.push({
-          id: indexCondition,
+          // id: indexCondition,
           field: field,
           operand: configItem.conditions
             ? Object.keys(configItem.conditions[field])[0]
@@ -492,7 +493,18 @@ const saveConfiguration = async (
   );
 };
 
-const getDefaultConfig = () => {};
+const getDefaultConfig = () => {
+  const configForm: NotificationConfigForm = [];
+  let id = 0;
+  for (const sub of defaultActiveSubs) {
+    configForm.push({
+      // id: id,
+      operation: sub as NotificationOperationName,
+      conditions: [{ field: '', /* id: 0,*/ operand: '', value: '' }],
+    });
+  }
+  return configForm;
+};
 
 export const NotificationsUtils = {
   defaultActiveSubs,
@@ -503,4 +515,5 @@ export const NotificationsUtils = {
   operationFieldList,
   initializeForm,
   saveConfiguration,
+  getDefaultConfig,
 };

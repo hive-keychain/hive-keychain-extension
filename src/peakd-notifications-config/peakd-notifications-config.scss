@@ -45,7 +45,8 @@ html {
           @include dialogs-title-panel();
           @include small-card();
           align-items: stretch;
-          max-width: 1000px;
+          max-width: 80%;
+          max-height: 80%;
 
           .react-dropdown-select-dropdown-handle {
             margin-top: -10px;

@@ -1,4 +1,5 @@
 import {
+  ConfigFormUpdateAction,
   NotificationConfigForm,
   NotificationConfigFormCondition,
   NotificationConfigFormItem,
@@ -17,6 +18,8 @@ interface Props {
   configFormItem: NotificationConfigFormItem;
   configFormItemCondition: NotificationConfigFormCondition;
   updateConfig: Function;
+  configFormItemIndex: number;
+  configFormItemConditionIndex: number;
 }
 
 export const NotificationConfigItemConditionComponent = ({
@@ -24,6 +27,8 @@ export const NotificationConfigItemConditionComponent = ({
   configForm,
   configFormItem,
   configFormItemCondition,
+  configFormItemIndex,
+  configFormItemConditionIndex,
 }: Props) => {
   const [conditionSelectOptions, setConditionSelectOptions] = useState<
     OptionItem[]
@@ -83,9 +88,14 @@ export const NotificationConfigItemConditionComponent = ({
           } as OptionItem
         }
         setSelectedItem={(item) =>
-          updateConfig(configFormItem.id, configFormItemCondition.id, {
-            field: item.value,
-          })
+          updateConfig(
+            configFormItemIndex,
+            configFormItemConditionIndex,
+            {
+              field: item.value,
+            },
+            ConfigFormUpdateAction.UPDATE_DATA,
+          )
         }
       />
       {
@@ -100,9 +110,14 @@ export const NotificationConfigItemConditionComponent = ({
               } as OptionItem
             }
             setSelectedItem={(item) =>
-              updateConfig(configFormItem.id, configFormItemCondition.id, {
-                operand: item.value,
-              })
+              updateConfig(
+                configFormItemIndex,
+                configFormItemConditionIndex,
+                {
+                  operand: item.value,
+                },
+                ConfigFormUpdateAction.UPDATE_DATA,
+              )
             }
           />
 
@@ -110,9 +125,14 @@ export const NotificationConfigItemConditionComponent = ({
             type={InputType.TEXT}
             value={configFormItemCondition.value}
             onChange={(value) =>
-              updateConfig(configFormItem.id, configFormItemCondition.id, {
-                value: value,
-              })
+              updateConfig(
+                configFormItemIndex,
+                configFormItemConditionIndex,
+                {
+                  value: value,
+                },
+                ConfigFormUpdateAction.UPDATE_DATA,
+              )
             }
           />
         </>
