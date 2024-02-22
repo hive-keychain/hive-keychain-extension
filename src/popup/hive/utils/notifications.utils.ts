@@ -470,9 +470,10 @@ const formatConfigForm = (form: NotificationConfigForm) => {
       conditions: {} as NotificationConfigConditions,
     };
     for (const condition of item.conditions) {
-      criteria.conditions[condition.field] = {
-        [condition.operand]: condition.value,
-      };
+      if (condition.field.length > 0 && condition.operand.length > 0)
+        criteria.conditions[condition.field] = {
+          [condition.operand]: condition.value,
+        };
     }
     config.push(criteria);
   }
@@ -485,7 +486,7 @@ const saveConfiguration = async (
 ) => {
   const config = formatConfigForm(form);
   return await CustomJsonUtils.send(
-    ['update_account', config],
+    ['update_account', { config }],
     account.name,
     account.keys.posting!,
     KeyType.POSTING,
@@ -495,12 +496,10 @@ const saveConfiguration = async (
 
 const getDefaultConfig = () => {
   const configForm: NotificationConfigForm = [];
-  let id = 0;
   for (const sub of defaultActiveSubs) {
     configForm.push({
-      // id: id,
       operation: sub as NotificationOperationName,
-      conditions: [{ field: '', /* id: 0,*/ operand: '', value: '' }],
+      conditions: [{ field: '', operand: '', value: '' }],
     });
   }
   return configForm;

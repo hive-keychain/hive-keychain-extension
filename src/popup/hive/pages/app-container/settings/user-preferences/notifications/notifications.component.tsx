@@ -72,10 +72,10 @@ const NotificationConfigPage = () => {
 
     await initSelectOptions(active_account_name);
 
-    // const userConfig = await NotificationsUtils.getAccountConfig(
-    //   active_account_name,
-    // );
-    const userConfig = await NotificationsUtils.getAccountConfig('muwave');
+    const userConfig = await NotificationsUtils.getAccountConfig(
+      active_account_name,
+    );
+    // const userConfig = await NotificationsUtils.getAccountConfig('muwave');
 
     console.log(userConfig);
 
@@ -158,10 +158,8 @@ const NotificationConfigPage = () => {
 
   const addNewCriteria = () => {
     if (newCriteria.length > 0 && configForm) {
-      // const id = Math.max(...configForm.map((conf) => conf.id));
       const newConfig: NotificationConfigForm = [...configForm];
       newConfig.push({
-        // id: id + 1,
         conditions: [{ field: '', operand: '', value: '' }],
         operation: newCriteria as OperationName | VirtualOperationName,
       });
@@ -171,11 +169,15 @@ const NotificationConfigPage = () => {
   };
 
   const saveConfig = async () => {
-    if (selectedAccount?.keys.posting) {
-      await NotificationsUtils.saveConfiguration(configForm!, selectedAccount!);
-    } else {
-      //TODO notify no posting key
-    }
+    if (window.confirm('OK ?'))
+      if (selectedAccount?.keys.posting) {
+        await NotificationsUtils.saveConfiguration(
+          configForm!,
+          selectedAccount!,
+        );
+      } else {
+        //TODO notify no posting key
+      }
   };
 
   const setDefaultConfig = () => {
