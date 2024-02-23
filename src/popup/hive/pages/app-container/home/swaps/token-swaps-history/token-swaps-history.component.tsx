@@ -10,6 +10,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
+import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
 const TokenSwapsHistory = ({
@@ -18,12 +19,14 @@ const TokenSwapsHistory = ({
   setInfoMessage,
 }: PropsFromRedux) => {
   const [history, setHistory] = useState<ISwap[]>([]);
-  const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
-    number | null
-  >(null);
   const [shouldRefresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const { countdown, refreshCountdown, nullifyCountdown } = useCountdown(
+    Config.swaps.autoRefreshHistoryPeriodSec,
+    () => {
+      refresh();
+    },
+  );
   useEffect(() => {
     setTitleContainerProperties({
       title: 'html_popup_token_swaps_history',
@@ -31,26 +34,6 @@ const TokenSwapsHistory = ({
     });
     initSwapHistory();
   }, []);
-
-  useEffect(() => {
-    if (autoRefreshCountdown === null) {
-      return;
-    }
-
-    if (autoRefreshCountdown === 0) {
-      refresh();
-      setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      setAutoRefreshCountdown(autoRefreshCountdown! - 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [autoRefreshCountdown]);
 
   const initSwapHistory = async () => {
     setLoading(true);
@@ -64,7 +47,7 @@ const TokenSwapsHistory = ({
       activeAccount.name!,
     );
     setHistory(result);
-    setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
+    refreshCountdown();
     setRefresh(false);
   };
 
@@ -78,10 +61,10 @@ const TokenSwapsHistory = ({
   return (
     <div className="token-swaps-history">
       <div className="refresh-panel">
-        {!!autoRefreshCountdown && (
+        {!!countdown && (
           <>
             {chrome.i18n.getMessage('swap_refresh_countdown', [
-              autoRefreshCountdown?.toString(),
+              countdown?.toString(),
             ])}
             <SVGIcon
               className={`swap-history-refresh ${

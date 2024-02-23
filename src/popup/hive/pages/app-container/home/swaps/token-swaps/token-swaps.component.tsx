@@ -41,6 +41,7 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
+import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
@@ -80,21 +81,27 @@ const TokenSwaps = ({
   const [estimate, setEstimate] = useState<IStep[]>();
   const [estimateValue, setEstimateValue] = useState<string | undefined>();
 
-  const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
-    number | null
-  >(null);
-
   const [isAdvancedParametersOpen, setIsAdvancedParametersOpen] =
     useState(false);
 
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
+
+  const { countdown, refreshCountdown, nullifyCountdown } = useCountdown(
+    Config.swaps.autoRefreshPeriodSec,
+    () => {
+      if (startToken && endToken) {
+        calculateEstimate(amount, startToken, endToken, swapConfig);
+        return;
+      }
+    },
+  );
 
   const throttledRefresh = useMemo(() => {
     return throttle(
       (newAmount, newEndToken, newStartToken, swapConfig) => {
         if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
           calculateEstimate(newAmount, newStartToken, newEndToken, swapConfig);
-          setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
+          refreshCountdown();
         }
       },
       1000,
@@ -162,26 +169,6 @@ const TokenSwaps = ({
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (autoRefreshCountdown === null) {
-      return;
-    }
-
-    if (autoRefreshCountdown === 0 && startToken && endToken) {
-      calculateEstimate(amount, startToken, endToken, swapConfig);
-      setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
-      return;
-    }
-
-    const a = setTimeout(() => {
-      setAutoRefreshCountdown(autoRefreshCountdown! - 1);
-    }, 1000);
-
-    return () => {
-      clearTimeout(a);
-    };
-  }, [autoRefreshCountdown]);
 
   const initTokenSelectOptions = async () => {
     const [startList, allTokens] = await Promise.all([
@@ -270,7 +257,7 @@ const TokenSwaps = ({
         endToken?.value.symbol,
         amount,
         () => {
-          setAutoRefreshCountdown(null);
+          nullifyCountdown();
         },
       );
 
@@ -578,21 +565,19 @@ const TokenSwaps = ({
                             endToken!,
                             swapConfig!,
                           );
-                          setAutoRefreshCountdown(
-                            Config.swaps.autoRefreshPeriodSec,
-                          );
+                          refreshCountdown();
                         }}
                       />
                     </CustomTooltip>
                   </div>
                   <div className="countdown">
-                    {!!autoRefreshCountdown && (
+                    {!!countdown && (
                       <>
                         {
                           <span>
                             {chrome.i18n.getMessage(
                               'swap_autorefresh',
-                              autoRefreshCountdown + '',
+                              countdown + '',
                             )}
                           </span>
                         }
