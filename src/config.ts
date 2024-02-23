@@ -52,8 +52,10 @@ const Config = {
         '716078e4-939c-445a-8c6d-534614cd31b1',
     } as RampConfig,
     ramp: {
-      baseUrl: 'https://api.ramp.network/',
-      apiKey: '',
+      baseUrl: process.env.RAMP_DEV_API_KEY
+        ? 'https://api.demo.ramp.network'
+        : 'https://api.ramp.network',
+      apiKey: process.env.RAMP_DEV_API_KEY || '',
     } as RampConfig,
   },
 };

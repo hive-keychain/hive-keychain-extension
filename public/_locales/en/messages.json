@@ -2878,7 +2878,7 @@
     "description": "Transfer from savings to an exchange platform warning message"
   },
   "popup_html_buy": {
-    "message": "Buy/Sell",
+    "message": "Buy",
     "description": "Main page buy button"
   },
   "html_popup_transak_description": {

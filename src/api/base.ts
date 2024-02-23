@@ -36,14 +36,14 @@ const post = async (url: string, body: any): Promise<any> => {
         body: JSON.stringify(body),
       })
         .then((res) => {
-          if (res && res.status === 200) {
+          if (res && (res.status === 200 || res.status === 201)) {
             return res.json();
           }
         })
         .then((res) => {
           resolve(res);
         })
-        .catch((err) => {
+        .catch((err: any) => {
           reject(err);
         });
     } catch (err) {

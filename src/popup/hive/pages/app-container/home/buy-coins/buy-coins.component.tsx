@@ -1,7 +1,9 @@
+import { RampType } from '@interfaces/ramps.interface';
 import {
-  RampType,
+  RampMerger,
+  RampProvider,
   TransakProvider,
-} from '@popup/hive/pages/app-container/home/buy-coins/ramps';
+} from '@popup/hive/pages/app-container/home/buy-coins/ramps.utils';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -19,18 +21,19 @@ const BuyCoins = ({
   const [buyType, setBuyType] = useState(BuyCoinType.BUY);
 
   useEffect(() => {
-    const a = new TransakProvider();
-    a.getFiatCurrencyOptions().then((e) => {
-      a.getEstimation(RampType.BUY, 200, {
-        symbol: 'TWD',
-        icon: '',
-        name: 'Euro',
-        paymentMethods: [],
-      }).then((f) => {
-        console.log(f);
-        console.log(a.getLink(f[0], 'stoodkev'));
-      });
-    });
+    (async () => {
+      const ramps = new RampMerger([new TransakProvider(), new RampProvider()]);
+      const currencies = await ramps.getFiatCurrencyOptions();
+      const estimations = await ramps.getEstimations(
+        RampType.BUY,
+        200, // amount
+        'USD', // Chose from the list of currencies
+        'BTC', // crypto
+        'BTC', // network
+        'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', // wallet
+      );
+      console.log(estimations);
+    })();
 
     setTitleContainerProperties({
       title: 'popup_html_buy',
