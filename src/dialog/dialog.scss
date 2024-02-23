@@ -16,9 +16,18 @@
   background-color: var(--background-color);
   @include background-bottom;
 }
-
+@-moz-document url-prefix() {
+  div:not(.scrollable) {
+    scrollbar-width: none;
+  }
+}
+.scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: $red transparent;
+}
 html {
   height: 100%;
+  scrollbar-width: 0;
   body {
     margin: 0px;
     height: 100%;
@@ -32,7 +41,7 @@ html {
       flex-direction: column;
       height: 100%;
       color: var(--main-font-color);
-      @include background-top;
+      // @include background-top;
       padding: 32px;
       box-sizing: border-box;
       font-size: 16px;
@@ -50,6 +59,7 @@ html {
         border-radius: 4px;
         background-color: transparent;
       }
+      scrollbar-width: none;
 
       ::-webkit-scrollbar {
         width: 6px;

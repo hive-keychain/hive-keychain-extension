@@ -26,11 +26,14 @@
       background: var(--card-background);
       border-radius: 20px;
       border: 1px solid var(--card-border);
-      user-select: all;
       .field {
         display: flex;
         justify-content: space-between;
         column-gap: 16px;
+        user-select: auto;
+        pre {
+          user-select: all;
+        }
         .label {
           @include poppins500(14px);
         }

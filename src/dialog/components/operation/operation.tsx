@@ -59,6 +59,7 @@ const Operation = ({
   return (
     <div className="operation">
       <div
+        className="scrollable"
         style={{
           height: canWhitelist ? '70%' : '85%',
           overflow: 'scroll',
