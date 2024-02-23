@@ -110,6 +110,7 @@ export class TransakProvider
           name: e.name,
           symbol: e.symbol,
           paymentMethods: e.paymentOptions,
+          logoSymbol: e.logoSymbol,
         };
       });
     return this.fiatCurrencyOptions;
@@ -193,7 +194,7 @@ export class RampMerger {
   constructor(providers: BaseProviderInterface[]) {
     this.providers = providers;
   }
-  getFiatCurrencyOptions = async () => {
+  getFiatCurrencyOptions = async (): Promise<RampFiatCurrency[]> => {
     let fiatCurrencies: RampFiatCurrency[] = [];
 
     for (const provider of this.providers) {
@@ -204,12 +205,14 @@ export class RampMerger {
         else fiatCurrencies.push(option);
       }
     }
-    fiatCurrencies.map(
-      (e) =>
-        (e.icon = `https://cdn.jsdelivr.net/gh/madebybowtie/FlagKit@2.2/Assets/SVG/${CountriesUtils.getCountryFromCurrency(
-          e.symbol,
-        )}.svg`),
-    );
+    fiatCurrencies.map((e) => {
+      e.icon = `https://cdn.jsdelivr.net/gh/madebybowtie/FlagKit@2.2/Assets/SVG/${
+        !e.logoSymbol
+          ? CountriesUtils.getCountryFromCurrency(e.symbol)
+          : e.logoSymbol
+      }.svg`;
+      return e;
+    });
 
     // Show current currency first, then EUR and USD, then the rest by alphabetical order
     const current = fiatCurrencies.shift();
@@ -226,7 +229,7 @@ export class RampMerger {
       ...fiatCurrencies.sort((a, b) => {
         return a.symbol < b.symbol ? -1 : 1;
       }),
-    ].filter((e) => !!e);
+    ].filter((e) => !!e) as RampFiatCurrency[];
   };
 
   getEstimations = async (

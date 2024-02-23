@@ -2,6 +2,7 @@ export interface RampFiatCurrency {
   icon: string;
   name: string;
   symbol: string;
+  logoSymbol?: string;
   paymentMethods: any[];
 }
 

@@ -6,9 +6,9 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-export interface OptionItem {
+export interface OptionItem<T = any> {
   label: string;
-  value: any;
+  value: T;
   canDelete?: boolean;
   subLabel?: string;
   img?: string;

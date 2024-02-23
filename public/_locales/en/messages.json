@@ -1546,8 +1546,12 @@
     "description": "When wallet is disabled on exchange."
   },
   "popup_html_buy_hive": {
-    "message": "Buy & Sell",
-    "description": "When clicking on the Hive arrow menu"
+    "message": "Fiat",
+    "description": "Buy menu"
+  },
+  "popup_html_buy_hive_crypto": {
+    "message": "Crypto",
+    "description": "Buy Menu"
   },
   "popup_html_buy_hbd": {
     "message": "Buy HBD",
@@ -2878,8 +2882,12 @@
     "description": "Transfer from savings to an exchange platform warning message"
   },
   "popup_html_buy": {
-    "message": "Buy",
+    "message": "Buy/Sell",
     "description": "Main page buy button"
+  },
+  "popup_html_buy_title": {
+    "message": "Buy and sell HIVE",
+    "description": "On Buy page"
   },
   "html_popup_transak_description": {
     "message": "Transak helps you buy HIVE using fiat. It supports credit cards, bank transfers, Apple Pay and MobiKwik in more than 100 countries (options vary per country). You will receive your HIVE directly in your Hive Keychain wallet.",
@@ -3362,6 +3370,10 @@
   "token": {
     "message": "Token",
     "description": "Value of token in USD"
+  },
+  "fiat": {
+    "message": "Fiat",
+    "description": "In Buy page"
   },
   "liquid_balance": {
     "message": "Liquid balance",
