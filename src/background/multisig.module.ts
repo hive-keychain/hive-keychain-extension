@@ -652,6 +652,7 @@ const waitForBroadcastToBeDone = async () => {
 
 setInterval(() => {
   if (!socket || !socket.connected) {
+    Logger.log('Restart the socket');
     start();
   }
 }, 60 * 1000);
