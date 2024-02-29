@@ -120,9 +120,7 @@ const isUsingMultisig = (
         ([auth, w]) => auth === initiatorAccount.name,
       );
       const keyAuth = transactionAccount.active.key_auths.find(
-        ([keyAuth, w]) =>
-          keyAuth ===
-          KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString()),
+        ([keyAuth, w]) => keyAuth === key,
       );
       if (
         (accAuth && accAuth[1] < transactionAccount.active.weight_threshold) ||
@@ -130,6 +128,7 @@ const isUsingMultisig = (
       ) {
         return true;
       }
+      return false;
     }
     case KeychainKeyTypesLC.posting:
       {

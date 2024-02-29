@@ -12,6 +12,7 @@
     justify-content: center;
     column-gap: 8px;
     padding: 0 30px;
+    margin-bottom: 10px;
     .message {
       @include caption;
       padding: 0px;

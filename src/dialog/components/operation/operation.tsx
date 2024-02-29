@@ -51,23 +51,21 @@ const Operation = ({
   const [useMultisig, setUseMultisig] = useState(false);
 
   useEffect(() => {
-    if (data && username) checkForMultsig();
+    if (data && (username || data.username)) checkForMultsig();
   }, [data, username]);
 
   const checkForMultsig = async () => {
     let useMultisig = false;
-    const method = getRequiredWifType(data);
-    const initiatorAccount = await AccountUtils.getExtendedAccount(username!);
+    const name = (username || data.username)!;
+    const method = getRequiredWifType(data).toLowerCase();
+    const initiatorAccount = await AccountUtils.getExtendedAccount(name);
+    const localAccount = await AccountUtils.getAccountFromLocalStorage(name);
 
-    const localAccount = await AccountUtils.getAccountFromLocalStorage(
-      username!,
-    );
-    console.log(method, 'method');
     switch (method) {
       case KeychainKeyTypesLC.active: {
         if (data.key || localAccount?.keys.active) {
           useMultisig = KeysUtils.isUsingMultisig(
-            data.key ?? localAccount?.keys.active!,
+            localAccount?.keys.activePubkey!,
             initiatorAccount,
             initiatorAccount,
             method,
@@ -77,10 +75,9 @@ const Operation = ({
         break;
       }
       case KeychainKeyTypesLC.posting: {
-        console.log('posting', method, data.key, localAccount?.keys.posting);
         if (data.key || localAccount?.keys.posting) {
           useMultisig = KeysUtils.isUsingMultisig(
-            data.key ?? localAccount?.keys.posting!,
+            localAccount?.keys.postingPubkey!,
             initiatorAccount,
             initiatorAccount,
             method,
