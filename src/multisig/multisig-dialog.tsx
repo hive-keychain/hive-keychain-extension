@@ -40,7 +40,7 @@ const MultisigDialog = () => {
   const [initialMultisigData, setInitialMultisigData] =
     useState<MultisigData>();
   const [multisigData, setMultisigData] = useState<MultisigData>();
-
+  const [isReady, setIsReady] = useState(false);
   const onReceivedDataFromBackground = (
     backgroundMessage: DialogMessage,
     sender: chrome.runtime.MessageSender,
@@ -51,7 +51,11 @@ const MultisigDialog = () => {
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
       setMultisigData(multisigData);
-    } else if (backgroundMessage.command === DialogCommand.READY_MULTISIG) {
+    } else if (
+      backgroundMessage.command === DialogCommand.READY_MULTISIG &&
+      !isReady
+    ) {
+      setIsReady(true);
       return BrowserUtils.sendResponse(true, sendResp);
     }
   };
@@ -107,6 +111,10 @@ const MultisigDialog = () => {
         setCaption('');
         const data = multisigData.data as MultisigDisplayMessageData;
         chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
+        if (data.success)
+          setTimeout(() => {
+            handleCloseClick();
+          }, 3000);
         return (
           <div className="card">
             <SVGIcon
@@ -184,6 +192,10 @@ const MultisigDialog = () => {
       case MultisigStep.NOTIFY_TRANSACTION_BROADCASTED: {
         const data = multisigData.data as MultisigDisplayMessageData;
         setCaption('');
+        // if (data.success)
+        //   setTimeout(() => {
+        //     handleCloseClick();
+        //   }, 3000);
         return (
           <div className="card">
             <SVGIcon
@@ -193,7 +205,9 @@ const MultisigDialog = () => {
             <div className="message">
               {chrome.i18n.getMessage(data.message)}
             </div>
-            <a href={`https://hivehub.dev/tx/${data.txId}`}>{data.txId}</a>
+            <a href={`https://hivehub.dev/tx/${data.txId}`} target="__blank">
+              {data.txId}
+            </a>
             <div className="fields-container">
               <div className="fields">
                 <CollaspsibleItem
