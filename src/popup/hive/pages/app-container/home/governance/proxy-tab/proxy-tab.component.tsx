@@ -1,7 +1,4 @@
-import {
-  KeychainKeyTypes,
-  KeychainKeyTypesLC,
-} from '@interfaces/keychain.interface';
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -44,7 +41,7 @@ const ProxyTab = ({
           activeAccount.keys.activePubkey!,
           activeAccount.account,
           activeAccount.account,
-          KeychainKeyTypes.active,
+          KeychainKeyTypesLC.active,
         ),
       );
     }

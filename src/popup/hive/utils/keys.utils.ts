@@ -112,10 +112,10 @@ const isUsingMultisig = (
   key: Key,
   transactionAccount: ExtendedAccount,
   initiatorAccount: ExtendedAccount,
-  method: KeychainKeyTypes,
+  method: KeychainKeyTypesLC,
 ): boolean => {
   switch (method) {
-    case KeychainKeyTypes.active: {
+    case KeychainKeyTypesLC.active: {
       const accAuth = transactionAccount.active.account_auths.find(
         ([auth, w]) => auth === initiatorAccount.name,
       );
@@ -131,7 +131,7 @@ const isUsingMultisig = (
         return true;
       }
     }
-    case KeychainKeyTypes.posting:
+    case KeychainKeyTypesLC.posting:
       {
         const accAuth = transactionAccount.posting.account_auths.find(
           ([auth, w]) => auth === initiatorAccount.name,
@@ -162,7 +162,7 @@ const getKeyType = (
   publicKey?: Key,
   transactionAccount?: ExtendedAccount,
   initiatorAccount?: ExtendedAccount,
-  method?: KeychainKeyTypes,
+  method?: KeychainKeyTypesLC,
 ): PrivateKeyType => {
   if (
     transactionAccount &&

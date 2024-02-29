@@ -1,10 +1,9 @@
 import {
-  KeychainKeyTypes,
+  KeychainKeyTypesLC,
   KeychainRequest,
 } from '@interfaces/keychain.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
@@ -14,6 +13,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
+import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
   title: string;
@@ -56,14 +56,15 @@ const Operation = ({
 
   const checkForMultsig = async () => {
     let useMultisig = false;
-    const method = MultisigUtils.getTxKeyType(data);
+    const method = getRequiredWifType(data);
     const initiatorAccount = await AccountUtils.getExtendedAccount(username!);
 
     const localAccount = await AccountUtils.getAccountFromLocalStorage(
       username!,
     );
+    console.log(method, 'method');
     switch (method) {
-      case KeychainKeyTypes.active: {
+      case KeychainKeyTypesLC.active: {
         if (data.key || localAccount?.keys.active) {
           useMultisig = KeysUtils.isUsingMultisig(
             data.key ?? localAccount?.keys.active!,
@@ -75,7 +76,8 @@ const Operation = ({
         }
         break;
       }
-      case KeychainKeyTypes.posting: {
+      case KeychainKeyTypesLC.posting: {
+        console.log('posting', method, data.key, localAccount?.keys.posting);
         if (data.key || localAccount?.keys.posting) {
           useMultisig = KeysUtils.isUsingMultisig(
             data.key ?? localAccount?.keys.posting!,

@@ -1,7 +1,7 @@
 import { addCaptionToLoading } from '@popup/hive/actions/loading.actions';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
@@ -75,7 +75,7 @@ const ConfirmationPage = ({
             activeAccount.keys.active,
             activeAccount.account,
             activeAccount.account,
-            method,
+            method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
         }
@@ -87,7 +87,7 @@ const ConfirmationPage = ({
             activeAccount.keys.posting,
             activeAccount.account,
             activeAccount.account,
-            method,
+            method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
         }

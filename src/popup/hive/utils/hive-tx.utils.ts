@@ -15,7 +15,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import {
   Transaction as HiveTransaction,
   config as HiveTxConfig,
@@ -100,7 +100,7 @@ const createSignAndBroadcastTransaction = async (
     key,
     transactionAccount,
     initiatorAccount,
-    method,
+    method.toLowerCase() as KeychainKeyTypesLC,
   );
 
   if (isUsingMultisig) {

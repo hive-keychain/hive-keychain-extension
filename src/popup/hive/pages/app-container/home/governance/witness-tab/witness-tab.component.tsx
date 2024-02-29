@@ -2,7 +2,7 @@ import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import FlatList from 'flatlist-react';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -68,7 +68,7 @@ const WitnessTab = ({
           activeAccount.keys.activePubkey!,
           activeAccount.account,
           activeAccount.account,
-          KeychainKeyTypes.active,
+          KeychainKeyTypesLC.active,
         ),
       );
     }

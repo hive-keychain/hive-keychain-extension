@@ -650,6 +650,14 @@ const waitForBroadcastToBeDone = async () => {
   });
 };
 
+setInterval(() => {
+  if (!socket.connected) {
+    console.log('disconnected');
+  } else {
+    console.log('still connected');
+  }
+}, 5 * 60 * 1000);
+
 export const MultisigModule = {
   start,
   processSignatureRequest,

@@ -1,7 +1,7 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Proposal } from '@interfaces/proposal.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -53,7 +53,7 @@ const ProposalItem = ({
           activeAccount.keys.activePubkey!,
           activeAccount.account,
           activeAccount.account,
-          KeychainKeyTypes.active,
+          KeychainKeyTypesLC.active,
         ),
       );
     }
