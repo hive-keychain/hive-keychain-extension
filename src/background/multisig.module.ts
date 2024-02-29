@@ -30,6 +30,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
+import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -40,7 +41,7 @@ let connectedPublicKeys: SignerConnectMessage[] = [];
 const start = async () => {
   Logger.info(`Starting multisig`);
 
-  socket = io('http://localhost:5000', {
+  socket = io(Config.multisig.baseURL, {
     transports: ['websocket'],
     reconnection: true,
   });
