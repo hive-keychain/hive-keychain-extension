@@ -1,5 +1,8 @@
 /* istanbul ignore file */
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 
 export interface BackgroundMessage {
@@ -9,5 +12,10 @@ export interface BackgroundMessage {
 
 export interface DialogMessage {
   command: DialogCommand;
+  value?: any;
+}
+
+export interface MultisigDialogMessage {
+  command: MultisigDialogCommand;
   value?: any;
 }

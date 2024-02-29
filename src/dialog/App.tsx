@@ -15,8 +15,6 @@ import './../analytics/analytics/gtag';
 const App = () => {
   const [data, setData] = useState<any>({});
   const [theme, setTheme] = useState<Theme>();
-  const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
-
   useEffect(() => {
     initTheme();
   }, []);
@@ -57,13 +55,13 @@ const App = () => {
       sendResp,
     ) {
       if (data.command === DialogCommand.READY) {
-        return BrowserUtils.sendResponse(true, sendResp);
+        BrowserUtils.sendResponse(true, sendResp);
+        chrome.windows.update((await chrome.windows.getCurrent()).id!, {
+          focused: true,
+        });
       } else if (Object.values(DialogCommand).includes(data.command)) {
         setData(data);
       }
-      chrome.windows.update((await chrome.windows.getCurrent()).id!, {
-        focused: true,
-      });
     });
   }, []);
 

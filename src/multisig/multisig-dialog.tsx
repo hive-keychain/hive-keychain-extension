@@ -1,6 +1,6 @@
 import {
   BackgroundMessage,
-  DialogMessage,
+  MultisigDialogMessage,
 } from '@background/background-message.interface';
 import {
   MultisigAcceptRejectTxData,
@@ -11,7 +11,7 @@ import {
 } from '@interfaces/multisig.interface';
 import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { MultisigDialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -42,17 +42,18 @@ const MultisigDialog = () => {
   const [multisigData, setMultisigData] = useState<MultisigData>();
   const [isReady, setIsReady] = useState(false);
   const onReceivedDataFromBackground = (
-    backgroundMessage: DialogMessage,
+    backgroundMessage: MultisigDialogMessage,
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
     if (
-      backgroundMessage.command === DialogCommand.MULTISIG_SEND_DATA_TO_POPUP
+      backgroundMessage.command ===
+      MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
       setMultisigData(multisigData);
     } else if (
-      backgroundMessage.command === DialogCommand.READY_MULTISIG &&
+      backgroundMessage.command === MultisigDialogCommand.READY_MULTISIG &&
       !isReady
     ) {
       setIsReady(true);
