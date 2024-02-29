@@ -651,12 +651,10 @@ const waitForBroadcastToBeDone = async () => {
 };
 
 setInterval(() => {
-  if (!socket.connected) {
-    console.log('disconnected');
-  } else {
-    console.log('still connected');
+  if (!socket || !socket.connected) {
+    start();
   }
-}, 5 * 60 * 1000);
+}, 60 * 1000);
 
 export const MultisigModule = {
   start,
