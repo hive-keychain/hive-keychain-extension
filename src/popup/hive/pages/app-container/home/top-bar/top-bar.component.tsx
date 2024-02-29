@@ -1,9 +1,13 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
+import { PeakDNotification } from '@interfaces/peakd-notifications.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
@@ -36,6 +40,15 @@ const TopBar = ({
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
+  const [notifications, setNotifications] = useState<PeakDNotification[]>();
+  const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
+
+  useEffect(() => {
+    console.log('init enpty', notifications, activeAccount.name);
+    if (!notifications) {
+      initNotifications(activeAccount.name!);
+    }
+  }, []);
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -54,12 +67,22 @@ const TopBar = ({
     }
   }, [activeAccount]);
 
+  useEffect(() => {
+    console.log({ notifications });
+  }, [notifications]);
+
   const refresh = () => {
     setRotateLogo(true);
     refreshActiveAccount();
     loadGlobalProperties();
     loadUserTokens(activeAccount.name!);
     setTimeout(() => setRotateLogo(false), 1000);
+  };
+
+  const initNotifications = async (username: string) => {
+    const notifs = await NotificationsUtils.getNotifications(username);
+    console.log('init', notifs);
+    setNotifications(notifs);
   };
 
   const claim = async (): Promise<void> => {
@@ -109,6 +132,10 @@ const TopBar = ({
     }
   };
 
+  const toggleNotificationPanel = () => {
+    setNotificationPanelOpen(!isNotificationPanelOpen);
+  };
+
   return (
     <div className="top-bar">
       <SVGIcon
@@ -127,6 +154,15 @@ const TopBar = ({
         tooltipPosition="right"
       />
       <div className="spacer"></div>
+      {notifications && notifications.length > 0 && (
+        <SVGIcon
+          icon={SVGIcons.TOP_BAR_NOTIFICATION_BUTTON}
+          dataTestId="notification-button"
+          className="notification-button"
+          onClick={() => toggleNotificationPanel()}
+          hoverable
+        />
+      )}
       {hasRewardToClaim && (
         <SVGIcon
           icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
@@ -138,6 +174,37 @@ const TopBar = ({
       )}
 
       <SelectAccountSectionComponent isOnMain />
+      {notifications && notifications.length > 0 && (
+        <div
+          className={`notifications-panel ${
+            isNotificationPanelOpen ? 'opened' : 'closed'
+          }`}>
+          <div className="notification-list">
+            {isNotificationPanelOpen &&
+              notifications.map((notif, index) => (
+                <React.Fragment key={notif.id}>
+                  <div
+                    className={`notification-item ${
+                      notif.txId ? 'clickable' : ''
+                    }`}>
+                    <div className="message">
+                      {chrome.i18n.getMessage(
+                        notif.message,
+                        notif.messageParams,
+                      )}
+                    </div>
+                    <div className="date">
+                      {moment(notif.createdAt).fromNow()}
+                    </div>
+                  </div>
+                  {index !== notifications.length - 1 && (
+                    <Separator type="horizontal" />
+                  )}
+                </React.Fragment>
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

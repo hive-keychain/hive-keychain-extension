@@ -1,4 +1,5 @@
 import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import moment from 'moment';
 
 export type NotificationOperationName = OperationName | VirtualOperationName;
 
@@ -18,13 +19,11 @@ export interface NotificationConfigConditions {
 export type NotificationConfigForm = NotificationConfigFormItem[];
 
 export interface NotificationConfigFormItem {
-  // id: number;
   operation: NotificationOperationName;
   conditions: NotificationConfigFormCondition[];
 }
 
 export interface NotificationConfigFormCondition {
-  // id: number;
   field: string;
   operand: string;
   value: string;
@@ -35,4 +34,12 @@ export enum ConfigFormUpdateAction {
   ADD_NEW_CONDITION = 'ADD_NEW_CONDITION',
   DELETE_CONDITION = 'DELETE_CONDITION',
   UPDATE_DATA = 'UPDATE_DATA',
+}
+
+export interface PeakDNotification {
+  id: string;
+  message: string;
+  messageParams: string[];
+  txId: string;
+  createdAt: moment.Moment;
 }

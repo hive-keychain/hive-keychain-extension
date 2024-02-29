@@ -1,4 +1,5 @@
 import { PeakDNotificationsApi } from '@api/peakd-notifications';
+import { Asset } from '@hiveio/dhive';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
@@ -7,8 +8,10 @@ import {
   NotificationConfigForm,
   NotificationConfigFormItem,
   NotificationOperationName,
+  PeakDNotification,
 } from '@interfaces/peakd-notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
+import moment from 'moment';
 
 const operationFieldList = [
   // {
@@ -505,6 +508,246 @@ const getDefaultConfig = () => {
   return configForm;
 };
 
+const getNotifications = async (username: string) => {
+  const notifications: PeakDNotification[] = [];
+  const res = await PeakDNotificationsApi.get(`notifications/${username}`);
+  for (const notif of res) {
+    console.log(notif);
+    const payload = JSON.parse(notif.payload);
+    let messageParams: string[] = [];
+    let message: string = `notification_${notif.operation}`;
+    switch (notif.operation_type) {
+      case 'transfer': {
+        if (payload.to === username) {
+          messageParams = [payload.amount, payload.from];
+          message = 'popup_html_wallet_info_transfer_in';
+        } else {
+          messageParams = [payload.amount, payload.to];
+          message = 'popup_html_wallet_info_transfer_out';
+        }
+        break;
+      }
+      case 'fill_recurrent_transfer': {
+        if (payload.to === username) {
+          messageParams = [
+            payload.amount,
+            payload.from,
+            payload.remaining_executions,
+          ];
+          message = 'popup_html_wallet_info_fill_recurrent_transfer_in';
+        } else {
+          messageParams = [
+            payload.amount,
+            payload.to,
+            payload.remaining_executions,
+          ];
+          message = 'popup_html_wallet_info_fill_recurrent_transfer_out';
+        }
+
+        break;
+      }
+      case 'account_update':
+      case 'account_update2': {
+        message = 'notification_account_update';
+        messageParams = [payload.account];
+        break;
+      }
+      case 'account_witness_proxy': {
+        message = 'notification_account_witness_proxy';
+        messageParams = [payload.account, payload.proxy];
+        break;
+      }
+      case 'account_witness_vote': {
+        if (payload.approve) {
+          message = 'notification_account_witness_vote';
+          messageParams = [payload.account, payload.witness];
+        } else {
+          message = 'notification_account_witness_unvote';
+          messageParams = [payload.account, payload.witness];
+        }
+        break;
+      }
+      case 'change_recovery_account': {
+        // TODO check payload
+        break;
+      }
+      case 'claim_account': {
+        message = 'popup_html_wallet_info_claim_account';
+        break;
+      }
+      case 'comment': {
+        // TODO wait for asgarth answer
+        break;
+      }
+      case 'custom_json': {
+        break;
+      }
+      case 'delegate_vesting_shares': {
+        if (Asset.fromString(payload.amount).amount > 0) {
+          message = 'notification_delegation';
+          messageParams = [
+            payload.delegator,
+            payload.amount,
+            payload.delegatee,
+          ];
+        } else {
+          message = 'notification_cancel_delegation';
+          messageParams = [payload.delegator, payload.delegatee];
+        }
+        break;
+      }
+      case 'feed_publish': {
+        // TODO
+        break;
+      }
+      case 'recover_account': {
+        message = 'notification_requested_account_recovery';
+        messageParams = [payload.account_to_recover, payload.recovery_account];
+        break;
+      }
+      case 'request_account_recovery': {
+        message = 'notification_recovered_account';
+        messageParams = [payload.account_to_recover];
+        break;
+      }
+      case 'set_withdraw_vesting_route': {
+        message = 'notification_set_power_down_route';
+        messageParams = [payload.from_account, payload.to_account];
+        break;
+      }
+      case 'transfer_from_savings': {
+        message = 'popup_html_wallet_info_withdraw_savings';
+        messageParams = [payload.amount];
+        break;
+      }
+      case 'transfer_to_savings': {
+        message = 'popup_html_wallet_info_deposit_savings';
+        messageParams = [payload.amount];
+        break;
+      }
+      case 'transfer_to_vesting': {
+        if (payload.to === username) {
+          message = 'popup_html_wallet_info_power_up';
+          messageParams = [payload.amount];
+        } else {
+          message = 'popup_html_wallet_info_power_up_other_account';
+          messageParams = [payload.from, payload.amount, payload.to];
+        }
+        break;
+      }
+      case 'vote': {
+        break;
+      }
+      case 'withdraw_vesting': {
+        message = 'bgd_ops_pd';
+        messageParams = [payload.amount, payload.account]; // TODO Convert to HP
+        break;
+      }
+      case 'recurrent_transfer': {
+        message = 'notification_recurrent_transfer';
+        messageParams = [
+          payload.from,
+          payload.amount,
+          payload.to,
+          payload.executions,
+          payload.recurrence,
+        ]; // TODO format amount
+        break;
+      }
+      case 'fill_convert_request': {
+        message = 'notification_fill_convert';
+        messageParams = [payload.owner, payload.amount_in, payload.amount_out];
+        break;
+      }
+      case 'author_reward': {
+        message = 'notification_author_reward';
+        messageParams = [
+          payload.author,
+          payload.hbd_payout,
+          payload.hive_payout,
+          payload.vesting_payout,
+          payload.permlink,
+        ];
+        break;
+      }
+      case 'curation_reward': {
+        message = 'notification_curation_reward';
+        messageParams = [
+          payload.curator,
+          payload.reward,
+          payload.comment_author,
+          payload.comment_permlink,
+        ];
+        break;
+      }
+      case 'comment_reward': {
+        message = 'notification_comment_reward';
+        messageParams = [payload.author, payload.payout, payload.permlink];
+        break;
+      }
+      case 'interest': {
+        message = 'notification_hbd_interest';
+        messageParams = [payload.owner, payload.interest];
+        break;
+      }
+      case 'fill_vesting_withdraw': {
+        if (username === payload.from_account) {
+          message = 'notification_fill_power_down';
+          messageParams = [payload.from, payload.withdraw];
+        } else {
+          message = 'notification_fill_power_down_other_account';
+          messageParams = [
+            payload.from_account,
+            payload.withdraw,
+            payload.to_account,
+          ];
+        }
+        break;
+      }
+      case 'fill_order': {
+        break;
+      }
+      case 'fill_transfer_from_savings': {
+        break;
+      }
+      case 'return_vesting_delegation': {
+        break;
+      }
+      case 'comment_benefactor_reward': {
+        break;
+      }
+      case 'producer_reward': {
+        message = 'notification_producer_reward';
+        messageParams = [payload.producer, payload.vesting_shares];
+        break;
+      }
+      case 'changed_recovery_account': {
+        message = 'notification_changed_recovery_account';
+        messageParams = [
+          payload.account,
+          payload.old_recovery_account,
+          payload.new_recovery_account,
+        ];
+        break;
+      }
+      case 'fill_collateralized_convert_request': {
+        break;
+      }
+      case 'failed_recurrent_transfer': {
+        break;
+      }
+    }
+    notifications.push({
+      id: notif.id,
+      createdAt: moment(notif.created),
+      txId: notif.trx_id,
+      message: message,
+      messageParams: messageParams,
+    });
+  }
+  return notifications;
+};
+
 export const NotificationsUtils = {
   defaultActiveSubs,
   conditionNames,
@@ -515,4 +758,5 @@ export const NotificationsUtils = {
   initializeForm,
   saveConfiguration,
   getDefaultConfig,
+  getNotifications,
 };

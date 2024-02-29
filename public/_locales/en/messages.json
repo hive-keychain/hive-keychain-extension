@@ -3782,5 +3782,82 @@
   "html_popup_delete_criteria": {
     "message": "Delete criteria",
     "description": "Delete criteria"
+  },
+  "notification_recurrent_transfer": {
+    "message": "@$1 started a $2 recurrent transfer to @$3 ($4 executions every $5 hours)",
+    "description": "Notification recurrent transfer"
+  },
+
+  "notification_account_update": {
+    "message": "The account @$1 has been updated",
+    "description": "Notification account updated"
+  },
+  "notification_account_witness_proxy": {
+    "message": "@$1 has set @$2 as a proxy",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_vote": {
+    "message": "@$1 has voted for @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_unvote": {
+    "message": "@$1 has unvoted @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_delegation": {
+    "message": "@$1 delegated $2 to @$3",
+    "description": "notification delegation hp"
+  },
+  "notification_cancel_delegation": {
+    "message": "@$1 has canceled a delegation to @$2",
+    "description": "notification cancel delegation hp"
+  },
+  "notification_requested_account_recovery": {
+    "message": "@$1 has requested recovery to @$2",
+    "description": "notification recovery request"
+  },
+  "notification_recovered_account": {
+    "message": "@$1 has been recovered",
+    "description": "Notification accouht recovered"
+  },
+  "notification_set_power_down_route": {
+    "message": "Power down route has been changed from @$1 to @$2",
+    "description": "Notification set power down route"
+  },
+  "notification_fill_convert": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification fill convert"
+  },
+  "notification_author_reward": {
+    "message": "@$1 has received $2, $3, $4 as an author reward for <a classname='notification-link' href='https://peakd.com/$1/$5'>$1/$5</a>",
+    "description": "Notification author reward"
+  },
+  "notification_comment_reward": {
+    "message": "@$1 has received $2 as an comment reward for <a classname='notification-link' href='https://peakd.com/$1/$5'>$1/$5</a>",
+    "description": "Notification comment reward"
+  },
+  "notification_hbd_interest": {
+    "message": "$@1 received $2 as interest",
+    "description": "Notification HBD interest received"
+  },
+  "notification_fill_power_down": {
+    "message": "$@1 received $2 as part of power down",
+    "description": "Notification power down received"
+  },
+  "notification_fill_power_down_other_account": {
+    "message": "$@1 received $2 as part of power down of @$3",
+    "description": "Notification power down received"
+  },
+  "notification_changed_recovery_account": {
+    "message": "@$1's recovery account has been change from @$2 to @$3",
+    "description": "Notification for changed recovery account"
+  },
+  "notification_producer_reward": {
+    "message": "@$1 received $2 as a producer rewards",
+    "description": "Notification for producer rewards"
+  },
+  "notification_curation_reward": {
+    "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' href='https://peakd.com/$3/$4'>$3/$4</a>",
+    "description": "Notification for curation rewards"
   }
 }

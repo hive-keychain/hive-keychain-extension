@@ -200,20 +200,23 @@ const Home = ({
 
   return (
     <div className={'home-page'} data-testid={`${Screen.HOME_PAGE}-page`}>
-      {activeRpc && activeRpc.uri !== 'NULL' && (
-        <>
-          <TopBarComponent />
-          <div className={'home-page-content'} onScroll={handleScroll}>
-            <ResourcesSectionComponent />
-            <EstimatedAccountValueSectionComponent />
-            <WalletInfoSectionComponent />
-          </div>
-          <ActionsSectionComponent
-            additionalClass={showBottomBar ? undefined : 'down'}
-          />
-          <ProposalVotingSectionComponent />
-        </>
-      )}
+      {activeAccount &&
+        activeAccount.name &&
+        activeRpc &&
+        activeRpc.uri !== 'NULL' && (
+          <>
+            <TopBarComponent />
+            <div className={'home-page-content'} onScroll={handleScroll}>
+              <ResourcesSectionComponent />
+              <EstimatedAccountValueSectionComponent />
+              <WalletInfoSectionComponent />
+            </div>
+            <ActionsSectionComponent
+              additionalClass={showBottomBar ? undefined : 'down'}
+            />
+            <ProposalVotingSectionComponent />
+          </>
+        )}
 
       {renderPopup(
         displayWhatsNew,

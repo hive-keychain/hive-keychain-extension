@@ -6,6 +6,50 @@
   align-items: center;
   user-select: none;
   column-gap: 8px;
+  position: relative;
+
+  .notifications-panel {
+    display: block;
+    position: absolute;
+    top: calc(100% + 16px);
+    width: calc(100% - 32px);
+    height: 0px;
+    transition: height 0.25s ease-out;
+    overflow: hidden;
+    z-index: 3;
+    margin: 0px 16px 16px 16px;
+    border-radius: 16px;
+    &.opened {
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      height: 500px;
+      transition: height 0.25s ease-in;
+    }
+
+    .notification-list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      margin: 16px;
+
+      .notification-item {
+        display: flex;
+        flex-direction: column;
+        &.clickable {
+          cursor: pointer;
+        }
+        .message {
+          color: var(--main-font-color);
+          font-size: 16px;
+        }
+        .date {
+          color: var(--main-font-color);
+          font-size: 14px;
+          font-style: italic;
+        }
+      }
+    }
+  }
 
   .logo {
     height: 32px;
@@ -26,6 +70,17 @@
       --claim-rewards-background-color: #{$red};
       --claim-rewards-color: white;
       --claim-rewards-border-color: #{$red};
+    }
+  }
+  .notification-button {
+    --notification-color: #{$red};
+    --notification-background-color: white;
+    --notification-border-color: #{$light-grey-border};
+
+    &:hover {
+      --notification-background-color: #{$red};
+      --notification-color: white;
+      --notification-border-color: #{$red};
     }
   }
   .button {

@@ -113,6 +113,7 @@ export enum SVGIcons {
   TOP_BAR_CLAIM_REWARDS_BTN = 'top-bar/claim-rewards-button',
   TOP_BAR_CLOSE_BTN = 'top-bar/close-button',
   TOP_BAR_KEYCHAIN_LOGO = 'top-bar/keychain-logo',
+  TOP_BAR_NOTIFICATION_BUTTON = 'top-bar/notification-button',
 
   SELECT_ARROW_DOWN = 'select/arrow-down',
   SELECT_ARROW_UP = 'select/arrow-up',
