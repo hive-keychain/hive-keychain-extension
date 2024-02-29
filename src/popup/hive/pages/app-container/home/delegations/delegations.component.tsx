@@ -54,7 +54,7 @@ export interface IncomingOutgoingParams {
 }
 const rules = FormUtils.createRules<DelegationForm>({
   username: Joi.string().required(),
-  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+  amount: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
 const Delegations = ({

@@ -93,6 +93,8 @@ $dark: (
   --carousel-arrow-color: white,
   // Select Account
   --select-account-background: $dark-background,
+  // Message
+  --green-success: $green-success,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -188,6 +190,8 @@ $light: (
   --carousel-arrow-color: $dark-blue,
   // Select Account
   --select-account-background: $light-background,
+  // Message
+  --green-success: $green-success,
 );
 
 @mixin spread-map($map: ()) {

@@ -47,6 +47,10 @@
         display: flex;
         justify-content: space-between;
         column-gap: 16px;
+        user-select: auto;
+        pre {
+          user-select: all;
+        }
         .label {
           @include poppins500(14px);
         }

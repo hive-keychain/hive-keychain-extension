@@ -41,6 +41,8 @@
     .loading-operation {
       display: flex;
       align-items: center;
+      z-index: 2;
+      column-gap: 8px;
 
       span {
         font-style: italic;
@@ -48,8 +50,11 @@
         color: white;
         z-index: 1;
       }
-      .done {
-        color: green;
+      .icon-done {
+        svg {
+          height: 24px;
+          width: 24px;
+        }
       }
     }
   }

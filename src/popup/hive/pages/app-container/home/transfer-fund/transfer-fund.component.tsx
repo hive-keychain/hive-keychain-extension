@@ -138,7 +138,6 @@ const TransferFunds = ({
 
   useEffect(() => {
     setBalance(balances[watch('selectedCurrency')]);
-    // loadAutocompleteTransferUsernames();
   }, [watch('selectedCurrency')]);
 
   const options = [

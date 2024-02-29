@@ -59,7 +59,7 @@ export interface IncomingOutgoingRCDelegationParams {
 const rules = FormUtils.createRules<DelegationForm>({
   delegatee: Joi.string().required(),
   delegator: Joi.string().required(),
-  gigaRcValue: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+  gigaRcValue: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
 const RCDelegations = ({

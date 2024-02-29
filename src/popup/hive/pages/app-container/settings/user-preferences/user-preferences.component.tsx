@@ -7,7 +7,7 @@ import UserPreferencesMenuItems from 'src/popup/hive/pages/app-container/setting
 import { RootState } from 'src/popup/hive/store';
 
 const UserPreferencesPage = ({}: PropsFromRedux) => {
-  const { setTheme } = useThemeContext();
+  const { toggleTheme } = useThemeContext();
   return (
     <div
       data-testid={`${Screen.SETTINGS_USER_PREFERENCES}-page`}
@@ -15,7 +15,7 @@ const UserPreferencesPage = ({}: PropsFromRedux) => {
       <MenuComponent
         title="popup_html_user_preferences"
         isBackButtonEnable={true}
-        menuItems={UserPreferencesMenuItems(setTheme)}></MenuComponent>
+        menuItems={UserPreferencesMenuItems(toggleTheme)}></MenuComponent>
     </div>
   );
 };

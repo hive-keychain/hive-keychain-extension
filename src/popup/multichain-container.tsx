@@ -19,8 +19,8 @@ export const MultichainContainer = () => {
     init();
   }, []);
 
-  const handleKeyPress = useCallback((event) => {
-    if (event.ctrlKey && event.key === 't') {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
       setTheme((previous) => {
         return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
       });
@@ -65,10 +65,16 @@ export const MultichainContainer = () => {
       );
   }, [theme]);
 
+  const toggleTheme = () => {
+    setTheme((oldTheme) => {
+      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+    });
+  };
+
   return (
     <div>
       {ready && chain && theme && (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
           <ChainContext.Provider value={{ chain, setChain }}>
             <div className={`theme ${theme}`}>
               <ChainComponentWithBoundary theme={theme} chain={chain} />

@@ -1090,7 +1090,7 @@
     "message": "已成功将帐号 @$1 添加到Keychain。"
   },
   "bgd_ops_transfer_success": {
-    "message": "已成功将$1$2从@$3转移到@$4。"
+    "message": "已成功将$1 $2从@$3转移到@$4。"
   },
   "bgd_ops_tokens": {
     "message": "交易已成功播送。 请检查您的馀额以确认过程是否已成功。"
