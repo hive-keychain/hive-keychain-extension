@@ -10,6 +10,7 @@ import { RootState } from 'src/popup/hive/store';
 const BuyCoins = ({
   setTitleContainerProperties,
   activeAccountName,
+  price,
 }: PropsFromRedux) => {
   const [buyType, setBuyType] = useState(BuyCoinType.FIAT);
 
@@ -29,7 +30,7 @@ const BuyCoins = ({
       case BuyCoinType.EXCHANGES:
         return <BuyExchanges />;
       case BuyCoinType.FIAT:
-        return <BuyRamps />;
+        return <BuyRamps username={activeAccountName} price={price} />;
       default:
         return null;
     }
@@ -65,6 +66,7 @@ const BuyCoins = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccountName: state.activeAccount.name!,
+    price: state.currencyPrices,
   };
 };
 

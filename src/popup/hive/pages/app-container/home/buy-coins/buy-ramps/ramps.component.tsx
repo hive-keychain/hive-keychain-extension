@@ -1,26 +1,93 @@
-import { RampFiatCurrency } from '@interfaces/ramps.interface';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import {
+  RampEstimationDisplay,
+  RampFiatCurrency,
+  RampType,
+} from '@interfaces/ramps.interface';
 import {
   RampMerger,
   RampProvider,
   TransakProvider,
 } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.utils';
-import React, { useEffect, useState } from 'react';
+import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
+import { ThrottleSettings, throttle } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-const BuyRamps = () => {
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import Config from 'src/config';
+import { useCountdown } from 'src/dialog/hooks/countdown.hook';
+
+const BuyRamps = ({
+  username,
+  price,
+}: {
+  username: string;
+  price: CurrencyPrices;
+}) => {
+  const [ramps, setRamps] = useState<RampMerger>();
   const [currencies, setCurrencies] = useState<RampFiatCurrency[]>([]);
   const [fiat, setFiat] = useState<OptionItem<RampFiatCurrency>>();
   const [amount, setAmount] = useState('');
+  const [estimations, setEstimations] = useState<RampEstimationDisplay[]>([]);
+  const { countdown, refreshCountdown } = useCountdown(
+    Config.ramps.autoRefreshPeriodSec,
+    () => {
+      getEstimations(false, amount, fiat!, ramps!);
+    },
+  );
+  useEffect(() => {
+    throttledRefresh(amount, fiat, ramps);
+  }, [amount, fiat, ramps]);
+
+  const throttledRefresh = useMemo(() => {
+    return throttle(
+      (newAmount, newFiatCurrenc, newRamps) => {
+        getEstimations(true, newAmount, newFiatCurrenc, newRamps);
+      },
+      1000,
+      { leading: false } as ThrottleSettings,
+    );
+  }, []);
+
+  const getEstimations = async (
+    shouldRefresh: boolean,
+    amount: string,
+    fiat: OptionItem<RampFiatCurrency>,
+    ramps: RampMerger,
+  ) => {
+    if (ramps && parseFloat(amount) > 0 && fiat) {
+      const estimations = await ramps.getEstimations(
+        RampType.BUY,
+        +amount,
+        fiat!.value.symbol,
+        // 'HIVE',
+        // 'HIVE',
+        // username,
+        'BTC',
+        'BTC',
+        'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+      );
+
+      setEstimations(estimations);
+      if (shouldRefresh) refreshCountdown();
+    }
+  };
 
   useEffect(() => {
-    const ramps = new RampMerger([new TransakProvider(), new RampProvider()]);
-    ramps.getFiatCurrencyOptions().then((currencyOptions) => {
+    const newRamps = new RampMerger([
+      new TransakProvider(),
+      new RampProvider(),
+    ]);
+    setRamps(newRamps);
+    newRamps.getFiatCurrencyOptions().then((currencyOptions) => {
       setCurrencies(currencyOptions);
       setFiat({
         value: currencyOptions[0],
@@ -29,6 +96,9 @@ const BuyRamps = () => {
         img: currencyOptions[0].icon,
       });
     });
+    return () => {
+      throttledRefresh.cancel();
+    };
   }, []);
 
   return (
@@ -59,77 +129,76 @@ const BuyRamps = () => {
                   placeholder="popup_html_transfer_amount"
                   min={0}
                 />
-                {/*  </div>
-          <span className="available">
-            {chrome.i18n.getMessage('popup_html_available')} :{' '}
-            {startToken?.value.balance
-              ? FormatUtils.withCommas(startToken?.value.balance)
-              : ''}
-          </span>
-        </div>
-        <SVGIcon
-          icon={SVGIcons.SWAPS_SWITCH}
-          onClick={swapStartAndEnd}
-          className="swap-icon"
-        />
-        <div className="end-token">
-          <div className="inputs">
-            {endTokenListOptions.length > 0 && endToken && (
-              <ComplexeCustomSelect
-                selectedItem={endToken}
-                options={endTokenListOptions}
-                setSelectedItem={setEndToken}
-                label="token"
-                filterable
-              />
-            )}
-            <CustomTooltip
-              color="grey"
-              message={getTokenUSDPrice(estimateValue, endToken?.value.symbol)}
-              position={'top'}
-              skipTranslation>
-              <InputComponent
-                type={InputType.TEXT}
-                value={
-                  estimateValue ? FormatUtils.withCommas(estimateValue!) : ''
-                }
-                disabled
-                onChange={() => {}}
-                placeholder="popup_html_transfer_amount"
-                rightActionIconClassname={loadingEstimate ? 'rotate' : ''}
-                rightActionIcon={SVGIcons.SWAPS_ESTIMATE_REFRESH}
-                rightActionClicked={() => {
-                  if (!estimate) return;
-                  calculateEstimate(
-                    amount,
-                    startToken!,
-                    endToken!,
-                    swapConfig!,
-                  );
-                  setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
-                }}
-              />
-            </CustomTooltip>
-          </div>
-          <div className="countdown">
-            {!!autoRefreshCountdown && (
-              <>
-                {
-                  <span>
-                    {chrome.i18n.getMessage(
-                      'swap_autorefresh',
-                      autoRefreshCountdown + '',
-                    )}
-                  </span>
-                }
-              </>
-            )} */}
+              </div>
+            </div>
+            <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
+            <div className="end-token">
+              <div className="inputs">
+                <ComplexeCustomSelect
+                  selectedItem={{
+                    label: 'HIVE',
+                    value: 'HIVE',
+                    img: `/assets/images/wallet/hive-logo.svg`,
+                  }}
+                  options={[
+                    {
+                      label: 'HIVE',
+                      value: 'HIVE',
+                      img: `/assets/images/wallet/hive-logo.svg`,
+                    },
+                  ]}
+                  setSelectedItem={() => {}}
+                  label="token"
+                />
+              </div>
+            </div>
+            <div className="estimations">
+              <div>{chrome.i18n.getMessage('quotes')}</div>
+              <div className="countdown">
+                {!!countdown && (
+                  <>
+                    {
+                      <span>
+                        {chrome.i18n.getMessage(
+                          'swap_autorefresh',
+                          countdown + '',
+                        )}
+                      </span>
+                    }
+                  </>
+                )}
+              </div>
+              <div className="quotes">
+                {estimations.map((estimation) => (
+                  <div
+                    className="quote"
+                    onClick={() => {
+                      window.open(estimation.link, '__blank');
+                    }}>
+                    <SVGIcon icon={estimation.logo} />
+                    <span>{estimation.paymentMethod}</span>
+                    <div>
+                      <span>{estimation.estimation}</span>
+                      <span className="amount">
+                        {CurrencyPricesUtils.getTokenUSDPrice(
+                          estimation.estimation + '',
+                          'HIVE',
+                          price,
+                          [],
+                        )}
+                      </span>
+                    </div>
+                    <span>{'>'}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </FormContainer>
       ) : (
-        <LoadingComponent />
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
+        </div>
       )}
     </div>
   );

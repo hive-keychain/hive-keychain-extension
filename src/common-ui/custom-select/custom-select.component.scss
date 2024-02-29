@@ -69,9 +69,12 @@
           border-radius: unset !important;
           border-bottom: 1px solid var(--input-border);
           padding: 6px;
-          input {
-            @include poppins500(14px);
-            font-size: 14px;
+          .custom-input-content {
+            padding: 7px;
+            input {
+              @include poppins500(14px);
+              font-size: 14px;
+            }
           }
         }
 

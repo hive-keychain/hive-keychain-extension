@@ -18,6 +18,7 @@ import {
 import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
 import { loadTokensMarket } from '@popup/hive/actions/token.actions';
 import { RootState } from '@popup/hive/store';
+import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -423,33 +424,6 @@ const TokenSwaps = ({
     }
   };
 
-  const getTokenUSDPrice = (
-    estimateValue: string | undefined,
-    symbol: string,
-  ) => {
-    if (!estimateValue) return '';
-    else {
-      let tokenPrice;
-      if (symbol === BaseCurrencies.HIVE.toUpperCase()) {
-        tokenPrice = price.hive.usd!;
-      } else if (symbol === BaseCurrencies.HBD.toUpperCase()) {
-        tokenPrice = price.hive_dollar.usd!;
-      } else {
-        tokenPrice =
-          TokensUtils.getHiveEngineTokenPrice(
-            {
-              symbol,
-            },
-            tokenMarket,
-          ) * price.hive.usd!;
-      }
-      return `≈ $${FormatUtils.withCommas(
-        Number.parseFloat(estimateValue) * tokenPrice + '',
-        2,
-      )}`;
-    }
-  };
-
   if (loading)
     return (
       <div className="rotating-logo-wrapper">
@@ -537,9 +511,11 @@ const TokenSwaps = ({
                     )}
                     <CustomTooltip
                       color="grey"
-                      message={getTokenUSDPrice(
+                      message={CurrencyPricesUtils.getTokenUSDPrice(
                         estimateValue,
                         endToken?.value.symbol,
+                        price,
+                        tokenMarket,
                       )}
                       position={'top'}
                       skipTranslation>

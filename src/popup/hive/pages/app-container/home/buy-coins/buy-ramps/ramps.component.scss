@@ -13,17 +13,17 @@
       display: flex;
       flex-direction: column;
       row-gap: 6px;
+      input::-webkit-input-placeholder {
+        font-size: 14px;
+      }
+      .left-image {
+        height: 20px !important;
+        width: 20px !important;
+        border-radius: unset !important;
+      }
       .fiat-token {
         display: flex;
         flex-direction: column;
-        input::-webkit-input-placeholder {
-          font-size: 14px;
-        }
-        .left-image {
-          height: 20px !important;
-          width: 20px !important;
-          border-radius: unset !important;
-        }
 
         .inputs {
           display: grid;
@@ -32,13 +32,22 @@
           column-gap: 12px;
         }
       }
-
-      // .swap-icon {
-      //   align-self: center;
-      // }
     }
   }
 
+  .swap-icon {
+    align-self: center;
+    margin-top: 10px;
+    margin-bottom: -10px;
+  }
+
+  .end-token {
+    .final-value {
+      font-size: 18px;
+      font-style: italic;
+      padding-top: 6px;
+    }
+  }
   .rotating-logo {
     align-self: center;
     justify-self: center;
@@ -50,5 +59,31 @@
     justify-content: flex-end;
     margin-top: 10px;
     font-size: 13px;
+  }
+  .quotes {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    .quote {
+      border: solid 1px var(--card-border);
+      border-radius: 15px;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 5px;
+      color: var(--main-font-color);
+      cursor: pointer;
+      .amount {
+        display: flex;
+        flex-direction: column;
+      }
+      .svg-icon {
+        width: 100px;
+        svg {
+          width: 100px;
+        }
+      }
+    }
   }
 }

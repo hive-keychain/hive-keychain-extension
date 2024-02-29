@@ -1,3 +1,5 @@
+import { SVGIcons } from 'src/common-ui/icons.enum';
+
 export interface RampFiatCurrency {
   icon: string;
   name: string;
@@ -30,7 +32,7 @@ export interface RampEstimation {
 
 export type RampEstimationDisplay = RampEstimation & {
   link: string;
-  logo: string;
+  logo: SVGIcons;
   name: string;
 };
 
@@ -43,7 +45,7 @@ export interface BaseProviderInterface {
   baseUrl: string;
   apiKey: string;
   name: string;
-  logo: string;
+  logo: SVGIcons;
   fiatCurrencyOptions: RampFiatCurrency[];
   getFiatCurrencyOptions: () => Promise<RampFiatCurrency[]>;
   getEstimation: (

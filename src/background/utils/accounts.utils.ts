@@ -32,6 +32,7 @@ const mergeImportedAccountsToExistingAccounts = async (
       (e) => e.keys.active?.[0] !== '#' && e.keys.posting?.[0] !== '#',
     );
   }
+  console.log(importedAccounts.map((e) => e.name));
   for (const importedAccount of importedAccounts) {
     if (
       existingAccounts

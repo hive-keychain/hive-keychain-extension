@@ -1,5 +1,10 @@
 import { KeychainApi } from '@api/keychain';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { TokenMarket } from '@interfaces/tokens.interface';
+import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -45,9 +50,39 @@ const getBittrexCurrency = async (currency: string) => {
   return null;
 };
 
+const getTokenUSDPrice = (
+  estimateValue: string | undefined,
+  symbol: string,
+  price: CurrencyPrices,
+  tokenMarket: TokenMarket[],
+) => {
+  if (!estimateValue) return '';
+  else {
+    let tokenPrice;
+    if (symbol === BaseCurrencies.HIVE.toUpperCase()) {
+      tokenPrice = price.hive.usd!;
+    } else if (symbol === BaseCurrencies.HBD.toUpperCase()) {
+      tokenPrice = price.hive_dollar.usd!;
+    } else {
+      tokenPrice =
+        TokensUtils.getHiveEngineTokenPrice(
+          {
+            symbol,
+          },
+          tokenMarket,
+        ) * price.hive.usd!;
+    }
+    return `≈ $${FormatUtils.withCommas(
+      Number.parseFloat(estimateValue) * tokenPrice + '',
+      2,
+    )}`;
+  }
+};
+
 const CurrencyPricesUtils = {
   getBittrexCurrency,
   getPrices,
+  getTokenUSDPrice,
 };
 
 export default CurrencyPricesUtils;

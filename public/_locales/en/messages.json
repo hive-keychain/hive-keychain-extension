@@ -3371,6 +3371,10 @@
     "message": "Token",
     "description": "Value of token in USD"
   },
+  "quotes": {
+    "message": "Quotes",
+    "description": "Value of token in USD"
+  },
   "fiat": {
     "message": "Fiat",
     "description": "In Buy page"

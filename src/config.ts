@@ -45,6 +45,7 @@ const Config = {
     feedWarningLimitInHours: 5,
   },
   ramps: {
+    autoRefreshPeriodSec: 30,
     transak: {
       baseUrl: 'https://api.transak.com',
       apiKey:

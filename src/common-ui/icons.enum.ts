@@ -9,7 +9,8 @@ export enum SVGIcons {
   BUY_HUOBI = 'buy/huobi',
   BUY_IONOMY = 'buy/ionomy',
   BUY_MEXC = 'buy/mexc',
-  BUY_TRANSAK = 'buy/transak',
+  BUY_TRANSAK = 'buy/transak-mono',
+  BUY_RAMP = 'buy/ramp-mono',
   BUY_UPBIT = 'buy/upbit',
 
   CHECKBOX_CHECKED = 'checkbox/checked',

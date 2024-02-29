@@ -9,8 +9,10 @@ import {
   Ramps,
 } from '@interfaces/ramps.interface';
 import CountriesUtils from '@popup/hive/utils/countries.utils';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 
+//TODO : Add minimum for each fiat
 const APP_CUSTOMIZATION = {
   name: 'Keychain',
   logo: {
@@ -40,11 +42,10 @@ export class TransakProvider
   constructor() {
     super(Config.ramps.transak);
     this.name = 'Transak';
-    this.logo = 'logoTransak';
-    //TODO : Update
+    this.logo = SVGIcons.BUY_TRANSAK;
   }
   name: string;
-  logo: string;
+  logo: SVGIcons;
   getEstimation = async (
     rampType: RampType,
     amount: number,
@@ -127,10 +128,10 @@ export class RampProvider
   constructor() {
     super(Config.ramps.ramp);
     this.name = 'Ramp';
-    this.logo = 'logoRamp';
+    this.logo = SVGIcons.BUY_RAMP;
   }
   name: string;
-  logo: string;
+  logo: SVGIcons;
   getFiatCurrencyOptions = async (): Promise<RampFiatCurrency[]> => {
     const currencyList = await BaseApi.get(
       BaseApi.buildUrl(this.baseUrl, 'api/host-api/v3/currencies'),
@@ -173,7 +174,8 @@ export class RampProvider
       );
       const options = [];
       for (const paymentMethod in result) {
-        options.push({ paymentMethod, ...result[paymentMethod] });
+        if (paymentMethod !== 'asset')
+          options.push({ paymentMethod, ...result[paymentMethod] });
       }
       return options.map((e: any) => ({
         ramp: Ramps.RAMP,
@@ -254,6 +256,7 @@ export class RampMerger {
           (estimation) =>
             ({
               ...estimation,
+              paymentMethod: cleanEstimationMethod(estimation.paymentMethod),
               link: provider.getLink(estimation, name),
               logo: provider.logo,
               name: provider.name,
@@ -261,6 +264,23 @@ export class RampMerger {
         );
       }),
     );
-    return estimations.reduce((acc, val) => [...acc, ...val], []);
+    const cleanEstimations = estimations
+      .reduce((acc, val) => [...acc, ...val], [])
+      .sort((a, b) => b.estimation - a.estimation);
+    console.log(cleanEstimations);
+    return cleanEstimations;
   };
 }
+
+const cleanEstimationMethod = (method: string) => {
+  method = method.toLowerCase();
+  switch (method) {
+    case 'google_pay':
+    case 'apple_pay':
+      return chrome.i18n.getMessage(method);
+    case 'card_payment':
+    case 'credit_debit_card':
+      return chrome.i18n.getMessage('card_payment');
+  }
+  return method;
+};
