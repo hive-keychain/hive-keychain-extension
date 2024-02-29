@@ -1,4 +1,7 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import {
+  BackgroundMessage,
+  DialogMessage,
+} from '@background/background-message.interface';
 import {
   MultisigAcceptRejectTxData,
   MultisigData,
@@ -8,6 +11,7 @@ import {
 } from '@interfaces/multisig.interface';
 import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -21,6 +25,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
+import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
@@ -37,16 +42,17 @@ const MultisigDialog = () => {
   const [multisigData, setMultisigData] = useState<MultisigData>();
 
   const onReceivedDataFromBackground = (
-    backgroundMessage: BackgroundMessage,
+    backgroundMessage: DialogMessage,
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
     if (
-      backgroundMessage.command ===
-      BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP
+      backgroundMessage.command === DialogCommand.MULTISIG_SEND_DATA_TO_POPUP
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
       setMultisigData(multisigData);
+    } else if (backgroundMessage.command === DialogCommand.READY_MULTISIG) {
+      return BrowserUtils.sendResponse(true, sendResp);
     }
   };
 

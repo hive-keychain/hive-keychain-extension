@@ -1,6 +1,10 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import {
+  BackgroundMessage,
+  DialogMessage,
+} from '@background/background-message.interface';
 import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { SignedTransaction } from '@hiveio/dhive';
 import {
   ConnectDisconnectMessage,
@@ -27,6 +31,7 @@ import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
@@ -200,7 +205,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
       );
 
       chrome.runtime.sendMessage({
-        command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+        command: DialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: {
           multisigStep: MultisigStep.SIGN_TRANSACTION_FEEDBACK,
           data: {
@@ -209,7 +214,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
             signer: signer,
           } as MultisigDisplayMessageData,
         },
-      } as BackgroundMessage);
+      } as DialogMessage);
 
       if (signedTransaction) {
         socket.emit(
@@ -467,7 +472,7 @@ const unlockWallet = async () => {
               chrome.runtime.onMessage.removeListener(onReceiveMK);
             } else {
               chrome.runtime.sendMessage({
-                command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+                command: DialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
                 value: {
                   multisigStep: MultisigStep.UNLOCK_WALLET,
                   data: { feedback: 'wrong_password' },
@@ -476,7 +481,7 @@ const unlockWallet = async () => {
             }
           } catch (err) {
             chrome.runtime.sendMessage({
-              command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+              command: DialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
               value: {
                 multisigStep: MultisigStep.UNLOCK_WALLET,
                 data: { feedback: 'wrong_password' },
@@ -545,7 +550,7 @@ const requestSignTransactionFromUser = (
       });
     } else {
       chrome.runtime.sendMessage({
-        command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
+        command: DialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: {
           multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
           data: {
@@ -594,14 +599,14 @@ const openWindow = (data: MultisigData): void => {
     // Except on Firefox
     //@ts-ignore
     if (typeof InstallTrigger === undefined) win.focused = true;
-    const window = await chrome.windows.create(win);
-
-    setTimeout(() => {
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.MULTISIG_SEND_DATA_TO_POPUP,
-        value: data,
-      } as BackgroundMessage);
-    }, 250);
+    chrome.windows.create(win, (window) => {
+      waitUntilDialogIsReady(100, DialogCommand.READY_MULTISIG, () => {
+        chrome.runtime.sendMessage({
+          command: DialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
+          value: data,
+        } as DialogMessage);
+      });
+    });
   });
 };
 
