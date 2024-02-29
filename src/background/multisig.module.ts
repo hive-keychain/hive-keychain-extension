@@ -42,7 +42,6 @@ import Logger from 'src/utils/logger.utils';
 let socket: Socket;
 
 let connectedPublicKeys: SignerConnectMessage[] = [];
-
 const start = async () => {
   Logger.info(`Starting multisig`);
 

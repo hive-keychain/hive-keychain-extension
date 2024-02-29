@@ -4,6 +4,7 @@ import {
   ConnectDisconnectMessage,
   MultisigAccountConfig,
 } from '@interfaces/multisig.interface';
+import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
@@ -27,6 +28,7 @@ const Multisig = ({
   activeAccount,
   accounts,
   setTitleContainerProperties,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [multisigAccountConfig, setMultisigAccountConfig] =
     useState<MultisigAccountConfig>(defaultConfig);
@@ -63,6 +65,10 @@ const Multisig = ({
   };
 
   const saveMultisigEnabled = async (isEnabled: boolean) => {
+    if (!MultisigUtils.isMultisigCompatible()) {
+      setErrorMessage('min_chrome_version');
+      return;
+    }
     const newConfig = {
       ...multisigAccountConfig,
       isEnabled: isEnabled,
@@ -205,6 +211,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setTitleContainerProperties,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

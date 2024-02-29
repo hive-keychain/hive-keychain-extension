@@ -384,6 +384,12 @@ const getTxKeyType = (data: KeychainRequestData) => {
   }
 };
 
+const isMultisigCompatible = () => {
+  const chromeVersion =
+    /Chrome\/([0-9.]+)/.exec(navigator.userAgent)?.[1]?.split('.')?.[0] || 0;
+  return process.env.IS_FIREFOX || +chromeVersion >= 116;
+};
+
 export const MultisigUtils = {
   getUsernameFromTransaction,
   saveMultisigConfig,
@@ -392,4 +398,5 @@ export const MultisigUtils = {
   encodeTransaction,
   getPotentialSigners,
   getTxKeyType,
+  isMultisigCompatible,
 };

@@ -3747,6 +3747,10 @@
     "message": "Multisig",
     "description": "Multisig menu item"
   },
+  "min_chrome_version": {
+    "message": "Please update your Chromium browser to the version 116 or newer, to be able to use the multisig features",
+    "description": "When enabling multisig on old browsers"
+  },
   "popup_html_multisig_intro": {
     "message": "This is the long caption to introduce multisig feature and explain a lot of things",
     "description": "Multisig page intro"
