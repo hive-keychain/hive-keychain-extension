@@ -60,6 +60,11 @@ const NotificationConfigPage = () => {
     init();
   }, []);
 
+  useEffect(() => {
+    if (selectedAccount && selectedAccount.name)
+      initConfig(selectedAccount?.name);
+  }, [selectedAccount]);
+
   const init = async () => {
     const { ACTIVE_THEME, active_account_name } =
       await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -68,21 +73,18 @@ const NotificationConfigPage = () => {
       ]);
 
     setTheme(ACTIVE_THEME ?? Theme.LIGHT);
-    setSelectedAccount(active_account_name);
 
     await initSelectOptions(active_account_name);
+  };
 
+  const initConfig = async (active_account_name: string) => {
     const userConfig = await NotificationsUtils.getAccountConfig(
       active_account_name,
     );
-    // const userConfig = await NotificationsUtils.getAccountConfig('muwave');
 
     console.log(userConfig);
 
     let conf: NotificationConfig = [];
-    console.log(
-      NotificationsUtils.operationFieldList.map((field) => field.name).length,
-    );
     if (userConfig) {
       conf = userConfig.config.filter(
         (item: NotificationConfigItem) => item.operation,
@@ -180,8 +182,26 @@ const NotificationConfigPage = () => {
       }
   };
 
+  const clearConfig = async () => {
+    setConfigForm([]);
+  };
+
   const setDefaultConfig = () => {
     setConfigForm(NotificationsUtils.getDefaultConfig());
+  };
+  const setAll = () => {
+    if (configForm) {
+      const newConfig: NotificationConfigForm = [...configForm];
+      for (const criteria of NotificationsUtils.operationFieldList.map(
+        (field) => field.name,
+      )) {
+        newConfig.push({
+          conditions: [{ field: '', operand: '', value: '' }],
+          operation: criteria as OperationName | VirtualOperationName,
+        });
+      }
+      setConfigForm(newConfig);
+    }
   };
 
   return (
@@ -223,13 +243,31 @@ const NotificationConfigPage = () => {
               title="html_popup_settings_notifications_active"
             />
           </div>
-          <ButtonComponent
-            additionalClass="default-config-button"
-            label="html_popup_notification_default_config"
-            onClick={setDefaultConfig}
-            type={ButtonType.ALTERNATIVE}
-            height="small"
-          />
+          <div className="config-buttons-panel">
+            {/* TODO remove all button */}
+            <ButtonComponent
+              additionalClass="default-config-button"
+              label="all"
+              skipLabelTranslation
+              onClick={setAll}
+              type={ButtonType.ALTERNATIVE}
+              height="small"
+            />
+            <ButtonComponent
+              additionalClass="clear-config-button"
+              label="notification_clear_config"
+              onClick={clearConfig}
+              type={ButtonType.ALTERNATIVE}
+              height="small"
+            />
+            <ButtonComponent
+              additionalClass="default-config-button"
+              label="html_popup_notification_default_config"
+              onClick={setDefaultConfig}
+              type={ButtonType.ALTERNATIVE}
+              height="small"
+            />
+          </div>
 
           {isActive && (
             <FormContainer onSubmit={saveConfig}>

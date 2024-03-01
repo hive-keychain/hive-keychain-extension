@@ -3859,5 +3859,45 @@
   "notification_curation_reward": {
     "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' href='https://peakd.com/$3/$4'>$3/$4</a>",
     "description": "Notification for curation rewards"
+  },
+  "notification_failed_recurrent_transfer": {
+    "message": "$1 recurrent transfer from @$2 to @$3 has failed",
+    "description": "Notification for failed recurrent transfer"
+  },
+  "notification_fill_collateralized_convert_request": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification collateralized convert request"
+  },
+  "notification_fill_transfer_from_savings": {
+    "message": "@$1 completed a withdrawal from savings of $2",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_fill_transfer_from_savings_from_other_account": {
+    "message": "@$1 completed a withdrawal from savings of $2 to @$3",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_returned_vesting_delegation": {
+    "message": "@$1 completed an undelegation. $2 are once again available",
+    "description": "Notification for when HP is avalable after undelegating"
+  },
+  "notification_comment_benefactor_reward": {
+    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for <a classname='notification-link' href='https://peakd.com/$5/$6'>$5/$6</a>",
+    "description": "Notification author reward"
+  },
+  "notification_fill_order": {
+    "message": "@$1 has filled an order from @$2 on the market. Bought $3 for $4",
+    "description": "Notification fill order"
+  },
+  "notification_change_recovery_account": {
+    "message": "@$1 has changed recovery account to @$2. This change will be effective in 30 days",
+    "description": "Notification change recovery account"
+  },
+  "notification_vote": {
+    "message": "@$1 has voted for <a classname='notification-link' href='https://peakd.com/$2/$3'>$2/$3</a>",
+    "description": "Notification for vote"
+  },
+  "notification_clear_config": {
+    "message": "Clear configuration",
+    "description": "clear config notification"
   }
 }

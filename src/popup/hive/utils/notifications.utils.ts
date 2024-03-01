@@ -1,5 +1,5 @@
 import { PeakDNotificationsApi } from '@api/peakd-notifications';
-import { Asset } from '@hiveio/dhive';
+import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@interfaces/peakd-notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import moment from 'moment';
+import FormatUtils from 'src/utils/format.utils';
 
 const operationFieldList = [
   // {
@@ -508,7 +509,10 @@ const getDefaultConfig = () => {
   return configForm;
 };
 
-const getNotifications = async (username: string) => {
+const getNotifications = async (
+  username: string,
+  globalProperties: DynamicGlobalProperties,
+) => {
   const notifications: PeakDNotification[] = [];
   const res = await PeakDNotificationsApi.get(`notifications/${username}`);
   for (const notif of res) {
@@ -568,7 +572,11 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'change_recovery_account': {
-        // TODO check payload
+        message = 'notification_change_recovery_account';
+        messageParams = [
+          payload.account_to_recover,
+          payload.new_recovery_account,
+        ];
         break;
       }
       case 'claim_account': {
@@ -580,6 +588,7 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'custom_json': {
+        // TODO later
         break;
       }
       case 'delegate_vesting_shares': {
@@ -597,7 +606,7 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'feed_publish': {
-        // TODO
+        // TODO check payload
         break;
       }
       case 'recover_account': {
@@ -636,6 +645,8 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'vote': {
+        message = 'notification_vote';
+        messageParams = [payload.voter, payload.author, payload.permlink];
         break;
       }
       case 'withdraw_vesting': {
@@ -705,20 +716,52 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'fill_order': {
+        message = 'notification_fill_order';
+        messageParams = [
+          payload.current_owner,
+          payload.open_owner,
+          payload.current_pays,
+          payload.open_pays,
+        ];
         break;
       }
       case 'fill_transfer_from_savings': {
+        if (payload.from === payload.to) {
+          message = 'notification_fill_transfer_from_savings';
+          messageParams = [payload.from, payload.amount];
+        } else {
+          message =
+            'notification_fill_transfer_from_savings_from_other_account';
+          messageParams = [payload.from, payload.amount, payload.to];
+        }
         break;
       }
       case 'return_vesting_delegation': {
+        message = 'notification_returned_vesting_delegation';
+        messageParams = [payload.account, payload.vesting_shares];
         break;
       }
       case 'comment_benefactor_reward': {
+        message = 'notification_comment_benefactor_reward';
+        messageParams = [
+          payload.benefactor,
+          payload.hbd_payout,
+          payload.hive_payout,
+          payload.vesting_payout,
+          payload.author,
+          payload.permlink,
+        ];
         break;
       }
       case 'producer_reward': {
         message = 'notification_producer_reward';
-        messageParams = [payload.producer, payload.vesting_shares];
+        messageParams = [
+          payload.producer,
+          FormatUtils.toFormattedHP(
+            payload.vesting_shares.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
+        ];
         break;
       }
       case 'changed_recovery_account': {
@@ -731,9 +774,13 @@ const getNotifications = async (username: string) => {
         break;
       }
       case 'fill_collateralized_convert_request': {
+        message = 'notification_fill_collateralized_convert_request';
+        messageParams = [payload.owner, payload.amount_in, payload.amount_out];
         break;
       }
       case 'failed_recurrent_transfer': {
+        message = 'notification_failed_recurrent_transfer';
+        messageParams = [payload.amount, payload.from, payload.to];
         break;
       }
     }

@@ -11,10 +11,16 @@
     margin: 0px 16px;
   }
 
-  .default-config-button {
+  .config-buttons-panel {
+    display: flex;
     align-self: flex-end;
+    column-gap: 8px;
     max-width: max-content;
-    padding: 0px 16px;
+    .clear-config-button,
+    .default-config-button {
+      padding: 0px 16px;
+      min-width: max-content;
+    }
   }
 
   .form-fields {

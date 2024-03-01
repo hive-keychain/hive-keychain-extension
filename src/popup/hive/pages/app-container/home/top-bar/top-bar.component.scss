@@ -31,6 +31,8 @@
       flex-direction: column;
       row-gap: 16px;
       margin: 16px;
+      height: calc(100% - 32px);
+      overflow: auto;
 
       .notification-item {
         display: flex;

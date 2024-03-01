@@ -1,3 +1,4 @@
+import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { PeakDNotification } from '@interfaces/peakd-notifications.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
@@ -44,13 +45,6 @@ const TopBar = ({
   const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
-    console.log('init enpty', notifications, activeAccount.name);
-    if (!notifications) {
-      initNotifications(activeAccount.name!);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       setHasRewardToClaim(
         RewardsUtils.hasReward(
@@ -68,8 +62,9 @@ const TopBar = ({
   }, [activeAccount]);
 
   useEffect(() => {
-    console.log({ notifications });
-  }, [notifications]);
+    if (globalProperties.globals && activeAccount.name)
+      initNotifications(activeAccount.name!, globalProperties.globals);
+  }, [activeAccount.name, globalProperties]);
 
   const refresh = () => {
     setRotateLogo(true);
@@ -79,8 +74,14 @@ const TopBar = ({
     setTimeout(() => setRotateLogo(false), 1000);
   };
 
-  const initNotifications = async (username: string) => {
-    const notifs = await NotificationsUtils.getNotifications(username);
+  const initNotifications = async (
+    username: string,
+    dynamicGlobalProperties: DynamicGlobalProperties,
+  ) => {
+    const notifs = await NotificationsUtils.getNotifications(
+      username,
+      dynamicGlobalProperties,
+    );
     console.log('init', notifs);
     setNotifications(notifs);
   };
