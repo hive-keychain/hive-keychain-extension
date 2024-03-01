@@ -141,7 +141,6 @@ const isUsingMultisig = (
         const keyAuth = transactionAccount.posting.key_auths.find(
           ([keyAuth, w]) => keyAuth === publicKey,
         );
-        console.log({ accAuth, keyAuth });
         if (
           (accAuth &&
             accAuth[1] < transactionAccount.posting.weight_threshold) ||

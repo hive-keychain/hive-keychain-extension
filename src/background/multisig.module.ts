@@ -56,6 +56,7 @@ const start = async () => {
     );
 
   if (
+    multisigConfig &&
     Object.values(multisigConfig).some(
       (config) =>
         config.isEnabled &&
@@ -427,7 +428,7 @@ const processSignatureRequest = async (
     let mk = await MkModule.getMk();
     let openNewWindow = true;
     if (!mk) {
-      mk = await unlockWallet();
+      mk = await unlockWallet(signer);
       openNewWindow = false;
     }
 
@@ -439,7 +440,6 @@ const processSignatureRequest = async (
       localAccount?.keys[
         signatureRequest.keyType.toLowerCase() as KeychainKeyTypesLC
       ]?.toString()!;
-
     const decodedTransaction = await decryptRequest(signer, key);
     if (decodedTransaction) {
       const signedTransaction = await requestSignTransactionFromUser(
@@ -450,11 +450,13 @@ const processSignatureRequest = async (
         openNewWindow,
       );
       return signedTransaction;
-    } else return;
+    } else {
+      return;
+    }
   }
 };
 
-const unlockWallet = async () => {
+const unlockWallet = async (signer: Signer) => {
   return new Promise((resolve, reject) => {
     const onReceiveMK = async (
       backgroundMessage: BackgroundMessage,
@@ -496,7 +498,7 @@ const unlockWallet = async () => {
 
     openWindow({
       multisigStep: MultisigStep.UNLOCK_WALLET,
-      data: {} as MultisigDataType,
+      data: { signer: signer } as MultisigDataType,
     });
   });
 };
