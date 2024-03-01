@@ -53,6 +53,10 @@ html {
           justify-content: center;
           flex-direction: column;
           row-gap: 16px;
+
+          a {
+            color: var(--main-font-color);
+          }
         }
 
         .fields-container {
@@ -145,7 +149,4 @@ html {
       }
     }
   }
-}
-a {
-  color: black;
 }

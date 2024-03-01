@@ -65,7 +65,7 @@ const Operation = ({
       case KeychainKeyTypesLC.active: {
         if (data.key || localAccount?.keys.active) {
           useMultisig = KeysUtils.isUsingMultisig(
-            localAccount?.keys.activePubkey!,
+            localAccount?.keys.active!,
             initiatorAccount,
             initiatorAccount,
             method,
@@ -77,7 +77,7 @@ const Operation = ({
       case KeychainKeyTypesLC.posting: {
         if (data.key || localAccount?.keys.posting) {
           useMultisig = KeysUtils.isUsingMultisig(
-            localAccount?.keys.postingPubkey!,
+            localAccount?.keys.posting!,
             initiatorAccount,
             initiatorAccount,
             method,
