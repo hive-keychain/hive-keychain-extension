@@ -1,6 +1,7 @@
 import {
   KeychainKeyTypesLC,
   KeychainRequest,
+  KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
@@ -57,6 +58,19 @@ const Operation = ({
   const checkForMultsig = async () => {
     let useMultisig = false;
     const name = (username || data.username)!;
+
+    if (
+      [
+        KeychainRequestTypes.signBuffer,
+        KeychainRequestTypes.signTx,
+        KeychainRequestTypes.encode,
+        KeychainRequestTypes.decode,
+        KeychainRequestTypes.addAccount,
+      ].includes(data.type)
+    ) {
+      setUseMultisig(false);
+      return;
+    }
     const method = getRequiredWifType(data).toLowerCase();
     const initiatorAccount = await AccountUtils.getExtendedAccount(name);
     const localAccount = await AccountUtils.getAccountFromLocalStorage(name);

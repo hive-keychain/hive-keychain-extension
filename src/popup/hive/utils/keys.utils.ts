@@ -117,11 +117,8 @@ const isUsingMultisig = (
   const publicKey = KeysUtils.getPublicKeyFromPrivateKeyString(
     key?.toString()!,
   );
-  console.log(`Trying to use method ${method}`);
-  console.log({ transactionAccount, initiatorAccount, key });
   switch (method) {
     case KeychainKeyTypesLC.active: {
-      console.log('active case');
       const accAuth = transactionAccount.active.account_auths.find(
         ([auth, w]) => auth === initiatorAccount.name,
       );
@@ -138,7 +135,6 @@ const isUsingMultisig = (
     }
     case KeychainKeyTypesLC.posting:
       {
-        console.log('posting case');
         const accAuth = transactionAccount.posting.account_auths.find(
           ([auth, w]) => auth === initiatorAccount.name,
         );
