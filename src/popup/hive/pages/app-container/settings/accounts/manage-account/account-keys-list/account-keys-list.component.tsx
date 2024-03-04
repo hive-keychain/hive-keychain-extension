@@ -20,6 +20,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -77,9 +78,11 @@ const AccountKeysList = ({
     );
     if (hasAuthorizedAccountLinkedToActiveAccount) {
       warningMessage = 'popup_html_deleting_account_linked_to_authorized';
-      warningParams = [activeAccount.name];
+      warningParams = [activeAccount.name!];
     }
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: null,
+      fields: [],
       message: chrome.i18n.getMessage(
         'popup_html_delete_account_confirmation_message',
         [activeAccount.name!],
@@ -138,7 +141,7 @@ const AccountKeysList = ({
         navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const toggleQRCode = () => {

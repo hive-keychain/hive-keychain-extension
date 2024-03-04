@@ -46,6 +46,11 @@ const Config = {
   witnesses: {
     feedWarningLimitInHours: 5,
   },
+  multisig: {
+    baseURL:
+      process.env.MULTISIG_BACKEND_SERVER ||
+      'https://api-multisig.hive-keychain.com',
+  },
 };
 
 export default Config;

@@ -81,7 +81,7 @@ export const broadcastDelegation = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    return createMessage(
+    return await createMessage(
       err,
       result,
       data,
