@@ -12,3 +12,8 @@ export enum DialogCommand {
   RETURN_ERROR_SIGNING_TRANSACTION = 'RETURN_ERROR_SIGNING_TRANSACTION',
   PING = 'PING',
 }
+
+export enum MultisigDialogCommand {
+  READY_MULTISIG = 'multisigReady',
+  MULTISIG_SEND_DATA_TO_POPUP = 'MULTISIG_SEND_DATA_TO_POPUP',
+}

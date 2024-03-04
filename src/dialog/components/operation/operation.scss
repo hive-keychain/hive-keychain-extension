@@ -5,6 +5,24 @@
   height: 100%;
   margin: 0px -16px;
   row-gap: 16px;
+
+  .multisig-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    padding: 0 30px;
+    margin-bottom: 10px;
+    .message {
+      @include caption;
+      padding: 0px;
+    }
+    .logo {
+      height: 24px;
+      width: auto;
+    }
+  }
+
   .operation-header {
     padding: 0 12px 12px 12px;
   }
@@ -26,11 +44,14 @@
       background: var(--card-background);
       border-radius: 20px;
       border: 1px solid var(--card-border);
-      user-select: all;
       .field {
         display: flex;
         justify-content: space-between;
         column-gap: 16px;
+        user-select: auto;
+        pre {
+          user-select: all;
+        }
         .label {
           @include poppins500(14px);
         }

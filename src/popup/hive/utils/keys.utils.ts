@@ -1,5 +1,6 @@
 import { Account, ExtendedAccount, PrivateKey } from '@hiveio/dhive';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -95,12 +96,89 @@ const isUsingLedger = (key: Key): boolean => {
   return KeysUtils.getKeyType(key, null) === PrivateKeyType.LEDGER;
 };
 
+const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
+  const localAccount = await AccountUtils.getAccountFromLocalStorage(
+    account.name,
+  );
+
+  if (localAccount?.keys.active === key) {
+    return KeychainKeyTypes.active;
+  } else {
+    return KeychainKeyTypes.posting;
+  }
+};
+
+const isUsingMultisig = (
+  key: Key,
+  transactionAccount: ExtendedAccount,
+  initiatorAccount: ExtendedAccount,
+  method: KeychainKeyTypesLC,
+): boolean => {
+  const publicKey = KeysUtils.getPublicKeyFromPrivateKeyString(
+    key?.toString()!,
+  );
+  switch (method) {
+    case KeychainKeyTypesLC.active: {
+      const accAuth = transactionAccount.active.account_auths.find(
+        ([auth, w]) => auth === initiatorAccount.name,
+      );
+      const keyAuth = transactionAccount.active.key_auths.find(
+        ([keyAuth, w]) => keyAuth === publicKey,
+      );
+      if (
+        (accAuth && accAuth[1] < transactionAccount.active.weight_threshold) ||
+        (keyAuth && keyAuth[1] < transactionAccount.active.weight_threshold)
+      ) {
+        return true;
+      }
+      return false;
+    }
+    case KeychainKeyTypesLC.posting:
+      {
+        const accAuth = transactionAccount.posting.account_auths.find(
+          ([auth, w]) => auth === initiatorAccount.name,
+        );
+        const keyAuth = transactionAccount.posting.key_auths.find(
+          ([keyAuth, w]) => keyAuth === publicKey,
+        );
+        if (
+          (accAuth &&
+            accAuth[1] < transactionAccount.posting.weight_threshold) ||
+          (keyAuth && keyAuth[1] < transactionAccount.posting.weight_threshold)
+        ) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  return true;
+};
+
 const getKeyReferences = (keys: string[]) => {
   return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
 };
 
-const getKeyType = (privateKey: Key, publicKey?: Key): PrivateKeyType => {
-  if (privateKey?.toString().startsWith('#')) {
+const getKeyType = (
+  privateKey: Key,
+  publicKey?: Key,
+  transactionAccount?: ExtendedAccount,
+  initiatorAccount?: ExtendedAccount,
+  method?: KeychainKeyTypesLC,
+): PrivateKeyType => {
+  if (
+    transactionAccount &&
+    initiatorAccount &&
+    method &&
+    KeysUtils.isUsingMultisig(
+      privateKey,
+      transactionAccount,
+      initiatorAccount,
+      method,
+    )
+  ) {
+    return PrivateKeyType.MULTISIG;
+  } else if (privateKey?.toString().startsWith('#')) {
     return PrivateKeyType.LEDGER;
   } else if (publicKey?.toString().startsWith('@')) {
     return PrivateKeyType.AUTHORIZED_ACCOUNT;
@@ -170,9 +248,11 @@ export const KeysUtils = {
   hasPosting,
   hasMemo,
   isUsingLedger,
+  isUsingMultisig,
   getKeyReferences,
   getKeyType,
   requireManualConfirmation,
   isExportable,
   checkWrongKeyOnAccount,
+  isKeyActiveOrPosting,
 };

@@ -1,7 +1,9 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -40,6 +42,7 @@ const PendingSavingsWithdrawalItem = ({
 }: PropsType) => {
   const cancelCurrentWithdrawSavingItem = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_withdraw_savings_message',
         [currency],
@@ -62,10 +65,14 @@ const PendingSavingsWithdrawalItem = ({
           );
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
-            setSuccessMessage('popup_html_cancel_withdraw_savings_successful', [
-              item.amount,
-              currency,
-            ]);
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else {
+              setSuccessMessage(
+                'popup_html_cancel_withdraw_savings_successful',
+                [item.amount, currency],
+              );
+            }
           } else {
             setErrorMessage('popup_html_cancel_withdraw_savings_fail', [
               currency,
@@ -77,7 +84,7 @@ const PendingSavingsWithdrawalItem = ({
           removeFromLoadingList('html_popup_cancel_withdraw_savings_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (

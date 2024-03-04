@@ -59,7 +59,7 @@ export const broadcastPowerUp = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,
@@ -121,7 +121,7 @@ export const broadcastPowerDown = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,

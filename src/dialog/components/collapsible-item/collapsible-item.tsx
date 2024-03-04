@@ -25,7 +25,7 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>
-      <div className={collapsed ? 'hide' : ''}>
+      <div className={collapsed ? 'hide' : 'field'}>
         {pre ? (
           <div className="operation_item_content">
             <pre>{content}</pre>

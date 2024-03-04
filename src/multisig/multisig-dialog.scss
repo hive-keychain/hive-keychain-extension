@@ -1,0 +1,152 @@
+@import '../common-style/common-style.scss';
+@import '../common-ui/common-ui.scss';
+@import '../popup/hive/hive-app.component.scss';
+@import '../popup/evm/evm-app.component.scss';
+@import '../dialog/components/collapsible-item/collapsible-item.scss';
+
+.theme {
+  &.light {
+    @include spread-map($light);
+  }
+  &.dark {
+    @include spread-map($dark);
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
+}
+
+html {
+  height: 100%;
+  body {
+    margin: 0px;
+    height: 100%;
+    #root {
+      display: block;
+      height: 100%;
+      overflow: hidden;
+      .multisig-dialog {
+        height: 100%;
+        @include background-top;
+        color: var(--main-font-color);
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        row-gap: 24px;
+        font-size: 16px;
+        overflow: auto;
+
+        .multisig-logo {
+          height: 30px;
+          width: auto;
+        }
+
+        @include dialogs-title-panel();
+        .caption {
+          @include caption();
+        }
+
+        .card {
+          @include small-card();
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          row-gap: 16px;
+
+          a {
+            color: var(--main-font-color);
+          }
+        }
+
+        .fields-container {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
+          .fields {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            row-gap: 16px;
+            overflow: auto;
+            padding: 16px 24px;
+            color: var(--main-font-color);
+            background: var(--card-background);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            .field {
+              display: flex;
+              justify-content: space-between;
+              column-gap: 16px;
+              .label {
+                @include poppins500(14px);
+              }
+              .value {
+                @include poppins400(14px);
+                overflow-wrap: anywhere;
+                max-width: 70%;
+                text-align: right;
+                user-select: text;
+                ul {
+                  margin: 0;
+                }
+                &.xs-font {
+                  font-size: 11px;
+                }
+              }
+            }
+            .operation_item_content {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .button-panel {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          column-gap: 8px;
+        }
+        .message {
+          @include caption();
+        }
+
+        .sign-in-page {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 55px 20px 32px;
+          row-gap: 36px;
+          .logo-white {
+            width: 228px;
+            height: auto;
+          }
+
+          .password-input {
+            width: 100%;
+          }
+
+          .action-panel {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            row-gap: 16px;
+            align-items: center;
+            .reset-password-link {
+              @include poppins600(12px);
+              color: var(--main-font-color);
+              cursor: pointer;
+              text-decoration: underline;
+              &:hover {
+                color: $red;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

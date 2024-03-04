@@ -54,5 +54,9 @@
     &:focus {
       box-shadow: none;
     }
+    svg {
+      height: 10px;
+      width: 10px;
+    }
   }
 }

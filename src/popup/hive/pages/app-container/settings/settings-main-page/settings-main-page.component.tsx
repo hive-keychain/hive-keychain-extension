@@ -28,7 +28,7 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
     forgetMk();
   };
   const getIcon = () =>
-    theme === Theme.DARK ? SVGIcons.MENU_THEME_DARK : SVGIcons.MENU_THEME_LIGHT;
+    theme === Theme.DARK ? SVGIcons.MENU_THEME_LIGHT : SVGIcons.MENU_THEME_DARK;
   return (
     <div
       className="settings-main-page"

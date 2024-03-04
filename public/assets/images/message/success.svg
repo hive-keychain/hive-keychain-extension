@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="109" height="109" fill="none" viewBox="0 0 109 109">
-  <circle cx="54.563" cy="54.465" r="54.391" fill="url(#a)"/>
-  <path fill="#fff" d="M50.523 69.159c-1.154 0-2.307-.495-2.966-1.484l-9.228-11.864c-1.318-1.648-.989-3.955.66-5.273 1.647-1.318 3.954-.988 5.272.66l6.262 8.074L64.365 41.31c1.318-1.647 3.625-1.977 5.273-.659 1.647 1.319 1.977 3.625.659 5.273L53.489 67.676c-.824.823-1.813 1.483-2.966 1.483Z"/>
-  <circle cx="77.703" cy="62.996" r="2.03" fill="#fff"/>
-  <circle cx="24.515" cy="40.665" r="3.247" fill="#fff"/>
-  <circle cx="72.019" cy="23.22" r="1.218" fill="#fff"/>
-  <circle cx="38.334" cy="80.452" r="1.624" fill="#fff"/>
-  <circle cx="56.197" cy="41.489" r=".812" fill="#fff"/>
-  <defs>
-    <linearGradient id="a" x1=".172" x2="125.75" y1="-6.605" y2="12.851" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#E31337"/>
-      <stop offset="1" stop-color="#FF002C"/>
-    </linearGradient>
-  </defs>
+<svg width="111" height="111" viewBox="0 0 111 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="55.391" cy="55.391" r="54.391" fill="url(#paint0_linear_5599_11043)" stroke="var(--green-success)" stroke-width="2"/>
+<path d="M50.3515 69.0853C49.198 69.0853 48.0445 68.591 47.3854 67.6023L38.1577 55.738C36.8394 54.0902 37.169 51.7832 38.8168 50.465C40.4646 49.1467 42.7715 49.4763 44.0898 51.1241L50.3515 59.1984L64.1932 41.2372C65.5115 39.5894 67.8184 39.2598 69.4662 40.5781C71.114 41.8964 71.4437 44.2033 70.1254 45.8511L53.3176 67.6023C52.4937 68.4262 51.505 69.0853 50.3515 69.0853Z" fill="var(--green-success)"/>
+<circle cx="77.5315" cy="62.9221" r="2.02951" fill="var(--green-success)"/>
+<circle cx="24.3429" cy="40.5919" r="3.24722" fill="var(--green-success)"/>
+<circle cx="71.8476" cy="23.1454" r="1.21771" fill="var(--green-success)"/>
+<circle cx="38.1612" cy="80.3785" r="1.62361" fill="var(--green-success)"/>
+<circle cx="56.0247" cy="41.4153" r="0.811805" fill="var(--green-success)"/>
+<defs>
+<linearGradient id="paint0_linear_5599_11043"  gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+</defs>
 </svg>

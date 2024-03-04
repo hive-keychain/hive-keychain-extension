@@ -9,18 +9,27 @@
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
+  transition: 0.225s linear;
   .title {
     @include poppins400(14px);
     color: var(--main-font-color);
   }
-
+  svg path:not(.savings) {
+    stroke: $red;
+  }
+  svg .savings {
+    fill: $red;
+  }
   &:hover {
     background: $red;
     .title {
       color: white;
     }
-    --wallet-icon-border-color: white;
-    --wallet-icon-color: white;
-    --wallet-icon-secondary-color: white;
+    svg path:not(.savings) {
+      stroke: white;
+    }
+    svg .savings {
+      fill: white;
+    }
   }
 }

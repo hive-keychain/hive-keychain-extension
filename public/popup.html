@@ -31,12 +31,8 @@
       }
 
       @-moz-document url-prefix() {
-        html {
-          background: black;
-        }
-        #root {
-          height: 746px;
-          width: 435px;
+        div:not(.scrollable) {
+          scrollbar-width: none;
         }
       }
     </style>

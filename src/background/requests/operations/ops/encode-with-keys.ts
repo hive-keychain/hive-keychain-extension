@@ -24,7 +24,7 @@ export const encodeWithKeys = async (
   } catch (err) {
     error = err;
   } finally {
-    return createMessage(
+    return await createMessage(
       error,
       encoded,
       data,

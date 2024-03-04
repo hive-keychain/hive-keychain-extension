@@ -1,4 +1,7 @@
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Proposal } from '@interfaces/proposal.interface';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,6 +9,7 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
@@ -31,13 +35,29 @@ const ProposalItem = ({
   setSuccessMessage,
   activeAccount,
   onVoteUnvoteSuccessful,
+  addCaptionToLoading,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
   const [usingProxy, setUsingProxy] = useState(false);
+  const [keyType, setKeyType] = useState<PrivateKeyType>();
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (activeAccount) {
+      setKeyType(
+        KeysUtils.getKeyType(
+          activeAccount.keys.active!,
+          activeAccount.keys.activePubkey!,
+          activeAccount.account,
+          activeAccount.account,
+          KeychainKeyTypesLC.active,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const init = async () => {
     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
@@ -53,32 +73,46 @@ const ProposalItem = ({
   };
 
   const toggleSupport = async (proposal: Proposal) => {
+    if (usingProxy) {
+      return;
+    }
+
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+
     if (proposal.voted) {
       addToLoadingList('popup_html_unvoting_for_proposal');
-      if (
-        await ProposalUtils.unvoteProposal(
-          proposal.proposalId,
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        onVoteUnvoteSuccessful();
-        setSuccessMessage('popup_html_proposal_unvote_successful');
+      const success = await ProposalUtils.unvoteProposal(
+        proposal.proposalId,
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          onVoteUnvoteSuccessful();
+          setSuccessMessage('popup_html_proposal_unvote_successful');
+        }
       } else {
         setErrorMessage('popup_html_proposal_unvote_fail');
       }
       removeFromLoadingList('popup_html_unvoting_for_proposal');
     } else {
       addToLoadingList('popup_html_voting_for_proposal');
-      if (
-        await ProposalUtils.voteForProposal(
-          proposal.proposalId,
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        setSuccessMessage('popup_html_proposal_vote_successful');
-        onVoteUnvoteSuccessful();
+      const success = await ProposalUtils.voteForProposal(
+        proposal.proposalId,
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          setSuccessMessage('popup_html_proposal_vote_successful');
+          onVoteUnvoteSuccessful();
+        }
       } else {
         setErrorMessage('popup_html_proposal_vote_fail');
       }
@@ -212,6 +246,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
+  addCaptionToLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector> & ProposalItemProps;
 

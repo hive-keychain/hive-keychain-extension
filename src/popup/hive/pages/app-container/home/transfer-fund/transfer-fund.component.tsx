@@ -1,6 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,6 +11,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -233,6 +237,7 @@ const TransferFunds = ({
     );
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         isCancelRecurrent
           ? 'popup_html_transfer_confirm_cancel_recurrent'
@@ -291,7 +296,9 @@ const TransferFunds = ({
               activeAccount,
             );
 
-            if (!form.isRecurrent) {
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else if (!form.isRecurrent) {
               setSuccessMessage('popup_html_transfer_successful', [
                 `@${form.receiverUsername}`,
                 stringifiedAmount,
@@ -322,7 +329,7 @@ const TransferFunds = ({
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (
