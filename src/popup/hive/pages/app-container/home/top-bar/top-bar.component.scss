@@ -24,6 +24,18 @@
       border: 1px solid var(--card-border);
       height: 500px;
       transition: height 0.25s ease-in;
+      display: flex;
+      flex-direction: column;
+
+      .set-all-as-read {
+        height: 24px;
+        min-height: 24px;
+        width: max-content;
+        padding: 2px 8px;
+        align-self: flex-end;
+        margin-top: 8px;
+        margin-right: 8px;
+      }
     }
 
     .notification-list {

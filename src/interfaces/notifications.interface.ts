@@ -36,10 +36,11 @@ export enum ConfigFormUpdateAction {
   UPDATE_DATA = 'UPDATE_DATA',
 }
 
-export interface PeakDNotification {
+export interface Notification {
   id: string;
   message: string;
   messageParams: string[];
   txId: string;
   createdAt: moment.Moment;
+  read: boolean;
 }

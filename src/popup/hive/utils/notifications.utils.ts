@@ -3,13 +3,13 @@ import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
+  Notification,
   NotificationConfig,
   NotificationConfigConditions,
   NotificationConfigForm,
   NotificationConfigFormItem,
   NotificationOperationName,
-  PeakDNotification,
-} from '@interfaces/peakd-notifications.interface';
+} from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
@@ -513,38 +513,31 @@ const getNotifications = async (
   username: string,
   globalProperties: DynamicGlobalProperties,
 ) => {
-  const notifications: PeakDNotification[] = [];
+  const notifications: Notification[] = [];
   const res = await PeakDNotificationsApi.get(`notifications/${username}`);
   for (const notif of res) {
-    console.log(notif);
     const payload = JSON.parse(notif.payload);
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
     switch (notif.operation_type) {
       case 'transfer': {
+        const amount = FormatUtils.withCommas(payload.amount, 3);
         if (payload.to === username) {
-          messageParams = [payload.amount, payload.from];
+          messageParams = [amount, payload.from];
           message = 'popup_html_wallet_info_transfer_in';
         } else {
-          messageParams = [payload.amount, payload.to];
+          messageParams = [amount, payload.to];
           message = 'popup_html_wallet_info_transfer_out';
         }
         break;
       }
       case 'fill_recurrent_transfer': {
+        const amount = FormatUtils.withCommas(payload.amount, 3);
         if (payload.to === username) {
-          messageParams = [
-            payload.amount,
-            payload.from,
-            payload.remaining_executions,
-          ];
+          messageParams = [amount, payload.from, payload.remaining_executions];
           message = 'popup_html_wallet_info_fill_recurrent_transfer_in';
         } else {
-          messageParams = [
-            payload.amount,
-            payload.to,
-            payload.remaining_executions,
-          ];
+          messageParams = [amount, payload.to, payload.remaining_executions];
           message = 'popup_html_wallet_info_fill_recurrent_transfer_out';
         }
 
@@ -596,7 +589,10 @@ const getNotifications = async (
           message = 'notification_delegation';
           messageParams = [
             payload.delegator,
-            payload.amount,
+            FormatUtils.toFormattedHP(
+              payload.vesting_shares.toString().replace('VESTS', ''),
+              globalProperties,
+            ),
             payload.delegatee,
           ];
         } else {
@@ -626,21 +622,24 @@ const getNotifications = async (
       }
       case 'transfer_from_savings': {
         message = 'popup_html_wallet_info_withdraw_savings';
-        messageParams = [payload.amount];
+        const amount = FormatUtils.withCommas(payload.amount, 3);
+        messageParams = [amount];
         break;
       }
       case 'transfer_to_savings': {
         message = 'popup_html_wallet_info_deposit_savings';
-        messageParams = [payload.amount];
+        const amount = FormatUtils.withCommas(payload.amount, 3);
+        messageParams = [amount];
         break;
       }
       case 'transfer_to_vesting': {
+        const amount = FormatUtils.withCommas(payload.amount, 3);
         if (payload.to === username) {
           message = 'popup_html_wallet_info_power_up';
-          messageParams = [payload.amount];
+          messageParams = [amount];
         } else {
           message = 'popup_html_wallet_info_power_up_other_account';
-          messageParams = [payload.from, payload.amount, payload.to];
+          messageParams = [payload.from, amount, payload.to];
         }
         break;
       }
@@ -651,14 +650,23 @@ const getNotifications = async (
       }
       case 'withdraw_vesting': {
         message = 'bgd_ops_pd';
-        messageParams = [payload.amount, payload.account]; // TODO Convert to HP
+        messageParams = [
+          FormatUtils.toFormattedHP(
+            payload.vesting_shares.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
+          ,
+          payload.account,
+        ]; // TODO Convert to HP
         break;
       }
       case 'recurrent_transfer': {
+        const amount = FormatUtils.withCommas(payload.amount, 3);
+
         message = 'notification_recurrent_transfer';
         messageParams = [
           payload.from,
-          payload.amount,
+          amount,
           payload.to,
           payload.executions,
           payload.recurrence,
@@ -666,17 +674,23 @@ const getNotifications = async (
         break;
       }
       case 'fill_convert_request': {
+        const amountIn = FormatUtils.withCommas(payload.amount_in, 3);
+        const amountOut = FormatUtils.withCommas(payload.amount_out, 3);
+
         message = 'notification_fill_convert';
-        messageParams = [payload.owner, payload.amount_in, payload.amount_out];
+        messageParams = [payload.owner, amountIn, amountOut];
         break;
       }
       case 'author_reward': {
         message = 'notification_author_reward';
         messageParams = [
           payload.author,
-          payload.hbd_payout,
-          payload.hive_payout,
-          payload.vesting_payout,
+          FormatUtils.withCommas(payload.hbd_payout, 3),
+          FormatUtils.withCommas(payload.hive_payout, 3),
+          FormatUtils.toFormattedHP(
+            payload.vesting_payout.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
           payload.permlink,
         ];
         break;
@@ -685,7 +699,10 @@ const getNotifications = async (
         message = 'notification_curation_reward';
         messageParams = [
           payload.curator,
-          payload.reward,
+          FormatUtils.toFormattedHP(
+            payload.reward.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
           payload.comment_author,
           payload.comment_permlink,
         ];
@@ -693,23 +710,39 @@ const getNotifications = async (
       }
       case 'comment_reward': {
         message = 'notification_comment_reward';
-        messageParams = [payload.author, payload.payout, payload.permlink];
+        messageParams = [
+          payload.author,
+          FormatUtils.withCommas(payload.payout, 3),
+          payload.permlink,
+        ];
         break;
       }
       case 'interest': {
         message = 'notification_hbd_interest';
-        messageParams = [payload.owner, payload.interest];
+        messageParams = [
+          payload.owner,
+          FormatUtils.withCommas(payload.interest, 3),
+        ];
         break;
       }
       case 'fill_vesting_withdraw': {
         if (username === payload.from_account) {
           message = 'notification_fill_power_down';
-          messageParams = [payload.from, payload.withdraw];
+          messageParams = [
+            payload.from,
+            FormatUtils.toFormattedHP(
+              payload.withdraw.toString().replace('VESTS', ''),
+              globalProperties,
+            ),
+          ];
         } else {
           message = 'notification_fill_power_down_other_account';
           messageParams = [
             payload.from_account,
-            payload.withdraw,
+            FormatUtils.toFormattedHP(
+              payload.withdraw.toString().replace('VESTS', ''),
+              globalProperties,
+            ),
             payload.to_account,
           ];
         }
@@ -720,34 +753,44 @@ const getNotifications = async (
         messageParams = [
           payload.current_owner,
           payload.open_owner,
-          payload.current_pays,
-          payload.open_pays,
+          FormatUtils.withCommas(payload.current_pays, 3),
+          FormatUtils.withCommas(payload.open_pays, 3),
         ];
         break;
       }
       case 'fill_transfer_from_savings': {
+        const amount = FormatUtils.withCommas(payload.amount, 3);
         if (payload.from === payload.to) {
           message = 'notification_fill_transfer_from_savings';
-          messageParams = [payload.from, payload.amount];
+          messageParams = [payload.from, amount];
         } else {
           message =
             'notification_fill_transfer_from_savings_from_other_account';
-          messageParams = [payload.from, payload.amount, payload.to];
+          messageParams = [payload.from, amount, payload.to];
         }
         break;
       }
       case 'return_vesting_delegation': {
         message = 'notification_returned_vesting_delegation';
-        messageParams = [payload.account, payload.vesting_shares];
+        messageParams = [
+          payload.account,
+          FormatUtils.toFormattedHP(
+            payload.vesting_shares.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
+        ];
         break;
       }
       case 'comment_benefactor_reward': {
         message = 'notification_comment_benefactor_reward';
         messageParams = [
           payload.benefactor,
-          payload.hbd_payout,
-          payload.hive_payout,
-          payload.vesting_payout,
+          FormatUtils.withCommas(payload.hbd_payout, 3),
+          FormatUtils.withCommas(payload.hive_payout, 3),
+          FormatUtils.toFormattedHP(
+            payload.vesting_payout.toString().replace('VESTS', ''),
+            globalProperties,
+          ),
           payload.author,
           payload.permlink,
         ];
@@ -775,12 +818,20 @@ const getNotifications = async (
       }
       case 'fill_collateralized_convert_request': {
         message = 'notification_fill_collateralized_convert_request';
-        messageParams = [payload.owner, payload.amount_in, payload.amount_out];
+        messageParams = [
+          payload.owner,
+          FormatUtils.withCommas(payload.amount_in, 3),
+          FormatUtils.withCommas(payload.amount_out, 3),
+        ];
         break;
       }
       case 'failed_recurrent_transfer': {
         message = 'notification_failed_recurrent_transfer';
-        messageParams = [payload.amount, payload.from, payload.to];
+        messageParams = [
+          FormatUtils.withCommas(payload.amount, 3),
+          payload.from,
+          payload.to,
+        ];
         break;
       }
     }
@@ -790,6 +841,7 @@ const getNotifications = async (
       txId: notif.trx_id,
       message: message,
       messageParams: messageParams,
+      read: !!notif.readAt,
     });
   }
   return notifications;

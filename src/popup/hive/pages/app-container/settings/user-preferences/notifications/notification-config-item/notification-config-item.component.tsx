@@ -2,7 +2,7 @@ import {
   ConfigFormUpdateAction,
   NotificationConfigForm,
   NotificationConfigFormItem,
-} from '@interfaces/peakd-notifications.interface';
+} from '@interfaces/notifications.interface';
 import { NotificationConfigItemConditionComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item-condition.component';
 import React, { useState } from 'react';
 import ButtonComponent, {

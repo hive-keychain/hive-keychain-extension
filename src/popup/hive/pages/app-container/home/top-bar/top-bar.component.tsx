@@ -1,14 +1,13 @@
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
-import { PeakDNotification } from '@interfaces/peakd-notifications.interface';
+import { Notification } from '@interfaces/notifications.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { NotificationPanel } from '@popup/hive/pages/app-container/home/top-bar/notification-panel.component';
 import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
-import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
@@ -41,7 +40,7 @@ const TopBar = ({
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
-  const [notifications, setNotifications] = useState<PeakDNotification[]>();
+  const [notifications, setNotifications] = useState<Notification[]>();
   const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
@@ -82,7 +81,6 @@ const TopBar = ({
       username,
       dynamicGlobalProperties,
     );
-    console.log('init', notifs);
     setNotifications(notifs);
   };
 
@@ -137,6 +135,14 @@ const TopBar = ({
     setNotificationPanelOpen(!isNotificationPanelOpen);
   };
 
+  const clickOnNotification = (notification: Notification) => {
+    if (notification.txId && !notification.txId.startsWith('v')) {
+      chrome.tabs.create({
+        url: `https://hivehub.dev/tx/${notification.txId}`,
+      });
+    }
+  };
+
   return (
     <div className="top-bar">
       <SVGIcon
@@ -176,35 +182,11 @@ const TopBar = ({
 
       <SelectAccountSectionComponent isOnMain />
       {notifications && notifications.length > 0 && (
-        <div
-          className={`notifications-panel ${
-            isNotificationPanelOpen ? 'opened' : 'closed'
-          }`}>
-          <div className="notification-list">
-            {isNotificationPanelOpen &&
-              notifications.map((notif, index) => (
-                <React.Fragment key={notif.id}>
-                  <div
-                    className={`notification-item ${
-                      notif.txId ? 'clickable' : ''
-                    }`}>
-                    <div className="message">
-                      {chrome.i18n.getMessage(
-                        notif.message,
-                        notif.messageParams,
-                      )}
-                    </div>
-                    <div className="date">
-                      {moment(notif.createdAt).fromNow()}
-                    </div>
-                  </div>
-                  {index !== notifications.length - 1 && (
-                    <Separator type="horizontal" />
-                  )}
-                </React.Fragment>
-              ))}
-          </div>
-        </div>
+        <NotificationPanel
+          notifications={notifications}
+          isPanelOpened={isNotificationPanelOpen}
+          clickOnNotification={clickOnNotification}
+        />
       )}
     </div>
   );

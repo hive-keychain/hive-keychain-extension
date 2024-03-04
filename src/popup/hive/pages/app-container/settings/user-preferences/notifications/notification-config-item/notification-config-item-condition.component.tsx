@@ -3,7 +3,7 @@ import {
   NotificationConfigForm,
   NotificationConfigFormCondition,
   NotificationConfigFormItem,
-} from '@interfaces/peakd-notifications.interface';
+} from '@interfaces/notifications.interface';
 import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
 import React, { useEffect, useState } from 'react';
 import {

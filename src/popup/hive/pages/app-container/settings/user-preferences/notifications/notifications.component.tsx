@@ -6,7 +6,7 @@ import {
   NotificationConfigForm,
   NotificationConfigFormCondition,
   NotificationConfigItem,
-} from '@interfaces/peakd-notifications.interface';
+} from '@interfaces/notifications.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';

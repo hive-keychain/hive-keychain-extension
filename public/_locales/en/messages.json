@@ -3829,11 +3829,11 @@
     "description": "Notification fill convert"
   },
   "notification_author_reward": {
-    "message": "@$1 has received $2, $3, $4 as an author reward for <a classname='notification-link' href='https://peakd.com/$1/$5'>$1/$5</a>",
+    "message": "@$1 has received $2, $3, $4 as an author reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
     "description": "Notification author reward"
   },
   "notification_comment_reward": {
-    "message": "@$1 has received $2 as an comment reward for <a classname='notification-link' href='https://peakd.com/$1/$5'>$1/$5</a>",
+    "message": "@$1 has received $2 as an comment reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
     "description": "Notification comment reward"
   },
   "notification_hbd_interest": {
@@ -3857,7 +3857,7 @@
     "description": "Notification for producer rewards"
   },
   "notification_curation_reward": {
-    "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' href='https://peakd.com/$3/$4'>$3/$4</a>",
+    "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>@$3/$4</a>",
     "description": "Notification for curation rewards"
   },
   "notification_failed_recurrent_transfer": {
@@ -3881,7 +3881,7 @@
     "description": "Notification for when HP is avalable after undelegating"
   },
   "notification_comment_benefactor_reward": {
-    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for <a classname='notification-link' href='https://peakd.com/$5/$6'>$5/$6</a>",
+    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for <a classname='notification-link' href='https://peakd.com/@$5/$6' target='__blank'>@$5/$6</a>",
     "description": "Notification author reward"
   },
   "notification_fill_order": {
@@ -3893,11 +3893,15 @@
     "description": "Notification change recovery account"
   },
   "notification_vote": {
-    "message": "@$1 has voted for <a classname='notification-link' href='https://peakd.com/$2/$3'>$2/$3</a>",
+    "message": "@$1 has voted for <a classname='notification-link' href='https://peakd.com/@$2/$3' target='__blank'>@$2/$3</a>",
     "description": "Notification for vote"
   },
   "notification_clear_config": {
     "message": "Clear configuration",
     "description": "clear config notification"
+  },
+  "notification_set_all_as_read": {
+    "message": "Set all as read",
+    "description": "Set all notifications as read"
   }
 }
