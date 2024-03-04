@@ -1,12 +1,13 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -46,6 +47,11 @@ interface DelegationForm {
   currency: string;
 }
 
+export interface IncomingOutgoingParams {
+  delegationType: DelegationType;
+  totalPendingOutgoingUndelegation?: string | number;
+  available?: number;
+}
 const rules = FormUtils.createRules<DelegationForm>({
   username: Joi.string().required(),
   amount: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
@@ -219,6 +225,7 @@ const Delegations = ({
     )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
         stringifiedAmount,
         `@${form.username}`,
@@ -248,7 +255,10 @@ const Delegations = ({
               form.username,
               activeAccount,
             );
-            setSuccessMessage('popup_html_delegation_successful');
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_delegation_successful');
           } else {
             setErrorMessage('popup_html_delegation_fail');
           }
@@ -258,11 +268,13 @@ const Delegations = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const cancelDelegation = (form: DelegationForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
+
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
@@ -288,7 +300,10 @@ const Delegations = ({
               form.username,
               activeAccount,
             );
-            setSuccessMessage('popup_html_cancel_delegation_successful');
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_cancel_delegation_successful');
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
           }
@@ -298,7 +313,7 @@ const Delegations = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getFormParams = () => {

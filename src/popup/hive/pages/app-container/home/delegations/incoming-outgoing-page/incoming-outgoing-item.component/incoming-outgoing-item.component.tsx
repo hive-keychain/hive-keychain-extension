@@ -3,9 +3,11 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from '@popup/hive/actions/delegations.actions';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -75,6 +77,7 @@ const IncomingOutgoing = ({
 
   const cancelDelegation = async () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
@@ -91,7 +94,9 @@ const IncomingOutgoing = ({
             activeAccount.keys.active!,
           );
           if (success) {
-            setSuccessMessage('popup_html_cancel_delegation_successful');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_cancel_delegation_successful');
             await refreshDelegations();
             goBack();
           } else {
@@ -103,7 +108,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const enterEditMode = () => {
@@ -133,6 +138,7 @@ const IncomingOutgoing = ({
     )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
         value,
         `@${username}`,
@@ -154,7 +160,9 @@ const IncomingOutgoing = ({
             activeAccount.keys.active!,
           );
           if (success) {
-            setSuccessMessage('popup_html_delegation_successful');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_delegation_successful');
             await refreshDelegations();
             goBack();
           } else {
@@ -166,7 +174,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const refreshDelegations = async () => {

@@ -1,8 +1,10 @@
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { RcDelegationsUtils } from '@popup/hive/utils/rc-delegations.utils';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -30,6 +32,10 @@ interface RcIncomingOutgoingProps {
   expirationDate?: string;
   maxAvailable?: string;
   rcDelegation: RcDelegation;
+}
+
+export interface EditRcDelegationParams {
+  formParams: any;
 }
 
 const RcIncomingOutgoingDelegationItem = ({
@@ -78,6 +84,7 @@ const RcIncomingOutgoingDelegationItem = ({
       },
     ];
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.posting,
       message: chrome.i18n.getMessage(
         'popup_html_cancel_rc_delegation_confirm_text',
       ),
@@ -97,15 +104,18 @@ const RcIncomingOutgoingDelegationItem = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-
-          setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
-            `@${rcDelegation.delegatee}`,
-          ]);
+          if (success.isUsingMultisig) {
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else {
+            setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
+              `@${rcDelegation.delegatee}`,
+            ]);
+          }
         } else {
           setErrorMessage('popup_html_cancel_rc_delegation_failed');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const goToEdit = (rcDelegation: RcDelegation) => {

@@ -15,10 +15,7 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
+import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
@@ -34,7 +31,6 @@ const CreateAccountStepOne = ({
   activeAccount,
   accounts,
   currencyLabels,
-  setErrorMessage,
   setTitleContainerProperties,
   navigateToWithParams,
 }: PropsFromRedux) => {
@@ -195,8 +191,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  setErrorMessage,
-  setSuccessMessage,
   setTitleContainerProperties,
   navigateToWithParams,
 });

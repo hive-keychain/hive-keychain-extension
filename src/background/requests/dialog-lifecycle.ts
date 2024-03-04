@@ -1,4 +1,5 @@
 import { RequestsHandler } from '@background/requests/request-handler';
+import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
@@ -40,7 +41,7 @@ export const createPopup = (
           () => {
             requestHandler.setWindowId(win.id);
             requestHandler.saveInLocalStorage();
-            waitUntilDialogIsReady(100, callback);
+            waitUntilDialogIsReady(100, DialogCommand.READY, callback);
           },
         );
       },
@@ -68,35 +69,6 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
     requestHandler.reset(true);
   }
 });
-/* istanbul ignore next */
-const waitUntilDialogIsReady = async (
-  ms: number,
-  callback: () => void,
-  nb = 0,
-) => {
-  nb++;
-  if (await askIfReady(ms)) {
-    callback();
-  } else {
-    waitUntilDialogIsReady(ms, callback, nb);
-  }
-};
-/* istanbul ignore next */
-const askIfReady = (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(false);
-    }, ms);
-    chrome.runtime.sendMessage(
-      {
-        command: DialogCommand.READY,
-      },
-      (resp) => {
-        if (resp) resolve(resp);
-      },
-    );
-  });
-};
 
 // check if win exists before removing it
 /* istanbul ignore next */

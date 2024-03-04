@@ -45,7 +45,10 @@ const WitnessVotingSection = ({
           await BlockchainTransactionUtils.delayRefresh();
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           refreshActiveAccount();
-          setSuccessMessage(`html_popup_vote_${account}_witness_success`);
+          if (transactionConfirmed.isUsingMultisig) {
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else
+            setSuccessMessage(`html_popup_vote_${account}_witness_success`);
         }
       } catch (err: any) {
         setErrorMessage(err.message);

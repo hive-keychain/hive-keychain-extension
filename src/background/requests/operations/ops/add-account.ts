@@ -53,7 +53,7 @@ export const addAccount = async (
     // Error no such account
     err = await chrome.i18n.getMessage('bgd_ops_add_account_error_invalid');
   }
-  return createMessage(
+  return await createMessage(
     !!err,
     !err,
     data,

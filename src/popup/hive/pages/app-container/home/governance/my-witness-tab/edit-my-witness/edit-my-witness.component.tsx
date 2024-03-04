@@ -70,7 +70,10 @@ const EditMyWitness = ({
       refreshActiveAccount();
       if (success) {
         goBackPage();
-        setSuccessMessage('popup_success_witness_account_update');
+
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else setSuccessMessage('popup_success_witness_account_update');
       } else {
         setErrorMessage('popup_error_witness_account_update', [
           `${activeAccount.name!}`,

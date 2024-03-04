@@ -58,7 +58,7 @@ export const broadcastProxy = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,

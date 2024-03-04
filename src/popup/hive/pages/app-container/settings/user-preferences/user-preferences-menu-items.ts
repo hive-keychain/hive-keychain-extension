@@ -21,6 +21,11 @@ const UserPreferencesMenuItems = (
       icon: SVGIcons.MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS,
       nextScreen: Screen.SETTINGS_FAVORITE_ACCOUNTS,
     },
+    {
+      label: 'popup_html_multisig',
+      icon: SVGIcons.MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS,
+      nextScreen: Screen.SETTINGS_MULTISIG,
+    },
     // {
     //   label: 'popup_html_theme',
     //   icon: SVGIcons.MENU_USER_PREFERENCES_THEME,

@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
+import { MultisigModule } from '@background/multisig.module';
 import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
 import { RequestsHandler } from '@background/requests/request-handler';
@@ -33,6 +34,7 @@ import MkModule from './mk.module';
       LocalStorageKeyEnum.AUTOLOCK,
     ),
   );
+  MultisigModule.start();
 })();
 /* istanbul ignore next */
 //@ts-ignore
