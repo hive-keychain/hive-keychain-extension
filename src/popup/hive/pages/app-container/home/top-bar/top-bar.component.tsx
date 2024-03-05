@@ -135,14 +135,6 @@ const TopBar = ({
     setNotificationPanelOpen(!isNotificationPanelOpen);
   };
 
-  const clickOnNotification = (notification: Notification) => {
-    if (notification.txId && !notification.txId.startsWith('v')) {
-      chrome.tabs.create({
-        url: `https://hivehub.dev/tx/${notification.txId}`,
-      });
-    }
-  };
-
   return (
     <div className="top-bar">
       <SVGIcon
@@ -185,7 +177,6 @@ const TopBar = ({
         <NotificationPanel
           notifications={notifications}
           isPanelOpened={isNotificationPanelOpen}
-          clickOnNotification={clickOnNotification}
         />
       )}
     </div>

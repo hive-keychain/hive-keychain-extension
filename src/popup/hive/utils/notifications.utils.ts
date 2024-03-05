@@ -513,12 +513,31 @@ const getNotifications = async (
   username: string,
   globalProperties: DynamicGlobalProperties,
 ) => {
+  const peakDNotifications = await getPeakDNotifications(
+    username,
+    globalProperties,
+  );
+
+  const finalNotifications = [...peakDNotifications];
+  finalNotifications.sort((a, b) => {
+    if (a.createdAt < b.createdAt) return -1;
+    else if (a.createdAt > b.createdAt) return 1;
+    else return 0;
+  });
+  return [...peakDNotifications];
+};
+
+const getPeakDNotifications = async (
+  username: string,
+  globalProperties: DynamicGlobalProperties,
+) => {
   const notifications: Notification[] = [];
   const res = await PeakDNotificationsApi.get(`notifications/${username}`);
   for (const notif of res) {
     const payload = JSON.parse(notif.payload);
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
+    let externalUrl: string;
     switch (notif.operation_type) {
       case 'transfer': {
         const amount = FormatUtils.withCommas(payload.amount, 3);
@@ -646,6 +665,7 @@ const getNotifications = async (
       case 'vote': {
         message = 'notification_vote';
         messageParams = [payload.voter, payload.author, payload.permlink];
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }
       case 'withdraw_vesting': {
@@ -693,6 +713,8 @@ const getNotifications = async (
           ),
           payload.permlink,
         ];
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+
         break;
       }
       case 'curation_reward': {
@@ -706,6 +728,7 @@ const getNotifications = async (
           payload.comment_author,
           payload.comment_permlink,
         ];
+        externalUrl = `https://peakd.com/@${payload.comment_author}/${payload.comment_permlink}`;
         break;
       }
       case 'comment_reward': {
@@ -715,6 +738,7 @@ const getNotifications = async (
           FormatUtils.withCommas(payload.payout, 3),
           payload.permlink,
         ];
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }
       case 'interest': {
@@ -794,6 +818,7 @@ const getNotifications = async (
           payload.author,
           payload.permlink,
         ];
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }
       case 'producer_reward': {
@@ -838,7 +863,10 @@ const getNotifications = async (
     notifications.push({
       id: notif.id,
       createdAt: moment(notif.created),
-      txId: notif.trx_id,
+      txUrl:
+        notif.trx_id && !notif.trx_id.startsWith('v')
+          ? `https://hivehub.dev/tx/${notif.trx_id}`
+          : undefined,
       message: message,
       messageParams: messageParams,
       read: !!notif.readAt,

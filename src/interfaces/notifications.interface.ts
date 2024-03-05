@@ -40,7 +40,8 @@ export interface Notification {
   id: string;
   message: string;
   messageParams: string[];
-  txId: string;
+  txUrl?: string;
   createdAt: moment.Moment;
   read: boolean;
+  externalUrl?: string;
 }

@@ -9,15 +9,25 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
-  clickOnNotification: (notif: Notification) => void;
 }
 
 export const NotificationPanel = ({
   isPanelOpened,
   notifications,
-  clickOnNotification,
 }: NotificationPanelProps) => {
   const setAllAsRead = async () => {};
+
+  const clickOnNotification = (notification: Notification) => {
+    if (notification.externalUrl) {
+      chrome.tabs.create({
+        url: notification.externalUrl,
+      });
+    } else if (notification.txUrl) {
+      chrome.tabs.create({
+        url: notification.txUrl,
+      });
+    }
+  };
 
   return (
     <div
@@ -33,7 +43,9 @@ export const NotificationPanel = ({
           notifications.map((notif, index) => (
             <React.Fragment key={notif.id}>
               <div
-                className={`notification-item ${notif.txId ? 'clickable' : ''}`}
+                className={`notification-item ${
+                  notif.txUrl || notif.externalUrl ? 'clickable' : ''
+                }`}
                 onClick={() => {
                   clickOnNotification(notif);
                 }}>
