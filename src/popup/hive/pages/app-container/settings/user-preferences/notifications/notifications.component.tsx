@@ -10,7 +10,7 @@ import {
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
-import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
+import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -78,11 +78,9 @@ const NotificationConfigPage = () => {
   };
 
   const initConfig = async (active_account_name: string) => {
-    const userConfig = await NotificationsUtils.getAccountConfig(
+    const userConfig = await PeakDNotificationsUtils.getAccountConfig(
       active_account_name,
     );
-
-    console.log(userConfig);
 
     let conf: NotificationConfig = [];
     if (userConfig) {
@@ -94,7 +92,7 @@ const NotificationConfigPage = () => {
     }
 
     setConfig(conf);
-    const form = NotificationsUtils.initializeForm(conf);
+    const form = PeakDNotificationsUtils.initializeForm(conf);
     setConfigForm([...form]);
 
     setActive(true);
@@ -173,7 +171,7 @@ const NotificationConfigPage = () => {
   const saveConfig = async () => {
     if (window.confirm('OK ?'))
       if (selectedAccount?.keys.posting) {
-        await NotificationsUtils.saveConfiguration(
+        await PeakDNotificationsUtils.saveConfiguration(
           configForm!,
           selectedAccount!,
         );
@@ -187,12 +185,12 @@ const NotificationConfigPage = () => {
   };
 
   const setDefaultConfig = () => {
-    setConfigForm(NotificationsUtils.getDefaultConfig());
+    setConfigForm(PeakDNotificationsUtils.getDefaultConfig());
   };
   const setAll = () => {
     if (configForm) {
       const newConfig: NotificationConfigForm = [...configForm];
-      for (const criteria of NotificationsUtils.operationFieldList.map(
+      for (const criteria of PeakDNotificationsUtils.operationFieldList.map(
         (field) => field.name,
       )) {
         newConfig.push({
@@ -277,7 +275,7 @@ const NotificationConfigPage = () => {
                     onChange={setNewCriteria}
                     value={newCriteria}
                     type={InputType.TEXT}
-                    autocompleteValues={NotificationsUtils.operationFieldList.map(
+                    autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
                       (field) => field.name,
                     )}
                   />

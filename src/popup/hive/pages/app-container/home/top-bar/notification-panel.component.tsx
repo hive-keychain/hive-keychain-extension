@@ -1,6 +1,13 @@
 import { Notification } from '@interfaces/notifications.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/hive/actions/loading.actions';
+import { RootState } from '@popup/hive/store';
+import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import moment from 'moment';
 import React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -9,13 +16,23 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
+  onSetAllAsRead: () => void;
 }
 
 export const NotificationPanel = ({
   isPanelOpened,
   notifications,
-}: NotificationPanelProps) => {
-  const setAllAsRead = async () => {};
+  activeAccount,
+  onSetAllAsRead,
+  addToLoadingList,
+  removeFromLoadingList,
+}: PropsFromRedux) => {
+  const markAllAsRead = async () => {
+    addToLoadingList('notification_setting_all_as_read');
+    await NotificationsUtils.markAllAsRead(activeAccount);
+    await onSetAllAsRead();
+    removeFromLoadingList('notification_setting_all_as_read');
+  };
 
   const clickOnNotification = (notification: Notification) => {
     if (notification.externalUrl) {
@@ -35,7 +52,7 @@ export const NotificationPanel = ({
       <ButtonComponent
         type={ButtonType.ALTERNATIVE}
         label="notification_set_all_as_read"
-        onClick={setAllAsRead}
+        onClick={markAllAsRead}
         additionalClass="set-all-as-read"
       />
       <div className="notification-list">
@@ -68,3 +85,17 @@ export const NotificationPanel = ({
     </div>
   );
 };
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    activeAccount: state.activeAccount,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  addToLoadingList,
+  removeFromLoadingList,
+});
+type PropsFromRedux = ConnectedProps<typeof connector> & NotificationPanelProps;
+
+export const NotificationPanelComponent = connector(NotificationPanel);

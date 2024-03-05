@@ -3903,5 +3903,9 @@
   "notification_set_all_as_read": {
     "message": "Set all as read",
     "description": "Set all notifications as read"
+  },
+  "notification_setting_all_as_read": {
+    "message": "Setting all notifications as read",
+    "description": "Set all notifications as read"
   }
 }

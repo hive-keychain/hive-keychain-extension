@@ -4,7 +4,7 @@ import {
   NotificationConfigFormCondition,
   NotificationConfigFormItem,
 } from '@interfaces/notifications.interface';
-import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
+import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import React, { useEffect, useState } from 'react';
 import {
   ComplexeCustomSelect,
@@ -44,7 +44,7 @@ export const NotificationConfigItemConditionComponent = ({
 
   const initSelectOptions = () => {
     const options = [];
-    const fields = NotificationsUtils.operationFieldList.find(
+    const fields = PeakDNotificationsUtils.operationFieldList.find(
       (operationField) => operationField.name === configFormItem.operation,
     );
     if (fields) {
@@ -61,11 +61,11 @@ export const NotificationConfigItemConditionComponent = ({
 
   const initOperandSelectOptions = () => {
     const options = [];
-    const fields = NotificationsUtils.operationFieldList.find(
+    const fields = PeakDNotificationsUtils.operationFieldList.find(
       (operationField) => operationField.name === configFormItem.operation,
     );
     if (fields) {
-      for (const field of NotificationsUtils.operandList) {
+      for (const field of PeakDNotificationsUtils.operandList) {
         options.push({
           label: field,
           value: field,

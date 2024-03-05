@@ -1,5 +1,6 @@
 import { PeakDNotificationsApi } from '@api/peakd-notifications';
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
@@ -513,24 +514,6 @@ const getNotifications = async (
   username: string,
   globalProperties: DynamicGlobalProperties,
 ) => {
-  const peakDNotifications = await getPeakDNotifications(
-    username,
-    globalProperties,
-  );
-
-  const finalNotifications = [...peakDNotifications];
-  finalNotifications.sort((a, b) => {
-    if (a.createdAt < b.createdAt) return -1;
-    else if (a.createdAt > b.createdAt) return 1;
-    else return 0;
-  });
-  return [...peakDNotifications];
-};
-
-const getPeakDNotifications = async (
-  username: string,
-  globalProperties: DynamicGlobalProperties,
-) => {
   const notifications: Notification[] = [];
   const res = await PeakDNotificationsApi.get(`notifications/${username}`);
   for (const notif of res) {
@@ -875,7 +858,22 @@ const getPeakDNotifications = async (
   return notifications;
 };
 
-export const NotificationsUtils = {
+const markAllAsRead = async (activeAccount: ActiveAccount) => {
+  return await CustomJsonUtils.send(
+    [
+      'setLastRead',
+      {
+        date: new Date(),
+      },
+    ],
+    activeAccount.name!,
+    activeAccount.keys.posting!,
+    KeyType.POSTING,
+    'notify',
+  );
+};
+
+export const PeakDNotificationsUtils = {
   defaultActiveSubs,
   conditionNames,
   prefixMap,
@@ -886,4 +884,5 @@ export const NotificationsUtils = {
   saveConfiguration,
   getDefaultConfig,
   getNotifications,
+  markAllAsRead,
 };

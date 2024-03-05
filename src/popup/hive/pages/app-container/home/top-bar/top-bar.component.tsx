@@ -2,8 +2,8 @@ import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { Notification } from '@interfaces/notifications.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
-import { NotificationPanel } from '@popup/hive/pages/app-container/home/top-bar/notification-panel.component';
-import { NotificationsUtils } from '@popup/hive/utils/notifications.utils';
+import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/top-bar/notification-panel.component';
+import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -174,9 +174,10 @@ const TopBar = ({
 
       <SelectAccountSectionComponent isOnMain />
       {notifications && notifications.length > 0 && (
-        <NotificationPanel
+        <NotificationPanelComponent
           notifications={notifications}
           isPanelOpened={isNotificationPanelOpen}
+          onSetAllAsRead={() => setNotifications([])}
         />
       )}
     </div>
