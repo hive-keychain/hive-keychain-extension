@@ -300,9 +300,7 @@ const connectToBackend = async (
   accountName: string,
   accountConfig: MultisigAccountConfig,
 ) => {
-  Logger.info(
-    `Trying to connect @${accountName} to the multisig backend server`,
-  );
+  Logger.info(`Connecting @${accountName} to the multisig backend server`);
   const signerConnectMessages: SignerConnectMessage[] = [];
   if (
     accountConfig.active?.isEnabled &&
@@ -332,6 +330,7 @@ const connectToBackend = async (
     SocketMessageCommand.SIGNER_CONNECT,
     signerConnectMessages,
     (signerConnectResponse: SignerConnectResponse) => {
+      //TODO: Add signing after the fact
       for (const signer of signerConnectMessages) {
         if (
           !(
