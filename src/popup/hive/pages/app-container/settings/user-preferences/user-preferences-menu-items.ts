@@ -23,7 +23,7 @@ const UserPreferencesMenuItems = (
     },
     {
       label: 'popup_html_multisig',
-      icon: SVGIcons.MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS,
+      icon: SVGIcons.MENU_USER_PREFERENCES_MULTISIG,
       nextScreen: Screen.SETTINGS_MULTISIG,
     },
     // {
