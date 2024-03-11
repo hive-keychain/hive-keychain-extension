@@ -3752,7 +3752,7 @@
     "description": "When enabling multisig on old browsers"
   },
   "popup_html_multisig_intro": {
-    "message": "This is the long caption to introduce multisig feature and explain a lot of things",
+    "message": "Enable Hive Multisig to listen to multisig requests for this account.\n Find more information about multisig in <a href='https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain' target='__blank'>this blog.</a>\nTo modify your account into a multisig account, use <a href='https://multisig.hive-keychain.com/' target='__blank'>the Hive Multisig dApp.</a>\nThis is an advanced feature, only use it if you know what you are doing.",
     "description": "Multisig page intro"
   },
   "popup_html_enable_multisig": {

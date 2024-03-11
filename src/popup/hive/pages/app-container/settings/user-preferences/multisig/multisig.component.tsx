@@ -155,9 +155,12 @@ const Multisig = ({
     <div
       data-testid={`${Screen.SETTINGS_MULTISIG}-page`}
       className="multisig-config-page">
-      <div className="intro">
-        {chrome.i18n.getMessage('popup_html_multisig_intro')}
-      </div>
+      <div
+        className="intro"
+        dangerouslySetInnerHTML={{
+          __html: chrome.i18n.getMessage('popup_html_multisig_intro'),
+        }}
+      />
 
       <SelectAccountSectionComponent fullSize background="white" />
 
