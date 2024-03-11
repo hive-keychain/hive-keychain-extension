@@ -2730,7 +2730,7 @@
     "description": "What's new popup button"
   },
   "html_popup_tokens_timeout": {
-    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
     "description": "Token timeout error"
   },
   "popup_html_create_account_buy_account": {

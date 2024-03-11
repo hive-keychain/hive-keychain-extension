@@ -1,9 +1,14 @@
 let decodeModule: any, encodeModule: any;
-if (!global.window) {
-  //@ts-ignore
-  global.window = { crypto };
+if (process.env.IS_FIREFOX) {
   decodeModule = require('@hiveio/hive-js/lib/auth/memo');
   encodeModule = require('@hiveio/hive-js/lib/auth/memo');
+} else {
+  if (!global.window) {
+    //@ts-ignore
+    global.window = { crypto };
+    decodeModule = require('@hiveio/hive-js/lib/auth/memo');
+    encodeModule = require('@hiveio/hive-js/lib/auth/memo');
+  }
 }
 
 import {

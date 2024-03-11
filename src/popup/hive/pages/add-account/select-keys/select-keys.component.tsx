@@ -101,6 +101,7 @@ const SelectKeys = ({
           keys.memo ? undefined : 'popup_html_public_key_not_matching'
         }
       />
+      <div className="fill-space"></div>
       <ButtonComponent
         dataTestId="button-save"
         label="popup_html_save"
