@@ -55,10 +55,7 @@ const App = () => {
       sendResp,
     ) {
       if (data.command === DialogCommand.READY) {
-        BrowserUtils.sendResponse(true, sendResp);
-        chrome.windows.update((await chrome.windows.getCurrent()).id!, {
-          focused: true,
-        });
+        return BrowserUtils.sendResponse(true, sendResp);
       } else if (Object.values(DialogCommand).includes(data.command)) {
         setData(data);
       }
