@@ -2,10 +2,13 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
+import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
+import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Theme } from '@popup/theme.context';
@@ -18,6 +21,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 //TODO important each 0 value, place a - no value. Tokens & currencies.
@@ -64,6 +68,24 @@ const PortfolioComponent = () => {
     if (!localAccounts) {
       //TODO setMessage using "no_account_found_on_ledger_error"
     } else {
+      //load rpc.
+      const current_rpc: Rpc = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.CURRENT_RPC,
+      );
+      let rpc = current_rpc || Config.rpc.DEFAULT;
+      const HiveEngineConfig = {
+        rpc: Config.hiveEngine.rpc,
+        mainnet: Config.hiveEngine.mainnet,
+        accountHistoryApi: Config.hiveEngine.accountHistoryApi,
+      };
+
+      //set rpcs by hand
+      HiveTxUtils.setRpc(rpc);
+      HiveEngineConfigUtils.setActiveApi(HiveEngineConfig.rpc);
+      HiveEngineConfigUtils.setActiveAccountHistoryApi(
+        HiveEngineConfig.accountHistoryApi,
+      );
+
       setLocalAccounts(localAccounts);
       const extAccounts = await AccountUtils.getExtendedAccounts(
         localAccounts.map((localAcc) => localAcc.name),
