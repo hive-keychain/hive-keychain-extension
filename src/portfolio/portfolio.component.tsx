@@ -51,6 +51,7 @@ const PortfolioComponent = () => {
   );
   const [allTokens, setAllTokens] = useState<Token[]>([]);
   const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
+  const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
 
   useEffect(() => {
     init();
@@ -87,9 +88,13 @@ const PortfolioComponent = () => {
       );
 
       setLocalAccounts(localAccounts);
-      const extAccounts = await AccountUtils.getExtendedAccounts(
+      let extAccounts = await AccountUtils.getExtendedAccounts(
         localAccounts.map((localAcc) => localAcc.name),
       );
+      //TODO Testing to filter here
+      // extAccounts = extAccounts.filter((item) => item.name === 'theghost1980');
+      //end test
+
       setExtendedAccountsList(extAccounts);
       console.log({ extAccounts }); //TODO remove line
       loadGlobalProps();
@@ -393,6 +398,7 @@ const PortfolioComponent = () => {
       }
 
       //calculate each total token value USD
+      let total_token_usd_value = 0;
       const totalTokenUSDValue = Object.entries(totalTokensAsPlainObjects).map(
         (key, value) => {
           let obj: { [key: string]: any } = {};
@@ -414,6 +420,8 @@ const PortfolioComponent = () => {
               currencyPrices.hive!,
             ).toFixed(4);
           }
+          console.log({ typeof: typeof obj[key[0]], data: obj[key[0]] }); //TODO remove line
+          total_token_usd_value += Number(obj[key[0]]);
           return obj;
         },
       );
@@ -433,6 +441,23 @@ const PortfolioComponent = () => {
         totalTokensUSDAsPlainObjects,
       });
 
+      const total_hive_balance_usd =
+        +totalBalance.split(' ')[0]! * (currencyPrices.hive.usd ?? 1);
+      const total_hbd_balance_usd =
+        +totalHBDBalance.split(' ')[0] * (currencyPrices.hive_dollar.usd ?? 1);
+      const total_vesting_shares_usd =
+        +FormatUtils.toHP(
+          getTotal('vesting_shares', extendedAccountsList),
+          globalProperties.globals,
+        ) * (currencyPrices.hive.usd ?? 1);
+
+      setTotalValueUSDPortfolio(
+        total_hive_balance_usd +
+          total_hbd_balance_usd +
+          total_vesting_shares_usd +
+          total_token_usd_value,
+      );
+
       setData({
         nodes: [
           ...portfolioUserData,
@@ -445,18 +470,11 @@ const PortfolioComponent = () => {
           } as any,
           {
             name: 'totals_usd',
-            balance: FormatUtils.formatCurrencyValue(
-              +totalBalance.split(' ')[0]! * (currencyPrices.hive.usd ?? 1),
-            ),
-            hbd_balance: FormatUtils.formatCurrencyValue(
-              +totalHBDBalance.split(' ')[0] *
-                (currencyPrices.hive_dollar.usd ?? 1),
-            ),
+            //TODO add formatCurrencyValue where needed
+            balance: FormatUtils.formatCurrencyValue(total_hive_balance_usd),
+            hbd_balance: FormatUtils.formatCurrencyValue(total_hbd_balance_usd),
             vesting_shares: FormatUtils.formatCurrencyValue(
-              +FormatUtils.toHP(
-                getTotal('vesting_shares', extendedAccountsList),
-                globalProperties.globals,
-              ) * (currencyPrices.hive.usd ?? 1),
+              total_vesting_shares_usd,
             ),
             ...totalTokensUSDAsPlainObjects,
           } as any,
@@ -533,6 +551,13 @@ const PortfolioComponent = () => {
                 custom: true,
               }}
             />
+            <div className="title-panel">
+              <div className="title">Portfolio Value USD:</div>
+              <div className="title">
+                {' '}
+                {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
+              </div>
+            </div>
           </>
         )}
     </div>
