@@ -10,7 +10,7 @@ import SignTransaction from 'src/dialog/pages/sign-transaction/sign-transaction'
 import Unlock from 'src/dialog/pages/unlock/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import './../analytics/analytics/gtag';
+// import './../analytics/analytics/gtag';
 
 const App = () => {
   const [data, setData] = useState<any>({});
@@ -28,23 +28,22 @@ const App = () => {
   };
 
   const initGoogleAnalytics = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag() {
-      window.dataLayer.push(arguments); // eslint-disable-line
-    };
-    window.gtag('js', new Date());
-    window.gtag(
-      'config',
-      process.env.GOOGLE_ANALYTICS_TAG_ID || 'G-1LRCTFLVBH',
-      {
-        page_path: '/popup',
-      },
-    );
-    window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
-
-    window.gtag('event', 'navigation', {
-      page: 'dialog',
-    });
+    // window.dataLayer = window.dataLayer || [];
+    // window.gtag = function gtag() {
+    //   window.dataLayer.push(arguments); // eslint-disable-line
+    // };
+    // window.gtag('js', new Date());
+    // window.gtag(
+    //   'config',
+    //   process.env.GOOGLE_ANALYTICS_TAG_ID || 'G-1LRCTFLVBH',
+    //   {
+    //     page_path: '/popup',
+    //   },
+    // );
+    // window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
+    // window.gtag('event', 'navigation', {
+    //   page: 'dialog',
+    // });
   };
 
   useEffect(() => {

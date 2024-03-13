@@ -4,7 +4,6 @@ import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -97,7 +96,7 @@ const ConfirmationPage = ({
   };
 
   const handleClickOnConfirm = () => {
-    AnalyticsUtils.sendRequestEvent(title);
+    // AnalyticsUtils.sendRequestEvent(title);
 
     if (willUseMultisig) {
       addCaptionToLoading('multisig_transmitting_to_multisig');

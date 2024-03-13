@@ -3,7 +3,6 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { setSuccessMessage } from 'src/popup/hive/actions/message.actions';
@@ -37,12 +36,12 @@ const Analytics = ({
   };
 
   const save = async () => {
-    AnalyticsUtils.saveSettings({
-      allowGoogleAnalytics: allowGoogleAnalytics,
-    } as AnalyticsSettings);
+    // AnalyticsUtils.saveSettings({
+    //   allowGoogleAnalytics: allowGoogleAnalytics,
+    // } as AnalyticsSettings);
     setSuccessMessage('popup_html_save_successful');
     if (allowGoogleAnalytics) {
-      AnalyticsUtils.initializeGoogleAnalytics();
+      // AnalyticsUtils.initializeGoogleAnalytics();
     }
     goBack();
   };

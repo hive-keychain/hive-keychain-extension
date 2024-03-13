@@ -181,10 +181,10 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     keepAlive();
     initAccountsConnections(multisigConfig);
   });
-  socket.on('error', (err) => {
+  socket.on('error', (err: any) => {
     Logger.error('Error in socket', err);
   });
-  socket.on('disconnect', (ev) => {
+  socket.on('disconnect', (ev: any) => {
     Logger.info('Disconnected from socket');
   });
 
