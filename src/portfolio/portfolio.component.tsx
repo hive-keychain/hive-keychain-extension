@@ -15,6 +15,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import PortfolioCellItemComponent from 'src/portfolio/portfolio-cell-item/portfolio-cell-item.component';
@@ -33,6 +34,9 @@ const PortfolioComponent = () => {
     useState<GlobalProperties | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<{ nodes: any[] }>({ nodes: [] });
+  const [filteredData, setFilteredData] = useState<{ nodes: any[] }>({
+    nodes: [],
+  });
   const [extraColumns, setExtraColumns] = useState<
     { label: string; renderCell: (item: any) => void }[]
   >([]);
@@ -45,6 +49,9 @@ const PortfolioComponent = () => {
   const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
   const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [filterValue, setFilterValue] = useState('');
+  const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
 
   useEffect(() => {
     init();
@@ -282,27 +289,29 @@ const PortfolioComponent = () => {
           total_token_usd_value,
       );
 
+      const nodesData = [
+        ...portfolioUserData,
+        {
+          name: 'totals',
+          balance: totalBalance,
+          hbd_balance: totalHBDBalance,
+          vesting_shares: totalHP,
+          ...totalTokensAsPlainObjects,
+        } as any,
+        {
+          name: 'totals_usd',
+          balance: FormatUtils.formatCurrencyValue(total_hive_balance_usd),
+          hbd_balance: FormatUtils.formatCurrencyValue(total_hbd_balance_usd),
+          vesting_shares: FormatUtils.formatCurrencyValue(
+            total_vesting_shares_usd,
+          ),
+          ...totalTokensUSDAsPlainObjects,
+        } as any,
+      ];
       setData({
-        nodes: [
-          ...portfolioUserData,
-          {
-            name: 'totals',
-            balance: totalBalance,
-            hbd_balance: totalHBDBalance,
-            vesting_shares: totalHP,
-            ...totalTokensAsPlainObjects,
-          } as any,
-          {
-            name: 'totals_usd',
-            balance: FormatUtils.formatCurrencyValue(total_hive_balance_usd),
-            hbd_balance: FormatUtils.formatCurrencyValue(total_hbd_balance_usd),
-            vesting_shares: FormatUtils.formatCurrencyValue(
-              total_vesting_shares_usd,
-            ),
-            ...totalTokensUSDAsPlainObjects,
-          } as any,
-        ],
+        nodes: nodesData,
       });
+      setFilteredData({ nodes: nodesData });
 
       const extra = keysToUse.map((key) => {
         return {
@@ -349,11 +358,75 @@ const PortfolioComponent = () => {
     }
   }, [extendedAccountsList, globalProperties, tokensBalanceList]);
 
+  const handleFilterTableByUser = (account: string) => {
+    const currentUserData = { ...data };
+    setFilteredData({
+      nodes: currentUserData.nodes.filter((item: any) => item.name === account),
+    });
+    setCurrentFilterList((prevList) => [...prevList, account]);
+    setFilterValue('');
+  };
+
+  const handleRemoveFilter = (filter: string) => {
+    setCurrentFilterList([]);
+    setFilterValue('');
+    const currentUserData = { ...data };
+    setFilteredData({ nodes: currentUserData.nodes });
+  };
+
   return (
     <div className={`theme ${theme} portfolio`}>
       <div className="title-panel">
         <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage('portfolio')}</div>
+        <div className="filter-box-container">
+          <input
+            placeholder="Filter"
+            value={filterValue}
+            onChange={(e) => setFilterValue(e.target.value)}
+          />
+          {filterValue.trim().length > 0 && (
+            <div className="filter-box">
+              {extendedAccountsList
+                .filter((acc) => acc.name.includes(filterValue))
+                .map((filteredAcc) => {
+                  return (
+                    <div
+                      className="avatar-username-container cursor-pointer"
+                      key={`avatar-username-filter-box-${filteredAcc.name}`}
+                      onClick={() => handleFilterTableByUser(filteredAcc.name)}>
+                      <PreloadedImage
+                        className="user-picture"
+                        src={`https://images.hive.blog/u/${filteredAcc.name}/avatar`}
+                        alt={'/assets/images/accounts.png'}
+                        placeholder={'/assets/images/accounts.png'}
+                      />
+                      <div className="account-name">{filteredAcc.name}</div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+        </div>
+        {currentFilterList.length > 0 && (
+          <div className="row-container">
+            {currentFilterList.map((currentFilter) => {
+              return (
+                <div
+                  key={`current-filter-${currentFilter}`}
+                  className="white-row">
+                  <div className="small-text">{currentFilter}</div>
+                  <div
+                    className="margin-left"
+                    onClick={() => handleRemoveFilter(currentFilter)}>
+                    {' '}
+                    X
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       {isLoading && (
         <div className="rotating-logo-container">
@@ -362,6 +435,7 @@ const PortfolioComponent = () => {
       )}
       {!isLoading &&
         data &&
+        filteredData &&
         globalProperties &&
         extraColumns &&
         currencyPrices &&
@@ -369,7 +443,7 @@ const PortfolioComponent = () => {
           <>
             <CompactTable
               columns={extraColumns}
-              data={data}
+              data={filteredData}
               theme={themeTable}
               layout={{
                 horizontalScroll: true,

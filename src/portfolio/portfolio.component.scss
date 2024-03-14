@@ -78,7 +78,6 @@ html {
             @include poppins600(14px);
             align-self: center;
           }
-
           .info-row {
             display: flex;
             align-items: center;
@@ -89,6 +88,34 @@ html {
             .usd-value {
               color: var(--main-font-color);
               @include poppins400(12px);
+            }
+          }
+        }
+        .filter-box-container {
+          width: 150px;
+
+          .filter-box {
+            width: inherit;
+            position: absolute;
+            background-color: white;
+            z-index: 100;
+          }
+        }
+        .row-container {
+          margin-left: 8px;
+          display: flex;
+          flex-direction: row;
+          .white-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            border-width: 1px;
+            border-color: black;
+            padding: 5px;
+            .small-text {
+              font-size: small;
             }
           }
         }
@@ -115,7 +142,13 @@ html {
             width: 30px;
             height: 30px;
           }
+          .cursor-pointer {
+            cursor: pointer;
+          }
         }
+      }
+      .margin-left {
+        margin-left: 4px;
       }
     }
   }
