@@ -40,7 +40,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 let socket: Socket;
-
+let shouldReconnectSocket: boolean = false;
 let connectedPublicKeys: SignerConnectMessage[] = [];
 const start = async () => {
   Logger.info(`Starting multisig`);
@@ -48,6 +48,7 @@ const start = async () => {
   socket = io(Config.multisig.baseURL, {
     transports: ['websocket'],
     reconnection: true,
+    autoConnect: false,
   });
 
   const multisigConfig: MultisigConfig =
@@ -64,6 +65,8 @@ const start = async () => {
     )
   ) {
     Logger.info('Some accounts need connection');
+    shouldReconnectSocket = true;
+    if (!socket.connected) socket.connect();
     connectSocket(multisigConfig);
   } else {
     Logger.info('Multisig hasnt been enabled for any account');
@@ -91,6 +94,8 @@ const setupRefreshConnections = () => {
           );
         const accountMultisigConfig = multisigConfig[value.account];
         if (value.connect) {
+          if (!socket.connected) socket.connect();
+          shouldReconnectSocket = true;
           connectToBackend(value.account, accountMultisigConfig);
         } else {
           if (value.publicKey && value.publicKey.length > 0) {
@@ -181,10 +186,10 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     keepAlive();
     initAccountsConnections(multisigConfig);
   });
-  socket.on('error', (err) => {
+  socket.on('error', (err: any) => {
     Logger.error('Error in socket', err);
   });
-  socket.on('disconnect', (ev) => {
+  socket.on('disconnect', (ev: any) => {
     Logger.info('Disconnected from socket');
   });
 
@@ -652,8 +657,8 @@ const waitForBroadcastToBeDone = async () => {
 };
 
 setInterval(() => {
-  if (!socket || !socket.connected) {
-    Logger.log('Restart the socket');
+  if (shouldReconnectSocket && (!socket || !socket.connected)) {
+    Logger.log('Restarting the socket');
     start();
   }
 }, 60 * 1000);
