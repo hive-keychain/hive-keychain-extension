@@ -125,7 +125,7 @@ const AddKey = ({
                     src={`https://images.hive.blog/u/${auth}/avatar`}
                     onError={(e: any) => {
                       e.target.onError = null;
-                      e.target.src = '/assets/images/accounts.png';
+                      e.target.src = '/assets/images/menu/accounts.svg';
                     }}
                   />
                   <div className="account-name">{auth}</div>

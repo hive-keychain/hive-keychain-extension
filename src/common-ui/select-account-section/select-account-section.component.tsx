@@ -92,8 +92,8 @@ const SelectAccountSection = ({
         <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
-          alt={'/assets/images/accounts.png'}
-          placeholder={'/assets/images/accounts.png'}
+          alt={'/assets/images/menu/accounts.svg'}
+          placeholder={'/assets/images/menu/accounts.svg'}
         />
         <div
           className="selected-account-name"
