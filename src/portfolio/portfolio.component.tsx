@@ -83,7 +83,6 @@ const PortfolioComponent = () => {
       //TODO Testing to filter here
       // extAccounts = extAccounts.filter((item) => item.name === 'theghost1980');
       //end test
-
       setExtendedAccountsList(extAccounts);
       loadGlobalProps();
       loadCurrencyPrices();
@@ -146,9 +145,20 @@ const PortfolioComponent = () => {
       let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         accountName,
       );
-      tokensBalance = tokensBalance.sort(
-        (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
-      );
+      if (tokensBalance.length > 0) {
+        tokensBalance = tokensBalance.sort(
+          (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
+        );
+      } else {
+        tokensBalance = [
+          {
+            _id: 99999,
+            account: accountName,
+            symbol: 'PAL',
+            balance: '0',
+          } as TokenBalance,
+        ];
+      }
       tempTokenBalanceList.push(tokensBalance);
     }
     //sort list who has more tokens
