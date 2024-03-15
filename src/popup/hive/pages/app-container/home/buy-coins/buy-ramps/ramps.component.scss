@@ -57,8 +57,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin-top: 10px;
     font-size: 13px;
+  }
+
+  .quote-label {
+    @include input-label;
+    margin-top: 10px;
   }
   .quotes {
     display: flex;
@@ -70,8 +74,9 @@
       align-items: center;
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
-      padding: 5px;
+      justify-content: space-between;
+      padding: 3px 15px;
+
       color: var(--main-font-color);
       cursor: pointer;
       .amount {
@@ -82,6 +87,16 @@
         width: 100px;
         svg {
           width: 100px;
+        }
+      }
+      .receive {
+        width: 100px;
+        text-align: right;
+      }
+      .chevron {
+        width: 20px;
+        svg {
+          width: 20px;
         }
       }
     }

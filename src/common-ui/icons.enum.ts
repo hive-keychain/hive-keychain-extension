@@ -117,6 +117,7 @@ export enum SVGIcons {
 
   SELECT_ARROW_DOWN = 'select/arrow-down',
   SELECT_ARROW_UP = 'select/arrow-up',
+  SELECT_ARROW_RIGHT = 'select/arrow-right',
   SELECT_ACTIVE = 'select/active',
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',

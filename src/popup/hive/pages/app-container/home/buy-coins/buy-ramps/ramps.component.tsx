@@ -153,7 +153,11 @@ const BuyRamps = ({
               </div>
             </div>
             <div className="estimations">
-              <div>{chrome.i18n.getMessage('quotes')}</div>
+              {estimations.length && (
+                <div className="quote-label">
+                  {chrome.i18n.getMessage('quotes')}
+                </div>
+              )}
               <div className="countdown">
                 {!!countdown && (
                   <>
@@ -176,8 +180,8 @@ const BuyRamps = ({
                       window.open(estimation.link, '__blank');
                     }}>
                     <SVGIcon icon={estimation.logo} />
-                    <span>{estimation.paymentMethod}</span>
-                    <div>
+                    <span className="method">{estimation.paymentMethod}</span>
+                    <div className="receive">
                       <span>{estimation.estimation}</span>
                       <span className="amount">
                         {CurrencyPricesUtils.getTokenUSDPrice(
@@ -188,7 +192,9 @@ const BuyRamps = ({
                         )}
                       </span>
                     </div>
-                    <span>{'>'}</span>
+                    <span className="chevron">
+                      <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
+                    </span>
                   </div>
                 ))}
               </div>
