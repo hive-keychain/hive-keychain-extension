@@ -45,7 +45,12 @@ const getFormatedOrDefaultValue = (
 };
 
 const getHiveTotal = (
-  key: 'balance' | 'hbd_balance' | 'vesting_shares',
+  key:
+    | 'balance'
+    | 'hbd_balance'
+    | 'vesting_shares'
+    | 'savings_hbd_balance'
+    | 'savings_balance',
   list: ExtendedAccount[],
 ) => {
   if (key === 'balance') {
@@ -76,6 +81,26 @@ const getHiveTotal = (
           0,
         )
         .toString() + ' VESTS'
+    );
+  } else if (key === 'savings_hbd_balance') {
+    return (
+      list
+        .reduce(
+          (acc, curr) =>
+            acc + Number((curr.savings_hbd_balance as string).split(' ')[0]),
+          0,
+        )
+        .toString() + ' SAVINGS_HBD'
+    );
+  } else if (key === 'savings_balance') {
+    return (
+      list
+        .reduce(
+          (acc, curr) =>
+            acc + Number((curr.savings_balance as string).split(' ')[0]),
+          0,
+        )
+        .toString() + ' SAVINGS_HIVE'
     );
   } else {
     return '0';

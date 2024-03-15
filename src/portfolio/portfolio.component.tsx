@@ -30,13 +30,16 @@ const PortfolioComponent = () => {
   const [extendedAccountsList, setExtendedAccountsList] = useState<
     ExtendedAccount[]
   >([]);
+  const [filteredExtendedAccountList, setFilteredExtendedAccountList] =
+    useState<ExtendedAccount[]>([]);
   const [globalProperties, setGlobalProperties] =
     useState<GlobalProperties | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<{ nodes: any[] }>({ nodes: [] });
-  const [filteredData, setFilteredData] = useState<{ nodes: any[] }>({
-    nodes: [],
-  });
+  //TODO cleanup
+  // const [filteredData, setFilteredData] = useState<{ nodes: any[] }>({
+  //   nodes: [],
+  // });
   const [extraColumns, setExtraColumns] = useState<
     { label: string; renderCell: (item: any) => void }[]
   >([]);
@@ -84,6 +87,7 @@ const PortfolioComponent = () => {
       // extAccounts = extAccounts.filter((item) => item.name === 'theghost1980');
       //end test
       setExtendedAccountsList(extAccounts);
+      setFilteredExtendedAccountList(extAccounts);
       loadGlobalProps();
       loadCurrencyPrices();
       loadUserTokens(localAccounts);
@@ -177,18 +181,26 @@ const PortfolioComponent = () => {
     ) {
       const totalBalance = PortfolioUtils.getHiveTotal(
         'balance',
-        extendedAccountsList,
+        filteredExtendedAccountList,
       );
       const totalHBDBalance = PortfolioUtils.getHiveTotal(
         'hbd_balance',
-        extendedAccountsList,
+        filteredExtendedAccountList,
       );
       const totalHP = PortfolioUtils.getHiveTotal(
         'vesting_shares',
-        extendedAccountsList,
+        filteredExtendedAccountList,
+      );
+      const totalSavingsHBD = PortfolioUtils.getHiveTotal(
+        'savings_hbd_balance',
+        filteredExtendedAccountList,
+      );
+      const totalSavingHIVE = PortfolioUtils.getHiveTotal(
+        'savings_balance',
+        filteredExtendedAccountList,
       );
 
-      const portfolioUserData = extendedAccountsList.map(
+      const portfolioUserData = filteredExtendedAccountList.map(
         ({ name, balance, vesting_shares, hbd_balance }) => {
           const tokenBalance = tokensBalanceList.find(
             (tokenBalance) => tokenBalance[0].account === name,
@@ -209,7 +221,8 @@ const PortfolioComponent = () => {
           };
         },
       );
-
+      //TODO bellow instead of doing this, get all tokens name, merge without duplicates, those names.
+      //  -> to get the exact tokens each account have, to render those as column headers.
       const sortedPortfolioUserData = portfolioUserData.sort(
         (a, b) => Object.keys(b).length - Object.keys(a).length,
       );
@@ -288,15 +301,24 @@ const PortfolioComponent = () => {
         +totalHBDBalance.split(' ')[0] * (currencyPrices.hive_dollar.usd ?? 1);
       const total_vesting_shares_usd =
         +FormatUtils.toHP(
-          PortfolioUtils.getHiveTotal('vesting_shares', extendedAccountsList),
+          PortfolioUtils.getHiveTotal(
+            'vesting_shares',
+            filteredExtendedAccountList,
+          ),
           globalProperties.globals,
         ) * (currencyPrices.hive.usd ?? 1);
+      const total_hbd_savings_usd =
+        +totalSavingsHBD.split(' ')[0] * (currencyPrices.hive_dollar.usd ?? 1);
+      const total_hive_savings_usd =
+        +totalSavingHIVE.split(' ')[0] * (currencyPrices.hive.usd ?? 1);
 
       setTotalValueUSDPortfolio(
         total_hive_balance_usd +
           total_hbd_balance_usd +
           total_vesting_shares_usd +
-          total_token_usd_value,
+          total_token_usd_value +
+          total_hbd_savings_usd +
+          total_hive_savings_usd,
       );
 
       const nodesData = [
@@ -321,7 +343,6 @@ const PortfolioComponent = () => {
       setData({
         nodes: nodesData,
       });
-      setFilteredData({ nodes: nodesData });
 
       const extra = keysToUse.map((key) => {
         return {
@@ -366,22 +387,35 @@ const PortfolioComponent = () => {
       );
       setIsLoading(false);
     }
-  }, [extendedAccountsList, globalProperties, tokensBalanceList]);
+  }, [filteredExtendedAccountList, globalProperties, tokensBalanceList]);
 
-  const handleFilterTableByUser = (account: string) => {
-    const currentUserData = { ...data };
-    setFilteredData({
-      nodes: currentUserData.nodes.filter((item: any) => item.name === account),
-    });
-    setCurrentFilterList((prevList) => [...prevList, account]);
-    setFilterValue('');
+  useEffect(() => {
+    const currentExtendedAccountList = [...extendedAccountsList];
+    if (currentFilterList.length === 0) {
+      setFilteredExtendedAccountList(currentExtendedAccountList);
+    } else {
+      const filteredList = currentExtendedAccountList.filter((extAcc) =>
+        currentFilterList.includes(extAcc.name),
+      );
+      setFilteredExtendedAccountList(filteredList);
+    }
+  }, [currentFilterList]);
+
+  const handleAddAccountToFilter = (account: string) => {
+    if (!currentFilterList.includes(account)) {
+      setCurrentFilterList((prevList) => [...prevList, account]);
+      setFilterValue('');
+    }
   };
 
-  const handleRemoveFilter = (filter: string) => {
-    setCurrentFilterList([]);
-    setFilterValue('');
-    const currentUserData = { ...data };
-    setFilteredData({ nodes: currentUserData.nodes });
+  const handleRemoveAccountFromFilter = (account: string) => {
+    if (currentFilterList.includes(account)) {
+      let tempCurrentFilterList = [...currentFilterList];
+      tempCurrentFilterList = tempCurrentFilterList.filter(
+        (filter) => filter !== account,
+      );
+      setCurrentFilterList(tempCurrentFilterList);
+    }
   };
 
   return (
@@ -389,55 +423,64 @@ const PortfolioComponent = () => {
       <div className="title-panel">
         <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
         <div className="title">{chrome.i18n.getMessage('portfolio')}</div>
-        <div className="filter-box-container">
-          <input
-            placeholder="Filter"
-            value={filterValue}
-            onChange={(e) => setFilterValue(e.target.value)}
-          />
-          {filterValue.trim().length > 0 && (
-            <div className="filter-box">
-              {extendedAccountsList
-                .filter((acc) => acc.name.includes(filterValue))
-                .map((filteredAcc) => {
-                  return (
-                    <div
-                      className="avatar-username-container cursor-pointer"
-                      key={`avatar-username-filter-box-${filteredAcc.name}`}
-                      onClick={() => handleFilterTableByUser(filteredAcc.name)}>
-                      <PreloadedImage
-                        className="user-picture"
-                        src={`https://images.hive.blog/u/${filteredAcc.name}/avatar`}
-                        alt={'/assets/images/accounts.png'}
-                        placeholder={'/assets/images/accounts.png'}
-                      />
-                      <div className="account-name">{filteredAcc.name}</div>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
+      </div>
+      <div className="filter-box-container">
+        <input
+          placeholder="Filter account"
+          value={filterValue}
+          onChange={(e) => setFilterValue(e.target.value)}
+          className="filter-input"
+        />
         {currentFilterList.length > 0 && (
-          <div className="row-container">
+          <div className="filter-box-list-container">
             {currentFilterList.map((currentFilter) => {
               return (
                 <div
                   key={`current-filter-${currentFilter}`}
-                  className="white-row">
+                  className="filter-item">
                   <div className="small-text">{currentFilter}</div>
-                  <div
+                  {/* <div
                     className="margin-left"
-                    onClick={() => handleRemoveFilter(currentFilter)}>
+                    onClick={() =>
+                      handleRemoveAccountFromFilter(currentFilter)
+                    }>
                     {' '}
                     X
-                  </div>
+                  </div> */}
+                  <SVGIcon
+                    dataTestId="input-clear"
+                    icon={SVGIcons.INPUT_CLEAR}
+                    className={`input-img erase right`}
+                    onClick={() => handleRemoveAccountFromFilter(currentFilter)}
+                  />
                 </div>
               );
             })}
           </div>
         )}
       </div>
+      {filterValue.trim().length > 0 && (
+        <div className="filter-box">
+          {extendedAccountsList
+            .filter((acc) => acc.name.includes(filterValue))
+            .map((filteredAcc) => {
+              return (
+                <div
+                  className="avatar-username-container cursor-pointer"
+                  key={`avatar-username-filter-box-${filteredAcc.name}`}
+                  onClick={() => handleAddAccountToFilter(filteredAcc.name)}>
+                  <PreloadedImage
+                    className="user-picture"
+                    src={`https://images.hive.blog/u/${filteredAcc.name}/avatar`}
+                    alt={'/assets/images/accounts.png'}
+                    placeholder={'/assets/images/accounts.png'}
+                  />
+                  <div className="account-name">{filteredAcc.name}</div>
+                </div>
+              );
+            })}
+        </div>
+      )}
       {isLoading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />
@@ -445,7 +488,6 @@ const PortfolioComponent = () => {
       )}
       {!isLoading &&
         data &&
-        filteredData &&
         globalProperties &&
         extraColumns &&
         currencyPrices &&
@@ -453,7 +495,7 @@ const PortfolioComponent = () => {
           <>
             <CompactTable
               columns={extraColumns}
-              data={filteredData}
+              data={data}
               theme={themeTable}
               layout={{
                 horizontalScroll: true,

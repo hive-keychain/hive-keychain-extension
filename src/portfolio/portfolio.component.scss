@@ -92,34 +92,48 @@ html {
           }
         }
         .filter-box-container {
-          width: 150px;
-
-          .filter-box {
-            width: inherit;
-            position: absolute;
-            background-color: white;
-            z-index: 100;
+          @include small-card;
+          margin: 0px 0px;
+          width: auto;
+          padding: 8px;
+          .filter-input {
+            border-radius: 20px;
+            // border: 1px solid var(--card-border);
+            padding-left: 8px;
+            border: unset;
+            border-bottom: 1px solid var(--card-border);
           }
-        }
-        .row-container {
-          margin-left: 8px;
-          display: flex;
-          flex-direction: row;
-          .white-row {
+          .filter-box-list-container {
+            margin-left: 8px;
             display: flex;
             flex-direction: row;
-            align-items: center;
-            background: white;
-            border-radius: 8px;
-            border-width: 1px;
-            border-color: black;
-            padding: 5px;
-            .small-text {
-              font-size: small;
+            .filter-item {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              background: white;
+              border-radius: 20px;
+              border: 1px solid var(--card-border);
+              padding-left: 4px;
+              padding-right: 4px;
+              margin-left: 4px;
+              .small-text {
+                font-size: small;
+              }
             }
           }
         }
-
+        .filter-box {
+          @include small-card;
+          flex-direction: column;
+          align-items: start;
+          margin: 0px 0px;
+          top: 140px;
+          width: 50%;
+          position: absolute;
+          background-color: white;
+          z-index: 100;
+        }
         .text {
           @include poppins500(13px);
           color: var(--main-font-color);
