@@ -103,7 +103,7 @@ const BuyRamps = ({
 
   return (
     <div className="ramps">
-      {currencies.length && fiat ? (
+      {currencies.length !== 0 && fiat ? (
         <FormContainer>
           <div className="form-fields">
             <div className="fiat-token">
@@ -153,23 +153,16 @@ const BuyRamps = ({
               </div>
             </div>
             <div className="estimations">
-              {estimations.length && (
-                <div className="quote-label">
-                  {chrome.i18n.getMessage('quotes')}
-                </div>
-              )}
-              <div className="countdown">
+              <div className="quote-label-wrapper">
+                {estimations.length !== 0 && (
+                  <span className="quote-label">
+                    {chrome.i18n.getMessage('quotes')}
+                  </span>
+                )}
                 {!!countdown && (
-                  <>
-                    {
-                      <span>
-                        {chrome.i18n.getMessage(
-                          'swap_autorefresh',
-                          countdown + '',
-                        )}
-                      </span>
-                    }
-                  </>
+                  <span className="countdown">
+                    {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
+                  </span>
                 )}
               </div>
               <div className="quotes">
