@@ -1,5 +1,7 @@
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -51,6 +53,7 @@ const TokenIncomingOutgoing = ({
 
   const cancelDelegation = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
@@ -75,6 +78,7 @@ const TokenIncomingOutgoing = ({
           );
           if (tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
+
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);
@@ -92,7 +96,7 @@ const TokenIncomingOutgoing = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const enterEditMode = () => {
@@ -115,6 +119,7 @@ const TokenIncomingOutgoing = ({
     const formattedAmount = `${value} ${symbol}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_delegate_tokens_confirm_text',
       ),
@@ -156,7 +161,7 @@ const TokenIncomingOutgoing = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const toggleExpandablePanel = () => {

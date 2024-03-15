@@ -59,6 +59,11 @@ const Config = {
       apiKey: process.env.RAMP_DEV_API_KEY || '',
     } as RampConfig,
   },
+  multisig: {
+    baseURL:
+      process.env.MULTISIG_BACKEND_SERVER ||
+      'https://api-multisig.hive-keychain.com',
+  },
 };
 
 export default Config;

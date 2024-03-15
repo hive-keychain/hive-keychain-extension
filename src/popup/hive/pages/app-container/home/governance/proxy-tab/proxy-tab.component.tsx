@@ -1,5 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import React, { useState } from 'react';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -8,6 +9,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
@@ -26,30 +28,46 @@ const ProxyTab = ({
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  addCaptionToLoading,
 }: PropsFromRedux) => {
   const [proxyUsername, setProxyUsername] = useState('');
+  const [keyType, setKeyType] = useState<PrivateKeyType>();
+
+  useEffect(() => {
+    if (activeAccount) {
+      setKeyType(
+        KeysUtils.getKeyType(
+          activeAccount.keys.active!,
+          activeAccount.keys.activePubkey!,
+          activeAccount.account,
+          activeAccount.account,
+          KeychainKeyTypesLC.active,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const setAsProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList(
-      'popup_html_setting_proxy',
-      KeysUtils.getKeyType(
-        activeAccount.keys.active!,
-        activeAccount.keys.activePubkey!,
-      ),
-    );
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+    addToLoadingList('popup_html_setting_proxy', keyType);
     try {
-      if (
-        await ProxyUtils.setAsProxy(
-          proxyUsername,
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        setSuccessMessage('popup_success_proxy', [proxyUsername]);
-        refreshActiveAccount();
+      const success = await ProxyUtils.setAsProxy(
+        proxyUsername,
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          setSuccessMessage('popup_success_proxy', [proxyUsername]);
+          refreshActiveAccount();
+        }
       } else {
         setErrorMessage('html_popup_set_as_proxy_error');
       }
@@ -64,22 +82,22 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList(
-      'popup_html_clearing_proxy',
-      KeysUtils.getKeyType(
-        activeAccount.keys.active!,
-        activeAccount.keys.activePubkey!,
-      ),
-    );
+    if (keyType === PrivateKeyType.MULTISIG) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
+    addToLoadingList('popup_html_clearing_proxy', keyType);
     try {
-      if (
-        await ProxyUtils.removeProxy(
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        refreshActiveAccount();
-        setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+      const success = await ProxyUtils.removeProxy(
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          refreshActiveAccount();
+          setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+        }
       } else {
         setErrorMessage('html_popup_clear_proxy_error');
       }
@@ -153,6 +171,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  addCaptionToLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

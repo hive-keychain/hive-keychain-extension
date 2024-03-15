@@ -1,6 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -8,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -189,6 +193,7 @@ const TokensTransfer = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
@@ -227,7 +232,11 @@ const TokensTransfer = ({
             activeAccount.keys.active!,
             activeAccount.name!,
           );
-          if (transactionStatus.broadcasted) {
+
+          if (transactionStatus.isUsingMultisig) {
+            navigateTo(Screen.HOME_PAGE, true);
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else if (transactionStatus.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList('html_popup_transfer_token_operation');
 
@@ -255,7 +264,7 @@ const TokensTransfer = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (

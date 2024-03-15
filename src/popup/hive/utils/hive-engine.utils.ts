@@ -18,7 +18,18 @@ const sendOperation = async (
   );
 
   if (transactionResult) {
-    return await HiveEngineUtils.tryConfirmTransaction(transactionResult.tx_id);
+    if (transactionResult.isUsingMultisig) {
+      return {
+        tx_id: transactionResult.tx_id,
+        broadcasted: false,
+        confirmed: false,
+        isUsingMultisig: true,
+      };
+    } else {
+      return await HiveEngineUtils.tryConfirmTransaction(
+        transactionResult.tx_id,
+      );
+    }
   } else {
     return {
       broadcasted: false,

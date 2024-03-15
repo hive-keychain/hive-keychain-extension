@@ -13,6 +13,7 @@
       .pending-conversion {
         @include small-card();
         margin: unset;
+        color: var(--main-font-color);
         .expiration-date {
           flex: 1;
         }

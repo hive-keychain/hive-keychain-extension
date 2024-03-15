@@ -99,7 +99,7 @@ export const broadcastAddAccountAuthority = async (
     );
   } finally {
     const err_message = await beautifyErrorMessage(err);
-    return createMessage(
+    return await createMessage(
       err,
       result,
       data,
@@ -184,7 +184,7 @@ export const broadcastRemoveAccountAuthority = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    return createMessage(
+    return await createMessage(
       err,
       result,
       data,
@@ -275,7 +275,7 @@ export const broadcastAddKeyAuthority = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    return createMessage(
+    return await createMessage(
       err,
       result,
       data,
@@ -363,7 +363,7 @@ export const broadcastRemoveKeyAuthority = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    return createMessage(
+    return await createMessage(
       err,
       result,
       data,

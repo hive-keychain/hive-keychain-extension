@@ -6,18 +6,6 @@ import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from 'src/popup/hive/store';
@@ -31,12 +19,6 @@ const IncomingOutgoingRcPage = ({
   currencyLabels,
   activeAccount,
   setTitleContainerProperties,
-  navigateToWithParams,
-  removeFromLoadingList,
-  addToLoadingList,
-  navigateTo,
-  setSuccessMessage,
-  setErrorMessage,
 }: PropsFromRedux) => {
   let header = '';
   switch (delegationType) {
@@ -180,13 +162,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  navigateToWithParams,
-  navigateTo,
-  setErrorMessage,
-  setSuccessMessage,
   setTitleContainerProperties,
-  removeFromLoadingList,
-  addToLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

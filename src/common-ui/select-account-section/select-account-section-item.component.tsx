@@ -99,8 +99,8 @@ export const SelectAccountSectionItemComponent = ({
         <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${item.label}/avatar`}
-          alt={'/assets/images/accounts.png'}
-          placeholder={'/assets/images/accounts.png'}
+          alt={'/assets/images/menu/accounts.svg'}
+          placeholder={'/assets/images/menu/accounts.svg'}
         />
         <div className="account-name">{item.label}</div>
         {renderCheckedAccount()}

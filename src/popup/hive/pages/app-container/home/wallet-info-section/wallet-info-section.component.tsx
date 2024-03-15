@@ -172,7 +172,6 @@ const WalletInfoSection = ({
         <div className="hive-engine-separator">
           <span>
             <SVGIcon icon={SVGIcons.HIVE_ENGINE} className="no-pointer" />
-            <p className="sub-value">Hive Engine</p>
           </span>
           <div className="line" />
 

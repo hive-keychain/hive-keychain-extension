@@ -15,6 +15,22 @@
       color: $red;
     }
 
+    .multisig-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 8px;
+      padding: 0 30px;
+      .message {
+        @include caption;
+        padding: 0px;
+      }
+      .logo {
+        height: 24px;
+        width: auto;
+      }
+    }
+
     .fields {
       display: flex;
       flex-direction: column;

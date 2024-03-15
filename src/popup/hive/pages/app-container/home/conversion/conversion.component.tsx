@@ -1,12 +1,16 @@
 import { Asset } from '@hiveio/dhive';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -143,6 +147,7 @@ const Conversion = ({
     )} ${form.currency}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
           ? 'popup_html_confirm_hbd_to_hive_conversion'
@@ -167,11 +172,16 @@ const Conversion = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            setSuccessMessage(
-              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-                ? 'popup_html_hbd_to_hive_conversion_success'
-                : 'popup_html_hive_to_hbd_conversion_success',
-            );
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else {
+              setSuccessMessage(
+                conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                  ? 'popup_html_hbd_to_hive_conversion_success'
+                  : 'popup_html_hive_to_hbd_conversion_success',
+              );
+            }
           } else {
             setErrorMessage(
               conversionType === ConversionType.CONVERT_HBD_TO_HIVE
@@ -185,7 +195,7 @@ const Conversion = ({
           removeFromLoadingList('html_popup_conversion_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const setToMax = () => {

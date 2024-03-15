@@ -8,7 +8,7 @@ const ImportKeys = ({}: PropsFromRedux) => {
     <div
       className="import-keys-page"
       data-testid={`${Screen.ACCOUNT_PAGE_IMPORT_KEYS}-page`}>
-      Import keys
+      {chrome.i18n.getMessage('popup_html_import_keys')}
     </div>
   );
 };
