@@ -150,9 +150,7 @@ const PortfolioComponent = () => {
         accountName,
       );
       if (tokensBalance.length > 0) {
-        tokensBalance = tokensBalance.sort(
-          (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
-        );
+        tokensBalance = tokensBalance;
       } else {
         tokensBalance = [
           {
@@ -165,10 +163,6 @@ const PortfolioComponent = () => {
       }
       tempTokenBalanceList.push(tokensBalance);
     }
-    //sort list who has more tokens
-    tempTokenBalanceList = tempTokenBalanceList.sort(
-      (a, b) => b.length - a.length,
-    );
     setTokensBalanceList(tempTokenBalanceList);
   };
 
@@ -221,17 +215,24 @@ const PortfolioComponent = () => {
           };
         },
       );
-      //TODO bellow instead of doing this, get all tokens name, merge without duplicates, those names.
-      //  -> to get the exact tokens each account have, to render those as column headers.
-      const sortedPortfolioUserData = portfolioUserData.sort(
-        (a, b) => Object.keys(b).length - Object.keys(a).length,
-      );
+      const tokensSymbolsArray: string[] = [];
+      portfolioUserData.map((data) => {
+        Object.keys(data).map((dataKey) => {
+          if (
+            dataKey !== 'name' &&
+            dataKey !== 'balance' &&
+            dataKey !== 'vesting_shares' &&
+            dataKey !== 'hbd_balance' &&
+            !tokensSymbolsArray.includes(dataKey)
+          ) {
+            tokensSymbolsArray.push(dataKey);
+          }
+        });
+      });
 
-      const keysToUse = Object.keys(sortedPortfolioUserData[0]).map(
-        (key) => key,
-      );
+      const keysToUse = Object.keys(portfolioUserData[0]).map((key) => key);
 
-      const filteredKeysToUse = keysToUse.filter(
+      const filteredKeysToUse = tokensSymbolsArray.filter(
         (key) =>
           key !== 'name' &&
           key !== 'balance' &&
@@ -241,7 +242,7 @@ const PortfolioComponent = () => {
 
       const totalTokens = filteredKeysToUse.map((key) => {
         const obj: { [key: string]: any } = {};
-        obj[key] = (sortedPortfolioUserData as any).reduce(
+        obj[key] = (portfolioUserData as any).reduce(
           (acc: number, curr: any) => {
             if (curr[key]) {
               return (acc += parseFloat(curr[key]));
@@ -294,7 +295,6 @@ const PortfolioComponent = () => {
           ...value,
         };
       }
-
       const total_hive_balance_usd =
         +totalBalance.split(' ')[0]! * (currencyPrices.hive.usd ?? 1);
       const total_hbd_balance_usd =
@@ -320,6 +320,11 @@ const PortfolioComponent = () => {
           total_hbd_savings_usd +
           total_hive_savings_usd,
       );
+
+      console.log({
+        totalTokensUSDAsPlainObjects,
+        keyL: Object.keys(totalTokensUSDAsPlainObjects).length,
+      }); //TODO remove line
 
       const nodesData = [
         ...portfolioUserData,
