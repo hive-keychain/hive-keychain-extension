@@ -66,15 +66,20 @@ export const NotificationPanel = ({
                 onClick={() => {
                   clickOnNotification(notif);
                 }}>
-                <div
-                  className="message"
-                  dangerouslySetInnerHTML={{
-                    __html: chrome.i18n.getMessage(
-                      notif.message,
-                      notif.messageParams,
-                    ),
-                  }}></div>
-                <div className="date">{moment(notif.createdAt).fromNow()}</div>
+                <div className="notification-dot"></div>
+                <div className="notification-content">
+                  <div
+                    className="message"
+                    dangerouslySetInnerHTML={{
+                      __html: chrome.i18n.getMessage(
+                        notif.message,
+                        notif.messageParams,
+                      ),
+                    }}></div>
+                  <div className="date">
+                    {moment(notif.createdAt).fromNow()}
+                  </div>
+                </div>
               </div>
               {index !== notifications.length - 1 && (
                 <Separator type="horizontal" />

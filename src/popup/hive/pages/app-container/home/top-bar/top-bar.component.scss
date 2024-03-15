@@ -48,18 +48,36 @@
 
       .notification-item {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        column-gap: 8px;
         &.clickable {
           cursor: pointer;
         }
-        .message {
-          color: var(--main-font-color);
-          font-size: 16px;
+
+        .notification-dot {
+          background: red;
+          height: 6px;
+          width: 6px;
+          border-radius: 50%;
+          display: inline-block;
+
+          &.read {
+            background: transparent;
+          }
         }
-        .date {
-          color: var(--main-font-color);
-          font-size: 14px;
-          font-style: italic;
+
+        .notification-content {
+          display: flex;
+          flex-direction: column;
+          .message {
+            color: var(--main-font-color);
+            font-size: 16px;
+          }
+          .date {
+            color: var(--main-font-color);
+            font-size: 14px;
+            font-style: italic;
+          }
         }
       }
     }

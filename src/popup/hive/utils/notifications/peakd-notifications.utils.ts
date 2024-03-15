@@ -520,7 +520,7 @@ const getNotifications = async (
     const payload = JSON.parse(notif.payload);
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
-    let externalUrl: string;
+    let externalUrl;
     switch (notif.operation_type) {
       case 'transfer': {
         const amount = FormatUtils.withCommas(payload.amount, 3);
@@ -850,6 +850,7 @@ const getNotifications = async (
         notif.trx_id && !notif.trx_id.startsWith('v')
           ? `https://hivehub.dev/tx/${notif.trx_id}`
           : undefined,
+      externalUrl: externalUrl,
       message: message,
       messageParams: messageParams,
       read: !!notif.readAt,
