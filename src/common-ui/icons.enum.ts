@@ -13,6 +13,13 @@ export enum SVGIcons {
   BUY_RAMP = 'buy/ramp-mono',
   BUY_UPBIT = 'buy/upbit',
 
+  BUY_METHOD_CARD = 'buy/payment-methods/card',
+  BUY_METHOD_GOOGLE_PAY = 'buy/payment-methods/google-pay',
+  BUY_METHOD_APPLE_PAY = 'buy/payment-methods/apple-pay',
+  BUY_METHOD_PIX = 'buy/payment-methods/pix',
+  BUY_METHOD_BANK = 'buy/payment-methods/bank',
+  QUESTION_MARK = 'buy/payment-methods/question-mark',
+
   CHECKBOX_CHECKED = 'checkbox/checked',
 
   FAVORITE_ACCOUNTS_EDIT = 'favorite-accounts/edit',

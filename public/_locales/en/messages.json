@@ -3854,5 +3854,13 @@
   "html_popup_click_to_refresh": {
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
+  },
+  "card_payment": {
+    "message": "Debit/Credit Card",
+    "description": "Buy Hive payment method"
+  },
+  "bank_transfer": {
+    "message": "Bank Transfer",
+    "description": "Buy Hive payment method"
   }
 }

@@ -173,7 +173,15 @@ const BuyRamps = ({
                       window.open(estimation.link, '__blank');
                     }}>
                     <SVGIcon icon={estimation.logo} />
-                    <span className="method">{estimation.paymentMethod}</span>
+                    <span className="method">
+                      <SVGIcon
+                        icon={estimation.paymentMethod.icon}
+                        skipTooltipTranslation
+                        tooltipPosition="bottom"
+                        tooltipDelayShow={1000}
+                        tooltipMessage={estimation.paymentMethod.title}
+                      />
+                    </span>
                     <div className="receive">
                       <span>{estimation.estimation}</span>
                       <span className="amount">

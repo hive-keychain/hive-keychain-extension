@@ -34,6 +34,7 @@ export type RampEstimationDisplay = RampEstimation & {
   link: string;
   logo: SVGIcons;
   name: string;
+  paymentMethod: { title: string; method: string; icon: SVGIcons };
 };
 
 export type RampConfig = {

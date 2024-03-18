@@ -174,7 +174,9 @@ export class RampProvider
       );
       const options = [];
       for (const paymentMethod in result) {
-        if (paymentMethod !== 'asset')
+        if (
+          !['asset', 'auto_bank_transfer'].includes(paymentMethod.toLowerCase())
+        )
           options.push({ paymentMethod, ...result[paymentMethod] });
       }
       return options.map((e: any) => ({
@@ -267,7 +269,6 @@ export class RampMerger {
     const cleanEstimations = estimations
       .reduce((acc, val) => [...acc, ...val], [])
       .sort((a, b) => b.estimation - a.estimation);
-    console.log(cleanEstimations);
     return cleanEstimations;
   };
 }
@@ -276,11 +277,45 @@ const cleanEstimationMethod = (method: string) => {
   method = method.toLowerCase();
   switch (method) {
     case 'google_pay':
+      return {
+        method,
+        title: 'Google Pay',
+        icon: SVGIcons.BUY_METHOD_GOOGLE_PAY,
+      };
     case 'apple_pay':
-      return chrome.i18n.getMessage(method);
+      return {
+        method,
+        title: 'Apple Pay',
+        icon: SVGIcons.BUY_METHOD_APPLE_PAY,
+      };
     case 'card_payment':
     case 'credit_debit_card':
-      return chrome.i18n.getMessage('card_payment');
+      return {
+        method,
+        title: chrome.i18n.getMessage('card_payment'),
+        icon: SVGIcons.BUY_METHOD_CARD,
+      };
+    case 'pm_pix':
+    case 'pix':
+      return {
+        method,
+        title: 'Pix',
+        icon: SVGIcons.BUY_METHOD_PIX,
+      };
+
+    case 'manual_bank_transfer':
+    case 'sepa_bank_transfer':
+      return {
+        method,
+        title: chrome.i18n.getMessage('bank_transfer'),
+        icon: SVGIcons.BUY_METHOD_BANK,
+      };
+
+    default:
+      return {
+        method,
+        title: method,
+        icon: SVGIcons.QUESTION_MARK,
+      };
   }
-  return method;
 };
