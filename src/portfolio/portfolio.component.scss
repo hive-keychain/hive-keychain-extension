@@ -96,15 +96,13 @@ html {
           margin: 0px 0px;
           width: auto;
           padding: 8px;
+          flex-direction: column-reverse;
           .filter-input {
-            border-radius: 20px;
-            // border: 1px solid var(--card-border);
-            padding-left: 8px;
             border: unset;
-            border-bottom: 1px solid var(--card-border);
           }
           .filter-box-list-container {
             margin-left: 8px;
+            margin-bottom: 8px;
             display: flex;
             flex-direction: row;
             .filter-item {
@@ -138,7 +136,6 @@ html {
           @include poppins500(13px);
           color: var(--main-font-color);
         }
-
         .avatar-username-container {
           display: flex;
           flex-direction: row;
@@ -158,6 +155,36 @@ html {
           }
           .cursor-pointer {
             cursor: pointer;
+          }
+        }
+        //TODO bellow refactor & cleanup
+        .portfolio-table-container {
+          @include small-card();
+          margin: 0px 0px;
+          overflow: scroll;
+          height: -webkit-fill-available;
+          .table-react {
+            height: inherit;
+          }
+          .theader {
+            position: sticky;
+            top: 0px;
+            background: antiquewhite;
+          }
+          .column-header {
+            min-width: 150px;
+            max-width: 150px;
+            text-align: left;
+          }
+          .fixed-left {
+            position: sticky;
+            left: 0px;
+            background: antiquewhite;
+          }
+          .data-cell {
+            min-width: 150px;
+            max-width: 150px;
+            text-align: left;
           }
         }
       }

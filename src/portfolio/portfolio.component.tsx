@@ -10,20 +10,22 @@ import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { getTheme } from '@table-library/react-table-library/baseline';
-import { CompactTable } from '@table-library/react-table-library/compact';
-import { useTheme } from '@table-library/react-table-library/theme';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import PortfolioCellItemComponent from 'src/portfolio/portfolio-cell-item/portfolio-cell-item.component';
+import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
+import PortfolioTableComponent from 'src/portfolio/portolfio-table/portfolio-table.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
-
+//TODO important:
+//  - create components in table.
+//  - add filter to the new data passed.
+//  - ask cedric how to order this new data per USD token value.
+//TODO check utils, remove unused + improve.
 const PortfolioComponent = () => {
   const [theme, setTheme] = useState<Theme>();
   const [localAccounts, setLocalAccounts] = useState<LocalAccount[]>([]);
@@ -55,6 +57,10 @@ const PortfolioComponent = () => {
 
   const [filterValue, setFilterValue] = useState('');
   const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
+
+  const [portfolioUserDataList, setPortfolioUserDataList] = useState<
+    PortfolioUserData[]
+  >([]);
 
   useEffect(() => {
     init();
@@ -149,23 +155,41 @@ const PortfolioComponent = () => {
       let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         accountName,
       );
-      if (tokensBalance.length > 0) {
-        tokensBalance = tokensBalance;
-      } else {
+      if (tokensBalance.length === 0) {
         tokensBalance = [
           {
             _id: 99999,
             account: accountName,
             symbol: 'PAL',
             balance: '0',
+            delegationsIn: '0',
+            delegationsOut: '0',
+            stake: '0',
+            pendingUndelegations: '0',
+            pendingUnstake: '0',
           } as TokenBalance,
         ];
       }
       tempTokenBalanceList.push(tokensBalance);
     }
+    console.log({ tempTokenBalanceList }); //TODO remove line
     setTokensBalanceList(tempTokenBalanceList);
   };
 
+  const getAllData = async () => {
+    //TODO bellow, testing to set all data at once
+    const dataTempUsers = await PortfolioUtils.getPortfolioUserDataList(
+      extendedAccountsList,
+      tokensBalanceList,
+      tokenMarket,
+      currencyPrices!,
+      globalProperties?.globals!,
+    );
+    //end testing
+    console.log({ dataTempUsers }); //TODO remove line
+    //TODO bellow assign the new one orderedTokenBalancesByUsdValue
+    setPortfolioUserDataList(dataTempUsers);
+  };
   useEffect(() => {
     if (
       extendedAccountsList.length > 0 &&
@@ -193,7 +217,7 @@ const PortfolioComponent = () => {
         'savings_balance',
         filteredExtendedAccountList,
       );
-
+      getAllData();
       const portfolioUserData = filteredExtendedAccountList.map(
         ({ name, balance, vesting_shares, hbd_balance }) => {
           const tokenBalance = tokensBalanceList.find(
@@ -215,6 +239,8 @@ const PortfolioComponent = () => {
           };
         },
       );
+      console.log({ portfolioUserData }); //TODO remove line
+
       const tokensSymbolsArray: string[] = [];
       portfolioUserData.map((data) => {
         Object.keys(data).map((dataKey) => {
@@ -326,70 +352,6 @@ const PortfolioComponent = () => {
         keyL: Object.keys(totalTokensUSDAsPlainObjects).length,
       }); //TODO remove line
 
-      const nodesData = [
-        ...portfolioUserData,
-        {
-          name: 'totals',
-          balance: totalBalance,
-          hbd_balance: totalHBDBalance,
-          vesting_shares: totalHP,
-          ...totalTokensAsPlainObjects,
-        } as any,
-        {
-          name: 'totals_usd',
-          balance: FormatUtils.formatCurrencyValue(total_hive_balance_usd),
-          hbd_balance: FormatUtils.formatCurrencyValue(total_hbd_balance_usd),
-          vesting_shares: FormatUtils.formatCurrencyValue(
-            total_vesting_shares_usd,
-          ),
-          ...totalTokensUSDAsPlainObjects,
-        } as any,
-      ];
-      setData({
-        nodes: nodesData,
-      });
-
-      const extra = keysToUse.map((key) => {
-        return {
-          label: PortfolioUtils.getLabelCell(key),
-          renderCell: (item: any) => (
-            <PortfolioCellItemComponent
-              item={item}
-              itemKey={key}
-              globalProperties={globalProperties}
-            />
-          ),
-        };
-      });
-      setExtraColumns(extra);
-      const dynamicPercentages = keysToUse
-        .slice(0, keysToUse.length - 1)
-        .map((k) => `25%`)
-        .join(' ');
-      setThemeTable(
-        useTheme([
-          getTheme(),
-          {
-            Table: `
-             --data-table-library_grid-template-columns:  ${dynamicPercentages} minmax(200px, 1fr);
-          `,
-            HeaderRow: `
-          background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
-          color: var(--main-font-color);
-          @include poppins500(14px);
-        `,
-            Row: `
-          &:nth-of-type(odd) {
-            background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
-          }
-  
-          &:nth-of-type(even) {
-            background-color: ${theme === Theme.DARK ? '#293144' : '#fafcfd'};
-          }
-        `,
-          },
-        ]),
-      );
       setIsLoading(false);
     }
   }, [filteredExtendedAccountList, globalProperties, tokensBalanceList]);
@@ -444,14 +406,6 @@ const PortfolioComponent = () => {
                   key={`current-filter-${currentFilter}`}
                   className="filter-item">
                   <div className="small-text">{currentFilter}</div>
-                  {/* <div
-                    className="margin-left"
-                    onClick={() =>
-                      handleRemoveAccountFromFilter(currentFilter)
-                    }>
-                    {' '}
-                    X
-                  </div> */}
                   <SVGIcon
                     dataTestId="input-clear"
                     icon={SVGIcons.INPUT_CLEAR}
@@ -496,17 +450,12 @@ const PortfolioComponent = () => {
         globalProperties &&
         extraColumns &&
         currencyPrices &&
-        tokensBalanceList.length > 0 && (
+        tokensBalanceList.length > 0 &&
+        portfolioUserDataList.length > 0 && (
           <>
-            <CompactTable
-              columns={extraColumns}
-              data={data}
-              theme={themeTable}
-              layout={{
-                horizontalScroll: true,
-                fixedHeader: true,
-                custom: true,
-              }}
+            <PortfolioTableComponent
+              data={portfolioUserDataList}
+              currencyPrices={currencyPrices}
             />
             <div className="title-panel">
               <div className="title">Portfolio Value USD:</div>
