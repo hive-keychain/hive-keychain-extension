@@ -166,43 +166,48 @@ const BuyRamps = ({
                 )}
               </div>
               <div className="quotes">
-                {estimations.map((estimation) => (
-                  <div
-                    className="quote"
-                    key={
-                      estimation.name +
-                      estimation.paymentMethod +
-                      estimation.crypto
-                    }
-                    onClick={() => {
-                      window.open(estimation.link, '__blank');
-                    }}>
-                    <SVGIcon icon={estimation.logo} />
-                    <span className="method">
-                      <SVGIcon
-                        icon={estimation.paymentMethod.icon}
-                        skipTooltipTranslation
-                        tooltipPosition="bottom"
-                        tooltipDelayShow={1000}
-                        tooltipMessage={estimation.paymentMethod.title}
-                      />
-                    </span>
-                    <div className="receive">
-                      <span>{estimation.estimation}</span>
-                      <span className="amount">
-                        {CurrencyPricesUtils.getTokenUSDPrice(
-                          estimation.estimation + '',
-                          'HIVE',
-                          price,
-                          [],
-                        )}
+                {estimations.map((estimation) => {
+                  const key =
+                    estimation.name +
+                    estimation.paymentMethod.method +
+                    estimation.fiat +
+                    estimation.amount +
+                    estimation.crypto;
+                  return (
+                    <div
+                      className="quote"
+                      key={key}
+                      onClick={() => {
+                        window.open(estimation.link, '__blank');
+                      }}>
+                      <SVGIcon icon={estimation.logo} />
+                      <span className="method">
+                        <SVGIcon
+                          key={key}
+                          icon={estimation.paymentMethod.icon}
+                          skipTooltipTranslation
+                          tooltipPosition="bottom"
+                          tooltipDelayShow={1000}
+                          tooltipMessage={estimation.paymentMethod.title}
+                        />
+                      </span>
+                      <div className="receive">
+                        <span>{estimation.estimation}</span>
+                        <span className="amount">
+                          {CurrencyPricesUtils.getTokenUSDPrice(
+                            estimation.estimation + '',
+                            'HIVE',
+                            price,
+                            [],
+                          )}
+                        </span>
+                      </div>
+                      <span className="chevron">
+                        <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
                       </span>
                     </div>
-                    <span className="chevron">
-                      <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

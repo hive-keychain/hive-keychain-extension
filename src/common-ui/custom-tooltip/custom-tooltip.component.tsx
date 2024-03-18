@@ -11,6 +11,7 @@ export interface TooltipProps {
   dataTestId?: string;
   additionalClassName?: string;
   color?: 'white' | 'grey';
+  key?: string;
 }
 
 interface TooltipCoordinates {
@@ -32,6 +33,7 @@ export const CustomTooltip = ({
   dataTestId,
   additionalClassName,
   color,
+  key,
 }: TooltipProps) => {
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
@@ -115,13 +117,15 @@ export const CustomTooltip = ({
       data-testid={dataTestId}
       className={`tooltip-container ${additionalClassName}`}
       onMouseEnter={show}
+      key={key}
       onMouseLeave={hide}>
-      <div className="tooltip-anchor" ref={anchor}>
+      <div className="tooltip-anchor" key={key} ref={anchor}>
         {children}
       </div>
 
       {isOpen && message && coordinates && (
         <div
+          key={key}
           ref={tooltip}
           data-testid="tooltip-content"
           className={`tooltip ${position ? position : 'top'} ${

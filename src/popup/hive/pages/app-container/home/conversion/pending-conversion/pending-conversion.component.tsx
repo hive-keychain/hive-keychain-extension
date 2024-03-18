@@ -29,7 +29,7 @@ const PendingConversionPage = ({
             <CustomTooltip
               dataTestId="tooltip-timesteamp-pending-conversion"
               position="bottom"
-              key={pendingConversion.id}
+              key={pendingConversion.id + ''}
               message={chrome.i18n.getMessage(
                 'popup_html_pending_currency_timestamp',
                 [
