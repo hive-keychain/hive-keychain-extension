@@ -169,6 +169,11 @@ const BuyRamps = ({
                 {estimations.map((estimation) => (
                   <div
                     className="quote"
+                    key={
+                      estimation.name +
+                      estimation.paymentMethod +
+                      estimation.crypto
+                    }
                     onClick={() => {
                       window.open(estimation.link, '__blank');
                     }}>
