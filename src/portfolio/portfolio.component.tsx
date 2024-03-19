@@ -22,7 +22,7 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
-//TODO check utils, remove unused + improve.
+
 const PortfolioComponent = () => {
   const [theme, setTheme] = useState<Theme>();
   const [localAccounts, setLocalAccounts] = useState<LocalAccount[]>([]);
@@ -39,9 +39,6 @@ const PortfolioComponent = () => {
   const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
   const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
-
-  // const [filterValue, setFilterValue] = useState('');
-  // const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
 
   const [portfolioUserDataList, setPortfolioUserDataList] = useState<
     PortfolioUserData[]

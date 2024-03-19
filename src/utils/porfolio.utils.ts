@@ -1,6 +1,5 @@
 import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
@@ -15,105 +14,6 @@ import {
 } from 'src/portfolio/portfolio.interface';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-//TODO bellow after refactor, remove & cleanup
-const getLabelCell = (key: string) => {
-  switch (key) {
-    case 'vesting_shares':
-      return 'HP';
-    case 'name':
-      return 'ACCOUNT';
-    case 'balance':
-      return 'HIVE';
-    case 'hbd_balance':
-      return 'HBD';
-    default:
-      return key;
-  }
-};
-
-const getFormatedOrDefaultValue = (
-  value: string,
-  globalProperties: GlobalProperties | null,
-) => {
-  switch (true) {
-    case value.includes('VESTS'):
-      return FormatUtils.withCommas(
-        FormatUtils.toHP(
-          (value as string).split(' ')[0],
-          globalProperties?.globals,
-        ).toString(),
-      );
-    case value.includes('HBD'):
-      return FormatUtils.withCommas((value as string).split(' ')[0]);
-    case value.includes('HIVE'):
-      return FormatUtils.withCommas((value as string).split(' ')[0]);
-    default:
-      return value;
-  }
-};
-
-const getHiveTotal = (
-  key:
-    | 'balance'
-    | 'hbd_balance'
-    | 'vesting_shares'
-    | 'savings_hbd_balance'
-    | 'savings_balance',
-  list: ExtendedAccount[],
-) => {
-  if (key === 'balance') {
-    return (
-      list
-        .reduce(
-          (acc, curr) => acc + Number((curr.balance as string).split(' ')[0]),
-          0,
-        )
-        .toString() + ' HIVE'
-    );
-  } else if (key === 'hbd_balance') {
-    return (
-      list
-        .reduce(
-          (acc, curr) =>
-            acc + Number((curr.hbd_balance as string).split(' ')[0]),
-          0,
-        )
-        .toString() + ' HBD'
-    );
-  } else if (key === 'vesting_shares') {
-    return (
-      list
-        .reduce(
-          (acc, curr) =>
-            acc + Number((curr.vesting_shares as string).split(' ')[0]),
-          0,
-        )
-        .toString() + ' VESTS'
-    );
-  } else if (key === 'savings_hbd_balance') {
-    return (
-      list
-        .reduce(
-          (acc, curr) =>
-            acc + Number((curr.savings_hbd_balance as string).split(' ')[0]),
-          0,
-        )
-        .toString() + ' SAVINGS_HBD'
-    );
-  } else if (key === 'savings_balance') {
-    return (
-      list
-        .reduce(
-          (acc, curr) =>
-            acc + Number((curr.savings_balance as string).split(' ')[0]),
-          0,
-        )
-        .toString() + ' SAVINGS_HIVE'
-    );
-  } else {
-    return '0';
-  }
-};
 
 const loadAndSetRPCsAndApis = async () => {
   //load rpc.
@@ -292,9 +192,6 @@ const getPortfolioUserDataList = async (
 };
 
 export const PortfolioUtils = {
-  getFormatedOrDefaultValue,
-  getLabelCell,
-  getHiveTotal,
   loadAndSetRPCsAndApis,
   getPortfolioUserDataList,
 };
