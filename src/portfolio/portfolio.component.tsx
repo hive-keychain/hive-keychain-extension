@@ -2,7 +2,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
@@ -11,6 +11,7 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -21,10 +22,6 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
-//TODO important:
-//  - create components in table.
-//  - add filter to the new data passed.
-//  - ask cedric how to order this new data per USD token value.
 //TODO check utils, remove unused + improve.
 const PortfolioComponent = () => {
   const [theme, setTheme] = useState<Theme>();
@@ -32,25 +29,13 @@ const PortfolioComponent = () => {
   const [extendedAccountsList, setExtendedAccountsList] = useState<
     ExtendedAccount[]
   >([]);
-  const [filteredExtendedAccountList, setFilteredExtendedAccountList] =
-    useState<ExtendedAccount[]>([]);
   const [globalProperties, setGlobalProperties] =
     useState<GlobalProperties | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<{ nodes: any[] }>({ nodes: [] });
-  //TODO cleanup
-  // const [filteredData, setFilteredData] = useState<{ nodes: any[] }>({
-  //   nodes: [],
-  // });
-  const [extraColumns, setExtraColumns] = useState<
-    { label: string; renderCell: (item: any) => void }[]
-  >([]);
-  const [themeTable, setThemeTable] = useState<any>();
   const [currencyPrices, setCurrencyPrices] = useState<CurrencyPrices>();
   const [tokensBalanceList, setTokensBalanceList] = useState<TokenBalance[][]>(
     [],
   );
-  const [allTokens, setAllTokens] = useState<Token[]>([]);
   const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
   const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
@@ -61,6 +46,8 @@ const PortfolioComponent = () => {
   const [portfolioUserDataList, setPortfolioUserDataList] = useState<
     PortfolioUserData[]
   >([]);
+  const [filteredPortfolioUserDataList, setFilteredPortfolioUserDataList] =
+    useState<PortfolioUserData[]>([]);
 
   useEffect(() => {
     init();
@@ -88,12 +75,7 @@ const PortfolioComponent = () => {
       let extAccounts = await AccountUtils.getExtendedAccounts(
         localAccounts.map((localAcc) => localAcc.name),
       );
-
-      //TODO Testing to filter here
-      // extAccounts = extAccounts.filter((item) => item.name === 'theghost1980');
-      //end test
       setExtendedAccountsList(extAccounts);
-      setFilteredExtendedAccountList(extAccounts);
       loadGlobalProps();
       loadCurrencyPrices();
       loadUserTokens(localAccounts);
@@ -127,14 +109,12 @@ const PortfolioComponent = () => {
         setCurrencyPrices(prices);
       }
     } catch (error) {
-      //TODO add as Logger.
       Logger.error('Error loading prices!', { error });
     }
   };
 
   const loadGlobalProps = async () => {
     try {
-      //global props
       const [globals, price, rewardFund] = await Promise.all([
         DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
         HiveUtils.getCurrentMedianHistoryPrice(),
@@ -148,7 +128,6 @@ const PortfolioComponent = () => {
   };
 
   const loadUserTokens = async (accountNames: LocalAccount[]) => {
-    //Get tokenBalance list
     let tempTokenBalanceList: TokenBalance[][] = [];
     for (let index = 0; index < accountNames.length; index++) {
       const accountName = accountNames[index].name;
@@ -172,12 +151,10 @@ const PortfolioComponent = () => {
       }
       tempTokenBalanceList.push(tokensBalance);
     }
-    console.log({ tempTokenBalanceList }); //TODO remove line
     setTokensBalanceList(tempTokenBalanceList);
   };
 
   const getAllData = async () => {
-    //TODO bellow, testing to set all data at once
     const dataTempUsers = await PortfolioUtils.getPortfolioUserDataList(
       extendedAccountsList,
       tokensBalanceList,
@@ -185,11 +162,10 @@ const PortfolioComponent = () => {
       currencyPrices!,
       globalProperties?.globals!,
     );
-    //end testing
-    console.log({ dataTempUsers }); //TODO remove line
-    //TODO bellow assign the new one orderedTokenBalancesByUsdValue
     setPortfolioUserDataList(dataTempUsers);
+    setFilteredPortfolioUserDataList(dataTempUsers);
   };
+
   useEffect(() => {
     if (
       extendedAccountsList.length > 0 &&
@@ -197,174 +173,20 @@ const PortfolioComponent = () => {
       currencyPrices &&
       tokensBalanceList.length > 0
     ) {
-      const totalBalance = PortfolioUtils.getHiveTotal(
-        'balance',
-        filteredExtendedAccountList,
-      );
-      const totalHBDBalance = PortfolioUtils.getHiveTotal(
-        'hbd_balance',
-        filteredExtendedAccountList,
-      );
-      const totalHP = PortfolioUtils.getHiveTotal(
-        'vesting_shares',
-        filteredExtendedAccountList,
-      );
-      const totalSavingsHBD = PortfolioUtils.getHiveTotal(
-        'savings_hbd_balance',
-        filteredExtendedAccountList,
-      );
-      const totalSavingHIVE = PortfolioUtils.getHiveTotal(
-        'savings_balance',
-        filteredExtendedAccountList,
-      );
       getAllData();
-      const portfolioUserData = filteredExtendedAccountList.map(
-        ({ name, balance, vesting_shares, hbd_balance }) => {
-          const tokenBalance = tokensBalanceList.find(
-            (tokenBalance) => tokenBalance[0].account === name,
-          );
-          const tokenBalanceObj = tokenBalance?.map(({ symbol, balance }) => {
-            return { [symbol]: balance };
-          });
-          let asPlainObjects: { [key: string]: any } = {};
-          for (const [key, value] of Object.entries(tokenBalanceObj!)) {
-            asPlainObjects = { ...asPlainObjects, ...value };
-          }
-          return {
-            name,
-            balance,
-            vesting_shares,
-            hbd_balance,
-            ...asPlainObjects,
-          };
-        },
-      );
-      console.log({ portfolioUserData }); //TODO remove line
-
-      const tokensSymbolsArray: string[] = [];
-      portfolioUserData.map((data) => {
-        Object.keys(data).map((dataKey) => {
-          if (
-            dataKey !== 'name' &&
-            dataKey !== 'balance' &&
-            dataKey !== 'vesting_shares' &&
-            dataKey !== 'hbd_balance' &&
-            !tokensSymbolsArray.includes(dataKey)
-          ) {
-            tokensSymbolsArray.push(dataKey);
-          }
-        });
-      });
-
-      const keysToUse = Object.keys(portfolioUserData[0]).map((key) => key);
-
-      const filteredKeysToUse = tokensSymbolsArray.filter(
-        (key) =>
-          key !== 'name' &&
-          key !== 'balance' &&
-          key !== 'vesting_shares' &&
-          key !== 'hbd_balance',
-      );
-
-      const totalTokens = filteredKeysToUse.map((key) => {
-        const obj: { [key: string]: any } = {};
-        obj[key] = (portfolioUserData as any).reduce(
-          (acc: number, curr: any) => {
-            if (curr[key]) {
-              return (acc += parseFloat(curr[key]));
-            } else {
-              return acc;
-            }
-          },
-          0,
-        );
-        return obj;
-      });
-
-      let totalTokensAsPlainObjects: { [key: string]: any } = {};
-      for (const [key, value] of Object.entries(totalTokens!)) {
-        totalTokensAsPlainObjects = { ...totalTokensAsPlainObjects, ...value };
-      }
-
-      //calculate each total token value USD
-      let total_token_usd_value = 0;
-      const totalTokenUSDValue = Object.entries(totalTokensAsPlainObjects).map(
-        (key, value) => {
-          let obj: { [key: string]: any } = {};
-          obj[key[0]] = 0;
-          if (key[1] > 0) {
-            obj[key[0]] = TokensUtils.getHiveEngineTokenValue(
-              {
-                account: '',
-                balance: key[1].toString(),
-                symbol: key[0],
-                pendingUndelegations: '0',
-                pendingUnstake: '0',
-                delegationsIn: '0',
-                delegationsOut: '0',
-                stake: '0',
-                _id: 0,
-              } as TokenBalance,
-              tokenMarket,
-              currencyPrices.hive!,
-            ).toFixed(4);
-          }
-          total_token_usd_value += Number(obj[key[0]]);
-          return obj;
-        },
-      );
-
-      let totalTokensUSDAsPlainObjects: { [key: string]: any } = {};
-      for (const [key, value] of Object.entries(totalTokenUSDValue!)) {
-        totalTokensUSDAsPlainObjects = {
-          ...totalTokensUSDAsPlainObjects,
-          ...value,
-        };
-      }
-      const total_hive_balance_usd =
-        +totalBalance.split(' ')[0]! * (currencyPrices.hive.usd ?? 1);
-      const total_hbd_balance_usd =
-        +totalHBDBalance.split(' ')[0] * (currencyPrices.hive_dollar.usd ?? 1);
-      const total_vesting_shares_usd =
-        +FormatUtils.toHP(
-          PortfolioUtils.getHiveTotal(
-            'vesting_shares',
-            filteredExtendedAccountList,
-          ),
-          globalProperties.globals,
-        ) * (currencyPrices.hive.usd ?? 1);
-      const total_hbd_savings_usd =
-        +totalSavingsHBD.split(' ')[0] * (currencyPrices.hive_dollar.usd ?? 1);
-      const total_hive_savings_usd =
-        +totalSavingHIVE.split(' ')[0] * (currencyPrices.hive.usd ?? 1);
-
-      setTotalValueUSDPortfolio(
-        total_hive_balance_usd +
-          total_hbd_balance_usd +
-          total_vesting_shares_usd +
-          total_token_usd_value +
-          total_hbd_savings_usd +
-          total_hive_savings_usd,
-      );
-
-      console.log({
-        totalTokensUSDAsPlainObjects,
-        keyL: Object.keys(totalTokensUSDAsPlainObjects).length,
-      }); //TODO remove line
-
       setIsLoading(false);
     }
-  }, [filteredExtendedAccountList, globalProperties, tokensBalanceList]);
+  }, [globalProperties, tokensBalanceList]);
 
   useEffect(() => {
-    const currentExtendedAccountList = [...extendedAccountsList];
+    const currentPortfolioUserDataList = [...portfolioUserDataList];
     if (currentFilterList.length === 0) {
-      setFilteredExtendedAccountList(currentExtendedAccountList);
+      setFilteredPortfolioUserDataList(portfolioUserDataList);
     } else {
-      const filteredList = currentExtendedAccountList.filter((extAcc) =>
-        currentFilterList.includes(extAcc.name),
+      const filteredList = currentPortfolioUserDataList.filter((item) =>
+        currentFilterList.includes(item.account),
       );
-      setFilteredExtendedAccountList(filteredList);
+      setFilteredPortfolioUserDataList(filteredList);
     }
   }, [currentFilterList]);
 
@@ -385,14 +207,42 @@ const PortfolioComponent = () => {
     }
   };
 
+  const isReadyToShow =
+    !isLoading &&
+    filteredPortfolioUserDataList &&
+    globalProperties &&
+    currencyPrices &&
+    tokensBalanceList.length > 0 &&
+    filteredPortfolioUserDataList.length > 0;
+
   return (
     <div className={`theme ${theme} portfolio`}>
-      <div className="title-panel">
-        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-        <div className="title">{chrome.i18n.getMessage('portfolio')}</div>
+      <div className="title-panel info-row">
+        <div className="info-row centered">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">{chrome.i18n.getMessage('portfolio')}</div>
+        </div>
+        {totalValueUSDPortfolio > 0 && (
+          <div className="title-panel">
+            <div className="title">Total Value USD:</div>
+            <CustomTooltip
+              position={'bottom'}
+              skipTranslation
+              message="This amount, reflects savings, stake, pending stake, delegations IN/OUT of tokens & balances in all the accounts you have registered in Keychain.">
+              <div className="info-row centered">
+                <div className="title">
+                  {' '}
+                  {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
+                </div>
+                <SVGIcon dataTestId="input-clear" icon={SVGIcons.MENU_ABOUT} />
+              </div>
+            </CustomTooltip>
+          </div>
+        )}
       </div>
       <div className="filter-box-container">
         <input
+          disabled={!isReadyToShow}
           placeholder="Filter account"
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
@@ -445,27 +295,17 @@ const PortfolioComponent = () => {
           <RotatingLogoComponent />
         </div>
       )}
-      {!isLoading &&
-        data &&
-        globalProperties &&
-        extraColumns &&
-        currencyPrices &&
-        tokensBalanceList.length > 0 &&
-        portfolioUserDataList.length > 0 && (
-          <>
-            <PortfolioTableComponent
-              data={portfolioUserDataList}
-              currencyPrices={currencyPrices}
-            />
-            <div className="title-panel">
-              <div className="title">Portfolio Value USD:</div>
-              <div className="title">
-                {' '}
-                {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
-              </div>
-            </div>
-          </>
-        )}
+      {isReadyToShow && (
+        <>
+          <PortfolioTableComponent
+            data={filteredPortfolioUserDataList}
+            currencyPrices={currencyPrices}
+            setTotalValueUSDPortfolio={(value) =>
+              setTotalValueUSDPortfolio(value)
+            }
+          />
+        </>
+      )}
       {!isLoading && errorMessage.length > 0 && (
         <div className="title-panel">
           <div className="title">{errorMessage}</div>

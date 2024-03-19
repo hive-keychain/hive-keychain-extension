@@ -157,15 +157,59 @@ const getPortfolioHETokenData = (
   } as PortfolioHETokenData;
 };
 
-// const getTokensNameOrderByUSDValue = (currentTokenSymbolList: string[]) => {
-//   let orderedTokenSymbolList: string[] = [];
-//   currentTokenSymbolList.map(tknSymbol => {
-//     const foundTokenInUserTokenList = userTokenBalanceList?.find(
-//       (item) => item.symbol === tknSymbol,
-//     );
-//   });
-//   return orderedTokenSymbolList;
-// };
+const getOrderedTokenSymbolListByUsdTotalValue = (
+  tokenSymbolListNoDuplicates: string[],
+  extendedAccountList: ExtendedAccount[],
+  tokensBalanceList: TokenBalance[][],
+  tokenMarket: TokenMarket[],
+  currencyPrices: CurrencyPrices,
+) => {
+  let totals: { symbol: string; total: number; totalUSD: number }[] = [];
+  extendedAccountList.map(({ name }) => {
+    const userTokenBalanceList = tokensBalanceList.find(
+      (tokenBalanceItem) => tokenBalanceItem[0].account === name,
+    );
+    let heTokenList = tokenSymbolListNoDuplicates.map((tknSymbol) => {
+      const foundTokenInUserTokenList = userTokenBalanceList?.find(
+        (item) => item.symbol === tknSymbol,
+      );
+      if (foundTokenInUserTokenList) {
+        const portfolioHETokenData: PortfolioHETokenData =
+          getPortfolioHETokenData(
+            foundTokenInUserTokenList,
+            tokenMarket,
+            currencyPrices,
+          );
+        const { symbol, totalBalance, totalBalanceUsdValue } =
+          portfolioHETokenData;
+        if (
+          !totals.find((item) => item.symbol === portfolioHETokenData.symbol)
+        ) {
+          totals.push({
+            symbol,
+            total: totalBalance,
+            totalUSD: totalBalanceUsdValue,
+          });
+        } else {
+          const foundIndex = totals.findIndex(
+            (item) => item.symbol === portfolioHETokenData.symbol,
+          );
+          totals[foundIndex] = {
+            symbol: totals[foundIndex].symbol,
+            total: totals[foundIndex].total + portfolioHETokenData.totalBalance,
+            totalUSD:
+              totals[foundIndex].totalUSD +
+              portfolioHETokenData.totalBalanceUsdValue,
+          };
+        }
+      }
+    });
+  });
+  //order & pass only symbols
+  return totals
+    .sort((a, b) => b.totalUSD - a.totalUSD)
+    .map((item) => item.symbol);
+};
 
 const getPortfolioUserDataList = async (
   extendedAccountList: ExtendedAccount[],
@@ -182,10 +226,13 @@ const getPortfolioUserDataList = async (
       }
     });
   });
-  tokenSymbolListNoDuplicates = tokenSymbolListNoDuplicates.sort((a, b) =>
-    a.localeCompare(b),
+  tokenSymbolListNoDuplicates = getOrderedTokenSymbolListByUsdTotalValue(
+    tokenSymbolListNoDuplicates,
+    extendedAccountList,
+    tokensBalanceList,
+    tokenMarket,
+    currencyPrices,
   );
-  console.log({ tokenSymbolListNoDuplicates }); //TODO remove & use
   let tempList: PortfolioUserData[] = extendedAccountList.map(
     ({
       name,
@@ -230,25 +277,6 @@ const getPortfolioUserDataList = async (
           } as PortfolioHETokenData;
         }
       });
-
-      // let heTokenList = userTokenBalanceList?.map((tokenBalanceItem) => {
-      //   const totalBalanceUsdValue = TokensUtils.getHiveEngineTokenValue(
-      //     tokenBalanceItem,
-      //     tokenMarket,
-      //     currencyPrices.hive!,
-      //   );
-      //   return {
-      //     symbol: tokenBalanceItem.symbol,
-      //     totalBalance:
-      //       +tokenBalanceItem.balance +
-      //       +tokenBalanceItem.delegationsIn +
-      //       +tokenBalanceItem.delegationsOut +
-      //       +tokenBalanceItem.stake +
-      //       +tokenBalanceItem.pendingUndelegations +
-      //       +tokenBalanceItem.pendingUnstake,
-      //     totalBalanceUsdValue,
-      //   } as PortfolioHETokenData;
-      // });
 
       return {
         account: name,

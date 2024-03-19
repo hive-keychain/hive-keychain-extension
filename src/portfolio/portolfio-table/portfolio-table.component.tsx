@@ -1,5 +1,6 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -7,46 +8,38 @@ import FormatUtils from 'src/utils/format.utils';
 interface Props {
   data: PortfolioUserData[];
   currencyPrices: CurrencyPrices;
+  setTotalValueUSDPortfolio: (value: number) => void;
 }
 
-const PortfolioTableComponent = ({ data, currencyPrices }: Props) => {
-  // const [columnHeaderTokenList, setColumnHeaderTokenList] = useState([]);
-  // const [totals, setTotals] = useState<{
-  //     totalHIVE: number;
-  //     totalHP: number;
-  //     totalHBD: number;
-  // }>({
-  //     totalHIVE: 0,
-  //     totalHP: 0,
-  //     totalHBD: 0
-  // });
+const PortfolioTableComponent = ({
+  data,
+  currencyPrices,
+  setTotalValueUSDPortfolio,
+}: Props) => {
+  const [totals, setTotals] = useState<
+    { symbol: string; total: number; totalUSD: number }[]
+  >([]);
 
-  // useEffect(() => {
-  //     let tempList: string[] = [];
-  //     data.map(userData => {
-  //         userData.heTokenList.map(heTokenItem => {
-  //             if(!tempList.includes(heTokenItem.symbol)){
-  //                 tempList.push(heTokenItem.symbol);
-  //             }
-  //         })
-  //     })
-  // }, []);
+  useEffect(() => {
+    getTotals();
+  }, [data]);
 
-  const getTotalTokens = (data: PortfolioUserData[], get: 'USD' | 'TOTAL') => {
-    let totals: { symbol: string; total: number; totalUSD: number }[] = [];
+  const getTotals = () => {
+    let temp_totals: { symbol: string; total: number; totalUSD: number }[] = [];
     data.map(({ heTokenList }) => {
       heTokenList.map((token) => {
-        if (totals.find((item) => item.symbol === token.symbol)) {
-          const indexFound = totals.findIndex(
+        if (temp_totals.find((item) => item.symbol === token.symbol)) {
+          const indexFound = temp_totals.findIndex(
             (item) => item.symbol === token.symbol,
           );
-          totals[indexFound] = {
-            symbol: totals[indexFound].symbol,
-            total: token.totalBalance + totals[indexFound].total,
-            totalUSD: token.totalBalanceUsdValue + totals[indexFound].totalUSD,
+          temp_totals[indexFound] = {
+            symbol: temp_totals[indexFound].symbol,
+            total: token.totalBalance + temp_totals[indexFound].total,
+            totalUSD:
+              token.totalBalanceUsdValue + temp_totals[indexFound].totalUSD,
           };
         } else {
-          totals.push({
+          temp_totals.push({
             symbol: token.symbol,
             total: token.totalBalance,
             totalUSD: token.totalBalanceUsdValue,
@@ -54,20 +47,19 @@ const PortfolioTableComponent = ({ data, currencyPrices }: Props) => {
         }
       });
     });
-    return totals.map((totalToken) => {
-      return get === 'TOTAL' ? (
-        <td className="data-cell" key={`${totalToken.symbol}-total`}>
-          {FormatUtils.formatCurrencyValue(totalToken.total)}
-        </td>
-      ) : (
-        <td className="data-cell" key={`${totalToken.symbol}-total-usd`}>
-          {FormatUtils.formatCurrencyValue(totalToken.totalUSD)}
-        </td>
-      );
-    });
+    setTotals(temp_totals);
+    setTotalValueUSDPortfolio(
+      temp_totals.reduce((acc, curr) => acc + curr.totalUSD, 0) +
+        data.reduce((acc, curr) => acc + curr.HIVE, 0) *
+          (currencyPrices.hive.usd ?? 1) +
+        data.reduce((acc, curr) => acc + curr.HP, 0) *
+          (currencyPrices.hive.usd ?? 1) +
+        data.reduce((acc, curr) => acc + curr.HBD, 0) *
+          (currencyPrices.hive_dollar.usd ?? 1),
+    );
   };
 
-  //TODO bellow add tr keys if needed.
+  //TODO bellow add tr keys
   return (
     <div className="portfolio-table-container">
       <table className="table-react">
@@ -92,7 +84,15 @@ const PortfolioTableComponent = ({ data, currencyPrices }: Props) => {
           {data.map((userData) => {
             return (
               <tr key={`${userData.account}-tr-row`}>
-                <td className="data-cell fixed-left">{userData.account}</td>
+                <td className="data-cell fixed-left avatar-username-container">
+                  <PreloadedImage
+                    className="user-picture"
+                    src={`https://images.hive.blog/u/${userData.account}/avatar`}
+                    alt={'/assets/images/accounts.png'}
+                    placeholder={'/assets/images/accounts.png'}
+                  />
+                  <div className="account-name">{userData.account}</div>
+                </td>
                 <td className="data-cell">
                   {FormatUtils.formatCurrencyValue(userData.HIVE)}
                 </td>
@@ -136,7 +136,14 @@ const PortfolioTableComponent = ({ data, currencyPrices }: Props) => {
                 data.reduce((acc, curr) => acc + curr.HBD, 0),
               )}
             </td>
-            {getTotalTokens(data, 'TOTAL')}
+            {/* {getTotalTokens(data, 'TOTAL')} */}
+            {totals.map((totalToken) => {
+              return (
+                <td className="data-cell" key={`${totalToken.symbol}-total`}>
+                  {FormatUtils.formatCurrencyValue(totalToken.total)}
+                </td>
+              );
+            })}
           </tr>
           <tr>
             <td className="data-cell fixed-left">TOTAL USD</td>
@@ -158,7 +165,16 @@ const PortfolioTableComponent = ({ data, currencyPrices }: Props) => {
                   (currencyPrices.hive_dollar.usd ?? 1),
               )}
             </td>
-            {getTotalTokens(data, 'USD')}
+            {/* {getTotalTokens(data, 'USD')} */}
+            {totals.map((totalToken) => {
+              return (
+                <td
+                  className="data-cell"
+                  key={`${totalToken.symbol}-total-usd`}>
+                  {FormatUtils.formatCurrencyValue(totalToken.totalUSD)}
+                </td>
+              );
+            })}
           </tr>
         </tbody>
       </table>

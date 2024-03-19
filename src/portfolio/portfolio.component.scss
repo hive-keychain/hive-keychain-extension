@@ -96,25 +96,24 @@ html {
           margin: 0px 0px;
           width: auto;
           padding: 8px;
-          flex-direction: column-reverse;
+          color: var(--main-font-color);
           .filter-input {
             border: unset;
+            text-align: center;
+            border-radius: 20px;
           }
           .filter-box-list-container {
-            margin-left: 8px;
-            margin-bottom: 8px;
             display: flex;
             flex-direction: row;
             .filter-item {
               display: flex;
               flex-direction: row;
               align-items: center;
-              background: white;
               border-radius: 20px;
               border: 1px solid var(--card-border);
               padding-left: 4px;
               padding-right: 4px;
-              margin-left: 4px;
+              margin-right: 8px;
               .small-text {
                 font-size: small;
               }
@@ -139,8 +138,9 @@ html {
         .avatar-username-container {
           display: flex;
           flex-direction: row;
-          align-items: 'center';
-          align-content: 'center';
+          width: 100%;
+          height: 100%;
+          align-items: center;
           .account-name {
             @include poppins500(14px);
             user-select: none;
@@ -157,6 +157,15 @@ html {
             cursor: pointer;
           }
         }
+        .info-row {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .centered {
+          justify-content: center;
+        }
         //TODO bellow refactor & cleanup
         .portfolio-table-container {
           @include small-card();
@@ -169,7 +178,7 @@ html {
           .theader {
             position: sticky;
             top: 0px;
-            background: antiquewhite;
+            background: var(--card-background);
           }
           .column-header {
             min-width: 150px;
@@ -179,12 +188,33 @@ html {
           .fixed-left {
             position: sticky;
             left: 0px;
-            background: antiquewhite;
+            background: var(--card-background);
           }
           .data-cell {
             min-width: 150px;
             max-width: 150px;
             text-align: left;
+          }
+          .avatar-username-container {
+            display: flex;
+            flex-direction: row;
+            align-items: 'center';
+            align-content: 'center';
+            .account-name {
+              @include poppins500(14px);
+              user-select: none;
+              color: var(--select-font-color);
+              margin-left: 10px;
+              align-self: center;
+            }
+            .user-picture {
+              border-radius: 50%;
+              width: 30px;
+              height: 30px;
+            }
+            .cursor-pointer {
+              cursor: pointer;
+            }
           }
         }
       }
