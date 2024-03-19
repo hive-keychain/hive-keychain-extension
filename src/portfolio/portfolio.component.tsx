@@ -63,7 +63,7 @@ const PortfolioComponent = () => {
     if (!localAccounts) {
       setIsLoading(false);
       setErrorMessage(
-        chrome.i18n.getMessage('no_account_found_on_ledger_error'),
+        chrome.i18n.getMessage('no_account_found_on_portfolio_error'),
       );
       return;
     } else {
@@ -192,11 +192,12 @@ const PortfolioComponent = () => {
         </div>
         {totalValueUSDPortfolio > 0 && (
           <div className="title-panel">
-            <div className="title">Total Value USD:</div>
+            <div className="title">
+              {chrome.i18n.getMessage('portfolio_total_value_usd')}
+            </div>
             <CustomTooltip
               position={'bottom'}
-              skipTranslation
-              message="This amount, reflects savings, stake, pending stake, delegations IN/OUT of tokens & balances in all the accounts you have registered in Keychain.">
+              message={'portfolio_tooltip_total_value'}>
               <div className="info-row centered">
                 <div className="title">
                   {' '}
@@ -222,15 +223,13 @@ const PortfolioComponent = () => {
         </div>
       )}
       {isReadyToShow && (
-        <>
-          <PortfolioTableComponent
-            data={filteredPortfolioUserDataList}
-            currencyPrices={currencyPrices}
-            setTotalValueUSDPortfolio={(value) =>
-              setTotalValueUSDPortfolio(value)
-            }
-          />
-        </>
+        <PortfolioTableComponent
+          data={filteredPortfolioUserDataList}
+          currencyPrices={currencyPrices}
+          setTotalValueUSDPortfolio={(value) =>
+            setTotalValueUSDPortfolio(value)
+          }
+        />
       )}
       {!isLoading && errorMessage.length > 0 && (
         <div className="title-panel">

@@ -1,4 +1,5 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import CurrencyUtils from '@popup/hive/utils/currency.utils';
 import React, { useEffect, useState } from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import {
@@ -59,16 +60,25 @@ const PortfolioTableComponent = ({
     );
   };
 
-  //TODO bellow add tr keys
   return (
     <div className="portfolio-table-container">
       <table className="table-react">
         <thead className="theader">
           <tr>
-            <th className="column-header fixed-left">ACCOUNT</th>
-            <th className="column-header">HIVE</th>
-            <th className="column-header">HP</th>
-            <th className="column-header">HBD</th>
+            <th className="column-header fixed-left">
+              {chrome.i18n
+                .getMessage('portfolio_table_column_header_account')
+                .toUpperCase()}
+            </th>
+            <th className="column-header">
+              {CurrencyUtils.getCurrencyLabels(false).hive}
+            </th>
+            <th className="column-header">
+              {CurrencyUtils.getCurrencyLabels(false).hp}
+            </th>
+            <th className="column-header">
+              {CurrencyUtils.getCurrencyLabels(false).hbd}
+            </th>
             {data[0].heTokenList.map((columnLabel) => {
               return (
                 <th
@@ -120,7 +130,11 @@ const PortfolioTableComponent = ({
             );
           })}
           <tr>
-            <td className="data-cell fixed-left">TOTALS</td>
+            <td className="data-cell fixed-left">
+              {chrome.i18n
+                .getMessage('portfolio_table_column_sticky_totals')
+                .toUpperCase()}
+            </td>
             <td className="data-cell">
               {FormatUtils.formatCurrencyValue(
                 data.reduce((acc, curr) => acc + curr.HIVE, 0),
@@ -136,7 +150,6 @@ const PortfolioTableComponent = ({
                 data.reduce((acc, curr) => acc + curr.HBD, 0),
               )}
             </td>
-            {/* {getTotalTokens(data, 'TOTAL')} */}
             {totals.map((totalToken) => {
               return (
                 <td className="data-cell" key={`${totalToken.symbol}-total`}>
@@ -146,7 +159,11 @@ const PortfolioTableComponent = ({
             })}
           </tr>
           <tr>
-            <td className="data-cell fixed-left">TOTAL USD</td>
+            <td className="data-cell fixed-left">
+              {chrome.i18n
+                .getMessage('portfolio_table_column_sticky_total_usd')
+                .toUpperCase()}
+            </td>
             <td className="data-cell">
               {FormatUtils.formatCurrencyValue(
                 data.reduce((acc, curr) => acc + curr.HIVE, 0) *
@@ -165,7 +182,6 @@ const PortfolioTableComponent = ({
                   (currencyPrices.hive_dollar.usd ?? 1),
               )}
             </td>
-            {/* {getTotalTokens(data, 'USD')} */}
             {totals.map((totalToken) => {
               return (
                 <td
