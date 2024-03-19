@@ -1,4 +1,8 @@
-//TODO bellow remove comments when finished.
+export interface PortfolioTotalTokenItem {
+  symbol: string;
+  total: number;
+  totalUSD: number;
+}
 
 export interface PortfolioHETokenData {
   symbol: string;

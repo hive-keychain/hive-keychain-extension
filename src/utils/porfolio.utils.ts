@@ -10,6 +10,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import {
   PortfolioHETokenData,
+  PortfolioTotalTokenItem,
   PortfolioUserData,
 } from 'src/portfolio/portfolio.interface';
 import FormatUtils from 'src/utils/format.utils';
@@ -164,7 +165,7 @@ const getOrderedTokenSymbolListByUsdTotalValue = (
   tokenMarket: TokenMarket[],
   currencyPrices: CurrencyPrices,
 ) => {
-  let totals: { symbol: string; total: number; totalUSD: number }[] = [];
+  let totals: PortfolioTotalTokenItem[] = [];
   extendedAccountList.map(({ name }) => {
     const userTokenBalanceList = tokensBalanceList.find(
       (tokenBalanceItem) => tokenBalanceItem[0].account === name,

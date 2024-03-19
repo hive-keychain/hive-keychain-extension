@@ -1,10 +1,12 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import React, { useEffect, useState } from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
+import {
+  PortfolioTotalTokenItem,
+  PortfolioUserData,
+} from 'src/portfolio/portfolio.interface';
 import FormatUtils from 'src/utils/format.utils';
 
-//TODO bellow add proper interfaces
 interface Props {
   data: PortfolioUserData[];
   currencyPrices: CurrencyPrices;
@@ -16,16 +18,14 @@ const PortfolioTableComponent = ({
   currencyPrices,
   setTotalValueUSDPortfolio,
 }: Props) => {
-  const [totals, setTotals] = useState<
-    { symbol: string; total: number; totalUSD: number }[]
-  >([]);
+  const [totals, setTotals] = useState<PortfolioTotalTokenItem[]>([]);
 
   useEffect(() => {
     getTotals();
   }, [data]);
 
   const getTotals = () => {
-    let temp_totals: { symbol: string; total: number; totalUSD: number }[] = [];
+    let temp_totals: PortfolioTotalTokenItem[] = [];
     data.map(({ heTokenList }) => {
       heTokenList.map((token) => {
         if (temp_totals.find((item) => item.symbol === token.symbol)) {
