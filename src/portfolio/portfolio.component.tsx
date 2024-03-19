@@ -13,9 +13,9 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import PortfolioFilterComponent from 'src/portfolio/portfolio-filter/portfolio-filter.component';
 import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
 import PortfolioTableComponent from 'src/portfolio/portolfio-table/portfolio-table.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -40,8 +40,8 @@ const PortfolioComponent = () => {
   const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [filterValue, setFilterValue] = useState('');
-  const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
+  // const [filterValue, setFilterValue] = useState('');
+  // const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
 
   const [portfolioUserDataList, setPortfolioUserDataList] = useState<
     PortfolioUserData[]
@@ -178,34 +178,34 @@ const PortfolioComponent = () => {
     }
   }, [globalProperties, tokensBalanceList]);
 
-  useEffect(() => {
-    const currentPortfolioUserDataList = [...portfolioUserDataList];
-    if (currentFilterList.length === 0) {
-      setFilteredPortfolioUserDataList(portfolioUserDataList);
-    } else {
-      const filteredList = currentPortfolioUserDataList.filter((item) =>
-        currentFilterList.includes(item.account),
-      );
-      setFilteredPortfolioUserDataList(filteredList);
-    }
-  }, [currentFilterList]);
+  // useEffect(() => {
+  //   const currentPortfolioUserDataList = [...portfolioUserDataList];
+  //   if (currentFilterList.length === 0) {
+  //     setFilteredPortfolioUserDataList(portfolioUserDataList);
+  //   } else {
+  //     const filteredList = currentPortfolioUserDataList.filter((item) =>
+  //       currentFilterList.includes(item.account),
+  //     );
+  //     setFilteredPortfolioUserDataList(filteredList);
+  //   }
+  // }, [currentFilterList]);
 
-  const handleAddAccountToFilter = (account: string) => {
-    if (!currentFilterList.includes(account)) {
-      setCurrentFilterList((prevList) => [...prevList, account]);
-      setFilterValue('');
-    }
-  };
+  // const handleAddAccountToFilter = (account: string) => {
+  //   if (!currentFilterList.includes(account)) {
+  //     setCurrentFilterList((prevList) => [...prevList, account]);
+  //     setFilterValue('');
+  //   }
+  // };
 
-  const handleRemoveAccountFromFilter = (account: string) => {
-    if (currentFilterList.includes(account)) {
-      let tempCurrentFilterList = [...currentFilterList];
-      tempCurrentFilterList = tempCurrentFilterList.filter(
-        (filter) => filter !== account,
-      );
-      setCurrentFilterList(tempCurrentFilterList);
-    }
-  };
+  // const handleRemoveAccountFromFilter = (account: string) => {
+  //   if (currentFilterList.includes(account)) {
+  //     let tempCurrentFilterList = [...currentFilterList];
+  //     tempCurrentFilterList = tempCurrentFilterList.filter(
+  //       (filter) => filter !== account,
+  //     );
+  //     setCurrentFilterList(tempCurrentFilterList);
+  //   }
+  // };
 
   const isReadyToShow =
     !isLoading &&
@@ -240,7 +240,15 @@ const PortfolioComponent = () => {
           </div>
         )}
       </div>
-      <div className="filter-box-container">
+      <PortfolioFilterComponent
+        extendedAccountsList={extendedAccountsList}
+        portfolioUserDataList={portfolioUserDataList}
+        setFilteredPortfolioUserDataList={(filteredList) =>
+          setFilteredPortfolioUserDataList(filteredList)
+        }
+        isReadyToShow={isReadyToShow}
+      />
+      {/* <div className="filter-box-container">
         <input
           disabled={!isReadyToShow}
           placeholder="Filter account"
@@ -289,7 +297,7 @@ const PortfolioComponent = () => {
               );
             })}
         </div>
-      )}
+      )} */}
       {isLoading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />

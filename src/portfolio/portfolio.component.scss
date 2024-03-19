@@ -97,10 +97,12 @@ html {
           width: auto;
           padding: 8px;
           color: var(--main-font-color);
+          flex-direction: row-reverse;
+          justify-content: flex-end;
           .filter-input {
             border: unset;
-            text-align: center;
             border-radius: 20px;
+            flex: 1;
           }
           .filter-box-list-container {
             display: flex;
