@@ -80,28 +80,30 @@ const PortfolioFilterComponent = ({
           </div>
         )}
       </div>
-      {filterValue.trim().length > 0 && (
-        <div className="filter-box">
-          {extendedAccountsList
-            .filter((acc) => acc.name.includes(filterValue))
-            .map((filteredAcc) => {
-              return (
-                <div
-                  className="avatar-username-container cursor-pointer"
-                  key={`avatar-username-filter-box-${filteredAcc.name}`}
-                  onClick={() => handleAddAccountToFilter(filteredAcc.name)}>
-                  <PreloadedImage
-                    className="user-picture"
-                    src={`https://images.hive.blog/u/${filteredAcc.name}/avatar`}
-                    alt={'/assets/images/accounts.png'}
-                    placeholder={'/assets/images/accounts.png'}
-                  />
-                  <div className="account-name">{filteredAcc.name}</div>
-                </div>
-              );
-            })}
-        </div>
-      )}
+      {filterValue.trim().length > 0 &&
+        extendedAccountsList.filter((acc) => acc.name.includes(filterValue))
+          .length > 0 && (
+          <div className="filter-box">
+            {extendedAccountsList
+              .filter((acc) => acc.name.includes(filterValue))
+              .map((filteredAcc) => {
+                return (
+                  <div
+                    className="avatar-username-container cursor-pointer"
+                    key={`avatar-username-filter-box-${filteredAcc.name}`}
+                    onClick={() => handleAddAccountToFilter(filteredAcc.name)}>
+                    <PreloadedImage
+                      className="user-picture"
+                      src={`https://images.hive.blog/u/${filteredAcc.name}/avatar`}
+                      alt={'/assets/images/accounts.png'}
+                      placeholder={'/assets/images/accounts.png'}
+                    />
+                    <div className="account-name">{filteredAcc.name}</div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
     </>
   );
 };
