@@ -96,7 +96,6 @@ html {
           margin: 0px 0px;
           width: auto;
           padding: 8px;
-          color: var(--main-font-color);
           flex-direction: row-reverse;
           justify-content: flex-end;
           .filter-input {
@@ -105,6 +104,8 @@ html {
             flex: 1;
             padding-left: 12px;
             outline: unset;
+            background-color: transparent;
+            color: var(--main-font-color);
           }
           .filter-box-list-container {
             display: flex;
@@ -144,7 +145,6 @@ html {
           top: 140px;
           width: 50%;
           position: absolute;
-          background-color: white;
           z-index: 100;
         }
         .text {
