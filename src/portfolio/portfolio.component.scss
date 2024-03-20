@@ -146,7 +146,7 @@ html {
           left: 24px;
           width: 50%;
           position: absolute;
-          z-index: 100;
+          z-index: 120;
         }
         .text {
           @include poppins500(13px);
@@ -186,6 +186,7 @@ html {
         //TODO bellow refactor & cleanup
         .portfolio-table-container {
           @include small-card();
+          align-items: unset;
           margin: 0px 0px;
           overflow: scroll;
           height: -webkit-fill-available;
@@ -196,16 +197,24 @@ html {
             position: sticky;
             top: 0px;
             background: var(--card-background);
+            z-index: 110;
           }
           .column-header {
             min-width: 150px;
             max-width: 150px;
             text-align: left;
           }
+          .fixed-left-top-of-all {
+            position: sticky;
+            left: 0px;
+            background: var(--card-background);
+            z-index: 110;
+          }
           .fixed-left {
             position: sticky;
             left: 0px;
             background: var(--card-background);
+            z-index: 100;
           }
           .data-cell {
             min-width: 150px;

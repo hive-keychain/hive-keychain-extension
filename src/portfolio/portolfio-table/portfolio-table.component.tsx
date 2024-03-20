@@ -33,7 +33,7 @@ const PortfolioTable = ({
       <table className="table-react">
         <thead className="theader">
           <tr>
-            <th className="column-header fixed-left">
+            <th className="column-header fixed-left-top-of-all">
               {chrome.i18n
                 .getMessage('portfolio_table_column_header_account')
                 .toUpperCase()}
