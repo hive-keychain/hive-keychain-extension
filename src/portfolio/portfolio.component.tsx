@@ -209,14 +209,15 @@ const PortfolioComponent = () => {
           </div>
         )}
       </div>
-      <PortfolioFilterComponent
-        extendedAccountsList={extendedAccountsList}
-        portfolioUserDataList={portfolioUserDataList}
-        setFilteredPortfolioUserDataList={(filteredList) =>
-          setFilteredPortfolioUserDataList(filteredList)
-        }
-        isReadyToShow={isReadyToShow}
-      />
+      {isReadyToShow && (
+        <PortfolioFilterComponent
+          extendedAccountsList={extendedAccountsList}
+          portfolioUserDataList={portfolioUserDataList}
+          setFilteredPortfolioUserDataList={(filteredList) =>
+            setFilteredPortfolioUserDataList(filteredList)
+          }
+        />
+      )}
       {isLoading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />

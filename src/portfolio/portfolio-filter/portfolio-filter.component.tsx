@@ -9,13 +9,11 @@ interface Props {
   extendedAccountsList: ExtendedAccount[];
   portfolioUserDataList: PortfolioUserData[];
   setFilteredPortfolioUserDataList: (filteredList: PortfolioUserData[]) => void;
-  isReadyToShow: boolean | null | undefined;
 }
 
 const PortfolioFilterComponent = ({
   portfolioUserDataList,
   setFilteredPortfolioUserDataList,
-  isReadyToShow,
   extendedAccountsList,
 }: Props) => {
   const [filterValue, setFilterValue] = useState('');
@@ -54,7 +52,6 @@ const PortfolioFilterComponent = ({
     <>
       <div className="filter-box-container">
         <input
-          disabled={!isReadyToShow}
           placeholder={chrome.i18n.getMessage('portfolio_filter_placeholder')}
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}

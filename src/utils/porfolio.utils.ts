@@ -142,8 +142,6 @@ const getPortfolioUserDataList = async (
       hbd_balance,
       savings_balance,
       savings_hbd_balance,
-      delegated_vesting_shares,
-      received_vesting_shares,
     }) => {
       const totalHIVE =
         +(balance as string).split(' ')[0] +
@@ -151,10 +149,7 @@ const getPortfolioUserDataList = async (
       const totalHBD =
         +(hbd_balance as string).split(' ')[0] +
         +(savings_hbd_balance as string).split(' ')[0];
-      const totalVESTS =
-        +(vesting_shares as string).split(' ')[0] +
-        +(delegated_vesting_shares as string).split(' ')[0] +
-        +(received_vesting_shares as string).split(' ')[0];
+      const totalVESTS = +(vesting_shares as string).split(' ')[0];
       const userTokenBalanceList = tokensBalanceList.find(
         (tokenBalanceItem) => tokenBalanceItem[0].account === name,
       );
