@@ -4,10 +4,6 @@ import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
-import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
-import HiveUtils from '@popup/hive/utils/hive.utils';
-import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -19,7 +15,6 @@ import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
 import { PortfolioTableComponent } from 'src/portfolio/portolfio-table/portfolio-table.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 const Portfolio = () => {
@@ -54,10 +49,17 @@ const Portfolio = () => {
       LocalStorageKeyEnum.ACTIVE_THEME,
     ]);
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+
     const mk = await LocalStorageUtils.getValueFromSessionStorage(
       LocalStorageKeyEnum.__MK,
     );
     let localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+    let extendedAccounts = await AccountUtils.getExtendedAccounts(
+      localAccounts.map((localAcc) => localAcc.name),
+    );
+    const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio(
+      extendedAccounts,
+    );
 
     if (!localAccounts) {
       setIsLoading(false);
@@ -66,121 +68,26 @@ const Portfolio = () => {
       );
       return;
     } else {
-      await PortfolioUtils.loadAndSetRPCsAndApis();
       setLocalAccounts(localAccounts);
-      let extAccounts = await AccountUtils.getExtendedAccounts(
-        localAccounts.map((localAcc) => localAcc.name),
-      );
-      setExtendedAccountsList(extAccounts);
-      loadGlobalProps();
-      loadCurrencyPrices();
-      loadUserTokens(localAccounts);
-      loadTokens();
-      loadTokensMarket();
-    }
-  };
 
-  const loadTokensMarket = async () => {
-    try {
-      const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
-      setTokenMarket(tokensMarket);
-    } catch (error) {
-      Logger.error('Error loading tokens market', { error });
-    }
-  };
+      setExtendedAccountsList(extendedAccounts);
 
-  const loadTokens = async () => {
-    let tokens;
-    try {
-      tokens = await TokensUtils.getAllTokens();
-    } catch (err: any) {
-      Logger.error('Error getting tokens', { err });
+      await getAllData();
     }
-  };
-
-  const loadCurrencyPrices = async () => {
-    try {
-      const prices = await CurrencyPricesUtils.getPrices();
-      if (prices) {
-        setCurrencyPrices(prices);
-      }
-    } catch (error) {
-      Logger.error('Error loading prices!', { error });
-    }
-  };
-
-  const loadGlobalProps = async () => {
-    try {
-      const [globals, price, rewardFund] = await Promise.all([
-        DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
-        HiveUtils.getCurrentMedianHistoryPrice(),
-        HiveUtils.getRewardFund(),
-      ]);
-      const props = { globals, price, rewardFund };
-      setGlobalProperties(props);
-    } catch (error) {
-      Logger.error('Error getting globals!', error);
-    }
-  };
-
-  const loadUserTokens = async (accountNames: LocalAccount[]) => {
-    let tempTokenBalanceList: TokenBalance[][] = [];
-    for (let index = 0; index < accountNames.length; index++) {
-      const accountName = accountNames[index].name;
-      let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
-        accountName,
-      );
-      if (tokensBalance.length === 0) {
-        tokensBalance = [
-          {
-            _id: 99999,
-            account: accountName,
-            symbol: 'PAL',
-            balance: '0',
-            delegationsIn: '0',
-            delegationsOut: '0',
-            stake: '0',
-            pendingUndelegations: '0',
-            pendingUnstake: '0',
-          } as TokenBalance,
-        ];
-      }
-      tempTokenBalanceList.push(tokensBalance);
-    }
-    setTokensBalanceList(tempTokenBalanceList);
   };
 
   const getAllData = async () => {
-    const dataTempUsers = await PortfolioUtils.getPortfolioUserDataList(
-      extendedAccountsList,
-      tokensBalanceList,
-      tokenMarket,
-      currencyPrices!,
-      globalProperties?.globals!,
-    );
-    setPortfolioUserDataList(dataTempUsers);
-    setFilteredPortfolioUserDataList(dataTempUsers);
+    // const dataTempUsers = await PortfolioUtils.getPortfolioUserDataList(
+    //   extendedAccountsList,
+    //   tokensBalanceList,
+    //   tokenMarket,
+    //   currencyPrices!,
+    //   globalProperties?.globals!,
+    // );
+    // setPortfolioUserDataList(dataTempUsers);
+    // setFilteredPortfolioUserDataList(dataTempUsers);
+    // setIsLoading(false);
   };
-
-  useEffect(() => {
-    if (
-      extendedAccountsList.length > 0 &&
-      globalProperties?.globals &&
-      currencyPrices &&
-      tokensBalanceList.length > 0
-    ) {
-      getAllData();
-      setIsLoading(false);
-    }
-  }, [globalProperties, tokensBalanceList]);
-
-  const isReadyToShow =
-    !isLoading &&
-    filteredPortfolioUserDataList &&
-    globalProperties &&
-    currencyPrices &&
-    tokensBalanceList.length > 0 &&
-    filteredPortfolioUserDataList.length > 0;
 
   return (
     <div className={`theme ${theme} portfolio`}>
@@ -205,7 +112,7 @@ const Portfolio = () => {
       <div className="caption">
         {chrome.i18n.getMessage('portfolio_caption_message_total_value')}
       </div>
-      {isReadyToShow && (
+      {!isLoading && (
         <PortfolioFilterComponent
           extendedAccountsList={extendedAccountsList}
           portfolioUserDataList={portfolioUserDataList}
@@ -214,12 +121,8 @@ const Portfolio = () => {
           }
         />
       )}
-      {isLoading && (
-        <div className="rotating-logo-container">
-          <RotatingLogoComponent />
-        </div>
-      )}
-      {isReadyToShow && (
+
+      {!isLoading && currencyPrices && portfolioUserDataList && (
         <PortfolioTableComponent
           data={filteredPortfolioUserDataList}
           currencyPrices={currencyPrices}
@@ -228,9 +131,16 @@ const Portfolio = () => {
           }
         />
       )}
+
       {!isLoading && errorMessage.length > 0 && (
         <div className="title-panel">
           <div className="title">{errorMessage}</div>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
         </div>
       )}
     </div>

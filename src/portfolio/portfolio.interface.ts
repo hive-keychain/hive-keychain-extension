@@ -13,7 +13,18 @@ export interface PortfolioHETokenData {
 export interface PortfolioUserData {
   account: string;
   HIVE: number; // liquid + savings
-  HP: number; // (outgoing + incoming)
+  HP: number;
   HBD: number; // liquid + savings
   heTokenList: PortfolioHETokenData[];
+}
+
+export interface UserPortfolio {
+  account: string;
+  balances: PortfolioBalance[];
+}
+
+export interface PortfolioBalance {
+  symbol: string;
+  balance: number;
+  usdValue: number;
 }

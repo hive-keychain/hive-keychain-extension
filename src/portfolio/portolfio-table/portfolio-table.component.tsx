@@ -22,6 +22,7 @@ const PortfolioTable = ({
   const [totals, setTotals] = useState<PortfolioTotalTokenItem[]>([]);
 
   useEffect(() => {
+    console.log(data);
     getTotals();
   }, [data]);
 
