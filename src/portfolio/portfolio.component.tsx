@@ -1,8 +1,5 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -11,7 +8,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioFilterComponent } from 'src/portfolio/portfolio-filter/portfolio-filter.component';
-import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
+import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioTableComponent } from 'src/portfolio/portolfio-table/portfolio-table.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -19,26 +16,18 @@ import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 const Portfolio = () => {
   const [theme, setTheme] = useState<Theme>();
+  const [tableColumnsHeaders, setTableColumnsHeaders] = useState<string[]>([]);
   const [localAccounts, setLocalAccounts] = useState<LocalAccount[]>([]);
   const [extendedAccountsList, setExtendedAccountsList] = useState<
     ExtendedAccount[]
   >([]);
-  const [globalProperties, setGlobalProperties] =
-    useState<GlobalProperties | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currencyPrices, setCurrencyPrices] = useState<CurrencyPrices>();
-  const [tokensBalanceList, setTokensBalanceList] = useState<TokenBalance[][]>(
-    [],
-  );
-  const [tokenMarket, setTokenMarket] = useState<TokenMarket[]>([]);
   const [totalValueUSDPortfolio, setTotalValueUSDPortfolio] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
-
-  const [portfolioUserDataList, setPortfolioUserDataList] = useState<
-    PortfolioUserData[]
+  const [portfolioData, setPortfolioData] = useState<UserPortfolio[]>([]);
+  const [filteredPortfolioData, setFilteredPortfolioData] = useState<
+    UserPortfolio[]
   >([]);
-  const [filteredPortfolioUserDataList, setFilteredPortfolioUserDataList] =
-    useState<PortfolioUserData[]>([]);
 
   useEffect(() => {
     init();
@@ -57,9 +46,6 @@ const Portfolio = () => {
     let extendedAccounts = await AccountUtils.getExtendedAccounts(
       localAccounts.map((localAcc) => localAcc.name),
     );
-    const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio(
-      extendedAccounts,
-    );
 
     if (!localAccounts) {
       setIsLoading(false);
@@ -69,24 +55,15 @@ const Portfolio = () => {
       return;
     } else {
       setLocalAccounts(localAccounts);
-
       setExtendedAccountsList(extendedAccounts);
-
-      await getAllData();
+      const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio(
+        extendedAccounts,
+      );
+      setTableColumnsHeaders(orderedTokenList as string[]);
+      setPortfolioData(portfolio as UserPortfolio[]);
+      setFilteredPortfolioData(portfolio as UserPortfolio[]);
+      setIsLoading(false);
     }
-  };
-
-  const getAllData = async () => {
-    // const dataTempUsers = await PortfolioUtils.getPortfolioUserDataList(
-    //   extendedAccountsList,
-    //   tokensBalanceList,
-    //   tokenMarket,
-    //   currencyPrices!,
-    //   globalProperties?.globals!,
-    // );
-    // setPortfolioUserDataList(dataTempUsers);
-    // setFilteredPortfolioUserDataList(dataTempUsers);
-    // setIsLoading(false);
   };
 
   return (
@@ -115,20 +92,20 @@ const Portfolio = () => {
       {!isLoading && (
         <PortfolioFilterComponent
           extendedAccountsList={extendedAccountsList}
-          portfolioUserDataList={portfolioUserDataList}
-          setFilteredPortfolioUserDataList={(filteredList) =>
-            setFilteredPortfolioUserDataList(filteredList)
+          data={portfolioData}
+          setFilteredPortfolioData={(filteredList) =>
+            setFilteredPortfolioData(filteredList)
           }
         />
       )}
 
-      {!isLoading && currencyPrices && portfolioUserDataList && (
+      {!isLoading && filteredPortfolioData && (
         <PortfolioTableComponent
-          data={filteredPortfolioUserDataList}
-          currencyPrices={currencyPrices}
+          data={filteredPortfolioData}
           setTotalValueUSDPortfolio={(value) =>
             setTotalValueUSDPortfolio(value)
           }
+          tableColumnsHeaders={tableColumnsHeaders}
         />
       )}
 

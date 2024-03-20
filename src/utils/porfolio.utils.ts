@@ -1,4 +1,4 @@
-import { ExtendedAccount } from '@hiveio/dhive';
+import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
@@ -14,6 +14,7 @@ import {
   PortfolioBalance,
   UserPortfolio,
 } from 'src/portfolio/portfolio.interface';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const loadAndSetRPCsAndApis = async () => {
@@ -60,7 +61,7 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
     HiveUtils.getRewardFund(),
   ]);
   const [prices, usersTokens, tokensMarket] = await Promise.all([
-    CurrencyPricesUtils.getPrices(),
+    CurrencyPricesUtils.getPrices() as unknown as CurrencyPrices,
     loadUsersTokens(extendedAccounts.map((acc: ExtendedAccount) => acc.name)),
     TokensUtils.getTokensMarket({}, 1000, 0, []),
   ]);
@@ -80,7 +81,6 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
       balances: userPortfolio,
     });
   }
-  console.log(portfolio);
 
   const orderedTokenList = [
     'HIVE',
@@ -90,12 +90,38 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
   ];
 
   for (const userPortfolio of portfolio) {
-    // add HBD
-    userPortfolio.balances.push();
-    // add HIVE
-    userPortfolio.balances.push();
-    // add HP
-    userPortfolio.balances.push();
+    const {
+      balance,
+      savings_balance,
+      savings_hbd_balance,
+      vesting_shares,
+      hbd_balance,
+    } = extendedAccounts.find(
+      (extAcc) => extAcc.name === userPortfolio.account,
+    )!;
+    const totalHIVE =
+      Asset.fromString(balance.toString()).amount +
+      Asset.fromString(savings_balance.toString()).amount;
+    const totalHBD =
+      Asset.fromString(hbd_balance.toString()).amount +
+      Asset.fromString(savings_hbd_balance.toString()).amount;
+    const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
+    const totalHP = FormatUtils.toHP(totalVESTS.toString(), globals);
+    userPortfolio.balances.push({
+      symbol: 'HIVE',
+      balance: totalHIVE,
+      usdValue: totalHIVE * (prices.hive.usd ?? 1),
+    });
+    userPortfolio.balances.push({
+      symbol: 'HBD',
+      balance: totalHBD,
+      usdValue: totalHBD * (prices.hive_dollar.usd ?? 1),
+    });
+    userPortfolio.balances.push({
+      symbol: 'HP',
+      balance: totalHP,
+      usdValue: totalHP * (prices.hive.usd ?? 1),
+    });
   }
 
   return [portfolio, orderedTokenList];
@@ -141,7 +167,6 @@ const getTokensFullList = (
   const tokensFullList: string[] = [];
 
   for (const userTokens of usersTokens) {
-    console.log(userTokens);
     for (const token of userTokens.tokensBalance) {
       if (!tokensFullList.includes(token.symbol)) {
         tokensFullList.push(token.symbol);
@@ -173,136 +198,35 @@ const getPortfolioHETokenData = (
   };
 };
 
-// const getOrderedTokenSymbolListByUsdTotalValue = (
-//   tokenSymbolListNoDuplicates: string[],
-//   extendedAccountList: ExtendedAccount[],
-//   tokensBalanceList: TokenBalance[][],
-//   tokenMarket: TokenMarket[],
-//   currencyPrices: CurrencyPrices,
-// ) => {
-//   let totals: PortfolioTotalTokenItem[] = [];
-//   extendedAccountList.map(({ name }) => {
-//     const userTokenBalanceList = tokensBalanceList.find(
-//       (tokenBalanceItem) => tokenBalanceItem[0].account === name,
-//     );
-//     let heTokenList = tokenSymbolListNoDuplicates.map((tknSymbol) => {
-//       const foundTokenInUserTokenList = userTokenBalanceList?.find(
-//         (item) => item.symbol === tknSymbol,
-//       );
-//       if (foundTokenInUserTokenList) {
-//         const portfolioHETokenData: PortfolioHETokenData =
-//           getPortfolioHETokenData(
-//             foundTokenInUserTokenList,
-//             tokenMarket,
-//             currencyPrices,
-//           );
-//         const { symbol, totalBalance, totalBalanceUsdValue } =
-//           portfolioHETokenData;
-//         if (
-//           !totals.find((item) => item.symbol === portfolioHETokenData.symbol)
-//         ) {
-//           totals.push({
-//             symbol,
-//             total: totalBalance,
-//             totalUSD: totalBalanceUsdValue,
-//           });
-//         } else {
-//           const foundIndex = totals.findIndex(
-//             (item) => item.symbol === portfolioHETokenData.symbol,
-//           );
-//           totals[foundIndex] = {
-//             symbol: totals[foundIndex].symbol,
-//             total: totals[foundIndex].total + portfolioHETokenData.totalBalance,
-//             totalUSD:
-//               totals[foundIndex].totalUSD +
-//               portfolioHETokenData.totalBalanceUsdValue,
-//           };
-//         }
-//       }
-//     });
-//   });
-//   //order & pass only symbols
-//   return totals
-//     .sort((a, b) => b.totalUSD - a.totalUSD)
-//     .map((item) => item.symbol);
-// };
-
-// const getPortfolioUserDataList = async (
-//   extendedAccountList: ExtendedAccount[],
-//   tokensBalanceList: TokenBalance[][],
-//   tokenMarket: TokenMarket[],
-//   currencyPrices: CurrencyPrices,
-//   globalProperties: DynamicGlobalProperties | undefined,
-// ) => {
-//   let tokenSymbolListNoDuplicates: string[] = [];
-//   tokensBalanceList.map((tokenBalance) => {
-//     tokenBalance.map((token) => {
-//       if (!tokenSymbolListNoDuplicates.includes(token.symbol)) {
-//         tokenSymbolListNoDuplicates.push(token.symbol);
-//       }
-//     });
-//   });
-//   tokenSymbolListNoDuplicates = getOrderedTokenSymbolListByUsdTotalValue(
-//     tokenSymbolListNoDuplicates,
-//     extendedAccountList,
-//     tokensBalanceList,
-//     tokenMarket,
-//     currencyPrices,
-//   );
-//   let tempList: PortfolioUserData[] = extendedAccountList.map(
-//     ({
-//       name,
-//       balance,
-//       vesting_shares,
-//       hbd_balance,
-//       savings_balance,
-//       savings_hbd_balance,
-//     }) => {
-//       const totalHIVE =
-//         Asset.fromString(balance.toString()).amount +
-//         Asset.fromString(savings_balance.toString()).amount;
-//       const totalHBD =
-//         Asset.fromString(hbd_balance.toString()).amount +
-//         Asset.fromString(savings_hbd_balance.toString()).amount;
-//       const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
-//       const userTokenBalanceList = tokensBalanceList.find(
-//         (tokenBalanceItem) => tokenBalanceItem[0].account === name,
-//       );
-//       let heTokenList = tokenSymbolListNoDuplicates.map((tknSymbol) => {
-//         const foundTokenInUserTokenList = userTokenBalanceList?.find(
-//           (item) => item.symbol === tknSymbol,
-//         );
-//         if (foundTokenInUserTokenList) {
-//           const portfolioHETokenData: PortfolioHETokenData =
-//             getPortfolioHETokenData(
-//               foundTokenInUserTokenList,
-//               tokenMarket,
-//               currencyPrices,
-//             );
-//           return portfolioHETokenData;
-//         } else {
-//           return {
-//             symbol: tknSymbol,
-//             totalBalance: 0,
-//             totalBalanceUsdValue: 0,
-//           } as PortfolioHETokenData;
-//         }
-//       });
-
-//       return {
-//         account: name,
-//         HIVE: totalHIVE,
-//         HBD: totalHBD,
-//         HP: FormatUtils.toHP(totalVESTS.toString(), globalProperties),
-//         heTokenList,
-//       } as PortfolioUserData;
-//     },
-//   );
-//   return tempList;
-// };
+const getTotals = (tableColumnsHeaders: string[], data: UserPortfolio[]) => {
+  const tempTotalBalances: PortfolioBalance[] = [];
+  tableColumnsHeaders.map((symbol) => {
+    data.map(({ balances }) => {
+      const foundToken = balances.find(
+        (tokenBalance) => tokenBalance.symbol === symbol,
+      );
+      if (foundToken) {
+        const foundTotalBalanceItem = tempTotalBalances.find(
+          (item) => item.symbol === foundToken.symbol,
+        );
+        if (foundTotalBalanceItem) {
+          foundTotalBalanceItem.balance += foundToken.balance;
+          foundTotalBalanceItem.usdValue += foundToken.usdValue;
+        } else {
+          tempTotalBalances.push({
+            symbol: foundToken.symbol,
+            balance: foundToken.balance,
+            usdValue: foundToken.usdValue,
+          });
+        }
+      }
+    });
+  });
+  return tempTotalBalances;
+};
 
 export const PortfolioUtils = {
   loadAndSetRPCsAndApis,
-  // getPortfolioUserDataList,
   getPortfolio,
+  getTotals,
 };

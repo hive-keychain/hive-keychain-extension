@@ -3,31 +3,31 @@ import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
+import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 
 interface Props {
   extendedAccountsList: ExtendedAccount[];
-  portfolioUserDataList: PortfolioUserData[];
-  setFilteredPortfolioUserDataList: (filteredList: PortfolioUserData[]) => void;
+  data: UserPortfolio[];
+  setFilteredPortfolioData: (filteredList: UserPortfolio[]) => void;
 }
 
 const PortfolioFilter = ({
-  portfolioUserDataList,
-  setFilteredPortfolioUserDataList,
+  data,
+  setFilteredPortfolioData,
   extendedAccountsList,
 }: Props) => {
   const [filterValue, setFilterValue] = useState('');
   const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
 
   useEffect(() => {
-    const currentPortfolioUserDataList = [...portfolioUserDataList];
+    const currentPortfolioUserDataList = [...data];
     if (currentFilterList.length === 0) {
-      setFilteredPortfolioUserDataList(portfolioUserDataList);
+      setFilteredPortfolioData(data);
     } else {
       const filteredList = currentPortfolioUserDataList.filter((item) =>
         currentFilterList.includes(item.account),
       );
-      setFilteredPortfolioUserDataList(filteredList);
+      setFilteredPortfolioData(filteredList);
     }
   }, [currentFilterList]);
 
