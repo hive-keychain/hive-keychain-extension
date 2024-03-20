@@ -3411,6 +3411,10 @@
     "message": "Filter account",
     "description": "portfolio filter"
   },
+  "portfolio_data_cell_zero_or_no_balance_text": {
+    "message": "-",
+    "description": "portfolio displayed when 0 or no balances found on tokens"
+  },
   "portfolio_table_column_header_account": {
     "message": "Account",
     "description": "portfolio table headers"

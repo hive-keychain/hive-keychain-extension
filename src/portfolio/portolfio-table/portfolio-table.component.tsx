@@ -119,7 +119,9 @@ const PortfolioTableComponent = ({
                       className="data-cell">
                       {!userTokenData.totalBalance ||
                       userTokenData.totalBalance === 0
-                        ? '-'
+                        ? chrome.i18n.getMessage(
+                            'portfolio_data_cell_zero_or_no_balance_text',
+                          )
                         : FormatUtils.formatCurrencyValue(
                             userTokenData.totalBalance,
                           )}
