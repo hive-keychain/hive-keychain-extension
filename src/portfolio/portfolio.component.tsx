@@ -14,15 +14,15 @@ import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import PortfolioFilterComponent from 'src/portfolio/portfolio-filter/portfolio-filter.component';
+import { PortfolioFilterComponent } from 'src/portfolio/portfolio-filter/portfolio-filter.component';
 import { PortfolioUserData } from 'src/portfolio/portfolio.interface';
-import PortfolioTableComponent from 'src/portfolio/portolfio-table/portfolio-table.component';
+import { PortfolioTableComponent } from 'src/portfolio/portolfio-table/portfolio-table.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
-const PortfolioComponent = () => {
+const Portfolio = () => {
   const [theme, setTheme] = useState<Theme>();
   const [localAccounts, setLocalAccounts] = useState<LocalAccount[]>([]);
   const [extendedAccountsList, setExtendedAccountsList] = useState<
@@ -237,4 +237,4 @@ const PortfolioComponent = () => {
   );
 };
 
-export default PortfolioComponent;
+export const PortfolioComponent = Portfolio;

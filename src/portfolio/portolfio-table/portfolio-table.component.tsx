@@ -14,7 +14,7 @@ interface Props {
   setTotalValueUSDPortfolio: (value: number) => void;
 }
 
-const PortfolioTableComponent = ({
+const PortfolioTable = ({
   data,
   currencyPrices,
   setTotalValueUSDPortfolio,
@@ -200,4 +200,4 @@ const PortfolioTableComponent = ({
   );
 };
 
-export default PortfolioTableComponent;
+export const PortfolioTableComponent = PortfolioTable;

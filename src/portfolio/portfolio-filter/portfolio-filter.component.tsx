@@ -11,7 +11,7 @@ interface Props {
   setFilteredPortfolioUserDataList: (filteredList: PortfolioUserData[]) => void;
 }
 
-const PortfolioFilterComponent = ({
+const PortfolioFilter = ({
   portfolioUserDataList,
   setFilteredPortfolioUserDataList,
   extendedAccountsList,
@@ -105,4 +105,4 @@ const PortfolioFilterComponent = ({
   );
 };
 
-export default PortfolioFilterComponent;
+export const PortfolioFilterComponent = PortfolioFilter;
