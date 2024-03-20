@@ -3403,7 +3403,7 @@
     "message": "Total Value USD:",
     "description": "portfolio main page"
   },
-  "portfolio_tooltip_total_value": {
+  "portfolio_caption_message_total_value": {
     "message": "This amount, reflects savings, stake, pending stake, delegations IN/OUT of tokens & balances in all the accounts you have registered in Keychain.",
     "description": "portfolio main page, information total value"
   },

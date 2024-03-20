@@ -11,7 +11,6 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -195,19 +194,16 @@ const PortfolioComponent = () => {
             <div className="title">
               {chrome.i18n.getMessage('portfolio_total_value_usd')}
             </div>
-            <CustomTooltip
-              position={'bottom'}
-              message={'portfolio_tooltip_total_value'}>
-              <div className="info-row centered">
-                <div className="title">
-                  {' '}
-                  {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
-                </div>
-                <SVGIcon dataTestId="input-clear" icon={SVGIcons.MENU_ABOUT} />
+            <div className="info-row centered">
+              <div className="title">
+                {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
               </div>
-            </CustomTooltip>
+            </div>
           </div>
         )}
+      </div>
+      <div className="caption">
+        {chrome.i18n.getMessage('portfolio_caption_message_total_value')}
       </div>
       {isReadyToShow && (
         <PortfolioFilterComponent
