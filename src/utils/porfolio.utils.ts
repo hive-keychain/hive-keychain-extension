@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
+import { Asset, DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
@@ -144,12 +144,12 @@ const getPortfolioUserDataList = async (
       savings_hbd_balance,
     }) => {
       const totalHIVE =
-        +(balance as string).split(' ')[0] +
-        +(savings_balance as string).split(' ')[0];
+        Asset.fromString(balance.toString()).amount +
+        Asset.fromString(savings_balance.toString()).amount;
       const totalHBD =
-        +(hbd_balance as string).split(' ')[0] +
-        +(savings_hbd_balance as string).split(' ')[0];
-      const totalVESTS = +(vesting_shares as string).split(' ')[0];
+        Asset.fromString(hbd_balance.toString()).amount +
+        Asset.fromString(savings_hbd_balance.toString()).amount;
+      const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
       const userTokenBalanceList = tokensBalanceList.find(
         (tokenBalanceItem) => tokenBalanceItem[0].account === name,
       );
