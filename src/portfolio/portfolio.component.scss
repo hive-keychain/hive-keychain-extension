@@ -104,21 +104,34 @@ html {
             border-radius: 20px;
             flex: 1;
             padding-left: 12px;
+            outline: unset;
           }
           .filter-box-list-container {
             display: flex;
             flex-direction: row;
+            column-gap: 8px;
             .filter-item {
               display: flex;
               flex-direction: row;
               align-items: center;
               border-radius: 20px;
               border: 1px solid var(--card-border);
-              padding-left: 4px;
-              padding-right: 4px;
-              margin-right: 8px;
-              .small-text {
-                font-size: small;
+              padding: 8px 12px;
+              .filter-item-value {
+                @include poppins400($input-font-size);
+              }
+              .erase-chip-icon {
+                display: none;
+                margin-left: 8px;
+                @include icon-size(16px);
+                svg {
+                  @include icon-size(16px);
+                }
+              }
+              &:hover {
+                .erase-chip-icon {
+                  display: block;
+                }
               }
             }
           }

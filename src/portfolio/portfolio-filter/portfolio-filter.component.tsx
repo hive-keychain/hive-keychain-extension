@@ -59,17 +59,17 @@ const PortfolioFilterComponent = ({
         />
         {currentFilterList.length > 0 && (
           <div className="filter-box-list-container">
-            {currentFilterList.map((currentFilter) => {
+            {currentFilterList.map((filterItem) => {
               return (
                 <div
-                  key={`current-filter-${currentFilter}`}
+                  key={`current-filter-${filterItem}`}
                   className="filter-item">
-                  <div className="small-text">{currentFilter}</div>
+                  <div className="filter-item-value">{filterItem}</div>
                   <SVGIcon
                     dataTestId="input-clear"
                     icon={SVGIcons.INPUT_CLEAR}
-                    className={`input-img erase right`}
-                    onClick={() => handleRemoveAccountFromFilter(currentFilter)}
+                    className={`erase-chip-icon`}
+                    onClick={() => handleRemoveAccountFromFilter(filterItem)}
                   />
                 </div>
               );
