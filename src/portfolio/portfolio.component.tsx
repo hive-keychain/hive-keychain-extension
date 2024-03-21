@@ -61,6 +61,15 @@ const Portfolio = () => {
       );
       setTableColumnsHeaders(orderedTokenList as string[]);
       setPortfolioData(portfolio as UserPortfolio[]);
+
+      const tempTotals = PortfolioUtils.getTotals(
+        orderedTokenList as string[],
+        portfolio as UserPortfolio[],
+      );
+      setTotalValueUSDPortfolio(
+        tempTotals.reduce((acc, curr) => acc + curr.usdValue, 0),
+      );
+
       setFilteredPortfolioData(portfolio as UserPortfolio[]);
       setIsLoading(false);
     }
@@ -93,18 +102,15 @@ const Portfolio = () => {
         <PortfolioFilterComponent
           extendedAccountsList={extendedAccountsList}
           data={portfolioData}
-          setFilteredPortfolioData={(filteredList) =>
-            setFilteredPortfolioData(filteredList)
-          }
+          setFilteredPortfolioData={(filteredList) => {
+            setFilteredPortfolioData(filteredList);
+          }}
         />
       )}
 
       {!isLoading && filteredPortfolioData && (
         <PortfolioTableComponent
           data={filteredPortfolioData}
-          setTotalValueUSDPortfolio={(value) =>
-            setTotalValueUSDPortfolio(value)
-          }
           tableColumnsHeaders={tableColumnsHeaders}
         />
       )}

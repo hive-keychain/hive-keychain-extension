@@ -3404,12 +3404,16 @@
     "description": "portfolio main page"
   },
   "portfolio_caption_message_total_value": {
-    "message": "This amount, reflects savings, stake, pending stake, delegations IN/OUT of tokens & balances in all the accounts you have registered in Keychain.",
+    "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
     "description": "portfolio main page, information total value"
   },
   "portfolio_filter_placeholder": {
     "message": "Filter account",
     "description": "portfolio filter"
+  },
+  "portfolio_clear_filter_link": {
+    "message": "Clear",
+    "description": "clear filter"
   },
   "portfolio_data_cell_zero_or_no_balance_text": {
     "message": "-",
@@ -3420,7 +3424,11 @@
     "description": "portfolio table headers"
   },
   "portfolio_table_column_sticky_totals": {
-    "message": "Totals",
+    "message": "Total",
+    "description": "portfolio table columns"
+  },
+  "portfolio_table_column_total_hive": {
+    "message": "Total Hive",
     "description": "portfolio table columns"
   },
   "portfolio_table_column_sticky_total_usd": {

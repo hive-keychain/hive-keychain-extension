@@ -1,9 +1,12 @@
 import { ExtendedAccount } from '@hiveio/dhive';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface Props {
   extendedAccountsList: ExtendedAccount[];
@@ -18,6 +21,11 @@ const PortfolioFilter = ({
 }: Props) => {
   const [filterValue, setFilterValue] = useState('');
   const [currentFilterList, setCurrentFilterList] = useState<string[]>([]);
+  const [focus, setFocus] = useState(false);
+
+  useEffect(() => {
+    initFilter();
+  }, []);
 
   useEffect(() => {
     const currentPortfolioUserDataList = [...data];
@@ -31,10 +39,19 @@ const PortfolioFilter = ({
     }
   }, [currentFilterList]);
 
+  const initFilter = async () => {
+    const filters = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.PORTFOLIO_FILTER,
+    );
+    setCurrentFilterList(filters ? filters : []);
+  };
+
   const handleAddAccountToFilter = (account: string) => {
     if (!currentFilterList.includes(account)) {
-      setCurrentFilterList((prevList) => [...prevList, account]);
+      const newFilter = [...currentFilterList, account];
+      setCurrentFilterList(newFilter);
       setFilterValue('');
+      saveFilterToLocalStorage(newFilter);
     }
   };
 
@@ -45,38 +62,56 @@ const PortfolioFilter = ({
         (filter) => filter !== account,
       );
       setCurrentFilterList(tempCurrentFilterList);
+
+      saveFilterToLocalStorage(tempCurrentFilterList);
     }
   };
 
+  const clearFilter = () => {
+    setCurrentFilterList([]);
+    saveFilterToLocalStorage([]);
+  };
+
+  const saveFilterToLocalStorage = (filters: string[]) => {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.PORTFOLIO_FILTER,
+      filters,
+    );
+  };
+
   return (
-    <>
-      <div className="filter-box-container">
+    <div className="filter-panel">
+      <div className={`filter-box-container ${focus ? 'is-focused' : ''}`}>
+        {currentFilterList.length > 0 &&
+          currentFilterList.map((filterItem) => {
+            return (
+              <div key={`current-filter-${filterItem}`} className="filter-item">
+                <div className="filter-item-value">{filterItem}</div>
+                <SVGIcon
+                  dataTestId="input-clear"
+                  icon={SVGIcons.INPUT_CLEAR}
+                  className={`erase-chip-icon`}
+                  onClick={() => handleRemoveAccountFromFilter(filterItem)}
+                />
+              </div>
+            );
+          })}
         <input
           placeholder={chrome.i18n.getMessage('portfolio_filter_placeholder')}
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
           className="filter-input"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleAddAccountToFilter(filterValue);
+            }
+          }}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
         />
-        {currentFilterList.length > 0 && (
-          <div className="filter-box-list-container">
-            {currentFilterList.map((filterItem) => {
-              return (
-                <div
-                  key={`current-filter-${filterItem}`}
-                  className="filter-item">
-                  <div className="filter-item-value">{filterItem}</div>
-                  <SVGIcon
-                    dataTestId="input-clear"
-                    icon={SVGIcons.INPUT_CLEAR}
-                    className={`erase-chip-icon`}
-                    onClick={() => handleRemoveAccountFromFilter(filterItem)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {filterValue.trim().length > 0 &&
+
+        {focus &&
+          filterValue.trim().length > 0 &&
           extendedAccountsList.filter((acc) => acc.name.includes(filterValue))
             .length > 0 && (
             <div className="filter-box">
@@ -103,7 +138,15 @@ const PortfolioFilter = ({
             </div>
           )}
       </div>
-    </>
+      {currentFilterList.length > 0 && (
+        <ButtonComponent
+          additionalClass="clear-filter-button"
+          label="portfolio_clear_filter_link"
+          onClick={() => clearFilter()}
+          height="small"
+        />
+      )}
+    </div>
   );
 };
 

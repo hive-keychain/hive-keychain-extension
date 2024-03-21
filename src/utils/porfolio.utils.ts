@@ -53,6 +53,18 @@ const loadUsersTokens = async (accountNames: string[]) => {
   return tempTokenBalanceList;
 };
 
+const loadTokenMarket = async () => {
+  let tokensMarket: TokenMarket[] = [];
+  let offset = 0;
+  let tokens;
+  do {
+    tokens = await TokensUtils.getTokensMarket({}, 1000, offset, []);
+    offset += 1000;
+    tokensMarket = [...tokensMarket, ...tokens];
+  } while (tokens.length === 1000);
+  return tokensMarket;
+};
+
 const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
   await PortfolioUtils.loadAndSetRPCsAndApis();
   const [globals, price, rewardFund] = await Promise.all([
@@ -63,7 +75,7 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
   const [prices, usersTokens, tokensMarket] = await Promise.all([
     CurrencyPricesUtils.getPrices() as unknown as CurrencyPrices,
     loadUsersTokens(extendedAccounts.map((acc: ExtendedAccount) => acc.name)),
-    TokensUtils.getTokensMarket({}, 1000, 0, []),
+    loadTokenMarket(),
   ]);
 
   const tokensFullList = getTokensFullList(usersTokens);
@@ -79,6 +91,8 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
     portfolio.push({
       account: userTokens.username,
       balances: userPortfolio,
+      totalHive: 0,
+      totalUSD: 0,
     });
   }
 
@@ -123,6 +137,42 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
       usdValue: totalHP * (prices.hive.usd ?? 1),
     });
   }
+  for (const userPortfolio of portfolio) {
+    let totalUSD = 0;
+    let totalHive = 0;
+    for (const balance of userPortfolio.balances) {
+      const tokenMarket = tokensMarket.find(
+        (tm) => tm.symbol === balance.symbol,
+      );
+      totalUSD += balance.usdValue;
+
+      let balanceInHive = 0;
+      switch (balance.symbol) {
+        case 'SWAP.HIVE':
+        case 'HIVE':
+          balanceInHive = balance.balance;
+          break;
+        case 'HBD':
+          balanceInHive =
+            (balance.balance * 1) /
+            Asset.fromString(price.base.toString()).amount;
+          break;
+        case 'HP':
+          balanceInHive = balance.balance;
+          break;
+        default:
+          balanceInHive = balance.balance * Number(tokenMarket!.lastPrice);
+          break;
+      }
+      console.log(balance.symbol, balanceInHive, totalHive);
+
+      totalHive += balanceInHive;
+    }
+    userPortfolio.totalUSD = totalUSD;
+    userPortfolio.totalHive = totalHive;
+  }
+
+  console.log(portfolio);
 
   return [portfolio, orderedTokenList];
 };
@@ -200,28 +250,57 @@ const getPortfolioHETokenData = (
 
 const getTotals = (tableColumnsHeaders: string[], data: UserPortfolio[]) => {
   const tempTotalBalances: PortfolioBalance[] = [];
-  tableColumnsHeaders.map((symbol) => {
-    data.map(({ balances }) => {
-      const foundToken = balances.find(
-        (tokenBalance) => tokenBalance.symbol === symbol,
+
+  for (const symbol of tableColumnsHeaders) {
+    let totalForToken: PortfolioBalance | undefined = tempTotalBalances.find(
+      (totalBalance) => totalBalance.symbol === symbol,
+    );
+
+    if (!totalForToken) {
+      totalForToken = {
+        symbol: symbol,
+        balance: 0,
+        usdValue: 0,
+      };
+    }
+    tempTotalBalances.push(totalForToken);
+    for (const userPortfolio of data) {
+      const userTokenBalance = userPortfolio.balances.find(
+        (balance) => balance.symbol === symbol,
       );
-      if (foundToken) {
-        const foundTotalBalanceItem = tempTotalBalances.find(
-          (item) => item.symbol === foundToken.symbol,
-        );
-        if (foundTotalBalanceItem) {
-          foundTotalBalanceItem.balance += foundToken.balance;
-          foundTotalBalanceItem.usdValue += foundToken.usdValue;
-        } else {
-          tempTotalBalances.push({
-            symbol: foundToken.symbol,
-            balance: foundToken.balance,
-            usdValue: foundToken.usdValue,
-          });
-        }
+
+      if (userTokenBalance) {
+        totalForToken.balance += userTokenBalance.balance;
+        totalForToken.usdValue += userTokenBalance.usdValue;
       }
-    });
-  });
+    }
+  }
+
+  // tableColumnsHeaders.map((symbol) => {
+  //   let foundToken: PortfolioBalance | undefined;
+  //   data.map(({ balances }) => {
+  //     foundToken = balances.find(
+  //       (tokenBalance) => tokenBalance.symbol === symbol,
+  //     );
+  //     if (!foundToken) {
+  //       foundToken = {
+  //         symbol: symbol,
+  //         balance: 0,
+  //         usdValue: 0,
+  //       };
+  //       tempTotalBalances.push(foundToken);
+  //     }
+  //     if (foundToken) {
+  //       const foundTotalBalanceItem = tempTotalBalances.find(
+  //         (item) => item.symbol === foundToken?.symbol,
+  //       );
+  //       if (foundTotalBalanceItem) {
+  //         foundTotalBalanceItem.balance += foundToken.balance;
+  //         foundTotalBalanceItem.usdValue += foundToken.usdValue;
+  //       }
+  //     }
+  //   });
+  // });
   return tempTotalBalances;
 };
 
@@ -229,4 +308,5 @@ export const PortfolioUtils = {
   loadAndSetRPCsAndApis,
   getPortfolio,
   getTotals,
+  getOrderedTokenFullList,
 };

@@ -10,30 +10,26 @@ import { PortfolioUtils } from 'src/utils/porfolio.utils';
 interface Props {
   data: UserPortfolio[];
   tableColumnsHeaders: string[];
-  setTotalValueUSDPortfolio: (value: number) => void;
 }
 
-const PortfolioTable = ({
-  data,
-  setTotalValueUSDPortfolio,
-  tableColumnsHeaders,
-}: Props) => {
+const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
   const [totals, setTotals] = useState<PortfolioBalance[]>([]);
+  const [totalHive, setTotalHive] = useState(0);
+  const [totalUSD, setTotalUSD] = useState(0);
 
   useEffect(() => {
     const tempTotals = PortfolioUtils.getTotals(tableColumnsHeaders, data);
     setTotals(tempTotals);
-    setTotalValueUSDPortfolio(
-      tempTotals.reduce((acc, curr) => acc + curr.usdValue, 0),
-    );
+    setTotalUSD(tempTotals.reduce((acc, curr) => acc + curr.usdValue, 0));
+    setTotalHive(tempTotals.reduce((acc, curr) => acc + curr.balance, 0));
   }, [data]);
 
   return (
     <div className="portfolio-table-container">
-      <table className="table-react">
-        <thead className="theader">
+      <table className="portfolio-table">
+        <thead className="headers">
           <tr>
-            <th className="column-header fixed-left-top-of-all">
+            <th className="table-header account-column">
               {chrome.i18n
                 .getMessage('portfolio_table_column_header_account')
                 .toUpperCase()}
@@ -41,19 +37,27 @@ const PortfolioTable = ({
             {tableColumnsHeaders.map((columnHeaderLabel) => {
               return (
                 <th
-                  className="column-header"
+                  className="table-header"
                   key={`${columnHeaderLabel}-column-label`}>
                   {columnHeaderLabel}
                 </th>
               );
             })}
+            <th className="table-header total-column">
+              {chrome.i18n.getMessage('portfolio_table_column_total_hive')}
+            </th>
+            <th className="table-header total-column">
+              {chrome.i18n.getMessage(
+                'portfolio_table_column_sticky_total_usd',
+              )}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {data.map(({ account, balances }) => {
+          {data.map(({ account, totalHive, totalUSD, balances }) => {
             return (
               <tr key={`${account}-tr-row`}>
-                <td className="data-cell fixed-left avatar-username-container">
+                <td className="account-column avatar-username-container">
                   <PreloadedImage
                     className="user-picture"
                     src={`https://images.hive.blog/u/${account}/avatar`}
@@ -69,45 +73,55 @@ const PortfolioTable = ({
                   return (
                     <td
                       key={`${account}-${symbol}-user-token-cell`}
-                      className="data-cell">
+                      className="value">
                       {!tokenFound || tokenFound.balance === 0
-                        ? chrome.i18n.getMessage(
-                            'portfolio_data_cell_zero_or_no_balance_text',
-                          )
+                        ? '-'
                         : FormatUtils.formatCurrencyValue(tokenFound.balance)}
                     </td>
                   );
                 })}
+                <td className="total-column">
+                  {FormatUtils.formatCurrencyValue(totalHive)}
+                </td>
+                <td className="total-column">
+                  {FormatUtils.formatCurrencyValue(totalUSD)}
+                </td>
               </tr>
             );
           })}
           <tr>
-            <td className="data-cell fixed-left">
-              {chrome.i18n
-                .getMessage('portfolio_table_column_sticky_totals')
-                .toUpperCase()}
+            <td className="header-total">
+              {chrome.i18n.getMessage('portfolio_table_column_sticky_totals')}
             </td>
             {totals.map(({ symbol, balance }) => {
               return (
-                <td className="data-cell" key={`${symbol}-total`}>
+                <td className="total-column" key={`${symbol}-total`}>
                   {FormatUtils.formatCurrencyValue(balance)}
                 </td>
               );
             })}
+            <td className="total-column" key={`total-value-hive`}>
+              {FormatUtils.formatCurrencyValue(totalHive)}
+            </td>
+            <td className="total-column" key={`total-usd`}></td>
           </tr>
           <tr>
-            <td className="data-cell fixed-left">
-              {chrome.i18n
-                .getMessage('portfolio_table_column_sticky_total_usd')
-                .toUpperCase()}
+            <td className="header-total">
+              {chrome.i18n.getMessage(
+                'portfolio_table_column_sticky_total_usd',
+              )}
             </td>
             {totals.map(({ symbol, usdValue }) => {
               return (
-                <td className="data-cell" key={`${symbol}-total-usd`}>
+                <td className="total-column" key={`${symbol}-total-usd`}>
                   {FormatUtils.formatCurrencyValue(usdValue)}
                 </td>
               );
             })}
+            <td className="total-column" key={`total-value-hive`}></td>
+            <td className="total-column" key={`total-usd`}>
+              {FormatUtils.formatCurrencyValue(totalUSD)}
+            </td>
           </tr>
         </tbody>
       </table>
