@@ -88,6 +88,7 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
       prices,
       tokensMarket,
     );
+    // const userPortfolio: PortfolioBalance[] = [];
     portfolio.push({
       account: userTokens.username,
       balances: userPortfolio,
@@ -146,30 +147,35 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
       );
       totalUSD += balance.usdValue;
 
-      let balanceInHive = 0;
-      switch (balance.symbol) {
-        case 'SWAP.HIVE':
-        case 'HIVE':
-          balanceInHive = balance.balance;
-          break;
-        case 'HBD':
-          balanceInHive =
-            (balance.balance * 1) /
-            Asset.fromString(price.base.toString()).amount;
-          break;
-        case 'HP':
-          balanceInHive = balance.balance;
-          break;
-        default:
-          balanceInHive = balance.balance * Number(tokenMarket!.lastPrice);
-          break;
-      }
-      console.log(balance.symbol, balanceInHive, totalHive);
+      // let balanceInHive = 0;
+      // switch (balance.symbol) {
+      //   case 'SWAP.HIVE':
+      //   case 'HIVE':
+      //     balanceInHive = balance.balance;
+      //     break;
+      //   case 'HBD':
+      //     balanceInHive =
+      //       (balance.balance * 1) /
+      //       Asset.fromString(price.base.toString()).amount;
+      //     break;
+      //   case 'HP':
+      //     balanceInHive = balance.balance;
+      //     break;
+      //   default:
+      //     balanceInHive =
+      //       balance.balance *
+      //       (Number(tokenMarket!.volume) <= 0
+      //         ? 0
+      //         : Number(tokenMarket!.lastPrice));
+      //     break;
+      // }
+      // console.log(balance.symbol, balanceInHive, totalHive);
 
-      totalHive += balanceInHive;
+      // totalHive += balanceInHive;
     }
     userPortfolio.totalUSD = totalUSD;
-    userPortfolio.totalHive = totalHive;
+    userPortfolio.totalHive = userPortfolio.totalUSD / (prices?.hive?.usd ?? 0);
+    console.log(userPortfolio);
   }
 
   console.log(portfolio);

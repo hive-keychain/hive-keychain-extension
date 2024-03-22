@@ -23,6 +23,14 @@
   .estimated-value-button-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+    .portfolio-icon {
+      @include icon-size(24px);
+      svg {
+        @include icon-size(24px);
+      }
+    }
   }
   .spacing {
     margin-left: 10px;

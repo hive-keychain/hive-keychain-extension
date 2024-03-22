@@ -98,6 +98,8 @@ export enum SVGIcons {
   MESSAGE_WARNING = 'message/warning',
   MESSAGE_SUCCESS = 'message/success',
 
+  PORTOLIO = 'portfolio/portfolio',
+
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',
   RESOURCE_ITEM_SAVINGS = 'resources/savings',
