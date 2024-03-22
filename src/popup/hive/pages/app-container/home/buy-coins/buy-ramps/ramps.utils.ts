@@ -186,7 +186,9 @@ export class RampProvider
         crypto: cryptoCurrency,
         fiat: fiatCurrency,
         amount: e.fiatValue,
-        estimation: +e.cryptoAmount,
+        estimation: +(
+          +e.cryptoAmount * Math.pow(10, -result.asset.decimals)
+        ).toFixed(result.asset.decimals),
         paymentMethod: e.paymentMethod,
       }));
     }
