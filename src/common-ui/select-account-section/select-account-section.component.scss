@@ -106,6 +106,13 @@
             flex: 1;
             justify-content: space-between;
             flex-direction: row;
+            &.firefox {
+              justify-content: end;
+              .copy-icon {
+                margin-right: 0px;
+                background-color: blue;
+              }
+            }
           }
           .active-icon,
           .drag-icon,

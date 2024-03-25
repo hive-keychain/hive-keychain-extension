@@ -10,6 +10,11 @@ import { setTitleContainerProperties } from 'src/popup/hive/actions/title-contai
 import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+export interface SelectKeysProps {
+  keys: Keys;
+  username: string;
+}
+
 const SelectKeys = ({
   keys,
   username,
@@ -96,6 +101,7 @@ const SelectKeys = ({
           keys.memo ? undefined : 'popup_html_public_key_not_matching'
         }
       />
+      <div className="fill-space"></div>
       <ButtonComponent
         dataTestId="button-save"
         label="popup_html_save"

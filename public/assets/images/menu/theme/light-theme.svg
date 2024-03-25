@@ -1,0 +1,12 @@
+<svg width="45" height="40" viewBox="0 0 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="22" cy="20.0002" r="3.66667" fill="var(--main-font-color)"/>
+<path d="M22 16.3332V12.6665" stroke="var(--main-font-color)"/>
+<path d="M22 27.3332V23.6665" stroke="var(--main-font-color)"/>
+<path d="M19.4073 17.4072L16.8146 14.8145" stroke="var(--main-font-color)"/>
+<path d="M27.1854 25.185L24.5927 22.5923" stroke="var(--main-font-color)"/>
+<path d="M25.6667 20L29.3334 20" stroke="var(--main-font-color)"/>
+<path d="M14.6667 20L18.3334 20" stroke="var(--main-font-color)"/>
+<path d="M24.5927 17.4072L27.1854 14.8145" stroke="var(--main-font-color)"/>
+<path d="M16.8146 25.185L19.4073 22.5923" stroke="var(--main-font-color)"/>
+<rect x="0.423259" y="-0.423259" width="43.37" height="38.9483" rx="19.4742" transform="matrix(1 0 0 -1 0 38.9484)" stroke="var(--main-font-color)" stroke-width="0.846517"/>
+</svg>

@@ -12,6 +12,7 @@ const config = {
     background: './src/background/index.ts',
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
+    multisigDialog: './src/multisig/multisig-dialog.tsx',
     addKeyFromLedger: './src/ledger/add-key/index.tsx',
     linkLedgerDevice: './src/ledger/link-device/index.tsx',
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',

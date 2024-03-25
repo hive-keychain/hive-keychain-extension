@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
@@ -29,12 +28,12 @@ const AnalyticsPopup = ({
   };
 
   const accept = () => {
-    AnalyticsUtils.acceptAll();
+    // AnalyticsUtils.acceptAll();
     setSuccessMessage('popup_html_analytics_thank_you');
     onAnswered();
   };
   const reject = () => {
-    AnalyticsUtils.rejectAll();
+    // AnalyticsUtils.rejectAll();
     onAnswered();
   };
 

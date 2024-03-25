@@ -42,7 +42,7 @@ export const signBuffer = async (
       (err as KeychainError).messageParams,
     );
   } finally {
-    return createMessage(
+    return await createMessage(
       error,
       signed,
       data,

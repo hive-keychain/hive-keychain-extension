@@ -40,16 +40,19 @@ const ProxySuggestion = ({
 
   const handleSetProxy = async () => {
     try {
-      if (
-        await ProxyUtils.setAsProxy(
-          'keychain',
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        )
-      ) {
-        setSuccessMessage('popup_success_proxy', ['keychain']);
-        handleClose();
+      const success = await ProxyUtils.setAsProxy(
+        'keychain',
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      );
+      if (success) {
+        if (success.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          setSuccessMessage('popup_success_proxy', ['keychain']);
+        }
         refreshActiveAccount();
+        handleClose();
       } else {
         setErrorMessage('popup_error_proxy', ['keychain']);
       }

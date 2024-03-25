@@ -51,7 +51,10 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       <div className="overlay"></div>
       <div className="message-card">
         <SVGIcon icon={getIcon(errorMessage.type)} />
-        <div className="title">
+        <div
+          className={`title ${
+            errorMessage.type === MessageType.SUCCESS ? 'success' : ''
+          }`}>
           {chrome.i18n.getMessage(getTitle(errorMessage.type))}
         </div>
         <div
@@ -63,6 +66,9 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
             ),
           }}></div>
         <ButtonComponent
+          additionalClass={
+            errorMessage.type === MessageType.SUCCESS ? 'success-button' : ''
+          }
           label="message_container_close_button"
           onClick={close}
         />

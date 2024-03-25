@@ -143,11 +143,12 @@ const walletInfoSectionItem = ({
       ref={reff}
       onClick={() => {
         toggleDropdown();
-        reff.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'center',
-        });
+        !process.env.IS_FIREFOX &&
+          reff.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'center',
+          });
       }}>
       <div className="information-panel">
         {!tokenInfo && (

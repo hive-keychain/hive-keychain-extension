@@ -50,15 +50,21 @@ export const SelectAccountSectionItemComponent = ({
             />
           )}
           {hovered && (
-            <div className="hovered-icons">
-              <SVGIcon
-                icon={SVGIcons.SELECT_COPY}
-                className="copy-icon"
-                onClick={(event) => copyUsernameToClipboard(event)}
-              />
-              <span {...dragHandle}>
-                <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
-              </span>
+            <div
+              className={`hovered-icons ${
+                process.env.IS_FIREFOX ? 'firefox' : ''
+              }`}>
+              <div onClick={(event) => copyUsernameToClipboard(event)}>
+                <PreloadedImage
+                  className={'copy-icon'}
+                  src={`/assets/images/select/copy.svg`}
+                />
+              </div>
+              {!process.env.IS_FIREFOX && (
+                <span {...dragHandle}>
+                  <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -93,8 +99,8 @@ export const SelectAccountSectionItemComponent = ({
         <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${item.label}/avatar`}
-          alt={'/assets/images/accounts.png'}
-          placeholder={'/assets/images/accounts.png'}
+          alt={'/assets/images/menu/accounts.svg'}
+          placeholder={'/assets/images/menu/accounts.svg'}
         />
         <div className="account-name">{item.label}</div>
         {renderCheckedAccount()}

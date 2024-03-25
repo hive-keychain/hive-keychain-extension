@@ -1,5 +1,4 @@
 import { MenuItem } from '@interfaces/menu-item.interface';
-import { ThemeToggle } from '@popup/hive/pages/app-container/settings/user-preferences/theme-toggle/theme-toggle.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 
@@ -23,11 +22,16 @@ const UserPreferencesMenuItems = (
       nextScreen: Screen.SETTINGS_FAVORITE_ACCOUNTS,
     },
     {
-      label: 'popup_html_theme',
-      icon: SVGIcons.MENU_USER_PREFERENCES_THEME,
-      action: toggleTheme,
-      rightPanel: ThemeToggle,
+      label: 'popup_html_multisig',
+      icon: SVGIcons.MENU_USER_PREFERENCES_MULTISIG,
+      nextScreen: Screen.SETTINGS_MULTISIG,
     },
+    // {
+    //   label: 'popup_html_theme',
+    //   icon: SVGIcons.MENU_USER_PREFERENCES_THEME,
+    //   action: toggleTheme,
+    //   rightPanel: ThemeToggle,
+    // },
   ];
 };
 

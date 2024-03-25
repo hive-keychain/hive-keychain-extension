@@ -1370,7 +1370,7 @@
     "message": "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully."
   },
   "bgd_ops_sign_success": {
-    "message": "Message signed succesfully."
+    "message": "Message signed successfully."
   },
   "bgd_ops_sign_error": {
     "message": "Could not sign."
@@ -2730,7 +2730,7 @@
     "description": "What's new popup button"
   },
   "html_popup_tokens_timeout": {
-    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
     "description": "Token timeout error"
   },
   "popup_html_create_account_buy_account": {
@@ -3786,6 +3786,94 @@
   "html_popup_cancel_unstake_token_fail": {
     "message": "Cancel token unstake has failed",
     "description": "Loading message unstake"
+  },
+  "popup_html_multisig": {
+    "message": "Multisig",
+    "description": "Multisig menu item"
+  },
+  "min_chrome_version": {
+    "message": "Please update your Chromium browser to the version 116 or newer, to be able to use the multisig features",
+    "description": "When enabling multisig on old browsers"
+  },
+  "popup_html_multisig_intro": {
+    "message": "Enable Hive Multisig to listen to multisig requests for this account.\n Find more information about multisig in <a href='https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain' target='__blank'>this blog.</a>\nTo modify your account into a multisig account, use <a href='https://multisig.hive-keychain.com/' target='__blank'>the Hive Multisig dApp.</a>\nThis is an advanced feature, only use it if you know what you are doing.",
+    "description": "Multisig page intro"
+  },
+  "popup_html_enable_multisig": {
+    "message": "Enable multisig",
+    "description": "Multisig page enable multisig"
+  },
+  "popup_html_enable_active_key_multisig": {
+    "message": "Enable active key multisig",
+    "description": "Multisig page enable active key multisig"
+  },
+  "popup_html_enable_posting_key_multisig": {
+    "message": "Enable posting key multisig",
+    "description": "Multisig page enable posting key multisig"
+  },
+  "multisig_dialog_accept_tx": {
+    "message": "Accept",
+    "description": "accept transaction coming from multisig"
+  },
+  "multisig_dialog_reject_tx": {
+    "message": "Reject",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_accept_reject_tx_caption": {
+    "message": "You received a signature request.",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_transaction_signed_successfully": {
+    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_transaction_broadcasted": {
+    "message": "Transaction broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig": {
+    "message": "Multisig",
+    "description": "Multisig"
+  },
+  "multisig_tx": {
+    "message": "Transaction",
+    "description": "Multisig transaction"
+  },
+  "multisig_initiator": {
+    "message": "Initiator",
+    "description": "Multisig transaction initiator"
+  },
+  "multisig_requested_signer_username": {
+    "message": "Requested signer",
+    "description": "Multisig transaction requested signer"
+  },
+  "multisig_requested_signer_public_key": {
+    "message": "Requested public key",
+    "description": "Multisig transaction requested signer"
+  },
+  "multisig_key_is_ledger_hint": {
+    "message": "Your key uses Ledger. It is not compatible with our version of Multisig",
+    "description": "Explanation of why Ledger cannot work with multisig"
+  },
+  "multisig_processing_tx_through_multisig_server": {
+    "message": "Your transaction will be processed using the multisig server",
+    "description": "Using multisig to process transaction"
+  },
+  "multisig_transaction_sent_to_signers": {
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "description": "Tx sent to multisig backend success message"
+  },
+  "multisig_disclaimer_message": {
+    "message": "Multisig detected : This transaction will be sent to the Hive Multisig server",
+    "description": "Message to inform user that multisig will be used"
+  },
+  "multisig_transmitting_to_multisig": {
+    "message": "Sending encoded to Multisig server and potential signers",
+    "description": "Message to inform user transmiting to multisig backend"
+  },
+  "swap_multisig_transaction_sent_to_signers": {
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted. Once broadcasted, your swap will be processed.",
+    "description": "Tx sent to multisig backend success message"
   },
   "html_popup_ecosystem_retrieving_error": {
     "message": "There was an error while retrieving the ecosystem. Please try again later",
