@@ -18,8 +18,10 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+/**
+ * Note: Will load rpc & set rpcs, from extension data or default values.
+ */
 const loadAndSetRPCsAndApis = async () => {
-  //load rpc.
   const current_rpc: Rpc = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.CURRENT_RPC,
   );
@@ -30,7 +32,6 @@ const loadAndSetRPCsAndApis = async () => {
     accountHistoryApi: Config.hiveEngine.accountHistoryApi,
   };
 
-  //set rpcs by hand
   HiveTxUtils.setRpc(rpc);
   HiveEngineConfigUtils.setActiveApi(HiveEngineConfig.rpc);
   HiveEngineConfigUtils.setActiveAccountHistoryApi(
@@ -102,7 +103,6 @@ const getPortfolio = async (
       prices,
       tokensMarket,
     );
-    // const userPortfolio: PortfolioBalance[] = [];
     portfolio.push({
       account: userTokens.username,
       balances: userPortfolio,
@@ -266,32 +266,6 @@ const getTotals = (tableColumnsHeaders: string[], data: UserPortfolio[]) => {
       }
     }
   }
-
-  // tableColumnsHeaders.map((symbol) => {
-  //   let foundToken: PortfolioBalance | undefined;
-  //   data.map(({ balances }) => {
-  //     foundToken = balances.find(
-  //       (tokenBalance) => tokenBalance.symbol === symbol,
-  //     );
-  //     if (!foundToken) {
-  //       foundToken = {
-  //         symbol: symbol,
-  //         balance: 0,
-  //         usdValue: 0,
-  //       };
-  //       tempTotalBalances.push(foundToken);
-  //     }
-  //     if (foundToken) {
-  //       const foundTotalBalanceItem = tempTotalBalances.find(
-  //         (item) => item.symbol === foundToken?.symbol,
-  //       );
-  //       if (foundTotalBalanceItem) {
-  //         foundTotalBalanceItem.balance += foundToken.balance;
-  //         foundTotalBalanceItem.usdValue += foundToken.usdValue;
-  //       }
-  //     }
-  //   });
-  // });
   return tempTotalBalances;
 };
 

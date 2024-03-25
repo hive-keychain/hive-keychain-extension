@@ -206,7 +206,6 @@ html {
         .centered {
           justify-content: center;
         }
-        //TODO bellow refactor & cleanup
         .portfolio-table-container {
           @include small-card();
           align-items: unset;
@@ -276,10 +275,6 @@ html {
               background-color: var(--card-background);
               padding-right: 8px;
             }
-            // tr td {
-            //   position: sticky;
-            //   top: 0;
-            // }
           }
 
           .avatar-username-container {
