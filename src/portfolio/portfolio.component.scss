@@ -21,6 +21,7 @@ $fixed-cell-width: 200px;
 
 html {
   height: 100%;
+  overflow: hidden;
   body {
     margin: 0px;
     height: 100%;
@@ -31,8 +32,6 @@ html {
       justify-content: center;
 
       .portfolio {
-        border: solid 1px grey;
-        border-radius: 8px;
         width: 100%;
         height: 100%;
         color: var(--main-font-color);
