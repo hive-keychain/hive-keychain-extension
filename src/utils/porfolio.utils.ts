@@ -160,39 +160,10 @@ const getPortfolio = async (
         (tm) => tm.symbol === balance.symbol,
       );
       totalUSD += balance.usdValue;
-
-      // let balanceInHive = 0;
-      // switch (balance.symbol) {
-      //   case 'SWAP.HIVE':
-      //   case 'HIVE':
-      //     balanceInHive = balance.balance;
-      //     break;
-      //   case 'HBD':
-      //     balanceInHive =
-      //       (balance.balance * 1) /
-      //       Asset.fromString(price.base.toString()).amount;
-      //     break;
-      //   case 'HP':
-      //     balanceInHive = balance.balance;
-      //     break;
-      //   default:
-      //     balanceInHive =
-      //       balance.balance *
-      //       (Number(tokenMarket!.volume) <= 0
-      //         ? 0
-      //         : Number(tokenMarket!.lastPrice));
-      //     break;
-      // }
-      // console.log(balance.symbol, balanceInHive, totalHive);
-
-      // totalHive += balanceInHive;
     }
     userPortfolio.totalUSD = totalUSD;
     userPortfolio.totalHive = userPortfolio.totalUSD / (prices?.hive?.usd ?? 0);
-    console.log(userPortfolio);
   }
-
-  console.log(portfolio);
 
   return [portfolio, orderedTokenList];
 };
