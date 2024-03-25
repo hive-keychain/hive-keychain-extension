@@ -107,7 +107,7 @@ const PortfolioFilter = ({
             }
           }}
           onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
+          onBlur={() => setTimeout(() => setFocus(false), 250)}
         />
 
         {focus &&
