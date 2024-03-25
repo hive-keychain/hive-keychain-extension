@@ -10,17 +10,35 @@ const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
   globalProperties,
+  tokensBalance,
+  tokensMarket,
 }: PropsFromRedux) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
   useEffect(() => {
-    setAccountValue(
-      AccountUtils.getAccountValue(
-        activeAccount.account,
-        currencyPrices,
-        globalProperties.globals!,
-      ),
-    );
-  }, [activeAccount, currencyPrices, globalProperties]);
+    if (
+      activeAccount &&
+      currencyPrices &&
+      globalProperties?.globals &&
+      tokensBalance &&
+      tokensMarket
+    ) {
+      setAccountValue(
+        AccountUtils.getAccountValue(
+          activeAccount.account,
+          currencyPrices,
+          globalProperties.globals!,
+          tokensBalance,
+          tokensMarket,
+        ),
+      );
+    }
+  }, [
+    activeAccount,
+    currencyPrices,
+    globalProperties,
+    tokensBalance,
+    tokensMarket,
+  ]);
 
   const openPortfolio = async () => {
     const extensionId = (await chrome.management.getSelf()).id;
@@ -63,6 +81,8 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyPrices: state.currencyPrices,
     globalProperties: state.globalProperties,
+    tokensBalance: state.userTokens.list,
+    tokensMarket: state.tokenMarket,
   };
 };
 

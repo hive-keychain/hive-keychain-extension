@@ -274,4 +274,5 @@ export const PortfolioUtils = {
   getPortfolio,
   getTotals,
   getOrderedTokenFullList,
+  generateUserLayerTwoPortolio,
 };
