@@ -48,10 +48,10 @@ const BuyCoins = ({
             value: BuyCoinType.FIAT,
             label: BuyCoinType.FIAT,
           },
-          {
-            value: BuyCoinType.CRYPTO,
-            label: BuyCoinType.CRYPTO,
-          },
+          // {
+          //   value: BuyCoinType.CRYPTO,
+          //   label: BuyCoinType.CRYPTO,
+          // },
           {
             value: BuyCoinType.EXCHANGES,
             label: BuyCoinType.EXCHANGES,
