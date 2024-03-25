@@ -1,5 +1,6 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { UserVestingRoute } from '@interfaces/vesting-routes.interface';
 import {
   retrieveAccounts,
   setAccounts,
@@ -23,6 +24,7 @@ import {
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
 import { RootState } from '@popup/hive/store';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -225,6 +227,46 @@ const HiveApp = ({
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
     loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
+    //TODO finish & move to utils accordingly
+    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+
+    //TODO bellow uncomment after finishing tests
+    // const allVestingRoutes =
+    //   await VestingRoutesUtils.getAllAccountsVestingRoutes(
+    //     accounts.map((acc) => acc.name),
+    //     'outgoing',
+    //   );
+    //TODO bellow remove block
+    const allVestingRoutes = [
+      {
+        account: 'theghost1980',
+        routes: [
+          {
+            id: 0,
+            fromAccount: 'theghost1980',
+            toAccount: 'keychain.tests',
+            percent: 1,
+          },
+        ],
+      },
+    ] as UserVestingRoute[];
+    //end block
+
+    //TODO bellow uncomment after meeting, same as different keys? 'do nothing' : 'agree'
+    // VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
+
+    if (lastVestingRoutes) {
+      //TODO compare only if last found & set popup
+      //TODO compare here.
+      const differentVestingRoutesFound =
+        VestingRoutesUtils.getDifferentVestingRoutesFound(
+          lastVestingRoutes,
+          allVestingRoutes,
+        );
+      console.log({ differentVestingRoutesFound }); //TODO remove line
+      //TODO bellow set state popup info.
+    }
+    console.log('hive-app', { lastVestingRoutes, allVestingRoutes }); //TODO remove line
   };
 
   const selectComponent = async (
