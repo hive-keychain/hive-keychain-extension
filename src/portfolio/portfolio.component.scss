@@ -43,6 +43,7 @@ html {
         font-size: 16px;
         position: relative;
         @include background-top();
+        background-repeat: repeat-x;
         @include dialogs-title-panel();
         .confirmation {
           margin-top: 20px;
