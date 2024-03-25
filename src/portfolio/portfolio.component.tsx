@@ -29,9 +29,24 @@ const Portfolio = () => {
     UserPortfolio[]
   >([]);
 
+  const [currentAccountIndex, setCurrentAccountIndex] = useState<
+    number | undefined
+  >();
+  const [currentAccountUsername, setCurrentAccountUsername] = useState<
+    string | undefined
+  >();
+
   useEffect(() => {
     init();
   }, []);
+
+  const onCreatingPortfolioProgress = (
+    currentAccountIndex: number,
+    currentAccount: string,
+  ) => {
+    setCurrentAccountIndex(currentAccountIndex);
+    setCurrentAccountUsername(currentAccount);
+  };
 
   const init = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -58,6 +73,7 @@ const Portfolio = () => {
       setExtendedAccountsList(extendedAccounts);
       const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio(
         extendedAccounts,
+        onCreatingPortfolioProgress,
       );
       setTableColumnsHeaders(orderedTokenList as string[]);
       setPortfolioData(portfolio as UserPortfolio[]);
@@ -124,6 +140,16 @@ const Portfolio = () => {
       {isLoading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />
+
+          {currentAccountIndex && currentAccountUsername && localAccounts && (
+            <div className="loading-message">
+              {chrome.i18n.getMessage('portfolio_fetch_progress', [
+                currentAccountIndex.toString(),
+                localAccounts!.length.toString(),
+                currentAccountUsername,
+              ])}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -3882,5 +3882,9 @@
   "html_popup_click_to_refresh": {
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
+  },
+  "portfolio_fetch_progress": {
+    "message": "Fetching data... $1/$2... Currently fetching @$3",
+    "description": "Portfolio fetching message"
   }
 }

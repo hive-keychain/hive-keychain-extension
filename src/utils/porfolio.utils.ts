@@ -14,6 +14,7 @@ import {
   PortfolioBalance,
   UserPortfolio,
 } from 'src/portfolio/portfolio.interface';
+import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -37,10 +38,16 @@ const loadAndSetRPCsAndApis = async () => {
   );
 };
 
-const loadUsersTokens = async (accountNames: string[]) => {
+const loadUsersTokens = async (
+  accountNames: string[],
+  onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
+) => {
   let tempTokenBalanceList: any[] = [];
 
+  let currentAccountIndex = 0;
   for (const username of accountNames) {
+    currentAccountIndex++;
+    if (onProgress) onProgress(currentAccountIndex, username);
     let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
       username,
     );
@@ -48,6 +55,7 @@ const loadUsersTokens = async (accountNames: string[]) => {
       username: username,
       tokensBalance: tokensBalance,
     });
+    await AsyncUtils.sleep(500);
   }
 
   return tempTokenBalanceList;
@@ -65,7 +73,10 @@ const loadTokenMarket = async () => {
   return tokensMarket;
 };
 
-const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
+const getPortfolio = async (
+  extendedAccounts: ExtendedAccount[],
+  onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
+) => {
   await PortfolioUtils.loadAndSetRPCsAndApis();
   const [globals, price, rewardFund] = await Promise.all([
     DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
@@ -74,7 +85,10 @@ const getPortfolio = async (extendedAccounts: ExtendedAccount[]) => {
   ]);
   const [prices, usersTokens, tokensMarket] = await Promise.all([
     CurrencyPricesUtils.getPrices() as unknown as CurrencyPrices,
-    loadUsersTokens(extendedAccounts.map((acc: ExtendedAccount) => acc.name)),
+    loadUsersTokens(
+      extendedAccounts.map((acc: ExtendedAccount) => acc.name),
+      onProgress,
+    ),
     loadTokenMarket(),
   ]);
 
