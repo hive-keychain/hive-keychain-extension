@@ -281,27 +281,27 @@ const cleanEstimationMethod = (method: string) => {
     case 'google_pay':
       return {
         method,
-        title: 'Google Pay',
+        // title: 'Google Pay',
         icon: SVGIcons.BUY_METHOD_GOOGLE_PAY,
       };
     case 'apple_pay':
       return {
         method,
-        title: 'Apple Pay',
+        // title: 'Apple Pay',
         icon: SVGIcons.BUY_METHOD_APPLE_PAY,
       };
     case 'card_payment':
     case 'credit_debit_card':
       return {
         method,
-        title: chrome.i18n.getMessage('card_payment'),
+        // title: chrome.i18n.getMessage('card_payment'),
         icon: SVGIcons.BUY_METHOD_CARD,
       };
     case 'pm_pix':
     case 'pix':
       return {
         method,
-        title: 'Pix',
+        // title: 'Pix',
         icon: SVGIcons.BUY_METHOD_PIX,
       };
 
@@ -309,7 +309,7 @@ const cleanEstimationMethod = (method: string) => {
     case 'sepa_bank_transfer':
       return {
         method,
-        title: chrome.i18n.getMessage('bank_transfer'),
+        // title: chrome.i18n.getMessage('bank_transfer'),
         icon: SVGIcons.BUY_METHOD_BANK,
       };
 
