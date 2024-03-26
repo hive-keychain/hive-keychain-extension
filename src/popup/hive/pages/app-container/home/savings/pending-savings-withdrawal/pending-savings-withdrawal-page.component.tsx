@@ -1,10 +1,10 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { PendingSavingsWithdrawalItemComponent } from 'src/popup/hive/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 
 export interface PendingSavingsWithdrawalProps {

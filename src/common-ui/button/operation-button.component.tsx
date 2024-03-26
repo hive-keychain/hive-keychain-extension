@@ -1,11 +1,11 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonProps,
 } from 'src/common-ui/button/button.component';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 
 type Props = PropsFromRedux & ButtonProps & { requiredKey: KeychainKeyTypesLC };
 

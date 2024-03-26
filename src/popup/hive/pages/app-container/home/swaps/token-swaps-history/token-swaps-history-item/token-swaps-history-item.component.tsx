@@ -1,4 +1,4 @@
-import { setInfoMessage } from '@popup/hive/actions/message.actions';
+import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';

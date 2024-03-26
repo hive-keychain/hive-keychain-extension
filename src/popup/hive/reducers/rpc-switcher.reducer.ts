@@ -1,6 +1,6 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import { ActionType } from '@popup/hive/actions/action-type.enum';
-import { ActionPayload } from '@popup/hive/actions/interfaces';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 
 type Switcher = {
   display: boolean;

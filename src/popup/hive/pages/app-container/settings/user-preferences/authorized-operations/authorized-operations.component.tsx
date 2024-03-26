@@ -1,4 +1,5 @@
 import { NoConfirm, NoConfirmWebsite } from '@interfaces/no-confirm.interface';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -9,7 +10,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 

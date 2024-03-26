@@ -1,6 +1,6 @@
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
 
 const GlobalPropertiesReducer = (
   state: GlobalProperties = {},

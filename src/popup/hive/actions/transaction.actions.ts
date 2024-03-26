@@ -1,7 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { store } from '@popup/multichain/store';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppThunk } from 'src/popup/hive/actions/interfaces';
 import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 
 export const initAccountTransactions =

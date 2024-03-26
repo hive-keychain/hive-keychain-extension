@@ -1,3 +1,7 @@
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { setMk } from '@popup/multichain/actions/mk.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -10,10 +14,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import { setMk } from 'src/popup/hive/actions/mk.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { resetTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 

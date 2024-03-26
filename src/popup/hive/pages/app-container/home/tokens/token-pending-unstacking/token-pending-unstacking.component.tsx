@@ -1,19 +1,19 @@
 import { PendingUnstaking, Token } from '@interfaces/tokens.interface';
+import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
+} from '@popup/multichain/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
-} from '@popup/hive/actions/message.actions';
+} from '@popup/multichain/actions/message.actions';
 import {
   goBack,
   navigateToWithParams,
-} from '@popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
-import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
-import TokensUtils from '@popup/hive/utils/tokens.utils';
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';

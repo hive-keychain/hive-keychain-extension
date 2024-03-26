@@ -1,6 +1,15 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import {
+  addCaptionToLoading,
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -13,15 +22,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addCaptionToLoading,
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';

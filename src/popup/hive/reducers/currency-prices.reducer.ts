@@ -1,6 +1,6 @@
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { CurrencyPrices } from 'src/interfaces/bittrex.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
 
 const CurrencyPricesReducer = (
   state: CurrencyPrices = { bitcoin: {}, hive: {}, hive_dollar: {} },

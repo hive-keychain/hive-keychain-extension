@@ -1,5 +1,5 @@
-import { forgetMk } from '@popup/hive/actions/mk.actions';
-import { resetNav } from '@popup/hive/actions/navigation.actions';
+import { forgetMk } from '@popup/multichain/actions/mk.actions';
+import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Theme, useThemeContext } from '@popup/theme.context';
 import { Screen } from '@reference-data/screen.enum';

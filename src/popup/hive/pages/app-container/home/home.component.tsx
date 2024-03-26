@@ -1,4 +1,5 @@
-import { setSuccessMessage } from '@popup/hive/actions/message.actions';
+import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -7,7 +8,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
-import { resetTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';

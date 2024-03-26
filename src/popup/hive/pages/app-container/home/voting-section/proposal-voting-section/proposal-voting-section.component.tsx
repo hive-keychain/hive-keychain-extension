@@ -1,4 +1,8 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -7,10 +11,6 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
 

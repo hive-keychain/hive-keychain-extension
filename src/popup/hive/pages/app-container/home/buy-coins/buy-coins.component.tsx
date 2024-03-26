@@ -1,3 +1,4 @@
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +8,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';

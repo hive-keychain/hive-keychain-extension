@@ -16,12 +16,13 @@ import {
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
-import { setMk } from '@popup/hive/actions/mk.actions';
-import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
+import { setMk } from '@popup/multichain/actions/mk.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -34,7 +35,6 @@ import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
-import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';

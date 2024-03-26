@@ -1,16 +1,16 @@
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';

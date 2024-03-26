@@ -5,6 +5,19 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -17,20 +30,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';

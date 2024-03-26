@@ -1,6 +1,6 @@
 import { TokenMarket } from '@interfaces/tokens.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
 
 const TokenMarketReducer = (
   state: TokenMarket[] = [],

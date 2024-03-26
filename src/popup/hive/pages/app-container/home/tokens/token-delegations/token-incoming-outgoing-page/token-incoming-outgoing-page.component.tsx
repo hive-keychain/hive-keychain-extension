@@ -1,10 +1,10 @@
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { TokenIncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';

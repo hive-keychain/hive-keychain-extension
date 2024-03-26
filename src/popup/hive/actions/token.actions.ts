@@ -1,3 +1,4 @@
+import { ActionPayload, AppThunk } from '@popup/multichain/actions/interfaces';
 import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
@@ -8,7 +9,6 @@ import {
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload, AppThunk } from 'src/popup/hive/actions/interfaces';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import Logger from 'src/utils/logger.utils';

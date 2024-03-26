@@ -1,6 +1,6 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
 
 export const AccountReducer = (
   state: LocalAccount[] = [],

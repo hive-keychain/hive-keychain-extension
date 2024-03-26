@@ -1,6 +1,6 @@
+import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppThunk } from 'src/popup/hive/actions/interfaces';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const TIME_REFERENCE = 1643236071000;

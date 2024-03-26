@@ -1,6 +1,5 @@
 import { Asset } from '@hiveio/dhive';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { navigateToWithParams } from '@popup/hive/actions/navigation.actions';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
   ActionButton,
@@ -8,6 +7,7 @@ import {
 } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
 import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';

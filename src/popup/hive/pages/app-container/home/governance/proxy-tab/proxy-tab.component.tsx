@@ -1,5 +1,14 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
+import {
+  addCaptionToLoading,
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,15 +18,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addCaptionToLoading,
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 

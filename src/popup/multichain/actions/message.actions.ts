@@ -1,6 +1,6 @@
 import { ErrorMessage } from 'src/interfaces/errorMessage.interface';
 import { MessageType } from 'src/reference-data/message-type.enum';
-import { ActionType } from './action-type.enum';
+import { ActionType } from '../../hive/actions/action-type.enum';
 import { ActionPayload } from './interfaces';
 
 export const setErrorMessage = (

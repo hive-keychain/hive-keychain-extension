@@ -1,3 +1,9 @@
+import { forgetMk } from '@popup/multichain/actions/mk.actions';
+import {
+  goBack,
+  navigateTo,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
@@ -7,9 +13,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { forgetMk } from 'src/popup/hive/actions/mk.actions';
-import { goBack, navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ClearAllData = ({

@@ -1,6 +1,6 @@
-import { setInfoMessage } from '@popup/hive/actions/message.actions';
-import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
 import { TokenSwapsHistoryItemComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history-item/token-swaps-history-item.component';
+import { setInfoMessage } from '@popup/multichain/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { ISwap } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
 import ArrayUtils from 'src/utils/array.utils';
 
 const TransactionReducer = (

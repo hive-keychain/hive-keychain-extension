@@ -3,6 +3,19 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from '@popup/hive/actions/delegations.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  goBack,
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -12,19 +25,6 @@ import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirma
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  goBack,
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';

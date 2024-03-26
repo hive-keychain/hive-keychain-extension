@@ -1,6 +1,19 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
@@ -20,19 +33,6 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from 'src/popup/hive/actions/delegations.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';

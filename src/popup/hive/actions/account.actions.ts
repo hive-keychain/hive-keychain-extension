@@ -7,8 +7,8 @@ import {
 } from 'src/popup/hive/actions/active-account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { ActionPayload, AppThunk } from '../../multichain/actions/interfaces';
 import { ActionType } from './action-type.enum';
-import { ActionPayload, AppThunk } from './interfaces';
 
 export const retrieveAccounts =
   (mk: string): AppThunk =>

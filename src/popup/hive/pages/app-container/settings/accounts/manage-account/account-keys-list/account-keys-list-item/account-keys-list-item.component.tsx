@@ -1,3 +1,8 @@
+import { setInfoMessage } from '@popup/multichain/actions/message.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -10,11 +15,6 @@ import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { removeKey, setAccounts } from 'src/popup/hive/actions/account.actions';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
-import {
-  goBack,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';

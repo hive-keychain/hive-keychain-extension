@@ -3,11 +3,11 @@ import {
   RCDelegationValue,
 } from '@interfaces/rc-delegation.interface';
 import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-delegation-item.component';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';

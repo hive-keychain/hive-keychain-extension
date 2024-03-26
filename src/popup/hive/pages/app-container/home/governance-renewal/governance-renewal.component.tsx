@@ -1,13 +1,13 @@
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 
 interface GovernanceRenewalProps {

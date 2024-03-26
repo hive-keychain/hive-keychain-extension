@@ -4,6 +4,9 @@ import {
   AccountCreationType,
   AccountCreationUtils,
 } from '@popup/hive/utils/account-creation.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -16,9 +19,6 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';

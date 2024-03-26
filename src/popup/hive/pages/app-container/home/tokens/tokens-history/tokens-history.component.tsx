@@ -9,6 +9,7 @@ import {
   TokenTransaction,
   TransferTokenTransaction,
 } from '@interfaces/tokens.interface';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
@@ -20,7 +21,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { TokenTransactionUtils } from 'src/popup/hive/utils/token-transaction.utils';

@@ -1,3 +1,5 @@
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,8 +8,6 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 

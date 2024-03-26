@@ -1,9 +1,9 @@
-import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
 import {
   DAppCategory,
   EcosystemCategory,
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';

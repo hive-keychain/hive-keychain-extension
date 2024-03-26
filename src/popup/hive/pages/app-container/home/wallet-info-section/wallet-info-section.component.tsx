@@ -1,7 +1,6 @@
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
   loadPendingUnstaking,
   loadTokens,
@@ -10,6 +9,7 @@ import {
 } from '@popup/hive/actions/token.actions';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';

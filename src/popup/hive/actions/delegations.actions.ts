@@ -1,7 +1,7 @@
+import { ActionPayload, AppThunk } from '@popup/multichain/actions/interfaces';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { DelegationsPayload } from 'src/interfaces/delegations.interface';
 import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload, AppThunk } from 'src/popup/hive/actions/interfaces';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import Logger from 'src/utils/logger.utils';
 

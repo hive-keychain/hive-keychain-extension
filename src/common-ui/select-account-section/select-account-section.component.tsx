@@ -1,6 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,7 +18,6 @@ import { SelectAccountSectionItemComponent } from 'src/common-ui/select-account-
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { setInfoMessage } from 'src/popup/hive/actions/message.actions';
 
 interface Props {
   background?: 'white';

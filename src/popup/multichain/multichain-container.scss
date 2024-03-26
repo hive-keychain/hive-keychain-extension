@@ -1,6 +1,7 @@
 @import '../hive/hive-app.component.scss';
 @import '../evm/evm-app.component.scss';
-@import './sign-up/sign-up.component.scss';
+@import './pages/sign-up/sign-up.component.scss';
+@import './pages/sign-in/sign-in-module.scss';
 
 .theme {
   &.light {

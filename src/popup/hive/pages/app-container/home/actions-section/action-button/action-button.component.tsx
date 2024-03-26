@@ -1,9 +1,9 @@
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ActionButton } from 'src/interfaces/action-button.interface';
-import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 
 const ActionButton = ({
   label,

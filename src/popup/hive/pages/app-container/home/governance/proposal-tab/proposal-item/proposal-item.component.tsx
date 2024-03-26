@@ -1,6 +1,15 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Proposal } from '@interfaces/proposal.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import {
+  addCaptionToLoading,
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -9,15 +18,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import {
-  addCaptionToLoading,
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import FormatUtils from 'src/utils/format.utils';

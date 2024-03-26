@@ -1,6 +1,6 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { ActionType } from './action-type.enum';
+import { ActionType } from '../../hive/actions/action-type.enum';
 
 export const setMk = (mk: string, sendMk: boolean) => {
   LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, mk);

@@ -1,6 +1,6 @@
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { Screen } from 'src/reference-data/screen.enum';
-import { ActionType } from './action-type.enum';
+import { ActionType } from '../../hive/actions/action-type.enum';
 import { AppThunk } from './interfaces';
 
 export type NavigationParams = ConfirmationPageParams | any;

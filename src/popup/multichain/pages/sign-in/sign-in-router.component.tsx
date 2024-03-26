@@ -1,10 +1,10 @@
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { ResetPasswordPageComponent } from '@popup/multichain/pages/sign-in/reset-password/reset-password.component';
+import { SignInComponent } from '@popup/multichain/pages/sign-in/sign-in/sign-in.component';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { ResetPasswordPageComponent } from 'src/popup/hive/pages/sign-in/reset-password/reset-password.component';
-import { SignInComponent } from 'src/popup/hive/pages/sign-in/sign-in/sign-in.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
 const SignInRouter = ({
