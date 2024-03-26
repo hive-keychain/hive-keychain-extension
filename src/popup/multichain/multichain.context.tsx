@@ -7,12 +7,12 @@ export enum Chain {
 }
 
 export type ChainContextType = {
-  chain: Chain;
+  chain?: Chain;
   setChain: (chain: Chain) => void;
 };
 
 export const ChainContext = createContext<ChainContextType>({
-  chain: Chain.HIVE,
+  chain: undefined,
   setChain: (chain) => Logger.log('no chain provider'),
 });
 export const useChainContext = () => useContext(ChainContext);

@@ -36,7 +36,6 @@ import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
 import { MessageContainerComponent } from 'src/popup/hive/pages/message-container/message-container.component';
 import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
-import { SignUpComponent } from 'src/popup/hive/pages/sign-up/sign-up.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
@@ -99,20 +98,6 @@ const HiveApp = ({
     }
     rpc = activeRpc?.uri;
   }, [activeRpc]);
-
-  const onActiveRpcRefreshed = async () => {
-    if (activeAccountUsername) {
-      refreshActiveAccount();
-    } else {
-      const lastActiveAccountName =
-        await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
-      loadActiveAccount(
-        accounts.find(
-          (account: LocalAccount) => account.name === lastActiveAccountName,
-        )!,
-      );
-    }
-  };
 
   useEffect(() => {
     initHasStoredAccounts();
@@ -250,11 +235,7 @@ const HiveApp = ({
 
   const renderMainLayoutNav = () => {
     if (!mk || mk.length === 0) {
-      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-        return <SignUpComponent />;
-      } else {
-        return <SignInRouterComponent />;
-      }
+      return <SignInRouterComponent />;
     } else {
       if (accounts && accounts.length === 0) {
         return <AddAccountRouterComponent />;

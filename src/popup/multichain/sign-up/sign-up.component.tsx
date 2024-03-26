@@ -109,6 +109,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   resetTitleContainerProperties,
 });
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SignUpComponent = connector(SignUp);

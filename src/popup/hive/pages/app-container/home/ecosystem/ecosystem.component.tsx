@@ -5,7 +5,7 @@ import {
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { RootState } from '@popup/hive/store';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
-import { useChainContext } from '@popup/multichain.context';
+import { useChainContext } from '@popup/multichain/multichain.context';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
@@ -32,7 +32,7 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
 
   const init = async () => {
     setLoading(true);
-    const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain);
+    const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain!);
     if (categories) {
       const tempTabs: any = [];
       for (const category of categories) {
