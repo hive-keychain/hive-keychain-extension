@@ -78,7 +78,7 @@ export const MultichainContainer = () => {
   };
 
   return (
-    <div>
+    <>
       {ready && theme && (
         <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
           <ChainContext.Provider value={{ chain, setChain }}>
@@ -95,18 +95,14 @@ export const MultichainContainer = () => {
           </ChainContext.Provider>
         </ThemeContext.Provider>
       )}
-    </div>
+    </>
   );
 };
 
 const renderChain = (screen: SignUpScreen, selectedChain?: Chain) => {
   switch (selectedChain) {
     case Chain.HIVE:
-      return (
-        <Provider store={store}>
-          <HiveAppComponent />
-        </Provider>
-      );
+      return <HiveAppComponent />;
     case Chain.EVM:
       return <EvmAppComponent />;
     default:
@@ -119,7 +115,6 @@ const renderChain = (screen: SignUpScreen, selectedChain?: Chain) => {
 };
 
 const ChainComponent = ({
-  theme,
   chain,
   screen,
 }: {
@@ -127,7 +122,7 @@ const ChainComponent = ({
   chain?: Chain;
   screen: SignUpScreen;
 }) => {
-  return renderChain(screen, chain);
+  return <Provider store={store}>{renderChain(screen, chain)}</Provider>;
 };
 
 const ChainComponentWithBoundary = withErrorBoundary(ChainComponent, {
