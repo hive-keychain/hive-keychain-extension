@@ -1,6 +1,5 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { UserVestingRoute } from '@interfaces/vesting-routes.interface';
 import {
   retrieveAccounts,
   setAccounts,
@@ -217,6 +216,7 @@ const HiveApp = ({
 
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
+      checkVestingRoutes();
     }
   };
 
@@ -227,35 +227,51 @@ const HiveApp = ({
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
     loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
-    //TODO finish & move to utils accordingly
-    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+  };
 
-    //TODO bellow uncomment after finishing tests
-    // const allVestingRoutes =
-    //   await VestingRoutesUtils.getAllAccountsVestingRoutes(
-    //     accounts.map((acc) => acc.name),
-    //     'outgoing',
-    //   );
+  const checkVestingRoutes = async (cleanFortesting = false) => {
+    if (cleanFortesting) {
+      console.log('Clear LAST_VESTING_ROUTES'); //TODO remove line
+      LocalStorageUtils.removeFromLocalStorage(
+        LocalStorageKeyEnum.LAST_VESTING_ROUTES,
+      );
+      return;
+    }
+    const allVestingRoutes =
+      await VestingRoutesUtils.getAllAccountsVestingRoutes(
+        accounts.map((acc) => acc.name),
+        'outgoing',
+      );
+
     //TODO bellow remove block
-    const allVestingRoutes = [
-      {
-        account: 'theghost1980',
-        routes: [
-          {
-            id: 0,
-            fromAccount: 'theghost1980',
-            toAccount: 'keychain.tests',
-            percent: 1,
-          },
-        ],
-      },
-    ] as UserVestingRoute[];
+    // const allVestingRoutes = [
+    //   {
+    //     account: 'theghost1980',
+    //     routes: [
+    //       {
+    //         id: 0,
+    //         fromAccount: 'theghost1980',
+    //         toAccount: 'keychain.tests',
+    //         percent: 1,
+    //       },
+    //     ],
+    //   },
+    // ] as UserVestingRoute[];
     //end block
 
-    //TODO bellow uncomment after meeting, same as different keys? 'do nothing' : 'agree'
-    // VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
+    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+    console.log({ allVestingRoutes, lastVestingRoutes }); //TODO remove line
+    if (!lastVestingRoutes && allVestingRoutes.length) {
+      VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
+      return;
+    }
 
-    if (lastVestingRoutes) {
+    if (
+      lastVestingRoutes &&
+      lastVestingRoutes.length > 0 &&
+      allVestingRoutes &&
+      allVestingRoutes.length > 0
+    ) {
       //TODO compare only if last found & set popup
       //TODO compare here.
       const differentVestingRoutesFound =
@@ -265,8 +281,8 @@ const HiveApp = ({
         );
       console.log({ differentVestingRoutesFound }); //TODO remove line
       //TODO bellow set state popup info.
+      VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
     }
-    console.log('hive-app', { lastVestingRoutes, allVestingRoutes }); //TODO remove line
   };
 
   const selectComponent = async (

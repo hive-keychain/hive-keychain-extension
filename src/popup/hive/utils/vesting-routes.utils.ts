@@ -19,13 +19,20 @@ const getAllAccountsVestingRoutes = async (
   type: 'outgoing' | 'incoming' | 'all',
 ) => {
   const allAccountsVestingRoutes: UserVestingRoute[] = [];
-
-  for (const name of names) {
+  for (let i = 0; i < names.length; i++) {
+    const name = names[i];
+    const vestingRoutes = await VestingRoutesUtils.getVestingRoutes(name, type);
     allAccountsVestingRoutes.push({
       account: name,
-      routes: await getVestingRoutes(name, type),
+      routes: vestingRoutes,
     });
   }
+  // for (const name of names) {
+  //   allAccountsVestingRoutes.push({
+  //     account: name,
+  //     routes: await getVestingRoutes(name, type),
+  //   });
+  // }
   return allAccountsVestingRoutes;
 };
 
@@ -41,21 +48,14 @@ const getDifferentVestingRoutesFound = (
   lastVestingRoutes: UserVestingRoute[],
   currentVestingRoutes: UserVestingRoute[],
 ) => {
-  //TODO bellow, the string comparisson must be made to each, so need to iterate one more deeper level on each array
   let differentVestingRoutesFound: UserVestingRoute[] = [];
-  lastVestingRoutes.forEach((lastVestingRoute) => {
-    const lastVestingRouteAsString = JSON.stringify(lastVestingRoute.routes);
-    const currentVestingRoutesFound = currentVestingRoutes.find(
-      (item) => item.account === lastVestingRoute.account,
+  if (lastVestingRoutes.length !== currentVestingRoutes.length) {
+    let difference = lastVestingRoutes.filter(
+      (x) => !currentVestingRoutes.includes(x),
     );
-    if (
-      currentVestingRoutesFound &&
-      JSON.stringify(currentVestingRoutesFound.routes) !==
-        lastVestingRouteAsString
-    ) {
-      differentVestingRoutesFound.push(currentVestingRoutesFound);
-    }
-  });
+    console.log('not same account routes', { difference });
+    differentVestingRoutesFound = difference;
+  }
   return differentVestingRoutesFound;
 };
 
