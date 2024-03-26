@@ -22,12 +22,13 @@ import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { Screen } from '@reference-data/screen.enum';
-import { IStep } from 'hive-keychain-commons';
+import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -361,6 +362,7 @@ const TokenSwaps = ({
     ];
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('html_popup_swap_token_confirm_message'),
       fields: fields,
       title: 'html_popup_swap_token_confirm_title',
@@ -371,6 +373,8 @@ const TokenSwaps = ({
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
+            activeAccount.account,
+            activeAccount.account,
           ),
           [startToken?.value.symbol, swapConfig.account],
         );
@@ -389,7 +393,14 @@ const TokenSwaps = ({
             'html_popup_swap_sending_token_to_swap_account',
           );
 
-          if (success) {
+          if (success && success.isUsingMultisig) {
+            await SwapTokenUtils.saveLastUsed(
+              startToken?.value,
+              endToken?.value,
+            );
+            setSuccessMessage('swap_multisig_transaction_sent_to_signers');
+            goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
+          } else if (success && success.tx_id) {
             await SwapTokenUtils.saveLastUsed(
               startToken?.value,
               endToken?.value,
@@ -411,7 +422,7 @@ const TokenSwaps = ({
       afterCancelAction: async () => {
         await SwapTokenUtils.cancelSwap(estimateId);
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getFormParams = () => {

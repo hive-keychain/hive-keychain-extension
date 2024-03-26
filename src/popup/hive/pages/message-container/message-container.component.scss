@@ -35,12 +35,16 @@
     .title {
       text-align: center;
       @include dmSans700(20px);
-      color: $red;
+      color: var(--main-font-color);
+      &.success {
+        color: $green-success;
+      }
     }
     .message {
       text-align: center;
       @include dmSans400(15px);
       color: var(--main-font-color);
+      user-select: all;
     }
   }
 }

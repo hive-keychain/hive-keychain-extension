@@ -67,7 +67,7 @@ export const broadcastCreateProposal = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,
@@ -150,7 +150,13 @@ export const broadcastUpdateProposalVote = async (
           ids.join(', #'),
         ]);
     }
-    const message = createMessage(err, result, data, messageText, err_message);
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      messageText,
+      err_message,
+    );
     return message;
   }
 };
@@ -203,7 +209,7 @@ export const broadcastRemoveProposal = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    const message = await createMessage(
       err,
       result,
       data,

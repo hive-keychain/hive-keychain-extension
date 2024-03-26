@@ -55,6 +55,9 @@ export enum SVGIcons {
   MENU_BUTTON = 'top-bar/menu-button',
   MENU_ABOUT = 'menu/about',
 
+  MENU_THEME_DARK = 'menu/theme/dark-theme',
+  MENU_THEME_LIGHT = 'menu/theme/light-theme',
+
   MENU_ACCOUNTS = 'menu/accounts',
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
@@ -87,6 +90,7 @@ export enum SVGIcons {
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
   MENU_USER_PREFERENCES_NOTIFICATIONS = 'menu/user-preferences/notifications',
+  MENU_USER_PREFERENCES_MULTISIG = 'menu/user-preferences/accounts-multisig',
 
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',

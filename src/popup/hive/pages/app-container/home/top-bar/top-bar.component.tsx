@@ -102,25 +102,29 @@ const TopBar = ({
       await sleep(3000);
       refreshActiveAccount();
       if (claimSuccessful) {
-        const rewardHp =
-          FormatUtils.withCommas(
-            FormatUtils.toHP(
-              activeAccount.account.reward_vesting_balance
-                .toString()
-                .replace('VESTS', ''),
-              globalProperties.globals,
-            ).toString(),
-          ) + ' HP';
-        let claimedResources = [
-          activeAccount.account.reward_hive_balance,
-          activeAccount.account.reward_hbd_balance,
-          rewardHp,
-        ].filter(
-          (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
-        );
-        setSuccessMessage('popup_html_claim_success', [
-          claimedResources.join(', '),
-        ]);
+        if (claimSuccessful.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          const rewardHp =
+            FormatUtils.withCommas(
+              FormatUtils.toHP(
+                activeAccount.account.reward_vesting_balance
+                  .toString()
+                  .replace('VESTS', ''),
+                globalProperties.globals,
+              ).toString(),
+            ) + ' HP';
+          let claimedResources = [
+            activeAccount.account.reward_hive_balance,
+            activeAccount.account.reward_hbd_balance,
+            rewardHp,
+          ].filter(
+            (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+          );
+          setSuccessMessage('popup_html_claim_success', [
+            claimedResources.join(', '),
+          ]);
+        }
         refresh();
       } else {
         setErrorMessage('popup_html_claim_error');
@@ -149,9 +153,9 @@ const TopBar = ({
         icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
-        tooltipDelayShow={1500}
-        tooltipMessage="html_popup_click_to_refresh"
-        tooltipPosition="right"
+        // tooltipDelayShow={1500}
+        // tooltipMessage="html_popup_click_to_refresh"
+        // tooltipPosition="right"
       />
       <div className="spacer"></div>
       {notifications && notifications.length > 0 && (

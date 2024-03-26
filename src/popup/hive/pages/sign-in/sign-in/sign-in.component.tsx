@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -24,10 +24,15 @@ const SignIn = ({
   setProcessingDecryptAccount,
 }: PropsFromRedux) => {
   const [password, setPassword] = useState('');
+  const ref = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     resetTitleContainerProperties();
   }, []);
+
+  useEffect(() => {
+    if (ref && ref.current) ref.current.focus();
+  }, [ref]);
 
   const login = async () => {
     if (await MkUtils.login(password)) {
@@ -67,6 +72,7 @@ const SignIn = ({
         type={InputType.PASSWORD}
         onEnterPress={login}
         dataTestId={'password-input'}
+        ref={ref}
       />
       <div className="divider"></div>
       <div className="action-panel">

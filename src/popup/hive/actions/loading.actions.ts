@@ -24,3 +24,10 @@ export const removeFromLoadingList = (operation: string) => {
     payload: { operation: operation },
   };
 };
+
+export const addCaptionToLoading = (caption: string) => {
+  return {
+    type: ActionType.ADD_CAPTION_TO_LOADING_PAGE,
+    payload: { caption: caption },
+  };
+};

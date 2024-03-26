@@ -2,7 +2,6 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import reducers from 'src/popup/hive/reducers';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -35,7 +34,7 @@ store.subscribe(() => {
       previousAccounts.length === 0 &&
       previousAccounts.length !== accounts.length
     ) {
-      AnalyticsUtils.sendAddFirstAccountEvent();
+      // AnalyticsUtils.sendAddFirstAccountEvent();
     }
     previousAccounts = accounts;
     if (accounts.length !== 0) {

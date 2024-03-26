@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.0.0",
+  "version": "3.1.4",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -87,9 +87,11 @@
     "resolve-cwd": "3.0.0",
     "sass": "1.65.1",
     "scss-tokenizer": "0.4.3",
+    "socket.io-client": "^4.7.2",
     "sscjs": "0.0.9",
     "url-loader": "4.1.1",
-    "valid-url": "1.0.9"
+    "valid-url": "1.0.9",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.0",
@@ -117,6 +119,7 @@
     "@types/redux-mock-store": "1.0.3",
     "@types/remote-redux-devtools": "0.5.5",
     "@types/sinon-chrome": "2.2.11",
+    "@types/websocket": "^1.0.10",
     "@types/yargs": "17.0.11",
     "@typescript-eslint/eslint-plugin": "5.33.0",
     "@typescript-eslint/parser": "5.33.0",

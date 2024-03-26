@@ -16,12 +16,20 @@
     background: $dark-blue;
     opacity: 0.8;
   }
-  .loading-text,
-  .caption {
+  .loading-text {
     font-size: 20px;
     margin-top: 16px;
     color: white;
     z-index: 1;
+  }
+
+  .loading-caption {
+    color: white;
+    z-index: 1;
+    font-size: 18px;
+    padding: 0px 24px;
+    padding-top: 8px;
+    text-align: center;
   }
 
   .operations {

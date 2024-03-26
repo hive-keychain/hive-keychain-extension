@@ -1,3 +1,7 @@
+rect,
+path {
+  transition: fill 0.225s linear;
+}
 .wallet-info-row {
   display: flex;
   flex-direction: column;
@@ -35,12 +39,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      --wallet-history-icon-color: #{$red};
       --wallet-icon-border-color: var(--wallet-card-border);
-      --wallet-icon-background: transparent;
-      &:hover {
-        --wallet-icon-background: #{$red};
-        --wallet-icon-color: white;
+      // --wallet-icon-background: transparent;
+      rect {
+        fill: transparent;
+      }
+      path {
+        fill: $red;
+      }
+
+      svg:hover {
+        rect {
+          fill: $red;
+        }
+        path {
+          fill: white;
+        }
+        // --wallet-icon-background: #{$red};\
         --wallet-icon-border-color: #{$red};
       }
     }
