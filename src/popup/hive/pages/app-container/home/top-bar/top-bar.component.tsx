@@ -81,6 +81,7 @@ const TopBar = ({
       username,
       dynamicGlobalProperties,
     );
+    console.log(notifs);
     setNotifications(notifs);
   };
 

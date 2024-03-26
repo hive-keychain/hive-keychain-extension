@@ -49,43 +49,49 @@ export const NotificationPanel = ({
   return (
     <div
       className={`notifications-panel ${isPanelOpened ? 'opened' : 'closed'}`}>
-      <ButtonComponent
-        type={ButtonType.ALTERNATIVE}
-        label="notification_set_all_as_read"
-        onClick={markAllAsRead}
-        additionalClass="set-all-as-read"
-      />
       <div className="notification-list">
-        {isPanelOpened &&
-          notifications.map((notif, index) => (
-            <React.Fragment key={notif.id}>
-              <div
-                className={`notification-item ${
-                  notif.txUrl || notif.externalUrl ? 'clickable' : ''
-                }`}
-                onClick={() => {
-                  clickOnNotification(notif);
-                }}>
-                <div className="notification-dot"></div>
-                <div className="notification-content">
+        {isPanelOpened && (
+          <>
+            <ButtonComponent
+              type={ButtonType.ALTERNATIVE}
+              label="notification_set_all_as_read"
+              onClick={markAllAsRead}
+              additionalClass="set-all-as-read"
+            />
+            {notifications.map((notif, index) => (
+              <React.Fragment key={notif.id}>
+                <div
+                  className={`notification-item ${
+                    notif.txUrl || notif.externalUrl ? 'clickable' : ''
+                  }`}
+                  onClick={() => {
+                    clickOnNotification(notif);
+                  }}>
                   <div
-                    className="message"
-                    dangerouslySetInnerHTML={{
-                      __html: chrome.i18n.getMessage(
-                        notif.message,
-                        notif.messageParams,
-                      ),
-                    }}></div>
-                  <div className="date">
-                    {moment(notif.createdAt).fromNow()}
+                    className={`notification-dot ${
+                      notif.read ? 'read' : ''
+                    }`}></div>
+                  <div className="notification-content">
+                    <div
+                      className="message"
+                      dangerouslySetInnerHTML={{
+                        __html: chrome.i18n.getMessage(
+                          notif.message,
+                          notif.messageParams,
+                        ),
+                      }}></div>
+                    <div className="date">
+                      {moment(notif.createdAt).fromNow()}
+                    </div>
                   </div>
                 </div>
-              </div>
-              {index !== notifications.length - 1 && (
-                <Separator type="horizontal" />
-              )}
-            </React.Fragment>
-          ))}
+                {index !== notifications.length - 1 && (
+                  <Separator type="horizontal" />
+                )}
+              </React.Fragment>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
