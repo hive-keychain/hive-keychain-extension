@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -32,7 +33,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -277,11 +277,13 @@ const Conversion = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
-    conversions: state.conversions as Conversion[],
+    conversions: state.hive.conversions as Conversion[],
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

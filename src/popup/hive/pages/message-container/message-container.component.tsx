@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -5,7 +6,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { resetMessage } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 
 const DEFAULT_TIMEOUT = 3000;
 

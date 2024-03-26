@@ -22,7 +22,7 @@ import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
-import { RootState } from '@popup/hive/store';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -307,22 +307,22 @@ const HiveApp = ({
 const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
-    accounts: state.accounts as LocalAccount[],
-    activeRpc: state.activeRpc,
-    switchToRpc: state.rpcSwitcher.rpc,
-    displayChangeRpcPopup: state.rpcSwitcher.display,
+    accounts: state.hive.accounts as LocalAccount[],
+    activeRpc: state.hive.activeRpc,
+    switchToRpc: state.hive.rpcSwitcher.rpc,
+    displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
-    activeAccountUsername: state.activeAccount.name,
+    activeAccountUsername: state.hive.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
     displayProxySuggestion:
-      state.activeAccount &&
-      state.activeAccount.account &&
-      state.activeAccount.account.proxy === '' &&
-      state.activeAccount.account.witnesses_voted_for === 0,
+      state.hive.activeAccount &&
+      state.hive.activeAccount.account &&
+      state.hive.activeAccount.account.proxy === '' &&
+      state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
-    appStatus: state.appStatus,
+    appStatus: state.hive.appStatus,
     errorMessage: state.errorMessage,
   };
 };

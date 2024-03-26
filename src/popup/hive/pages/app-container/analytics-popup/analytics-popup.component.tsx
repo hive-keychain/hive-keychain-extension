@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -7,7 +8,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 
 interface Props {
   onAnswered: any;

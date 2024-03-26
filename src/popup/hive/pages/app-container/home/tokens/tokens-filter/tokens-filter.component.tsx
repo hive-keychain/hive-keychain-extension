@@ -1,4 +1,5 @@
 import { Token } from '@interfaces/tokens.interface';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
@@ -11,7 +12,6 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { loadTokens } from 'src/popup/hive/actions/token.actions';
-import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -156,8 +156,8 @@ const TokensFilter = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    tokens: state.tokens as Token[],
+    activeAccount: state.hive.activeAccount,
+    tokens: state.hive.tokens as Token[],
   };
 };
 

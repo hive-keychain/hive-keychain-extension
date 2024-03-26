@@ -18,6 +18,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -39,7 +40,6 @@ import { ReceivedInterestsTransactionComponent } from 'src/popup/hive/pages/app-
 import { RecurrentTransferTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/recurrent-transfer-transaction/recurrent-transfer-transaction.component';
 import { TransferTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/transfer-transaction/transfer-transaction.component';
 import { WithdrawSavingsTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/withdraw-savings-transaction/withdraw-savings-transaction.component';
-import { RootState } from 'src/popup/hive/store';
 
 interface WalletTransactionInfoProps {
   transaction: Transaction;

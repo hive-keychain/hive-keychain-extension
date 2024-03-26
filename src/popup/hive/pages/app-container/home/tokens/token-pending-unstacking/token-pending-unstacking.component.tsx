@@ -13,8 +13,8 @@ import {
 } from '@popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
 import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
-import { RootState } from '@popup/hive/store';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
@@ -193,9 +193,9 @@ const TokenPendingUnstake = ({
 };
 const mapStateToProps = (state: RootState) => {
   return {
-    pendingUnstaking: state.tokensPendingUnstaking,
+    pendingUnstaking: state.hive.tokensPendingUnstaking,
     tokenInfo: state.navigation.stack[0].params.tokenInfo as Token,
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

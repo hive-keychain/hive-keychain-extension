@@ -1,5 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Witness } from '@interfaces/witness.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -12,7 +13,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
@@ -90,7 +90,7 @@ const WitnessVotingSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

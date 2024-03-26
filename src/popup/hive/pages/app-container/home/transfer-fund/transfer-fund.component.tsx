@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -34,7 +35,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils, {
   CurrencyLabels,
@@ -459,14 +459,16 @@ const TransferFunds = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     navParams: state.navigation.stack[0].params,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
-    phishing: state.phishing,
-    localAccounts: state.accounts,
+    phishing: state.hive.phishing,
+    localAccounts: state.hive.accounts,
   };
 };
 

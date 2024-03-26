@@ -1,5 +1,6 @@
 import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -11,7 +12,6 @@ import { MyWitnessTabComponent } from 'src/popup/hive/pages/app-container/home/g
 import { ProposalTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/witness-tab/witness-tab.component';
-import { RootState } from 'src/popup/hive/store';
 
 const Governance = ({
   setTitleContainerProperties,
@@ -82,7 +82,7 @@ const Governance = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.hive.activeAccount };
 };
 
 const connector = connect(mapStateToProps, {

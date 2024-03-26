@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -14,7 +15,6 @@ import {
   goBack,
   navigateToWithParams,
 } from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -215,8 +215,8 @@ const AccountKeysListItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts as LocalAccount[],
-    activeAccount: state.activeAccount,
+    accounts: state.hive.accounts as LocalAccount[],
+    activeAccount: state.hive.activeAccount,
   };
 };
 

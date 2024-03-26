@@ -1,9 +1,9 @@
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
-import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';

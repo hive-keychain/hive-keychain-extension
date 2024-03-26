@@ -1,5 +1,5 @@
 import { setInfoMessage } from '@popup/hive/actions/message.actions';
-import { RootState } from '@popup/hive/store';
+import { RootState } from '@popup/multichain/store';
 import { ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';
 import { default as React, useState } from 'react';

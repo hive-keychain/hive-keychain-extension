@@ -1,4 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -10,7 +11,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -108,9 +108,9 @@ const ProposalVotingSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
     isMessageContainerDisplayed: state.errorMessage.key.length > 0,
-    globalProperties: state.globalProperties,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

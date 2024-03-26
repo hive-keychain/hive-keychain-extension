@@ -1,6 +1,7 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
@@ -21,7 +22,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
@@ -335,7 +335,7 @@ const WitnessTab = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

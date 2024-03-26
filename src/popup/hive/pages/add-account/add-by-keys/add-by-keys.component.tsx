@@ -1,4 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -9,7 +10,6 @@ import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -104,7 +104,7 @@ const AddByKeys = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    localAccounts: state.accounts,
+    localAccounts: state.hive.accounts,
   };
 };
 

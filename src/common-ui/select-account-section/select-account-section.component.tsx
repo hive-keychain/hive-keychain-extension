@@ -1,7 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
-import { RootState } from '@popup/hive/store';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import {
   DragDropContext,
@@ -196,8 +196,8 @@ const SelectAccountSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts,
-    activeAccount: state.activeAccount,
+    accounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

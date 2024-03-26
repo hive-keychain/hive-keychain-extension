@@ -9,6 +9,7 @@ import {
   TokenTransaction,
   TransferTokenTransaction,
 } from '@interfaces/tokens.interface';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
@@ -22,7 +23,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
-import { RootState } from 'src/popup/hive/store';
 import { TokenTransactionUtils } from 'src/popup/hive/utils/token-transaction.utils';
 
 const TokensHistory = ({
@@ -143,10 +143,10 @@ const TokensHistory = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccountName: state.activeAccount?.name,
-    userTokens: state.userTokens,
+    activeAccountName: state.hive.activeAccount?.name,
+    userTokens: state.hive.userTokens,
     currentTokenBalance: state.navigation.params?.tokenBalance as TokenBalance,
-    tokenHistory: state.tokenHistory as TokenTransaction[],
+    tokenHistory: state.hive.tokenHistory as TokenTransaction[],
   };
 };
 

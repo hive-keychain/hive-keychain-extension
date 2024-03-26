@@ -1,7 +1,7 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const EstimatedAccountValueSection = ({
@@ -44,9 +44,9 @@ const EstimatedAccountValueSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyPrices: state.currencyPrices,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    currencyPrices: state.hive.currencyPrices,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

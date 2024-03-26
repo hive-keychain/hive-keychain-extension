@@ -1,5 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -17,7 +18,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
@@ -161,7 +161,7 @@ const ProxyTab = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

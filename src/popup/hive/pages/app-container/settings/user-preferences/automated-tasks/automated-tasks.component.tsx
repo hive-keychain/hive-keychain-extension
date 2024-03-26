@@ -1,5 +1,6 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import Config from 'src/config';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 
 const AutomatedTasks = ({
@@ -181,7 +181,10 @@ const AutomatedTasks = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts, activeAccount: state.activeAccount };
+  return {
+    accounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
+  };
 };
 
 const connector = connect(mapStateToProps, {

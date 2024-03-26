@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -7,7 +8,6 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from 'src/popup/hive/actions/loading.actions';
-import { RootState } from 'src/popup/hive/store';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 
 interface GovernanceRenewalProps {
@@ -117,7 +117,7 @@ const GovernanceRenewal = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts };
+  return { accounts: state.hive.accounts };
 };
 
 const connector = connect(mapStateToProps, {

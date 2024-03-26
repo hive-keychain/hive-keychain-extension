@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,7 +10,6 @@ import { resetActiveAccount } from 'src/popup/hive/actions/active-account.action
 import { forgetMk } from 'src/popup/hive/actions/mk.actions';
 import { goBack, navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ClearAllData = ({

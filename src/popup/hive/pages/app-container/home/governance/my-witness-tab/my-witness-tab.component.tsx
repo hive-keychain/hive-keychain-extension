@@ -1,4 +1,5 @@
 import { Witness } from '@interfaces/witness.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -7,7 +8,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
 import { EditMyWitnessComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/edit-my-witness/edit-my-witness.component';
 import { WitnessInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
-import { RootState } from 'src/popup/hive/store';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
 type Props = {
@@ -85,9 +85,9 @@ const MyWitnessTab = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
-    currencyPrices: state.currencyPrices,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
+    currencyPrices: state.hive.currencyPrices,
   };
 };
 

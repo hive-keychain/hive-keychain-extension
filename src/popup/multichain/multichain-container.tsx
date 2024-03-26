@@ -2,6 +2,7 @@ import ChainSelector from '@popup/multichain/chain-selector.component';
 import { Chain, ChainContext } from '@popup/multichain/multichain.context';
 import { SignUpContext, SignUpScreen } from '@popup/multichain/sign-up.context';
 import { SignUpComponent } from '@popup/multichain/sign-up/sign-up.component';
+import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
@@ -9,7 +10,6 @@ import { Provider } from 'react-redux';
 import { ErrorFallback } from 'src/common-ui/error-fallback/error-fallback.component';
 import { EvmAppComponent } from 'src/popup/evm/evm-app.component';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { store } from 'src/popup/hive/store';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 

@@ -1,6 +1,6 @@
+import { RootState } from '@popup/multichain/store/index';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { RootState } from 'src/popup/hive/store/index';
 import { ActionType } from './action-type.enum';
 
 export interface ActionPayload<T> {

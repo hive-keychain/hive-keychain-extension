@@ -3,6 +3,7 @@ import {
   WitnessInfo,
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
@@ -29,7 +30,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { WitnessGlobalInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
-import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils, {
   WITNESS_DISABLED_KEY,
@@ -308,7 +308,7 @@ const WitnessInformation = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

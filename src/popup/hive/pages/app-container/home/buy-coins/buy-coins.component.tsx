@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,7 +10,6 @@ import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.compon
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
 const BuyCoins = ({
@@ -102,8 +102,10 @@ const BuyCoins = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    activeAccountName: state.activeAccount.name!,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    activeAccountName: state.hive.activeAccount.name!,
   };
 };
 

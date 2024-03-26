@@ -14,6 +14,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
@@ -31,7 +32,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { fetchAccountTransactions } from 'src/popup/hive/actions/transaction.actions';
 import { WalletHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
-import { RootState } from 'src/popup/hive/store';
 import TransactionUtils, {
   HAS_IN_OUT_TRANSACTIONS,
   NB_TRANSACTION_FETCHED,
@@ -530,8 +530,8 @@ const WalletHistory = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    transactions: state.transactions as Transactions,
-    activeAccountName: state.activeAccount.name,
+    transactions: state.hive.transactions as Transactions,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 

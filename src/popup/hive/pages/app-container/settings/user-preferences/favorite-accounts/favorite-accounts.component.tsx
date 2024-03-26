@@ -6,6 +6,7 @@ import {
 } from '@interfaces/favorite-user.interface';
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +15,6 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { FavoriteAccountsListComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
-import { RootState } from 'src/popup/hive/store';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -196,9 +196,9 @@ const FavoriteAccounts = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts,
-    activeAccount: state.activeAccount,
-    localAccounts: state.accounts,
+    accounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
+    localAccounts: state.hive.accounts,
   };
 };
 

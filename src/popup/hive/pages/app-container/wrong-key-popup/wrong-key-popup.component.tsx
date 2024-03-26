@@ -1,4 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
@@ -10,7 +11,6 @@ import ButtonComponent, {
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface WrongKeysOnUser {
@@ -102,7 +102,7 @@ const WrongKeyPopup = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts,
+    accounts: state.hive.accounts,
   };
 };
 

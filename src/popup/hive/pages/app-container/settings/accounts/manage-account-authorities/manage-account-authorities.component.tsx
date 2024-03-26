@@ -1,10 +1,10 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { AccountAuthoritiesListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list.component';
-import { RootState } from 'src/popup/hive/store';
 
 const ManageAccountAuthorities = ({
   setTitleContainerProperties,

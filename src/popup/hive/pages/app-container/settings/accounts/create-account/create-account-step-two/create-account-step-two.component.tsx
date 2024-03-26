@@ -5,6 +5,7 @@ import {
   AccountCreationUtils,
   GeneratedKeys,
 } from '@popup/hive/utils/account-creation.utils';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -23,7 +24,6 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 
 const SUBSTRING_LENGTH = 15;
@@ -359,8 +359,8 @@ const CreateAccountStepTwo = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    accounts: state.accounts,
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
     navParams: state.navigation.params,
   };
 };

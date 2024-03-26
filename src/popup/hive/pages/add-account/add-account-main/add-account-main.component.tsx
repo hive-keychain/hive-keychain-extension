@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
@@ -7,7 +8,6 @@ import ButtonComponent, {
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 
@@ -118,8 +118,8 @@ const AddAccountMain = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts,
-    isLedgerSupported: state.appStatus.isLedgerSupported,
+    accounts: state.hive.accounts,
+    isLedgerSupported: state.hive.appStatus.isLedgerSupported,
   };
 };
 

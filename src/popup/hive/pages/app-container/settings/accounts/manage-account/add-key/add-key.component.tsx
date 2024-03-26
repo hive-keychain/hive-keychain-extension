@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -11,7 +12,6 @@ import {
 } from 'src/popup/hive/actions/message.actions';
 import { goBack } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -156,10 +156,10 @@ const AddKey = ({
 const mapStateToProps = (state: RootState) => {
   return {
     keyType: state.navigation.stack[0].params as KeyType,
-    activeAccountName: state.activeAccount.name,
-    isLedgerSupported: state.appStatus.isLedgerSupported,
-    activeAccount: state.activeAccount,
-    localAccounts: state.accounts,
+    activeAccountName: state.hive.activeAccount.name,
+    isLedgerSupported: state.hive.appStatus.isLedgerSupported,
+    activeAccount: state.hive.activeAccount,
+    localAccounts: state.hive.accounts,
     mk: state.mk,
   };
 };

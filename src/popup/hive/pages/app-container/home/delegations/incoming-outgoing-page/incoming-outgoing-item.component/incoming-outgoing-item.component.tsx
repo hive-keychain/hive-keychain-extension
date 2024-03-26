@@ -3,6 +3,7 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from '@popup/hive/actions/delegations.actions';
+import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -25,7 +26,6 @@ import {
   navigateToWithParams,
 } from 'src/popup/hive/actions/navigation.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -284,9 +284,11 @@ const IncomingOutgoing = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties.globals,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
   };
 };
 

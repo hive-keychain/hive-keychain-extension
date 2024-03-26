@@ -1,3 +1,4 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -10,7 +11,6 @@ import {
 import { setMk } from 'src/popup/hive/actions/mk.actions';
 import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -100,7 +100,7 @@ const ChangePassword = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { mk: state.mk, accounts: state.accounts };
+  return { mk: state.mk, accounts: state.hive.accounts };
 };
 
 const connector = connect(mapStateToProps, {

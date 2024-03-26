@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -30,7 +31,6 @@ import {
 } from 'src/popup/hive/actions/navigation.actions';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
@@ -338,16 +338,18 @@ const TokensTransfer = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
     tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
-    phishing: state.phishing,
-    localAccounts: state.accounts,
+    phishing: state.hive.phishing,
+    localAccounts: state.hive.accounts,
   };
 };
 

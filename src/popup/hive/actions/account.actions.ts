@@ -54,7 +54,10 @@ export const addKey =
     ) => ActionPayload<ErrorMessage>,
   ): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts, mk } = getState();
+    const {
+      hive: { activeAccount, accounts },
+      mk,
+    } = getState();
     let newAccounts;
     try {
       newAccounts = await AccountUtils.addKey(
@@ -84,7 +87,10 @@ export const addKey =
 export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts, mk } = getState();
+    const {
+      hive: { activeAccount, accounts },
+      mk,
+    } = getState();
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );

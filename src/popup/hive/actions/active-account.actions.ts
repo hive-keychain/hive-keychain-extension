@@ -12,9 +12,9 @@ export const refreshActiveAccount =
       3000,
     );
     setTimeout(() => {
-      const account = getState().accounts.find(
+      const account = getState().hive.accounts.find(
         (localAccount: LocalAccount) =>
-          localAccount.name === getState().activeAccount.name,
+          localAccount.name === getState().hive.activeAccount.name,
       );
       dispatch(loadActiveAccount(account!));
     }, delay);
@@ -34,8 +34,8 @@ export const loadActiveAccount =
   async (dispatch, getState) => {
     if (
       account &&
-      getState().activeRpc &&
-      getState().activeRpc?.uri !== 'NULL'
+      getState().hive.activeRpc &&
+      getState().hive.activeRpc?.uri !== 'NULL'
     ) {
       dispatch(refreshKeys(account));
       dispatch(getAccountRC(account.name));
