@@ -34,7 +34,6 @@ import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
-import { MessageContainerComponent } from 'src/popup/hive/pages/message-container/message-container.component';
 import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
@@ -59,7 +58,6 @@ const HiveApp = ({
   displayProxySuggestion,
   navigationStack,
   appStatus,
-  errorMessage,
   setMk,
   navigateTo,
   loadActiveAccount,
@@ -291,7 +289,7 @@ const HiveApp = ({
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
-      {errorMessage?.key && <MessageContainerComponent />}
+
       {renderPopup(
         loading,
         activeRpc,
@@ -323,7 +321,6 @@ const mapStateToProps = (state: RootState) => {
       state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
     appStatus: state.hive.appStatus,
-    errorMessage: state.errorMessage,
   };
 };
 

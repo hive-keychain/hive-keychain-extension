@@ -1,15 +1,12 @@
-import ChainSelector from '@popup/multichain/chain-selector.component';
+import ChainRouter from '@popup/multichain/chain-router.component';
 import { Chain, ChainContext } from '@popup/multichain/multichain.context';
 import { SignUpContext, SignUpScreen } from '@popup/multichain/sign-up.context';
-import { SignUpComponent } from '@popup/multichain/sign-up/sign-up.component';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import { ErrorFallback } from 'src/common-ui/error-fallback/error-fallback.component';
-import { EvmAppComponent } from 'src/popup/evm/evm-app.component';
-import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -99,21 +96,6 @@ export const MultichainContainer = () => {
   );
 };
 
-const renderChain = (screen: SignUpScreen, selectedChain?: Chain) => {
-  switch (selectedChain) {
-    case Chain.HIVE:
-      return <HiveAppComponent />;
-    case Chain.EVM:
-      return <EvmAppComponent />;
-    default:
-      return screen === SignUpScreen.SIGN_UP ? (
-        <SignUpComponent />
-      ) : (
-        <ChainSelector />
-      );
-  }
-};
-
 const ChainComponent = ({
   chain,
   screen,
@@ -122,7 +104,11 @@ const ChainComponent = ({
   chain?: Chain;
   screen: SignUpScreen;
 }) => {
-  return <Provider store={store}>{renderChain(screen, chain)}</Provider>;
+  return (
+    <Provider store={store}>
+      {<ChainRouter screen={screen} selectedChain={chain} />}
+    </Provider>
+  );
 };
 
 const ChainComponentWithBoundary = withErrorBoundary(ChainComponent, {
