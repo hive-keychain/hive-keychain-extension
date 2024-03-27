@@ -23,7 +23,6 @@
       width: max-content;
       padding: 2px 8px;
       align-self: flex-end;
-      margin-right: 8px;
       font-size: 13px;
     }
   }
@@ -73,14 +72,32 @@
   }
 }
 
-.notification-button {
+.notifications-button-container {
+  position: relative;
   --notification-color: #{$red};
   --notification-background-color: white;
   --notification-border-color: #{$light-grey-border};
 
-  &:hover {
-    --notification-background-color: #{$red};
-    --notification-color: white;
-    --notification-border-color: #{$red};
+  .notification-button {
+    &:hover {
+      --notification-background-color: #{$red};
+      --notification-color: white;
+      --notification-border-color: #{$red};
+    }
+  }
+
+  .notifications-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    height: 24px;
+    width: 24px;
+    font-size: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--notification-background-color);
+    background-color: var(--notification-color);
   }
 }
