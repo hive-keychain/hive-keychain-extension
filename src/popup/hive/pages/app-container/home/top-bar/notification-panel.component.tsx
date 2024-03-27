@@ -72,6 +72,7 @@ export const NotificationPanel = ({
                       notif.read ? 'read' : ''
                     }`}></div>
                   <div className="notification-content">
+                    {notif.read}
                     <div
                       className="message"
                       dangerouslySetInnerHTML={{

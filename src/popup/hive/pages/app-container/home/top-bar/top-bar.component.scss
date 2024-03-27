@@ -33,15 +33,15 @@
         width: max-content;
         padding: 2px 8px;
         align-self: flex-end;
-        margin-top: 8px;
         margin-right: 8px;
+        font-size: 13px;
       }
     }
 
     .notification-list {
       display: flex;
       flex-direction: column;
-      row-gap: 16px;
+      row-gap: 8px;
       margin: 16px;
       height: calc(100% - 32px);
       overflow: auto;
@@ -71,11 +71,11 @@
           flex-direction: column;
           .message {
             color: var(--main-font-color);
-            font-size: 16px;
+            font-size: 13px;
           }
           .date {
             color: var(--main-font-color);
-            font-size: 14px;
+            font-size: 11px;
             font-style: italic;
           }
         }

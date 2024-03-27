@@ -515,8 +515,20 @@ const getNotifications = async (
   globalProperties: DynamicGlobalProperties,
 ) => {
   const notifications: Notification[] = [];
-  const res = await PeakDNotificationsApi.get(`notifications/${username}`);
-  for (const notif of res) {
+
+  let rawNotifications: any[] = [];
+  let lastBatch: any[] = [];
+  const limit = 100;
+  let offset = 0;
+  do {
+    lastBatch = await PeakDNotificationsApi.get(
+      `notifications/${username}?limit=${100}&offset=${offset}`,
+    );
+    rawNotifications = [...rawNotifications, ...lastBatch];
+    offset += limit;
+  } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
+
+  for (const notif of rawNotifications) {
     const payload = JSON.parse(notif.payload);
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
@@ -660,7 +672,7 @@ const getNotifications = async (
           ),
           ,
           payload.account,
-        ]; // TODO Convert to HP
+        ];
         break;
       }
       case 'recurrent_transfer': {
@@ -673,7 +685,7 @@ const getNotifications = async (
           payload.to,
           payload.executions,
           payload.recurrence,
-        ]; // TODO format amount
+        ];
         break;
       }
       case 'fill_convert_request': {
