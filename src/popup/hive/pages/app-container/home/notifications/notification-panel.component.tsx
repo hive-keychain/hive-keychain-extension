@@ -1,10 +1,5 @@
 import { Notification } from '@interfaces/notifications.interface';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
 import { RootState } from '@popup/hive/store';
-import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -12,33 +7,28 @@ import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-bu
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 
 interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
-  onSetAllAsRead: () => void;
-  loadMore: () => void;
+  hasMoreData: boolean;
+  onMarkAllAsRead: () => void;
+  loadMore: () => Promise<void>;
 }
 
 export const NotificationPanel = ({
   isPanelOpened,
   notifications,
-  activeAccount,
-  onSetAllAsRead,
-  addToLoadingList,
-  removeFromLoadingList,
+  hasMoreData,
+  onMarkAllAsRead,
   loadMore,
 }: PropsFromRedux) => {
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
-  const notificationList = useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const markAllAsRead = async () => {
-    addToLoadingList('notification_setting_all_as_read');
-    await NotificationsUtils.markAllAsRead(activeAccount);
-    await onSetAllAsRead();
-    removeFromLoadingList('notification_setting_all_as_read');
-  };
+  const notificationList = useRef<HTMLDivElement>(null);
 
   const clickOnNotification = (notification: Notification) => {
     if (notification.externalUrl) {
@@ -52,37 +42,39 @@ export const NotificationPanel = ({
     }
   };
 
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    await loadMore();
+    setIsLoadingMore(false);
+  };
+
   const handleScroll = (event: any) => {
-    // if (
-    //   transactions.list[transactions.list.length - 1]?.last === true ||
-    //   transactions.lastUsedStart === 0
-    // )
-    //   return;
+    if (isLoadingMore || !hasMoreData) return;
     setDisplayedScrollToTop(event.target.scrollTop !== 0);
 
     if (
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight
     ) {
-      loadMore();
+      handleLoadMore();
     }
   };
 
   return (
     <div
       className={`notifications-panel ${isPanelOpened ? 'opened' : 'closed'}`}>
-      <div
-        className="notification-list"
-        ref={notificationList}
-        onScroll={handleScroll}>
-        {isPanelOpened && (
-          <>
-            <ButtonComponent
-              type={ButtonType.ALTERNATIVE}
-              label="notification_set_all_as_read"
-              onClick={markAllAsRead}
-              additionalClass="set-all-as-read"
-            />
+      {isPanelOpened && (
+        <div className="notification-list-container">
+          <ButtonComponent
+            type={ButtonType.ALTERNATIVE}
+            label="notification_set_all_as_read"
+            onClick={onMarkAllAsRead}
+            additionalClass="set-all-as-read"
+          />
+          <div
+            className="notification-list"
+            ref={notificationList}
+            onScroll={handleScroll}>
             {notifications.map((notif, index) => (
               <React.Fragment key={notif.id}>
                 <div
@@ -113,26 +105,27 @@ export const NotificationPanel = ({
                 {index !== notifications.length - 1 && (
                   <Separator type="horizontal" />
                 )}
+                {isLoadingMore && index === notifications.length - 1 && (
+                  <div className="load-more-panel">
+                    <RotatingLogoComponent />
+                  </div>
+                )}
               </React.Fragment>
             ))}
-          </>
-        )}
-      </div>
-      {displayScrollToTop && <BackToTopButton element={notificationList} />}
+          </div>
+
+          {displayScrollToTop && <BackToTopButton element={notificationList} />}
+        </div>
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {
-    activeAccount: state.activeAccount,
-  };
+  return {};
 };
 
-const connector = connect(mapStateToProps, {
-  addToLoadingList,
-  removeFromLoadingList,
-});
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector> & NotificationPanelProps;
 
 export const NotificationPanelComponent = connector(NotificationPanel);

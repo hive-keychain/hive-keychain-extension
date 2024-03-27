@@ -16,7 +16,15 @@
     transition: height 0.25s ease-in;
     display: flex;
     flex-direction: column;
+  }
 
+  .notification-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    row-gap: 16px;
+    height: 100%;
+    box-sizing: border-box;
     .set-all-as-read {
       height: 24px;
       min-height: 24px;
@@ -25,47 +33,45 @@
       align-self: flex-end;
       font-size: 13px;
     }
-  }
-
-  .notification-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px;
-    margin: 16px;
-    height: calc(100% - 32px);
-    overflow: auto;
-
-    .notification-item {
+    .notification-list {
       display: flex;
-      align-items: center;
-      column-gap: 8px;
-      &.clickable {
-        cursor: pointer;
-      }
+      flex-direction: column;
+      row-gap: 8px;
+      height: calc(100% - 32px);
+      overflow: auto;
 
-      .notification-dot {
-        background: red;
-        min-height: 6px;
-        min-width: 6px;
-        border-radius: 50%;
-        display: inline-block;
-
-        &.read {
-          background: transparent;
-        }
-      }
-
-      .notification-content {
+      .notification-item {
         display: flex;
-        flex-direction: column;
-        .message {
-          color: var(--main-font-color);
-          font-size: 13px;
+        align-items: center;
+        column-gap: 8px;
+        &.clickable {
+          cursor: pointer;
         }
-        .date {
-          color: var(--main-font-color);
-          font-size: 11px;
-          font-style: italic;
+
+        .notification-dot {
+          background: $red;
+          min-height: 6px;
+          min-width: 6px;
+          border-radius: 50%;
+          display: inline-block;
+
+          &.read {
+            background: transparent;
+          }
+        }
+
+        .notification-content {
+          display: flex;
+          flex-direction: column;
+          .message {
+            color: var(--main-font-color);
+            font-size: 13px;
+          }
+          .date {
+            color: var(--main-font-color);
+            font-size: 11px;
+            font-style: italic;
+          }
         }
       }
     }
@@ -99,5 +105,12 @@
     justify-content: center;
     color: var(--notification-background-color);
     background-color: var(--notification-color);
+  }
+
+  &:hover {
+    .notifications-count {
+      background-color: var(--notification-background-color);
+      color: var(--notification-color);
+    }
   }
 }

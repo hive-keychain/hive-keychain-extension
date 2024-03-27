@@ -129,7 +129,9 @@ const TopBar = ({
         data-testid="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
-      <NotificationsComponent />
+      {activeAccount.name && globalProperties.globals && (
+        <NotificationsComponent />
+      )}
       {hasRewardToClaim && (
         <SVGIcon
           icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}

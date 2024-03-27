@@ -2,11 +2,15 @@ import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Notification } from '@interfaces/notifications.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/hive/actions/loading.actions';
 import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/notifications/notification-panel.component';
 import { RootState } from '@popup/hive/store';
 import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -18,32 +22,54 @@ interface NotificationsProps {
 const Notifications = ({
   globalProperties,
   activeAccount,
-}: NotificationsProps) => {
+  addToLoadingList,
+  removeFromLoadingList,
+}: PropsFromRedux) => {
   const [notifications, setNotifications] = useState<Notification[]>();
   const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(false);
 
   useEffect(() => {
     if (globalProperties.globals && activeAccount.name)
       initNotifications(activeAccount.name!, globalProperties.globals);
-  }, [activeAccount.name, globalProperties]);
+  }, []);
 
   const initNotifications = async (
     username: string,
     dynamicGlobalProperties: DynamicGlobalProperties,
   ) => {
-    const notifs = await NotificationsUtils.getNotifications(
+    const { notifs, hasMore } = await NotificationsUtils.getNotifications(
       username,
       dynamicGlobalProperties,
     );
     setNotifications(notifs);
+    setHasMoreData(hasMore);
   };
 
   const toggleNotificationPanel = () => {
     setNotificationPanelOpen(!isNotificationPanelOpen);
   };
 
+  const markAllAsRead = async () => {
+    addToLoadingList('notification_setting_all_as_read');
+    await NotificationsUtils.markAllAsRead(activeAccount);
+    removeFromLoadingList('notification_setting_all_as_read');
+    setNotifications(
+      notifications?.map((notif) => {
+        notif.read = true;
+        return notif;
+      }),
+    );
+  };
+
   const loadMore = async () => {
-    console.log('loading more');
+    const { notifs, hasMore } = await NotificationsUtils.getNotifications(
+      activeAccount.name!,
+      globalProperties.globals!,
+      notifications,
+    );
+    setNotifications(notifs);
+    setHasMoreData(hasMore);
   };
 
   return (
@@ -57,17 +83,20 @@ const Notifications = ({
             onClick={() => toggleNotificationPanel()}
             hoverable
           />
-          <div className="notifications-count">
-            {notifications.filter((notif) => !notif.read).length}
-          </div>
+          {notifications.filter((notif) => !notif.read).length > 0 && (
+            <div className="notifications-count">
+              {notifications.filter((notif) => !notif.read).length}
+            </div>
+          )}
         </div>
       )}
       {notifications && notifications.length > 0 && (
         <NotificationPanelComponent
           notifications={notifications}
           isPanelOpened={isNotificationPanelOpen}
-          onSetAllAsRead={() => setNotifications([])}
-          loadMore={() => loadMore()}
+          onMarkAllAsRead={() => markAllAsRead()}
+          loadMore={loadMore}
+          hasMoreData={hasMoreData}
         />
       )}
     </>
@@ -81,6 +110,10 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  addToLoadingList,
+  removeFromLoadingList,
+});
+type PropsFromRedux = ConnectedProps<typeof connector> & NotificationsProps;
 
 export const NotificationsComponent = connector(Notifications);

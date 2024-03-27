@@ -36,8 +36,13 @@ export enum ConfigFormUpdateAction {
   UPDATE_DATA = 'UPDATE_DATA',
 }
 
+export enum NotificationType {
+  PEAKD = 'PEAKD',
+}
+
 export interface Notification {
-  localIndex: number;
+  type: NotificationType;
+  isTypeLast: boolean;
   id: string;
   message: string;
   messageParams: string[];

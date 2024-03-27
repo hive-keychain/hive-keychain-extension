@@ -10,6 +10,7 @@ import {
   NotificationConfigForm,
   NotificationConfigFormItem,
   NotificationOperationName,
+  NotificationType,
 } from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import moment from 'moment';
@@ -513,20 +514,24 @@ const getDefaultConfig = () => {
 const getNotifications = async (
   username: string,
   globalProperties: DynamicGlobalProperties,
+  initialList?: Notification[],
 ) => {
   const notifications: Notification[] = [];
 
   let rawNotifications: any[] = [];
   let lastBatch: any[] = [];
   const limit = 100;
-  let offset = 0;
+  const initialOffset =
+    initialList && initialList.length > 0 ? initialList.length : 0;
+  let offset = initialOffset;
+
   do {
     lastBatch = await PeakDNotificationsApi.get(
       `notifications/${username}?limit=${100}&offset=${offset}`,
     );
     rawNotifications = [...rawNotifications, ...lastBatch];
     offset += limit;
-  } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
+  } while (false && lastBatch.every((rawNotif) => rawNotif.read_at === null));
 
   for (const [index, notif] of rawNotifications.entries()) {
     const payload = JSON.parse(notif.payload);
@@ -856,7 +861,10 @@ const getNotifications = async (
       }
     }
     notifications.push({
-      localIndex: index,
+      type: NotificationType.PEAKD,
+      isTypeLast:
+        rawNotifications.length !== limit &&
+        rawNotifications.length - 1 === index,
       id: notif.id,
       createdAt: moment(notif.created),
       txUrl:
