@@ -1,0 +1,40 @@
+.vesting-routes-popup {
+  .popup-content {
+    width: -webkit-fill-available;
+    margin: 0px 0px;
+  }
+  .vesting-item-row {
+    display: inline-flex;
+    height: 200px;
+    width: 330px;
+    .vesting-route-item {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      font-size: 10px;
+    }
+    .flex-align-left {
+      align-items: flex-start;
+    }
+    .flex-align-right {
+      align-items: flex-end;
+    }
+    .display-content {
+      display: contents;
+      .content-vesting-route-button {
+        margin-top: 8px;
+        width: 80px;
+        height: 36px;
+        min-height: unset !important;
+      }
+      .custom-checkbox-container {
+        margin-top: 8px;
+        height: 36px;
+        min-height: unset !important;
+      }
+      .label {
+        font-size: 10px;
+      }
+    }
+  }
+}

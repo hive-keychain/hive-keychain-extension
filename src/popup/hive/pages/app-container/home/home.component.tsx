@@ -1,4 +1,10 @@
+import {
+  UserVestingRoute,
+  VestingRoute,
+} from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
+import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -50,6 +56,8 @@ const Home = ({
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
   >();
+  const [displayWrongVestingRoutesPopup, setDisplayWrongVestingRoutesPopup] =
+    useState<UserVestingRoute[] | undefined>();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -61,6 +69,7 @@ const Home = ({
     initWhatsNew();
     initSurvey();
     initCheckKeysOnAccounts(accounts);
+    initCheckVestingRoutes(accounts, true);
   }, []);
 
   useEffect(() => {
@@ -152,11 +161,125 @@ const Home = ({
     }
   };
 
+  const initCheckVestingRoutes = async (
+    localAccounts: LocalAccount[],
+    cleanFortesting = false,
+  ) => {
+    if (cleanFortesting) {
+      await VestingRoutesUtils.clearLastVestingRoutesInStorage();
+      return;
+    }
+    let currentVestingRoutes =
+      await VestingRoutesUtils.getAllAccountsVestingRoutes(
+        localAccounts.map((acc) => acc.name),
+        'outgoing',
+      );
+
+    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+
+    if (!lastVestingRoutes) {
+      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+      return;
+    } else {
+      //TODO remove testing block
+      currentVestingRoutes = [
+        {
+          account: 'theghost1980',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'theghost1980',
+              toAccount: 'keychain.tests',
+              percent: 1,
+              autoVest: true,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'lecaillon',
+          routes: [],
+        },
+        {
+          account: 'stoodkev',
+          routes: [],
+        },
+        {
+          account: 'sexosentido',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'sexosentido',
+              toAccount: 'keychain.tests',
+              percent: 100,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'sai.baba',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'sai.baba',
+              toAccount: 'keychain.tests',
+              percent: 30,
+              autoVest: true,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'keychain.tests',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'keychain.tests',
+              toAccount: 'theghost1980',
+              percent: 20,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'jobaboard',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'jobaboard',
+              toAccount: 'theghost1980',
+              percent: 1,
+              autoVest: true,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'keychain2024',
+          routes: [],
+        },
+      ] as UserVestingRoute[];
+      //end testing block
+      console.log({ currentVestingRoutes, lastVestingRoutes }); //TODO remove line
+      const differentVestingRoutesFound =
+        VestingRoutesUtils.getDifferentVestingRoutesFound(
+          lastVestingRoutes,
+          currentVestingRoutes,
+        );
+      if (differentVestingRoutesFound.length > 0)
+        setDisplayWrongVestingRoutesPopup(differentVestingRoutesFound);
+      console.log({ differentVestingRoutesFound }); //TODO remove line
+
+      //TODO bellow set state popup info.
+
+      //TODO while testing the displaying is commented, TO add later on
+      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+    }
+  };
+
   const renderPopup = (
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
+    displayWrongVestingRoutesPopup: UserVestingRoute[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -176,6 +299,15 @@ const Home = ({
         <WrongKeyPopupComponent
           displayWrongKeyPopup={displayWrongKeyPopup}
           setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
+        />
+      );
+    } else if (displayWrongVestingRoutesPopup) {
+      return (
+        <VestingRoutesPopupComponent
+          displayWrongVestingRoutesPopup={displayWrongVestingRoutesPopup}
+          clearDisplayWrongVestingRoutes={() =>
+            setDisplayWrongVestingRoutesPopup(undefined)
+          }
         />
       );
     }
@@ -220,6 +352,7 @@ const Home = ({
         governanceAccountsToExpire,
         surveyToDisplay,
         displayWrongKeyPopup,
+        displayWrongVestingRoutesPopup,
       )}
     </div>
   );
