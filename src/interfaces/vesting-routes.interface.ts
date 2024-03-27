@@ -9,4 +9,5 @@ export interface VestingRoute {
 export interface UserVestingRoute {
   account: string;
   routes: VestingRoute[];
+  routesChanged?: VestingRoute[];
 }

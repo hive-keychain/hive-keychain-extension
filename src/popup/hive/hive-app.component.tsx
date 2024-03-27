@@ -23,7 +23,6 @@ import {
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
 import { RootState } from '@popup/hive/store';
-import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -216,7 +215,6 @@ const HiveApp = ({
 
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
-      checkVestingRoutes();
     }
   };
 
@@ -227,62 +225,6 @@ const HiveApp = ({
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
     loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
-  };
-
-  const checkVestingRoutes = async (cleanFortesting = false) => {
-    if (cleanFortesting) {
-      console.log('Clear LAST_VESTING_ROUTES'); //TODO remove line
-      LocalStorageUtils.removeFromLocalStorage(
-        LocalStorageKeyEnum.LAST_VESTING_ROUTES,
-      );
-      return;
-    }
-    const allVestingRoutes =
-      await VestingRoutesUtils.getAllAccountsVestingRoutes(
-        accounts.map((acc) => acc.name),
-        'outgoing',
-      );
-
-    //TODO bellow remove block
-    // const allVestingRoutes = [
-    //   {
-    //     account: 'theghost1980',
-    //     routes: [
-    //       {
-    //         id: 0,
-    //         fromAccount: 'theghost1980',
-    //         toAccount: 'keychain.tests',
-    //         percent: 1,
-    //       },
-    //     ],
-    //   },
-    // ] as UserVestingRoute[];
-    //end block
-
-    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
-    console.log({ allVestingRoutes, lastVestingRoutes }); //TODO remove line
-    if (!lastVestingRoutes && allVestingRoutes.length) {
-      VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
-      return;
-    }
-
-    if (
-      lastVestingRoutes &&
-      lastVestingRoutes.length > 0 &&
-      allVestingRoutes &&
-      allVestingRoutes.length > 0
-    ) {
-      //TODO compare only if last found & set popup
-      //TODO compare here.
-      const differentVestingRoutesFound =
-        VestingRoutesUtils.getDifferentVestingRoutesFound(
-          lastVestingRoutes,
-          allVestingRoutes,
-        );
-      console.log({ differentVestingRoutesFound }); //TODO remove line
-      //TODO bellow set state popup info.
-      VestingRoutesUtils.saveLastVestingRoutes(allVestingRoutes);
-    }
   };
 
   const selectComponent = async (

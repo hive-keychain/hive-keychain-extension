@@ -1,8 +1,15 @@
+import {
+  UserVestingRoute,
+  VestingRoute,
+} from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -50,6 +57,8 @@ const Home = ({
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
   >();
+  const [displayWrongVestingRoutesPopup, setDisplayWrongVestingRoutesPopup] =
+    useState<UserVestingRoute[] | undefined>();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -61,6 +70,7 @@ const Home = ({
     initWhatsNew();
     initSurvey();
     initCheckKeysOnAccounts(accounts);
+    initCheckVestingRoutes(accounts, true);
   }, []);
 
   useEffect(() => {
@@ -152,11 +162,128 @@ const Home = ({
     }
   };
 
+  const initCheckVestingRoutes = async (
+    localAccounts: LocalAccount[],
+    cleanFortesting = false,
+  ) => {
+    if (cleanFortesting) {
+      console.log('Clear LAST_VESTING_ROUTES'); //TODO remove line
+      LocalStorageUtils.removeFromLocalStorage(
+        LocalStorageKeyEnum.LAST_VESTING_ROUTES,
+      );
+      return;
+    }
+    let currentVestingRoutes =
+      await VestingRoutesUtils.getAllAccountsVestingRoutes(
+        localAccounts.map((acc) => acc.name),
+        'outgoing',
+      );
+
+    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+
+    if (!lastVestingRoutes) {
+      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+      return;
+    } else {
+      //TODO remove testing block
+      currentVestingRoutes = [
+        {
+          account: 'theghost1980',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'theghost1980',
+              toAccount: 'keychain.tests',
+              percent: 0,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'lecaillon',
+          routes: [],
+        },
+        {
+          account: 'stoodkev',
+          routes: [],
+        },
+        {
+          account: 'sexosentido',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'sexosentido',
+              toAccount: 'keychain.tests',
+              percent: 0,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'sai.baba',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'sai.baba',
+              toAccount: 'keychain.tests',
+              percent: 0,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'keychain.tests',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'keychain.tests',
+              toAccount: 'theghost1980',
+              percent: 0,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'jobaboard',
+          routes: [
+            {
+              id: 0,
+              fromAccount: 'jobaboard',
+              toAccount: 'theghost1980',
+              percent: 100,
+              autoVest: false,
+            } as VestingRoute,
+          ],
+        },
+        {
+          account: 'keychain2024',
+          routes: [],
+        },
+      ] as UserVestingRoute[];
+      //end testing block
+      console.log({ currentVestingRoutes, lastVestingRoutes }); //TODO remove line
+      const differentVestingRoutesFound =
+        VestingRoutesUtils.getDifferentVestingRoutesFound(
+          lastVestingRoutes,
+          currentVestingRoutes,
+        );
+      if (differentVestingRoutesFound.length > 0)
+        setDisplayWrongVestingRoutesPopup(differentVestingRoutesFound);
+      console.log({ differentVestingRoutesFound }); //TODO remove line
+
+      //TODO bellow set state popup info.
+
+      //TODO while testing the comparisson, commented bellow
+      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+    }
+  };
+
   const renderPopup = (
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
+    displayWrongVestingRoutesPopup: UserVestingRoute[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -177,6 +304,85 @@ const Home = ({
           displayWrongKeyPopup={displayWrongKeyPopup}
           setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
         />
+      );
+    } else if (displayWrongVestingRoutesPopup) {
+      //TODO bellow move it to its component, same folder as popups.
+      return (
+        <PopupContainer className="wrong-key-popup">
+          <div className="popup-title">
+            The Wallet has found vesting routes with changes:
+          </div>
+          <div
+            style={{ height: '-webkit-fill-available', overflowY: 'scroll' }}>
+            {displayWrongVestingRoutesPopup.map((acc) => {
+              return (
+                <div
+                  style={{
+                    width: '-webkit-fill-available',
+                    overflowY: 'scroll',
+                  }}
+                  key={`${acc.account}-vesting-routes`}>
+                  <div>Account: {acc.account}</div>
+                  <div
+                    style={{
+                      flexDirection: 'row',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '-webkit-fill-available',
+                      fontSize: '10px',
+                    }}>
+                    <div>
+                      <div>Before</div>
+                      {acc.routesChanged ? (
+                        acc.routesChanged.map((item) => {
+                          return (
+                            <div key={`${item.id}-vesting-route-2`}>
+                              <div>Id: {item.id}</div>
+                              <div>fromAccount: {item.fromAccount}</div>
+                              <div>toAccount: {item.toAccount}</div>
+                              <div>percent: {item.percent}</div>
+                              <div>autoVest: {item.autoVest.toString()}</div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div>Non existent!</div>
+                      )}
+                    </div>
+                    <div>
+                      <div>Now</div>
+                      {acc.routes.map((routeChanged) => {
+                        return (
+                          <div key={`${routeChanged.id}-vesting-route`}>
+                            <div>Id: {routeChanged.id}</div>
+                            <div>fromAccount: {routeChanged.fromAccount}</div>
+                            <div>toAccount: {routeChanged.toAccount}</div>
+                            <div>percent: {routeChanged.percent}</div>
+                            <div>
+                              autoVest: {routeChanged.autoVest.toString()}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            if you didn't change them, please seek assistance on the Hive
+            Discord channel
+          </div>
+          <div className="popup-footer">
+            <ButtonComponent
+              //TODO bellow add to tr
+              skipLabelTranslation
+              label={'Got it!'}
+              onClick={() => setDisplayWrongVestingRoutesPopup(undefined)}
+            />
+          </div>
+        </PopupContainer>
       );
     }
   };
@@ -220,6 +426,7 @@ const Home = ({
         governanceAccountsToExpire,
         surveyToDisplay,
         displayWrongKeyPopup,
+        displayWrongVestingRoutesPopup,
       )}
     </div>
   );
