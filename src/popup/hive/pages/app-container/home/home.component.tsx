@@ -3,13 +3,12 @@ import {
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
+import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
-import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -273,8 +272,8 @@ const Home = ({
 
       //TODO bellow set state popup info.
 
-      //TODO while testing the comparisson, commented bellow
-      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+      //TODO while testing the displaying is commented, TO add later on
+      // VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     }
   };
 
@@ -306,83 +305,13 @@ const Home = ({
         />
       );
     } else if (displayWrongVestingRoutesPopup) {
-      //TODO bellow move it to its component, same folder as popups.
       return (
-        <PopupContainer className="wrong-key-popup">
-          <div className="popup-title">
-            The Wallet has found vesting routes with changes:
-          </div>
-          <div
-            style={{ height: '-webkit-fill-available', overflowY: 'scroll' }}>
-            {displayWrongVestingRoutesPopup.map((acc) => {
-              return (
-                <div
-                  style={{
-                    width: '-webkit-fill-available',
-                    overflowY: 'scroll',
-                  }}
-                  key={`${acc.account}-vesting-routes`}>
-                  <div>Account: {acc.account}</div>
-                  <div
-                    style={{
-                      flexDirection: 'row',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '-webkit-fill-available',
-                      fontSize: '10px',
-                    }}>
-                    <div>
-                      <div>Before</div>
-                      {acc.routesChanged ? (
-                        acc.routesChanged.map((item) => {
-                          return (
-                            <div key={`${item.id}-vesting-route-2`}>
-                              <div>Id: {item.id}</div>
-                              <div>fromAccount: {item.fromAccount}</div>
-                              <div>toAccount: {item.toAccount}</div>
-                              <div>percent: {item.percent}</div>
-                              <div>autoVest: {item.autoVest.toString()}</div>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div>Non existent!</div>
-                      )}
-                    </div>
-                    <div>
-                      <div>Now</div>
-                      {acc.routes.map((routeChanged) => {
-                        return (
-                          <div key={`${routeChanged.id}-vesting-route`}>
-                            <div>Id: {routeChanged.id}</div>
-                            <div>fromAccount: {routeChanged.fromAccount}</div>
-                            <div>toAccount: {routeChanged.toAccount}</div>
-                            <div>percent: {routeChanged.percent}</div>
-                            <div>
-                              autoVest: {routeChanged.autoVest.toString()}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div>
-            if you didn't change them, please seek assistance on the Hive
-            Discord channel
-          </div>
-          <div className="popup-footer">
-            <ButtonComponent
-              //TODO bellow add to tr
-              skipLabelTranslation
-              label={'Got it!'}
-              onClick={() => setDisplayWrongVestingRoutesPopup(undefined)}
-            />
-          </div>
-        </PopupContainer>
+        <VestingRoutesPopupComponent
+          displayWrongVestingRoutesPopup={displayWrongVestingRoutesPopup}
+          clearDisplayWrongVestingRoutes={() =>
+            setDisplayWrongVestingRoutesPopup(undefined)
+          }
+        />
       );
     }
   };

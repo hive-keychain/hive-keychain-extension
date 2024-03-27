@@ -2729,6 +2729,14 @@
     "message": "Got it!",
     "description": "What's new popup button"
   },
+  "popup_html_vesting_shares_title": {
+    "message": "Some of your vesting routes have changed",
+    "description": "Vesting shares popup title"
+  },
+  "popup_html_vesting_shares_warning_message": {
+    "message": "if you didn't change them, please seek assistance on the Hive Discord channel",
+    "description": "Vesting shares popup warning message"
+  },
   "html_popup_tokens_timeout": {
     "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
     "description": "Token timeout error"
