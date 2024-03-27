@@ -37,6 +37,7 @@ export enum ConfigFormUpdateAction {
 }
 
 export interface Notification {
+  localIndex: number;
   id: string;
   message: string;
   messageParams: string[];

@@ -528,7 +528,7 @@ const getNotifications = async (
     offset += limit;
   } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
 
-  for (const notif of rawNotifications) {
+  for (const [index, notif] of rawNotifications.entries()) {
     const payload = JSON.parse(notif.payload);
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
@@ -856,6 +856,7 @@ const getNotifications = async (
       }
     }
     notifications.push({
+      localIndex: index,
       id: notif.id,
       createdAt: moment(notif.created),
       txUrl:

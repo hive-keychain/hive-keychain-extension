@@ -6,8 +6,9 @@ import {
 import { RootState } from '@popup/hive/store';
 import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import moment from 'moment';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -17,6 +18,7 @@ interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
   onSetAllAsRead: () => void;
+  loadMore: () => void;
 }
 
 export const NotificationPanel = ({
@@ -26,7 +28,11 @@ export const NotificationPanel = ({
   onSetAllAsRead,
   addToLoadingList,
   removeFromLoadingList,
+  loadMore,
 }: PropsFromRedux) => {
+  const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+  const notificationList = useRef<HTMLDivElement>(null);
+
   const markAllAsRead = async () => {
     addToLoadingList('notification_setting_all_as_read');
     await NotificationsUtils.markAllAsRead(activeAccount);
@@ -46,10 +52,29 @@ export const NotificationPanel = ({
     }
   };
 
+  const handleScroll = (event: any) => {
+    // if (
+    //   transactions.list[transactions.list.length - 1]?.last === true ||
+    //   transactions.lastUsedStart === 0
+    // )
+    //   return;
+    setDisplayedScrollToTop(event.target.scrollTop !== 0);
+
+    if (
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight
+    ) {
+      loadMore();
+    }
+  };
+
   return (
     <div
       className={`notifications-panel ${isPanelOpened ? 'opened' : 'closed'}`}>
-      <div className="notification-list">
+      <div
+        className="notification-list"
+        ref={notificationList}
+        onScroll={handleScroll}>
         {isPanelOpened && (
           <>
             <ButtonComponent
@@ -93,6 +118,7 @@ export const NotificationPanel = ({
           </>
         )}
       </div>
+      {displayScrollToTop && <BackToTopButton element={notificationList} />}
     </div>
   );
 };

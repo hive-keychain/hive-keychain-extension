@@ -1,9 +1,6 @@
-import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
-import { Notification } from '@interfaces/notifications.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
-import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/top-bar/notification-panel.component';
-import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
+import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -40,8 +37,6 @@ const TopBar = ({
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>();
-  const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -60,29 +55,12 @@ const TopBar = ({
     }
   }, [activeAccount]);
 
-  useEffect(() => {
-    if (globalProperties.globals && activeAccount.name)
-      initNotifications(activeAccount.name!, globalProperties.globals);
-  }, [activeAccount.name, globalProperties]);
-
   const refresh = () => {
     setRotateLogo(true);
     refreshActiveAccount();
     loadGlobalProperties();
     loadUserTokens(activeAccount.name!);
     setTimeout(() => setRotateLogo(false), 1000);
-  };
-
-  const initNotifications = async (
-    username: string,
-    dynamicGlobalProperties: DynamicGlobalProperties,
-  ) => {
-    const notifs = await NotificationsUtils.getNotifications(
-      username,
-      dynamicGlobalProperties,
-    );
-    console.log(notifs);
-    setNotifications(notifs);
   };
 
   const claim = async (): Promise<void> => {
@@ -136,10 +114,6 @@ const TopBar = ({
     }
   };
 
-  const toggleNotificationPanel = () => {
-    setNotificationPanelOpen(!isNotificationPanelOpen);
-  };
-
   return (
     <div className="top-bar">
       <SVGIcon
@@ -153,20 +127,9 @@ const TopBar = ({
         icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
-        // tooltipDelayShow={1500}
-        // tooltipMessage="html_popup_click_to_refresh"
-        // tooltipPosition="right"
       />
       <div className="spacer"></div>
-      {notifications && notifications.length > 0 && (
-        <SVGIcon
-          icon={SVGIcons.TOP_BAR_NOTIFICATION_BUTTON}
-          dataTestId="notification-button"
-          className="notification-button"
-          onClick={() => toggleNotificationPanel()}
-          hoverable
-        />
-      )}
+      <NotificationsComponent />
       {hasRewardToClaim && (
         <SVGIcon
           icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
@@ -176,15 +139,7 @@ const TopBar = ({
           hoverable
         />
       )}
-
       <SelectAccountSectionComponent isOnMain />
-      {notifications && notifications.length > 0 && (
-        <NotificationPanelComponent
-          notifications={notifications}
-          isPanelOpened={isNotificationPanelOpen}
-          onSetAllAsRead={() => setNotifications([])}
-        />
-      )}
     </div>
   );
 };
