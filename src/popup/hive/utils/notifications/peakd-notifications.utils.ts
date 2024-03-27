@@ -531,7 +531,7 @@ const getNotifications = async (
     );
     rawNotifications = [...rawNotifications, ...lastBatch];
     offset += limit;
-  } while (false && lastBatch.every((rawNotif) => rawNotif.read_at === null));
+  } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
 
   for (const [index, notif] of rawNotifications.entries()) {
     const payload = JSON.parse(notif.payload);
