@@ -2734,7 +2734,7 @@
     "description": "Vesting shares popup title"
   },
   "popup_html_vesting_shares_warning_message": {
-    "message": "if you didn't change them, please seek assistance on the Hive Discord channel",
+    "message": "if you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>",
     "description": "Vesting shares popup warning message"
   },
   "html_popup_tokens_timeout": {

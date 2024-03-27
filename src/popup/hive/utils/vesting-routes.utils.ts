@@ -46,6 +46,13 @@ const getLastVestingRoutes = async () => {
   return result ?? null;
 };
 
+const clearLastVestingRoutesInStorage = async () => {
+  console.log('Clear LAST_VESTING_ROUTES'); //TODO remove line
+  await LocalStorageUtils.removeFromLocalStorage(
+    LocalStorageKeyEnum.LAST_VESTING_ROUTES,
+  );
+};
+
 const getDifferentVestingRoutesFound = (
   lastVestingRoutes: UserVestingRoute[],
   currentVestingRoutes: UserVestingRoute[],
@@ -94,14 +101,14 @@ const getDifferentVestingRoutesFound = (
               autoVest !== currentRouteAutoVest
             ) {
               //at least one field changed.
-              routesWithChangedFields.push({
+              currentRoutesWithChanges.push({
                 id,
                 fromAccount,
                 toAccount,
                 percent,
                 autoVest,
               } as VestingRoute);
-              currentRoutesWithChanges.push({
+              routesWithChangedFields.push({
                 id,
                 fromAccount: currentRoutefromAccount,
                 toAccount: currentRouteToAccount,
@@ -137,4 +144,5 @@ export const VestingRoutesUtils = {
   getLastVestingRoutes,
   saveLastVestingRoutes,
   getDifferentVestingRoutesFound,
+  clearLastVestingRoutesInStorage,
 };

@@ -166,10 +166,7 @@ const Home = ({
     cleanFortesting = false,
   ) => {
     if (cleanFortesting) {
-      console.log('Clear LAST_VESTING_ROUTES'); //TODO remove line
-      LocalStorageUtils.removeFromLocalStorage(
-        LocalStorageKeyEnum.LAST_VESTING_ROUTES,
-      );
+      await VestingRoutesUtils.clearLastVestingRoutesInStorage();
       return;
     }
     let currentVestingRoutes =
@@ -193,8 +190,8 @@ const Home = ({
               id: 0,
               fromAccount: 'theghost1980',
               toAccount: 'keychain.tests',
-              percent: 0,
-              autoVest: false,
+              percent: 1,
+              autoVest: true,
             } as VestingRoute,
           ],
         },
@@ -213,7 +210,7 @@ const Home = ({
               id: 0,
               fromAccount: 'sexosentido',
               toAccount: 'keychain.tests',
-              percent: 0,
+              percent: 100,
               autoVest: false,
             } as VestingRoute,
           ],
@@ -225,8 +222,8 @@ const Home = ({
               id: 0,
               fromAccount: 'sai.baba',
               toAccount: 'keychain.tests',
-              percent: 0,
-              autoVest: false,
+              percent: 30,
+              autoVest: true,
             } as VestingRoute,
           ],
         },
@@ -237,7 +234,7 @@ const Home = ({
               id: 0,
               fromAccount: 'keychain.tests',
               toAccount: 'theghost1980',
-              percent: 0,
+              percent: 20,
               autoVest: false,
             } as VestingRoute,
           ],
@@ -249,8 +246,8 @@ const Home = ({
               id: 0,
               fromAccount: 'jobaboard',
               toAccount: 'theghost1980',
-              percent: 100,
-              autoVest: false,
+              percent: 1,
+              autoVest: true,
             } as VestingRoute,
           ],
         },
@@ -273,7 +270,7 @@ const Home = ({
       //TODO bellow set state popup info.
 
       //TODO while testing the displaying is commented, TO add later on
-      // VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     }
   };
 
