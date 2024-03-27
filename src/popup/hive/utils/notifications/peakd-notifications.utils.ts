@@ -599,7 +599,7 @@ const getNotifications = async (
         break;
       }
       case 'delegate_vesting_shares': {
-        if (Asset.fromString(payload.amount).amount > 0) {
+        if (Asset.fromString(payload.vesting_shares).amount > 0) {
           message = 'notification_delegation';
           messageParams = [
             payload.delegator,
@@ -865,7 +865,7 @@ const getNotifications = async (
       externalUrl: externalUrl,
       message: message,
       messageParams: messageParams,
-      read: !!notif.readAt,
+      read: !!notif.read_at,
     });
   }
   return notifications;
