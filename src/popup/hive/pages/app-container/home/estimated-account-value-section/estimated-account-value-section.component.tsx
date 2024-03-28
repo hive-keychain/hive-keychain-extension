@@ -1,3 +1,4 @@
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
@@ -5,7 +6,13 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+export enum AccountValueType {
+  DOLLARS = 'DOLLARS',
+  HIVE = 'HIVE',
+  HIDDEN = 'HIDDEN',
+}
 const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
@@ -14,6 +21,21 @@ const EstimatedAccountValueSection = ({
   tokensMarket,
 }: PropsFromRedux) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
+  const [accountValueType, setAccountValueType] = useState<AccountValueType>(
+    AccountValueType.DOLLARS,
+  );
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    setAccountValueType(
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
+      )) || AccountValueType.DOLLARS,
+    );
+  };
+
   useEffect(() => {
     if (
       activeAccount &&
@@ -29,6 +51,7 @@ const EstimatedAccountValueSection = ({
           globalProperties.globals!,
           tokensBalance,
           tokensMarket,
+          accountValueType,
         ),
       );
     }
@@ -38,6 +61,7 @@ const EstimatedAccountValueSection = ({
     globalProperties,
     tokensBalance,
     tokensMarket,
+    accountValueType,
   ]);
 
   const openPortfolio = async () => {
@@ -45,6 +69,26 @@ const EstimatedAccountValueSection = ({
     chrome.tabs.create({
       url: `chrome-extension://${extensionId}/portfolio.html`,
     });
+  };
+
+  const onClickEstimatedValue = () => {
+    const newAccountValueType =
+      accountValueType === AccountValueType.DOLLARS
+        ? AccountValueType.HIVE
+        : accountValueType === AccountValueType.HIVE
+        ? AccountValueType.HIDDEN
+        : AccountValueType.DOLLARS;
+    setAccountValueType(newAccountValueType);
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
+      newAccountValueType,
+    );
+  };
+  const getPrefix = () => {
+    return accountValueType === AccountValueType.DOLLARS ? '$' : '';
+  };
+  const getSuffix = () => {
+    return accountValueType === AccountValueType.HIVE ? 'HIVE' : '';
   };
 
   return (
@@ -62,11 +106,19 @@ const EstimatedAccountValueSection = ({
           </CustomTooltip>
         </div>
         <div className="estimated-value-button-container">
-          <div data-testid="estimated-account-div-value" className="value">
-            {accountValue ? `$ ${accountValue}` : '...'}
+          {' '}
+          <div
+            data-testid="estimated-account-div-value"
+            className={`value ${
+              accountValueType === AccountValueType.HIDDEN ? 'with-margin' : ''
+            }`}
+            onClick={onClickEstimatedValue}>
+            {accountValue
+              ? `${getPrefix()} ${accountValue} ${getSuffix()}`
+              : '...'}
           </div>
           <SVGIcon
-            className="portfolio-icon"
+            className={`portfolio-icon `}
             icon={SVGIcons.PORTOLIO}
             onClick={openPortfolio}
           />

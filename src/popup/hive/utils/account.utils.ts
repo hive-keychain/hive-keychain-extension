@@ -8,6 +8,7 @@ import {
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -363,7 +364,9 @@ const getAccountValue = (
   props: DynamicGlobalProperties,
   tokensBalance: TokenBalance[],
   tokensMarket: TokenMarket[],
+  accountValueType: AccountValueType,
 ) => {
+  if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
   const userLayerTwoPortfolio = PortfolioUtils.generateUserLayerTwoPortolio(
     {
@@ -377,18 +380,20 @@ const getAccountValue = (
     (acc, curr) => acc + curr.usdValue,
     0,
   );
-  return FormatUtils.withCommas(
-    (
-      (parseFloat(hbd_balance as string) +
-        parseFloat(savings_hbd_balance as string)) *
-        prices.hive_dollar.usd +
-      (FormatUtils.toHP(vesting_shares as string, props) +
-        parseFloat(balance as string) +
-        parseFloat(savings_balance as string)) *
-        prices.hive.usd +
-      layerTwoTokensTotalValue
-    ).toString(),
-  );
+  const dollarValue =
+    (parseFloat(hbd_balance as string) +
+      parseFloat(savings_hbd_balance as string)) *
+      prices.hive_dollar.usd +
+    (FormatUtils.toHP(vesting_shares as string, props) +
+      parseFloat(balance as string) +
+      parseFloat(savings_balance as string)) *
+      prices.hive.usd +
+    layerTwoTokensTotalValue;
+  const value =
+    accountValueType === AccountValueType.DOLLARS
+      ? dollarValue
+      : dollarValue / prices.hive.usd;
+  return FormatUtils.withCommas(value.toString());
 };
 /* istanbul ignore next */
 const getPublicMemo = async (username: string): Promise<string> => {

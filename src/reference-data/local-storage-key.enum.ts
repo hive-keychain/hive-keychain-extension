@@ -38,4 +38,7 @@ export enum LocalStorageKeyEnum {
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_THEME = 'ACTIVE_THEME',
+
+  // To show the right type of account value
+  ACCOUNT_VALUE_TYPE = 'ACCOUNT_VALUE_TYPE',
 }
