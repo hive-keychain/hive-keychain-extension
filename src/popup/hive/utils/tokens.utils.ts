@@ -299,6 +299,7 @@ const getHiveEngineTokenValue = (
   hive: Currency = { usd: 1 },
 ) => {
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  if (Number(tokenMarket?.volume) <= 0) return 0;
   const price = tokenMarket
     ? parseFloat(tokenMarket.lastPrice)
     : balance.symbol === 'SWAP.HIVE'

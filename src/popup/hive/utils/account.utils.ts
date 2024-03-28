@@ -7,6 +7,7 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -21,6 +22,7 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
@@ -355,20 +357,36 @@ const getAccountValue = (
     vesting_shares,
     savings_balance,
     savings_hbd_balance,
+    name,
   }: ExtendedAccount,
-  { hive, hive_dollar }: CurrencyPrices,
+  prices: CurrencyPrices,
   props: DynamicGlobalProperties,
+  tokensBalance: TokenBalance[],
+  tokensMarket: TokenMarket[],
 ) => {
-  if (!hive_dollar?.usd || !hive?.usd) return 0;
+  if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
+  const userLayerTwoPortfolio = PortfolioUtils.generateUserLayerTwoPortolio(
+    {
+      username: name,
+      tokensBalance: tokensBalance,
+    },
+    prices,
+    tokensMarket,
+  );
+  const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
+    (acc, curr) => acc + curr.usdValue,
+    0,
+  );
   return FormatUtils.withCommas(
     (
       (parseFloat(hbd_balance as string) +
         parseFloat(savings_hbd_balance as string)) *
-        hive_dollar.usd +
+        prices.hive_dollar.usd +
       (FormatUtils.toHP(vesting_shares as string, props) +
         parseFloat(balance as string) +
         parseFloat(savings_balance as string)) *
-        hive.usd
+        prices.hive.usd +
+      layerTwoTokensTotalValue
     ).toString(),
   );
 };
