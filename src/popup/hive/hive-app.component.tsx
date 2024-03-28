@@ -1,4 +1,3 @@
-import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
   retrieveAccounts,
@@ -9,10 +8,6 @@ import {
   refreshActiveAccount,
 } from '@popup/hive/actions/active-account.actions';
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
-import {
-  setIsLedgerSupported,
-  setProcessingDecryptAccount,
-} from '@popup/hive/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
@@ -24,10 +19,8 @@ import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { BackgroundMessage } from 'src/background/background-message.interface';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
@@ -39,12 +32,8 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import { ColorsUtils } from 'src/utils/colors.utils';
-import { LedgerUtils } from 'src/utils/ledger.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import PopupUtils from 'src/utils/popup.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 let rpc: string | undefined = '';
 const HiveApp = ({
@@ -61,7 +50,6 @@ const HiveApp = ({
   setMk,
   navigateTo,
   loadActiveAccount,
-  refreshActiveAccount,
   switchToRpc,
   displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
@@ -70,7 +58,6 @@ const HiveApp = ({
   setActiveRpc,
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
-  setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -78,16 +65,7 @@ const HiveApp = ({
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
 
   useEffect(() => {
-    PopupUtils.fixPopupOnMacOs();
-    initAutoLock();
     initApplication();
-    LedgerUtils.isLedgerSupported().then((res) => {
-      setIsLedgerSupported(res);
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
-        res,
-      );
-    });
   }, []);
 
   useEffect(() => {
@@ -146,24 +124,6 @@ const HiveApp = ({
       setActiveRpc(rpc);
     } else {
       useWorkingRPC(rpc);
-    }
-  };
-
-  const initAutoLock = async () => {
-    let autolock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-    );
-    if (
-      autolock &&
-      [AutoLockType.DEVICE_LOCK, AutoLockType.IDLE_LOCK].includes(autolock.type)
-    ) {
-      chrome.runtime.onMessage.addListener(onReceivedAutolockCmd);
-    }
-  };
-  const onReceivedAutolockCmd = (message: BackgroundMessage) => {
-    if (message.command === BackgroundCommand.LOCK_APP) {
-      setMk('', false);
-      chrome.runtime.onMessage.removeListener(onReceivedAutolockCmd);
     }
   };
 
@@ -337,8 +297,6 @@ const connector = connect(mapStateToProps, {
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
-  setProcessingDecryptAccount,
-  setIsLedgerSupported,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
