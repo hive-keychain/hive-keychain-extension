@@ -3400,7 +3400,7 @@
     "description": "portfolio button click"
   },
   "portfolio_total_value_usd": {
-    "message": "Total Value USD:",
+    "message": "Total Value:",
     "description": "portfolio main page"
   },
   "portfolio_caption_message_total_value": {

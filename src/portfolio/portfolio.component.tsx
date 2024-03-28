@@ -105,23 +105,29 @@ const Portfolio = () => {
             </div>
             <div className="info-row centered">
               <div className="title">
-                {FormatUtils.formatCurrencyValue(totalValueUSDPortfolio)}
+                {`$${FormatUtils.formatCurrencyValue(
+                  totalValueUSDPortfolio,
+                  2,
+                )}`}
               </div>
             </div>
           </div>
         )}
       </div>
-      <div className="caption">
-        {chrome.i18n.getMessage('portfolio_caption_message_total_value')}
-      </div>
+
       {!isLoading && (
-        <PortfolioFilterComponent
-          extendedAccountsList={extendedAccountsList}
-          data={portfolioData}
-          setFilteredPortfolioData={(filteredList) => {
-            setFilteredPortfolioData(filteredList);
-          }}
-        />
+        <>
+          <div className="caption">
+            {chrome.i18n.getMessage('portfolio_caption_message_total_value')}
+          </div>
+          <PortfolioFilterComponent
+            extendedAccountsList={extendedAccountsList}
+            data={portfolioData}
+            setFilteredPortfolioData={(filteredList) => {
+              setFilteredPortfolioData(filteredList);
+            }}
+          />
+        </>
       )}
 
       {!isLoading && filteredPortfolioData && (

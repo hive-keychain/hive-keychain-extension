@@ -207,101 +207,113 @@ html {
         .centered {
           justify-content: center;
         }
-        .portfolio-table-container {
+        .portfolio-table-container-wrapper {
           @include small-card();
-          align-items: unset;
           margin: 0px 0px;
           padding: 0px;
-          overflow: scroll;
+          overflow: hidden;
 
-          .portfolio-table {
-            overflow: auto;
-            width: 100%;
-            height: 200px;
-          }
+          .portfolio-table-container {
+            align-items: unset;
+            margin: 0px 0px;
+            padding: 0px;
+            overflow: scroll;
 
-          table {
-            table-layout: fixed;
-            width: 100%;
-
-            .table-header {
-              width: $cell-width;
-              padding-top: 8px;
-              padding-bottom: 8px;
-              z-index: 5;
-              background-color: var(--card-background);
-              text-align: right;
+            .portfolio-table {
+              overflow: auto;
+              width: 100%;
+              height: 200px;
             }
 
-            tr {
-              border-bottom: 1px solid var(--card-border);
+            table {
+              table-layout: fixed;
+              width: 100%;
+
+              .table-header {
+                width: $cell-width;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                z-index: 5;
+                background-color: var(--card-background);
+                text-align: right;
+              }
+
+              tr {
+                border-bottom: 1px solid var(--card-border);
+              }
+
+              td {
+                text-align: right;
+                width: $cell-width;
+                padding-top: 8px;
+                padding-bottom: 8px;
+              }
+
+              .account-column,
+              .header-total {
+                width: $fixed-cell-width;
+                text-align: left;
+                padding-left: 8px;
+              }
+
+              td:first-child,
+              th:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+                background-color: var(--card-background);
+              }
+              td:last-child,
+              th:last-child {
+                position: sticky;
+                right: 0;
+                z-index: 2;
+                background-color: var(--card-background);
+                padding-right: 8px;
+              }
+              thead tr th {
+                position: sticky;
+                top: 0;
+              }
+              th:first-child,
+              th:last-child {
+                z-index: 6;
+                background-color: var(--card-background);
+                padding-right: 8px;
+              }
             }
 
-            td {
-              text-align: right;
-              width: $cell-width;
-              padding-top: 8px;
-              padding-bottom: 8px;
-            }
-
-            .account-column,
-            .header-total {
-              width: $fixed-cell-width;
-              text-align: left;
+            .avatar-username-container {
+              display: flex;
+              flex-direction: row;
+              align-items: 'center';
+              align-content: 'center';
               padding-left: 8px;
-            }
-
-            td:first-child,
-            th:first-child {
-              position: sticky;
-              left: 0;
-              z-index: 2;
-              background-color: var(--card-background);
-            }
-            td:last-child,
-            th:last-child {
-              position: sticky;
-              right: 0;
-              z-index: 2;
-              background-color: var(--card-background);
-              padding-right: 8px;
-            }
-            thead tr th {
-              position: sticky;
-              top: 0;
-            }
-            th:first-child,
-            th:last-child {
-              z-index: 6;
-              background-color: var(--card-background);
-              padding-right: 8px;
-            }
-          }
-
-          .avatar-username-container {
-            display: flex;
-            flex-direction: row;
-            align-items: 'center';
-            align-content: 'center';
-            padding-left: 8px;
-            .account-name {
-              @include poppins500(14px);
-              user-select: none;
-              color: var(--select-font-color);
-              margin-left: 12px;
-              align-self: center;
-            }
-            .user-picture {
-              border-radius: 50%;
-              width: 30px;
-              height: 30px;
-            }
-            .cursor-pointer {
-              cursor: pointer;
+              .account-name {
+                @include poppins500(14px);
+                user-select: none;
+                color: var(--select-font-color);
+                margin-left: 12px;
+                align-self: center;
+              }
+              .user-picture {
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+              }
+              .cursor-pointer {
+                cursor: pointer;
+              }
             }
           }
         }
       }
     }
   }
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 6px;
+  background-color: transparent;
 }

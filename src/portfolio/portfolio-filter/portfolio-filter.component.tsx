@@ -78,7 +78,7 @@ const PortfolioFilter = ({
       filters,
     );
   };
-
+  if (data.length === 1) return null;
   return (
     <div className="filter-panel">
       <div className={`filter-box-container ${focus ? 'is-focused' : ''}`}>
