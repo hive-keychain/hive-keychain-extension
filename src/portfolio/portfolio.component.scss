@@ -217,18 +217,18 @@ html {
             align-items: unset;
             margin: 0px 0px;
             padding: 0px;
+            height: 100%;
             overflow: scroll;
 
             .portfolio-table {
               overflow: auto;
               width: 100%;
-              height: 200px;
+              height: 100%;
             }
 
             table {
               table-layout: fixed;
               width: 100%;
-
               .table-header {
                 width: $cell-width;
                 padding-top: 8px;
@@ -254,6 +254,7 @@ html {
                 width: $fixed-cell-width;
                 text-align: left;
                 padding-left: 8px;
+                font-weight: bold;
               }
 
               td:first-child,
@@ -271,6 +272,7 @@ html {
                 background-color: var(--card-background);
                 padding-right: 8px;
               }
+
               thead tr th {
                 position: sticky;
                 top: 0;
