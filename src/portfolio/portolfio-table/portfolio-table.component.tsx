@@ -21,7 +21,7 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
     const tempTotals = PortfolioUtils.getTotals(tableColumnsHeaders, data);
     setTotals(tempTotals);
     setTotalUSD(tempTotals.reduce((acc, curr) => acc + curr.usdValue, 0));
-    setTotalHive(tempTotals.reduce((acc, curr) => acc + curr.balance, 0));
+    setTotalHive(data.reduce((acc, curr) => acc + curr.totalHive, 0));
   }, [data]);
 
   return (
@@ -104,7 +104,9 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
               <td className="total-column" key={`total-value-hive`}>
                 {FormatUtils.formatCurrencyValue(totalHive)}
               </td>
-              <td className="total-column" key={`total-usd`}></td>
+              <td className="total-column" key={`total-usd`}>
+                -
+              </td>
             </tr>
             <tr>
               <td className="header-total">
@@ -119,7 +121,9 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
                   </td>
                 );
               })}
-              <td className="total-column" key={`total-value-hive`}></td>
+              <td className="total-column" key={`total-value-hive`}>
+                -
+              </td>
               <td className="total-column" key={`total-usd`}>
                 {FormatUtils.formatCurrencyValue(totalUSD)}
               </td>
