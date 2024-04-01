@@ -1,17 +1,45 @@
 .vesting-routes-popup {
+  .button-disabled {
+    background-color: gray !important;
+    color: gray !important;
+    &:hover {
+      box-shadow: none;
+    }
+  }
   .popup-content {
     width: -webkit-fill-available;
     margin: 0px 0px;
+    row-gap: 16px !important;
   }
-  .vesting-item-row {
-    display: inline-flex;
-    height: 200px;
+  .vesting-item {
+    display: inline-block;
+    height: 180px;
     width: 330px;
+    overflow-y: scroll;
+    .mandatory-select-option {
+      margin-top: 8px;
+      width: -webkit-fill-available;
+      height: 48px;
+      color: var(--main-font-color);
+      background-color: var(--button-alternative-background-color);
+      border: 1px solid var(--button-alternative-border-color);
+      border-radius: 48px;
+      padding: 8px;
+    }
+    .vesting-item-row {
+      display: flex;
+      flex-direction: row;
+    }
     .vesting-route-item {
       display: flex;
       flex-direction: column;
       width: 50%;
       font-size: 10px;
+      height: auto;
+      .action-panel {
+        margin-top: 8px;
+        width: max-content;
+      }
     }
     .flex-align-left {
       align-items: flex-start;
@@ -22,15 +50,14 @@
     .display-content {
       display: contents;
       .content-vesting-route-button {
-        margin-top: 8px;
         width: 80px;
-        height: 36px;
+        height: auto;
         min-height: unset !important;
       }
       .custom-checkbox-container {
-        margin-top: 8px;
-        height: 36px;
+        height: auto;
         min-height: unset !important;
+        margin-bottom: 4px;
       }
       .label {
         font-size: 10px;

@@ -138,6 +138,11 @@ const saveLastVestingRoutes = async (vestingRoutes: UserVestingRoute[]) => {
   );
 };
 
+const updateLastVestingRoutes = async (
+  account: string,
+  changedRoute: VestingRoute,
+) => {};
+
 export const VestingRoutesUtils = {
   getVestingRoutes,
   getAllAccountsVestingRoutes,
@@ -145,4 +150,5 @@ export const VestingRoutesUtils = {
   saveLastVestingRoutes,
   getDifferentVestingRoutesFound,
   clearLastVestingRoutesInStorage,
+  updateLastVestingRoutes,
 };

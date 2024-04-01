@@ -69,7 +69,7 @@ const Home = ({
     initWhatsNew();
     initSurvey();
     initCheckKeysOnAccounts(accounts);
-    initCheckVestingRoutes(accounts, true);
+    initCheckVestingRoutes(accounts);
   }, []);
 
   useEffect(() => {
@@ -193,6 +193,13 @@ const Home = ({
               percent: 1,
               autoVest: true,
             } as VestingRoute,
+            {
+              id: 1,
+              fromAccount: 'theghost1980',
+              toAccount: 'cedric.guillas',
+              percent: 100,
+              autoVest: true,
+            } as VestingRoute,
           ],
         },
         {
@@ -266,11 +273,6 @@ const Home = ({
       if (differentVestingRoutesFound.length > 0)
         setDisplayWrongVestingRoutesPopup(differentVestingRoutesFound);
       console.log({ differentVestingRoutesFound }); //TODO remove line
-
-      //TODO bellow set state popup info.
-
-      //TODO while testing the displaying is commented, TO add later on
-      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     }
   };
 

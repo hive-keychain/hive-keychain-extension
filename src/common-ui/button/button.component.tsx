@@ -17,11 +17,13 @@ export interface ButtonProps {
   dataTestId?: string;
   additionalClass?: string;
   height?: 'tall' | 'medium' | 'small';
+  disabled?: boolean;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
+      disabled={props.disabled}
       data-testid={props.dataTestId}
       className={`submit-button ${
         props.type ? props.type : ButtonType.IMPORTANT
