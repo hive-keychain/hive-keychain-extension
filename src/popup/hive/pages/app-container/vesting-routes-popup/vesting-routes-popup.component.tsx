@@ -79,45 +79,6 @@ const VestingRoutesPopup = ({
     );
   };
 
-  const handleRevert = (account: string, vestingRoute: VestingRoute) => {
-    console.log('//TODO revert for item', { account, vestingRoute });
-  };
-
-  const handleIntentionalChanges = (
-    account: string,
-    routeChanged: VestingRoute,
-  ) => {
-    //TODO what it should happen here is, we save this vesting route in local storage
-    // //TODO while testing the displaying is commented, TO add later on
-    // VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
-
-    console.log('//TODO mark to skip for item', { account, routeChanged });
-    // const foundInList = markAsIntentionalVestingRouteList.find(
-    //   (item) => item.id === routeChanged.id,
-    // );
-    // let tempList = [...markAsIntentionalVestingRouteList];
-    // if (foundInList) {
-    //   // setMarkAsIntentionalVestingRouteList(tempList.filter(item => item.id !== routeChanged.id));
-    //   tempList = tempList.filter((item) => item.id !== routeChanged.id);
-    // } else {
-    //   tempList.push(routeChanged);
-    // }
-    // setMarkAsIntentionalVestingRouteList(tempList);
-  };
-
-  const handleSelect = (option: string, account: string) => {
-    if (option === 'default') {
-      setOptionActionSelected(undefined);
-      return;
-    }
-    console.log({ option, account }); //TODO remove line
-    //TODo to finish bellow
-    setOptionActionSelected({
-      option,
-      account,
-    });
-  };
-
   return (
     <PopupContainer className="vesting-routes-popup">
       <div className="popup-title">

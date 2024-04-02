@@ -1,7 +1,4 @@
-import {
-  UserVestingRoute,
-  VestingRoute,
-} from '@interfaces/vesting-routes.interface';
+import { UserVestingRoute } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -186,20 +183,20 @@ const Home = ({
         {
           account: 'theghost1980',
           routes: [
-            {
-              id: 0,
-              fromAccount: 'theghost1980',
-              toAccount: 'keychain.tests',
-              percent: 1,
-              autoVest: true,
-            } as VestingRoute,
-            {
-              id: 1,
-              fromAccount: 'theghost1980',
-              toAccount: 'cedric.guillas',
-              percent: 100,
-              autoVest: true,
-            } as VestingRoute,
+            // {
+            //   id: 0,
+            //   fromAccount: 'theghost1980',
+            //   toAccount: 'keychain.tests',
+            //   percent: 1,
+            //   autoVest: true,
+            // } as VestingRoute,
+            // {
+            //   id: 1,
+            //   fromAccount: 'theghost1980',
+            //   toAccount: 'keychain.tests2',
+            //   percent: 100,
+            //   autoVest: true,
+            // } as VestingRoute,
           ],
         },
         {
@@ -212,51 +209,19 @@ const Home = ({
         },
         {
           account: 'sexosentido',
-          routes: [
-            {
-              id: 0,
-              fromAccount: 'sexosentido',
-              toAccount: 'keychain.tests',
-              percent: 100,
-              autoVest: false,
-            } as VestingRoute,
-          ],
+          routes: [],
         },
         {
           account: 'sai.baba',
-          routes: [
-            {
-              id: 0,
-              fromAccount: 'sai.baba',
-              toAccount: 'keychain.tests',
-              percent: 30,
-              autoVest: true,
-            } as VestingRoute,
-          ],
+          routes: [],
         },
         {
           account: 'keychain.tests',
-          routes: [
-            {
-              id: 0,
-              fromAccount: 'keychain.tests',
-              toAccount: 'theghost1980',
-              percent: 20,
-              autoVest: false,
-            } as VestingRoute,
-          ],
+          routes: [],
         },
         {
           account: 'jobaboard',
-          routes: [
-            {
-              id: 0,
-              fromAccount: 'jobaboard',
-              toAccount: 'theghost1980',
-              percent: 1,
-              autoVest: true,
-            } as VestingRoute,
-          ],
+          routes: [],
         },
         {
           account: 'keychain2024',
@@ -270,8 +235,11 @@ const Home = ({
           lastVestingRoutes,
           currentVestingRoutes,
         );
+
+      //TODO bellow uncomment when fix the comparisson
       if (differentVestingRoutesFound.length > 0)
         setDisplayWrongVestingRoutesPopup(differentVestingRoutesFound);
+
       console.log({ differentVestingRoutesFound }); //TODO remove line
     }
   };

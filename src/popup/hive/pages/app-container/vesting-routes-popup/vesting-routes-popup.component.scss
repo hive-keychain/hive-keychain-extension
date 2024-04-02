@@ -11,7 +11,16 @@
     margin: 0px 0px;
     row-gap: 16px !important;
   }
-  .vesting-item {
+  .carousel-item-container {
+    display: inline-block;
+    width: 330px;
+  }
+  .vesting-routes-titles-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .vesting-item-list-container {
     display: inline-block;
     height: 180px;
     width: 330px;
@@ -26,42 +35,31 @@
       border-radius: 48px;
       padding: 8px;
     }
-    .vesting-item-row {
-      display: flex;
-      flex-direction: row;
-    }
-    .vesting-route-item {
-      display: flex;
+    .vesting-route-card-item {
+      @include small-card();
+      padding: 8px 4px 8px 4px;
+      margin: 0px 0px;
+      margin-bottom: 8px;
       flex-direction: column;
-      width: 50%;
-      font-size: 10px;
-      height: auto;
-      .action-panel {
-        margin-top: 8px;
-        width: max-content;
+      .vesting-item-card-row-container {
+        display: flex;
+        flex-direction: row;
+        width: -webkit-fill-available;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .vesting-item-details-container {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        font-size: 12px;
       }
     }
-    .flex-align-left {
-      align-items: flex-start;
-    }
-    .flex-align-right {
-      align-items: flex-end;
-    }
-    .display-content {
-      display: contents;
-      .content-vesting-route-button {
-        width: 80px;
-        height: auto;
-        min-height: unset !important;
-      }
-      .custom-checkbox-container {
-        height: auto;
-        min-height: unset !important;
-        margin-bottom: 4px;
-      }
-      .label {
-        font-size: 10px;
-      }
-    }
+  }
+  .margin-bottom-8px {
+    margin-bottom: 8px;
+  }
+  .small-font {
+    font-size: 12px;
   }
 }

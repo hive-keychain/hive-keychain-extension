@@ -2,8 +2,11 @@ import {
   UserVestingRoute,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
-import { VestingRouteActionPanelComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-action-panel.component';
+import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { RootState } from '@popup/hive/store';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 
 interface Props {
   userVestingRoute: UserVestingRoute;
@@ -16,12 +19,16 @@ interface Props {
 
 const VestingRouteItem = ({
   userVestingRoute,
+  refreshActiveAccount,
 }: //   item,
 //   account,
 //   handleIntentionalChanges,
 //   handleRevert,
 //   preFixKey,
-Props) => {
+Props & PropsFromRedux) => {
+  const { account, routes, routesChanged } = userVestingRoute;
+  console.log({ account, routes, routesChanged }); //TODO remove line
+
   const handleRevert = (account: string, vestingRoute: VestingRoute) => {
     console.log('//TODO revert for item', { account, vestingRoute });
   };
@@ -48,15 +55,86 @@ Props) => {
     // setMarkAsIntentionalVestingRouteList(tempList);
   };
 
-  const renderVestingItem = (
-    vestingRoute: VestingRoute,
-    index: number,
+  // const renderVestingItem = (
+  //   // vestingRoute: VestingRoute,
+  //   // index: number,
+  //   // account: string,
+  //   userVestinRoute: UserVestingRoute,
+  // ) => {
+  //   return (
+  //     <div
+  //       className="display-content"
+  //       key={`${vestingRoute.id}-vesting-route-${index}`}>
+  //       <div className="title">Id: {vestingRoute.id}</div>
+  //       <div className="title">fromAccount: {vestingRoute.fromAccount}</div>
+  //       <div className="title">toAccount: {vestingRoute.toAccount}</div>
+  //       <div className="title">percent: {vestingRoute.percent}</div>
+  //       <div className="title">
+  //         autoVest: {vestingRoute.autoVest.toString()}
+  //       </div>
+  //       <VestingRouteActionPanelComponent
+  //         key={`${vestingRoute.id}-action-panel-${index}`}
+  //         item={vestingRoute}
+  //         account={account}
+  //         handleRevert={handleRevert}
+  //         handleIntentionalChanges={handleIntentionalChanges}
+  //       />
+  //     </div>
+  //   );
+  // };
+
+  const handleSelect = async (
+    option: string,
     account: string,
+    route: VestingRoute,
+    action: 'add' | 'remove',
+  ) => {
+    //'default' | 'skipAndSave' | 'revert'
+    if (option === 'default') return;
+    if (option === 'skipAndSave') {
+      const tempLastVestingRoutes =
+        await VestingRoutesUtils.getLastVestingRoutes();
+      if (action === 'add') {
+        const foundLast = tempLastVestingRoutes?.find(
+          (lastRoute) => lastRoute.account === account,
+        );
+        if (foundLast?.routes.length === 0) {
+          foundLast.routes.push(route);
+        }
+      } else {
+        //TODO keep working on this...
+      }
+      console.log({ tempLastVestingRoutes }); //TODO remove line
+      await VestingRoutesUtils.saveLastVestingRoutes(tempLastVestingRoutes!);
+      //TODO here, remove from initial display array or find a better way to reload the app, ask cedric!!!
+      refreshActiveAccount();
+    }
+  };
+
+  const renderActionOptions = (
+    acc: string,
+    route: VestingRoute,
+    action: 'add' | 'remove',
   ) => {
     return (
-      <div
-        className="display-content"
-        key={`${vestingRoute.id}-vesting-route-${index}`}>
+      <select
+        className="mandatory-select-option"
+        onChange={(e) => handleSelect(e.target.value, acc, route, action)}>
+        <option
+          defaultChecked
+          defaultValue={'default'}
+          label="Please Select an option"
+          value={'default'}
+        />
+        <option label="These changes are intentional" value="skipAndSave" />
+        <option label="Revert Changes" value="revert" />
+      </select>
+    );
+  };
+
+  const renderVestingItemDetails = (vestingRoute: VestingRoute) => {
+    return (
+      <div className="vesting-item-details-container">
         <div className="title">Id: {vestingRoute.id}</div>
         <div className="title">fromAccount: {vestingRoute.fromAccount}</div>
         <div className="title">toAccount: {vestingRoute.toAccount}</div>
@@ -64,15 +142,41 @@ Props) => {
         <div className="title">
           autoVest: {vestingRoute.autoVest.toString()}
         </div>
-        <VestingRouteActionPanelComponent
-          key={`${vestingRoute.id}-action-panel-${index}`}
-          item={vestingRoute}
-          account={account}
-          handleRevert={handleRevert}
-          handleIntentionalChanges={handleIntentionalChanges}
-        />
       </div>
     );
+  };
+
+  const renderVestingItems = ({
+    account,
+    routes: newRoutes,
+    routesChanged: oldRoutes,
+  }: UserVestingRoute) => {
+    console.log({ account, oldRoutes, newRoutes }); //TODO remove line
+    if (!oldRoutes) {
+      newRoutes.map((newRoute) => {
+        return (
+          <div key={`${account}-${newRoute.id}-vesting-route-card`}>
+            <div className="vesting-item-card-row-container">
+              <div className="title">Non existent!</div>
+              {renderVestingItemDetails(newRoute)}
+            </div>
+          </div>
+        );
+      });
+    } else if (oldRoutes) {
+      oldRoutes.map((oldRoute) => {
+        const oldRouteId = oldRoute.id;
+        return (
+          <div key={`${account}-${oldRouteId}-vesting-route-card`}>
+            {renderVestingItemDetails(oldRoute)}
+            {renderVestingItemDetails(
+              newRoutes.find((item) => item.id === oldRouteId)!,
+            )}
+          </div>
+        );
+      });
+    }
+    return null;
   };
 
   //TODO add to tr
@@ -80,37 +184,71 @@ Props) => {
     <div
       className={`carousel-item`}
       key={`${userVestingRoute.account}-vesting-routes`}>
-      <div className="title">Account: @{userVestingRoute.account}</div>
-      <div
-        className="vesting-item"
-        key={`${userVestingRoute.account}-vesting-item`}>
+      <div className="carousel-item-container">
+        <div className="title margin-bottom-8px">
+          Account: @{userVestingRoute.account}
+        </div>
+        <div className="vesting-routes-titles-container">
+          <div className="title">Old Route</div>
+          <div className="title">New Route</div>
+        </div>
         <div
-          className="vesting-item-row"
-          key={`${userVestingRoute.account}-vesting-item-row`}>
-          <div
-            className="vesting-route-item flex-align-left"
-            key={`${userVestingRoute.account}-vesting-itemrow-left`}>
-            <div className="title">Old Route</div>
-            {userVestingRoute.routesChanged ? (
-              userVestingRoute.routesChanged.map((oldRoute, i) =>
-                renderVestingItem(oldRoute, i, userVestingRoute.account),
-              )
-            ) : (
-              <div
-                className="title"
-                key={`${userVestingRoute.account}-non-existent-title`}>
-                Non existent!
-              </div>
-            )}
-          </div>
-          <div
-            className="vesting-route-item flex-align-right"
-            key={`${userVestingRoute.account}-vesting-itemrow-right`}>
-            <div className="title">New Route</div>
-            {userVestingRoute.routes.map((newRoute, i) =>
-              renderVestingItem(newRoute, i, userVestingRoute.account),
-            )}
-          </div>
+          className="vesting-item-list-container"
+          key={`${userVestingRoute.account}-vesting-item-list-container`}>
+          {!userVestingRoute.routesChanged && userVestingRoute.routes?.length
+            ? userVestingRoute.routes.map((newRoute) => {
+                return (
+                  <div
+                    className="vesting-route-card-item"
+                    key={`${userVestingRoute.account}-${newRoute.id}-vesting-route-card`}>
+                    <div className="vesting-item-card-row-container">
+                      <div className="title small-font">Non existent!</div>
+                      {renderVestingItemDetails(newRoute)}
+                    </div>
+                    <div>{renderActionOptions(account, newRoute, 'add')}</div>
+                  </div>
+                );
+              })
+            : userVestingRoute.routes.length === 0 &&
+              userVestingRoute.routesChanged?.length
+            ? userVestingRoute.routesChanged.map((oldRoute) => {
+                return (
+                  <div
+                    className="vesting-route-card-item"
+                    key={`${userVestingRoute.account}-${oldRoute.id}-vesting-route-card`}>
+                    <div className="vesting-item-card-row-container">
+                      {renderVestingItemDetails(oldRoute)}
+                      <div className="title small-font">Non existent!</div>
+                    </div>
+                    <div>
+                      {renderActionOptions(account, oldRoute, 'remove')}
+                    </div>
+                  </div>
+                );
+              })
+            : null}
+          {/* <div
+            className="vesting-item"
+            key={`${userVestingRoute.account}-vesting-item`}>
+            <div key={`${userVestingRoute.account}-vesting-itemrow-left`}>
+              {userVestingRoute.routesChanged ? (
+                userVestingRoute.routesChanged.map((oldRoute, i) =>
+                  renderVestingItem(oldRoute, i, userVestingRoute.account),
+                )
+              ) : (
+                <div
+                  className="title"
+                  key={`${userVestingRoute.account}-non-existent-title`}>
+                  Non existent!
+                </div>
+              )}
+            </div>
+            <div key={`${userVestingRoute.account}-vesting-itemrow-right`}>
+              {userVestingRoute.routes.map((newRoute, i) =>
+                renderVestingItem(newRoute, i, userVestingRoute.account),
+              )}
+            </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -136,4 +274,13 @@ Props) => {
   //   );
 };
 
-export const VestinRouteItemComponent = VestingRouteItem;
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const connector = connect(mapStateToProps, {
+  refreshActiveAccount,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const VestinRouteItemComponent = connector(VestingRouteItem);

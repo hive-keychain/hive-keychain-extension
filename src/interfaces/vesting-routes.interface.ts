@@ -4,6 +4,7 @@ export interface VestingRoute {
   toAccount: string;
   percent: number;
   autoVest: boolean;
+  nonExistent?: boolean;
 }
 
 export interface UserVestingRoute {
