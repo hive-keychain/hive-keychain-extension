@@ -96,13 +96,13 @@ const getPortfolio = async (
   const tokensFullList = getTokensFullList(usersTokens);
 
   const portfolio: UserPortfolio[] = [];
-
+  const tokens = await TokensUtils.getAllTokens();
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
       prices,
       tokensMarket,
-      await TokensUtils.getAllTokens(),
+      tokens,
     );
     portfolio.push({
       account: userTokens.username,
