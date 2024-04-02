@@ -1,9 +1,9 @@
-import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications.component';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './peakd-notifications-config.scss';
+import { NotificationsAdvancedConfig } from 'src/peakd-notifications-config/notifications-advanced-config.component';
+import './notifications-advanced-config.component.scss';
 ReactDOM.render(
-  <NotificationsConfigComponent />,
+  <NotificationsAdvancedConfig />,
   document.getElementById('root'),
 );
 

@@ -24,12 +24,7 @@ const UserPreferencesMenuItems = (
     {
       label: 'html_popup_settings_notifications',
       icon: SVGIcons.MENU_USER_PREFERENCES_NOTIFICATIONS,
-      action: async () => {
-        const extensionId = (await chrome.management.getSelf()).id;
-        chrome.tabs.create({
-          url: `chrome-extension://${extensionId}/peakd-notifications-config.html`,
-        });
-      },
+      nextScreen: Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
     },
     {
       label: 'popup_html_multisig',

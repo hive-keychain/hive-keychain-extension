@@ -895,6 +895,24 @@ const markAllAsRead = async (activeAccount: ActiveAccount) => {
   );
 };
 
+const deleteAccountConfig = async (activeAccount: ActiveAccount) => {
+  return await CustomJsonUtils.send(
+    ['delete_account', {}],
+    activeAccount.name!,
+    activeAccount.keys.posting!,
+    KeyType.POSTING,
+    'notify',
+  );
+};
+
+const saveDefaultConfig = async (activeAccount: ActiveAccount) => {
+  const config = getDefaultConfig();
+  return saveConfiguration(config, {
+    keys: activeAccount.keys,
+    name: activeAccount.name!,
+  } as LocalAccount);
+};
+
 export const PeakDNotificationsUtils = {
   defaultActiveSubs,
   conditionNames,
@@ -907,4 +925,6 @@ export const PeakDNotificationsUtils = {
   getDefaultConfig,
   getNotifications,
   markAllAsRead,
+  deleteAccountConfig,
+  saveDefaultConfig,
 };

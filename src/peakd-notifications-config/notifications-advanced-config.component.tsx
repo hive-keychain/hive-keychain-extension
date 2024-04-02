@@ -35,7 +35,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const NotificationConfigPage = () => {
+const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
   const [config, setConfig] = useState<NotificationConfig>();
 
@@ -206,7 +206,7 @@ const NotificationConfigPage = () => {
     <div className={`theme ${theme} notifications-config-page-main-container`}>
       {ready && (
         <div
-          data-testid={`${Screen.SETTINGS_NOTIFICATIONS}-page`}
+          data-testid={`${Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION}-page`}
           className={`notifications-config-page`}>
           <div className="title-panel">
             <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
@@ -321,4 +321,4 @@ const NotificationConfigPage = () => {
   );
 };
 
-export const NotificationsConfigComponent = NotificationConfigPage;
+export const NotificationsAdvancedConfig = NotificationsAdvancedConfigPage;

@@ -3,7 +3,7 @@ import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
-import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications.component';
+import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -158,7 +158,7 @@ const AppRouter = ({
         return <AutomatedTasksComponent />;
       case Screen.SETTINGS_FAVORITE_ACCOUNTS:
         return <FavoriteAccountsComponent />;
-      case Screen.SETTINGS_NOTIFICATIONS:
+      case Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION:
         return <NotificationsConfigComponent />;
       case Screen.SETTINGS_MULTISIG:
         return <MultisigComponent />;

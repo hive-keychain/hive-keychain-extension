@@ -3995,5 +3995,9 @@
   "notification_setting_all_as_read": {
     "message": "Setting all notifications as read",
     "description": "Set all notifications as read"
+  },
+  "notification_settings_advanced_settings": {
+    "message": "Open advanced settings",
+    "description": "Open advanced settings"
   }
 }
