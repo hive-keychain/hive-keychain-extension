@@ -19,6 +19,7 @@ const EstimatedAccountValueSection = ({
   globalProperties,
   tokensBalance,
   tokensMarket,
+  tokens,
 }: PropsFromRedux) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
@@ -52,6 +53,7 @@ const EstimatedAccountValueSection = ({
           tokensBalance,
           tokensMarket,
           accountValueType,
+          tokens,
         ),
       );
     }
@@ -135,6 +137,7 @@ const mapStateToProps = (state: RootState) => {
     globalProperties: state.globalProperties,
     tokensBalance: state.userTokens.list,
     tokensMarket: state.tokenMarket,
+    tokens: state.tokens,
   };
 };
 

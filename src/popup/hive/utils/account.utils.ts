@@ -7,7 +7,7 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
@@ -365,6 +365,7 @@ const getAccountValue = (
   tokensBalance: TokenBalance[],
   tokensMarket: TokenMarket[],
   accountValueType: AccountValueType,
+  tokens: Token[],
 ) => {
   if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
@@ -375,6 +376,7 @@ const getAccountValue = (
     },
     prices,
     tokensMarket,
+    tokens,
   );
   const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
     (acc, curr) => acc + curr.usdValue,

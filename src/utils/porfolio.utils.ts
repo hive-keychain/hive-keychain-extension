@@ -1,7 +1,7 @@
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
@@ -102,6 +102,7 @@ const getPortfolio = async (
       userTokens,
       prices,
       tokensMarket,
+      await TokensUtils.getAllTokens(),
     );
     portfolio.push({
       account: userTokens.username,
@@ -192,11 +193,12 @@ const generateUserLayerTwoPortolio = (
   userTokens: { username: string; tokensBalance: TokenBalance[] },
   prices: CurrencyPrices,
   tokensMarket: TokenMarket[],
+  tokens: Token[],
 ) => {
   const userLayerTwoPortfolio: PortfolioBalance[] = [];
   for (const userToken of userTokens.tokensBalance) {
     userLayerTwoPortfolio.push(
-      getPortfolioHETokenData(userToken, tokensMarket, prices),
+      getPortfolioHETokenData(userToken, tokensMarket, prices, tokens),
     );
   }
   return userLayerTwoPortfolio;
@@ -221,11 +223,13 @@ const getPortfolioHETokenData = (
   tokenBalanceItem: TokenBalance,
   tokenMarket: TokenMarket[],
   currencyPrices: CurrencyPrices,
+  tokens: Token[],
 ): PortfolioBalance => {
   const totalBalanceUsdValue = TokensUtils.getHiveEngineTokenValue(
     tokenBalanceItem,
     tokenMarket,
     currencyPrices!.hive!,
+    tokens,
   );
   return {
     symbol: tokenBalanceItem.symbol,
