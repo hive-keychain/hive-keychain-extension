@@ -3436,7 +3436,7 @@
     "description": "portfolio table columns"
   },
   "broadcast_error_transaction_expired": {
-    "message": "Your transaction has expired. Please try to broadcast it again.",
+    "message": "This transaction has expired. This might be due to an invalid time on your device. Please make sure that your device time is synchronized online.",
     "description": "transaction expireed error"
   },
   "html_popup_swap_token_confirm_title": {
