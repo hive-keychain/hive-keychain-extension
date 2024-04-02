@@ -19,7 +19,8 @@
       "@background/*": ["./src/background/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@reference-data/*": ["./src/reference-data/*"],
-      "@api/*": ["./src/api/*"]
+      "@api/*": ["./src/api/*"],
+      "react": ["./node_modules/@types/react"]
     }
   },
   "include": ["src/**/*"],
