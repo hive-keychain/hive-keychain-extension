@@ -2,7 +2,7 @@ import {
   UserVestingRoute,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
-import { VestingRouteActionPanelComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-action-panel.component';
+import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-item.component';
 import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -130,101 +130,92 @@ const VestingRoutesPopup = ({
             'popup_html_vesting_shares_warning_message',
           ),
         }}></div>
-      <div>
-        <Carousel
-          showArrows={false}
-          showIndicators={false}
-          selectedItem={pageIndex}
-          showThumbs={false}
-          showStatus={false}
-          dynamicHeight
-          renderIndicator={renderCustomIndicator}>
-          {displayWrongVestingRoutesPopup.map((acc) => {
-            return (
-              <div
-                className="carousel-item"
-                key={`${acc.account}-vesting-routes`}>
-                <div className="title">Account: @{acc.account}</div>
-                <div className="vesting-item">
-                  <div className="vesting-item-row">
-                    <div className="vesting-route-item flex-align-left">
-                      <div className="title">Before</div>
-                      {acc.routesChanged ? (
-                        acc.routesChanged.map((item) => {
-                          return (
-                            <div
-                              className="display-content"
-                              key={`${item.id}-vesting-route-2`}>
-                              <div className="title">Id: {item.id}</div>
-                              <div className="title">
-                                fromAccount: {item.fromAccount}
-                              </div>
-                              <div className="title">
-                                toAccount: {item.toAccount}
-                              </div>
-                              <div className="title">
-                                percent: {item.percent}
-                              </div>
-                              <div className="title">
-                                autoVest: {item.autoVest.toString()}
-                              </div>
-                              <VestingRouteActionPanelComponent
-                                key={`${acc.account}-${item.id}-action-panel`}
-                                item={item}
-                                account={acc.account}
-                                handleRevert={handleRevert}
-                                handleIntentionalChanges={
-                                  handleIntentionalChanges
-                                }
-                              />
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="title">Non existent!</div>
-                      )}
-                    </div>
-                    <div className="vesting-route-item flex-align-right">
-                      <div className="title">Now</div>
-                      {acc.routes.map((routeChanged) => {
-                        return (
-                          <div
-                            className="display-content"
-                            key={`${routeChanged.id}-vesting-route`}>
-                            <div className="title">Id: {routeChanged.id}</div>
-                            <div className="title">
-                              fromAccount: {routeChanged.fromAccount}
-                            </div>
-                            <div className="title">
-                              toAccount: {routeChanged.toAccount}
-                            </div>
-                            <div className="title">
-                              percent: {routeChanged.percent}
-                            </div>
-                            <div className="title">
-                              autoVest: {routeChanged.autoVest.toString()}
-                            </div>
-                            <VestingRouteActionPanelComponent
-                              key={`${acc.account}-${routeChanged.id}-action-panel`}
-                              item={routeChanged}
-                              account={acc.account}
-                              handleRevert={handleRevert}
-                              handleIntentionalChanges={
-                                handleIntentionalChanges
-                              }
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </Carousel>
-      </div>
+
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        selectedItem={pageIndex}
+        showThumbs={false}
+        showStatus={false}
+        dynamicHeight
+        renderIndicator={renderCustomIndicator}>
+        {displayWrongVestingRoutesPopup.map((acc, index) => {
+          return (
+            <VestinRouteItemComponent
+              key={`${acc.account}-${index}`}
+              userVestingRoute={acc}
+            />
+          );
+          // return (
+          //   <div
+          //     className={`carousel-item`}
+          //     key={`${acc.account}-vesting-routes-${index}`}>
+          //     <div className="title">Account: @{acc.account}</div>
+          //     <div
+          //       className="vesting-item"
+          //       key={`${acc.account}-vesting-item-${index}`}>
+          //       <div
+          //         className="vesting-item-row"
+          //         key={`${acc.account}-vesting-item-row-${index}`}>
+          //         <div
+          //           className="vesting-route-item flex-align-left"
+          //           key={`${acc.account}-vesting-itemrow-left-${index}`}>
+          //           <div
+          //             className="title"
+          //             key={`${acc.account}-old-title-${index}`}>
+          //             Before
+          //           </div>
+          //           {acc.routesChanged ? (
+          //             acc.routesChanged.map((item, i) => {
+          //               return (
+          //                 <VestinRouteItemComponent
+          //                   preFixKey={`${item.id}-old-route-found-${index}-${i}`}
+          //                   item={item}
+          //                   account={acc.account}
+          //                   handleIntentionalChanges={
+          //                     handleIntentionalChanges
+          //                   }
+          //                   handleRevert={handleRevert}
+          //                 />
+          //               );
+          //             })
+          //           ) : (
+          //             <div
+          //               className="title"
+          //               key={`${acc.account}-non-existent-title-${index}`}>
+          //               Non existent!
+          //             </div>
+          //           )}
+          //         </div>
+          //         <div
+          //           className="vesting-route-item flex-align-right"
+          //           key={`${acc.account}-vesting-itemrow-right-${index}`}>
+          //           <div
+          //             className="title"
+          //             key={`${acc.account}-new-title-${index}`}>
+          //             Now
+          //           </div>
+          //           {acc.routes.map((routeChanged, i) => {
+          //             return (
+          //               <VestinRouteItemComponent
+          //                 preFixKey={`${routeChanged.id}new-route-found-${index}-${i}`}
+          //                 item={routeChanged}
+          //                 account={acc.account}
+          //                 handleIntentionalChanges={handleIntentionalChanges}
+          //                 handleRevert={handleRevert}
+          //               />
+          //             );
+          //           })}
+          //         </div>
+          //       </div>
+          //     </div>
+          //   </div>
+          // );
+        })}
+      </Carousel>
+
       <div className="popup-footer">
+        {/* //TODO cleanup unused code */}
         {/* {pageIndex > 0 && (
           <ButtonComponent
             type={ButtonType.ALTERNATIVE}
