@@ -33,7 +33,12 @@ export enum LocalStorageKeyEnum {
   LAST_PRICE = 'LAST_PRICE',
   MULTISIG_CONFIG = 'MULTISIG_CONFIG',
 
+  PORTFOLIO_FILTER = 'PORTFOLIO_FILTER',
+
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_THEME = 'ACTIVE_THEME',
+
+  // To show the right type of account value
+  ACCOUNT_VALUE_TYPE = 'ACCOUNT_VALUE_TYPE',
 }

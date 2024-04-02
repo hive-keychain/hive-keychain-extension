@@ -3295,6 +3295,10 @@
     "message": "No account found on your Ledger. Make sure your added at least one and try again.",
     "description": "synchronize ledger caption"
   },
+  "no_account_found_on_portfolio_error": {
+    "message": "No account found on your Keychain Portfolio. Make sure you add at least one and try again.",
+    "description": "portfolio section, loading accounts"
+  },
   "all_ledger_accounts_already_imported": {
     "message": "All the accounts on your Ledger have already been linked to Keychain",
     "description": "while synchronizing ledger"
@@ -3390,6 +3394,46 @@
   "ledger_import_account_has_ledger": {
     "message": "We detected an account using Ledger within the accounts you imported. To be able to use it please click <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>here</a> to link your Ledger.",
     "description": "link device error"
+  },
+  "portfolio": {
+    "message": "Keychain Portfolio",
+    "description": "portfolio button click"
+  },
+  "portfolio_total_value_usd": {
+    "message": "Total Value:",
+    "description": "portfolio main page"
+  },
+  "portfolio_caption_message_total_value": {
+    "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
+    "description": "portfolio main page, information total value"
+  },
+  "portfolio_filter_placeholder": {
+    "message": "Filter account",
+    "description": "portfolio filter"
+  },
+  "portfolio_clear_filter_link": {
+    "message": "Clear",
+    "description": "clear filter"
+  },
+  "portfolio_data_cell_zero_or_no_balance_text": {
+    "message": "-",
+    "description": "portfolio displayed when 0 or no balances found on tokens"
+  },
+  "portfolio_table_column_header_account": {
+    "message": "Account",
+    "description": "portfolio table headers"
+  },
+  "portfolio_table_column_sticky_totals": {
+    "message": "Total",
+    "description": "portfolio table columns"
+  },
+  "portfolio_table_column_total_hive": {
+    "message": "Total Hive",
+    "description": "portfolio table columns"
+  },
+  "portfolio_table_column_sticky_total_usd": {
+    "message": "Total USD",
+    "description": "portfolio table columns"
   },
   "broadcast_error_transaction_expired": {
     "message": "This transaction has expired. This might be due to an invalid time on your device. Please make sure that your device time is synchronized online.",
@@ -3838,5 +3882,9 @@
   "html_popup_click_to_refresh": {
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
+  },
+  "portfolio_fetch_progress": {
+    "message": "Fetching data... $1/$2... Currently fetching @$3",
+    "description": "Portfolio fetching message"
   }
 }

@@ -297,8 +297,11 @@ const getHiveEngineTokenValue = (
   balance: TokenBalance,
   market: TokenMarket[],
   hive: Currency = { usd: 1 },
+  tokens?: Token[],
 ) => {
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  const token = tokens?.find((t) => t.symbol === balance.symbol);
+  if (Number(tokenMarket?.volume) <= 0) return 0;
   const price = tokenMarket
     ? parseFloat(tokenMarket.lastPrice)
     : balance.symbol === 'SWAP.HIVE'
@@ -308,7 +311,7 @@ const getHiveEngineTokenValue = (
   const totalToken =
     parseFloat(balance.balance) +
     parseFloat(balance.pendingUndelegations) +
-    parseFloat(balance.pendingUnstake) +
+    parseFloat(balance.pendingUnstake) / (token?.numberTransactions || 1) +
     parseFloat(balance.delegationsOut) +
     parseFloat(balance.stake);
   return totalToken * price * hive?.usd!;

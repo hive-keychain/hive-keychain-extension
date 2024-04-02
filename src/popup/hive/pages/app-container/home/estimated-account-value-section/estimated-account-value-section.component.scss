@@ -20,10 +20,31 @@
       width: 16px;
     }
   }
+  .estimated-value-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+
+    .portfolio-icon {
+      @include icon-size(24px);
+
+      svg {
+        @include icon-size(24px);
+      }
+    }
+  }
+  .spacing {
+    margin-left: 10px;
+  }
   .value {
     @include poppins700(32px);
     color: var(--home-account-value-color);
     text-align: center;
+    cursor: pointer;
+    &.with-margin {
+      margin-bottom: 10px;
+    }
   }
   .account-value-explanation-section {
     font-size: 18px;
