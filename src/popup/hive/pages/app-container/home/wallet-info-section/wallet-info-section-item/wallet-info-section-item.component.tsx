@@ -222,6 +222,7 @@ const walletInfoSectionItem = ({
                     tokenBalance,
                     tokenMarket,
                     hive,
+                    [tokenInfo],
                   ).toFixed(2)}{' '}
                   ($
                   {(

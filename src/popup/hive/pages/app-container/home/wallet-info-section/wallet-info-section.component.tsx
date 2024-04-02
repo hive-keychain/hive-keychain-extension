@@ -99,8 +99,18 @@ const WalletInfoSection = ({
         .filter((token) => !hiddenTokens.includes(token.symbol))
         .sort(
           (a, b) =>
-            TokensUtils.getHiveEngineTokenValue(b, market) -
-            TokensUtils.getHiveEngineTokenValue(a, market),
+            TokensUtils.getHiveEngineTokenValue(
+              b,
+              market,
+              undefined,
+              allTokens,
+            ) -
+            TokensUtils.getHiveEngineTokenValue(
+              a,
+              market,
+              undefined,
+              allTokens,
+            ),
         );
       setFilteredTokenList(orderedFiltered);
     }
