@@ -95,7 +95,7 @@ const NotificationsAdvancedConfigPage = () => {
     const form = PeakDNotificationsUtils.initializeForm(conf);
     setConfigForm([...form]);
 
-    setActive(true);
+    setActive(!!userConfig);
   };
 
   const initSelectOptions = async (activeUsername: string) => {
