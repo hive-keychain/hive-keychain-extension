@@ -34,6 +34,7 @@ html {
         align-items: center;
         justify-content: center;
         .notifications-config-page {
+          flex: 1;
           color: var(--main-font-color);
           box-sizing: border-box;
           display: flex;
@@ -45,91 +46,98 @@ html {
           @include small-card();
           align-items: stretch;
           width: 80%;
-          height: 80%;
+          height: 95%;
 
-          .form-fields {
-            .add-panel {
-              display: flex;
-              align-items: center;
-              column-gap: 16px;
-
-              .add-button {
-                width: 50px;
-                height: 42px;
+          .form-container {
+            border-radius: 40px;
+            .form-fields {
+              flex: 1;
+              .add-panel {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                border: 1px solid var(--card-border);
-                background: transparent;
-                cursor: pointer;
-                color: var(--main-font-color);
-                .svg-icon {
-                  height: 18px;
-                  width: 18px;
-                }
-                &:hover {
-                  background: $red;
-                  color: white;
-                }
-              }
-            }
+                column-gap: 16px;
 
-            .criteria {
-              display: flex;
-              flex-direction: column;
-              row-gap: 16px;
-              cursor: pointer;
-
-              .operation-panel {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                .left-panel {
+                .add-button {
+                  width: 50px;
+                  height: 42px;
                   display: flex;
                   align-items: center;
-                  column-gap: 8px;
+                  justify-content: center;
+                  border-radius: 50%;
+                  border: 1px solid var(--card-border);
+                  background: transparent;
+                  cursor: pointer;
+                  color: var(--main-font-color);
                   .svg-icon {
                     height: 18px;
+                    width: 18px;
                   }
-                }
-                .expand-detail-icon {
-                  @include icon-size(18px);
-                  @include open-close-rotate();
+                  &:hover {
+                    background: $red;
+                    color: white;
+                  }
                 }
               }
 
-              .conditions {
+              .criteria {
                 display: flex;
                 flex-direction: column;
-                row-gap: 8px;
-                width: 100%;
+                row-gap: 16px;
+                cursor: pointer;
 
-                .condition-row {
+                .operation-panel {
                   display: flex;
                   align-items: center;
-                  column-gap: 8px;
-                  .condition-configuration {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                    flex: 1;
+                  justify-content: space-between;
+                  .left-panel {
+                    display: flex;
+                    align-items: center;
                     column-gap: 8px;
+                    .svg-icon {
+                      height: 18px;
+                    }
                   }
-                  .svg-icon {
-                    height: 20px;
+                  .expand-detail-icon {
+                    @include icon-size(18px);
+                    @include open-close-rotate();
                   }
                 }
-                .criteria-button-panel {
+
+                .conditions {
                   display: flex;
-                  column-gap: 16px;
-                  align-items: center;
-                  justify-content: flex-start;
-                  margin-top: 16px;
-                  .new-condition-button,
-                  .delete-criteria-button {
-                    width: fit-content;
-                    padding: 0px 16px;
-                    align-self: flex-start;
+                  flex-direction: column;
+                  row-gap: 8px;
+                  width: 100%;
+
+                  .condition-row {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 8px;
+                    .condition-configuration {
+                      display: grid;
+                      grid-template-columns: repeat(
+                        auto-fit,
+                        minmax(150px, 1fr)
+                      );
+                      flex: 1;
+                      column-gap: 8px;
+                    }
+                    .svg-icon {
+                      height: 20px;
+                    }
+                  }
+                  .criteria-button-panel {
+                    display: flex;
+                    column-gap: 16px;
+                    align-items: center;
+                    justify-content: flex-start;
+                    margin-top: 16px;
+                    .new-condition-button,
+                    .delete-criteria-button {
+                      width: fit-content;
+                      padding: 0px 16px;
+                      align-self: flex-start;
+                    }
                   }
                 }
               }
@@ -153,6 +161,11 @@ html {
           }
           .custom-select {
             height: 48px;
+          }
+
+          .buttons-panel {
+            display: flex;
+            column-gap: 16px;
           }
         }
       }

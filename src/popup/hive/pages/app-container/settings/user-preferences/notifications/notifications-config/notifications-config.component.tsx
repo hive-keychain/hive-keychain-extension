@@ -1,4 +1,5 @@
 import { KeyType } from '@interfaces/keys.interface';
+import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import { navigateTo, resetNav } from '@popup/hive/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
 import { RootState } from '@popup/hive/store';
@@ -19,6 +20,7 @@ const NotificationConfigPage = ({
   setTitleContainerProperties,
   resetNav,
   navigateTo,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [isActive, setActive] = useState(false);
   const [userHasConfig, setUserHasConfig] = useState<boolean>();
@@ -51,6 +53,11 @@ const NotificationConfigPage = ({
   };
 
   const handleSubmitClick = async () => {
+    if (isActive === userHasConfig) {
+      setErrorMessage('notification_settings_nothing_has_changed');
+      return;
+    }
+
     if (isActive) {
       await PeakDNotificationsUtils.saveDefaultConfig(activeAccount);
     } else {
@@ -92,13 +99,11 @@ const NotificationConfigPage = ({
 
           <div className="fill-space"></div>
 
-          {userHasConfig !== isActive && (
-            <OperationButtonComponent
-              key={KeyType.POSTING}
-              onClick={handleSubmitClick}
-              label={'popup_html_submit'}
-            />
-          )}
+          <OperationButtonComponent
+            key={KeyType.POSTING}
+            onClick={handleSubmitClick}
+            label={'popup_html_submit'}
+          />
         </div>
       )}
       {!ready && <LoadingComponent />}
@@ -113,6 +118,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   resetNav,
   navigateTo,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

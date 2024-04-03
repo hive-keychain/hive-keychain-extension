@@ -242,11 +242,9 @@ const NotificationsAdvancedConfigPage = () => {
             />
           </div>
           <div className="config-buttons-panel">
-            {/* TODO remove all button */}
             <ButtonComponent
               additionalClass="default-config-button"
-              label="all"
-              skipLabelTranslation
+              label="notification_settings_select_all"
               onClick={setAll}
               type={ButtonType.ALTERNATIVE}
               height="small"
@@ -298,22 +296,24 @@ const NotificationsAdvancedConfigPage = () => {
                     </React.Fragment>
                   );
                 })}
-              </div>
-              <div className="button-panel" ref={formFields}>
-                <ButtonComponent
-                  label="html_popup_reset_form"
-                  onClick={resetForm}
-                  height="small"
-                  type={ButtonType.ALTERNATIVE}
-                />
-                <ButtonComponent
-                  label="popup_html_save"
-                  onClick={saveConfig}
-                  height="small"
-                />
+                <div ref={formFields}></div>
               </div>
             </FormContainer>
           )}
+          {!isActive && <div className="fill-space"></div>}
+          <div className="buttons-panel">
+            <ButtonComponent
+              label="html_popup_reset_form"
+              onClick={resetForm}
+              height="small"
+              type={ButtonType.ALTERNATIVE}
+            />
+            <ButtonComponent
+              label="popup_html_save"
+              onClick={saveConfig}
+              height="small"
+            />
+          </div>
         </div>
       )}
       {!ready && <LoadingComponent />}

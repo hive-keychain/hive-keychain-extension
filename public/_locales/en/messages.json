@@ -3999,5 +3999,13 @@
   "notification_settings_advanced_settings": {
     "message": "Open advanced settings",
     "description": "Open advanced settings"
+  },
+  "notification_settings_select_all": {
+    "message": "Select all",
+    "description": "Select all criterias"
+  },
+  "notification_settings_nothing_has_changed": {
+    "message": "No changes detected",
+    "description": "Select all criterias"
   }
 }
