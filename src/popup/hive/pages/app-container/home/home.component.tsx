@@ -1,4 +1,8 @@
-import { UserVestingRoute } from '@interfaces/vesting-routes.interface';
+import {
+  AccountVestingRoute,
+  UserVestingRoute,
+  VestingRoute,
+} from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -54,7 +58,7 @@ const Home = ({
     WrongKeysOnUser | undefined
   >();
   const [displayWrongVestingRoutesPopup, setDisplayWrongVestingRoutesPopup] =
-    useState<UserVestingRoute[] | undefined>();
+    useState<AccountVestingRoute[] | undefined>();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -175,6 +179,27 @@ const Home = ({
     const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
 
     if (!lastVestingRoutes) {
+      //TODo testing bellow, remove block
+      //Block
+      // const tempCurrentVestingRoutes = currentVestingRoutes.filter(
+      //   (item) => item.account !== 'theghost1980',
+      // );
+      // currentVestingRoutes = [
+      //   ...tempCurrentVestingRoutes,
+      //   {
+      //     account: 'theghost1980',
+      //     routes: [
+      //       {
+      //         id: 0,
+      //         fromAccount: 'theghost1980',
+      //         toAccount: 'keychain.tests',
+      //         percent: 100,
+      //         autoVest: true,
+      //       } as VestingRoute,
+      //     ],
+      //   },
+      // ];
+      //END block
       VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
       return;
     } else {
@@ -183,25 +208,33 @@ const Home = ({
         {
           account: 'theghost1980',
           routes: [
-            // {
-            //   id: 0,
-            //   fromAccount: 'theghost1980',
-            //   toAccount: 'keychain.tests',
-            //   percent: 1,
-            //   autoVest: true,
-            // } as VestingRoute,
-            // {
-            //   id: 1,
-            //   fromAccount: 'theghost1980',
-            //   toAccount: 'keychain.tests2',
-            //   percent: 100,
-            //   autoVest: true,
-            // } as VestingRoute,
+            {
+              id: 0,
+              fromAccount: 'theghost1980',
+              toAccount: 'keychain.tests',
+              percent: 69,
+              autoVest: true,
+            } as VestingRoute,
+            {
+              id: 1,
+              fromAccount: 'theghost1980',
+              toAccount: 'keychain.tests2',
+              percent: 100,
+              autoVest: true,
+            } as VestingRoute,
           ],
         },
         {
           account: 'lecaillon',
-          routes: [],
+          routes: [
+            {
+              id: 1,
+              fromAccount: 'lecaillon',
+              toAccount: 'keychain.tests2',
+              percent: 100,
+              autoVest: true,
+            } as VestingRoute,
+          ],
         },
         {
           account: 'stoodkev',
@@ -230,17 +263,19 @@ const Home = ({
       ] as UserVestingRoute[];
       //end testing block
       console.log({ currentVestingRoutes, lastVestingRoutes }); //TODO remove line
-      const differentVestingRoutesFound =
-        VestingRoutesUtils.getDifferentVestingRoutesFound(
-          lastVestingRoutes,
-          currentVestingRoutes,
-        );
+      const wrongVestingRoutes = VestingRoutesUtils.getWrongVestingRoutes(
+        lastVestingRoutes,
+        currentVestingRoutes,
+      );
 
-      //TODO bellow uncomment when fix the comparisson
-      if (differentVestingRoutesFound.length > 0)
-        setDisplayWrongVestingRoutesPopup(differentVestingRoutesFound);
+      if (
+        wrongVestingRoutes.some(
+          (item) => item.lastRoutes.length > 0 || item.newRoutes.length > 0,
+        )
+      )
+        setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
 
-      console.log({ differentVestingRoutesFound }); //TODO remove line
+      console.log({ wrongVestingRoutes }); //TODO remove line
     }
   };
 
@@ -249,7 +284,7 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
-    displayWrongVestingRoutesPopup: UserVestingRoute[] | undefined,
+    displayWrongVestingRoutesPopup: AccountVestingRoute[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -278,6 +313,10 @@ const Home = ({
           clearDisplayWrongVestingRoutes={() =>
             setDisplayWrongVestingRoutesPopup(undefined)
           }
+          setDisplayWrongVestingRoutesPopup={(updated) =>
+            setDisplayWrongVestingRoutesPopup(updated)
+          }
+          localAccounts={accounts}
         />
       );
     }

@@ -1,9 +1,12 @@
 import {
+  AccountVestingRoute,
+  NonExistenVestingRoute,
   UserVestingRoute,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import _ from 'lodash';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getVestingRoutes = async (
@@ -53,67 +56,91 @@ const clearLastVestingRoutesInStorage = async () => {
   );
 };
 
-const getDifferentVestingRoutesFound = (
+const getWrongVestingRoutes = (
   lastVestingRoutes: UserVestingRoute[],
   currentVestingRoutes: UserVestingRoute[],
 ) => {
   //TODO recode this to return an object we can already use & edit as we need.
-  const routes: {
-    account: string;
-    lastRoutes:
-      | VestingRoute[]
-      | {
-          id: number;
-          status: 'non existent';
-        }[];
-    newRoutes:
-      | VestingRoute[]
-      | {
-          id: number;
-          status: 'non existent';
-        }[];
-  }[] = [];
-  let differentVestingRoutesFound: UserVestingRoute[] = [];
-
-  //new way to test
-  for (const currentVestingRoute of currentVestingRoutes) {
-    console.log({ currentVestingRoute });
-    const lastUserVestingRouteFound = lastVestingRoutes.find(
-      (item) => item.account === currentVestingRoute.account,
-    );
-    if (
-      lastUserVestingRouteFound?.routes.length !==
-      currentVestingRoute.routes.length
-    ) {
-      const routesNotPresentInLast: VestingRoute[] = [];
-      const routesCurrentlyRemoved: VestingRoute[] = [];
-      currentVestingRoute.routes.map((current) => {
-        if (
-          !lastUserVestingRouteFound?.routes.find(
-            (last) => last.id === current.id,
-          )
-        ) {
-          routesNotPresentInLast.push(current);
+  const routes: AccountVestingRoute[] = [];
+  if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
+    console.log('NOT Equal!'); //TODO remove line
+    //Bellow comparing current vs last //TODO last vs current
+    currentVestingRoutes.map(({ account, routes: currRoutes }) => {
+      const foundUserVestingInLast = lastVestingRoutes.find(
+        (item) => item.account === account,
+      );
+      const missingRoutes: VestingRoute[] = [];
+      const nonExistentRoutes: NonExistenVestingRoute[] = [];
+      const changedRoutes: VestingRoute[] = [];
+      const lastChangedRoutes: VestingRoute[] = [];
+      currRoutes.map((currRoute) => {
+        if (foundUserVestingInLast) {
+          let foundUserRouteInLast = foundUserVestingInLast.routes.find(
+            (route) => route.id === currRoute.id,
+          );
+          if (foundUserRouteInLast) {
+            //compare equality
+            if (!_.isEqual(foundUserRouteInLast, currRoute)) {
+              changedRoutes.push(currRoute);
+              lastChangedRoutes.push(foundUserRouteInLast);
+            }
+          } else {
+            nonExistentRoutes.push({
+              id: currRoute.id,
+              status: 'non existent',
+            });
+            missingRoutes.push(currRoute);
+          }
         }
       });
-      lastUserVestingRouteFound?.routes.map((lastRoute) => {
-        if (
-          !currentVestingRoute.routes.find(
-            (current) => current.id === lastRoute.id,
-          )
-        ) {
-          routesCurrentlyRemoved.push(lastRoute);
-        }
+      routes.push({
+        account,
+        lastRoutes: nonExistentRoutes.length
+          ? nonExistentRoutes
+          : lastChangedRoutes,
+        newRoutes: missingRoutes.length ? missingRoutes : changedRoutes,
       });
-      differentVestingRoutesFound.push({
-        account: currentVestingRoute.account,
-        routes: routesNotPresentInLast,
-        routesChanged: routesCurrentlyRemoved.length
-          ? routesCurrentlyRemoved
-          : undefined,
-      });
-    }
+    });
   }
+  //new way to test
+  // for (const currentVestingRoute of currentVestingRoutes) {
+  //   console.log({ currentVestingRoute });
+  //   const lastUserVestingRouteFound = lastVestingRoutes.find(
+  //     (item) => item.account === currentVestingRoute.account,
+  //   );
+  //   if (
+  //     lastUserVestingRouteFound?.routes.length !==
+  //     currentVestingRoute.routes.length
+  //   ) {
+  //     const routesNotPresentInLast: VestingRoute[] = [];
+  //     const routesCurrentlyRemoved: VestingRoute[] = [];
+  //     currentVestingRoute.routes.map((current) => {
+  //       if (
+  //         !lastUserVestingRouteFound?.routes.find(
+  //           (last) => last.id === current.id,
+  //         )
+  //       ) {
+  //         routesNotPresentInLast.push(current);
+  //       }
+  //     });
+  //     lastUserVestingRouteFound?.routes.map((lastRoute) => {
+  //       if (
+  //         !currentVestingRoute.routes.find(
+  //           (current) => current.id === lastRoute.id,
+  //         )
+  //       ) {
+  //         routesCurrentlyRemoved.push(lastRoute);
+  //       }
+  //     });
+  //     differentVestingRoutesFound.push({
+  //       account: currentVestingRoute.account,
+  //       routes: routesNotPresentInLast,
+  //       routesChanged: routesCurrentlyRemoved.length
+  //         ? routesCurrentlyRemoved
+  //         : undefined,
+  //     });
+  //   }
+  // }
   //end new way
 
   //OLD way bellow
@@ -187,7 +214,7 @@ const getDifferentVestingRoutesFound = (
   //     }
   //   }
   // }
-  return differentVestingRoutesFound;
+  return routes;
 };
 
 const saveLastVestingRoutes = async (vestingRoutes: UserVestingRoute[]) => {
@@ -207,7 +234,7 @@ export const VestingRoutesUtils = {
   getAllAccountsVestingRoutes,
   getLastVestingRoutes,
   saveLastVestingRoutes,
-  getDifferentVestingRoutesFound,
+  getWrongVestingRoutes,
   clearLastVestingRoutesInStorage,
   updateLastVestingRoutes,
 };
