@@ -188,7 +188,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market trades, transfers, or transactions.",
+    "message": "The estimated account value is a ballpark idea of what your funds are worth.<br><br>You can switch between the USD, HIVE or hidden modes by clicking on the displayed amount.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
