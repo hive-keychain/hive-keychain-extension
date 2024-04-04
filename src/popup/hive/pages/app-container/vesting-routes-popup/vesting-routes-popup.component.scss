@@ -1,9 +1,25 @@
 .vesting-routes-popup {
-  .button-disabled {
-    background-color: gray !important;
-    color: gray !important;
-    &:hover {
-      box-shadow: none;
+  .popup-footer {
+    height: 12px !important;
+    flex: unset !important;
+  }
+  .indicator-container {
+    margin: 10px 0;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+    z-index: 1;
+    .dot {
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      margin: 0 8px;
+      background: var(--main-font-color);
+      border-radius: 50%;
+      opacity: 0.4;
+    }
+    .selected {
+      opacity: 1;
     }
   }
   .popup-content {
@@ -20,9 +36,18 @@
     flex-direction: row;
     justify-content: space-between;
   }
+  .vesting-action-buttons-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    .vesting-action-button {
+      width: 45%;
+    }
+  }
   .vesting-item-list-container {
     display: inline-block;
-    height: 180px;
+    height: 150px;
     width: 330px;
     overflow-y: scroll;
     .mandatory-select-option {

@@ -1,6 +1,6 @@
 import {
   AccountVestingRoute,
-  NonExistenVestingRoute,
+  UserLastCurrentRoutes,
   UserVestingRoute,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
@@ -32,12 +32,6 @@ const getAllAccountsVestingRoutes = async (
       routes: vestingRoutes,
     });
   }
-  // for (const name of names) {
-  //   allAccountsVestingRoutes.push({
-  //     account: name,
-  //     routes: await getVestingRoutes(name, type),
-  //   });
-  // }
   return allAccountsVestingRoutes;
 };
 
@@ -62,45 +56,79 @@ const getWrongVestingRoutes = (
 ) => {
   //TODO recode this to return an object we can already use & edit as we need.
   const routes: AccountVestingRoute[] = [];
+  let userRoutes: UserLastCurrentRoutes[] = [];
   if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
     console.log('NOT Equal!'); //TODO remove line
-    //Bellow comparing current vs last //TODO last vs current
-    currentVestingRoutes.map(({ account, routes: currRoutes }) => {
-      const foundUserVestingInLast = lastVestingRoutes.find(
-        (item) => item.account === account,
-      );
-      const missingRoutes: VestingRoute[] = [];
-      const nonExistentRoutes: NonExistenVestingRoute[] = [];
-      const changedRoutes: VestingRoute[] = [];
-      const lastChangedRoutes: VestingRoute[] = [];
-      currRoutes.map((currRoute) => {
-        if (foundUserVestingInLast) {
-          let foundUserRouteInLast = foundUserVestingInLast.routes.find(
-            (route) => route.id === currRoute.id,
-          );
-          if (foundUserRouteInLast) {
-            //compare equality
-            if (!_.isEqual(foundUserRouteInLast, currRoute)) {
-              changedRoutes.push(currRoute);
-              lastChangedRoutes.push(foundUserRouteInLast);
-            }
-          } else {
-            nonExistentRoutes.push({
-              id: currRoute.id,
-              status: 'non existent',
-            });
-            missingRoutes.push(currRoute);
+    currentVestingRoutes.map((item) => {
+      let currentVestingRoute = { ...item };
+      let foundLastRoutes = lastVestingRoutes.find(
+        (lastVestingRoute) =>
+          lastVestingRoute.account === currentVestingRoute.account,
+      )!.routes;
+      if (!_.isEqual(foundLastRoutes, currentVestingRoute.routes)) {
+        foundLastRoutes = foundLastRoutes.filter((foundlastRoute) => {
+          if (
+            currentVestingRoute.routes.find((item) =>
+              _.isEqual(item, foundlastRoute),
+            )
+          ) {
+            //now we remove it from the current as well, before assign it later on
+            currentVestingRoute.routes = currentVestingRoute.routes.filter(
+              (c) => c.id !== foundlastRoute.id,
+            );
+            return false;
           }
-        }
-      });
-      routes.push({
-        account,
-        lastRoutes: nonExistentRoutes.length
-          ? nonExistentRoutes
-          : lastChangedRoutes,
-        newRoutes: missingRoutes.length ? missingRoutes : changedRoutes,
-      });
+          return true;
+        });
+
+        console.log({ foundLastRoutes, i: currentVestingRoute.routes }); //TODO remove line
+        userRoutes.push({
+          account: currentVestingRoute.account,
+          lastRoutes: foundLastRoutes,
+          currentRoutes: currentVestingRoute.routes,
+        });
+      }
     });
+    userRoutes = userRoutes.filter(
+      (item) => item.currentRoutes.length > 0 || item.lastRoutes.length > 0,
+    );
+    //Bellow comparing current vs last //TODO last vs current
+    // currentVestingRoutes.map(({ account, routes: currRoutes }) => {
+    //   const foundUserVestingInLast = lastVestingRoutes.find(
+    //     (item) => item.account === account,
+    //   );
+    //   const missingRoutes: VestingRoute[] = [];
+    //   const nonExistentRoutes: NonExistenVestingRoute[] = [];
+    //   const changedRoutes: VestingRoute[] = [];
+    //   const lastChangedRoutes: VestingRoute[] = [];
+    //   currRoutes.map((currRoute) => {
+    //     if (foundUserVestingInLast) {
+    //       let foundUserRouteInLast = foundUserVestingInLast.routes.find(
+    //         (route) => route.id === currRoute.id,
+    //       );
+    //       if (foundUserRouteInLast) {
+    //         //compare equality
+    //         if (!_.isEqual(foundUserRouteInLast, currRoute)) {
+    //           changedRoutes.push(currRoute);
+    //           lastChangedRoutes.push(foundUserRouteInLast);
+    //         }
+    //       } else {
+    //         nonExistentRoutes.push({
+    //           id: currRoute.id,
+    //           status: 'non existent',
+    //         });
+    //         missingRoutes.push(currRoute);
+    //       }
+    //     }
+    //   });
+    //   routes.push({
+    //     account,
+    //     lastRoutes: nonExistentRoutes.length
+    //       ? nonExistentRoutes
+    //       : lastChangedRoutes,
+    //     newRoutes: missingRoutes.length ? missingRoutes : changedRoutes,
+    //   });
+    // });
   }
   //new way to test
   // for (const currentVestingRoute of currentVestingRoutes) {
@@ -214,7 +242,7 @@ const getWrongVestingRoutes = (
   //     }
   //   }
   // }
-  return routes;
+  return userRoutes.length > 0 ? userRoutes : undefined;
 };
 
 const saveLastVestingRoutes = async (vestingRoutes: UserVestingRoute[]) => {

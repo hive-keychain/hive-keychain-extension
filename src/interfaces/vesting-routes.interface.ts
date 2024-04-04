@@ -1,3 +1,4 @@
+//TODO bellow remove unused
 export interface NonExistenVestingRoute {
   id: number;
   status: 'non existent';
@@ -17,7 +18,12 @@ export interface AccountVestingRoute {
   newRoutes: VestingRoute[] | NonExistenVestingRoute[];
 }
 
-//TODO bellow remove interface
+export interface UserLastCurrentRoutes {
+  account: string;
+  lastRoutes: VestingRoute[];
+  currentRoutes: VestingRoute[];
+}
+
 export interface UserVestingRoute {
   account: string;
   routes: VestingRoute[];

@@ -1,5 +1,5 @@
 import {
-  AccountVestingRoute,
+  UserLastCurrentRoutes,
   UserVestingRoute,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
@@ -58,7 +58,7 @@ const Home = ({
     WrongKeysOnUser | undefined
   >();
   const [displayWrongVestingRoutesPopup, setDisplayWrongVestingRoutesPopup] =
-    useState<AccountVestingRoute[] | undefined>();
+    useState<UserLastCurrentRoutes[] | undefined>();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -212,14 +212,14 @@ const Home = ({
               id: 0,
               fromAccount: 'theghost1980',
               toAccount: 'keychain.tests',
-              percent: 69,
+              percent: 100,
               autoVest: true,
             } as VestingRoute,
             {
               id: 1,
               fromAccount: 'theghost1980',
               toAccount: 'keychain.tests2',
-              percent: 100,
+              percent: 80,
               autoVest: true,
             } as VestingRoute,
           ],
@@ -228,12 +228,19 @@ const Home = ({
           account: 'lecaillon',
           routes: [
             {
-              id: 1,
+              id: 0,
               fromAccount: 'lecaillon',
-              toAccount: 'keychain.tests2',
-              percent: 100,
+              toAccount: 'keychain.tests',
+              percent: 0,
               autoVest: true,
             } as VestingRoute,
+            // {
+            //   id: 1,
+            //   fromAccount: 'lecaillon',
+            //   toAccount: 'keychain.tests2',
+            //   percent: 100,
+            //   autoVest: true,
+            // } as VestingRoute,
           ],
         },
         {
@@ -267,15 +274,16 @@ const Home = ({
         lastVestingRoutes,
         currentVestingRoutes,
       );
-
-      if (
-        wrongVestingRoutes.some(
-          (item) => item.lastRoutes.length > 0 || item.newRoutes.length > 0,
-        )
-      )
+      if (wrongVestingRoutes) {
+        console.log({ wrongVestingRoutes });
         setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
-
-      console.log({ wrongVestingRoutes }); //TODO remove line
+      }
+      // if (
+      //   wrongVestingRoutes.some(
+      //     (item) => item.lastRoutes.length > 0 || item.newRoutes.length > 0,
+      //   )
+      // )
+      //   setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
     }
   };
 
@@ -284,7 +292,7 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
-    displayWrongVestingRoutesPopup: AccountVestingRoute[] | undefined,
+    displayWrongVestingRoutesPopup: UserLastCurrentRoutes[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -313,10 +321,10 @@ const Home = ({
           clearDisplayWrongVestingRoutes={() =>
             setDisplayWrongVestingRoutesPopup(undefined)
           }
-          setDisplayWrongVestingRoutesPopup={(updated) =>
-            setDisplayWrongVestingRoutesPopup(updated)
-          }
-          localAccounts={accounts}
+          // setDisplayWrongVestingRoutesPopup={(updated) =>
+          //   setDisplayWrongVestingRoutesPopup(updated)
+          // }
+          // localAccounts={accounts}
         />
       );
     }

@@ -1,28 +1,31 @@
-import { LocalAccount } from '@interfaces/local-account.interface';
-import { AccountVestingRoute } from '@interfaces/vesting-routes.interface';
+import {
+  UserLastCurrentRoutes,
+  UserVestingRoute,
+} from '@interfaces/vesting-routes.interface';
 import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-item.component';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
+import _ from 'lodash';
 import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
-
+//TODO imporant bellow.
+//  - Show the options: (skip or revert) for each account at the bottom.
+//  - remove the next/prev buttons, add the indicators.
+//  - each time the user select one option and succed, move to the next.
+//  -> broadcast:
+//    -> check when last doesnt have that item, so the one to broadcast is current. & viceversa.
+//  - if last, close & display the success popup on top.
+//  - clean unused remove unused interfaces.
+//  - fix the key error in items
 interface Props {
-  displayWrongVestingRoutesPopup: AccountVestingRoute[];
+  displayWrongVestingRoutesPopup: UserLastCurrentRoutes[];
   clearDisplayWrongVestingRoutes: () => void;
-  setDisplayWrongVestingRoutesPopup: (
-    updatedWrongVestingRoutes: AccountVestingRoute[] | undefined,
-  ) => void;
-  localAccounts: LocalAccount[];
 }
 
 const VestingRoutesPopup = ({
   displayWrongVestingRoutesPopup,
   clearDisplayWrongVestingRoutes,
-  setDisplayWrongVestingRoutesPopup,
-  localAccounts,
 }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [optionActionSelected, setOptionActionSelected] = useState<{
@@ -31,31 +34,43 @@ const VestingRoutesPopup = ({
   }>();
 
   const next = () => {
-    if (optionActionSelected && optionActionSelected.option === 'skipAndSave') {
-      const found = displayWrongVestingRoutesPopup.find(
-        (item) => item.account === optionActionSelected.account,
-      );
-      if (found) {
-        const { account } = optionActionSelected;
-        console.log({ account, found });
-        // VestingRoutesUtils.updateLastVestingRoutes(account,);
-      }
-    } else if (
-      optionActionSelected &&
-      optionActionSelected.option === 'revert'
-    ) {
-    }
-    //TODO uncoment bellow when finished above
-    // setPageIndex(pageIndex + 1);
-    // setOptionActionSelected(undefined);
+    setPageIndex(pageIndex + 1);
   };
 
   //TODO cleanup
-  // const previous = () => {
-  //   setPageIndex(pageIndex - 1);
-  // };
+  const previous = () => {
+    setPageIndex(pageIndex - 1);
+  };
 
   const finish = () => {
+    clearDisplayWrongVestingRoutes();
+  };
+
+  const skipAndSave = async (displayedData: UserLastCurrentRoutes[]) => {
+    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+    const copyDisplayedData = displayedData.map((item) => {
+      return {
+        account: item.account,
+        routes: item.currentRoutes,
+      } as UserVestingRoute;
+    });
+    const updatedLastList = lastVestingRoutes!.map((lastItem) => {
+      let foundToUpdate = copyDisplayedData.find(
+        (l) => l.account === lastItem.account,
+      );
+      if (foundToUpdate) {
+        return {
+          account: lastItem.account,
+          routes: _.merge(foundToUpdate.routes, lastItem.routes),
+        };
+      } else
+        return {
+          account: lastItem.account,
+          routes: lastItem.routes,
+        };
+    });
+    console.log('About to save: ', { updatedLastList, lastVestingRoutes });
+    await VestingRoutesUtils.saveLastVestingRoutes(updatedLastList);
     clearDisplayWrongVestingRoutes();
   };
 
@@ -63,15 +78,16 @@ const VestingRoutesPopup = ({
     clickHandler: (e: React.MouseEvent | React.KeyboardEvent) => void,
     isSelected: boolean,
     index: number,
-    label: string,
   ) => {
     return (
       <li
+        key={`vesting-route-dot-indicator-${index}`}
         className={`dot ${isSelected ? 'selected' : ''}`}
-        onClick={(e) => {
-          clickHandler(e);
-          setPageIndex(index);
-        }}></li>
+        // onClick={(e) => {
+        //   // clickHandler(e);
+        //   setPageIndex(index);
+        // }}
+      ></li>
     );
   };
 
@@ -94,53 +110,71 @@ const VestingRoutesPopup = ({
         selectedItem={pageIndex}
         showThumbs={false}
         showStatus={false}
-        dynamicHeight
-        renderIndicator={renderCustomIndicator}>
-        {displayWrongVestingRoutesPopup
-          .filter(
-            (item) => item.lastRoutes.length > 0 || item.newRoutes.length > 0,
-          )
-          .map((acc, index) => {
+        dynamicHeight>
+        {displayWrongVestingRoutesPopup.map(
+          ({ account, lastRoutes, currentRoutes }) => {
             return (
               <VestinRouteItemComponent
-                key={`${acc.account}-${index}`}
-                userVestingRoute={acc}
+                account={account}
+                lastRoutes={lastRoutes}
+                currentRoutes={currentRoutes}
               />
             );
-          })}
+          },
+        )}
       </Carousel>
-
       <div className="popup-footer">
-        {/* //TODO cleanup unused code */}
-        {/* {pageIndex > 0 && (
-          <ButtonComponent
-            type={ButtonType.ALTERNATIVE}
-            label="popup_html_whats_new_previous"
-            onClick={() => previous()}
-          />
-        )} */}
+        <ul className="indicator-container">
+          {displayWrongVestingRoutesPopup.map((v, index) => {
+            return (
+              <li
+                key={`dot-indicator-${index}`}
+                className={`dot ${index === pageIndex ? 'selected' : ''}`}></li>
+            );
+          })}
+        </ul>
+      </div>
+      {/* //TODO clenup unused */}
+      {/* <div className="popup-footer">
         {pageIndex === displayWrongVestingRoutesPopup.length - 1 && (
           <ButtonComponent
-            //TODO check if those buttons needed at all or not.
-            dataTestId="button-last-page"
+            //TODO add missing tr
+            skipLabelTranslation
+            dataTestId="button-revert-vesting-routes"
             type={ButtonType.IMPORTANT}
-            label="popup_html_whats_new_got_it"
-            onClick={() => finish()}
+            label="These Changes are intentional"
+            onClick={() => skipAndSave(displayWrongVestingRoutesPopup)}
+            additionalClass="margin-bottom-8px"
           />
         )}
-        {pageIndex < displayWrongVestingRoutesPopup.length - 1 && (
-          <ButtonComponent
-            disabled={optionActionSelected === undefined}
-            dataTestId="button-next-page"
-            type={ButtonType.ALTERNATIVE}
-            label="popup_html_whats_new_next"
-            onClick={() => next()}
-            additionalClass={
-              optionActionSelected === undefined ? 'button-disabled' : undefined
-            }
-          />
-        )}
-      </div>
+        <div className="footer-row">
+          {pageIndex > 0 && (
+            <ButtonComponent
+              type={ButtonType.ALTERNATIVE}
+              label="popup_html_whats_new_previous"
+              onClick={() => previous()}
+            />
+          )}
+          {pageIndex === displayWrongVestingRoutesPopup.length - 1 && (
+            <ButtonComponent
+              //TODO add missing tr
+              skipLabelTranslation
+              dataTestId="button-last-page"
+              type={ButtonType.IMPORTANT}
+              label="Revert All"
+              onClick={() => finish()}
+            />
+          )}
+          {pageIndex < displayWrongVestingRoutesPopup.length - 1 && (
+            <ButtonComponent
+              dataTestId="button-next-page"
+              type={ButtonType.ALTERNATIVE}
+              label="popup_html_whats_new_next"
+              onClick={() => next()}
+            />
+          )}
+        </div>
+      </div> */}
     </PopupContainer>
   );
 };
