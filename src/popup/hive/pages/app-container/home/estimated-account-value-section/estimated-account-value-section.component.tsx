@@ -67,9 +67,8 @@ const EstimatedAccountValueSection = ({
   ]);
 
   const openPortfolio = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/portfolio.html`,
+      url: `portfolio.html`,
     });
   };
 
