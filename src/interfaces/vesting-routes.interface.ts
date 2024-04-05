@@ -1,10 +1,9 @@
 export interface VestingRoute {
   id: number;
-  fromAccount: string;
-  toAccount: string;
+  from_account: string;
+  to_account: string;
   percent: number;
-  autoVest: boolean;
-  nonExistent?: boolean;
+  auto_vest: boolean;
 }
 
 export interface UserLastCurrentRoutes {

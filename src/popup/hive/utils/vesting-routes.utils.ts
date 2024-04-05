@@ -1,3 +1,5 @@
+import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import {
   UserLastCurrentRoutes,
   UserVestingRoute,
@@ -97,6 +99,36 @@ const saveLastVestingRoutes = async (vestingRoutes: UserVestingRoute[]) => {
   );
 };
 
+const sendVestingRoute = async (
+  from: string,
+  to: string,
+  percent: number,
+  auto_vest: boolean,
+  activeKey: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [VestingRoutesUtils.getVestingRouteOperation(from, to, percent, auto_vest)],
+    activeKey,
+  );
+};
+
+const getVestingRouteOperation = (
+  from: string,
+  to: string,
+  percent: number,
+  auto_vest: boolean,
+): SetWithdrawVestingRouteOperation => {
+  return [
+    'set_withdraw_vesting_route',
+    {
+      from_account: from,
+      to_account: to,
+      percent: percent,
+      auto_vest: auto_vest,
+    },
+  ];
+};
+
 export const VestingRoutesUtils = {
   getVestingRoutes,
   getAllAccountsVestingRoutes,
@@ -104,4 +136,6 @@ export const VestingRoutesUtils = {
   saveLastVestingRoutes,
   getWrongVestingRoutes,
   clearLastVestingRoutesInStorage,
+  getVestingRouteOperation,
+  sendVestingRoute,
 };

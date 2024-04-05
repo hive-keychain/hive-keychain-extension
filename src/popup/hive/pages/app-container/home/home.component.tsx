@@ -1,7 +1,4 @@
-import {
-  UserLastCurrentRoutes,
-  UserVestingRoute,
-} from '@interfaces/vesting-routes.interface';
+import { UserLastCurrentRoutes } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -70,7 +67,30 @@ const Home = ({
     initSurvey();
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes(accounts);
+    //TODO remove testing block bellow
+    // sendVestingRouteOp();
+    //end block
   }, []);
+
+  //TODo remove block bellow
+  const sendVestingRouteOp = async () => {
+    const testingUsername = 'keychain.tests';
+    const userAK = accounts.find((a) => a.name === testingUsername)?.keys
+      .active;
+    if (userAK) {
+      const result = await VestingRoutesUtils.sendVestingRoute(
+        'keychain.tests',
+        'aggroed',
+        1000,
+        false,
+        userAK,
+      );
+      console.log({ result });
+    } else {
+      Logger.error(`Need to add active key for: ${testingUsername}`);
+    }
+  };
+  //end block
 
   useEffect(() => {
     if (activeRpc && activeRpc.uri !== 'NULL')
@@ -178,96 +198,9 @@ const Home = ({
     const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
 
     if (!lastVestingRoutes) {
-      //TODo testing bellow, remove block
-      //Block
-      // const tempCurrentVestingRoutes = currentVestingRoutes.filter(
-      //   (item) => item.account !== 'theghost1980',
-      // );
-      // currentVestingRoutes = [
-      //   ...tempCurrentVestingRoutes,
-      //   {
-      //     account: 'theghost1980',
-      //     routes: [
-      //       {
-      //         id: 0,
-      //         fromAccount: 'theghost1980',
-      //         toAccount: 'keychain.tests',
-      //         percent: 100,
-      //         autoVest: true,
-      //       } as VestingRoute,
-      //     ],
-      //   },
-      // ];
-      //END block
       VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
       return;
     } else {
-      //TODO remove testing block
-      currentVestingRoutes = [
-        {
-          account: 'theghost1980',
-          routes: [
-            // {
-            //   id: 0,
-            //   fromAccount: 'theghost1980',
-            //   toAccount: 'keychain.tests',
-            //   percent: 100,
-            //   autoVest: true,
-            // } as VestingRoute,
-            // {
-            //   id: 1,
-            //   fromAccount: 'theghost1980',
-            //   toAccount: 'keychain.tests2',
-            //   percent: 100,
-            //   autoVest: true,
-            // } as VestingRoute,
-          ],
-        },
-        {
-          account: 'lecaillon',
-          routes: [
-            // {
-            //   id: 0,
-            //   fromAccount: 'lecaillon',
-            //   toAccount: 'keychain.tests',
-            //   percent: 0,
-            //   autoVest: true,
-            // } as VestingRoute,
-            // {
-            //   id: 1,
-            //   fromAccount: 'lecaillon',
-            //   toAccount: 'keychain.tests2',
-            //   percent: 100,
-            //   autoVest: true,
-            // } as VestingRoute,
-          ],
-        },
-        {
-          account: 'stoodkev',
-          routes: [],
-        },
-        {
-          account: 'sexosentido',
-          routes: [],
-        },
-        {
-          account: 'sai.baba',
-          routes: [],
-        },
-        {
-          account: 'keychain.tests',
-          routes: [],
-        },
-        {
-          account: 'jobaboard',
-          routes: [],
-        },
-        {
-          account: 'keychain2024',
-          routes: [],
-        },
-      ] as UserVestingRoute[];
-      //end testing block
       console.log({ currentVestingRoutes, lastVestingRoutes }); //TODO remove line
       const wrongVestingRoutes = VestingRoutesUtils.getWrongVestingRoutes(
         lastVestingRoutes,

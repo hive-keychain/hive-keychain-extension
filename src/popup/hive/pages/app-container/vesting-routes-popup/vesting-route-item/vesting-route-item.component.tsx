@@ -25,7 +25,10 @@ const VestingRouteItem = ({
   isLast,
   setSuccessMessage,
   finish,
+  accounts,
 }: Props & PropsFromRedux) => {
+  const [isRevertingVestingRoutes, setIsRevertingVestingRoutes] =
+    useState(false);
   const [currentlyRemovedRoutesIdList, setCurrentlyRemovedRoutesIdList] =
     useState<{ id: number }[]>([]);
 
@@ -48,25 +51,25 @@ const VestingRouteItem = ({
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_from_title',
           )}
-          {vestingRoute.fromAccount}
+          {vestingRoute.from_account}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_to_title',
           )}
-          {vestingRoute.toAccount}
+          {vestingRoute.to_account}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_percent_title',
           )}
-          {vestingRoute.percent}
+          {vestingRoute.percent / 100}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_autovest_title',
           )}
-          {vestingRoute.autoVest.toString()}
+          {vestingRoute.auto_vest.toString()}
         </div>
       </div>
     );
@@ -130,7 +133,6 @@ const VestingRouteItem = ({
   };
 
   const skipAndSave = async (
-    last: VestingRoute[],
     current: VestingRoute[],
     acc: string,
     isLast: boolean,
@@ -168,8 +170,24 @@ const VestingRouteItem = ({
     finish();
   };
 
-  const revert = () => {
-    //TODO
+  const revert = (
+    last: VestingRoute[],
+    current: VestingRoute[],
+    acc: string,
+    isLast: boolean,
+  ) => {
+    // op to broadcast.
+    // [
+    //   "set_withdraw_vesting_route",
+    //   {
+    //     "from_account": "alice",
+    //     "to_account": "bob",
+    //     "percent": 10000,
+    //     "auto_vest": true
+    //   }
+    // ]
+    //TODO:
+    //  - validation of active key still needed? roght now the revert button will be disabled if not active key present
   };
 
   return (
@@ -182,12 +200,12 @@ const VestingRouteItem = ({
           {account}
         </div>
         <div className="vesting-routes-titles-container margin-bottom-8px">
-          <div className="title">
+          <div className="title margin-left-16px">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_old_route_title',
             )}
           </div>
-          <div className="title">
+          <div className="title margin-right-16px">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_new_route_title',
             )}
@@ -200,19 +218,21 @@ const VestingRouteItem = ({
         </div>
         <div className="vesting-action-buttons-container">
           <ButtonComponent
+            disabled={
+              accounts.find((acc) => acc.name === account)?.keys.active !==
+              undefined
+            }
             dataTestId="button-revert-vesting-routes"
             type={ButtonType.IMPORTANT}
             label={'popup_html_vesting_route_account_item_button_revert_label'}
-            onClick={revert}
+            onClick={() => revert(lastRoutes, currentRoutes, account, isLast)}
             additionalClass="vesting-action-button small-font"
           />
           <ButtonComponent
             dataTestId="button-skip-vesting-routes"
             type={ButtonType.IMPORTANT}
             label={'popup_html_vesting_route_account_item_button_skip_label'}
-            onClick={() =>
-              skipAndSave(lastRoutes, currentRoutes, account, isLast)
-            }
+            onClick={() => skipAndSave(currentRoutes, account, isLast)}
             additionalClass="vesting-action-button small-font"
           />
         </div>
@@ -222,7 +242,9 @@ const VestingRouteItem = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    accounts: state.accounts,
+  };
 };
 
 const connector = connect(mapStateToProps, {
