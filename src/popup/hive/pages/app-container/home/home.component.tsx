@@ -1,7 +1,6 @@
 import {
   UserLastCurrentRoutes,
   UserVestingRoute,
-  VestingRoute,
 } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
@@ -208,32 +207,32 @@ const Home = ({
         {
           account: 'theghost1980',
           routes: [
-            {
-              id: 0,
-              fromAccount: 'theghost1980',
-              toAccount: 'keychain.tests',
-              percent: 100,
-              autoVest: true,
-            } as VestingRoute,
-            {
-              id: 1,
-              fromAccount: 'theghost1980',
-              toAccount: 'keychain.tests2',
-              percent: 80,
-              autoVest: true,
-            } as VestingRoute,
+            // {
+            //   id: 0,
+            //   fromAccount: 'theghost1980',
+            //   toAccount: 'keychain.tests',
+            //   percent: 100,
+            //   autoVest: true,
+            // } as VestingRoute,
+            // {
+            //   id: 1,
+            //   fromAccount: 'theghost1980',
+            //   toAccount: 'keychain.tests2',
+            //   percent: 100,
+            //   autoVest: true,
+            // } as VestingRoute,
           ],
         },
         {
           account: 'lecaillon',
           routes: [
-            {
-              id: 0,
-              fromAccount: 'lecaillon',
-              toAccount: 'keychain.tests',
-              percent: 0,
-              autoVest: true,
-            } as VestingRoute,
+            // {
+            //   id: 0,
+            //   fromAccount: 'lecaillon',
+            //   toAccount: 'keychain.tests',
+            //   percent: 0,
+            //   autoVest: true,
+            // } as VestingRoute,
             // {
             //   id: 1,
             //   fromAccount: 'lecaillon',
@@ -275,15 +274,9 @@ const Home = ({
         currentVestingRoutes,
       );
       if (wrongVestingRoutes) {
-        console.log({ wrongVestingRoutes });
+        console.log({ wrongVestingRoutes }); //TODO remove line
         setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
       }
-      // if (
-      //   wrongVestingRoutes.some(
-      //     (item) => item.lastRoutes.length > 0 || item.newRoutes.length > 0,
-      //   )
-      // )
-      //   setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
     }
   };
 

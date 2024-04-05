@@ -1,5 +1,9 @@
 import { VestingRoute } from '@interfaces/vesting-routes.interface';
-import React from 'react';
+import { setSuccessMessage } from '@popup/hive/actions/message.actions';
+import { RootState } from '@popup/hive/store';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
+import React, { useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -8,46 +12,22 @@ interface Props {
   account: string;
   lastRoutes: VestingRoute[];
   currentRoutes: VestingRoute[];
+  next: () => void;
+  isLast: boolean;
+  finish: () => void;
 }
 
-const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
-  // const handleSelect = async (
-  //   option: string,
-  //   lastRoute: VestingRoute | NonExistenVestingRoute,
-  //   newRoute: VestingRoute | NonExistenVestingRoute,
-  //   acc: string,
-  // ) => {
-  //   //TODO cleanup
-  //   //'default' | 'skipAndSave' | 'revert'
-  //   if (option === 'default') return;
-  //   if (option === 'skipAndSave') {
-  //     const tempLastVestingRoutes =
-  //       await VestingRoutesUtils.getLastVestingRoutes();
-
-  //     let foundLast = tempLastVestingRoutes?.find(
-  //       (lastRoute) => lastRoute.account === acc,
-  //     );
-  //     if ((lastRoute as NonExistenVestingRoute).status === 'non existent') {
-  //       foundLast!.routes.push(newRoute as VestingRoute);
-  //     } else if ((lastRoute as VestingRoute).fromAccount) {
-  //       if (foundLast) {
-  //         let routesFound = foundLast.routes as VestingRoute[];
-  //         const indexFound = routesFound.findIndex(
-  //           (item) => item.id === newRoute.id,
-  //         );
-  //         if (indexFound > -1) {
-  //           routesFound[indexFound] = newRoute as VestingRoute;
-  //           foundLast.routes = routesFound;
-  //         }
-  //       }
-  //     }
-
-  //     // console.log('about to save: ', { tempLastVestingRoutes }); //TODO remove line
-
-  //     await VestingRoutesUtils.saveLastVestingRoutes(tempLastVestingRoutes!);
-  //     //TODO important: ask cedric what to do here? reload the app? set/update the new displayWrong array?
-  //   }
-  // };
+const VestingRouteItem = ({
+  account,
+  lastRoutes,
+  currentRoutes,
+  next,
+  isLast,
+  setSuccessMessage,
+  finish,
+}: Props & PropsFromRedux) => {
+  const [currentlyRemovedRoutesIdList, setCurrentlyRemovedRoutesIdList] =
+    useState<{ id: number }[]>([]);
 
   const renderVestingItemDetails = (
     vestingRoute: VestingRoute,
@@ -56,20 +36,50 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
   ) => {
     return (
       <div
-        className={`vesting-item-details-container ${alignment}-${vestingRoute.id}-${addToKey}`}>
-        <div className="title">Id: {vestingRoute.id}</div>
-        <div className="title">from: {vestingRoute.fromAccount}</div>
-        <div className="title">to: {vestingRoute.toAccount}</div>
-        <div className="title">percent: {vestingRoute.percent}</div>
+        key={`vesting-item-details-${vestingRoute.id}-${addToKey}`}
+        className={`vesting-item-details-container ${alignment}`}>
         <div className="title">
-          autoVest: {vestingRoute.autoVest.toString()}
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_id_title',
+          )}
+          {vestingRoute.id}
+        </div>
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_from_title',
+          )}
+          {vestingRoute.fromAccount}
+        </div>
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_to_title',
+          )}
+          {vestingRoute.toAccount}
+        </div>
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_percent_title',
+          )}
+          {vestingRoute.percent}
+        </div>
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_autovest_title',
+          )}
+          {vestingRoute.autoVest.toString()}
         </div>
       </div>
     );
   };
 
+  const addToRemovedList = (id: number) => {
+    if (!currentlyRemovedRoutesIdList.find((item) => item.id === id)) {
+      setCurrentlyRemovedRoutesIdList((prev) => [...prev, { id }]);
+    }
+  };
+
   const renderFromList = (last: VestingRoute[], current: VestingRoute[]) => {
-    if (current.length) {
+    if (current.length >= last.length) {
       return current.map((curr) => {
         const foundInLast = last.find((l) => l.id === curr.id);
         return (
@@ -78,7 +88,11 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
             className="vesting-route-card-item">
             <div className="vesting-item-card-row-container">
               {!foundInLast ? (
-                <div className="title small-font">Non Existent</div>
+                <div className="title small-font">
+                  {chrome.i18n.getMessage(
+                    'popup_html_vesting_route_item_details_non_existent_label',
+                  )}
+                </div>
               ) : (
                 renderVestingItemDetails(foundInLast, 'alignment-left', 'last')
               )}
@@ -87,9 +101,10 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
           </div>
         );
       });
-    } else if (last.length) {
+    } else if (last.length > current.length) {
       return last.map((last) => {
         const foundInCurr = current.find((c) => c.id === last.id);
+        if (!foundInCurr) addToRemovedList(last.id);
         return (
           <div
             key={`vesting-route-card-item-current-last-${last.id}`}
@@ -97,7 +112,11 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
             <div className="vesting-item-card-row-container">
               {renderVestingItemDetails(last, 'alignment-left', 'curr')}
               {!foundInCurr ? (
-                <div>Non Existent</div>
+                <div className="title small-font">
+                  {chrome.i18n.getMessage(
+                    'popup_html_vesting_route_item_details_non_existent_label',
+                  )}
+                </div>
               ) : (
                 renderVestingItemDetails(foundInCurr, 'alignment-right', 'last')
               )}
@@ -110,22 +129,69 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
     }
   };
 
-  const skipAndSave = () => {
-    //TODO
+  const skipAndSave = async (
+    last: VestingRoute[],
+    current: VestingRoute[],
+    acc: string,
+    isLast: boolean,
+  ) => {
+    let copyLast = [...(await VestingRoutesUtils.getLastVestingRoutes())!];
+    const toUpdateIndex = copyLast.findIndex((c) => c.account === acc);
+    if (toUpdateIndex !== -1) {
+      if (!copyLast[toUpdateIndex].routes.length) {
+        copyLast[toUpdateIndex].routes = current;
+      } else {
+        if (current.length === 0 || currentlyRemovedRoutesIdList.length) {
+          currentlyRemovedRoutesIdList.map((removedRoute) => {
+            copyLast[toUpdateIndex].routes = copyLast[
+              toUpdateIndex
+            ].routes.filter((r) => r.id !== removedRoute.id);
+          });
+        } else {
+          current.map((c) => {
+            const toUpdateIndexRouteInlast = copyLast[
+              toUpdateIndex
+            ].routes.findIndex((r) => r.id === c.id);
+            if (toUpdateIndexRouteInlast !== -1) {
+              copyLast[toUpdateIndex].routes[toUpdateIndexRouteInlast] = c;
+            } else {
+              copyLast[toUpdateIndex].routes.push(c);
+            }
+          });
+        }
+      }
+    }
+    await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
+    setCurrentlyRemovedRoutesIdList([]);
+    if (!isLast) return next();
+    setSuccessMessage('popup_html_vesting_routes_handled_successfully');
+    finish();
   };
 
   const revert = () => {
     //TODO
   };
 
-  //TODO add to tr
   return (
     <div className={`carousel-item`} key={`${account}-vesting-routes`}>
       <div className="carousel-item-container">
-        <div className="title margin-bottom-8px">Account: @{account}</div>
-        <div className="vesting-routes-titles-container">
-          <div className="title">Old Route</div>
-          <div className="title">New Route</div>
+        <div className="title margin-bottom-8px">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_account_item_label',
+          )}
+          {account}
+        </div>
+        <div className="vesting-routes-titles-container margin-bottom-8px">
+          <div className="title">
+            {chrome.i18n.getMessage(
+              'popup_html_vesting_route_account_item_old_route_title',
+            )}
+          </div>
+          <div className="title">
+            {chrome.i18n.getMessage(
+              'popup_html_vesting_route_account_item_new_route_title',
+            )}
+          </div>
         </div>
         <div
           className="vesting-item-list-container"
@@ -134,21 +200,19 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
         </div>
         <div className="vesting-action-buttons-container">
           <ButtonComponent
-            //TODO add missing tr
-            skipLabelTranslation
             dataTestId="button-revert-vesting-routes"
             type={ButtonType.IMPORTANT}
-            label="These Changes are intentional"
-            onClick={skipAndSave}
+            label={'popup_html_vesting_route_account_item_button_revert_label'}
+            onClick={revert}
             additionalClass="vesting-action-button small-font"
           />
           <ButtonComponent
-            //TODO add missing tr
-            skipLabelTranslation
-            dataTestId="button-last-page"
+            dataTestId="button-skip-vesting-routes"
             type={ButtonType.IMPORTANT}
-            label="Revert All"
-            onClick={revert}
+            label={'popup_html_vesting_route_account_item_button_skip_label'}
+            onClick={() =>
+              skipAndSave(lastRoutes, currentRoutes, account, isLast)
+            }
             additionalClass="vesting-action-button small-font"
           />
         </div>
@@ -157,44 +221,13 @@ const VestingRouteItem = ({ account, lastRoutes, currentRoutes }: Props) => {
   );
 };
 
-export const VestinRouteItemComponent = VestingRouteItem;
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
 
-//TODO check when needed & remove code bellow
-// {lastRoutes.map((lastRoute, index) => {
-//   const currentRoute = currentRoutes.find((current) => current.id);
-//   return (
-//     <div
-//       className="vesting-route-card-item"
-//       key={`${userVestingRoute.account}-${lastRoute.id}-vesting-route-card`}>
-//       <div className="vesting-item-card-row-container">
-//         {(lastRoute as NonExistenVestingRoute).status && (
-//           <div className="title small-font">
-//             {(lastRoute as NonExistenVestingRoute).status}
-//           </div>
-//         )}
-//         {(lastRoute as VestingRoute).fromAccount &&
-//           renderVestingItemDetails(
-//             lastRoute as VestingRoute,
-//             'alignment-left',
-//           )}
-//         {(newRoute as NonExistenVestingRoute).status && (
-//           <div className="title small-font">
-//             {(newRoute as NonExistenVestingRoute).status}
-//           </div>
-//         )}
-//         {(newRoute as VestingRoute).fromAccount &&
-//           renderVestingItemDetails(
-//             newRoute as VestingRoute,
-//             'alignment-right',
-//           )}
-//       </div>
-//       {/* <div>
-//         {renderActionOptions(
-//           lastRoute,
-//           newRoute,
-//           userVestingRoute.account,
-//         )}
-//       </div> */}
-//     </div>
-//   );
-// })}
+const connector = connect(mapStateToProps, {
+  setSuccessMessage,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const VestinRouteItemComponent = connector(VestingRouteItem);
