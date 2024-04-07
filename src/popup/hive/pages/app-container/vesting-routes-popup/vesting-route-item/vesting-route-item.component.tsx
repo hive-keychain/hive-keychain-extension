@@ -7,6 +7,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import Logger from 'src/utils/logger.utils';
 
 interface Props {
   account: string;
@@ -163,6 +164,7 @@ const VestingRouteItem = ({
         }
       }
     }
+    console.log('about to update lastVestingRoutes: ', { copyLast }); //TODO remove line
     await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
     setCurrentlyRemovedRoutesIdList([]);
     if (!isLast) return next();
@@ -170,12 +172,13 @@ const VestingRouteItem = ({
     finish();
   };
 
-  const revert = (
+  const revert = async (
     last: VestingRoute[],
     current: VestingRoute[],
     acc: string,
     isLast: boolean,
   ) => {
+    const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
     // op to broadcast.
     // [
     //   "set_withdraw_vesting_route",
@@ -188,6 +191,74 @@ const VestingRouteItem = ({
     // ]
     //TODO:
     //  - validation of active key still needed? roght now the revert button will be disabled if not active key present
+    console.log({ last, current, acc, isLast, currentlyRemovedRoutesIdList }); //TODO remove line
+    const broadcastOperation: {
+      from_account: string;
+      to_account: string;
+      percent: number;
+      auto_vest: boolean;
+    }[] = [];
+    if (last.length === current.length) {
+      last.map((l) => {
+        broadcastOperation.push({
+          from_account: l.from_account,
+          to_account: l.to_account,
+          percent: l.percent,
+          auto_vest: l.auto_vest,
+        });
+      });
+    } else if (current.length > last.length) {
+      //TODO check & broadcast
+      current.map((c) => {
+        const foundInlast = last.find((f) => f.id === c.id);
+        if (!foundInlast) {
+          broadcastOperation.push({
+            from_account: c.from_account,
+            to_account: c.to_account,
+            percent: 0,
+            auto_vest: c.auto_vest,
+          });
+        }
+      });
+    } else if (current.length < last.length) {
+      last.map((l) => {
+        const foundInCurr = current.find((c) => c.id === l.id);
+        if (!foundInCurr) {
+          broadcastOperation.push({
+            from_account: l.from_account,
+            to_account: l.to_account,
+            percent: l.percent,
+            auto_vest: l.auto_vest,
+          });
+        }
+      });
+    }
+    console.log('About to broadcast: ', { broadcastOperation });
+    //TODO bellow uncomment after testing the actual case
+    try {
+      for (const t of broadcastOperation) {
+        const result = await VestingRoutesUtils.sendVestingRoute(
+          t.from_account,
+          t.to_account,
+          t.percent,
+          t.auto_vest,
+          activeKey,
+        );
+        console.log({ result }); //TODO remove line
+      }
+      const currentRoutes =
+        await VestingRoutesUtils.getAllAccountsVestingRoutes(
+          accounts.map((a) => a.name),
+          'outgoing',
+        );
+      console.log('After broadcasting changes: ', { currentRoutes }); //TODO remove line
+      await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
+      if (!isLast) return next();
+      setSuccessMessage('popup_html_vesting_routes_handled_successfully');
+      finish();
+    } catch (error) {
+      Logger.error('Error while sending vesting route', true);
+    }
   };
 
   return (
@@ -221,12 +292,19 @@ const VestingRouteItem = ({
             disabled={
               accounts.find((acc) => acc.name === account)?.keys.active !==
               undefined
+                ? false
+                : true
             }
             dataTestId="button-revert-vesting-routes"
             type={ButtonType.IMPORTANT}
             label={'popup_html_vesting_route_account_item_button_revert_label'}
             onClick={() => revert(lastRoutes, currentRoutes, account, isLast)}
-            additionalClass="vesting-action-button small-font"
+            additionalClass={`vesting-action-button small-font ${
+              accounts.find((acc) => acc.name === account)?.keys.active ===
+              undefined
+                ? 'disabled'
+                : null
+            }`}
           />
           <ButtonComponent
             dataTestId="button-skip-vesting-routes"

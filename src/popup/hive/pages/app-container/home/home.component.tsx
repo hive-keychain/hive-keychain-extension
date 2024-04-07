@@ -1,6 +1,7 @@
 import { UserLastCurrentRoutes } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -68,11 +69,16 @@ const Home = ({
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes(accounts);
     //TODO remove testing block bellow
+    // checkResultTxId('87c896e803062c1e13be777eabac01e29fcdbcb3');
     // sendVestingRouteOp();
     //end block
   }, []);
 
   //TODo remove block bellow
+  const checkResultTxId = async (txId: string) => {
+    const resultTxID = await HiveTxUtils.getTransaction(txId);
+    console.log('Results of last Txid', { resultTxID });
+  };
   const sendVestingRouteOp = async () => {
     const testingUsername = 'keychain.tests';
     const userAK = accounts.find((a) => a.name === testingUsername)?.keys
@@ -80,12 +86,12 @@ const Home = ({
     if (userAK) {
       const result = await VestingRoutesUtils.sendVestingRoute(
         'keychain.tests',
-        'aggroed',
-        1000,
+        'theghost1980',
+        0,
         false,
         userAK,
       );
-      console.log({ result });
+      console.log('sendVestingRoute test results: ', { result });
     } else {
       Logger.error(`Need to add active key for: ${testingUsername}`);
     }
@@ -247,6 +253,7 @@ const Home = ({
           clearDisplayWrongVestingRoutes={() =>
             setDisplayWrongVestingRoutesPopup(undefined)
           }
+          //TODO bellow check & cleanup
           // setDisplayWrongVestingRoutesPopup={(updated) =>
           //   setDisplayWrongVestingRoutesPopup(updated)
           // }
