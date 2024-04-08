@@ -3,9 +3,16 @@ import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vestin
 import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 //TODO important bellow.
 //  - fix the key error in items
+//  - test:
+//    - dark/light theme, fix if necessary
+//    - remove the active key for one account to test, send a video asking 'what it should do in this case?':
+//        - allow user add this missing key or just allow intentional changes?
+//    - different changes but using skip.
+//  - check TODOs & send for review!
 interface Props {
   displayWrongVestingRoutesPopup: UserLastCurrentRoutes[];
   clearDisplayWrongVestingRoutes: () => void;
@@ -15,6 +22,7 @@ const VestingRoutesPopup = ({
   displayWrongVestingRoutesPopup,
   clearDisplayWrongVestingRoutes,
 }: Props) => {
+  const [isLoadingChanges, setIsLoadingChanges] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
 
   const next = () => {
@@ -23,6 +31,7 @@ const VestingRoutesPopup = ({
 
   return (
     <PopupContainer className="vesting-routes-popup">
+      <LoadingComponent hide={!isLoadingChanges} />
       <div className="popup-title">
         {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
       </div>
@@ -51,6 +60,9 @@ const VestingRoutesPopup = ({
                 next={next}
                 isLast={pageIndex === displayWrongVestingRoutesPopup.length - 1}
                 finish={clearDisplayWrongVestingRoutes}
+                setIsLoadingChanges={(value: boolean) =>
+                  setIsLoadingChanges(value)
+                }
               />
             );
           },

@@ -16,6 +16,7 @@ interface Props {
   next: () => void;
   isLast: boolean;
   finish: () => void;
+  setIsLoadingChanges: (value: boolean) => void;
 }
 
 const VestingRouteItem = ({
@@ -27,9 +28,8 @@ const VestingRouteItem = ({
   setSuccessMessage,
   finish,
   accounts,
+  setIsLoadingChanges,
 }: Props & PropsFromRedux) => {
-  const [isRevertingVestingRoutes, setIsRevertingVestingRoutes] =
-    useState(false);
   const [currentlyRemovedRoutesIdList, setCurrentlyRemovedRoutesIdList] =
     useState<{ id: number }[]>([]);
 
@@ -138,6 +138,7 @@ const VestingRouteItem = ({
     acc: string,
     isLast: boolean,
   ) => {
+    setIsLoadingChanges(true);
     let copyLast = [...(await VestingRoutesUtils.getLastVestingRoutes())!];
     const toUpdateIndex = copyLast.findIndex((c) => c.account === acc);
     if (toUpdateIndex !== -1) {
@@ -167,6 +168,7 @@ const VestingRouteItem = ({
     console.log('about to update lastVestingRoutes: ', { copyLast }); //TODO remove line
     await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
     setCurrentlyRemovedRoutesIdList([]);
+    setIsLoadingChanges(false);
     if (!isLast) return next();
     setSuccessMessage('popup_html_vesting_routes_handled_successfully');
     finish();
@@ -178,6 +180,7 @@ const VestingRouteItem = ({
     acc: string,
     isLast: boolean,
   ) => {
+    setIsLoadingChanges(true);
     const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
     // op to broadcast.
     // [
@@ -253,6 +256,7 @@ const VestingRouteItem = ({
         );
       console.log('After broadcasting changes: ', { currentRoutes }); //TODO remove line
       await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
+      setIsLoadingChanges(false);
       if (!isLast) return next();
       setSuccessMessage('popup_html_vesting_routes_handled_successfully');
       finish();
@@ -287,6 +291,7 @@ const VestingRouteItem = ({
           key={`${account}-vesting-item-list-container`}>
           {renderFromList(lastRoutes, currentRoutes)}
         </div>
+
         <div className="vesting-action-buttons-container">
           <ButtonComponent
             disabled={

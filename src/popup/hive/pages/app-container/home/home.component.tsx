@@ -70,7 +70,7 @@ const Home = ({
     initCheckVestingRoutes(accounts);
     //TODO remove testing block bellow
     // checkResultTxId('87c896e803062c1e13be777eabac01e29fcdbcb3');
-    // sendVestingRouteOp();
+    // sendTestVestingRoutes(['keychain.tests', 'sexosentido'], 0);
     //end block
   }, []);
 
@@ -79,22 +79,73 @@ const Home = ({
     const resultTxID = await HiveTxUtils.getTransaction(txId);
     console.log('Results of last Txid', { resultTxID });
   };
-  const sendVestingRouteOp = async () => {
-    const testingUsername = 'keychain.tests';
-    const userAK = accounts.find((a) => a.name === testingUsername)?.keys
-      .active;
-    if (userAK) {
-      const result = await VestingRoutesUtils.sendVestingRoute(
-        'keychain.tests',
-        'theghost1980',
-        0,
-        false,
-        userAK,
-      );
-      console.log('sendVestingRoute test results: ', { result });
-    } else {
-      Logger.error(`Need to add active key for: ${testingUsername}`);
-    }
+  const sendTestVestingRoutes = async (
+    testingAccounts: string[],
+    percent: number,
+  ) => {
+    testingAccounts.map(async (acc) => {
+      const userAK = accounts.find((a) => a.name === acc)?.keys.active;
+      if (userAK) {
+        const result = await VestingRoutesUtils.sendVestingRoute(
+          acc,
+          'theghost1980',
+          percent,
+          false,
+          userAK,
+        );
+        console.log('sendVestingRoute test results: ', { result });
+        const result2 = await VestingRoutesUtils.sendVestingRoute(
+          acc,
+          'stoodkev',
+          percent,
+          false,
+          userAK,
+        );
+        console.log('sendVestingRoute test results: ', { result2 });
+        const result3 = await VestingRoutesUtils.sendVestingRoute(
+          acc,
+          'sai.baba',
+          percent,
+          false,
+          userAK,
+        );
+        console.log('sendVestingRoute test results: ', { result3 });
+      } else {
+        Logger.error(`Need to add active key for: ${acc}`);
+      }
+    });
+    //TODO cleanup bellow
+    // const testingUsername = 'keychain.tests';
+    // const userAK = accounts.find((a) => a.name === testingUsername)?.keys
+    //   .active;
+    // if (userAK) {
+    //   const result = await VestingRoutesUtils.sendVestingRoute(
+    //     'keychain.tests',
+    //     'theghost1980',
+    //     percent,
+    //     false,
+    //     userAK,
+    //   );
+    //   console.log('sendVestingRoute test results: ', { result });
+    //   const result2 = await VestingRoutesUtils.sendVestingRoute(
+    //     'keychain.tests',
+    //     'stoodkev',
+    //     percent,
+    //     false,
+    //     userAK,
+    //   );
+    //   console.log('sendVestingRoute test results: ', { result2 });
+    //   const result3 = await VestingRoutesUtils.sendVestingRoute(
+    //     'keychain.tests',
+    //     'sexosentido',
+    //     percent,
+    //     false,
+    //     userAK,
+    //   );
+    //   console.log('sendVestingRoute test results: ', { result3 });
+    // } else {
+    //   Logger.error(`Need to add active key for: ${testingUsername}`);
+    // }
   };
   //end block
 
