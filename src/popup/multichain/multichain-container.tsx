@@ -1,6 +1,5 @@
 import ChainRouter from '@popup/multichain/chain-router.component';
 import { Chain, ChainContext } from '@popup/multichain/multichain.context';
-import { SignUpContext, SignUpScreen } from '@popup/multichain/sign-up.context';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -13,9 +12,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 export const MultichainContainer = () => {
   const [chain, setChain] = useState<Chain>();
   const [theme, setTheme] = useState<Theme>();
-  const [signUpScreen, setSignUpScreen] = useState<SignUpScreen>(
-    SignUpScreen.SIGN_UP,
-  );
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -79,16 +75,9 @@ export const MultichainContainer = () => {
       {ready && theme && (
         <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
           <ChainContext.Provider value={{ chain, setChain }}>
-            <SignUpContext.Provider
-              value={{ screen: signUpScreen, setScreen: setSignUpScreen }}>
-              <div className={`theme ${theme}`}>
-                <ChainComponentWithBoundary
-                  theme={theme}
-                  chain={chain}
-                  screen={signUpScreen}
-                />
-              </div>
-            </SignUpContext.Provider>
+            <div className={`theme ${theme}`}>
+              <ChainComponentWithBoundary theme={theme} chain={chain} />
+            </div>
           </ChainContext.Provider>
         </ThemeContext.Provider>
       )}
@@ -96,14 +85,7 @@ export const MultichainContainer = () => {
   );
 };
 
-const ChainComponent = ({
-  chain,
-  screen,
-}: {
-  theme: Theme;
-  chain?: Chain;
-  screen: SignUpScreen;
-}) => {
+const ChainComponent = ({ chain }: { theme: Theme; chain?: Chain }) => {
   return (
     <Provider store={store}>
       {<ChainRouter screen={screen} selectedChain={chain} />}

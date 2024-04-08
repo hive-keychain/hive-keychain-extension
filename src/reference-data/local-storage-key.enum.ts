@@ -36,4 +36,5 @@ export enum LocalStorageKeyEnum {
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_THEME = 'ACTIVE_THEME',
+  HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
 }

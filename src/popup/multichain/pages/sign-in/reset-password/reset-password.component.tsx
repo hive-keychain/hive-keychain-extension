@@ -1,3 +1,4 @@
+import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -16,6 +17,7 @@ const ResetPasswordPage = ({
   resetAccount,
   forgetMk,
   resetActiveAccount,
+  setHasFinishedSignup,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -26,6 +28,7 @@ const ResetPasswordPage = ({
 
   const reset = async () => {
     resetAccount();
+    setHasFinishedSignup(false);
     forgetMk();
     resetActiveAccount();
     await LocalStorageUtils.clearLocalStorage();
@@ -63,6 +66,7 @@ const connector = connect(mapStateToProps, {
   resetAccount,
   forgetMk,
   resetActiveAccount,
+  setHasFinishedSignup,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

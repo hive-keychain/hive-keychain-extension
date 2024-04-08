@@ -39,6 +39,10 @@ if (store.getState().hive) {
         previousAccounts.length === 0 &&
         previousAccounts.length !== accounts.length
       ) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+          true,
+        );
         // AnalyticsUtils.sendAddFirstAccountEvent();
       }
       previousAccounts = accounts;

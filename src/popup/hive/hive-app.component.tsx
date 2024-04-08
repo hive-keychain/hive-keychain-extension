@@ -30,7 +30,6 @@ import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
-import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { ColorsUtils } from 'src/utils/colors.utils';
@@ -134,21 +133,14 @@ const HiveApp = ({
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
 
-    const mkFromStorage = await MkUtils.getMkFromLocalStorage();
-    if (mkFromStorage) {
-      setMk(mkFromStorage, false);
-    }
-
     let accountsFromStorage: LocalAccount[] = [];
-    if (storedAccounts && mkFromStorage) {
-      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(
-        mkFromStorage,
-      );
+    if (storedAccounts && mk) {
+      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(mk);
       setAccounts(accountsFromStorage);
     }
 
     setAppReady(true);
-    await selectComponent(mkFromStorage, accountsFromStorage);
+    await selectComponent(mk, accountsFromStorage);
 
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
