@@ -24,7 +24,7 @@ const VestingRoutesPopup = ({
   return (
     <PopupContainer className="vesting-routes-popup">
       <LoadingComponent hide={!isLoadingChanges} />
-      <div className="popup-title">
+      <div className="popup-title text-centered">
         {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
       </div>
       <div
@@ -60,7 +60,7 @@ const VestingRoutesPopup = ({
           },
         )}
       </Carousel>
-      <div className="popup-footer">
+      {/* <div className="popup-footer">
         <ul className="indicator-container">
           {displayWrongVestingRoutesPopup.map((v, index) => {
             return (
@@ -70,7 +70,7 @@ const VestingRoutesPopup = ({
             );
           })}
         </ul>
-      </div>
+      </div> */}
     </PopupContainer>
   );
 };

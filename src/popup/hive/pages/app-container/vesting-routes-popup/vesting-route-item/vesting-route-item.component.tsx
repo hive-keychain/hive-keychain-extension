@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { VestingRoute } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { RootState } from '@popup/hive/store';
@@ -7,6 +8,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Logger from 'src/utils/logger.utils';
 
 interface Props {
@@ -275,29 +277,18 @@ const VestingRouteItem = ({
 
         <div className="vesting-action-buttons-container">
           <ButtonComponent
-            disabled={
-              accounts.find((acc) => acc.name === account)?.keys.active !==
-              undefined
-                ? false
-                : true
-            }
-            dataTestId="button-revert-vesting-routes"
-            type={ButtonType.IMPORTANT}
-            label={'popup_html_vesting_route_account_item_button_revert_label'}
-            onClick={() => revert(lastRoutes, currentRoutes, account, isLast)}
-            additionalClass={`vesting-action-button small-font ${
-              accounts.find((acc) => acc.name === account)?.keys.active ===
-              undefined
-                ? 'disabled'
-                : null
-            }`}
-          />
-          <ButtonComponent
             dataTestId="button-skip-vesting-routes"
-            type={ButtonType.IMPORTANT}
+            type={ButtonType.ALTERNATIVE}
             label={'popup_html_vesting_route_account_item_button_skip_label'}
             onClick={() => skipAndSave(currentRoutes, account, isLast)}
             additionalClass="vesting-action-button small-font"
+          />
+          <OperationButtonComponent
+            dataTestId="button-revert-vesting-routes"
+            requiredKey={KeychainKeyTypesLC.active}
+            onClick={() => revert(lastRoutes, currentRoutes, account, isLast)}
+            label={'popup_html_vesting_route_account_item_button_revert_label'}
+            additionalClass={'vesting-action-button small-font'}
           />
         </div>
       </div>

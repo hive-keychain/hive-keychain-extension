@@ -94,10 +94,7 @@
   .alignment-right {
     align-items: flex-end;
   }
-  .disabled {
-    background-color: gray;
-    &:hover {
-      cursor: not-allowed;
-    }
+  .text-centered {
+    text-align: center;
   }
 }
