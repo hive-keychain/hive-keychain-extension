@@ -17,6 +17,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
+import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -58,7 +59,9 @@ const ChainRouter = ({
       (await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
       )) || false;
-    setHasFinishedSignup(hasFinishedSignup);
+    setTimeout(() => {
+      setHasFinishedSignup(hasFinishedSignup);
+    }, 1000);
   };
 
   const initAutoLock = async () => {
@@ -81,20 +84,31 @@ const ChainRouter = ({
   };
 
   const renderChain = () => {
-    if (hasFinishedSignup === undefined) return null;
     if (!mk || mk.length === 0) {
-      if (!hasFinishedSignup) {
+      console.log('no mk');
+      if (hasFinishedSignup === null) {
+        console.log('no load');
+        return <SplashscreenComponent />;
+      } else if (!hasFinishedSignup) {
+        console.log('load signup');
+
         return <SignUpComponent />;
       } else {
+        console.log('load signin');
+
         return <SignInRouterComponent />;
       }
     } else {
+      console.log('you mk');
       switch (selectedChain) {
         case Chain.HIVE:
+          console.log('hive');
           return <HiveAppComponent />;
         case Chain.EVM:
+          console.log('evm');
           return <EvmAppComponent />;
         default:
+          console.log('hive per default');
           return <HiveAppComponent />;
       }
     }
