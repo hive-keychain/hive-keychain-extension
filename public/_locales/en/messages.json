@@ -344,7 +344,11 @@
     "description": "on settings page"
   },
   "popup_html_operations": {
-    "message": "Operations",
+    "message": "Whitelisted operations",
+    "description": "on settings page"
+  },
+  "popup_html_export_transactions": {
+    "message": "Export transactions",
     "description": "on settings page"
   },
   "popup_html_favorite_accounts": {
@@ -1832,7 +1836,7 @@
     "description": "In confirmation page"
   },
   "popup_html_user_preferences": {
-    "message": "User preferences",
+    "message": "User operations",
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
