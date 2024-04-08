@@ -107,6 +107,10 @@
     "message": "Confirm",
     "description": "Generic button"
   },
+  "popup_html_download": {
+    "message": "Download",
+    "description": "Generic button"
+  },
   "popup_html_submit": {
     "message": "Submit",
     "description": "Generic button"
@@ -210,6 +214,14 @@
   "popup_html_username": {
     "message": "Username",
     "description": "placeholder for entering username"
+  },
+  "popup_html_start_date": {
+    "message": "Start Date",
+    "description": "placeholder for entering a starting date"
+  },
+  "popup_html_end_date": {
+    "message": "End Date",
+    "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
     "message": "Import keys",
@@ -485,6 +497,10 @@
   },
   "popup_html_pref_info": {
     "message": "For a better experience, you can whitelist non-active authority operations when dApps request them. You won't receive a confirmation prompt for these operations.",
+    "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_info": {
+    "message": "For your convenience, please select the account and the transactions you want to download in a CSV file.",
     "description": "on preferences"
   },
   "popup_html_no_pref": {

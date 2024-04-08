@@ -1,1 +1,10 @@
-//TODO bellow all styles
+.export-transactions-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 16px;
+  padding: 0px 24px;
+  .introduction {
+    @include caption();
+  }
+}
