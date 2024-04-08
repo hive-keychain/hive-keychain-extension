@@ -33,6 +33,7 @@ const ChainRouter = ({
   setIsLedgerSupported,
   hasFinishedSignup,
   setHasFinishedSignup,
+  currentPage,
 }: Props & PropsFromRedux) => {
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -61,7 +62,7 @@ const ChainRouter = ({
       )) || false;
     setTimeout(() => {
       setHasFinishedSignup(hasFinishedSignup);
-    }, 1000);
+    }, 500);
   };
 
   const initAutoLock = async () => {
@@ -85,30 +86,18 @@ const ChainRouter = ({
 
   const renderChain = () => {
     if (!mk || mk.length === 0) {
-      console.log('no mk');
-      if (hasFinishedSignup === null) {
-        console.log('no load');
-        return <SplashscreenComponent />;
-      } else if (!hasFinishedSignup) {
-        console.log('load signup');
-
+      if (!hasFinishedSignup) {
         return <SignUpComponent />;
       } else {
-        console.log('load signin');
-
         return <SignInRouterComponent />;
       }
     } else {
-      console.log('you mk');
       switch (selectedChain) {
         case Chain.HIVE:
-          console.log('hive');
           return <HiveAppComponent />;
         case Chain.EVM:
-          console.log('evm');
           return <EvmAppComponent />;
         default:
-          console.log('hive per default');
           return <HiveAppComponent />;
       }
     }
@@ -118,6 +107,7 @@ const ChainRouter = ({
     <>
       {renderChain()}
       {errorMessage?.key && <MessageContainerComponent />}
+      {hasFinishedSignup === null && !currentPage && <SplashscreenComponent />}
     </>
   );
 };
@@ -127,6 +117,7 @@ const mapStateToProps = (state: RootState) => {
     errorMessage: state.errorMessage,
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
+    currentPage: state.navigation.stack[0],
   };
 };
 
