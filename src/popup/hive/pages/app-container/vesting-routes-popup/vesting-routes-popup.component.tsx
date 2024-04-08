@@ -5,14 +5,6 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
-//TODO important bellow.
-//  - fix the key error in items
-//  - test:
-//    - dark/light theme, fix if necessary
-//    - remove the active key for one account to test, send a video asking 'what it should do in this case?':
-//        - allow user add this missing key or just allow intentional changes?
-//    - different changes but using skip.
-//  - check TODOs & send for review!
 interface Props {
   displayWrongVestingRoutesPopup: UserLastCurrentRoutes[];
   clearDisplayWrongVestingRoutes: () => void;
@@ -36,13 +28,12 @@ const VestingRoutesPopup = ({
         {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
       </div>
       <div
-        className="content"
+        className="content caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage(
             'popup_html_vesting_routes_warning_message',
           ),
         }}></div>
-
       <Carousel
         showArrows={false}
         showIndicators={false}
@@ -54,6 +45,7 @@ const VestingRoutesPopup = ({
           ({ account, lastRoutes, currentRoutes }) => {
             return (
               <VestinRouteItemComponent
+                key={`vesting-route-item-${account}`}
                 account={account}
                 lastRoutes={lastRoutes}
                 currentRoutes={currentRoutes}
@@ -73,7 +65,7 @@ const VestingRoutesPopup = ({
           {displayWrongVestingRoutesPopup.map((v, index) => {
             return (
               <li
-                key={`dot-indicator-${index}`}
+                key={`dot-indicator-${v.account}-${index}`}
                 className={`dot ${index === pageIndex ? 'selected' : ''}`}></li>
             );
           })}

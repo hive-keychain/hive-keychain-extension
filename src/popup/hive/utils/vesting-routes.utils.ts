@@ -1,5 +1,6 @@
 import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   UserLastCurrentRoutes,
   UserVestingRoute,
@@ -8,6 +9,7 @@ import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import _ from 'lodash';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getVestingRoutes = async (
   name: string,
@@ -44,7 +46,7 @@ const getLastVestingRoutes = async () => {
 };
 
 const clearLastVestingRoutesInStorage = async () => {
-  console.log('Cleared LAST_VESTING_ROUTES'); //TODO remove line
+  Logger.log('Cleared LAST_VESTING_ROUTES');
   await LocalStorageUtils.removeFromLocalStorage(
     LocalStorageKeyEnum.LAST_VESTING_ROUTES,
   );
@@ -129,6 +131,30 @@ const getVestingRouteOperation = (
   ];
 };
 
+const sendTestVestingRoutes = async (
+  testingAccounts: string[],
+  accounts: LocalAccount[],
+  percent: number,
+  showResultLogs?: boolean,
+) => {
+  testingAccounts.map(async (acc) => {
+    const userAK = accounts.find((a) => a.name === acc)?.keys.active;
+    if (userAK) {
+      const result = await VestingRoutesUtils.sendVestingRoute(
+        acc,
+        'stoodkev',
+        percent,
+        false,
+        userAK,
+      );
+      if (showResultLogs)
+        Logger.log('sendVestingRoute test results: ', { result });
+    } else {
+      Logger.error(`Need to add active key for: ${acc}`);
+    }
+  });
+};
+
 export const VestingRoutesUtils = {
   getVestingRoutes,
   getAllAccountsVestingRoutes,
@@ -138,4 +164,5 @@ export const VestingRoutesUtils = {
   clearLastVestingRoutesInStorage,
   getVestingRouteOperation,
   sendVestingRoute,
+  sendTestVestingRoutes,
 };

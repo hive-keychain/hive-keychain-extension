@@ -165,7 +165,6 @@ const VestingRouteItem = ({
         }
       }
     }
-    console.log('about to update lastVestingRoutes: ', { copyLast }); //TODO remove line
     await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
     setCurrentlyRemovedRoutesIdList([]);
     setIsLoadingChanges(false);
@@ -182,19 +181,6 @@ const VestingRouteItem = ({
   ) => {
     setIsLoadingChanges(true);
     const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
-    // op to broadcast.
-    // [
-    //   "set_withdraw_vesting_route",
-    //   {
-    //     "from_account": "alice",
-    //     "to_account": "bob",
-    //     "percent": 10000,
-    //     "auto_vest": true
-    //   }
-    // ]
-    //TODO:
-    //  - validation of active key still needed? roght now the revert button will be disabled if not active key present
-    console.log({ last, current, acc, isLast, currentlyRemovedRoutesIdList }); //TODO remove line
     const broadcastOperation: {
       from_account: string;
       to_account: string;
@@ -211,7 +197,6 @@ const VestingRouteItem = ({
         });
       });
     } else if (current.length > last.length) {
-      //TODO check & broadcast
       current.map((c) => {
         const foundInlast = last.find((f) => f.id === c.id);
         if (!foundInlast) {
@@ -236,8 +221,6 @@ const VestingRouteItem = ({
         }
       });
     }
-    console.log('About to broadcast: ', { broadcastOperation });
-    //TODO bellow uncomment after testing the actual case
     try {
       for (const t of broadcastOperation) {
         const result = await VestingRoutesUtils.sendVestingRoute(
@@ -247,14 +230,12 @@ const VestingRouteItem = ({
           t.auto_vest,
           activeKey,
         );
-        console.log({ result }); //TODO remove line
       }
       const currentRoutes =
         await VestingRoutesUtils.getAllAccountsVestingRoutes(
           accounts.map((a) => a.name),
           'outgoing',
         );
-      console.log('After broadcasting changes: ', { currentRoutes }); //TODO remove line
       await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
       setIsLoadingChanges(false);
       if (!isLast) return next();

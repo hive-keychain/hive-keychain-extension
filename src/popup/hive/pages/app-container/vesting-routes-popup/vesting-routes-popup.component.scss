@@ -36,6 +36,10 @@
     flex-direction: row;
     justify-content: space-between;
   }
+  .title {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
   .vesting-action-buttons-container {
     display: flex;
     flex-direction: row;
@@ -50,16 +54,6 @@
     height: 150px;
     width: 330px;
     overflow-y: scroll;
-    .mandatory-select-option {
-      margin-top: 8px;
-      width: -webkit-fill-available;
-      height: 48px;
-      color: var(--main-font-color);
-      background-color: var(--button-alternative-background-color);
-      border: 1px solid var(--button-alternative-border-color);
-      border-radius: 48px;
-      padding: 8px;
-    }
     .vesting-route-card-item {
       @include small-card();
       margin: 0px 0px;
@@ -75,7 +69,10 @@
       .vesting-item-details-container {
         display: flex;
         flex-direction: column;
-        font-size: 12px;
+        .title {
+          @include poppins400(12px);
+          color: var(--main-font-color);
+        }
       }
     }
   }
@@ -89,7 +86,7 @@
     margin-right: 16px;
   }
   .small-font {
-    font-size: 12px;
+    @include poppins600(12px);
   }
   .alignment-left {
     align-items: flex-start;
