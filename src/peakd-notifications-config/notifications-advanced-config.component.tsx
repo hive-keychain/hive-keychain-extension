@@ -164,6 +164,7 @@ const NotificationsAdvancedConfigPage = () => {
         operation: newCriteria as OperationName | VirtualOperationName,
       });
       setConfigForm(newConfig);
+      setNewCriteria('');
       formFields.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -241,29 +242,31 @@ const NotificationsAdvancedConfigPage = () => {
               title="html_popup_settings_notifications_active"
             />
           </div>
-          <div className="config-buttons-panel">
-            <ButtonComponent
-              additionalClass="default-config-button"
-              label="notification_settings_select_all"
-              onClick={setAll}
-              type={ButtonType.ALTERNATIVE}
-              height="small"
-            />
-            <ButtonComponent
-              additionalClass="clear-config-button"
-              label="notification_clear_config"
-              onClick={clearConfig}
-              type={ButtonType.ALTERNATIVE}
-              height="small"
-            />
-            <ButtonComponent
-              additionalClass="default-config-button"
-              label="html_popup_notification_default_config"
-              onClick={setDefaultConfig}
-              type={ButtonType.ALTERNATIVE}
-              height="small"
-            />
-          </div>
+          {isActive && (
+            <div className="config-buttons-panel">
+              <ButtonComponent
+                additionalClass="default-config-button"
+                label="notification_settings_select_all"
+                onClick={setAll}
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+              />
+              <ButtonComponent
+                additionalClass="clear-config-button"
+                label="notification_clear_config"
+                onClick={clearConfig}
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+              />
+              <ButtonComponent
+                additionalClass="default-config-button"
+                label="html_popup_notification_default_config"
+                onClick={setDefaultConfig}
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+              />
+            </div>
+          )}
 
           {isActive && (
             <FormContainer onSubmit={saveConfig}>
