@@ -71,7 +71,7 @@ const Home = ({
     // VestingRoutesUtils.sendTestVestingRoutes(
     //   ['keychain.tests', 'sexosentido'],
     //   accounts,
-    //   800,
+    //   1500,
     //   true,
     // );
     //end block

@@ -54,13 +54,13 @@ const VestingRouteItem = ({
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_from_title',
           )}
-          {vestingRoute.from_account}
+          {vestingRoute.fromAccount}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_to_title',
           )}
-          {vestingRoute.to_account}
+          {vestingRoute.toAccount}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
@@ -72,7 +72,7 @@ const VestingRouteItem = ({
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_autovest_title',
           )}
-          {vestingRoute.auto_vest.toString()}
+          {vestingRoute.autoVest.toString()}
         </div>
       </div>
     );
@@ -192,10 +192,10 @@ const VestingRouteItem = ({
     if (last.length === current.length) {
       last.map((l) => {
         broadcastOperation.push({
-          from_account: l.from_account,
-          to_account: l.to_account,
+          from_account: l.fromAccount,
+          to_account: l.toAccount,
           percent: l.percent,
-          auto_vest: l.auto_vest,
+          auto_vest: l.autoVest,
         });
       });
     } else if (current.length > last.length) {
@@ -203,10 +203,10 @@ const VestingRouteItem = ({
         const foundInlast = last.find((f) => f.id === c.id);
         if (!foundInlast) {
           broadcastOperation.push({
-            from_account: c.from_account,
-            to_account: c.to_account,
+            from_account: c.fromAccount,
+            to_account: c.toAccount,
             percent: 0,
-            auto_vest: c.auto_vest,
+            auto_vest: c.autoVest,
           });
         }
       });
@@ -215,10 +215,10 @@ const VestingRouteItem = ({
         const foundInCurr = current.find((c) => c.id === l.id);
         if (!foundInCurr) {
           broadcastOperation.push({
-            from_account: l.from_account,
-            to_account: l.to_account,
+            from_account: l.fromAccount,
+            to_account: l.toAccount,
             percent: l.percent,
-            auto_vest: l.auto_vest,
+            auto_vest: l.autoVest,
           });
         }
       });

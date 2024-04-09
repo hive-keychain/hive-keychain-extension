@@ -4,6 +4,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   UserLastCurrentRoutes,
   UserVestingRoute,
+  VestingRoute,
 } from '@interfaces/vesting-routes.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -14,11 +15,20 @@ import Logger from 'src/utils/logger.utils';
 const getVestingRoutes = async (
   name: string,
   type: 'outgoing' | 'incoming' | 'all',
-) => {
-  return await HiveTxUtils.getData('condenser_api.get_withdraw_routes', [
-    name,
-    type,
-  ]);
+): Promise<VestingRoute[]> => {
+  let vestingRoutes = await HiveTxUtils.getData(
+    'condenser_api.get_withdraw_routes',
+    [name, type],
+  );
+  return vestingRoutes.map((vestingRoute: any) => {
+    return {
+      id: vestingRoute.id,
+      fromAccount: vestingRoute.from_account,
+      toAccount: vestingRoute.to_account,
+      percent: vestingRoute.percent,
+      autoVest: vestingRoute.auto_vest,
+    } as VestingRoute;
+  });
 };
 
 const getAllAccountsVestingRoutes = async (
