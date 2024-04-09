@@ -1,7 +1,7 @@
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AccountAuthoritiesListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
-import { RootState } from 'src/popup/hive/store';
 
 const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
   return (
@@ -30,7 +30,7 @@ const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

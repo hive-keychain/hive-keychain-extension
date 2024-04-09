@@ -41,4 +41,7 @@ export enum LocalStorageKeyEnum {
 
   // To show the right type of account value
   ACCOUNT_VALUE_TYPE = 'ACCOUNT_VALUE_TYPE',
+
+  // To check if some account (regardless of chain) has been setup
+  HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
 }

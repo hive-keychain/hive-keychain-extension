@@ -7,15 +7,15 @@ import {
 } from 'src/popup/hive/actions/active-account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import { ActionType } from './action-type.enum';
-import { ActionPayload, AppThunk } from './interfaces';
+import { ActionPayload, AppThunk } from '../../multichain/actions/interfaces';
+import { HiveActionType } from './action-type.enum';
 
 export const retrieveAccounts =
   (mk: string): AppThunk =>
   async (dispatch, getState) => {
     let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
     const action: ActionPayload<LocalAccount[]> = {
-      type: ActionType.SET_ACCOUNTS,
+      type: HiveActionType.SET_ACCOUNTS,
       payload: accounts,
     };
     if (accounts) {
@@ -26,20 +26,20 @@ export const retrieveAccounts =
 
 export const addAccount = (account: LocalAccount) => {
   return {
-    type: ActionType.ADD_ACCOUNT,
+    type: HiveActionType.ADD_ACCOUNT,
     payload: account,
   };
 };
 
 export const resetAccount = () => {
   return {
-    type: ActionType.RESET_ACCOUNT,
+    type: HiveActionType.RESET_ACCOUNT,
   };
 };
 
 export const setAccounts = (accounts: LocalAccount[]) => {
   return {
-    type: ActionType.SET_ACCOUNTS,
+    type: HiveActionType.SET_ACCOUNTS,
     payload: accounts,
   };
 };
@@ -54,7 +54,10 @@ export const addKey =
     ) => ActionPayload<ErrorMessage>,
   ): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts, mk } = getState();
+    const {
+      hive: { activeAccount, accounts },
+      mk,
+    } = getState();
     let newAccounts;
     try {
       newAccounts = await AccountUtils.addKey(
@@ -73,7 +76,7 @@ export const addKey =
         (account: LocalAccount) => account.name === activeAccount.name,
       );
       const action: ActionPayload<LocalAccount[]> = {
-        type: ActionType.SET_ACCOUNTS,
+        type: HiveActionType.SET_ACCOUNTS,
         payload: newAccounts,
       };
       dispatch(action);
@@ -84,7 +87,10 @@ export const addKey =
 export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts, mk } = getState();
+    const {
+      hive: { activeAccount, accounts },
+      mk,
+    } = getState();
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
@@ -124,7 +130,7 @@ export const removeKey =
     }
 
     const action: ActionPayload<LocalAccount[]> = {
-      type: ActionType.SET_ACCOUNTS,
+      type: HiveActionType.SET_ACCOUNTS,
       payload: finalAccounts,
     };
 

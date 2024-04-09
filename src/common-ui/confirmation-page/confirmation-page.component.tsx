@@ -1,5 +1,8 @@
-import { addCaptionToLoading } from '@popup/hive/actions/loading.actions';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
+import { goBack } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
@@ -9,9 +12,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { goBack } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -191,7 +191,7 @@ const mapStateToProps = (state: RootState) => {
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
     method: state.navigation.stack[0].params.method as KeychainKeyTypes,
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

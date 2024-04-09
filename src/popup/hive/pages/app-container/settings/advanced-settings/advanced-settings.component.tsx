@@ -1,8 +1,8 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
-import { RootState } from 'src/popup/hive/store';
 import getAdvancedSettingsMenuItems from './advanced-settings-menu-items';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
@@ -21,7 +21,7 @@ const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { isLedgerSupported: state.appStatus.isLedgerSupported };
+  return { isLedgerSupported: state.hive.appStatus.isLedgerSupported };
 };
 
 const connector = connect(mapStateToProps, {});
