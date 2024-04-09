@@ -40,7 +40,7 @@ html {
           display: flex;
           flex-direction: column;
           row-gap: 24px;
-          position: relative;
+          // position: relative;
           @include background-top();
           @include dialogs-title-panel();
           @include small-card();
@@ -50,35 +50,37 @@ html {
 
           .form-container {
             border-radius: 40px;
-            .form-fields {
-              flex: 1;
-              .add-panel {
+            overflow: hidden;
+            position: relative;
+            .add-panel {
+              display: flex;
+              align-items: center;
+              column-gap: 16px;
+
+              .add-button {
+                width: 50px;
+                height: 42px;
                 display: flex;
                 align-items: center;
-                column-gap: 16px;
-
-                .add-button {
-                  width: 50px;
-                  height: 42px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  border-radius: 50%;
-                  border: 1px solid var(--card-border);
-                  background: transparent;
-                  cursor: pointer;
-                  color: var(--main-font-color);
-                  .svg-icon {
-                    height: 18px;
-                    width: 18px;
-                  }
-                  &:hover {
-                    background: $red;
-                    color: white;
-                  }
+                justify-content: center;
+                border-radius: 50%;
+                border: 1px solid var(--input-border);
+                background: transparent;
+                cursor: pointer;
+                color: var(--main-font-color);
+                .svg-icon {
+                  height: 18px;
+                  width: 18px;
+                }
+                &:hover {
+                  background: $red;
+                  color: white;
                 }
               }
-
+            }
+            .form-fields {
+              flex: 1;
+              overflow: auto;
               .criteria {
                 display: flex;
                 flex-direction: column;

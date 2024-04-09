@@ -15,6 +15,7 @@ import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
+import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -54,7 +55,8 @@ const NotificationsAdvancedConfigPage = () => {
   const [displayDefaultConfigButton, setDisplayDefaultConfigButton] =
     useState(false);
 
-  const formFields = useRef<HTMLDivElement>(null);
+  const bottomFormFields = useRef<HTMLDivElement>(null);
+  const topFormFields = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     init();
@@ -165,7 +167,7 @@ const NotificationsAdvancedConfigPage = () => {
       });
       setConfigForm(newConfig);
       setNewCriteria('');
-      formFields.current?.scrollIntoView({ behavior: 'smooth' });
+      bottomFormFields.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -270,20 +272,20 @@ const NotificationsAdvancedConfigPage = () => {
 
           {isActive && (
             <FormContainer onSubmit={saveConfig}>
-              <div className="form-fields">
-                <div className="add-panel">
-                  <InputComponent
-                    onChange={setNewCriteria}
-                    value={newCriteria}
-                    type={InputType.TEXT}
-                    autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
-                      (field) => field.name,
-                    )}
-                  />
-                  <div className="add-button" onClick={addNewCriteria}>
-                    <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
-                  </div>
+              <div className="add-panel">
+                <InputComponent
+                  onChange={setNewCriteria}
+                  value={newCriteria}
+                  type={InputType.TEXT}
+                  autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
+                    (field) => field.name,
+                  )}
+                />
+                <div className="add-button" onClick={addNewCriteria}>
+                  <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
                 </div>
+              </div>
+              <div className="form-fields" ref={topFormFields}>
                 {configForm?.map((configFormItem, configFormItemIndex) => {
                   return (
                     <React.Fragment key={`config-item-${configFormItemIndex}`}>
@@ -299,7 +301,8 @@ const NotificationsAdvancedConfigPage = () => {
                     </React.Fragment>
                   );
                 })}
-                <div ref={formFields}></div>
+                <div ref={bottomFormFields}></div>
+                <BackToTopButton element={topFormFields} />
               </div>
             </FormContainer>
           )}
