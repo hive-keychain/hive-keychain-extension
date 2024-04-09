@@ -1,6 +1,6 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 
 export interface LoadingOperation {
   name: string;
@@ -30,7 +30,7 @@ export const LoadingReducer = (
   { type, payload }: ActionPayload<LoadingPayload | SetCaptionPayload>,
 ): LoadingState => {
   switch (type) {
-    case ActionType.ADD_TO_LOADING_LIST: {
+    case MultichainActionType.ADD_TO_LOADING_LIST: {
       const loadingPayload = payload as LoadingPayload;
       if (
         state.loadingOperations.find(
@@ -65,7 +65,7 @@ export const LoadingReducer = (
       }
     }
 
-    case ActionType.REMOVE_FROM_LOADING_LIST: {
+    case MultichainActionType.REMOVE_FROM_LOADING_LIST: {
       const loadingPayload = payload as LoadingPayload;
       const newState: LoadingState = {
         loadingOperations: [...state.loadingOperations],
@@ -83,7 +83,7 @@ export const LoadingReducer = (
         ? newState
         : { loadingOperations: [], caption: undefined };
     }
-    case ActionType.ADD_CAPTION_TO_LOADING_PAGE: {
+    case MultichainActionType.ADD_CAPTION_TO_LOADING_PAGE: {
       const setCaptionPayload = payload as SetCaptionPayload;
       const newState: LoadingState = {
         loadingOperations: [...state.loadingOperations],

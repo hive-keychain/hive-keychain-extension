@@ -1,5 +1,5 @@
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 
 export interface NavigationState {
@@ -25,12 +25,12 @@ export const NavigationReducer = (
   { type, payload }: ActionPayload<NavigatePayload>,
 ): NavigationState => {
   switch (type) {
-    case ActionType.RESET_NAV:
+    case MultichainActionType.RESET_NAV:
       return { stack: [], params: null };
-    case ActionType.NAVIGATE_TO:
-    case ActionType.NAVIGATE_TO_WITH_PARAMS:
+    case MultichainActionType.NAVIGATE_TO:
+    case MultichainActionType.NAVIGATE_TO_WITH_PARAMS:
       return navigateTo(state, payload);
-    case ActionType.GO_BACK: {
+    case MultichainActionType.GO_BACK: {
       const newStack = state.stack;
       if (newStack.length > 1) {
         newStack[1].previousParams = newStack[0].params;
@@ -40,7 +40,7 @@ export const NavigationReducer = (
         stack: newStack,
       };
     }
-    case ActionType.GO_BACK_TO_THEN_NAVIGATE: {
+    case MultichainActionType.GO_BACK_TO_THEN_NAVIGATE: {
       const newStack = state.stack;
       const goBacktoPage = payload?.goBackTo ?? newStack[1].currentPage;
 

@@ -1,10 +1,11 @@
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { RootState } from '@popup/multichain/store/index';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { ActionType } from '../../hive/actions/action-type.enum';
+import { HiveActionType } from '../../hive/actions/action-type.enum';
 
 export interface ActionPayload<T> {
-  readonly type: ActionType;
+  readonly type: HiveActionType | MultichainActionType;
   readonly payload?: T;
 }
 

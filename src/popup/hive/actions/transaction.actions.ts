@@ -1,7 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { store } from '@popup/multichain/store';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 
 export const initAccountTransactions =
@@ -18,7 +18,7 @@ export const initAccountTransactions =
     );
 
     dispatch({
-      type: ActionType.INIT_TRANSACTIONS,
+      type: HiveActionType.INIT_TRANSACTIONS,
       payload: result,
     });
   };
@@ -37,7 +37,7 @@ export const fetchAccountTransactions =
     );
 
     dispatch({
-      type: ActionType.ADD_TRANSACTIONS,
+      type: HiveActionType.ADD_TRANSACTIONS,
       payload: result,
     });
   };

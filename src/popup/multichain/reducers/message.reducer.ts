@@ -1,6 +1,6 @@
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ErrorMessage } from 'src/interfaces/errorMessage.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
 import { MessageType } from 'src/reference-data/message-type.enum';
 
 export const MessageReducer = (
@@ -8,7 +8,7 @@ export const MessageReducer = (
   { type, payload }: ActionPayload<ErrorMessage>,
 ): ErrorMessage => {
   switch (type) {
-    case ActionType.SET_MESSAGE:
+    case MultichainActionType.SET_MESSAGE:
       return payload!;
     default:
       return state;

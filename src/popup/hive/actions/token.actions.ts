@@ -1,3 +1,4 @@
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/multichain/actions/interfaces';
 import { MessageType } from '@reference-data/message-type.enum';
 import {
@@ -8,7 +9,7 @@ import {
   TokenMarket,
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import Logger from 'src/utils/logger.utils';
@@ -20,7 +21,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({
-        type: ActionType.SET_MESSAGE,
+        type: MultichainActionType.SET_MESSAGE,
         payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
       });
     }
@@ -28,7 +29,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   }
 
   const action: ActionPayload<Token[]> = {
-    type: ActionType.LOAD_TOKENS,
+    type: HiveActionType.LOAD_TOKENS,
     payload: tokens,
   };
   dispatch(action);
@@ -37,7 +38,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
   const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
   const action: ActionPayload<TokenMarket[]> = {
-    type: ActionType.LOAD_TOKENS_MARKET,
+    type: HiveActionType.LOAD_TOKENS_MARKET,
     payload: tokensMarket,
   };
   dispatch(action);
@@ -48,7 +49,7 @@ export const loadPendingUnstaking =
   async (dispatch) => {
     const pendingUnstaking = await TokensUtils.getPendingUnstakes(account);
     const action: ActionPayload<PendingUnstaking[]> = {
-      type: ActionType.LOAD_PENDING_UNSTAKING,
+      type: HiveActionType.LOAD_PENDING_UNSTAKING,
       payload: pendingUnstaking,
     };
     dispatch(action);
@@ -59,7 +60,7 @@ export const loadUserTokens =
   async (dispatch) => {
     try {
       dispatch({
-        type: ActionType.CLEAR_USER_TOKENS,
+        type: HiveActionType.CLEAR_USER_TOKENS,
       });
       let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         account,
@@ -68,7 +69,7 @@ export const loadUserTokens =
         (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
       );
       const action: ActionPayload<TokenBalance[]> = {
-        type: ActionType.LOAD_USER_TOKENS,
+        type: HiveActionType.LOAD_USER_TOKENS,
         payload: tokensBalance,
       };
       dispatch(action);
@@ -150,7 +151,7 @@ export const loadTokenHistory =
     });
 
     const action: ActionPayload<TokenTransaction[]> = {
-      type: ActionType.LOAD_TOKEN_HISTORY,
+      type: HiveActionType.LOAD_TOKEN_HISTORY,
       payload: tokenHistory,
     };
     dispatch(action);
