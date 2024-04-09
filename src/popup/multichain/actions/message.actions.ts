@@ -1,12 +1,12 @@
+import { Message } from '@interfaces/message.interface';
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
-import { ErrorMessage } from 'src/interfaces/errorMessage.interface';
 import { MessageType } from 'src/reference-data/message-type.enum';
 import { ActionPayload } from './interfaces';
 
 export const setErrorMessage = (
   key: string,
   params: string[] = [],
-): ActionPayload<ErrorMessage> => {
+): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
     payload: { key, type: MessageType.ERROR, params },
@@ -16,7 +16,7 @@ export const setErrorMessage = (
 export const setSuccessMessage = (
   key: string,
   params: string[] = [],
-): ActionPayload<ErrorMessage> => {
+): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
     payload: { key, type: MessageType.SUCCESS, params },
@@ -25,7 +25,7 @@ export const setSuccessMessage = (
 export const setInfoMessage = (
   key: string,
   params: string[] = [],
-): ActionPayload<ErrorMessage> => {
+): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
     payload: { key, type: MessageType.INFO, params },
@@ -34,14 +34,14 @@ export const setInfoMessage = (
 export const setWarningMessage = (
   key: string,
   params: string[] = [],
-): ActionPayload<ErrorMessage> => {
+): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
     payload: { key, type: MessageType.WARNING, params },
   };
 };
 
-export const resetMessage = (): ActionPayload<ErrorMessage> => {
+export const resetMessage = (): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
     payload: { key: '', type: MessageType.SUCCESS, params: [] },

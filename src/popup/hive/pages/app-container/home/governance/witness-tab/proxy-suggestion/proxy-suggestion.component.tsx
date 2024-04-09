@@ -103,7 +103,7 @@ const ProxySuggestion = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    isMessageContainerDisplayed: state.errorMessage.key.length > 0,
+    isMessageContainerDisplayed: state.message.key.length > 0,
   };
 };
 

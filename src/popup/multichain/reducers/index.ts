@@ -9,7 +9,7 @@ import { combineReducers } from 'redux';
 
 export default combineReducers({
   mk: MkReducer,
-  errorMessage: MessageReducer,
+  message: MessageReducer,
   navigation: NavigationReducer,
   loading: LoadingReducer,
   titleContainer: TitleContainerReducer,
