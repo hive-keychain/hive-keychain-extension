@@ -1,4 +1,5 @@
 import { AddWalletMainComponent } from '@popup/evm/pages/add-account/add-wallet-main.component';
+import { ImportWalletFromSeedComponent } from '@popup/evm/pages/import-wallet-from-seed/import-wallet-from-seed.component';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -14,8 +15,9 @@ const EVMAppRouter = ({
     switch (page) {
       case Screen.EVM_ADD_WALLET_MAIN:
         return <AddWalletMainComponent />;
-      case Screen.CREATE_EVM_WALLET:
       case Screen.IMPORT_EVM_WALLET:
+        return <ImportWalletFromSeedComponent />;
+      case Screen.CREATE_EVM_WALLET:
       default:
         return null;
     }

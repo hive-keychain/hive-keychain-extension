@@ -3898,5 +3898,29 @@
   "popup_html_evm_create_wallet": {
     "message": "Create new EVM wallet",
     "description": "EVM > Add wallet main page"
+  },
+  "popup_html_evm_setup_import_text": {
+    "message": "Import your EVM wallet using the seed phrase you obtained when originally creating your account.<br/><br/>This seed phrase is a 12-words that allows you to recover your accounts.<br/><br/>Make sure to always keep it safe offline.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "popup_html_evm_seed_phrase": {
+    "message": "Seed Phrase",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "popup_html_evm_seed_phrase_placeholder": {
+    "message": "12-words seed phrase, separated by whitespace",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "htlm_popup_evm_invalid_mnemonic_length": {
+    "message": "Your seedphrase should be 12 words long.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "htlm_popup_evm_invalid_mnemonic_word": {
+    "message": "The word $1 of the seedphrase is incorrect.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "htlm_popup_evm_invalid_mnemonic_checksum": {
+    "message": "This seedphrase is invalid.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
   }
 }
