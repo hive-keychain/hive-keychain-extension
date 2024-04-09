@@ -1,4 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import reducers from '@popup/multichain/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
@@ -33,16 +34,19 @@ if (store.getState().hive) {
     const {
       mk,
       hive: { accounts, activeRpc, activeAccount, hiveEngineConfig },
+      hasFinishedSignup,
     } = store.getState();
     if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
       if (
         previousAccounts.length === 0 &&
-        previousAccounts.length !== accounts.length
+        previousAccounts.length !== accounts.length &&
+        !hasFinishedSignup
       ) {
         LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
           true,
         );
+        store.dispatch(setHasFinishedSignup(true));
         // AnalyticsUtils.sendAddFirstAccountEvent();
       }
       previousAccounts = accounts;

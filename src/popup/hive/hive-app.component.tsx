@@ -57,8 +57,8 @@ const HiveApp = ({
   setActiveRpc,
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
+  hasFinishedSignup,
 }: PropsFromRedux) => {
-  const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
@@ -75,7 +75,6 @@ const HiveApp = ({
   }, [activeRpc]);
 
   useEffect(() => {
-    initHasStoredAccounts();
     const found = navigationStack.find(
       (navigation) =>
         navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
@@ -84,7 +83,7 @@ const HiveApp = ({
     if (
       isAppReady &&
       (navigationStack.length === 0 || found) &&
-      hasStoredAccounts
+      hasFinishedSignup
     ) {
       if (accounts.length > 0) {
         initActiveAccount(accounts);
@@ -97,7 +96,7 @@ const HiveApp = ({
     isAppReady,
     mk,
     accounts,
-    hasStoredAccounts,
+    hasFinishedSignup,
     appStatus.processingDecryptAccount,
   ]);
 
@@ -110,11 +109,6 @@ const HiveApp = ({
       }
     }
   }, [appStatus, displaySplashscreen]);
-
-  const initHasStoredAccounts = async () => {
-    const storedAccounts = await AccountUtils.hasStoredAccounts();
-    setHasStoredAccounts(storedAccounts);
-  };
 
   const initActiveRpc = async (rpc: Rpc) => {
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
@@ -131,7 +125,6 @@ const HiveApp = ({
     loadCurrencyPrices();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
-    setHasStoredAccounts(storedAccounts);
 
     let accountsFromStorage: LocalAccount[] = [];
     if (storedAccounts && mk) {
@@ -175,7 +168,7 @@ const HiveApp = ({
       mk &&
       mk.length === 0 &&
       accounts.length === 0 &&
-      !hasStoredAccounts
+      !hasFinishedSignup
     ) {
       navigateTo(Screen.SIGN_UP_PAGE, true);
     } else {
@@ -273,6 +266,7 @@ const mapStateToProps = (state: RootState) => {
       state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
     appStatus: state.hive.appStatus,
+    hasFinishedSignup: state.hasFinishedSignup,
   };
 };
 
