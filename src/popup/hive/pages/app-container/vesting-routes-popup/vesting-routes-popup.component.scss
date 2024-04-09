@@ -3,25 +3,6 @@
     height: 12px !important;
     flex: unset !important;
   }
-  .indicator-container {
-    margin: 10px 0;
-    padding: 0;
-    text-align: center;
-    width: 100%;
-    z-index: 1;
-    .dot {
-      width: 8px;
-      height: 8px;
-      display: inline-block;
-      margin: 0 8px;
-      background: var(--main-font-color);
-      border-radius: 50%;
-      opacity: 0.4;
-    }
-    .selected {
-      opacity: 1;
-    }
-  }
   .popup-content {
     width: -webkit-fill-available;
     margin: 0px 0px;
@@ -30,69 +11,76 @@
   .carousel-item-container {
     display: inline-block;
     width: 330px;
-  }
-  .vesting-routes-titles-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  .title {
-    @include poppins400(14px);
-    color: var(--main-font-color);
-  }
-  .vesting-action-buttons-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    .vesting-action-button {
-      width: 45%;
-    }
-  }
-  .vesting-item-list-container {
-    display: inline-block;
-    height: 150px;
-    width: 330px;
-    overflow-y: scroll;
-    .vesting-route-card-item {
-      @include small-card();
-      margin: 0px 0px;
+    .account-title {
+      @include poppins400(14px);
+      color: var(--main-font-color);
       margin-bottom: 8px;
-      flex-direction: column;
-      .vesting-item-card-row-container {
-        display: flex;
-        flex-direction: row;
-        width: -webkit-fill-available;
-        justify-content: space-between;
-        align-items: center;
+    }
+    .vesting-routes-titles-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      .old-route-title {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        margin-left: 16px;
       }
-      .vesting-item-details-container {
-        display: flex;
+      .new-route-title {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        margin-right: 16px;
+      }
+    }
+    .vesting-item-list-container {
+      display: inline-block;
+      height: 150px;
+      width: 330px;
+      overflow-y: scroll;
+      .vesting-route-card-item {
+        @include small-card();
+        margin: 0px 0px;
+        margin-bottom: 8px;
         flex-direction: column;
-        .title {
-          @include poppins400(12px);
-          color: var(--main-font-color);
+        .vesting-item-card-row-container {
+          display: flex;
+          flex-direction: row;
+          width: -webkit-fill-available;
+          justify-content: space-between;
+          align-items: center;
+          .title {
+            @include poppins400(14px);
+            color: var(--main-font-color);
+          }
+        }
+        .vesting-item-details-container {
+          display: flex;
+          flex-direction: column;
+          .title {
+            @include poppins400(12px);
+            color: var(--main-font-color);
+          }
+        }
+        .alignment-left {
+          align-items: flex-start;
+        }
+        .alignment-right {
+          align-items: flex-end;
         }
       }
     }
-  }
-  .margin-bottom-8px {
-    margin-bottom: 8px;
-  }
-  .margin-left-16px {
-    margin-left: 16px;
-  }
-  .margin-right-16px {
-    margin-right: 16px;
-  }
-  .small-font {
-    @include poppins600(12px);
-  }
-  .alignment-left {
-    align-items: flex-start;
-  }
-  .alignment-right {
-    align-items: flex-end;
+    .vesting-action-buttons-container {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+      .vesting-action-button {
+        width: 45%;
+      }
+    }
+    .small-font {
+      @include poppins600(12px);
+    }
   }
   .text-centered {
     text-align: center;

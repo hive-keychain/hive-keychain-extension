@@ -256,19 +256,19 @@ const VestingRouteItem = ({
   return (
     <div className={`carousel-item`} key={`${account}-vesting-routes`}>
       <div className="carousel-item-container">
-        <div className="title margin-bottom-8px">
+        <div className="account-title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_account_item_label',
           )}
           {account}
         </div>
-        <div className="vesting-routes-titles-container margin-bottom-8px">
-          <div className="title margin-left-16px">
+        <div className="vesting-routes-titles-container">
+          <div className="old-route-title">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_old_route_title',
             )}
           </div>
-          <div className="title margin-right-16px">
+          <div className="new-route-title">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_new_route_title',
             )}
@@ -279,7 +279,6 @@ const VestingRouteItem = ({
           key={`${account}-vesting-item-list-container`}>
           {renderFromList(lastRoutes, currentRoutes)}
         </div>
-
         <div className="vesting-action-buttons-container">
           <ButtonComponent
             dataTestId="button-skip-vesting-routes"
