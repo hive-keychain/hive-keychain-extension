@@ -2,13 +2,13 @@ import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Notification } from '@interfaces/notifications.interface';
+import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/notifications/notification-panel.component';
+import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
-import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/notifications/notification-panel.component';
-import { RootState } from '@popup/hive/store';
-import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
+} from '@popup/multichain/actions/loading.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -105,8 +105,8 @@ const Notifications = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

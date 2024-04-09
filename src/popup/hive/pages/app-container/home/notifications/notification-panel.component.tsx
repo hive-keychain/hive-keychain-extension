@@ -1,5 +1,5 @@
 import { Notification } from '@interfaces/notifications.interface';
-import { RootState } from '@popup/hive/store';
+import { RootState } from '@popup/multichain/store';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';

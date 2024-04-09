@@ -1,9 +1,12 @@
 import { KeyType } from '@interfaces/keys.interface';
-import { setErrorMessage } from '@popup/hive/actions/message.actions';
-import { navigateTo, resetNav } from '@popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
-import { RootState } from '@popup/hive/store';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  resetNav,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -112,7 +115,7 @@ const NotificationConfigPage = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.hive.activeAccount };
 };
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
