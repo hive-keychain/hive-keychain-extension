@@ -37,13 +37,14 @@ const VestingRouteItem = ({
 
   const renderVestingItemDetails = (
     vestingRoute: VestingRoute,
-    alignment: 'alignment-left' | 'alignment-right',
-    addToKey?: string,
+    vestingRouteType: 'old' | 'new',
   ) => {
     return (
       <div
-        key={`vesting-item-details-${vestingRoute.id}-${addToKey}`}
-        className={`vesting-item-details-container ${alignment}`}>
+        key={`vesting-item-details-${vestingRoute.id}-${vestingRouteType}`}
+        className={`vesting-item-details-container ${
+          vestingRouteType === 'new' ? 'alignment-right' : 'alignment-left'
+        }`}>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_id_title',
@@ -100,9 +101,9 @@ const VestingRouteItem = ({
                   )}
                 </div>
               ) : (
-                renderVestingItemDetails(foundInLast, 'alignment-left', 'last')
+                renderVestingItemDetails(foundInLast, 'old')
               )}
-              {renderVestingItemDetails(curr, 'alignment-right', 'curr')}
+              {renderVestingItemDetails(curr, 'new')}
             </div>
           </div>
         );
@@ -116,7 +117,7 @@ const VestingRouteItem = ({
             key={`vesting-route-card-item-current-last-${last.id}`}
             className="vesting-route-card-item">
             <div className="vesting-item-card-row-container">
-              {renderVestingItemDetails(last, 'alignment-left', 'curr')}
+              {renderVestingItemDetails(last, 'new')}
               {!foundInCurr ? (
                 <div className="title small-font">
                   {chrome.i18n.getMessage(
@@ -124,7 +125,7 @@ const VestingRouteItem = ({
                   )}
                 </div>
               ) : (
-                renderVestingItemDetails(foundInCurr, 'alignment-right', 'last')
+                renderVestingItemDetails(foundInCurr, 'old')
               )}
             </div>
           </div>
