@@ -49,9 +49,8 @@ const NotificationConfigPage = ({
   };
 
   const openAdvancedConfiguration = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/peakd-notifications-config.html`,
+      url: `peakd-notifications-config.html`,
     });
   };
 

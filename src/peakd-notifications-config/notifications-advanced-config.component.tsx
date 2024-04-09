@@ -1,5 +1,6 @@
 import { OperationName, VirtualOperationName } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Message } from '@interfaces/message.interface';
 import {
   ConfigFormUpdateAction,
   NotificationConfig,
@@ -13,6 +14,7 @@ import MkUtils from '@popup/hive/utils/mk.utils';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { MessageType } from '@reference-data/message-type.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
@@ -32,6 +34,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -52,8 +55,7 @@ const NotificationsAdvancedConfigPage = () => {
 
   const [ready, setReady] = useState(false);
 
-  const [displayDefaultConfigButton, setDisplayDefaultConfigButton] =
-    useState(false);
+  const [message, setMessage] = useState<Message>();
 
   const bottomFormFields = useRef<HTMLDivElement>(null);
   const topFormFields = useRef<HTMLDivElement>(null);
@@ -89,8 +91,6 @@ const NotificationsAdvancedConfigPage = () => {
       conf = userConfig.config.filter(
         (item: NotificationConfigItem) => item.operation,
       );
-    } else {
-      setDisplayDefaultConfigButton(true);
     }
 
     setConfig(conf);
@@ -172,14 +172,18 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const saveConfig = async () => {
-    if (window.confirm('OK ?'))
+    if (window.confirm(chrome.i18n.getMessage('notification_confirm_save')))
       if (selectedAccount?.keys.posting) {
         await PeakDNotificationsUtils.saveConfiguration(
           configForm!,
           selectedAccount!,
         );
       } else {
-        //TODO notify no posting key
+        setMessage({
+          key: 'popup_missing_key',
+          params: [chrome.i18n.getMessage('posting')],
+          type: MessageType.ERROR,
+        } as Message);
       }
   };
 
@@ -323,6 +327,12 @@ const NotificationsAdvancedConfigPage = () => {
         </div>
       )}
       {!ready && <LoadingComponent />}
+      {message && (
+        <MessageContainerComponent
+          message={message}
+          onResetMessage={() => setMessage(undefined)}
+        />
+      )}
     </div>
   );
 };

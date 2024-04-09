@@ -3888,7 +3888,7 @@
     "description": "Notifications"
   },
   "html_popup_settings_notifications_caption": {
-    "message": "This is the configuration page for PeakD notification picture",
+    "message": "This is the configuration page for PeakD notification. Be aware that changes might take time to be applied.",
     "description": "Notification caption introducing the feature"
   },
   "html_popup_settings_notifications_active": {
@@ -4055,5 +4055,9 @@
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "notification_confirm_save": {
+    "message": "Are you sure you want to save your changes ?",
+    "description": "Notification save changes message"
   }
 }

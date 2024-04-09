@@ -32,6 +32,7 @@
     justify-content: center;
     padding: 24px;
     row-gap: 12px;
+    max-width: 500px;
     .title {
       text-align: center;
       @include dmSans700(20px);
