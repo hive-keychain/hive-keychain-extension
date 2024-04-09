@@ -13,13 +13,12 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import Logger from 'src/utils/logger.utils';
 
 interface Props {
   account: string;
   lastRoutes: VestingRoute[];
   currentRoutes: VestingRoute[];
-  next: () => void;
+  nextCarouselSlide: () => void;
   isLast: boolean;
   clearDisplayWrongVestingRoutes: () => void;
 }
@@ -28,7 +27,7 @@ const VestingRouteItem = ({
   account,
   lastRoutes,
   currentRoutes,
-  next,
+  nextCarouselSlide,
   isLast,
   setSuccessMessage,
   clearDisplayWrongVestingRoutes,
@@ -143,114 +142,40 @@ const VestingRouteItem = ({
   };
 
   const skipAndSave = async (
-    current: VestingRoute[],
-    acc: string,
+    currentRoutes: VestingRoute[],
+    account: string,
     isLast: boolean,
   ) => {
-    let copyLast = [...(await VestingRoutesUtils.getLastVestingRoutes())!];
-    const toUpdateIndex = copyLast.findIndex((c) => c.account === acc);
-    if (toUpdateIndex !== -1) {
-      if (!copyLast[toUpdateIndex].routes.length) {
-        copyLast[toUpdateIndex].routes = current;
-      } else {
-        if (current.length === 0 || currentlyRemovedRoutesIdList.length) {
-          currentlyRemovedRoutesIdList.map((removedRoute) => {
-            copyLast[toUpdateIndex].routes = copyLast[
-              toUpdateIndex
-            ].routes.filter((r) => r.id !== removedRoute);
-          });
-        } else {
-          current.map((c) => {
-            const toUpdateIndexRouteInlast = copyLast[
-              toUpdateIndex
-            ].routes.findIndex((r) => r.id === c.id);
-            if (toUpdateIndexRouteInlast !== -1) {
-              copyLast[toUpdateIndex].routes[toUpdateIndexRouteInlast] = c;
-            } else {
-              copyLast[toUpdateIndex].routes.push(c);
-            }
-          });
-        }
-      }
-    }
-    await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
-    setCurrentlyRemovedRoutesIdList([]);
-    if (!isLast) return next();
-    setSuccessMessage('popup_html_vesting_routes_handled_successfully');
-    clearDisplayWrongVestingRoutes();
+    await VestingRoutesUtils.skipAccountRoutes(
+      currentRoutes,
+      account,
+      isLast,
+      nextCarouselSlide,
+      currentlyRemovedRoutesIdList,
+      (value) => setCurrentlyRemovedRoutesIdList(value),
+      (message) => setSuccessMessage(message),
+      clearDisplayWrongVestingRoutes,
+    );
   };
 
   const revert = async (
     lastRoutes: VestingRoute[],
     currentRoutes: VestingRoute[],
-    acc: string,
+    account: string,
     isLast: boolean,
   ) => {
-    addToLoadingList('html_popup_revert_vesting_route_operation');
-    const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
-    const broadcastOperation: {
-      fromAccount: string;
-      toAccount: string;
-      percent: number;
-      autoVest: boolean;
-    }[] = [];
-    if (lastRoutes.length === currentRoutes.length) {
-      lastRoutes.map(({ fromAccount, toAccount, percent, autoVest }) => {
-        broadcastOperation.push({
-          fromAccount,
-          toAccount,
-          percent,
-          autoVest,
-        });
-      });
-    } else if (currentRoutes.length > lastRoutes.length) {
-      currentRoutes.map((c) => {
-        const foundInlast = lastRoutes.find(({ id }) => id === c.id);
-        if (!foundInlast) {
-          broadcastOperation.push({
-            fromAccount: c.fromAccount,
-            toAccount: c.toAccount,
-            percent: 0,
-            autoVest: c.autoVest,
-          });
-        }
-      });
-    } else if (currentRoutes.length < lastRoutes.length) {
-      lastRoutes.map((l) => {
-        const foundInCurr = currentRoutes.find((c) => c.id === l.id);
-        if (!foundInCurr) {
-          broadcastOperation.push({
-            fromAccount: l.fromAccount,
-            toAccount: l.toAccount,
-            percent: l.percent,
-            autoVest: l.autoVest,
-          });
-        }
-      });
-    }
-    try {
-      for (const t of broadcastOperation) {
-        const result = await VestingRoutesUtils.sendVestingRoute(
-          t.fromAccount,
-          t.toAccount,
-          t.percent,
-          t.autoVest,
-          activeKey,
-        );
-      }
-      const currentRoutes =
-        await VestingRoutesUtils.getAllAccountsVestingRoutes(
-          accounts.map((a) => a.name),
-          'outgoing',
-        );
-      await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
-      removeFromLoadingList('html_popup_revert_vesting_route_operation');
-      if (!isLast) return next();
-      setSuccessMessage('popup_html_vesting_routes_handled_successfully');
-      clearDisplayWrongVestingRoutes();
-    } catch (error) {
-      Logger.error('Error while sending vesting route', true);
-    }
+    await VestingRoutesUtils.revertAccountRoutes(
+      lastRoutes,
+      currentRoutes,
+      account,
+      isLast,
+      (message) => addToLoadingList(message),
+      accounts,
+      (message) => removeFromLoadingList(message),
+      nextCarouselSlide,
+      (message) => setSuccessMessage(message),
+      clearDisplayWrongVestingRoutes,
+    );
   };
 
   return (

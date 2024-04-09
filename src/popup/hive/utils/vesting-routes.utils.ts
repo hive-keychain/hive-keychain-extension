@@ -55,6 +55,7 @@ const getLastVestingRoutes = async () => {
   return result ?? null;
 };
 
+//TODO remove this function and its use after review
 const clearLastVestingRoutesInStorage = async () => {
   Logger.log('Cleared LAST_VESTING_ROUTES');
   await LocalStorageUtils.removeFromLocalStorage(
@@ -164,6 +165,7 @@ const getVestingRouteOperation = (
   ];
 };
 
+//TODO remove bellow and its use after review
 const sendTestVestingRoutes = async (
   testingAccounts: string[],
   accounts: LocalAccount[],
@@ -188,6 +190,127 @@ const sendTestVestingRoutes = async (
   });
 };
 
+const skipAccountRoutes = async (
+  currentRoutes: VestingRoute[],
+  account: string,
+  isLast: boolean,
+  nextCarouselSlide: () => void,
+  currentlyRemovedRoutesIdList: number[],
+  setCurrentlyRemovedRoutesIdList: (value: number[]) => void,
+  setSuccessMessage: (message: string) => void,
+  clearDisplayWrongVestingRoutes: () => void,
+) => {
+  let copyLast = [...(await VestingRoutesUtils.getLastVestingRoutes())!];
+  const toUpdateIndex = copyLast.findIndex((c) => c.account === account);
+  if (toUpdateIndex !== -1) {
+    if (!copyLast[toUpdateIndex].routes.length) {
+      copyLast[toUpdateIndex].routes = currentRoutes;
+    } else {
+      if (currentRoutes.length === 0 || currentlyRemovedRoutesIdList.length) {
+        currentlyRemovedRoutesIdList.map((removedRoute) => {
+          copyLast[toUpdateIndex].routes = copyLast[
+            toUpdateIndex
+          ].routes.filter((r) => r.id !== removedRoute);
+        });
+      } else {
+        currentRoutes.map((c) => {
+          const toUpdateIndexRouteInlast = copyLast[
+            toUpdateIndex
+          ].routes.findIndex((r) => r.id === c.id);
+          if (toUpdateIndexRouteInlast !== -1) {
+            copyLast[toUpdateIndex].routes[toUpdateIndexRouteInlast] = c;
+          } else {
+            copyLast[toUpdateIndex].routes.push(c);
+          }
+        });
+      }
+    }
+  }
+  await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
+  setCurrentlyRemovedRoutesIdList([]);
+  if (!isLast) return nextCarouselSlide();
+  setSuccessMessage('popup_html_vesting_routes_handled_successfully');
+  clearDisplayWrongVestingRoutes();
+};
+
+const revertAccountRoutes = async (
+  lastRoutes: VestingRoute[],
+  currentRoutes: VestingRoute[],
+  account: string,
+  isLast: boolean,
+  addToLoadingList: (message: string) => void,
+  accounts: LocalAccount[],
+  removeFromLoadingList: (message: string) => void,
+  nextCarouselSlide: () => void,
+  setSuccessMessage: (message: string) => void,
+  clearDisplayWrongVestingRoutes: () => void,
+) => {
+  addToLoadingList('html_popup_revert_vesting_route_operation');
+  const activeKey = accounts.find((a) => a.name === account)?.keys.active!;
+  const broadcastOperation: {
+    fromAccount: string;
+    toAccount: string;
+    percent: number;
+    autoVest: boolean;
+  }[] = [];
+  if (lastRoutes.length === currentRoutes.length) {
+    lastRoutes.map(({ fromAccount, toAccount, percent, autoVest }) => {
+      broadcastOperation.push({
+        fromAccount,
+        toAccount,
+        percent,
+        autoVest,
+      });
+    });
+  } else if (currentRoutes.length > lastRoutes.length) {
+    currentRoutes.map((c) => {
+      const foundInlast = lastRoutes.find(({ id }) => id === c.id);
+      if (!foundInlast) {
+        broadcastOperation.push({
+          fromAccount: c.fromAccount,
+          toAccount: c.toAccount,
+          percent: 0,
+          autoVest: c.autoVest,
+        });
+      }
+    });
+  } else if (currentRoutes.length < lastRoutes.length) {
+    lastRoutes.map((l) => {
+      const foundInCurr = currentRoutes.find((c) => c.id === l.id);
+      if (!foundInCurr) {
+        broadcastOperation.push({
+          fromAccount: l.fromAccount,
+          toAccount: l.toAccount,
+          percent: l.percent,
+          autoVest: l.autoVest,
+        });
+      }
+    });
+  }
+  try {
+    for (const t of broadcastOperation) {
+      const result = await VestingRoutesUtils.sendVestingRoute(
+        t.fromAccount,
+        t.toAccount,
+        t.percent,
+        t.autoVest,
+        activeKey,
+      );
+    }
+    const currentRoutes = await VestingRoutesUtils.getAllAccountsVestingRoutes(
+      accounts.map((a) => a.name),
+      'outgoing',
+    );
+    await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
+    removeFromLoadingList('html_popup_revert_vesting_route_operation');
+    if (!isLast) return nextCarouselSlide();
+    setSuccessMessage('popup_html_vesting_routes_handled_successfully');
+    clearDisplayWrongVestingRoutes();
+  } catch (error) {
+    Logger.error('Error while sending vesting route', true);
+  }
+};
+
 export const VestingRoutesUtils = {
   getVestingRoutes,
   getAllAccountsVestingRoutes,
@@ -198,4 +321,6 @@ export const VestingRoutesUtils = {
   getVestingRouteOperation,
   sendVestingRoute,
   sendTestVestingRoutes,
+  skipAccountRoutes,
+  revertAccountRoutes,
 };

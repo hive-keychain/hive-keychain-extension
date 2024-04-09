@@ -23,7 +23,7 @@ const VestingRoutesPopup = ({
 }: Props & PropsFromRedux) => {
   const [pageIndex, setPageIndex] = useState(0);
 
-  const next = () => {
+  const nextCarouselSlide = () => {
     setPageIndex(pageIndex + 1);
   };
 
@@ -58,7 +58,7 @@ const VestingRoutesPopup = ({
                 account={account}
                 lastRoutes={lastRoutes}
                 currentRoutes={currentRoutes}
-                next={next}
+                nextCarouselSlide={nextCarouselSlide}
                 isLast={pageIndex === displayWrongVestingRoutesPopup.length - 1}
                 clearDisplayWrongVestingRoutes={clearDisplayWrongVestingRoutes}
               />
