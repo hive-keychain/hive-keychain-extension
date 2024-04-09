@@ -33,7 +33,7 @@ const VestingRouteItem = ({
   setIsLoadingChanges,
 }: Props & PropsFromRedux) => {
   const [currentlyRemovedRoutesIdList, setCurrentlyRemovedRoutesIdList] =
-    useState<{ id: number }[]>([]);
+    useState<number[]>([]);
 
   const renderVestingItemDetails = (
     vestingRoute: VestingRoute,
@@ -80,8 +80,10 @@ const VestingRouteItem = ({
   };
 
   const addToRemovedList = (id: number) => {
-    if (!currentlyRemovedRoutesIdList.find((item) => item.id === id)) {
-      setCurrentlyRemovedRoutesIdList((prev) => [...prev, { id }]);
+    if (!currentlyRemovedRoutesIdList.find((idNumber) => idNumber === id)) {
+      const tempList = [...currentlyRemovedRoutesIdList];
+      tempList.push(id);
+      setCurrentlyRemovedRoutesIdList(tempList);
     }
   };
 
@@ -152,7 +154,7 @@ const VestingRouteItem = ({
           currentlyRemovedRoutesIdList.map((removedRoute) => {
             copyLast[toUpdateIndex].routes = copyLast[
               toUpdateIndex
-            ].routes.filter((r) => r.id !== removedRoute.id);
+            ].routes.filter((r) => r.id !== removedRoute);
           });
         } else {
           current.map((c) => {
