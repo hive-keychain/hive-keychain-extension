@@ -181,49 +181,49 @@ const VestingRouteItem = ({
   };
 
   const revert = async (
-    last: VestingRoute[],
-    current: VestingRoute[],
+    lastRoutes: VestingRoute[],
+    currentRoutes: VestingRoute[],
     acc: string,
     isLast: boolean,
   ) => {
     addToLoadingList('html_popup_revert_vesting_route_operation');
     const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
     const broadcastOperation: {
-      from_account: string;
-      to_account: string;
+      fromAccount: string;
+      toAccount: string;
       percent: number;
-      auto_vest: boolean;
+      autoVest: boolean;
     }[] = [];
-    if (last.length === current.length) {
-      last.map((l) => {
+    if (lastRoutes.length === currentRoutes.length) {
+      lastRoutes.map(({ fromAccount, toAccount, percent, autoVest }) => {
         broadcastOperation.push({
-          from_account: l.fromAccount,
-          to_account: l.toAccount,
-          percent: l.percent,
-          auto_vest: l.autoVest,
+          fromAccount,
+          toAccount,
+          percent,
+          autoVest,
         });
       });
-    } else if (current.length > last.length) {
-      current.map((c) => {
-        const foundInlast = last.find((f) => f.id === c.id);
+    } else if (currentRoutes.length > lastRoutes.length) {
+      currentRoutes.map((c) => {
+        const foundInlast = lastRoutes.find(({ id }) => id === c.id);
         if (!foundInlast) {
           broadcastOperation.push({
-            from_account: c.fromAccount,
-            to_account: c.toAccount,
+            fromAccount: c.fromAccount,
+            toAccount: c.toAccount,
             percent: 0,
-            auto_vest: c.autoVest,
+            autoVest: c.autoVest,
           });
         }
       });
-    } else if (current.length < last.length) {
-      last.map((l) => {
-        const foundInCurr = current.find((c) => c.id === l.id);
+    } else if (currentRoutes.length < lastRoutes.length) {
+      lastRoutes.map((l) => {
+        const foundInCurr = currentRoutes.find((c) => c.id === l.id);
         if (!foundInCurr) {
           broadcastOperation.push({
-            from_account: l.fromAccount,
-            to_account: l.toAccount,
+            fromAccount: l.fromAccount,
+            toAccount: l.toAccount,
             percent: l.percent,
-            auto_vest: l.autoVest,
+            autoVest: l.autoVest,
           });
         }
       });
@@ -231,10 +231,10 @@ const VestingRouteItem = ({
     try {
       for (const t of broadcastOperation) {
         const result = await VestingRoutesUtils.sendVestingRoute(
-          t.from_account,
-          t.to_account,
+          t.fromAccount,
+          t.toAccount,
           t.percent,
-          t.auto_vest,
+          t.autoVest,
           activeKey,
         );
       }
