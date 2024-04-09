@@ -2019,6 +2019,10 @@
     "message": "Conversion",
     "description": "conversion operation"
   },
+  "html_popup_revert_vesting_route_operation": {
+    "message": "Reverting Vesting route(s)",
+    "description": "when the user decides to revert all vesting routes in his account"
+  },
   "html_popup_delegation_operation": {
     "message": "Delegating",
     "description": "delegation operation"

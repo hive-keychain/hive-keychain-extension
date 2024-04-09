@@ -1,6 +1,12 @@
 import { UserLastCurrentRoutes } from '@interfaces/vesting-routes.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/hive/actions/loading.actions';
 import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-item.component';
+import { RootState } from '@popup/hive/store';
 import React, { useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -13,8 +19,8 @@ interface Props {
 const VestingRoutesPopup = ({
   displayWrongVestingRoutesPopup,
   clearDisplayWrongVestingRoutes,
-}: Props) => {
-  const [isLoadingChanges, setIsLoadingChanges] = useState(false);
+  loadingState,
+}: Props & PropsFromRedux) => {
   const [pageIndex, setPageIndex] = useState(0);
 
   const next = () => {
@@ -23,7 +29,10 @@ const VestingRoutesPopup = ({
 
   return (
     <PopupContainer className="vesting-routes-popup">
-      <LoadingComponent hide={!isLoadingChanges} />
+      <LoadingComponent
+        hide={!loadingState.loadingOperations.length}
+        operations={loadingState.loadingOperations}
+      />
       <div className="popup-title text-centered">
         {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
       </div>
@@ -51,28 +60,26 @@ const VestingRoutesPopup = ({
                 currentRoutes={currentRoutes}
                 next={next}
                 isLast={pageIndex === displayWrongVestingRoutesPopup.length - 1}
-                finish={clearDisplayWrongVestingRoutes}
-                setIsLoadingChanges={(value: boolean) =>
-                  setIsLoadingChanges(value)
-                }
+                clearDisplayWrongVestingRoutes={clearDisplayWrongVestingRoutes}
               />
             );
           },
         )}
       </Carousel>
-      {/* <div className="popup-footer">
-        <ul className="indicator-container">
-          {displayWrongVestingRoutesPopup.map((v, index) => {
-            return (
-              <li
-                key={`dot-indicator-${v.account}-${index}`}
-                className={`dot ${index === pageIndex ? 'selected' : ''}`}></li>
-            );
-          })}
-        </ul>
-      </div> */}
     </PopupContainer>
   );
 };
 
-export const VestingRoutesPopupComponent = VestingRoutesPopup;
+const mapStateToProps = (state: RootState) => {
+  return {
+    loadingState: state.loading,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  addToLoadingList,
+  removeFromLoadingList,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const VestingRoutesPopupComponent = connector(VestingRoutesPopup);

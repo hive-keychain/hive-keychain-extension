@@ -1,5 +1,9 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { VestingRoute } from '@interfaces/vesting-routes.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/hive/actions/loading.actions';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { RootState } from '@popup/hive/store';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -17,8 +21,7 @@ interface Props {
   currentRoutes: VestingRoute[];
   next: () => void;
   isLast: boolean;
-  finish: () => void;
-  setIsLoadingChanges: (value: boolean) => void;
+  clearDisplayWrongVestingRoutes: () => void;
 }
 
 const VestingRouteItem = ({
@@ -28,9 +31,10 @@ const VestingRouteItem = ({
   next,
   isLast,
   setSuccessMessage,
-  finish,
+  clearDisplayWrongVestingRoutes,
   accounts,
-  setIsLoadingChanges,
+  addToLoadingList,
+  removeFromLoadingList,
 }: Props & PropsFromRedux) => {
   const [currentlyRemovedRoutesIdList, setCurrentlyRemovedRoutesIdList] =
     useState<number[]>([]);
@@ -119,7 +123,7 @@ const VestingRouteItem = ({
             key={`vesting-route-card-item-current-last-${last.id}`}
             className="vesting-route-card-item">
             <div className="vesting-item-card-row-container">
-              {renderVestingItemDetails(last, 'new')}
+              {renderVestingItemDetails(last, 'old')}
               {!foundInCurr ? (
                 <div className="title small-font">
                   {chrome.i18n.getMessage(
@@ -127,7 +131,7 @@ const VestingRouteItem = ({
                   )}
                 </div>
               ) : (
-                renderVestingItemDetails(foundInCurr, 'old')
+                renderVestingItemDetails(foundInCurr, 'new')
               )}
             </div>
           </div>
@@ -143,7 +147,6 @@ const VestingRouteItem = ({
     acc: string,
     isLast: boolean,
   ) => {
-    setIsLoadingChanges(true);
     let copyLast = [...(await VestingRoutesUtils.getLastVestingRoutes())!];
     const toUpdateIndex = copyLast.findIndex((c) => c.account === acc);
     if (toUpdateIndex !== -1) {
@@ -172,10 +175,9 @@ const VestingRouteItem = ({
     }
     await VestingRoutesUtils.saveLastVestingRoutes(copyLast);
     setCurrentlyRemovedRoutesIdList([]);
-    setIsLoadingChanges(false);
     if (!isLast) return next();
     setSuccessMessage('popup_html_vesting_routes_handled_successfully');
-    finish();
+    clearDisplayWrongVestingRoutes();
   };
 
   const revert = async (
@@ -184,7 +186,7 @@ const VestingRouteItem = ({
     acc: string,
     isLast: boolean,
   ) => {
-    setIsLoadingChanges(true);
+    addToLoadingList('html_popup_revert_vesting_route_operation');
     const activeKey = accounts.find((a) => a.name === acc)?.keys.active!;
     const broadcastOperation: {
       from_account: string;
@@ -242,10 +244,10 @@ const VestingRouteItem = ({
           'outgoing',
         );
       await VestingRoutesUtils.saveLastVestingRoutes(currentRoutes);
-      setIsLoadingChanges(false);
+      removeFromLoadingList('html_popup_revert_vesting_route_operation');
       if (!isLast) return next();
       setSuccessMessage('popup_html_vesting_routes_handled_successfully');
-      finish();
+      clearDisplayWrongVestingRoutes();
     } catch (error) {
       Logger.error('Error while sending vesting route', true);
     }
@@ -307,6 +309,8 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setSuccessMessage,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
