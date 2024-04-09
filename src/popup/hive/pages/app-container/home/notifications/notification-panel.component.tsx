@@ -27,6 +27,7 @@ export const NotificationPanel = ({
 }: PropsFromRedux) => {
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [allRead] = useState(notifications.every((notif) => notif.read));
 
   const notificationList = useRef<HTMLDivElement>(null);
 
@@ -65,12 +66,14 @@ export const NotificationPanel = ({
       className={`notifications-panel ${isPanelOpened ? 'opened' : 'closed'}`}>
       {isPanelOpened && (
         <div className="notification-list-container">
-          <ButtonComponent
-            type={ButtonType.ALTERNATIVE}
-            label="notification_set_all_as_read"
-            onClick={onMarkAllAsRead}
-            additionalClass="set-all-as-read"
-          />
+          {!allRead && (
+            <ButtonComponent
+              type={ButtonType.ALTERNATIVE}
+              label="notification_set_all_as_read"
+              onClick={onMarkAllAsRead}
+              additionalClass="set-all-as-read"
+            />
+          )}
           <div
             className="notification-list"
             ref={notificationList}
