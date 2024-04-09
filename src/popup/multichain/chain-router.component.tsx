@@ -1,13 +1,14 @@
 import { BackgroundMessage } from '@background/background-message.interface';
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
-import { EvmAppComponent } from '@popup/evm/evm-app.component';
+import { EVMAppComponent } from '@popup/evm/evm-app.component';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
 import { HiveAppComponent } from '@popup/hive/hive-app.component';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { Chain } from '@popup/multichain/multichain.context';
+import ChainSelector from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
@@ -96,9 +97,9 @@ const ChainRouter = ({
         case Chain.HIVE:
           return <HiveAppComponent />;
         case Chain.EVM:
-          return <EvmAppComponent />;
+          return <EVMAppComponent />;
         default:
-          return <HiveAppComponent />;
+          return <ChainSelector />;
       }
     }
   };

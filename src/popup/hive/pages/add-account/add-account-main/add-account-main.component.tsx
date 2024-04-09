@@ -1,7 +1,8 @@
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent, {
@@ -18,12 +19,14 @@ const AddAccountMain = ({
   setTitleContainerProperties,
   isLedgerSupported,
 }: PropsFromRedux) => {
-  const [importWindow, setImportWindow] = useState<number>();
-
+  const { setChain } = useChainContext();
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
+      onBackAdditional: () => {
+        setChain();
+      },
       isCloseButtonDisabled: !accounts || !accounts.length,
     });
   });

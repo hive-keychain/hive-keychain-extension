@@ -45,14 +45,7 @@ const AddAccountRouter = ({
       {hasTitle &&
         navStack[navStack.length - 1].currentPage ===
           Screen.ACCOUNT_PAGE_INIT_ACCOUNT && (
-          <PageTitleComponent
-            title={titleProperties.title}
-            titleParams={titleProperties.titleParams}
-            skipTitleTranslation={titleProperties.skipTitleTranslation}
-            isBackButtonEnabled={titleProperties.isBackButtonEnabled}
-            isCloseButtonDisabled={
-              titleProperties.isCloseButtonDisabled
-            }></PageTitleComponent>
+          <PageTitleComponent {...titleProperties}></PageTitleComponent>
         )}
       <div
         className="page-content"

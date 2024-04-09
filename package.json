@@ -59,6 +59,7 @@
     "axios": "0.25.0",
     "crypto-js": "4.1.1",
     "decimal.js": "10.4.3",
+    "ethers": "^6.11.1",
     "flatlist-react": "1.5.0",
     "hive-keychain-commons": "^1.2.3",
     "hive-tx": "github:hive-keychain/hive-tx-js",
@@ -138,6 +139,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
     "jest-chrome": "0.7.2",
+    "npm-force-resolutions": "0.0.10",
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
@@ -153,8 +155,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
-    "webpack-merge": "5.8.0",
-    "npm-force-resolutions": "0.0.10"
+    "webpack-merge": "5.8.0"
   },
   "resolutions": {
     "@types/react": "17.0.2",

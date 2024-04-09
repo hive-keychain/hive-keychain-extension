@@ -3886,5 +3886,17 @@
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "popup_html_evm_add_wallet_method": {
+    "message": "Import your existing EVM wallet or create a new one",
+    "description": "EVM > Add wallet main page"
+  },
+  "popup_html_evm_import_wallet": {
+    "message": "Import your wallet from a seedphrase",
+    "description": "EVM > Add wallet main page"
+  },
+  "popup_html_evm_create_wallet": {
+    "message": "Create new EVM wallet",
+    "description": "EVM > Add wallet main page"
   }
 }

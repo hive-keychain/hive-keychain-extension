@@ -41,7 +41,7 @@ const PageTitle = ({
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
     if (onBackAdditional) onBackAdditional();
-    if (isBackButtonEnabled) {
+    if (canGoBack && isBackButtonEnabled) {
       goBack();
     }
   };
@@ -59,10 +59,9 @@ const PageTitle = ({
       rightAction.callback();
     }
   };
-
   return (
     <div className="title-section">
-      {isBackButtonEnabled && canGoBack && (
+      {isBackButtonEnabled && (canGoBack || onBackAdditional) && (
         <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}

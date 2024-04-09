@@ -8,7 +8,7 @@ export enum Chain {
 
 export type ChainContextType = {
   chain?: Chain;
-  setChain: (chain: Chain) => void;
+  setChain: (chain?: Chain) => void;
 };
 
 export const ChainContext = createContext<ChainContextType>({
