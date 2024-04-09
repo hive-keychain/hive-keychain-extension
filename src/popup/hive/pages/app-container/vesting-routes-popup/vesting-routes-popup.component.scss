@@ -1,88 +1,88 @@
 .vesting-routes-popup {
-  .popup-footer {
-    height: 12px !important;
-    flex: unset !important;
-  }
   .popup-content {
     width: -webkit-fill-available;
     margin: 0px 0px;
-    row-gap: 16px !important;
-  }
-  .carousel-item-container {
-    display: inline-block;
-    width: 330px;
-    .account-title {
-      @include poppins400(14px);
-      color: var(--main-font-color);
-      margin-bottom: 8px;
+    row-gap: 12px !important;
+    .popup-title {
+      text-align: center;
+      font-size: 18px;
     }
-    .vesting-routes-titles-container {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      .old-route-title {
-        @include poppins400(14px);
-        color: var(--main-font-color);
-        margin-left: 16px;
-      }
-      .new-route-title {
-        @include poppins400(14px);
-        color: var(--main-font-color);
-        margin-right: 16px;
-      }
-    }
-    .vesting-item-list-container {
+    .carousel-item-container {
       display: inline-block;
-      height: 150px;
       width: 330px;
-      overflow-y: scroll;
-      .vesting-route-card-item {
-        @include small-card();
-        margin: 0px 0px;
+      .account-title {
+        @include poppins400(14px);
+        color: var(--main-font-color);
         margin-bottom: 8px;
-        flex-direction: column;
-        .vesting-item-card-row-container {
-          display: flex;
-          flex-direction: row;
-          width: -webkit-fill-available;
-          justify-content: space-between;
-          align-items: center;
-          .title {
-            @include poppins400(14px);
-            color: var(--main-font-color);
+      }
+
+      .vesting-routes-titles-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        .vesting-route-title {
+          @include poppins400(14px);
+          color: var(--main-font-color);
+          &.old-route {
+            margin-left: 16px;
+          }
+
+          &.new-route {
+            margin-right: 16px;
           }
         }
-        .vesting-item-details-container {
-          display: flex;
+      }
+
+      .vesting-item-list-container {
+        display: inline-block;
+        height: 150px;
+        width: 330px;
+        overflow-y: scroll;
+        .vesting-route-card-item {
+          @include small-card();
+          margin: 0px 0px;
+          margin-bottom: 8px;
           flex-direction: column;
-          .title {
-            @include poppins400(12px);
-            color: var(--main-font-color);
+          .vesting-item-card-row-container {
+            display: flex;
+            flex-direction: row;
+            width: -webkit-fill-available;
+            justify-content: space-between;
+            align-items: center;
+            .title {
+              @include poppins400(12px);
+              color: var(--main-font-color);
+            }
+          }
+          .vesting-item-details-container {
+            display: flex;
+            flex-direction: column;
+            .title {
+              @include poppins400(12px);
+              color: var(--main-font-color);
+            }
+
+            &.new {
+              align-items: flex-end;
+            }
+            &.old {
+              align-items: flex-start;
+            }
           }
         }
-        .alignment-left {
-          align-items: flex-start;
-        }
-        .alignment-right {
-          align-items: flex-end;
+      }
+      .vesting-action-buttons-container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        .vesting-action-button {
+          width: 45%;
+          @include poppins600(12px);
         }
       }
     }
-    .vesting-action-buttons-container {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      justify-content: space-between;
-      .vesting-action-button {
-        width: 45%;
-      }
-    }
-    .small-font {
-      @include poppins600(12px);
-    }
-  }
-  .text-centered {
-    text-align: center;
   }
 }

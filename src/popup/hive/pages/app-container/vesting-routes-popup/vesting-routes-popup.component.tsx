@@ -1,4 +1,4 @@
-import { UserLastCurrentRoutes } from '@interfaces/vesting-routes.interface';
+import { UserVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -12,13 +12,13 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 interface Props {
-  displayWrongVestingRoutesPopup: UserLastCurrentRoutes[];
-  clearDisplayWrongVestingRoutes: () => void;
+  vestingRoutesDifferences: UserVestingRoutesDifferences[];
+  closePopup: () => void;
 }
 
 const VestingRoutesPopup = ({
-  displayWrongVestingRoutesPopup,
-  clearDisplayWrongVestingRoutes,
+  vestingRoutesDifferences,
+  closePopup,
   loadingState,
 }: Props & PropsFromRedux) => {
   const [pageIndex, setPageIndex] = useState(0);
@@ -33,11 +33,11 @@ const VestingRoutesPopup = ({
         hide={!loadingState.loadingOperations.length}
         operations={loadingState.loadingOperations}
       />
-      <div className="popup-title text-centered">
+      <div className="popup-title">
         {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
       </div>
       <div
-        className="content caption"
+        className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage(
             'popup_html_vesting_routes_warning_message',
@@ -50,7 +50,7 @@ const VestingRoutesPopup = ({
         showThumbs={false}
         showStatus={false}
         dynamicHeight>
-        {displayWrongVestingRoutesPopup.map(
+        {vestingRoutesDifferences.map(
           ({ account, lastRoutes, currentRoutes }) => {
             return (
               <VestinRouteItemComponent
@@ -59,8 +59,8 @@ const VestingRoutesPopup = ({
                 lastRoutes={lastRoutes}
                 currentRoutes={currentRoutes}
                 nextCarouselSlide={nextCarouselSlide}
-                isLast={pageIndex === displayWrongVestingRoutesPopup.length - 1}
-                clearDisplayWrongVestingRoutes={clearDisplayWrongVestingRoutes}
+                isLast={pageIndex === vestingRoutesDifferences.length - 1}
+                clearDisplayWrongVestingRoutes={closePopup}
               />
             );
           },

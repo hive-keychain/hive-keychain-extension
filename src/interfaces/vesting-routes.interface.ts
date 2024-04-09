@@ -6,7 +6,7 @@ export interface VestingRoute {
   autoVest: boolean;
 }
 
-export interface UserLastCurrentRoutes {
+export interface UserVestingRoutesDifferences {
   account: string;
   lastRoutes: VestingRoute[];
   currentRoutes: VestingRoute[];

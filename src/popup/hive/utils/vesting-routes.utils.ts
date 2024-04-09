@@ -2,8 +2,8 @@ import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
-  UserLastCurrentRoutes,
   UserVestingRoute,
+  UserVestingRoutesDifferences,
   VestingRoute,
 } from '@interfaces/vesting-routes.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
@@ -83,7 +83,7 @@ const getWrongVestingRoutes = async (
     VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     return undefined;
   }
-  let userRoutes: UserLastCurrentRoutes[] = [];
+  let userRoutes: UserVestingRoutesDifferences[] = [];
   if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
     currentVestingRoutes.map((item) => {
       let currentVestingRoute = { ...item };
@@ -233,6 +233,7 @@ const skipAccountRoutes = async (
   clearDisplayWrongVestingRoutes();
 };
 
+// TODO should have nothing related to state
 const revertAccountRoutes = async (
   lastRoutes: VestingRoute[],
   currentRoutes: VestingRoute[],

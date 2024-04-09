@@ -1,4 +1,4 @@
-import { UserLastCurrentRoutes } from '@interfaces/vesting-routes.interface';
+import { UserVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -53,8 +53,9 @@ const Home = ({
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
   >();
-  const [displayWrongVestingRoutesPopup, setDisplayWrongVestingRoutesPopup] =
-    useState<UserLastCurrentRoutes[] | undefined>();
+  const [vestingRoutesDifferences, setVestingRoutesDifferences] = useState<
+    UserVestingRoutesDifferences[] | undefined
+  >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -167,7 +168,7 @@ const Home = ({
   };
 
   const initCheckVestingRoutes = async (clearForTesting?: boolean) => {
-    setDisplayWrongVestingRoutesPopup(
+    setVestingRoutesDifferences(
       await VestingRoutesUtils.getWrongVestingRoutes(accounts, clearForTesting),
     );
   };
@@ -177,7 +178,7 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
-    displayWrongVestingRoutesPopup: UserLastCurrentRoutes[] | undefined,
+    vestingRoutesDifferences: UserVestingRoutesDifferences[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -199,13 +200,14 @@ const Home = ({
           setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
         />
       );
-    } else if (displayWrongVestingRoutesPopup) {
+    } else if (
+      vestingRoutesDifferences &&
+      vestingRoutesDifferences.length > 0
+    ) {
       return (
         <VestingRoutesPopupComponent
-          displayWrongVestingRoutesPopup={displayWrongVestingRoutesPopup}
-          clearDisplayWrongVestingRoutes={() =>
-            setDisplayWrongVestingRoutesPopup(undefined)
-          }
+          vestingRoutesDifferences={vestingRoutesDifferences}
+          closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
     }
@@ -250,7 +252,7 @@ const Home = ({
         governanceAccountsToExpire,
         surveyToDisplay,
         displayWrongKeyPopup,
-        displayWrongVestingRoutesPopup,
+        vestingRoutesDifferences,
       )}
     </div>
   );

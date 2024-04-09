@@ -45,9 +45,7 @@ const VestingRouteItem = ({
     return (
       <div
         key={`vesting-item-details-${vestingRoute.id}-${vestingRouteType}`}
-        className={`vesting-item-details-container ${
-          vestingRouteType === 'new' ? 'alignment-right' : 'alignment-left'
-        }`}>
+        className={`vesting-item-details-container ${vestingRouteType}`}>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_id_title',
@@ -100,7 +98,7 @@ const VestingRouteItem = ({
             className="vesting-route-card-item">
             <div className="vesting-item-card-row-container">
               {!foundInLast ? (
-                <div className="title small-font">
+                <div className="title">
                   {chrome.i18n.getMessage(
                     'popup_html_vesting_route_item_details_non_existent_label',
                   )}
@@ -124,7 +122,7 @@ const VestingRouteItem = ({
             <div className="vesting-item-card-row-container">
               {renderVestingItemDetails(last, 'old')}
               {!foundInCurr ? (
-                <div className="title small-font">
+                <div className="title">
                   {chrome.i18n.getMessage(
                     'popup_html_vesting_route_item_details_non_existent_label',
                   )}
@@ -188,12 +186,12 @@ const VestingRouteItem = ({
           {account}
         </div>
         <div className="vesting-routes-titles-container">
-          <div className="old-route-title">
+          <div className="vesting-route-title old-route">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_old_route_title',
             )}
           </div>
-          <div className="new-route-title">
+          <div className="vesting-route-title new-route">
             {chrome.i18n.getMessage(
               'popup_html_vesting_route_account_item_new_route_title',
             )}
