@@ -1,11 +1,11 @@
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserListName } from '@interfaces/favorite-user.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { SyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { RootState } from 'src/popup/hive/store';
 
 interface FavoriteAccountsItemProps {
   favorite: AutoCompleteValue;

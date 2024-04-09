@@ -105,6 +105,7 @@ export enum SVGIcons {
   MESSAGE_SUCCESS = 'message/success',
 
   NOTIFICATIONS_ADD = 'notifications/add',
+  PORTOLIO = 'portfolio/portfolio',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',

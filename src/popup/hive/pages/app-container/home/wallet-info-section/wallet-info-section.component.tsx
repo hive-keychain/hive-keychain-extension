@@ -1,7 +1,6 @@
 import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
   loadPendingUnstaking,
   loadTokens,
@@ -10,6 +9,8 @@ import {
 } from '@popup/hive/actions/token.actions';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
@@ -20,7 +21,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
-import { RootState } from 'src/popup/hive/store';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -99,8 +99,18 @@ const WalletInfoSection = ({
         .filter((token) => !hiddenTokens.includes(token.symbol))
         .sort(
           (a, b) =>
-            TokensUtils.getHiveEngineTokenValue(b, market) -
-            TokensUtils.getHiveEngineTokenValue(a, market),
+            TokensUtils.getHiveEngineTokenValue(
+              b,
+              market,
+              undefined,
+              allTokens,
+            ) -
+            TokensUtils.getHiveEngineTokenValue(
+              a,
+              market,
+              undefined,
+              allTokens,
+            ),
         );
       setFilteredTokenList(orderedFiltered);
     }
@@ -249,14 +259,16 @@ const WalletInfoSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    globalProperties: state.globalProperties,
-    delegations: state.delegations,
-    conversions: state.conversions,
-    userTokens: state.userTokens,
-    market: state.tokenMarket,
-    allTokens: state.tokens,
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    globalProperties: state.hive.globalProperties,
+    delegations: state.hive.delegations,
+    conversions: state.hive.conversions,
+    userTokens: state.hive.userTokens,
+    market: state.hive.tokenMarket,
+    allTokens: state.hive.tokens,
   };
 };
 

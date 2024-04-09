@@ -1,17 +1,17 @@
 import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { MyWitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/my-witness-tab.component';
 import { ProposalTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/witness-tab/witness-tab.component';
-import { RootState } from 'src/popup/hive/store';
 
 const Governance = ({
   setTitleContainerProperties,
@@ -82,7 +82,7 @@ const Governance = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.hive.activeAccount };
 };
 
 const connector = connect(mapStateToProps, {

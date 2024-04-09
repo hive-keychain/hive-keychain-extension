@@ -1,18 +1,18 @@
-import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
 import {
   setErrorMessage,
   setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
+} from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
+import { Screen } from '@reference-data/screen.enum';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -150,14 +150,16 @@ const IncomingOutgoingPage = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
     delegationType: state.navigation.stack[0].params
       .delegationType as DelegationType,
     totalPendingOutgoingUndelegation:
       state.navigation.stack[0].params.totalPendingOutgoingUndelegation,
-    delegations: state.delegations,
-    globalProperties: state.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    delegations: state.hive.delegations,
+    globalProperties: state.hive.globalProperties.globals,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     available: state.navigation.stack[0].params.available,
   };
 };

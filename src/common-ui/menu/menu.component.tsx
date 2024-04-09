@@ -1,11 +1,11 @@
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 
 interface MenuProps {
   title: string;
