@@ -62,10 +62,26 @@ const clearLastVestingRoutesInStorage = async () => {
   );
 };
 
-const getWrongVestingRoutes = (
-  lastVestingRoutes: UserVestingRoute[],
-  currentVestingRoutes: UserVestingRoute[],
+const getWrongVestingRoutes = async (
+  localAccounts: LocalAccount[],
+  //TODO remove bellow after fixes in review
+  clearForTesting?: boolean,
 ) => {
+  if (clearForTesting) {
+    await VestingRoutesUtils.clearLastVestingRoutesInStorage();
+    return undefined;
+  }
+  let currentVestingRoutes =
+    await VestingRoutesUtils.getAllAccountsVestingRoutes(
+      localAccounts.map((acc) => acc.name),
+      'outgoing',
+    );
+
+  const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
+  if (!lastVestingRoutes) {
+    VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
+    return undefined;
+  }
   let userRoutes: UserLastCurrentRoutes[] = [];
   if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
     currentVestingRoutes.map((item) => {

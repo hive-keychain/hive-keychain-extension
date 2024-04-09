@@ -66,7 +66,7 @@ const Home = ({
     initWhatsNew();
     initSurvey();
     initCheckKeysOnAccounts(accounts);
-    initCheckVestingRoutes(accounts);
+    initCheckVestingRoutes();
     //TODO Remove after testings & code review, this block bellow
     // VestingRoutesUtils.sendTestVestingRoutes(
     //   ['keychain.tests', 'sexosentido'],
@@ -166,34 +166,10 @@ const Home = ({
     }
   };
 
-  const initCheckVestingRoutes = async (
-    localAccounts: LocalAccount[],
-    cleanFortesting = false,
-  ) => {
-    if (cleanFortesting) {
-      await VestingRoutesUtils.clearLastVestingRoutesInStorage();
-      return;
-    }
-    let currentVestingRoutes =
-      await VestingRoutesUtils.getAllAccountsVestingRoutes(
-        localAccounts.map((acc) => acc.name),
-        'outgoing',
-      );
-
-    const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
-
-    if (!lastVestingRoutes) {
-      VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
-      return;
-    } else {
-      const wrongVestingRoutes = VestingRoutesUtils.getWrongVestingRoutes(
-        lastVestingRoutes,
-        currentVestingRoutes,
-      );
-      if (wrongVestingRoutes) {
-        setDisplayWrongVestingRoutesPopup(wrongVestingRoutes);
-      }
-    }
+  const initCheckVestingRoutes = async (clearForTesting?: boolean) => {
+    setDisplayWrongVestingRoutesPopup(
+      await VestingRoutesUtils.getWrongVestingRoutes(accounts, clearForTesting),
+    );
   };
 
   const renderPopup = (
