@@ -1,6 +1,6 @@
 import { WalletWithBalance } from '@popup/evm/interfaces/wallet.interface';
 import EthersUtils from '@popup/evm/utils/ethers.utils';
-import { EthersError, HDNodeWallet } from 'ethers';
+import { EthersError, HDNodeWallet, ethers } from 'ethers';
 
 const getWalletFromSeedPhrase = (seed: string) => {
   let wallet: HDNodeWallet | undefined, error;
@@ -37,9 +37,10 @@ const deriveWallets = async (
     consecutiveEmptyWallets = 0;
   while (1) {
     const derivedWallet = wallet.deriveChild(i);
-    const balance = Number(
-      await EthersUtils.getProvider().getBalance(derivedWallet.address),
+    const wei = await EthersUtils.getProvider().getBalance(
+      derivedWallet.address,
     );
+    const balance = Number(parseFloat(ethers.formatEther(wei)).toFixed(6));
     wallets.push({
       wallet: derivedWallet,
       balance,
@@ -51,7 +52,7 @@ const deriveWallets = async (
   }
   return wallets.map((e, i) => {
     const length = wallets.length;
-    e.selected = i < length - 2;
+    e.selected = i < length - 2 || i === 0;
     return e;
   });
 };

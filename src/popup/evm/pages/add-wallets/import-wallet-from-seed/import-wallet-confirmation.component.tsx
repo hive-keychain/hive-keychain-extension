@@ -1,4 +1,6 @@
 import { WalletWithBalance } from '@popup/evm/interfaces/wallet.interface';
+import EVMFormatUtils from '@popup/evm/utils/format.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -11,6 +13,7 @@ const ImportWalletConfirmation = ({
   navigateToWithParams,
   setTitleContainerProperties,
   walletsWithBalance,
+  setErrorMessage,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
   useEffect(() => {
@@ -20,6 +23,7 @@ const ImportWalletConfirmation = ({
       isCloseButtonDisabled: true,
     });
   }, []);
+
   useEffect(() => {
     setWallets(walletsWithBalance);
   }, [walletsWithBalance]);
@@ -29,7 +33,14 @@ const ImportWalletConfirmation = ({
     walletsCopy[i].selected = !walletsCopy[i].selected;
     setWallets(walletsCopy);
   };
-  const submitForm = async (): Promise<void> => {};
+  const submitForm = async (): Promise<void> => {
+    const checkedWallets = wallets.filter((e) => e.selected);
+    if (!checkedWallets.length) {
+      setErrorMessage('html_popup_evm_error_select_account');
+    } else {
+      //TODO: Save account and pass in reducer
+    }
+  };
 
   return (
     <div
@@ -42,17 +53,23 @@ const ImportWalletConfirmation = ({
         }}></div>
       <div className="form-container">
         {wallets.map((e, i) => {
-          <CheckboxPanelComponent
-            checked={e.selected}
-            onChange={() => {
-              onChangeSelected(i);
-            }}
-            key={e.wallet.address}
-            skipTranslation
-            title={`Account ${i}`}
-            hint={`Balance: ${e.balance} ETH`}
-            skipHintTranslation
-          />;
+          return (
+            <CheckboxPanelComponent
+              checked={e.selected}
+              onChange={() => {
+                onChangeSelected(i);
+              }}
+              key={e.wallet.address}
+              skipTranslation
+              title={`${chrome.i18n.getMessage('dialog_account')} ${
+                i + 1
+              }: ${EVMFormatUtils.formatAddress(e.wallet.address)}`}
+              hint={`${chrome.i18n.getMessage('popup_html_balance')}: ${
+                e.balance
+              } ETH`}
+              skipHintTranslation
+            />
+          );
         })}
         <ButtonComponent
           dataTestId="submit-button"
@@ -73,6 +90,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
   setTitleContainerProperties,
+  setErrorMessage,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

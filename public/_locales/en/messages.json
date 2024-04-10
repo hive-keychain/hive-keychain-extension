@@ -3934,5 +3934,9 @@
   "html_popup_evm_create_new_wallet": {
     "message": "Create Wallet",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_error_select_account": {
+    "message": "Please select at least one account",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   }
 }

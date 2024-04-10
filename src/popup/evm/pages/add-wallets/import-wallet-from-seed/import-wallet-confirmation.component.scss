@@ -1,7 +1,7 @@
 .import-evm-wallet-confirmation-page {
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
+  row-gap: 6px;
   height: 100%;
   .caption {
     @include caption();
@@ -12,7 +12,7 @@
 
   .form-container {
     @include pageLayoutRowGap;
-    row-gap: 32px;
+    row-gap: 8px;
     margin-top: 16px;
   }
 }
