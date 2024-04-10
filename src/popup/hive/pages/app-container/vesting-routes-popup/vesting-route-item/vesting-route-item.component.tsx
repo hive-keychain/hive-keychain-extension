@@ -85,9 +85,8 @@ const VestingRouteItem = ({
   const skipAndSave = async (
     differences: VestingRouteDifference[],
     account: string,
-    isLast: boolean,
   ) => {
-    await VestingRoutesUtils.skipAccountRoutes(differences, account, isLast);
+    await VestingRoutesUtils.skipAccountRoutes(differences, account);
     checkForNextSlideOrHidePopup();
   };
 
@@ -100,9 +99,14 @@ const VestingRouteItem = ({
   const revert = async (
     differences: VestingRouteDifference[],
     account: string,
-    isLast: boolean,
   ) => {
-    await VestingRoutesUtils.revertAccountRoutes(differences, account, isLast);
+    addToLoadingList('html_popup_revert_vesting_route_operation');
+    await VestingRoutesUtils.revertAccountRoutes(
+      accounts,
+      differences,
+      account,
+    );
+    removeFromLoadingList('html_popup_revert_vesting_route_operation');
     checkForNextSlideOrHidePopup();
   };
 
@@ -151,13 +155,13 @@ const VestingRouteItem = ({
             dataTestId="button-skip-vesting-routes"
             type={ButtonType.ALTERNATIVE}
             label={'popup_html_vesting_route_account_item_button_skip_label'}
-            onClick={() => skipAndSave(differences, account, isLast)}
+            onClick={() => skipAndSave(differences, account)}
             additionalClass="vesting-action-button small-font"
           />
           <OperationButtonComponent
             dataTestId="button-revert-vesting-routes"
             requiredKey={KeychainKeyTypesLC.active}
-            onClick={() => revert(differences, account, isLast)}
+            onClick={() => revert(differences, account)}
             label={'popup_html_vesting_route_account_item_button_revert_label'}
             additionalClass={'vesting-action-button small-font'}
           />

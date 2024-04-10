@@ -159,9 +159,9 @@ const Home = ({
     }
   };
 
-  const initCheckVestingRoutes = async (clearForTesting?: boolean) => {
+  const initCheckVestingRoutes = async () => {
     setVestingRoutesDifferences(
-      await VestingRoutesUtils.getWrongVestingRoutes(accounts, clearForTesting),
+      await VestingRoutesUtils.getWrongVestingRoutes(accounts),
     );
   };
 

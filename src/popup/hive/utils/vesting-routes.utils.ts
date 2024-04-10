@@ -55,23 +55,7 @@ const getLastVestingRoutes = async () => {
   return result ?? null;
 };
 
-//TODO remove this function and its use after review
-const clearLastVestingRoutesInStorage = async () => {
-  Logger.log('Cleared LAST_VESTING_ROUTES');
-  await LocalStorageUtils.removeFromLocalStorage(
-    LocalStorageKeyEnum.LAST_VESTING_ROUTES,
-  );
-};
-
-const getWrongVestingRoutes = async (
-  localAccounts: LocalAccount[],
-  //TODO remove bellow after fixes in review
-  clearForTesting?: boolean,
-) => {
-  if (clearForTesting) {
-    await VestingRoutesUtils.clearLastVestingRoutesInStorage();
-    return undefined;
-  }
+const getWrongVestingRoutes = async (localAccounts: LocalAccount[]) => {
   let currentVestingRoutes =
     await VestingRoutesUtils.getAllAccountsVestingRoutes(
       localAccounts.map((acc) => acc.name),
@@ -79,7 +63,6 @@ const getWrongVestingRoutes = async (
     );
 
   const lastVestingRoutes = await VestingRoutesUtils.getLastVestingRoutes();
-  console.log({ lastVestingRoutes, currentVestingRoutes }); //TODO remove line
   if (!lastVestingRoutes) {
     VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     return undefined;
@@ -207,7 +190,6 @@ const getVestingRouteOperation = (
 const skipAccountRoutes = async (
   differences: VestingRouteDifference[],
   account: string,
-  isLast: boolean,
 ) => {
   let lastRoutes = await VestingRoutesUtils.getLastVestingRoutes();
   let lastUserRoutes = lastRoutes!.find((i) => i.account === account)!;
@@ -231,70 +213,39 @@ const skipAccountRoutes = async (
 };
 
 const revertAccountRoutes = async (
+  accounts: LocalAccount[],
   differences: VestingRouteDifference[],
   account: string,
-  isLast: boolean,
 ) => {
-  //TODO about now
-  // const activeKey = accounts.find((a) => a.name === account)?.keys.active!;
-  // const broadcastOperation: {
-  //   fromAccount: string;
-  //   toAccount: string;
-  //   percent: number;
-  //   autoVest: boolean;
-  // }[] = [];
-  // if (lastRoutes.length === currentRoutes.length) {
-  //   lastRoutes.map(({ fromAccount, toAccount, percent, autoVest }) => {
-  //     broadcastOperation.push({
-  //       fromAccount,
-  //       toAccount,
-  //       percent,
-  //       autoVest,
-  //     });
-  //   });
-  // } else if (currentRoutes.length > lastRoutes.length) {
-  //   currentRoutes.map((c) => {
-  //     const foundInlast = lastRoutes.find(({ id }) => id === c.id);
-  //     if (!foundInlast) {
-  //       broadcastOperation.push({
-  //         fromAccount: c.fromAccount,
-  //         toAccount: c.toAccount,
-  //         percent: 0,
-  //         autoVest: c.autoVest,
-  //       });
-  //     }
-  //   });
-  // } else if (currentRoutes.length < lastRoutes.length) {
-  //   lastRoutes.map((l) => {
-  //     const foundInCurr = currentRoutes.find((c) => c.id === l.id);
-  //     if (!foundInCurr) {
-  //       broadcastOperation.push({
-  //         fromAccount: l.fromAccount,
-  //         toAccount: l.toAccount,
-  //         percent: l.percent,
-  //         autoVest: l.autoVest,
-  //       });
-  //     }
-  //   });
-  // }
-  // try {
-  //   for (const t of broadcastOperation) {
-  //     const result = await VestingRoutesUtils.sendVestingRoute(
-  //       t.fromAccount,
-  //       t.toAccount,
-  //       t.percent,
-  //       t.autoVest,
-  //       activeKey,
-  //     );
-  //   }
-  //   // no need
-  //   const currentRoutes = await VestingRoutesUtils.getAllAccountsVestingRoutes(
-  //     accounts.map((a) => a.name),
-  //     'outgoing',
-  //   );
-  // } catch (error) {
-  //   Logger.error('Error while sending vesting route', true);
-  // }
+  const broadcastOperation: {
+    fromAccount: string;
+    toAccount: string;
+    percent: number;
+    autoVest: boolean;
+  }[] = [];
+  const activeKey = accounts.find((a) => a.name === account)?.keys.active!;
+  if (activeKey) {
+    differences.map(({ oldRoute, newRoute }) => {
+      if (oldRoute) {
+        broadcastOperation.push(oldRoute);
+      } else if (newRoute) {
+        broadcastOperation.push({ ...newRoute, percent: 0 });
+      }
+    });
+    try {
+      for (const t of broadcastOperation) {
+        const result = await VestingRoutesUtils.sendVestingRoute(
+          t.fromAccount,
+          t.toAccount,
+          t.percent,
+          t.autoVest,
+          activeKey,
+        );
+      }
+    } catch (error) {
+      Logger.error('Error while reverting vesting route(s)', true);
+    }
+  }
 };
 
 export const VestingRoutesUtils = {
@@ -303,7 +254,6 @@ export const VestingRoutesUtils = {
   getLastVestingRoutes,
   saveLastVestingRoutes,
   getWrongVestingRoutes,
-  clearLastVestingRoutesInStorage,
   getVestingRouteOperation,
   sendVestingRoute,
   skipAccountRoutes,
