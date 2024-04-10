@@ -503,6 +503,14 @@
     "message": "For your convenience, please select the account and the transactions you want to download in a CSV file.",
     "description": "on preferences"
   },
+  "popup_html_pref_export_transactions_downloading_loading_message": {
+    "message": "Downloading transactions",
+    "description": "Downloading transactions"
+  },
+  "popup_html_pref_export_transactions_generating_csv_loading_message": {
+    "message": "Generating CSV file",
+    "description": "Generating csv"
+  },
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
     "description": "on preferences"
