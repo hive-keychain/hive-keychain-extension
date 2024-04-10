@@ -44,7 +44,8 @@
           @include small-card();
           margin: 0px 0px;
           margin-bottom: 8px;
-          flex-direction: column;
+          flex-direction: row;
+          justify-content: space-between;
           .vesting-item-card-row-container {
             display: flex;
             flex-direction: row;

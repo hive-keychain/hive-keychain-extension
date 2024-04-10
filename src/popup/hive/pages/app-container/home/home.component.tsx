@@ -1,4 +1,4 @@
-import { UserVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
@@ -54,7 +54,7 @@ const Home = ({
     WrongKeysOnUser | undefined
   >();
   const [vestingRoutesDifferences, setVestingRoutesDifferences] = useState<
-    UserVestingRoutesDifferences[] | undefined
+    AccountVestingRoutesDifferences[] | undefined
   >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
@@ -68,14 +68,6 @@ const Home = ({
     initSurvey();
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes();
-    //TODO Remove after testings & code review, this block bellow
-    // VestingRoutesUtils.sendTestVestingRoutes(
-    //   ['keychain.tests', 'sexosentido'],
-    //   accounts,
-    //   1150,
-    //   true,
-    // );
-    //end block
   }, []);
 
   useEffect(() => {
@@ -178,7 +170,7 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
-    vestingRoutesDifferences: UserVestingRoutesDifferences[] | undefined,
+    vestingRoutesDifferences: AccountVestingRoutesDifferences[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (

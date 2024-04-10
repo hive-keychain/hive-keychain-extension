@@ -1,4 +1,4 @@
-import { UserVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -12,7 +12,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 interface Props {
-  vestingRoutesDifferences: UserVestingRoutesDifferences[];
+  vestingRoutesDifferences: AccountVestingRoutesDifferences[];
   closePopup: () => void;
 }
 
@@ -50,21 +50,18 @@ const VestingRoutesPopup = ({
         showThumbs={false}
         showStatus={false}
         dynamicHeight>
-        {vestingRoutesDifferences.map(
-          ({ account, lastRoutes, currentRoutes }) => {
-            return (
-              <VestinRouteItemComponent
-                key={`vesting-route-item-${account}`}
-                account={account}
-                lastRoutes={lastRoutes}
-                currentRoutes={currentRoutes}
-                nextCarouselSlide={nextCarouselSlide}
-                isLast={pageIndex === vestingRoutesDifferences.length - 1}
-                clearDisplayWrongVestingRoutes={closePopup}
-              />
-            );
-          },
-        )}
+        {vestingRoutesDifferences.map(({ account, differences }) => {
+          return (
+            <VestinRouteItemComponent
+              key={`vesting-route-item-${account}`}
+              account={account}
+              differences={differences}
+              nextCarouselSlide={nextCarouselSlide}
+              isLast={pageIndex === vestingRoutesDifferences.length - 1}
+              clearDisplayWrongVestingRoutes={closePopup}
+            />
+          );
+        })}
       </Carousel>
     </PopupContainer>
   );

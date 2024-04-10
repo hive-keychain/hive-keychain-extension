@@ -1,5 +1,4 @@
 export interface VestingRoute {
-  id: number;
   fromAccount: string;
   toAccount: string;
   percent: number;
