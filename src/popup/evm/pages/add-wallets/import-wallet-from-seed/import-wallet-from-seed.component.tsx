@@ -29,30 +29,35 @@ const ImportWalletFromSeed = ({
     const { wallet, error, errorParams } =
       EVMWalletUtils.getWalletFromSeedPhrase(seed);
     if (wallet) {
-      console.log(wallet);
+      const derivedWallets = await EVMWalletUtils.deriveWallets(wallet);
+      navigateToWithParams(
+        Screen.IMPORT_EVM_WALLET_CONFIRMATION,
+        derivedWallets,
+      );
     } else {
       setErrorMessage(error!, errorParams);
     }
   };
 
   //TODO: - make input field a textarea (already passed as a type property to the input)
+  //TODO: - add loader while deriving wallets
 
   return (
     <div
-      data-testid={`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`}
-      className="add-by-keys-page">
+      data-testid={`${Screen.IMPORT_EVM_WALLET}-page`}
+      className="import-evm-wallet">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_evm_setup_import_text'),
+          __html: chrome.i18n.getMessage('html_popup_evm_setup_import_text'),
         }}></div>
       <div className="form-container">
         <InputComponent
           dataTestId="input-seed-key"
           value={seed}
           onChange={setSeed}
-          label="popup_html_evm_seed_phrase"
-          placeholder="popup_html_evm_seed_phrase_placeholder"
+          label="html_popup_evm_seed_phrase"
+          placeholder="html_popup_evm_seed_phrase_placeholder"
           type={InputType.TEXT_AREA}
           onEnterPress={submitForm}
         />

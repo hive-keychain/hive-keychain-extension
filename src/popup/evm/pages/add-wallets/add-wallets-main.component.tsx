@@ -78,19 +78,19 @@ const AddWalletMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_evm_add_wallet_method'),
+          __html: chrome.i18n.getMessage('html_popup_evm_add_wallet_method'),
         }}></div>
 
       <div className="button-container">
         <ButtonComponent
           dataTestId="import-evm-wallet-button"
-          label={'popup_html_evm_import_wallet'}
+          label={'html_popup_evm_import_wallet'}
           onClick={handleImportEVMWallet}
           type={ButtonType.ALTERNATIVE}
         />
         <ButtonComponent
           dataTestId="create-evm-wallet-button"
-          label={'popup_html_evm_create_wallet'}
+          label={'html_popup_evm_create_wallet'}
           onClick={handleCreateEVMWallet}
           type={ButtonType.ALTERNATIVE}
         />

@@ -3887,40 +3887,52 @@
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
   },
-  "popup_html_evm_add_wallet_method": {
+  "html_popup_evm_add_wallet_method": {
     "message": "Import your existing EVM wallet or create a new one",
     "description": "EVM > Add wallet main page"
   },
-  "popup_html_evm_import_wallet": {
+  "html_popup_evm_import_wallet": {
     "message": "Import your wallet from a seedphrase",
     "description": "EVM > Add wallet main page"
   },
-  "popup_html_evm_create_wallet": {
+  "html_popup_evm_create_wallet": {
     "message": "Create new EVM wallet",
     "description": "EVM > Add wallet main page"
   },
-  "popup_html_evm_setup_import_text": {
+  "html_popup_evm_setup_import_text": {
     "message": "Import your EVM wallet using the seed phrase you obtained when originally creating your account.<br/><br/>This seed phrase is a 12-words that allows you to recover your accounts.<br/><br/>Make sure to always keep it safe offline.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
-  "popup_html_evm_seed_phrase": {
+  "html_popup_evm_seed_phrase": {
     "message": "Seed Phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
-  "popup_html_evm_seed_phrase_placeholder": {
+  "html_popup_evm_seed_phrase_placeholder": {
     "message": "12-words seed phrase, separated by whitespace",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
-  "htlm_popup_evm_invalid_mnemonic_length": {
+  "html_popup_evm_invalid_mnemonic_length": {
     "message": "Your seedphrase should be 12 words long.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
-  "htlm_popup_evm_invalid_mnemonic_word": {
+  "html_popup_evm_invalid_mnemonic_word": {
     "message": "The word $1 of the seedphrase is incorrect.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
-  "htlm_popup_evm_invalid_mnemonic_checksum": {
+  "html_popup_evm_invalid_mnemonic_checksum": {
     "message": "This seedphrase is invalid.",
     "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_choose_account": {
+    "message": "Select accounts",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_choose_account_text": {
+    "message": "We've preselected accounts with a non-null $1 balance.<br/><br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_create_new_wallet": {
+    "message": "Create Wallet",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   }
 }
