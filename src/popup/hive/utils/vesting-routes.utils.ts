@@ -2,9 +2,10 @@ import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
+  AccountVestingRoutesDifferences,
   UserVestingRoute,
-  UserVestingRoutesDifferences,
   VestingRoute,
+  VestingRouteDifference,
 } from '@interfaces/vesting-routes.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -22,7 +23,6 @@ const getVestingRoutes = async (
   );
   return vestingRoutes.map((vestingRoute: any) => {
     return {
-      id: vestingRoute.id,
       fromAccount: vestingRoute.from_account,
       toAccount: vestingRoute.to_account,
       percent: vestingRoute.percent,
@@ -83,42 +83,116 @@ const getWrongVestingRoutes = async (
     VestingRoutesUtils.saveLastVestingRoutes(currentVestingRoutes);
     return undefined;
   }
-  let userRoutes: UserVestingRoutesDifferences[] = [];
-  if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
-    currentVestingRoutes.map((item) => {
-      let currentVestingRoute = { ...item };
-      let foundLastRoutes = lastVestingRoutes.find(
-        (lastVestingRoute) =>
-          lastVestingRoute.account === currentVestingRoute.account,
-      )!.routes;
-      if (!_.isEqual(foundLastRoutes, currentVestingRoute.routes)) {
-        foundLastRoutes = foundLastRoutes.filter((foundlastRoute) => {
-          if (
-            currentVestingRoute.routes.find((item) =>
-              _.isEqual(item, foundlastRoute),
-            )
-          ) {
-            //now we remove it from the current as well, before assign it later on
-            currentVestingRoute.routes = currentVestingRoute.routes.filter(
-              (c) => c.id !== foundlastRoute.id,
-            );
-            return false;
-          }
-          return true;
-        });
 
-        userRoutes.push({
-          account: currentVestingRoute.account,
-          lastRoutes: foundLastRoutes,
-          currentRoutes: currentVestingRoute.routes,
-        });
-      }
-    });
-    userRoutes = userRoutes.filter(
-      (item) => item.currentRoutes.length > 0 || item.lastRoutes.length > 0,
+  let accountsVestingRoutesDifferences: AccountVestingRoutesDifferences[] = [];
+
+  for (const account of localAccounts) {
+    const accountVestingRoutesDifferences: AccountVestingRoutesDifferences = {
+      account: account.name,
+      differences: [],
+    };
+    const oldRoutes = lastVestingRoutes.find(
+      (vestingRoute) => vestingRoute.account === account.name,
     );
+    const currentRoutes = currentVestingRoutes.find(
+      (vestingRoute) => vestingRoute.account === account.name,
+    );
+
+    // Compare
+    console.log(oldRoutes, currentRoutes);
+    if (!_.isEqual(oldRoutes, currentRoutes)) {
+      console.log('different');
+      if (oldRoutes)
+        for (const oldRoute of oldRoutes.routes) {
+          let difference: VestingRouteDifference = {};
+          const foundInCurrentRoutes = currentRoutes?.routes.find(
+            (route) => route.toAccount === oldRoute.toAccount,
+          );
+          if (foundInCurrentRoutes) {
+            if (!_.isEqual(foundInCurrentRoutes, oldRoute)) {
+              difference = { oldRoute, newRoute: foundInCurrentRoutes };
+            }
+          } else {
+            difference = { oldRoute, newRoute: undefined };
+          }
+          accountVestingRoutesDifferences.differences.push(difference);
+        }
+      if (currentRoutes)
+        for (const currentRoute of currentRoutes.routes) {
+          let difference: VestingRouteDifference = {};
+          const foundInOldRoutes = oldRoutes?.routes.find(
+            (route) => route.toAccount === currentRoute.toAccount,
+          );
+          if (foundInOldRoutes) {
+            if (!_.isEqual(foundInOldRoutes, currentRoute)) {
+              if (
+                !accountVestingRoutesDifferences.differences.find(
+                  (diff) =>
+                    diff.newRoute?.toAccount === currentRoute.toAccount &&
+                    diff.oldRoute?.toAccount === foundInOldRoutes?.toAccount,
+                )
+              )
+                difference = {
+                  newRoute: currentRoute,
+                  oldRoute: foundInOldRoutes,
+                };
+            }
+          } else {
+            difference = { oldRoute: undefined, newRoute: currentRoute };
+          }
+          if (difference.oldRoute || difference.newRoute)
+            accountVestingRoutesDifferences.differences.push(difference);
+        }
+    } else {
+      console.log('same routes');
+    }
+
+    if (accountVestingRoutesDifferences.differences.length > 0) {
+      accountsVestingRoutesDifferences.push(accountVestingRoutesDifferences);
+    }
   }
-  return userRoutes.length > 0 ? userRoutes : undefined;
+  console.log(accountsVestingRoutesDifferences);
+
+  // let userRoutes: UserVestingRoutesDifferences[] = [];
+  // if (!_.isEqual(lastVestingRoutes, currentVestingRoutes)) {
+  //   currentVestingRoutes.map((item) => {
+  //     let currentVestingRoute = { ...item };
+  //     let foundLastRoutes = lastVestingRoutes.find(
+  //       (lastVestingRoute) =>
+  //         lastVestingRoute.account === currentVestingRoute.account,
+  //     )!.routes;
+  //     if (!_.isEqual(foundLastRoutes, currentVestingRoute.routes)) {
+  //       foundLastRoutes = foundLastRoutes.filter((foundlastRoute) => {
+  //         if (
+  //           currentVestingRoute.routes.find((item) =>
+  //             _.isEqual(item, foundlastRoute),
+  //           )
+  //         ) {
+  //           //now we remove it from the current as well, before assign it later on
+  //           currentVestingRoute.routes = currentVestingRoute.routes.filter(
+  //             (c) => c.id !== foundlastRoute.id,
+  //           );
+  //           return false;
+  //         }
+  //         return true;
+  //       });
+
+  //       userRoutes.push({
+  //         account: currentVestingRoute.account,
+  //         lastRoutes: foundLastRoutes,
+  //         currentRoutes: currentVestingRoute.routes,
+  //       });
+  //     }
+  //   });
+  //   console.log([...userRoutes]);
+  //   userRoutes = userRoutes.filter(
+  //     (item) => item.currentRoutes.length > 0 || item.lastRoutes.length > 0,
+  //   );
+  //   console.log([...userRoutes]);
+  // }
+  // return userRoutes.length > 0 ? userRoutes : undefined;
+
+  return accountsVestingRoutesDifferences;
 };
 
 const saveLastVestingRoutes = async (vestingRoutes: UserVestingRoute[]) => {
@@ -254,6 +328,7 @@ const revertAccountRoutes = async (
     percent: number;
     autoVest: boolean;
   }[] = [];
+
   if (lastRoutes.length === currentRoutes.length) {
     lastRoutes.map(({ fromAccount, toAccount, percent, autoVest }) => {
       broadcastOperation.push({
@@ -298,6 +373,7 @@ const revertAccountRoutes = async (
         activeKey,
       );
     }
+    // no need
     const currentRoutes = await VestingRoutesUtils.getAllAccountsVestingRoutes(
       accounts.map((a) => a.name),
       'outgoing',
