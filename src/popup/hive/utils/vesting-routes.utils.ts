@@ -217,31 +217,27 @@ const revertAccountRoutes = async (
   differences: VestingRouteDifference[],
   account: string,
 ) => {
-  const broadcastOperation: {
-    fromAccount: string;
-    toAccount: string;
-    percent: number;
-    autoVest: boolean;
-  }[] = [];
+  const broadcastOperations: SetWithdrawVestingRouteOperation[] = [];
   const activeKey = accounts.find((a) => a.name === account)?.keys.active!;
   if (activeKey) {
     differences.map(({ oldRoute, newRoute }) => {
       if (oldRoute) {
-        broadcastOperation.push(oldRoute);
+        const { fromAccount, toAccount, percent, autoVest } = oldRoute;
+        broadcastOperations.push(
+          getVestingRouteOperation(fromAccount, toAccount, percent, autoVest),
+        );
       } else if (newRoute) {
-        broadcastOperation.push({ ...newRoute, percent: 0 });
+        const { fromAccount, toAccount, autoVest } = newRoute;
+        broadcastOperations.push(
+          getVestingRouteOperation(fromAccount, toAccount, 0, autoVest),
+        );
       }
     });
     try {
-      for (const t of broadcastOperation) {
-        const result = await VestingRoutesUtils.sendVestingRoute(
-          t.fromAccount,
-          t.toAccount,
-          t.percent,
-          t.autoVest,
-          activeKey,
-        );
-      }
+      const result = await HiveTxUtils.sendOperation(
+        broadcastOperations,
+        activeKey,
+      );
     } catch (error) {
       Logger.error('Error while reverting vesting route(s)', true);
     }
