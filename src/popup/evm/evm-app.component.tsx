@@ -1,4 +1,4 @@
-import { EVMRouterComponent } from '@popup/evm/evm-router.component';
+import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -9,7 +9,7 @@ const EvmApp = ({ navigateTo }: PropsFromRedux) => {
   useEffect(() => {
     navigateTo(Screen.EVM_ADD_WALLET_MAIN);
   }, []);
-  return <EVMRouterComponent />;
+  return <EvmRouterComponent />;
 };
 
 const mapStateToProps = (state: RootState) => {
@@ -22,4 +22,4 @@ const connector = connect(mapStateToProps, {
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const EVMAppComponent = connector(EvmApp);
+export const EvmAppComponent = connector(EvmApp);

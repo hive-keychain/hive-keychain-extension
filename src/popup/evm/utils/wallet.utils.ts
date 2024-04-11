@@ -1,6 +1,14 @@
-import { WalletWithBalance } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  StoredEvmAccount,
+  StoredEvmAccounts,
+  WalletWithBalance,
+} from '@popup/evm/interfaces/wallet.interface';
 import EthersUtils from '@popup/evm/utils/ethers.utils';
+import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getWalletFromSeedPhrase = (seed: string) => {
   let wallet: HDNodeWallet | undefined, error;
@@ -61,10 +69,47 @@ const createWallet = () => {
   return ethers.Wallet.createRandom();
 };
 
-const EVMWalletUtils = {
+const saveAccounts = (
+  wallet: HDNodeWallet,
+  accounts: StoredEvmAccount[],
+  mk: string,
+) => {
+  const EvmAccountObject: StoredEvmAccounts = {
+    seed: wallet.mnemonic!.phrase,
+    accounts,
+  };
+  const encryptedAccounts = EncryptUtils.encryptJson(EvmAccountObject, mk);
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_ACCOUNTS,
+    encryptedAccounts,
+  );
+};
+
+const getAccountsFromLocalStorage = async (mk: string) => {
+  const wallets = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ACCOUNTS,
+  );
+  return EncryptUtils.decryptToJson(wallets, mk) as StoredEvmAccounts;
+};
+
+const rebuildAccounts = async (mk: string) => {
+  const accounts = await getAccountsFromLocalStorage(mk);
+  return accounts.accounts.map((e) => {
+    const account: EvmAccount = {
+      ...e,
+      wallet: HDNodeWallet.fromPhrase(accounts.seed, undefined, e.path),
+    };
+    return account;
+  });
+};
+
+const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
   createWallet,
+  saveAccounts,
+  getAccountsFromLocalStorage,
+  rebuildAccounts,
 };
 
-export default EVMWalletUtils;
+export default EvmWalletUtils;

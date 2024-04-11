@@ -1,7 +1,7 @@
 import { BackgroundMessage } from '@background/background-message.interface';
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
-import { EVMAppComponent } from '@popup/evm/evm-app.component';
+import { EvmAppComponent } from '@popup/evm/evm-app.component';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
 import { HiveAppComponent } from '@popup/hive/hive-app.component';
 import MkUtils from '@popup/hive/utils/mk.utils';
@@ -97,7 +97,7 @@ const ChainRouter = ({
         case Chain.HIVE:
           return <HiveAppComponent />;
         case Chain.EVM:
-          return <EVMAppComponent />;
+          return <EvmAppComponent />;
         default:
           return <ChainSelector />;
       }

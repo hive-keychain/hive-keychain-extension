@@ -26,10 +26,10 @@ const AddWalletMain = ({
     });
   });
 
-  const handleCreateEVMWallet = (): void => {
+  const handleCreateEvmWallet = (): void => {
     navigateTo(Screen.CREATE_EVM_WALLET);
   };
-  const handleImportEVMWallet = (): void => {
+  const handleImportEvmWallet = (): void => {
     navigateTo(Screen.IMPORT_EVM_WALLET);
   };
 
@@ -85,13 +85,13 @@ const AddWalletMain = ({
         <ButtonComponent
           dataTestId="import-evm-wallet-button"
           label={'html_popup_evm_import_wallet'}
-          onClick={handleImportEVMWallet}
+          onClick={handleImportEvmWallet}
           type={ButtonType.ALTERNATIVE}
         />
         <ButtonComponent
           dataTestId="create-evm-wallet-button"
           label={'html_popup_evm_create_wallet'}
-          onClick={handleCreateEVMWallet}
+          onClick={handleCreateEvmWallet}
           type={ButtonType.ALTERNATIVE}
         />
         {/* <ButtonComponent

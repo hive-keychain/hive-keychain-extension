@@ -9,7 +9,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
-const EVMAppRouter = ({
+const EvmAppRouter = ({
   currentPage,
   titleProperties,
   hasTitle,
@@ -68,4 +68,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const EVMRouterComponent = connector(EVMAppRouter);
+export const EvmRouterComponent = connector(EvmAppRouter);

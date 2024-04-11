@@ -1,4 +1,4 @@
-import EVMWalletUtils from '@popup/evm/utils/wallet.utils';
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -27,13 +27,13 @@ const ImportWalletFromSeed = ({
 
   const submitForm = async (): Promise<void> => {
     const { wallet, error, errorParams } =
-      EVMWalletUtils.getWalletFromSeedPhrase(seed);
+      EvmWalletUtils.getWalletFromSeedPhrase(seed);
     if (wallet) {
-      const derivedWallets = await EVMWalletUtils.deriveWallets(wallet);
-      navigateToWithParams(
-        Screen.IMPORT_EVM_WALLET_CONFIRMATION,
+      const derivedWallets = await EvmWalletUtils.deriveWallets(wallet);
+      navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
+        wallet,
         derivedWallets,
-      );
+      });
     } else {
       setErrorMessage(error!, errorParams);
     }

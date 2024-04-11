@@ -1,9 +1,10 @@
 import { WalletWithBalance } from '@popup/evm/interfaces/wallet.interface';
-import EVMFormatUtils from '@popup/evm/utils/format.utils';
+import EvmFormatUtils from '@popup/evm/utils/format.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -14,6 +15,7 @@ const ImportWalletConfirmation = ({
   setTitleContainerProperties,
   walletsWithBalance,
   setErrorMessage,
+  wallet,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
   useEffect(() => {
@@ -63,7 +65,7 @@ const ImportWalletConfirmation = ({
               skipTranslation
               title={`${chrome.i18n.getMessage('dialog_account')} ${
                 i + 1
-              }: ${EVMFormatUtils.formatAddress(e.wallet.address)}`}
+              }: ${EvmFormatUtils.formatAddress(e.wallet.address)}`}
               hint={`${chrome.i18n.getMessage('popup_html_balance')}: ${
                 e.balance
               } ETH`}
@@ -83,7 +85,9 @@ const ImportWalletConfirmation = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    walletsWithBalance: state.navigation.stack[0].params as WalletWithBalance[],
+    walletsWithBalance: state.navigation.stack[0].params
+      .derivedWallets as WalletWithBalance[],
+    wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
   };
 };
 

@@ -1,4 +1,4 @@
-import EVMWalletUtils from '@popup/evm/utils/wallet.utils';
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -23,7 +23,7 @@ const CreateNewWallet = ({
       isCloseButtonDisabled: true,
     });
 
-    setWallet(EVMWalletUtils.createWallet());
+    setWallet(EvmWalletUtils.createWallet());
   }, []);
 
   const submitForm = async (): Promise<void> => {
