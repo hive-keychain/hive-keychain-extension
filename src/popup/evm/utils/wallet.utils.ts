@@ -1,6 +1,5 @@
 import {
   EvmAccount,
-  StoredEvmAccount,
   StoredEvmAccounts,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
@@ -71,14 +70,19 @@ const createWallet = () => {
 
 const saveAccounts = (
   wallet: HDNodeWallet,
-  accounts: StoredEvmAccount[],
+  accounts: EvmAccount[],
   mk: string,
 ) => {
-  const EvmAccountObject: StoredEvmAccounts = {
+  const evmAccountObject: StoredEvmAccounts = {
     seed: wallet.mnemonic!.phrase,
-    accounts,
+    accounts: accounts.map((derivedWallet) => ({
+      id: derivedWallet.id,
+      path: derivedWallet.path!,
+    })),
   };
-  const encryptedAccounts = EncryptUtils.encryptJson(EvmAccountObject, mk);
+  console.log(evmAccountObject);
+  const encryptedAccounts = EncryptUtils.encryptJson(evmAccountObject, mk);
+
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
     encryptedAccounts,

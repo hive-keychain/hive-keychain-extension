@@ -1,3 +1,6 @@
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -12,6 +15,9 @@ const CreateNewWalletVerification = ({
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
+  wallet,
+  mk,
+  setEvmAccounts,
 }: PropsType) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -21,7 +27,18 @@ const CreateNewWalletVerification = ({
     });
   }, []);
 
-  const submitForm = async (): Promise<void> => {};
+  const submitForm = async (): Promise<void> => {
+    //TODO: Show error if comparison between real seed and the one typed by the user fails
+
+    const derivedWallet = wallet.deriveChild(0);
+    const account: EvmAccount = {
+      id: derivedWallet.index,
+      path: derivedWallet.path!,
+      wallet: derivedWallet,
+    };
+    await EvmWalletUtils.saveAccounts(wallet, [account], mk);
+    setEvmAccounts([account]);
+  };
 
   //TODO : Check design at https://www.figma.com/file/dNbTAJVEhzc6N9Vyc3KWO2/Hive-Keychain?type=design&node-id=2030-10481&mode=design&t=K3XrHi52olosr08f-0
   //       Try changing the style a little bit because the designers literally copied it from MM, same for text.
@@ -50,13 +67,17 @@ const CreateNewWalletVerification = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { wallet: state.navigation.stack[0].params as HDNodeWallet[] };
+  return {
+    wallet: state.navigation.stack[0].params as HDNodeWallet,
+    mk: state.mk,
+  };
 };
 
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
+  setEvmAccounts,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

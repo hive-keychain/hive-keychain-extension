@@ -1,3 +1,4 @@
+import evmReducers from '@popup/evm/reducers';
 import hiveReducers from '@popup/hive/reducers';
 import { HasFinishedSignupReducer } from '@popup/multichain/reducers/has-finished-signup.reducer';
 import { LoadingReducer } from '@popup/multichain/reducers/loading.reducer';
@@ -14,5 +15,6 @@ export default combineReducers({
   loading: LoadingReducer,
   titleContainer: TitleContainerReducer,
   hive: hiveReducers,
+  evm: evmReducers,
   hasFinishedSignup: HasFinishedSignupReducer,
 });

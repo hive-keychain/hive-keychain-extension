@@ -84,6 +84,34 @@ if (store.getState().hive) {
   });
 }
 
+if (store.getState().evm) {
+  let previousAccounts = store.getState().evm.accounts;
+
+  /* istanbul ignore next */
+
+  store.subscribe(() => {
+    const {
+      mk,
+      evm: { accounts },
+      hasFinishedSignup,
+    } = store.getState();
+    if (JSON.stringify(previousAccounts) !== JSON.stringify(accounts)) {
+      if (
+        previousAccounts.length === 0 &&
+        previousAccounts.length !== accounts.length &&
+        !hasFinishedSignup
+      ) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+          true,
+        );
+        store.dispatch(setHasFinishedSignup(true));
+      }
+      previousAccounts = accounts;
+    }
+  });
+}
+
 export { store };
 
 export type RootState = ReturnType<typeof store.getState>;
