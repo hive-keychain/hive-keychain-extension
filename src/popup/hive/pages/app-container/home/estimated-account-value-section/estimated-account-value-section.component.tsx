@@ -1,3 +1,4 @@
+import { HiveInternalMarketLockedInOrders } from '@popup/hive/utils/hive-internal-market.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +14,10 @@ export enum AccountValueType {
   HIVE = 'HIVE',
   HIDDEN = 'HIDDEN',
 }
+
+interface Props {
+  hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders;
+}
 const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
@@ -20,7 +25,8 @@ const EstimatedAccountValueSection = ({
   tokensBalance,
   tokensMarket,
   tokens,
-}: PropsFromRedux) => {
+  hiveMarketLockedOpenOrdersValues,
+}: PropsFromRedux & Props) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
     AccountValueType.DOLLARS,
@@ -43,7 +49,8 @@ const EstimatedAccountValueSection = ({
       currencyPrices &&
       globalProperties?.globals &&
       tokensBalance &&
-      tokensMarket
+      tokensMarket &&
+      hiveMarketLockedOpenOrdersValues
     ) {
       setAccountValue(
         AccountUtils.getAccountValue(
@@ -54,6 +61,7 @@ const EstimatedAccountValueSection = ({
           tokensMarket,
           accountValueType,
           tokens,
+          hiveMarketLockedOpenOrdersValues,
         ),
       );
     }
@@ -64,6 +72,7 @@ const EstimatedAccountValueSection = ({
     tokensBalance,
     tokensMarket,
     accountValueType,
+    hiveMarketLockedOpenOrdersValues,
   ]);
 
   const openPortfolio = async () => {

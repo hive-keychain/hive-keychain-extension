@@ -1,3 +1,7 @@
+import {
+  HiveInternalMarketLockedInOrders,
+  HiveInternalMarketUtils,
+} from '@popup/hive/utils/hive-internal-market.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -52,6 +56,10 @@ const Home = ({
   >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
+  const [
+    hiveMarketLockedOpenOrdersValues,
+    setHiveMarketLockedOpenOrdersValues,
+  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -62,6 +70,18 @@ const Home = ({
     initSurvey();
     initCheckKeysOnAccounts(accounts);
   }, []);
+
+  useEffect(() => {
+    if (activeAccount.name) {
+      loadHiveInternalMarketOrders(activeAccount.name);
+    }
+  }, [activeAccount]);
+
+  const loadHiveInternalMarketOrders = async (username: string) => {
+    setHiveMarketLockedOpenOrdersValues(
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username),
+    );
+  };
 
   useEffect(() => {
     if (activeRpc && activeRpc.uri !== 'NULL')
@@ -205,7 +225,11 @@ const Home = ({
           <TopBarComponent />
           <div className={'home-page-content'} onScroll={handleScroll}>
             <ResourcesSectionComponent />
-            <EstimatedAccountValueSectionComponent />
+            <EstimatedAccountValueSectionComponent
+              hiveMarketLockedOpenOrdersValues={
+                hiveMarketLockedOpenOrdersValues
+              }
+            />
             <WalletInfoSectionComponent />
           </div>
           <ActionsSectionComponent
