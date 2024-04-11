@@ -5,6 +5,7 @@ import {
   TransferOperation,
 } from '@hiveio/dhive';
 import TransactionUtils from '@popup/hive/utils/transaction.utils';
+import moment from 'moment';
 import { KeychainError } from 'src/keychain-error';
 import Logger from 'src/utils/logger.utils';
 
@@ -12,7 +13,7 @@ const proposal_fee = 87;
 const collateralized_convert_immediate_conversion = 88;
 
 interface ExportTransactionOperation {
-  datetime: Date;
+  datetime: string;
   transactionId: string;
   blockNumber: number;
   from?: string;
@@ -49,12 +50,13 @@ const fetchTransaction = async (
     proposal_fee,
   ]) as [number, number];
   const lastTransaction = await TransactionUtils.getLastTransaction(username);
+
   let limit = Math.min();
   let start = lastTransaction;
   let rawTransactions: any[] = [];
 
   let operations: ExportTransactionOperation[] = [];
-
+  let forceStop = false;
   try {
     do {
       rawTransactions = await TransactionUtils.getTransactions(
@@ -65,15 +67,27 @@ const fetchTransaction = async (
         operationsBitmask[1],
       );
 
-      for (const tx of rawTransactions) {
+      for (let i = rawTransactions.length - 1; i >= 0; i--) {
+        const tx = rawTransactions[i];
         const operationPayload = tx[1].op[1];
         const operationType = tx[1].op[0];
         const transactionInfo = tx[1];
-        const datetime = new Date(transactionInfo.timestamp);
+        const localDatetime = moment(transactionInfo.timestamp + 'z').format(
+          'yyyy-MM-DD hh:mm:ss',
+        );
+        const date = moment.utc(transactionInfo.timestamp);
+
+        if (endDate && date.isSameOrAfter(moment(endDate).add(1, 'day'), 'day'))
+          continue;
+
+        if (startDate && date.isBefore(moment(startDate), 'day')) {
+          forceStop = true;
+          break;
+        }
 
         const operation: ExportTransactionOperation = {
           operationType: operationType,
-          datetime: datetime,
+          datetime: localDatetime,
           transactionId: transactionInfo.trx_id,
           blockNumber: transactionInfo.block,
           to: 'NA',
@@ -328,11 +342,11 @@ const fetchTransaction = async (
         }
       }
 
+      console.log(operations);
+
       start = Math.min(start - 1000, rawTransactions[0][0] - 1);
-    } while (start > MAX_LIMIT);
-    return operations.sort(
-      (a, b) => b.datetime.getTime() - a.datetime.getTime(),
-    );
+    } while (start > MAX_LIMIT && !forceStop);
+    return operations;
   } catch (err) {
     Logger.error('Error while fetching transactions', err);
   }
@@ -353,8 +367,12 @@ const generateCSV = (operations: ExportTransactionOperation[]): string => {
   return csvContent;
 };
 
-const downloadTransactions = async (username: string) => {
-  const operations = await fetchTransaction(username);
+const downloadTransactions = async (
+  username: string,
+  startDate?: Date,
+  endDate?: Date,
+) => {
+  const operations = await fetchTransaction(username, startDate, endDate);
   if (!operations) {
     throw new KeychainError('export_transactions_fetching_error');
   }

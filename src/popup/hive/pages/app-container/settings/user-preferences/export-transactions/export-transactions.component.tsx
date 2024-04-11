@@ -5,31 +5,16 @@ import {
 import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import { Screen } from '@reference-data/screen.enum';
-import Joi from 'joi';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
-import { FormUtils } from 'src/utils/form.utils';
-
-interface ExportTransactionsForm {
-  startDate: string;
-  endDate: string;
-}
-
-const exportTransactionsRules = FormUtils.createRules<ExportTransactionsForm>({
-  startDate: Joi.string(),
-  endDate: Joi.string(),
-});
-
-const MINIMUM_FETCHED_TRANSACTIONS = 1;
 
 const ExportTransactions = ({
   activeAccount,
@@ -38,12 +23,8 @@ const ExportTransactions = ({
   removeFromLoadingList,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const { control, handleSubmit } = useForm<ExportTransactionsForm>({
-    defaultValues: {
-      startDate: '',
-      endDate: '',
-    },
-  });
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState(new Date('2022-01-01'));
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -52,10 +33,14 @@ const ExportTransactions = ({
     });
   }, []);
 
-  const handleClickOnDownload = async (form: ExportTransactionsForm) => {
+  const handleClickOnDownload = async () => {
     addToLoadingList('popup_html_pref_export_transactions_loading_message');
     try {
-      await ExportTransactionUtils.downloadTransactions(activeAccount.name!);
+      await ExportTransactionUtils.downloadTransactions(
+        activeAccount.name!,
+        startDate,
+        endDate,
+      );
     } catch (err) {
       const error = err as KeychainError;
       setErrorMessage(error.message, error.messageParams);
@@ -75,21 +60,21 @@ const ExportTransactions = ({
       </div>
 
       <SelectAccountSectionComponent fullSize background="white" />
-      <FormContainer onSubmit={handleSubmit(handleClickOnDownload)}>
+      <FormContainer onSubmit={handleClickOnDownload}>
         <div className="form-fields">
-          <FormInputComponent
-            name="startDate"
-            control={control}
+          <InputComponent
+            onChange={setStartDate}
+            value={startDate}
             dataTestId="input-startDate"
-            type={InputType.TEXT}
+            type={InputType.DATE}
             placeholder="popup_html_start_date"
             label="popup_html_start_date"
           />
-          <FormInputComponent
-            name="endDate"
-            control={control}
+          <InputComponent
+            onChange={setEndDate}
+            value={endDate}
             dataTestId="input-endDate"
-            type={InputType.TEXT}
+            type={InputType.DATE}
             placeholder="popup_html_end_date"
             label="popup_html_end_date"
           />
@@ -97,7 +82,7 @@ const ExportTransactions = ({
         <ButtonComponent
           label="popup_html_download"
           dataTestId="export-transactions-download"
-          onClick={handleSubmit(handleClickOnDownload)}
+          onClick={handleClickOnDownload}
         />
       </FormContainer>
     </div>
