@@ -2,6 +2,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/hive/actions/loading.actions';
+import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import { Screen } from '@reference-data/screen.enum';
 import Joi from 'joi';
@@ -13,6 +14,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
+import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { RootState } from 'src/popup/hive/store';
 import { FormUtils } from 'src/utils/form.utils';
@@ -34,6 +36,7 @@ const ExportTransactions = ({
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const { control, handleSubmit } = useForm<ExportTransactionsForm>({
     defaultValues: {
@@ -51,10 +54,16 @@ const ExportTransactions = ({
 
   const handleClickOnDownload = async (form: ExportTransactionsForm) => {
     addToLoadingList('popup_html_pref_export_transactions_loading_message');
-    await ExportTransactionUtils.downloadTransactions(activeAccount.name!);
-    removeFromLoadingList(
-      'popup_html_pref_export_transactions_loading_message',
-    );
+    try {
+      await ExportTransactionUtils.downloadTransactions(activeAccount.name!);
+    } catch (err) {
+      const error = err as KeychainError;
+      setErrorMessage(error.message, error.messageParams);
+    } finally {
+      removeFromLoadingList(
+        'popup_html_pref_export_transactions_loading_message',
+      );
+    }
   };
 
   return (
@@ -105,6 +114,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

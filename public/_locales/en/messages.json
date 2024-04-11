@@ -3914,5 +3914,9 @@
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "export_transactions_fetching_error": {
+    "message": "There was an error while fetching your transactions. Please try again later",
+    "description": "Error while downloading transactions"
   }
 }
