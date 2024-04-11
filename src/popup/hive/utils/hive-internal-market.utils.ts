@@ -16,7 +16,6 @@ const getHiveInternalMarketOrders = async (username: string) => {
       'condenser_api.get_open_orders',
       [username],
     );
-    console.log({ openMarketOrders }); //TODO remove line
     totals.hive = openMarketOrders
       .filter((order: any) => order.sell_price.base.includes('HIVE'))
       .reduce(
