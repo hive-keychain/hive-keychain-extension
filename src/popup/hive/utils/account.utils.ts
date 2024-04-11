@@ -368,6 +368,7 @@ const getAccountValue = (
   accountValueType: AccountValueType,
   tokens: Token[],
   hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders,
+  hiddenTokensList: string[],
 ) => {
   if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
@@ -379,6 +380,7 @@ const getAccountValue = (
     prices,
     tokensMarket,
     tokens,
+    hiddenTokensList,
   );
   const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
     (acc, curr) => acc + curr.usdValue,

@@ -98,12 +98,16 @@ const getPortfolio = async (
 
   const portfolio: UserPortfolio[] = [];
   const tokens = await TokensUtils.getAllTokens();
+  const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.HIDDEN_TOKENS,
+  );
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
       prices,
       tokensMarket,
       tokens,
+      hiddenTokensList,
     );
     portfolio.push({
       account: userTokens.username,
@@ -201,9 +205,12 @@ const generateUserLayerTwoPortolio = (
   prices: CurrencyPrices,
   tokensMarket: TokenMarket[],
   tokens: Token[],
+  hiddenTokensList: string[],
 ) => {
   const userLayerTwoPortfolio: PortfolioBalance[] = [];
-  for (const userToken of userTokens.tokensBalance) {
+  for (const userToken of userTokens.tokensBalance.filter(
+    (token) => !hiddenTokensList.includes(token.symbol),
+  )) {
     userLayerTwoPortfolio.push(
       getPortfolioHETokenData(userToken, tokensMarket, prices, tokens),
     );

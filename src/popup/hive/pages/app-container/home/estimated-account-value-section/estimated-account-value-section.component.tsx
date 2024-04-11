@@ -31,9 +31,19 @@ const EstimatedAccountValueSection = ({
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
     AccountValueType.DOLLARS,
   );
+  const [hiddenTokensList, setHiddenTokensList] = useState<string[]>();
+
   useEffect(() => {
     init();
+    loadHiddenTokensList();
   }, []);
+
+  const loadHiddenTokensList = async () => {
+    const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    );
+    setHiddenTokensList(hiddenTokensList);
+  };
 
   const init = async () => {
     setAccountValueType(
@@ -50,7 +60,8 @@ const EstimatedAccountValueSection = ({
       globalProperties?.globals &&
       tokensBalance &&
       tokensMarket &&
-      hiveMarketLockedOpenOrdersValues
+      hiveMarketLockedOpenOrdersValues &&
+      hiddenTokensList
     ) {
       setAccountValue(
         AccountUtils.getAccountValue(
@@ -62,6 +73,7 @@ const EstimatedAccountValueSection = ({
           accountValueType,
           tokens,
           hiveMarketLockedOpenOrdersValues,
+          hiddenTokensList,
         ),
       );
     }
@@ -73,6 +85,7 @@ const EstimatedAccountValueSection = ({
     tokensMarket,
     accountValueType,
     hiveMarketLockedOpenOrdersValues,
+    hiddenTokensList,
   ]);
 
   const openPortfolio = async () => {
