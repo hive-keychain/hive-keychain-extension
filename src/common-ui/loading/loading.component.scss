@@ -23,6 +23,18 @@
     z-index: 1;
   }
 
+  .progress-bar-container {
+    height: 24px;
+    width: 300px;
+    border-radius: 16px;
+    border: 1px solid $red;
+    background: transparent;
+    .progress-bar {
+      height: 24px;
+      background: $red;
+    }
+  }
+
   .loading-caption {
     color: white;
     z-index: 1;

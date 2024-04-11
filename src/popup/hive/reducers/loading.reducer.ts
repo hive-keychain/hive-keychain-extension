@@ -12,6 +12,7 @@ export interface LoadingOperation {
 export interface LoadingState {
   loadingOperations: LoadingOperation[];
   caption?: string;
+  loadingPercentage?: number;
 }
 
 export interface LoadingPayload {
@@ -25,9 +26,18 @@ export interface SetCaptionPayload {
   caption: string;
 }
 
+export interface SetLoadingPercentagePayload {
+  loadingPercentage: number;
+}
+
 export const LoadingReducer = (
   state: LoadingState = { loadingOperations: [], caption: undefined },
-  { type, payload }: ActionPayload<LoadingPayload | SetCaptionPayload>,
+  {
+    type,
+    payload,
+  }: ActionPayload<
+    LoadingPayload | SetCaptionPayload | SetLoadingPercentagePayload
+  >,
 ): LoadingState => {
   switch (type) {
     case ActionType.ADD_TO_LOADING_LIST: {
@@ -70,6 +80,7 @@ export const LoadingReducer = (
       const newState: LoadingState = {
         loadingOperations: [...state.loadingOperations],
         caption: state.caption,
+        loadingPercentage: state.loadingPercentage,
       };
       for (let loadingOperation of newState.loadingOperations) {
         if (loadingOperation.name === loadingPayload?.operation) {
@@ -81,13 +92,28 @@ export const LoadingReducer = (
         (loadingOperation) => loadingOperation.done === false,
       )
         ? newState
-        : { loadingOperations: [], caption: undefined };
+        : {
+            loadingOperations: [],
+            caption: undefined,
+            loadingPercentage: undefined,
+          };
     }
     case ActionType.ADD_CAPTION_TO_LOADING_PAGE: {
       const setCaptionPayload = payload as SetCaptionPayload;
       const newState: LoadingState = {
         loadingOperations: [...state.loadingOperations],
         caption: setCaptionPayload.caption,
+        loadingPercentage: state.loadingPercentage,
+      };
+      return newState;
+    }
+    case ActionType.ADD_LOADING_PERCENTAGE: {
+      const setLoadingPercentagePayload =
+        payload as SetLoadingPercentagePayload;
+      const newState: LoadingState = {
+        loadingOperations: [...state.loadingOperations],
+        caption: state.caption,
+        loadingPercentage: setLoadingPercentagePayload.loadingPercentage,
       };
       return newState;
     }

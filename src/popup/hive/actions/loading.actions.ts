@@ -31,3 +31,10 @@ export const addCaptionToLoading = (caption: string) => {
     payload: { caption: caption },
   };
 };
+
+export const setLoadingPercentage = (percentage: number) => {
+  return {
+    type: ActionType.ADD_LOADING_PERCENTAGE,
+    payload: { loadingPercentage: percentage },
+  };
+};

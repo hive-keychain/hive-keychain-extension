@@ -3918,5 +3918,13 @@
   "export_transactions_fetching_error": {
     "message": "There was an error while fetching your transactions. Please try again later",
     "description": "Error while downloading transactions"
+  },
+  "export_transactions_incorrect_dates": {
+    "message": "Start date should be before end date",
+    "description": "Error while downloading transactions"
+  },
+  "popup_html_pref_export_transactions_loading_caption": {
+    "message": "$1%",
+    "description": "Caption for download data"
   }
 }

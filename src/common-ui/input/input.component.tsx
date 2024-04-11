@@ -100,7 +100,8 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             value={props.value}
             step={props.step}
             min={props.min}
-            max={props.max}
+            max={props.type === InputType.DATE ? '9999-12-31' : props.max}
+            pattern={props.type === InputType.DATE ? 'yyyy-MM-DD' : undefined}
             onChange={(e) => props.onChange(e.target.value)}
             onKeyPress={(e) => {
               if (e.key === 'Enter' && props.onEnterPress) {

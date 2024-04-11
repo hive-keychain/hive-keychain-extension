@@ -27,6 +27,7 @@ const fetchTransaction = async (
   username: string,
   startDate?: Date,
   endDate?: Date,
+  feedBack?: (percentage: number) => void,
 ): Promise<ExportTransactionOperation[] | undefined> => {
   const MAX_LIMIT = 1000;
   const op = DHiveUtils.operationOrders;
@@ -49,6 +50,9 @@ const fetchTransaction = async (
     op.escrow_approve,
     proposal_fee,
   ]) as [number, number];
+
+  username = 'engrave';
+
   const lastTransaction = await TransactionUtils.getLastTransaction(username);
 
   let limit = Math.min();
@@ -57,6 +61,12 @@ const fetchTransaction = async (
 
   let operations: ExportTransactionOperation[] = [];
   let forceStop = false;
+  let percentageDuration;
+  endDate = new Date();
+  if (startDate) {
+    percentageDuration = endDate.getTime() - new Date(startDate).getTime();
+  }
+
   try {
     do {
       rawTransactions = await TransactionUtils.getTransactions(
@@ -66,16 +76,15 @@ const fetchTransaction = async (
         operationsBitmask[0],
         operationsBitmask[1],
       );
-
       for (let i = rawTransactions.length - 1; i >= 0; i--) {
         const tx = rawTransactions[i];
         const operationPayload = tx[1].op[1];
         const operationType = tx[1].op[0];
         const transactionInfo = tx[1];
         const localDatetime = moment(transactionInfo.timestamp + 'z').format(
-          'yyyy-MM-DD hh:mm:ss',
+          'yyyy-MM-DD HH:mm:ss',
         );
-        const date = moment.utc(transactionInfo.timestamp);
+        const date = moment(transactionInfo.timestamp + 'z');
 
         if (endDate && date.isSameOrAfter(moment(endDate).add(1, 'day'), 'day'))
           continue;
@@ -341,8 +350,23 @@ const fetchTransaction = async (
             break;
         }
       }
+      let percentage;
+      if (startDate && percentageDuration) {
+        // take care of date
+        const tx = rawTransactions[rawTransactions.length - 1];
+        const transactionInfo = tx[1];
+        const date = moment(transactionInfo.timestamp + 'z').toDate();
 
-      console.log(operations);
+        const passedDuration = endDate.getTime() - date.getTime();
+        percentage = (passedDuration / percentageDuration) * 100;
+      } else {
+        // use lastTransaction
+        const index =
+          lastTransaction - rawTransactions[rawTransactions.length - 1][0];
+        percentage = (index / lastTransaction) * 100;
+      }
+      // sendBack percentage
+      if (feedBack) feedBack(percentage);
 
       start = Math.min(start - 1000, rawTransactions[0][0] - 1);
     } while (start > MAX_LIMIT && !forceStop);
@@ -371,8 +395,14 @@ const downloadTransactions = async (
   username: string,
   startDate?: Date,
   endDate?: Date,
+  feedback?: (percentage: number) => void,
 ) => {
-  const operations = await fetchTransaction(username, startDate, endDate);
+  const operations = await fetchTransaction(
+    username,
+    startDate,
+    endDate,
+    feedback,
+  );
   if (!operations) {
     throw new KeychainError('export_transactions_fetching_error');
   }

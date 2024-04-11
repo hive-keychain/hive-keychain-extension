@@ -1,6 +1,7 @@
 import {
   addToLoadingList,
   removeFromLoadingList,
+  setLoadingPercentage,
 } from '@popup/hive/actions/loading.actions';
 import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
@@ -22,9 +23,10 @@ const ExportTransactions = ({
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
+  setLoadingPercentage,
 }: PropsFromRedux) => {
   const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState(new Date('2022-01-01'));
+  const [endDate, setEndDate] = useState();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -34,14 +36,29 @@ const ExportTransactions = ({
   }, []);
 
   const handleClickOnDownload = async () => {
-    addToLoadingList('popup_html_pref_export_transactions_loading_message');
+    console.log(startDate, endDate);
+    if (
+      startDate &&
+      endDate &&
+      new Date(startDate).getTime() > new Date(endDate).getTime()
+    ) {
+      setErrorMessage('export_transactions_incorrect_dates');
+      return;
+    }
+    addToLoadingList(
+      'popup_html_pref_export_transactions_downloading_loading_message',
+    );
     try {
       await ExportTransactionUtils.downloadTransactions(
         activeAccount.name!,
         startDate,
         endDate,
+        (percentage) => {
+          setLoadingPercentage(percentage);
+        },
       );
     } catch (err) {
+      console.log(err);
       const error = err as KeychainError;
       setErrorMessage(error.message, error.messageParams);
     } finally {
@@ -100,6 +117,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
+  setLoadingPercentage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
