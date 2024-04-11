@@ -1,11 +1,12 @@
-export const tutorialSlideDataList = [
+import { TutorialSlideItem } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.interface';
+
+export const tutorialSlideDataList: TutorialSlideItem[] = [
   {
     title: 'What is Keychain?',
     paragraphs: [
       "Keychain is your go-to solution for navigating the Hive ecosystem with ease and security, right at your fingertips. Whether you're on a computer or the go with your smartphone, Keychain empowers you to manage your Hive accounts effortlessly in a way you won't worry about exposing your private keys. With Hive Keychain, you can transfer tokens, cast votes, and handle a variety of transactions seamlessly.",
       'Simple to use and designed with your safety in mind, Keychain is the perfect companion for anyone looking to make the most out of their Hive experience.',
     ],
-    images: [],
   },
   {
     title: 'Four Keys but only three are needed. Why?',

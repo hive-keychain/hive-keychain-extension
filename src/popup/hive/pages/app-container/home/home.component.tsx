@@ -1,3 +1,4 @@
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -221,6 +222,7 @@ const Home = ({
         surveyToDisplay,
         displayWrongKeyPopup,
       )}
+      <TutorialPopupComponent />
     </div>
   );
 };
