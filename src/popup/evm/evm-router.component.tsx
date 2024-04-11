@@ -1,4 +1,6 @@
 import { AddWalletMainComponent } from '@popup/evm/pages/add-wallets/add-wallets-main.component';
+import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet-verification.component';
+import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { RootState } from '@popup/multichain/store';
@@ -21,6 +23,9 @@ const EVMAppRouter = ({
       case Screen.IMPORT_EVM_WALLET_CONFIRMATION:
         return <ImportWalletConfirmationComponent />;
       case Screen.CREATE_EVM_WALLET:
+        return <CreateNewWalletComponent />;
+      case Screen.CREATE_EVM_WALLET_VERIFICATION:
+        return <CreateNewWalletVerificationComponent />;
       default:
         return null;
     }

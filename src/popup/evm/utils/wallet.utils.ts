@@ -57,9 +57,14 @@ const deriveWallets = async (
   });
 };
 
+const createWallet = () => {
+  return ethers.Wallet.createRandom();
+};
+
 const EVMWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
+  createWallet,
 };
 
 export default EVMWalletUtils;
