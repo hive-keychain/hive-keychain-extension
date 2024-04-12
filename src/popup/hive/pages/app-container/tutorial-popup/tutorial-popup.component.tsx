@@ -1,18 +1,12 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-interface Props {
-  // onOverlayClick: () => void;
-  // content: WhatsNewContent;
-}
-
-const TutorialPopup = ({}: Props) => {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [images, setImages] = useState<HTMLImageElement[]>();
-  const [ready, setReady] = useState(false);
-  const locale = 'en'; // later use getUILanguage()
+const TutorialPopup = () => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -23,47 +17,46 @@ const TutorialPopup = ({}: Props) => {
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
-    if (!skipTutorial) {
+    if (skipTutorial === undefined) {
       setShow(true);
     }
   };
 
-  // useEffect(() => {
-  //   const imgs = [];
-  //   for (const feature of content.features[locale]) {
-  //     const imageElement = new Image();
-  //     imageElement.src = feature.image;
-  //     imgs.push(imageElement);
-  //   }
-  //   setImages(imgs);
-  //   imgs[0].onload = () => {
-  //     setReady(true);
-  //   };
-  // }, []);
-
-  // const renderCustomIndicator = (
-  //   clickHandler: (e: React.MouseEvent | React.KeyboardEvent) => void,
-  //   isSelected: boolean,
-  //   index: number,
-  //   label: string,
-  // ) => {
-  //   return (
-  //     <li
-  //       className={`dot ${isSelected ? 'selected' : ''}`}
-  //       onClick={(e) => {
-  //         clickHandler(e);
-  //         setPageIndex(index);
-  //       }}></li>
-  //   );
-  // };
+  const handleClick = (option: 'tutorial_seen' | 'tutorial_opted_out') => {
+    if (option === 'tutorial_seen') {
+      chrome.tabs.create({ url: 'http://localhost:3000/' });
+    }
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.SKIP_TUTORIAL,
+      option,
+    );
+    setShow(false);
+  };
 
   if (!show) return null;
-  //TODO change classes as need
   else
     return (
-      <PopupContainer data-testid="whats-new-popup" className="whats-new">
-        <div className="popup-title">"Onboarding Tutorial"</div>
-
+      <PopupContainer data-testid="tutorial-popup" className="tutorial">
+        <div className="popup-title">
+          {chrome.i18n.getMessage('popup_html_tutorial_popup_title')}
+        </div>
+        <div className="sub-title">
+          {chrome.i18n.getMessage('popup_html_tutorial_popup_sub_title')}
+        </div>
+        <div className="buttons-container">
+          <ButtonComponent
+            label="popup_html_tutorial_popup_user_opt_out_label"
+            type={ButtonType.ALTERNATIVE}
+            onClick={() => handleClick('tutorial_opted_out')}
+            additionalClass="button"
+          />
+          <ButtonComponent
+            label="popup_html_tutorial_popup_seen_label"
+            type={ButtonType.IMPORTANT}
+            onClick={() => handleClick('tutorial_seen')}
+            additionalClass="button"
+          />
+        </div>
         <div className="popup-footer"></div>
       </PopupContainer>
     );

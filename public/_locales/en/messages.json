@@ -11,6 +11,22 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_tutorial_popup_title": {
+    "message": "Onboarding Tutorial",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_sub_title": {
+    "message": "Would you like to see our Tutorial?",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_seen_label": {
+    "message": "Yes",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_user_opt_out_label": {
+    "message": "No",
+    "description": "tutorial popup"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"

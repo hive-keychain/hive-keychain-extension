@@ -1,1 +1,13 @@
-//TODO
+.sub-title {
+  @include poppins500(16px);
+  color: var(--main-font-color);
+}
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  .button {
+    width: 44%;
+  }
+}
