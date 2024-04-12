@@ -17,7 +17,7 @@ const TutorialPopup = () => {
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
-    if (skipTutorial === undefined) {
+    if (!skipTutorial) {
       setShow(true);
     }
   };
