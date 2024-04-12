@@ -58,7 +58,9 @@ const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
         <div className="progress-bar-container">
           <div
             className="progress-bar"
-            style={{ width: `${loadingPercentage}%` }}></div>
+            style={{ width: `${loadingPercentage}%` }}>
+            {loadingPercentage > 10 && `${loadingPercentage.toFixed(0)}%`}
+          </div>
         </div>
       )}
     </div>

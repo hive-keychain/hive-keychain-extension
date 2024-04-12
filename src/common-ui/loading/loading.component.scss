@@ -23,15 +23,25 @@
     z-index: 1;
   }
 
+  $progress-bar-height: 18px;
   .progress-bar-container {
-    height: 24px;
+    height: $progress-bar-height;
     width: 300px;
     border-radius: 16px;
     border: 1px solid $red;
-    background: transparent;
+    background: $red-opacity;
+    z-index: 2;
+    overflow: hidden;
     .progress-bar {
-      height: 24px;
+      height: $progress-bar-height;
       background: $red;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include poppins600(12px);
+      border-radius: 16px;
+      transition: width 0.225s linear;
+      overflow: hidden;
     }
   }
 
