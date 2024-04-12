@@ -5,7 +5,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
-import React, { useEffect, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -97,7 +97,6 @@ const ConfirmationPage = ({
 
   const handleClickOnConfirm = () => {
     // AnalyticsUtils.sendRequestEvent(title);
-
     if (willUseMultisig) {
       addCaptionToLoading('multisig_transmitting_to_multisig');
     }
@@ -171,7 +170,10 @@ const ConfirmationPage = ({
         <ButtonComponent
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
-          onClick={handleClickOnConfirm}
+          onClick={($event: BaseSyntheticEvent) => {
+            $event.target.disabled = true;
+            handleClickOnConfirm();
+          }}
           type={ButtonType.IMPORTANT}></ButtonComponent>
       </div>
     </div>
