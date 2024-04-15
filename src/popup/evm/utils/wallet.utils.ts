@@ -80,7 +80,6 @@ const saveAccounts = (
       path: derivedWallet.path!,
     })),
   };
-  console.log(evmAccountObject);
   const encryptedAccounts = EncryptUtils.encryptJson(evmAccountObject, mk);
 
   LocalStorageUtils.saveValueInLocalStorage(
