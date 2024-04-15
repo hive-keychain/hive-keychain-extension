@@ -48,13 +48,13 @@ const VestingRouteItem = ({
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_from_title',
           )}
-          {vestingRoute.fromAccount}
+          {`@${vestingRoute.fromAccount}`}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_item_details_to_title',
           )}
-          {vestingRoute.toAccount}
+          {`@${vestingRoute.toAccount}`}
         </div>
         <div className="title">
           {chrome.i18n.getMessage(
@@ -74,10 +74,14 @@ const VestingRouteItem = ({
 
   const renderNone = () => {
     return (
-      <div className="title">
-        {chrome.i18n.getMessage(
-          'popup_html_vesting_route_item_details_non_existent_label',
-        )}
+      <div
+        key={`vesting-item-details-none`}
+        className={`vesting-item-details-container `}>
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_vesting_route_item_details_non_existent_label',
+          )}
+        </div>
       </div>
     );
   };
@@ -109,14 +113,13 @@ const VestingRouteItem = ({
     removeFromLoadingList('html_popup_revert_vesting_route_operation');
     checkForNextSlideOrHidePopup();
   };
-
   return (
     <div className={`carousel-item`} key={`${account}-vesting-routes`}>
       <div className="carousel-item-container">
         <div className="account-title">
           {chrome.i18n.getMessage(
             'popup_html_vesting_route_account_item_label',
-          )}
+          ) + ': @'}
           {account}
         </div>
         <div className="vesting-routes-titles-container">

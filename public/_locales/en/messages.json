@@ -2738,7 +2738,7 @@
     "description": "Vesting shares popup title"
   },
   "popup_html_vesting_routes_warning_message": {
-    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>",
+    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>.",
     "description": "Vesting shares popup warning message"
   },
   "popup_html_vesting_routes_handled_successfully": {
@@ -2746,7 +2746,7 @@
     "description": "Vesting shares end list being handled by user"
   },
   "popup_html_vesting_route_account_item_label": {
-    "message": "Account: @",
+    "message": "Account",
     "description": "wrong vesting routes popup, account item label"
   },
   "popup_html_vesting_route_account_item_old_route_title": {
@@ -2762,7 +2762,7 @@
     "description": "wrong vesting routes popup, account item, revert button label"
   },
   "popup_html_vesting_route_account_item_button_skip_label": {
-    "message": "These Changes are intentional",
+    "message": "These changes were intentional",
     "description": "wrong vesting routes popup, account item, revert skip label"
   },
   "popup_html_vesting_route_item_details_non_existent_label": {
