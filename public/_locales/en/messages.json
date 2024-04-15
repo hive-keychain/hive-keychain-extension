@@ -3896,7 +3896,7 @@
     "description": "Message to inform user that multisig will be used"
   },
   "multisig_transmitting_to_multisig": {
-    "message": "Sending encoded to Multisig server and potential signers",
+    "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
   "swap_multisig_transaction_sent_to_signers": {
