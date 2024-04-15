@@ -430,6 +430,17 @@ const defaultActiveSubs = [
   'sm_unlock_assets',
 ];
 
+const suggestedConfig = [
+  'fill_convert_request',
+  'interest',
+  'fill_order',
+  'fill_transfer_from_savings',
+  'fill_collateralized_convert_request',
+  'fill_recurrent_transfer',
+  'failed_recurrent_transfer',
+  'fill_vesting_withdraw',
+];
+
 const prefixMap = {
   core: '',
   splinterlands: 'sm_',
@@ -484,6 +495,22 @@ const formatConfigForm = (form: NotificationConfigForm) => {
     config.push(criteria);
   }
   return config;
+};
+
+const getSuggestedConfig = (username: string) => {
+  const configForm: NotificationConfigForm = [];
+  configForm.push({
+    operation: 'transfer',
+    conditions: [{ field: 'to', operand: '==', value: username }],
+  });
+  for (const sub of suggestedConfig) {
+    configForm.push({
+      operation: sub as NotificationOperationName,
+      conditions: [{ field: '', operand: '', value: '' }],
+    });
+  }
+
+  return configForm;
 };
 
 const saveConfiguration = async (
@@ -927,4 +954,5 @@ export const PeakDNotificationsUtils = {
   markAllAsRead,
   deleteAccountConfig,
   saveDefaultConfig,
+  getSuggestedConfig,
 };
