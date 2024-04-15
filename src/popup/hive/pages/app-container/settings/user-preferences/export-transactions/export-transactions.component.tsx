@@ -70,10 +70,14 @@ const ExportTransactions = ({
     <div
       data-testid={`${Screen.SETTINGS_EXPORT_TRANSACTIONS}-page`}
       className="export-transactions-page">
-      <div className="introduction">
-        {chrome.i18n.getMessage('popup_html_pref_export_transactions_info')}
-      </div>
-
+      <div
+        className="introduction"
+        dangerouslySetInnerHTML={{
+          __html: chrome.i18n.getMessage(
+            'popup_html_pref_export_transactions_info',
+          ),
+        }}
+      />
       <SelectAccountSectionComponent fullSize background="white" />
       <FormContainer onSubmit={handleClickOnDownload}>
         <div className="form-fields">

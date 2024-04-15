@@ -500,7 +500,7 @@
     "description": "on preferences"
   },
   "popup_html_pref_export_transactions_info": {
-    "message": "For your convenience, please select the account and the transactions you want to download in a CSV file.",
+    "message": "Download your account's monetary transactions as a .csv file. You can omit the start or end date if necessary.<br/><br/>Depending on the number of transactions, this may take a little while. ",
     "description": "on preferences"
   },
   "popup_html_pref_export_transactions_downloading_loading_message": {
