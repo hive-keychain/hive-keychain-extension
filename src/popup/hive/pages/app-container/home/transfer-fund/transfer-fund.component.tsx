@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -250,7 +251,7 @@ const TransferFunds = ({
         ? 'popup_html_cancel_recurrent_transfer'
         : 'popup_html_transfer_funds',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
           'html_popup_transfer_fund_operation',
           KeysUtils.getKeyType(
@@ -285,6 +286,7 @@ const TransferFunds = ({
             isCancelRecurrent ? 2 : +form.iteration,
             isCancelRecurrent ? 24 : +form.frequency,
             activeAccount.keys.active!,
+            options,
           );
 
           removeFromLoadingList('html_popup_transfer_fund_operation');

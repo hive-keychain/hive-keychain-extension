@@ -1,5 +1,5 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 
 export interface MultisigAccountKeyConfig {
@@ -94,6 +94,7 @@ export interface RequestSignatureSigner {
   encryptedTransaction: string; // Encrypted transaction with signer key
   publicKey: string;
   weight: string;
+  metaData?: any;
 }
 
 export interface SignTransactionMessage extends SocketMessagePayload {
@@ -167,6 +168,7 @@ export interface MultisigRequestSignatures {
   transactionAccount: ExtendedAccount;
   signature: string;
   method: KeychainKeyTypes;
+  options: TransactionOptions;
 }
 
 export enum MultisigStep {

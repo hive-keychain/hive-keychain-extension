@@ -9,7 +9,7 @@ import {
   HiveTxBroadcastSuccessResponse,
   TransactionResult,
 } from '@interfaces/hive-tx.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
@@ -43,10 +43,12 @@ const sendOperation = async (
   operations: Operation[],
   key: Key,
   confirmation?: boolean,
+  options?: TransactionOptions,
 ): Promise<TransactionResult | null> => {
   const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
+    options,
   );
   if (transactionResult) {
     if (transactionResult.isUsingMultisig) {
@@ -82,6 +84,7 @@ const createTransaction = async (operations: Operation[]) => {
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
+  options?: TransactionOptions,
 ): Promise<HiveTxBroadcastResult | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(
@@ -118,6 +121,7 @@ const createSignAndBroadcastTransaction = async (
           transactionAccount,
           method,
           signedTransaction?.signatures[0],
+          options,
         );
         return {
           status: response as string,
@@ -352,6 +356,7 @@ const useMultisig = async (
   transactionAccount: ExtendedAccount,
   method: KeychainKeyTypes,
   signature: string,
+  options?: TransactionOptions,
 ) => {
   return new Promise((resolve, reject) => {
     const handleResponseFromBackground = (
@@ -369,6 +374,8 @@ const useMultisig = async (
     };
     chrome.runtime.onMessage.addListener(handleResponseFromBackground);
 
+    console.log(options);
+
     chrome.runtime.sendMessage({
       command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
       value: {
@@ -378,6 +385,7 @@ const useMultisig = async (
         transactionAccount: transactionAccount,
         method: method,
         signature: signature,
+        options: options,
       } as MultisigRequestSignatures,
     } as BackgroundMessage);
   });

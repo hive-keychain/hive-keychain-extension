@@ -5,6 +5,7 @@
     flex-direction: column;
     row-gap: 16px;
     padding: 0px 24px;
+    flex: 1;
     .introduction {
       padding: 0px 32px;
       @include caption;
@@ -63,11 +64,9 @@
   }
 
   .bottom-panel {
-    position: fixed;
-    left: 24px;
-    bottom: 32px;
     width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;
+    padding: 16px;
   }
 }

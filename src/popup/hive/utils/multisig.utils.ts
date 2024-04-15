@@ -278,6 +278,17 @@ const encodeTransaction = async (
     `#${JSON.stringify(transaction)}`,
   );
 };
+const encodeMetadata = async (
+  metadata: any,
+  key: string,
+  receiverPubKey: string,
+) => {
+  return encodeModule.encode(
+    key,
+    receiverPubKey,
+    `#${JSON.stringify(metadata)}`,
+  );
+};
 
 const decodeTransaction = async (
   message: string,
@@ -350,12 +361,88 @@ const isMultisigCompatible = () => {
   return process.env.IS_FIREFOX || +chromeVersion >= 116;
 };
 
+export interface TwoFABotConfiguration {
+  name: string;
+  configPath: string;
+}
+
+const get2FAAccounts = async (
+  account: ExtendedAccount,
+  key: Key,
+  method: KeychainKeyTypes,
+) => {
+  let potentialBots;
+  switch (method) {
+    case KeychainKeyTypes.active: {
+      potentialBots = account.active.account_auths.map(([username, weigth]) => {
+        return username;
+      });
+      break;
+    }
+    case KeychainKeyTypes.posting: {
+      potentialBots = account.posting.account_auths.map(
+        ([username, weigth]) => {
+          return username;
+        },
+      );
+      break;
+    }
+  }
+  if (!potentialBots) {
+    return [];
+  }
+  const extendedAccounts = await AccountUtils.getExtendedAccounts(
+    potentialBots,
+  );
+  const botNames = [];
+  for (const extendedAccount of extendedAccounts) {
+    const metadata = JSON.parse(extendedAccount.json_metadata);
+    if (metadata.isMultisigBot) {
+      const config: any = await getTwoFaBotUserConfig(
+        metadata.configPath,
+        account.name,
+      );
+      console.log(config);
+      if (config && config.use2FAByDefault) {
+        botNames.push(extendedAccount.name);
+      }
+    }
+  }
+  return botNames;
+};
+
+const getTwoFaBotUserConfig = async (configPath: string, username: string) => {
+  return await new Promise((resolve, reject) => {
+    try {
+      fetch(`${configPath.replace(':username', username)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then((res) => {
+          if (res && res.status === 200) {
+            return res.json();
+          }
+        })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const MultisigUtils = {
+  get2FAAccounts,
   getUsernameFromTransaction,
   saveMultisigConfig,
   getMultisigAccountConfig,
   decodeTransaction,
   encodeTransaction,
+  encodeMetadata,
   getPotentialSigners,
   isMultisigCompatible,
 };

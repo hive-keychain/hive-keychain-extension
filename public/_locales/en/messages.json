@@ -3886,5 +3886,9 @@
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "multisig_bot_two_fa_code": {
+    "message": "@$1 2FA code",
+    "description": "Two fa code label"
   }
 }

@@ -6,6 +6,7 @@ import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { SignedTransaction } from '@hiveio/dhive';
+import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import {
   ConnectDisconnectMessage,
   MultisigAcceptRejectTxData,
@@ -128,6 +129,7 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
+        console.log(data);
         requestSignatures(data, true);
       }
     },
@@ -364,6 +366,7 @@ const getRequestSignatureMessage = async (
   data: MultisigRequestSignatures,
 ): Promise<RequestSignatureMessage> => {
   return new Promise(async (resolve, reject) => {
+    console.log('trying to create multisig request');
     const potentialSigners = await MultisigUtils.getPotentialSigners(
       data.initiatorAccount,
       data.key,
@@ -372,6 +375,22 @@ const getRequestSignatureMessage = async (
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
+      const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
+      const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
+      console.log(usernames);
+      let twoFACodes = {};
+      console.log('data option metadata', data.options.metaData);
+      if (data.options?.metaData?.twoFACodes) {
+        twoFACodes = {
+          [usernames[0]]: await encodeMetadata(
+            data.options?.metaData?.twoFACodes[usernames[0]],
+            data.key!.toString(),
+            receiverPubKey,
+          ),
+        };
+        console.log('after encode', twoFACodes);
+      }
+
       signers.push({
         encryptedTransaction: await encodeTransaction(
           data.transaction,
@@ -380,6 +399,7 @@ const getRequestSignatureMessage = async (
         ),
         publicKey: receiverPubKey,
         weight: weight.toString(),
+        metaData: { ...metaData, twoFACodes: twoFACodes },
       });
     }
 
@@ -415,6 +435,8 @@ const getRequestSignatureMessage = async (
         threshold: transactionAccountThreshold,
       },
     };
+
+    console.log(request);
 
     resolve(request);
   });
@@ -589,6 +611,14 @@ const encodeTransaction = async (
   );
 };
 
+const encodeMetadata = async (
+  metaData: any,
+  key: string,
+  receiverPublicKey: string,
+): Promise<string> => {
+  return await MultisigUtils.encodeMetadata(metaData, key, receiverPublicKey);
+};
+
 const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
 
 const openWindow = (data: MultisigData): void => {
@@ -667,4 +697,5 @@ export const MultisigModule = {
   start,
   processSignatureRequest,
   requestSignatures,
+  encodeMetadata,
 };
