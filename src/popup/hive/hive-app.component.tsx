@@ -200,6 +200,7 @@ const HiveApp = ({
         <LoadingComponent
           operations={loadingState.loadingOperations}
           caption={loadingState.caption}
+          loadingPercentage={loadingState.loadingPercentage}
         />
       );
     }

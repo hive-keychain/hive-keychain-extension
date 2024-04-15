@@ -1,3 +1,6 @@
+import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -50,6 +53,9 @@ const Home = ({
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
   >();
+  const [vestingRoutesDifferences, setVestingRoutesDifferences] = useState<
+    AccountVestingRoutesDifferences[] | undefined
+  >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
@@ -61,6 +67,7 @@ const Home = ({
     initWhatsNew();
     initSurvey();
     initCheckKeysOnAccounts(accounts);
+    initCheckVestingRoutes();
   }, []);
 
   useEffect(() => {
@@ -152,11 +159,18 @@ const Home = ({
     }
   };
 
+  const initCheckVestingRoutes = async () => {
+    setVestingRoutesDifferences(
+      await VestingRoutesUtils.getWrongVestingRoutes(accounts),
+    );
+  };
+
   const renderPopup = (
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
     displayWrongKeyPopup: WrongKeysOnUser | undefined,
+    vestingRoutesDifferences: AccountVestingRoutesDifferences[] | undefined,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -176,6 +190,16 @@ const Home = ({
         <WrongKeyPopupComponent
           displayWrongKeyPopup={displayWrongKeyPopup}
           setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
+        />
+      );
+    } else if (
+      vestingRoutesDifferences &&
+      vestingRoutesDifferences.length > 0
+    ) {
+      return (
+        <VestingRoutesPopupComponent
+          vestingRoutesDifferences={vestingRoutesDifferences}
+          closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
     }
@@ -223,6 +247,7 @@ const Home = ({
         governanceAccountsToExpire,
         surveyToDisplay,
         displayWrongKeyPopup,
+        vestingRoutesDifferences,
       )}
     </div>
   );
