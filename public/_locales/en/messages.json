@@ -2019,6 +2019,10 @@
     "message": "Conversion",
     "description": "conversion operation"
   },
+  "html_popup_revert_vesting_route_operation": {
+    "message": "Reverting Vesting route(s)",
+    "description": "when the user decides to revert all vesting routes in his account"
+  },
   "html_popup_delegation_operation": {
     "message": "Delegating",
     "description": "delegation operation"
@@ -2728,6 +2732,62 @@
   "popup_html_whats_new_got_it": {
     "message": "Got it!",
     "description": "What's new popup button"
+  },
+  "popup_html_vesting_routes_title": {
+    "message": "Your vesting routes have changed",
+    "description": "Vesting shares popup title"
+  },
+  "popup_html_vesting_routes_warning_message": {
+    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>.",
+    "description": "Vesting shares popup warning message"
+  },
+  "popup_html_vesting_routes_handled_successfully": {
+    "message": "Your vesting routes have been secured!",
+    "description": "Vesting shares end list being handled by user"
+  },
+  "popup_html_vesting_route_account_item_label": {
+    "message": "Account",
+    "description": "wrong vesting routes popup, account item label"
+  },
+  "popup_html_vesting_route_account_item_old_route_title": {
+    "message": "Old Route",
+    "description": "wrong vesting routes popup, account item, old route label/title"
+  },
+  "popup_html_vesting_route_account_item_new_route_title": {
+    "message": "New Route",
+    "description": "wrong vesting routes popup, account item, new route label/title"
+  },
+  "popup_html_vesting_route_account_item_button_revert_label": {
+    "message": "Revert All",
+    "description": "wrong vesting routes popup, account item, revert button label"
+  },
+  "popup_html_vesting_route_account_item_button_skip_label": {
+    "message": "These changes were intentional",
+    "description": "wrong vesting routes popup, account item, revert skip label"
+  },
+  "popup_html_vesting_route_item_details_non_existent_label": {
+    "message": "None",
+    "description": "wrong vesting routes popup, item details, non existent label"
+  },
+  "popup_html_vesting_route_item_details_id_title": {
+    "message": "Id: ",
+    "description": "wrong vesting routes popup, item details, id label/title"
+  },
+  "popup_html_vesting_route_item_details_from_title": {
+    "message": "From: ",
+    "description": "wrong vesting routes popup, item details, from label/title"
+  },
+  "popup_html_vesting_route_item_details_to_title": {
+    "message": "To: ",
+    "description": "wrong vesting routes popup, item details, to label/title"
+  },
+  "popup_html_vesting_route_item_details_percent_title": {
+    "message": "Percent: ",
+    "description": "wrong vesting routes popup, item details, percent label/title"
+  },
+  "popup_html_vesting_route_item_details_autovest_title": {
+    "message": "Auto vest: ",
+    "description": "wrong vesting routes popup, item details, autovest label/title"
   },
   "html_popup_tokens_timeout": {
     "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
