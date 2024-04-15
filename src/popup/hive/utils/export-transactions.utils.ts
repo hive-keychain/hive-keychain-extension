@@ -175,18 +175,6 @@ const fetchTransaction = async (
             });
             break;
           }
-          case 'collateralized_convert_immediate_conversion': {
-            let asset = Asset.fromString(operationPayload.hbd_out.toString());
-            operations.push({
-              ...operation,
-              from: operationPayload.owner,
-              to: operationPayload.owner,
-              amount: asset.amount,
-              currency: asset.symbol,
-            });
-            break;
-          }
-
           case 'fill_collateralized_convert_request': {
             let asset = Asset.fromString(
               operationPayload.amount_out.toString(),
