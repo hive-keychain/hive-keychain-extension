@@ -1,8 +1,8 @@
 import { Transaction } from '@interfaces/transaction.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { WalletTransactionInfoComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-info.component';
-import { RootState } from 'src/popup/hive/store';
 
 interface WalletHistoryItemProps {
   transaction: Transaction;
@@ -23,7 +23,7 @@ const WalletHistoryItem = ({ transaction, ariaLabel }: PropsFromRedux) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccountName: state.activeAccount.name,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 

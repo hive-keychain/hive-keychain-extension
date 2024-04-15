@@ -414,7 +414,7 @@ const downloadTransactions = async (
   var url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'transactions.csv';
+  a.download = `${username}-transactions.csv`;
   a.click();
 };
 

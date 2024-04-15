@@ -1,5 +1,5 @@
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppThunk } from 'src/popup/hive/actions/interfaces';
+import { AppThunk } from '@popup/multichain/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 
 export const fetchConversionRequests =
@@ -7,7 +7,7 @@ export const fetchConversionRequests =
   async (dispatch) => {
     const conversions = await ConversionUtils.getConversionRequests(name);
     dispatch({
-      type: ActionType.FETCH_CONVERSION_REQUESTS,
+      type: HiveActionType.FETCH_CONVERSION_REQUESTS,
       payload: conversions,
     });
   };

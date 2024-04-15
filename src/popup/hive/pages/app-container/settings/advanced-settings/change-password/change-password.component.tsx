@@ -1,16 +1,16 @@
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { setMk } from '@popup/multichain/actions/mk.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { setMk } from 'src/popup/hive/actions/mk.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -100,7 +100,7 @@ const ChangePassword = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { mk: state.mk, accounts: state.accounts };
+  return { mk: state.mk, accounts: state.hive.accounts };
 };
 
 const connector = connect(mapStateToProps, {

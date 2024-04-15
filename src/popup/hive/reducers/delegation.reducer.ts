@@ -1,6 +1,6 @@
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { Delegations } from 'src/interfaces/delegations.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 const DelegationsReducer = (
   state: Delegations = {
@@ -11,11 +11,11 @@ const DelegationsReducer = (
   { type, payload }: ActionPayload<Delegations>,
 ) => {
   switch (type) {
-    case ActionType.FETCH_DELEGATEES:
+    case HiveActionType.FETCH_DELEGATEES:
       return { ...state, outgoing: payload!.outgoing };
-    case ActionType.FETCH_DELEGATORS:
+    case HiveActionType.FETCH_DELEGATORS:
       return { ...state, incoming: payload!.incoming };
-    case ActionType.FETCH_PENDING_OUTGOING_UNDELEGATION:
+    case HiveActionType.FETCH_PENDING_OUTGOING_UNDELEGATION:
       return {
         ...state,
         pendingOutgoingUndelegation: payload!.pendingOutgoingUndelegation,

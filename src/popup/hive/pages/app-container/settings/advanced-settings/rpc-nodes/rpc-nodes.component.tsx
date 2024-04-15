@@ -7,6 +7,12 @@ import {
   setHEActiveRpc,
 } from '@popup/hive/actions/hive-engine-config.actions';
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
@@ -24,12 +30,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -477,9 +477,9 @@ const RpcNodes = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeRpc: state.activeRpc,
-    activeHERpc: state.hiveEngineConfig.rpc,
-    activeAccountHistoryApi: state.hiveEngineConfig.accountHistoryApi,
+    activeRpc: state.hive.activeRpc,
+    activeHERpc: state.hive.hiveEngineConfig.rpc,
+    activeAccountHistoryApi: state.hive.hiveEngineConfig.accountHistoryApi,
   };
 };
 

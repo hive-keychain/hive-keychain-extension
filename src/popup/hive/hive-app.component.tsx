@@ -1,4 +1,3 @@
-import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
   retrieveAccounts,
@@ -9,24 +8,19 @@ import {
   refreshActiveAccount,
 } from '@popup/hive/actions/active-account.actions';
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
-import {
-  setIsLedgerSupported,
-  setProcessingDecryptAccount,
-} from '@popup/hive/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
-import { setMk } from '@popup/hive/actions/mk.actions';
-import { navigateTo } from '@popup/hive/actions/navigation.actions';
 import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
-import { RootState } from '@popup/hive/store';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { setMk } from '@popup/multichain/actions/mk.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { BackgroundMessage } from 'src/background/background-message.interface';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
@@ -34,19 +28,11 @@ import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
-import { MessageContainerComponent } from 'src/popup/hive/pages/message-container/message-container.component';
-import { SignInRouterComponent } from 'src/popup/hive/pages/sign-in/sign-in-router.component';
-import { SignUpComponent } from 'src/popup/hive/pages/sign-up/sign-up.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
-import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import { ColorsUtils } from 'src/utils/colors.utils';
-import { LedgerUtils } from 'src/utils/ledger.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import PopupUtils from 'src/utils/popup.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 let rpc: string | undefined = '';
 const HiveApp = ({
@@ -60,11 +46,9 @@ const HiveApp = ({
   displayProxySuggestion,
   navigationStack,
   appStatus,
-  errorMessage,
   setMk,
   navigateTo,
   loadActiveAccount,
-  refreshActiveAccount,
   switchToRpc,
   displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
@@ -73,24 +57,14 @@ const HiveApp = ({
   setActiveRpc,
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
-  setIsLedgerSupported,
+  hasFinishedSignup,
 }: PropsFromRedux) => {
-  const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
 
   useEffect(() => {
-    PopupUtils.fixPopupOnMacOs();
-    initAutoLock();
     initApplication();
-    LedgerUtils.isLedgerSupported().then((res) => {
-      setIsLedgerSupported(res);
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
-        res,
-      );
-    });
   }, []);
 
   useEffect(() => {
@@ -100,22 +74,7 @@ const HiveApp = ({
     rpc = activeRpc?.uri;
   }, [activeRpc]);
 
-  const onActiveRpcRefreshed = async () => {
-    if (activeAccountUsername) {
-      refreshActiveAccount();
-    } else {
-      const lastActiveAccountName =
-        await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
-      loadActiveAccount(
-        accounts.find(
-          (account: LocalAccount) => account.name === lastActiveAccountName,
-        )!,
-      );
-    }
-  };
-
   useEffect(() => {
-    initHasStoredAccounts();
     const found = navigationStack.find(
       (navigation) =>
         navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
@@ -124,7 +83,7 @@ const HiveApp = ({
     if (
       isAppReady &&
       (navigationStack.length === 0 || found) &&
-      hasStoredAccounts
+      hasFinishedSignup
     ) {
       if (accounts.length > 0) {
         initActiveAccount(accounts);
@@ -137,7 +96,7 @@ const HiveApp = ({
     isAppReady,
     mk,
     accounts,
-    hasStoredAccounts,
+    hasFinishedSignup,
     appStatus.processingDecryptAccount,
   ]);
 
@@ -151,11 +110,6 @@ const HiveApp = ({
     }
   }, [appStatus, displaySplashscreen]);
 
-  const initHasStoredAccounts = async () => {
-    const storedAccounts = await AccountUtils.hasStoredAccounts();
-    setHasStoredAccounts(storedAccounts);
-  };
-
   const initActiveRpc = async (rpc: Rpc) => {
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
     setDisplayChangeRpcPopup(!rpcStatusOk);
@@ -166,46 +120,20 @@ const HiveApp = ({
     }
   };
 
-  const initAutoLock = async () => {
-    let autolock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-    );
-    if (
-      autolock &&
-      [AutoLockType.DEVICE_LOCK, AutoLockType.IDLE_LOCK].includes(autolock.type)
-    ) {
-      chrome.runtime.onMessage.addListener(onReceivedAutolockCmd);
-    }
-  };
-  const onReceivedAutolockCmd = (message: BackgroundMessage) => {
-    if (message.command === BackgroundCommand.LOCK_APP) {
-      setMk('', false);
-      chrome.runtime.onMessage.removeListener(onReceivedAutolockCmd);
-    }
-  };
-
   const initApplication = async () => {
     await ColorsUtils.downloadColors();
     loadCurrencyPrices();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
-    setHasStoredAccounts(storedAccounts);
-
-    const mkFromStorage = await MkUtils.getMkFromLocalStorage();
-    if (mkFromStorage) {
-      setMk(mkFromStorage, false);
-    }
 
     let accountsFromStorage: LocalAccount[] = [];
-    if (storedAccounts && mkFromStorage) {
-      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(
-        mkFromStorage,
-      );
+    if (storedAccounts && mk) {
+      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(mk);
       setAccounts(accountsFromStorage);
     }
 
     setAppReady(true);
-    await selectComponent(mkFromStorage, accountsFromStorage);
+    await selectComponent(mk, accountsFromStorage);
 
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
@@ -240,7 +168,7 @@ const HiveApp = ({
       mk &&
       mk.length === 0 &&
       accounts.length === 0 &&
-      !hasStoredAccounts
+      !hasFinishedSignup
     ) {
       navigateTo(Screen.SIGN_UP_PAGE, true);
     } else {
@@ -250,11 +178,7 @@ const HiveApp = ({
 
   const renderMainLayoutNav = () => {
     if (!mk || mk.length === 0) {
-      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-        return <SignUpComponent />;
-      } else {
-        return <SignInRouterComponent />;
-      }
+      return <SignInRouterComponent />;
     } else {
       if (accounts && accounts.length === 0) {
         return <AddAccountRouterComponent />;
@@ -311,7 +235,7 @@ const HiveApp = ({
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
-      {errorMessage?.key && <MessageContainerComponent />}
+
       {renderPopup(
         loading,
         activeRpc,
@@ -327,23 +251,23 @@ const HiveApp = ({
 const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
-    accounts: state.accounts as LocalAccount[],
-    activeRpc: state.activeRpc,
-    switchToRpc: state.rpcSwitcher.rpc,
-    displayChangeRpcPopup: state.rpcSwitcher.display,
+    accounts: state.hive.accounts as LocalAccount[],
+    activeRpc: state.hive.activeRpc,
+    switchToRpc: state.hive.rpcSwitcher.rpc,
+    displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
-    activeAccountUsername: state.activeAccount.name,
+    activeAccountUsername: state.hive.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
     displayProxySuggestion:
-      state.activeAccount &&
-      state.activeAccount.account &&
-      state.activeAccount.account.proxy === '' &&
-      state.activeAccount.account.witnesses_voted_for === 0,
+      state.hive.activeAccount &&
+      state.hive.activeAccount.account &&
+      state.hive.activeAccount.account.proxy === '' &&
+      state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
-    appStatus: state.appStatus,
-    errorMessage: state.errorMessage,
+    appStatus: state.hive.appStatus,
+    hasFinishedSignup: state.hasFinishedSignup,
   };
 };
 
@@ -360,8 +284,6 @@ const connector = connect(mapStateToProps, {
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
-  setProcessingDecryptAccount,
-  setIsLedgerSupported,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

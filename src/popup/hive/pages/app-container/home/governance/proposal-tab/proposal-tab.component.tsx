@@ -1,10 +1,10 @@
 import { Proposal } from '@interfaces/proposal.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { ProposalItemComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-item/proposal-item.component';
-import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
@@ -81,8 +81,8 @@ const ProposalTab = ({ activeAccount, globalProperties }: PropsFromRedux) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

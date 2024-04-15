@@ -1,9 +1,9 @@
 import { ReceivedInterests } from '@interfaces/transaction.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
-import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 
 interface ReceivedInterestsTransactionProps {
@@ -28,7 +28,7 @@ const ReceivedInterestsTransaction = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccountName: state.activeAccount.name };
+  return { activeAccountName: state.hive.activeAccount.name };
 };
 
 const connector = connect(mapStateToProps, {});

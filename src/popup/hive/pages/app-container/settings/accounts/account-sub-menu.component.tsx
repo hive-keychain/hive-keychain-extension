@@ -1,9 +1,9 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import AccountSubMenuItems from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu-items';
-import { RootState } from 'src/popup/hive/store';
 
 const AccountSubMenu = ({}: PropsFromRedux) => {
   return (

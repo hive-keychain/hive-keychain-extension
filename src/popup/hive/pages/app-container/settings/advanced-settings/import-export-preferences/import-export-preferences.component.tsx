@@ -1,9 +1,9 @@
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import ImportExportSubMenuItems from 'src/popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-menu-items';
-import { RootState } from 'src/popup/hive/store';
 
 const ImportExportPreferences = ({}: PropsFromRedux) => {
   return (

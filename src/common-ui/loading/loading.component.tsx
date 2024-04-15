@@ -1,8 +1,8 @@
+import { LoadingOperation } from '@popup/multichain/reducers/loading.reducer';
 import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { LoadingOperation } from 'src/popup/hive/reducers/loading.reducer';
 
 type Props = {
   operations?: LoadingOperation[];

@@ -4,6 +4,7 @@ import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -53,7 +54,6 @@ import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/sett
 import { FavoriteAccountsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { OperationPopupComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences.component';
-import { RootState } from 'src/popup/hive/store';
 import { Screen } from 'src/reference-data/screen.enum';
 
 const AppRouter = ({

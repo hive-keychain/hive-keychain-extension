@@ -1,10 +1,10 @@
+import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
   setLoadingPercentage,
-} from '@popup/hive/actions/loading.actions';
-import { setErrorMessage } from '@popup/hive/actions/message.actions';
-import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
+} from '@popup/multichain/actions/loading.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -14,8 +14,8 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { KeychainError } from 'src/keychain-error';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
+import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
+import { RootState } from 'src/popup/multichain/store';
 
 const ExportTransactions = ({
   activeAccount,
@@ -108,7 +108,7 @@ const ExportTransactions = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 
