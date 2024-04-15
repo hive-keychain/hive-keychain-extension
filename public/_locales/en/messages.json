@@ -107,6 +107,10 @@
     "message": "Confirm",
     "description": "Generic button"
   },
+  "popup_html_download": {
+    "message": "Download",
+    "description": "Generic button"
+  },
   "popup_html_submit": {
     "message": "Submit",
     "description": "Generic button"
@@ -210,6 +214,14 @@
   "popup_html_username": {
     "message": "Username",
     "description": "placeholder for entering username"
+  },
+  "popup_html_start_date": {
+    "message": "Start Date",
+    "description": "placeholder for entering a starting date"
+  },
+  "popup_html_end_date": {
+    "message": "End Date",
+    "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
     "message": "Import keys",
@@ -344,7 +356,11 @@
     "description": "on settings page"
   },
   "popup_html_operations": {
-    "message": "Operations",
+    "message": "Whitelisted operations",
+    "description": "on settings page"
+  },
+  "popup_html_export_transactions": {
+    "message": "Export transactions",
     "description": "on settings page"
   },
   "popup_html_favorite_accounts": {
@@ -482,6 +498,18 @@
   "popup_html_pref_info": {
     "message": "For a better experience, you can whitelist non-active authority operations when dApps request them. You won't receive a confirmation prompt for these operations.",
     "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_info": {
+    "message": "Download your account's monetary transactions as a .csv file. You can omit the start or end date if necessary.<br/><br/>Depending on the number of transactions, this may take a little while. ",
+    "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_downloading_loading_message": {
+    "message": "Downloading transactions",
+    "description": "Downloading transactions"
+  },
+  "popup_html_pref_export_transactions_generating_csv_loading_message": {
+    "message": "Generating CSV file",
+    "description": "Generating csv"
   },
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
@@ -1832,7 +1860,7 @@
     "description": "In confirmation page"
   },
   "popup_html_user_preferences": {
-    "message": "User preferences",
+    "message": "User operations",
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
@@ -3928,7 +3956,7 @@
     "description": "Message to inform user that multisig will be used"
   },
   "multisig_transmitting_to_multisig": {
-    "message": "Sending encoded to Multisig server and potential signers",
+    "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
   "swap_multisig_transaction_sent_to_signers": {
@@ -3946,5 +3974,17 @@
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "export_transactions_fetching_error": {
+    "message": "There was an error while fetching your transactions. Please try again later",
+    "description": "Error while downloading transactions"
+  },
+  "export_transactions_incorrect_dates": {
+    "message": "Start date should be before end date",
+    "description": "Error while downloading transactions"
+  },
+  "popup_html_pref_export_transactions_loading_caption": {
+    "message": "$1%",
+    "description": "Caption for download data"
   }
 }
