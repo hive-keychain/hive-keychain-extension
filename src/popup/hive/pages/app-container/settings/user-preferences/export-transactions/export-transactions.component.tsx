@@ -36,7 +36,6 @@ const ExportTransactions = ({
   }, []);
 
   const handleClickOnDownload = async () => {
-    console.log(startDate, endDate);
     if (
       startDate &&
       endDate &&
@@ -58,12 +57,11 @@ const ExportTransactions = ({
         },
       );
     } catch (err) {
-      console.log(err);
       const error = err as KeychainError;
       setErrorMessage(error.message, error.messageParams);
     } finally {
       removeFromLoadingList(
-        'popup_html_pref_export_transactions_loading_message',
+        'popup_html_pref_export_transactions_downloading_loading_message',
       );
     }
   };

@@ -50,9 +50,6 @@ const fetchTransaction = async (
     op.escrow_approve,
     proposal_fee,
   ]) as [number, number];
-
-  username = 'engrave';
-
   const lastTransaction = await TransactionUtils.getLastTransaction(username);
 
   let limit = Math.min();
@@ -407,14 +404,16 @@ const downloadTransactions = async (
     throw new KeychainError('export_transactions_fetching_error');
   }
   const csv = generateCSV(operations);
-
   var data = new Blob([csv], {
     type: 'text/plain',
   });
   var url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${username}-transactions.csv`;
+
+  a.download = `${username}-transactions-${startDate || 'start'}-${
+    endDate || moment().format('YYYY-MM-DD')
+  }.csv`;
   a.click();
 };
 
