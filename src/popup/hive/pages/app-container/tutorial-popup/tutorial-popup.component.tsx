@@ -6,14 +6,27 @@ import ButtonComponent, {
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const TutorialPopup = () => {
+interface Props {
+  username: string;
+}
+
+const TutorialPopup = ({ username }: Props) => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     init();
   }, []);
 
-  const init = async () => {
+  const init = async (reset?: boolean) => {
+    //TODO remove reset option after finishing tutorial
+    if (reset) {
+      console.log('Reset SKIP_TUTORIAL!');
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.SKIP_TUTORIAL,
+        null,
+      );
+      return;
+    }
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
@@ -24,6 +37,7 @@ const TutorialPopup = () => {
 
   const handleClick = (option: 'tutorial_seen' | 'tutorial_opted_out') => {
     if (option === 'tutorial_seen') {
+      //TODO somehow pass user session data to url
       chrome.tabs.create({ url: 'http://localhost:3000/' });
     }
     LocalStorageUtils.saveValueInLocalStorage(
