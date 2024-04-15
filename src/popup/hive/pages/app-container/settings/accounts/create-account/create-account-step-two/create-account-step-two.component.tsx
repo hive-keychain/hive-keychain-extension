@@ -5,6 +5,17 @@ import {
   AccountCreationUtils,
   GeneratedKeys,
 } from '@popup/hive/utils/account-creation.utils';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -13,17 +24,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import FormatUtils from 'src/utils/format.utils';
 
 const SUBSTRING_LENGTH = 15;
@@ -359,8 +359,8 @@ const CreateAccountStepTwo = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    accounts: state.accounts,
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
     navParams: state.navigation.params,
   };
 };

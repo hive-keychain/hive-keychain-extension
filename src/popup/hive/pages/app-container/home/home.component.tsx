@@ -1,7 +1,9 @@
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
-import { setSuccessMessage } from '@popup/hive/actions/message.actions';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
+import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -9,7 +11,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
-import { resetTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';
@@ -25,7 +26,6 @@ import {
   WrongKeyPopupComponent,
   WrongKeysOnUser,
 } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
@@ -252,13 +252,13 @@ const Home = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    accounts: state.accounts,
-    activeRpc: state.activeRpc,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
+    activeRpc: state.hive.activeRpc,
+    globalProperties: state.hive.globalProperties,
     isAppReady:
-      Object.keys(state.globalProperties).length > 0 &&
-      !ActiveAccountUtils.isEmpty(state.activeAccount),
+      Object.keys(state.hive.globalProperties).length > 0 &&
+      !ActiveAccountUtils.isEmpty(state.hive.activeAccount),
   };
 };
 

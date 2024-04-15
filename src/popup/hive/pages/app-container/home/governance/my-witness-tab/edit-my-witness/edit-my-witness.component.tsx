@@ -5,6 +5,15 @@ import {
   WitnessInfo,
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -15,15 +24,6 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/popup/hive/utils/currency.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
@@ -166,7 +166,7 @@ const EditMyWitness = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

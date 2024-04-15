@@ -1,26 +1,26 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SwapConfig } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
+import { loadTokensMarket } from '@popup/hive/actions/token.actions';
+import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
+} from '@popup/multichain/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
   setWarningMessage,
-} from '@popup/hive/actions/message.actions';
+} from '@popup/multichain/actions/message.actions';
 import {
   goBackToThenNavigate,
   navigateTo,
   navigateToWithParams,
-} from '@popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/hive/actions/title-container.actions';
-import { loadTokensMarket } from '@popup/hive/actions/token.actions';
-import { RootState } from '@popup/hive/store';
-import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
-import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import TokensUtils from '@popup/hive/utils/tokens.utils';
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
 import { ThrottleSettings, throttle } from 'lodash';
@@ -670,9 +670,9 @@ const TokenSwaps = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    price: state.currencyPrices,
-    tokenMarket: state.tokenMarket,
+    activeAccount: state.hive.activeAccount,
+    price: state.hive.currencyPrices,
+    tokenMarket: state.hive.tokenMarket,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

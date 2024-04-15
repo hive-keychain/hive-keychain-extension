@@ -1,10 +1,10 @@
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-item.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
-import { VestinRouteItemComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-route-item/vesting-route-item.component';
-import { RootState } from '@popup/hive/store';
+} from '@popup/multichain/actions/loading.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Carousel } from 'react-responsive-carousel';

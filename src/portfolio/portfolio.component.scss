@@ -1,0 +1,321 @@
+@import '../common-style/common-style.scss';
+@import '../common-ui/common-ui.scss';
+@import '../popup/hive/hive-app.component.scss';
+@import '../popup/evm/evm-app.component.scss';
+
+$cell-width: 150px;
+$fixed-cell-width: 200px;
+
+.theme {
+  &.light {
+    @include spread-map($light);
+    --box-border-color: #919191;
+  }
+  &.dark {
+    @include spread-map($dark);
+    --box-border-color: #919191;
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+  body {
+    margin: 0px;
+    height: 100%;
+    #root {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+
+      .portfolio {
+        width: 100%;
+        height: 100%;
+        color: var(--main-font-color);
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        row-gap: 24px;
+        font-size: 16px;
+        position: relative;
+        @include background-top();
+        background-repeat: repeat-x;
+        @include dialogs-title-panel();
+        .confirmation {
+          margin-top: 20px;
+          display: flex;
+          column-gap: 5px;
+          flex-direction: row;
+        }
+        .link-device {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          row-gap: 16px;
+        }
+        .caption {
+          @include caption();
+          padding: 0;
+        }
+        .fill-space {
+          flex: 1;
+        }
+        .rotating-logo-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          flex: 1;
+          row-gap: 12px;
+        }
+        .portfolio-accounts-panel {
+          display: flex;
+          flex-direction: column;
+          row-gap: 16px;
+          align-items: stretch;
+          justify-content: center;
+          @include small-card();
+          margin: unset;
+          color: var(--main-font-color);
+          .title {
+            @include poppins600(14px);
+            align-self: center;
+          }
+          .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            @include poppins500(13px);
+            color: var(--main-font-color);
+            width: 100%;
+            .usd-value {
+              color: var(--main-font-color);
+              @include poppins400(12px);
+            }
+          }
+        }
+        .filter-panel {
+          display: flex;
+          align-items: center;
+          column-gap: 16px;
+          .clear-filter-button {
+            width: max-content;
+            min-width: 100px;
+          }
+          .filter-box-container {
+            flex: 1;
+            @include small-card;
+            margin: 0px 0px;
+            width: auto;
+            padding: 8px;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            row-gap: 8px;
+            column-gap: 8px;
+
+            &.is-focused {
+              border-color: var(--box-border-color);
+            }
+
+            .filter-input {
+              border: unset;
+              border-radius: 20px;
+              flex: 1;
+              padding-left: 12px;
+              outline: unset;
+              background-color: transparent;
+              color: var(--main-font-color);
+              height: 36px;
+            }
+
+            .filter-item {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              border-radius: 20px;
+              border: 1px solid var(--card-border);
+              padding: 8px 12px;
+              .filter-item-value {
+                @include poppins400($input-font-size);
+              }
+              .erase-chip-icon {
+                display: none;
+                margin-left: 8px;
+                @include icon-size(16px);
+                svg {
+                  @include icon-size(16px);
+                }
+              }
+              &:hover {
+                .erase-chip-icon {
+                  display: block;
+                }
+              }
+            }
+          }
+          .filter-box {
+            @include small-card;
+            border-color: var(--box-border-color);
+            flex-direction: column;
+            align-items: start;
+            margin: 0px 0px;
+            top: 205px;
+            left: 24px;
+            width: 50%;
+            position: absolute;
+            z-index: 120;
+            row-gap: 12px;
+          }
+        }
+        .text {
+          @include poppins500(13px);
+          color: var(--main-font-color);
+        }
+        .avatar-username-container {
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          height: 100%;
+          align-items: center;
+          .account-name {
+            @include poppins500(14px);
+            user-select: none;
+            color: var(--select-font-color);
+            margin-left: 12px;
+            align-self: center;
+          }
+          .user-picture {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+          }
+          .cursor-pointer {
+            cursor: pointer;
+          }
+        }
+        .info-row {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .centered {
+          justify-content: center;
+        }
+        .portfolio-table-container-wrapper {
+          @include small-card();
+          margin: 0px 0px;
+          padding: 0px;
+          overflow: hidden;
+
+          .portfolio-table-container {
+            align-items: unset;
+            margin: 0px 0px;
+            padding: 0px;
+            height: 100%;
+            overflow: scroll;
+
+            .portfolio-table {
+              overflow: auto;
+              width: 100%;
+              height: 100%;
+            }
+
+            table {
+              table-layout: fixed;
+              width: 100%;
+              .table-header {
+                width: $cell-width;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                z-index: 5;
+                background-color: var(--card-background);
+                text-align: right;
+              }
+
+              tr {
+                border-bottom: 1px solid var(--card-border);
+              }
+
+              td {
+                text-align: right;
+                width: $cell-width;
+                padding-top: 8px;
+                padding-bottom: 8px;
+              }
+
+              .account-column,
+              .header-total {
+                width: $fixed-cell-width;
+                text-align: left;
+                padding-left: 8px;
+                font-weight: bold;
+              }
+
+              td:first-child,
+              th:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+                background-color: var(--card-background);
+              }
+              td:last-child,
+              th:last-child {
+                position: sticky;
+                right: 0;
+                z-index: 2;
+                background-color: var(--card-background);
+                padding-right: 8px;
+              }
+
+              thead tr th {
+                position: sticky;
+                top: 0;
+              }
+              th:first-child,
+              th:last-child {
+                z-index: 6;
+                background-color: var(--card-background);
+                padding-right: 8px;
+              }
+            }
+
+            .avatar-username-container {
+              display: flex;
+              flex-direction: row;
+              align-items: 'center';
+              align-content: 'center';
+              padding-left: 8px;
+              .account-name {
+                @include poppins500(14px);
+                user-select: none;
+                color: var(--select-font-color);
+                margin-left: 12px;
+                align-self: center;
+              }
+              .user-picture {
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+              }
+              .cursor-pointer {
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 6px;
+  background-color: transparent;
+}

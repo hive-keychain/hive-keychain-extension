@@ -18,6 +18,7 @@ const config = {
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
     web_interface: './src/content-scripts/web-interface/index.ts',
     keychainify: './src/content-scripts/keychainify/index.ts',
+    portfolio: './src/portfolio/index.tsx',
   },
   module: {
     rules: [

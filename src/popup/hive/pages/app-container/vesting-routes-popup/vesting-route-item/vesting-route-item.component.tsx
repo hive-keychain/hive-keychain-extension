@@ -3,13 +3,13 @@ import {
   VestingRoute,
   VestingRouteDifference,
 } from '@interfaces/vesting-routes.interface';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
-import { setSuccessMessage } from '@popup/hive/actions/message.actions';
-import { RootState } from '@popup/hive/store';
-import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
+} from '@popup/multichain/actions/loading.actions';
+import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -176,7 +176,7 @@ const VestingRouteItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts,
+    accounts: state.hive.accounts,
   };
 };
 

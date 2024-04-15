@@ -1,10 +1,10 @@
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {

@@ -1,8 +1,8 @@
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ResourceItemComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
-import { RootState } from 'src/popup/hive/store';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
 const ResourcesSection = ({
@@ -77,8 +77,8 @@ const ResourcesSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

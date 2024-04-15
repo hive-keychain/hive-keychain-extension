@@ -8,7 +8,7 @@ export enum ButtonType {
 }
 
 export interface ButtonProps {
-  onClick: () => void;
+  onClick: (event?: any) => void;
   label: string;
   skipLabelTranslation?: boolean;
   labelParams?: string[];
