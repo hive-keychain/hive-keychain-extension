@@ -508,6 +508,10 @@ const getSuggestedConfig = (username: string) => {
       operation: sub as NotificationOperationName,
       conditions: [{ field: '', operand: '', value: '' }],
     });
+    configForm.push({
+      operation: 'comment',
+      conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
+    });
   }
 
   return configForm;
@@ -558,7 +562,10 @@ const getNotifications = async (
     );
     rawNotifications = [...rawNotifications, ...lastBatch];
     offset += limit;
-  } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
+  } while (
+    lastBatch.length > 0 &&
+    lastBatch.every((rawNotif) => rawNotif.read_at === null)
+  );
 
   for (const [index, notif] of rawNotifications.entries()) {
     const payload = JSON.parse(notif.payload);
@@ -623,7 +630,15 @@ const getNotifications = async (
         break;
       }
       case 'comment': {
-        // TODO wait for asgarth answer
+        // case mention
+        message = 'notification_mention';
+        messageParams = [
+          notif.sender,
+          notif.account,
+          payload.author,
+          payload.permlink,
+        ];
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }
       case 'custom_json': {
@@ -933,7 +948,8 @@ const deleteAccountConfig = async (activeAccount: ActiveAccount) => {
 };
 
 const saveDefaultConfig = async (activeAccount: ActiveAccount) => {
-  const config = getDefaultConfig();
+  // const config = getDefaultConfig();
+  const config = getSuggestedConfig(activeAccount.name!);
   return saveConfiguration(config, {
     keys: activeAccount.keys,
     name: activeAccount.name!,
