@@ -3,6 +3,7 @@ import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-walle
 import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
+import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -14,7 +15,7 @@ const EvmAppRouter = ({
   titleProperties,
   hasTitle,
 }: PropsFromRedux) => {
-  const renderAccountPage = (page: Screen) => {
+  const renderPage = (page: Screen) => {
     switch (page) {
       case Screen.EVM_ADD_WALLET_MAIN:
         return <AddWalletMainComponent />;
@@ -26,6 +27,8 @@ const EvmAppRouter = ({
         return <CreateNewWalletComponent />;
       case Screen.CREATE_EVM_WALLET_VERIFICATION:
         return <CreateNewWalletVerificationComponent />;
+      case Screen.CREATE_EVM_WALLET_VERIFICATION:
+        return <EvmHomeComponent />;
       default:
         return null;
     }
@@ -49,7 +52,7 @@ const EvmAppRouter = ({
           display: 'flex',
           flexDirection: 'column',
         }}>
-        {renderAccountPage(currentPage!)}
+        {renderPage(currentPage!)}
       </div>
     </div>
   );

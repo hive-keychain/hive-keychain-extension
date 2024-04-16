@@ -5,15 +5,23 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 
-const EvmApp = ({ navigateTo }: PropsFromRedux) => {
+const EvmApp = ({ navigateTo, accounts }: PropsFromRedux) => {
   useEffect(() => {
-    navigateTo(Screen.EVM_ADD_WALLET_MAIN);
-  }, []);
+    console.log(accounts);
+    if (!accounts.length) {
+      navigateTo(Screen.EVM_ADD_WALLET_MAIN);
+    } else {
+      navigateTo(Screen.EVM_HOME);
+    }
+  }, [accounts.length]);
+
   return <EvmRouterComponent />;
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    accounts: state.evm.accounts,
+  };
 };
 
 const connector = connect(mapStateToProps, {
