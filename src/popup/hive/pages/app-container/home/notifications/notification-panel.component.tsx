@@ -1,7 +1,7 @@
 import { Notification } from '@interfaces/notifications.interface';
 import { RootState } from '@popup/multichain/store';
 import moment from 'moment';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
@@ -27,9 +27,13 @@ export const NotificationPanel = ({
 }: PropsFromRedux) => {
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [allRead] = useState(notifications.every((notif) => notif.read));
+  const [allRead, setAllRead] = useState(false);
 
   const notificationList = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setAllRead(notifications.every((notif) => notif.read));
+  }, [notifications]);
 
   const clickOnNotification = (notification: Notification) => {
     if (notification.externalUrl) {
