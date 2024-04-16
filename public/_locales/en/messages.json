@@ -23,6 +23,10 @@
     "message": "Wrong key. Please use memo key",
     "description": "while using wrong private key"
   },
+  "common_experimental": {
+    "message": "Experimental",
+    "description": "experimental"
+  },
   "common_yes": {
     "message": "Yes",
     "description": "Generic"
@@ -3972,7 +3976,7 @@
     "description": "explanation for keychain icon click"
   },
   "html_popup_settings_notifications": {
-    "message": "Notifications (Experimental)",
+    "message": "Notifications",
     "description": "Notifications"
   },
   "html_popup_settings_notifications_caption": {
