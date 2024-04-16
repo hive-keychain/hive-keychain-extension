@@ -382,9 +382,26 @@ const operationFieldList = [
     name: 'changed_recovery_account',
     fields: ['account', 'old_recovery_account', 'new_recovery_account'],
   },
-  { name: 'fill_collateralized_convert_request', fields: [] },
-  { name: 'fill_recurrent_transfer', fields: [] },
-  { name: 'failed_recurrent_transfer', fields: [] },
+  {
+    name: 'fill_collateralized_convert_request',
+    fields: ['amount_in', 'amount_out', 'excess_collateral'],
+  },
+  {
+    name: 'fill_recurrent_transfer',
+    fields: ['from', 'to', 'amount', 'memo', 'remaining_executions'],
+  },
+  {
+    name: 'failed_recurrent_transfer',
+    fields: [
+      'from',
+      'to',
+      'amount',
+      'memo',
+      'consecutive_failures',
+      'remaining_executions',
+      'deleted',
+    ],
+  },
 ];
 
 const operandList = [
