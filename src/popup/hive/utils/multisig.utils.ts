@@ -52,6 +52,7 @@ import {
   ResetAccountOperation,
   SetResetAccountOperation,
   SetWithdrawVestingRouteOperation,
+  SignedTransaction,
   Transaction,
   TransferFromSavingsOperation,
   TransferOperation,
@@ -64,6 +65,14 @@ import {
   WitnessSetPropertiesOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
+import { MultisigAccountConfig } from '@interfaces/multisig.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getUsernameFromTransaction = (tx: Transaction) => {
   let username;
@@ -234,16 +243,6 @@ const getUsernameFromTransaction = (tx: Transaction) => {
   return username;
 };
 
-import { SignedTransaction } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
-import { MultisigAccountConfig } from '@interfaces/multisig.interface';
-import AccountUtils from '@popup/hive/utils/account.utils';
-import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
-
 const saveMultisigConfig = async (
   account: string,
   newAccountConfig: MultisigAccountConfig,
@@ -368,7 +367,6 @@ export interface TwoFABotConfiguration {
 
 const get2FAAccounts = async (
   account: ExtendedAccount,
-  key: Key,
   method: KeychainKeyTypes,
 ) => {
   let potentialBots;
@@ -402,7 +400,6 @@ const get2FAAccounts = async (
         metadata.configPath,
         account.name,
       );
-      console.log(config);
       if (config && config.use2FAByDefault) {
         botNames.push(extendedAccount.name);
       }

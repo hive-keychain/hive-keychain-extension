@@ -88,7 +88,6 @@ const ConfirmationPage = ({
           if (useMultisig) {
             const accounts = await MultisigUtils.get2FAAccounts(
               activeAccount.account,
-              activeAccount.keys.active,
               method,
             );
 
@@ -114,7 +113,6 @@ const ConfirmationPage = ({
           if (useMultisig) {
             const accounts = await MultisigUtils.get2FAAccounts(
               activeAccount.account,
-              activeAccount.keys.posting,
               method,
             );
             accounts.forEach((acc) =>

@@ -1,6 +1,7 @@
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import {
   addCaptionToLoading,
   addToLoadingList,
@@ -12,7 +13,7 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -133,6 +134,14 @@ const WitnessTab = ({
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       try {
         addToLoadingList('html_popup_unvote_witness_operation');
+
+        const twoFaAccounts = await MultisigUtils.get2FAAccounts(
+          activeAccount.account,
+          KeychainKeyTypes.active,
+        );
+
+        // if()
+
         const success = await WitnessUtils.unvoteWitness(
           witness,
           activeAccount.name!,
