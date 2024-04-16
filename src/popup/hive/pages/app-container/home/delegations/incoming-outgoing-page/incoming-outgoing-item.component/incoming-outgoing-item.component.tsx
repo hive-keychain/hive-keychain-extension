@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   loadDelegatees,
   loadDelegators,
@@ -83,7 +84,7 @@ const IncomingOutgoing = ({
       ),
       title: 'popup_html_cancel_delegation',
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_cancel_delegation_operation');
 
         try {
@@ -92,6 +93,7 @@ const IncomingOutgoing = ({
             username!,
             '0.000000 VESTS',
             activeAccount.keys.active!,
+            options,
           );
           if (success) {
             if (success.isUsingMultisig) {
@@ -148,7 +150,7 @@ const IncomingOutgoing = ({
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: stringifiedAmount },
       ],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_delegation_operation');
 
         try {
@@ -158,6 +160,7 @@ const IncomingOutgoing = ({
             FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
               ' VESTS',
             activeAccount.keys.active!,
+            options,
           );
           if (success) {
             if (success.isUsingMultisig) {

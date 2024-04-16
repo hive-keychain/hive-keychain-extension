@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -59,7 +60,7 @@ const TokenIncomingOutgoing = ({
       ),
       title: 'popup_html_cancel_delegation',
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
           'html_popup_cancel_delegation_operation',
           KeysUtils.getKeyType(
@@ -75,6 +76,7 @@ const TokenIncomingOutgoing = ({
             amount.toString(),
             activeAccount.keys.active!,
             activeAccount.name!,
+            options,
           );
           if (tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
@@ -128,7 +130,7 @@ const TokenIncomingOutgoing = ({
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: formattedAmount },
       ],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_delegation_operation');
 
         try {
@@ -138,6 +140,7 @@ const TokenIncomingOutgoing = ({
             value.toString(),
             activeAccount.keys.active!,
             activeAccount.name!,
+            options,
           );
 
           if (tokenOperationResult.broadcasted) {

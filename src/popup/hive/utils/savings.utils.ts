@@ -5,7 +5,7 @@ import {
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -15,10 +15,13 @@ const deposit = async (
   receiver: string,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [await getDepositOperation(username, receiver, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -27,10 +30,13 @@ const withdraw = async (
   to: string,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [await getWithdrawOperation(username, to, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -99,10 +105,13 @@ const cancelCurrentWithdrawSaving = async (
   username: string,
   request_id: number,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [SavingsUtils.getCancelTransferFromSavingsOperation(username, request_id)],
     activeKey,
+    false,
+    options,
   );
 };
 

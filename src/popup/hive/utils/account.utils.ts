@@ -12,7 +12,12 @@ import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
+import {
+  Key,
+  Keys,
+  KeyType,
+  TransactionOptions,
+} from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -533,6 +538,7 @@ const updateAccount = (
   memo: string,
   stringifiedMetadata: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -545,6 +551,8 @@ const updateAccount = (
       ),
     ],
     key!,
+    false,
+    options,
   );
 };
 

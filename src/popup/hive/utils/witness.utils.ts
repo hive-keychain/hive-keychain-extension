@@ -5,7 +5,7 @@ import {
 } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import {
   LastSigningKeys,
   Witness,
@@ -124,6 +124,7 @@ const updateWitnessParameters = async (
   witnessAccountName: string,
   witnessParamsForm: WitnessParamsForm,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessAccountUpdateOperation = getWitnessAccountUpdateOperation(
     witnessAccountName,
@@ -132,6 +133,8 @@ const updateWitnessParameters = async (
   return await HiveTxUtils.sendOperation(
     [witnessAccountUpdateOperation],
     activeKey,
+    true,
+    options,
   );
 };
 

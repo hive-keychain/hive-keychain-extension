@@ -1,6 +1,7 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
@@ -92,6 +93,7 @@ const processSwap = async (
   amount: number,
   activeAccount: ActiveAccount,
   swapAccount: string,
+  options?: TransactionOptions,
 ) => {
   if (
     startToken === BaseCurrencies.HBD.toUpperCase() ||
@@ -106,6 +108,7 @@ const processSwap = async (
       0,
       0,
       activeAccount.keys.active!,
+      options,
     );
     return status;
   } else {

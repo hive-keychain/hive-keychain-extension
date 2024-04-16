@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
@@ -199,7 +200,7 @@ const TokensTransfer = ({
       warningMessage: warningMessage,
       title: 'popup_html_transfer_tokens',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         try {
           let memoParam = form.memo;
           if (form.memo.length) {
@@ -231,6 +232,7 @@ const TokensTransfer = ({
             memoParam,
             activeAccount.keys.active!,
             activeAccount.name!,
+            options,
           );
 
           if (transactionStatus.isUsingMultisig) {
