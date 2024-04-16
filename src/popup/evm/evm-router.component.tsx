@@ -27,7 +27,7 @@ const EvmAppRouter = ({
         return <CreateNewWalletComponent />;
       case Screen.CREATE_EVM_WALLET_VERIFICATION:
         return <CreateNewWalletVerificationComponent />;
-      case Screen.CREATE_EVM_WALLET_VERIFICATION:
+      case Screen.EVM_HOME:
         return <EvmHomeComponent />;
       default:
         return null;

@@ -7,7 +7,7 @@ const IV_SIZE = 128;
 const ITERATIONS = 100;
 
 const encryptJson = (content: any, encryptPassword: string): string => {
-  if (content.list) content.hash = md5(content.list);
+  content.hash = md5(content.list);
   var msg = encrypt(JSON.stringify(content), encryptPassword);
   return msg;
 };

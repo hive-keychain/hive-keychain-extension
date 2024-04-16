@@ -231,9 +231,6 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.hive.accounts,
     activeRpc: state.hive.activeRpc,
     globalProperties: state.hive.globalProperties,
-    isAppReady:
-      Object.keys(state.hive.globalProperties).length > 0 &&
-      !ActiveAccountUtils.isEmpty(state.hive.activeAccount),
   };
 };
 

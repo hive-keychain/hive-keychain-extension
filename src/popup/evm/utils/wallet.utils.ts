@@ -80,7 +80,10 @@ const saveAccounts = (
       path: derivedWallet.path!,
     })),
   };
-  const encryptedAccounts = EncryptUtils.encryptJson(evmAccountObject, mk);
+  const encryptedAccounts = EncryptUtils.encryptJson(
+    { list: evmAccountObject },
+    mk,
+  );
 
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
@@ -92,10 +95,11 @@ const getAccountsFromLocalStorage = async (mk: string) => {
   const wallets = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
-  return EncryptUtils.decryptToJson(wallets, mk) as StoredEvmAccounts;
+  return EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk)
+    .list as StoredEvmAccounts;
 };
 
-const rebuildAccounts = async (mk: string) => {
+const rebuildAccountsFromLocalStorage = async (mk: string) => {
   const accounts = await getAccountsFromLocalStorage(mk);
   return accounts.accounts.map((e) => {
     const account: EvmAccount = {
@@ -112,7 +116,7 @@ const EvmWalletUtils = {
   createWallet,
   saveAccounts,
   getAccountsFromLocalStorage,
-  rebuildAccounts,
+  rebuildAccountsFromLocalStorage,
 };
 
 export default EvmWalletUtils;

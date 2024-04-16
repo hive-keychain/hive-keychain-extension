@@ -8,8 +8,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
-import { ResourcesSectionComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resources-section.component';
-import { TopBarComponent } from 'src/popup/hive/pages/app-container/home/top-bar/top-bar.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { WalletInfoSectionComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
@@ -102,9 +100,7 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
     <div className={'home-page-evm'} data-testid={`${Screen.EVM_HOME}-page`}>
       {
         <>
-          <TopBarComponent />
           <div className={'home-page-content'} onScroll={handleScroll}>
-            <ResourcesSectionComponent />
             <EstimatedAccountValueSectionComponent />
             <WalletInfoSectionComponent />
           </div>
@@ -123,7 +119,6 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
-    isAppReady: true, //TODO : change according to what needs to be loaded
   };
 };
 
