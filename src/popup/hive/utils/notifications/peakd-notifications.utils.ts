@@ -503,14 +503,28 @@ const getSuggestedConfig = (username: string) => {
     operation: 'transfer',
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
+  configForm.push({
+    operation: 'comment',
+    conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
+  });
+  configForm.push({
+    operation: 'comment',
+    conditions: [
+      { field: 'parent_author', operand: '==', value: `${username}` },
+    ],
+  });
+  configForm.push({
+    operation: 'recurrent_transfer',
+    conditions: [{ field: 'to', operand: '==', value: username }],
+  });
+  configForm.push({
+    operation: 'delegate_vesting_shares',
+    conditions: [{ field: 'delegatee', operand: '==', value: username }],
+  });
   for (const sub of suggestedConfig) {
     configForm.push({
       operation: sub as NotificationOperationName,
       conditions: [{ field: '', operand: '', value: '' }],
-    });
-    configForm.push({
-      operation: 'comment',
-      conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
     });
   }
 
@@ -630,14 +644,20 @@ const getNotifications = async (
         break;
       }
       case 'comment': {
-        // case mention
-        message = 'notification_mention';
-        messageParams = [
-          notif.sender,
-          notif.account,
-          payload.author,
-          payload.permlink,
-        ];
+        if (payload.parent_author === username) {
+          // case response
+          message = 'notification_answer';
+          messageParams = [notif.sender, payload.author, payload.permlink];
+        } else {
+          // case mention
+          message = 'notification_mention';
+          messageParams = [
+            notif.sender,
+            notif.account,
+            payload.author,
+            payload.permlink,
+          ];
+        }
         externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }

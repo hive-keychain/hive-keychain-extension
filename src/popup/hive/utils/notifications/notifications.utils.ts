@@ -17,7 +17,9 @@ const getNotifications = async (
     initialList.filter((n) => n.type === NotificationType.PEAKD),
   );
   const peakdHasMore =
-    !peakDNotifications[peakDNotifications.length - 1].isTypeLast;
+    peakDNotifications.length === 0
+      ? false
+      : !peakDNotifications[peakDNotifications.length - 1].isTypeLast;
 
   const finalNotifications = [...initialList, ...peakDNotifications];
   finalNotifications.sort((a, b) => {
