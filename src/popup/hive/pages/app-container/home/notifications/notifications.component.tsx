@@ -30,15 +30,15 @@ const Notifications = ({
   const [hasMoreData, setHasMoreData] = useState(false);
 
   useEffect(() => {
-    if (globalProperties.globals && activeAccount.name)
+    if (globalProperties.globals && activeAccount.name) {
       initNotifications(activeAccount.name!, globalProperties.globals);
-  }, [activeAccount.name]);
+    }
+  }, [activeAccount.name, globalProperties]);
 
   const initNotifications = async (
     username: string,
     dynamicGlobalProperties: DynamicGlobalProperties,
   ) => {
-    console.log('init notification for ', username);
     const { notifs, hasMore } = await NotificationsUtils.getNotifications(
       username,
       dynamicGlobalProperties,

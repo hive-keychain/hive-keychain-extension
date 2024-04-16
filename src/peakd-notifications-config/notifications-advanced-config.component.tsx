@@ -174,10 +174,24 @@ const NotificationsAdvancedConfigPage = () => {
   const saveConfig = async () => {
     if (window.confirm(chrome.i18n.getMessage('notification_confirm_save')))
       if (selectedAccount?.keys.posting) {
-        await PeakDNotificationsUtils.saveConfiguration(
+        setReady(false);
+        const response = await PeakDNotificationsUtils.saveConfiguration(
           configForm!,
           selectedAccount!,
         );
+        if (response?.tx_id) {
+          setMessage({
+            key: 'notification_account_update',
+            params: [selectedAccount.name],
+            type: MessageType.SUCCESS,
+          } as Message);
+        } else {
+          setMessage({
+            key: 'bgd_ops_error_broadcasting',
+            type: MessageType.ERROR,
+          } as Message);
+        }
+        setReady(true);
       } else {
         setMessage({
           key: 'popup_missing_key',
