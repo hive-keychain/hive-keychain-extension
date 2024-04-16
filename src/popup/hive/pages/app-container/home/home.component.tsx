@@ -222,7 +222,7 @@ const Home = ({
         surveyToDisplay,
         displayWrongKeyPopup,
       )}
-      <TutorialPopupComponent username={activeAccount.name!} />
+      <TutorialPopupComponent />
     </div>
   );
 };

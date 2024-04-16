@@ -1,3 +1,4 @@
+import { useThemeContext } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
@@ -6,13 +7,9 @@ import ButtonComponent, {
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-interface Props {
-  username: string;
-}
-
-const TutorialPopup = ({ username }: Props) => {
+const TutorialPopup = () => {
   const [show, setShow] = useState(false);
-
+  const { theme } = useThemeContext();
   useEffect(() => {
     init();
   }, []);
@@ -37,8 +34,9 @@ const TutorialPopup = ({ username }: Props) => {
 
   const handleClick = (option: 'tutorial_seen' | 'tutorial_opted_out') => {
     if (option === 'tutorial_seen') {
-      //TODO somehow pass user session data to url
-      chrome.tabs.create({ url: 'http://localhost:3000/' });
+      chrome.tabs.create({
+        url: `http://localhost:3000/extension`,
+      });
     }
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
