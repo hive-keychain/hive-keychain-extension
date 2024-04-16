@@ -128,13 +128,17 @@ const SelectAccountSection = ({
     return (
       <div className="custom-select-dropdown">
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable-account" type="account">
+          <Droppable
+            droppableId="droppable-account"
+            type="account"
+            isDropDisabled={!isOnMain}>
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {properties.options.map((option, index) => (
                   <Draggable
                     key={option.value}
                     draggableId={option.value}
+                    isDragDisabled={!isOnMain}
                     index={index}>
                     {(provided) => (
                       <div
@@ -165,7 +169,6 @@ const SelectAccountSection = ({
       </div>
     );
   };
-
   return (
     <>
       {selectedLocalAccount && options && (
