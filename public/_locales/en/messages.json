@@ -3972,11 +3972,11 @@
     "description": "explanation for keychain icon click"
   },
   "html_popup_settings_notifications": {
-    "message": "Notifications",
+    "message": "Notifications (Experimental)",
     "description": "Notifications"
   },
   "html_popup_settings_notifications_caption": {
-    "message": "This is the configuration page for PeakD notification. Be aware that changes might take time to be applied.",
+    "message": "Configure your Peak Open Projects notifications. Be aware that changes might take time to be applied, and that this is an experimental feature.",
     "description": "Notification caption introducing the feature"
   },
   "html_popup_settings_notifications_activated": {
