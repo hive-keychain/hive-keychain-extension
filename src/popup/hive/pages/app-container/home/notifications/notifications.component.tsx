@@ -32,12 +32,13 @@ const Notifications = ({
   useEffect(() => {
     if (globalProperties.globals && activeAccount.name)
       initNotifications(activeAccount.name!, globalProperties.globals);
-  }, []);
+  }, [activeAccount.name]);
 
   const initNotifications = async (
     username: string,
     dynamicGlobalProperties: DynamicGlobalProperties,
   ) => {
+    console.log('init notification for ', username);
     const { notifs, hasMore } = await NotificationsUtils.getNotifications(
       username,
       dynamicGlobalProperties,

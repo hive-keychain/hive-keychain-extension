@@ -503,6 +503,24 @@ const getSuggestedConfig = (username: string) => {
     operation: 'transfer',
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
+  configForm.push({
+    operation: 'comment',
+    conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
+  });
+  configForm.push({
+    operation: 'comment',
+    conditions: [
+      { field: 'parent_author', operand: '==', value: `${username}` },
+    ],
+  });
+  configForm.push({
+    operation: 'recurrent_transfer',
+    conditions: [{ field: 'to', operand: '==', value: username }],
+  });
+  configForm.push({
+    operation: 'delegate_vesting_shares',
+    conditions: [{ field: 'delegatee', operand: '==', value: username }],
+  });
   for (const sub of suggestedConfig) {
     configForm.push({
       operation: sub as NotificationOperationName,
@@ -558,7 +576,10 @@ const getNotifications = async (
     );
     rawNotifications = [...rawNotifications, ...lastBatch];
     offset += limit;
-  } while (lastBatch.every((rawNotif) => rawNotif.read_at === null));
+  } while (
+    lastBatch.length > 0 &&
+    lastBatch.every((rawNotif) => rawNotif.read_at === null)
+  );
 
   for (const [index, notif] of rawNotifications.entries()) {
     const payload = JSON.parse(notif.payload);
@@ -623,7 +644,21 @@ const getNotifications = async (
         break;
       }
       case 'comment': {
-        // TODO wait for asgarth answer
+        if (payload.parent_author === username) {
+          // case response
+          message = 'notification_answer';
+          messageParams = [notif.sender, payload.author, payload.permlink];
+        } else {
+          // case mention
+          message = 'notification_mention';
+          messageParams = [
+            notif.sender,
+            notif.account,
+            payload.author,
+            payload.permlink,
+          ];
+        }
+        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
         break;
       }
       case 'custom_json': {
@@ -933,7 +968,8 @@ const deleteAccountConfig = async (activeAccount: ActiveAccount) => {
 };
 
 const saveDefaultConfig = async (activeAccount: ActiveAccount) => {
-  const config = getDefaultConfig();
+  // const config = getDefaultConfig();
+  const config = getSuggestedConfig(activeAccount.name!);
   return saveConfiguration(config, {
     keys: activeAccount.keys,
     name: activeAccount.name!,

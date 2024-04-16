@@ -4012,6 +4012,14 @@
     "message": "The account @$1 has been updated",
     "description": "Notification account updated"
   },
+  "notification_mention": {
+    "message": "@$1 mentioned @$2 in <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>$3/$4</a>",
+    "description": "Notification mentioned"
+  },
+  "notification_answer": {
+    "message": "@$1 replied to <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reply"
+  },
   "notification_account_witness_proxy": {
     "message": "@$1 has set @$2 as a proxy",
     "description": "Notification witness proxy"
