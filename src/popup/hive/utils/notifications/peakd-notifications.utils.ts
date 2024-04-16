@@ -521,6 +521,14 @@ const getSuggestedConfig = (username: string) => {
     operation: 'delegate_vesting_shares',
     conditions: [{ field: 'delegatee', operand: '==', value: username }],
   });
+  configForm.push({
+    operation: 'custom_json',
+    conditions: [{ field: '', operand: '', value: '' }],
+  });
+  configForm.push({
+    operation: 'custom_json',
+    conditions: [{ field: 'json', operand: 'regex', value: username }],
+  });
   for (const sub of suggestedConfig) {
     configForm.push({
       operation: sub as NotificationOperationName,
