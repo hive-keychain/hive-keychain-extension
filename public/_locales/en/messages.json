@@ -3979,8 +3979,8 @@
     "message": "This is the configuration page for PeakD notification. Be aware that changes might take time to be applied.",
     "description": "Notification caption introducing the feature"
   },
-  "html_popup_settings_notifications_active": {
-    "message": "Active",
+  "html_popup_settings_notifications_activated": {
+    "message": "Activated",
     "description": "Notification system active for this account"
   },
   "html_popup_settings_notifications_condition": {

@@ -245,7 +245,7 @@ const NotificationsAdvancedConfigPage = () => {
               checked={isActive}
               onChange={setActive}
               backgroundType={BackgroundType.FILLED}
-              title="html_popup_settings_notifications_active"
+              title="html_popup_settings_notifications_activated"
             />
           </div>
           {isActive && (

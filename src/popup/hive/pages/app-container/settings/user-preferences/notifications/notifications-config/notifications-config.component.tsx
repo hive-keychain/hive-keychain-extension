@@ -90,7 +90,7 @@ const NotificationConfigPage = ({
             checked={isActive}
             onChange={setActive}
             backgroundType={BackgroundType.FILLED}
-            title="html_popup_settings_notifications_active"
+            title="html_popup_settings_notifications_activated"
           />
 
           <div
@@ -104,7 +104,7 @@ const NotificationConfigPage = ({
           <OperationButtonComponent
             key={KeyType.POSTING}
             onClick={handleSubmitClick}
-            label={'popup_html_submit'}
+            label={'popup_html_save'}
           />
         </div>
       )}
