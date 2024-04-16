@@ -92,7 +92,6 @@ const NotificationConfigPage = ({
             backgroundType={BackgroundType.FILLED}
             title="html_popup_settings_notifications_activated"
           />
-
           <div
             className="link-to-advanced-settings"
             onClick={openAdvancedConfiguration}>
