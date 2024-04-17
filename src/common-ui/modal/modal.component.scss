@@ -1,0 +1,12 @@
+.modal-container {
+  .popup-content {
+    width: 100%;
+    min-height: 200px;
+
+    .modal-title {
+      @include poppins400(16px);
+    }
+    .modal-content {
+    }
+  }
+}

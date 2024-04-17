@@ -11,6 +11,7 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
+import { openModal } from '@popup/multichain/actions/modal.actions';
 import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -46,6 +47,7 @@ const WitnessTab = ({
   setSuccessMessage,
   refreshActiveAccount,
   addCaptionToLoading,
+  openModal,
 }: PropsFromRedux & WitnessTabProps) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
@@ -140,13 +142,15 @@ const WitnessTab = ({
           KeychainKeyTypes.active,
         );
 
+        openModal({ title: 'toto', children: <></> });
         // if()
+        const success: any = {};
 
-        const success = await WitnessUtils.unvoteWitness(
-          witness,
-          activeAccount.name!,
-          activeAccount.keys.active!,
-        );
+        // const success = await WitnessUtils.unvoteWitness(
+        //   witness,
+        //   activeAccount.name!,
+        //   activeAccount.keys.active!,
+        // );
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_unvote_witness_operation');
         await BlockchainTransactionUtils.delayRefresh();
@@ -355,6 +359,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   refreshActiveAccount,
   addCaptionToLoading,
+  openModal,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
