@@ -3979,6 +3979,10 @@
     "message": "@$1 2FA code",
     "description": "Two fa code label"
   },
+  "multisig_bot_two_fa_codes": {
+    "message": "2FA Codes",
+    "description": "Two fa code label"
+  },
   "export_transactions_fetching_error": {
     "message": "There was an error while fetching your transactions. Please try again later",
     "description": "Error while downloading transactions"
@@ -3990,5 +3994,9 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_transaction_metadata": {
+    "message": "Transaction metadata",
+    "description": "Transaction metadata"
   }
 }

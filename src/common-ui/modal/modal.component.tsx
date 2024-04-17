@@ -4,8 +4,6 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 interface ModalProps {
   children: JSX.Element | JSX.Element[];
   title: string;
-  //   onClose: () => void
-  //   onClose: () => void
 }
 
 export const ModalComponent = ({ children, title }: ModalProps) => {

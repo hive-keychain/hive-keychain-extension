@@ -24,20 +24,31 @@ export const WITNESS_DISABLED_KEY =
   'STM1111111111111111111111111111111114T1Anm';
 
 /* istanbul ignore next */
-const voteWitness = async (witness: Witness, voter: string, activeKey: Key) => {
+const voteWitness = async (
+  witness: Witness,
+  voter: string,
+  activeKey: Key,
+  options?: TransactionOptions,
+) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
     voter,
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const unvoteWitness = async (
   witness: Witness,
   voter: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     false,
@@ -45,7 +56,12 @@ const unvoteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const updateWitnessVote = async (
@@ -67,10 +83,16 @@ const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   GovernanceUtils.removeFromIgnoreRenewal(username);
 
-  return await HiveTxUtils.sendOperation([witnessOperation], activeKey);
+  return await HiveTxUtils.sendOperation(
+    [witnessOperation],
+    activeKey,
+    false,
+    options,
+  );
 };
 /* istanbul ignore next */
 const getWitnessVoteOperation = (

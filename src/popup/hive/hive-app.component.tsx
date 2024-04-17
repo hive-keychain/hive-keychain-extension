@@ -16,7 +16,6 @@ import {
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
 import { setMk } from '@popup/multichain/actions/mk.actions';
-import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
@@ -59,8 +58,6 @@ const HiveApp = ({
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   hasFinishedSignup,
-  openModal,
-  closeModal,
 }: PropsFromRedux) => {
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
@@ -147,11 +144,6 @@ const HiveApp = ({
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
     }
-
-    openModal({
-      title: 'html_popup_click_to_refresh',
-      children: <div>content</div>,
-    });
   };
 
   const initActiveAccount = async (accounts: LocalAccount[]) => {
@@ -292,8 +284,6 @@ const connector = connect(mapStateToProps, {
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
-  openModal,
-  closeModal,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
