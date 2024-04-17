@@ -1,17 +1,16 @@
-import { useThemeContext } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
-  const { theme } = useThemeContext();
   useEffect(() => {
-    init();
+    init(true);
   }, []);
 
   const init = async (reset?: boolean) => {
@@ -32,15 +31,15 @@ const TutorialPopup = () => {
     }
   };
 
-  const handleClick = (option: 'tutorial_seen' | 'tutorial_opted_out') => {
-    if (option === 'tutorial_seen') {
+  const handleClick = (option: 'show' | 'skip') => {
+    if (option === 'show') {
       chrome.tabs.create({
-        url: `http://localhost:3000/extension`,
+        url: `${Config.tutorial.baseUrl}/extension`,
       });
     }
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
-      option,
+      false,
     );
     setShow(false);
   };
@@ -52,20 +51,29 @@ const TutorialPopup = () => {
         <div className="popup-title">
           {chrome.i18n.getMessage('popup_html_tutorial_popup_title')}
         </div>
-        <div className="sub-title">
-          {chrome.i18n.getMessage('popup_html_tutorial_popup_sub_title')}
-        </div>
+        <img
+          src={'/assets/images/popup/landscape_tutorial_popup.png'}
+          alt="tutorial-popup-image"
+          className="image"
+        />
+        <div
+          className="sub-title"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(
+              'popup_html_tutorial_popup_description',
+            ),
+          }}></div>
         <div className="buttons-container">
           <ButtonComponent
-            label="popup_html_tutorial_popup_user_opt_out_label"
+            label="popup_html_tutorial_popup_skip_label"
             type={ButtonType.ALTERNATIVE}
-            onClick={() => handleClick('tutorial_opted_out')}
+            onClick={() => handleClick('skip')}
             additionalClass="button"
           />
           <ButtonComponent
-            label="popup_html_tutorial_popup_seen_label"
+            label="popup_html_tutorial_popup_show_label"
             type={ButtonType.IMPORTANT}
-            onClick={() => handleClick('tutorial_seen')}
+            onClick={() => handleClick('show')}
             additionalClass="button"
           />
         </div>

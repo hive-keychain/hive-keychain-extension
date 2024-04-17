@@ -51,6 +51,9 @@ const Config = {
       process.env.MULTISIG_BACKEND_SERVER ||
       'https://api-multisig.hive-keychain.com',
   },
+  tutorial: {
+    baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
+  },
 };
 
 export default Config;

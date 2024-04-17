@@ -1,6 +1,10 @@
 .sub-title {
-  @include poppins500(16px);
+  @include poppins500(14px);
   color: var(--main-font-color);
+}
+.image {
+  width: 290px;
+  border-radius: 24px;
 }
 .buttons-container {
   display: flex;

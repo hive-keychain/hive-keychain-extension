@@ -12,19 +12,19 @@
     "description": "while using wrong private key"
   },
   "popup_html_tutorial_popup_title": {
-    "message": "Onboarding Tutorial",
+    "message": "Welcome to Keychain!",
     "description": "tutorial popup"
   },
-  "popup_html_tutorial_popup_sub_title": {
-    "message": "Would you like to see our Tutorial?",
+  "popup_html_tutorial_popup_description": {
+    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
     "description": "tutorial popup"
   },
-  "popup_html_tutorial_popup_seen_label": {
-    "message": "Yes",
+  "popup_html_tutorial_popup_show_label": {
+    "message": "Show",
     "description": "tutorial popup"
   },
-  "popup_html_tutorial_popup_user_opt_out_label": {
-    "message": "No",
+  "popup_html_tutorial_popup_skip_label": {
+    "message": "Skip",
     "description": "tutorial popup"
   },
   "popup_html_wrong_key_active": {
