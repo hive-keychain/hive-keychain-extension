@@ -2271,8 +2271,16 @@
     "message": "Close",
     "description": "general"
   },
+  "popup_html_help": {
+    "message": "Help",
+    "description": "Contact support"
+  },
   "popup_html_contact_support": {
     "message": "Contact support",
+    "description": "Contact support"
+  },
+  "popup_html_tutorial": {
+    "message": "Tutorial",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {

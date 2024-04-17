@@ -30,11 +30,10 @@ const SettingsMenuItems = (logout: () => void): MenuItem[] => {
       nextScreen: Screen.GOVERNANCE_PAGE,
     },
     {
-      label: 'popup_html_contact_support',
+      label: 'popup_html_help',
+      //TODO bellow change ICON
       icon: SVGIcons.MENU_SUPPORT,
-      action: () => {
-        chrome.tabs.create({ url: 'https://discord.gg/3Sex2qYtXP' });
-      },
+      nextScreen: Screen.SETTINGS_HELP,
     },
     {
       label: 'popup_html_about',
