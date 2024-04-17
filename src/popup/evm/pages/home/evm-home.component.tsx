@@ -33,6 +33,7 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
     initSurvey();
   }, []);
 
+  //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
   };
