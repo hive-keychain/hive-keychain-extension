@@ -193,7 +193,7 @@ const addAuthorizedAccount = async (
     throw new KeychainError('popup_no_auth_account', [authorizedAccount]);
   } else {
     localAuthorizedAccount = existingAccounts.find(
-      (localAccount: LocalAccount) => localAccount.name,
+      (localAccount: LocalAccount) => localAccount.name === authorizedAccount,
     )!;
   }
 
