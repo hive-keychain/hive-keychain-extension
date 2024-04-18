@@ -54,21 +54,22 @@ const TutorialPopup = () => {
               'popup_html_tutorial_popup_description',
             ),
           }}></div>
-        <div className="buttons-container">
-          <ButtonComponent
-            label="popup_html_tutorial_popup_skip_label"
-            type={ButtonType.ALTERNATIVE}
-            onClick={() => handleClick('skip')}
-            additionalClass="button"
-          />
-          <ButtonComponent
-            label="popup_html_tutorial_popup_show_label"
-            type={ButtonType.IMPORTANT}
-            onClick={() => handleClick('show')}
-            additionalClass="button"
-          />
+        <div className="popup-footer">
+          <div className="buttons-container">
+            <ButtonComponent
+              label="popup_html_tutorial_popup_skip_label"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => handleClick('skip')}
+              additionalClass="button"
+            />
+            <ButtonComponent
+              label="popup_html_tutorial_popup_show_label"
+              type={ButtonType.IMPORTANT}
+              onClick={() => handleClick('show')}
+              additionalClass="button"
+            />
+          </div>
         </div>
-        <div className="popup-footer"></div>
       </PopupContainer>
     );
 };

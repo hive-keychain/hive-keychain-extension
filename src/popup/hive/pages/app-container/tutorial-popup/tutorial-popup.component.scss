@@ -1,17 +1,28 @@
-.sub-title {
-  @include poppins500(14px);
-  color: var(--main-font-color);
-}
-.image {
-  width: 290px;
-  border-radius: 24px;
-}
-.buttons-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  .button {
-    width: 44%;
+.tutorial {
+  .popup-content {
+    height: 85%;
+    justify-content: space-around;
+    row-gap: unset;
+  }
+  .sub-title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    width: 280px;
+  }
+  .image {
+    width: 290px;
+    border-radius: 24px;
+  }
+  .popup-footer {
+    flex: none !important;
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      .button {
+        width: 44%;
+      }
+    }
   }
 }

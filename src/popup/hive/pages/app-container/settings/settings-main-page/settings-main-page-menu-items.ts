@@ -31,8 +31,7 @@ const SettingsMenuItems = (logout: () => void): MenuItem[] => {
     },
     {
       label: 'popup_html_help',
-      //TODO bellow change ICON
-      icon: SVGIcons.MENU_SUPPORT,
+      icon: SVGIcons.MENU_HELP,
       nextScreen: Screen.SETTINGS_HELP,
     },
     {

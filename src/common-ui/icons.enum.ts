@@ -81,6 +81,7 @@ export enum SVGIcons {
   MENU_GOVERNANCE = 'menu/governance',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',
+  MENU_HELP = 'menu/help',
   MENU_SUPPORT = 'menu/support',
 
   MENU_USER_PREFERENCES = 'menu/user-preferences',
