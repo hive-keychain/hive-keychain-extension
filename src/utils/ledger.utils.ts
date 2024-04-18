@@ -45,8 +45,13 @@ const getSettings = async () => {
 };
 /* istanbul ignore next */
 const getKeyFromDerivationPath = async (path: string) => {
-  const ledger = await LedgerUtils.getLedgerInstance();
-  return ledger.getPublicKey(path);
+  try {
+    const ledger = await LedgerUtils.getLedgerInstance();
+    const publicKey = await ledger.getPublicKey(path);
+    return publicKey;
+  } catch (e) {
+    throw ErrorUtils.parseLedger(e);
+  }
 };
 
 const getKeyForAccount = async (
@@ -77,8 +82,12 @@ const getKeyForAccount = async (
 };
 
 const getKeysForAccount = async (username: string) => {
-  const allKeys = await LedgerUtils.getAllAccounts();
-  return allKeys.find((a) => a.name === username)?.keys;
+  try {
+    const allKeys = await LedgerUtils.getAllAccounts();
+    return allKeys.find((a) => a.name === username)?.keys;
+  } catch (e) {
+    throw ErrorUtils.parseLedger(e);
+  }
 };
 
 /* istanbul ignore next */
