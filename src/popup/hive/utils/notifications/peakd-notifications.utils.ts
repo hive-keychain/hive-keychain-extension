@@ -612,7 +612,27 @@ const getNotifications = async (
     let message: string = `notification_${notif.operation}`;
     let externalUrl;
     switch (notif.operation_type) {
+      case 'custom_json': {
+        const json = payload.json[1];
+        switch (notif.custom_json_id) {
+          case 'follow':
+            message =
+              json.what.length > 0
+                ? 'notification_follow'
+                : 'notification_unfollow';
+            messageParams = [json.follower, json.following];
+            break;
+          case 'reblog':
+            message = 'notification_reblog';
+            messageParams = [json.account, json.author, json.permlink];
+            break;
+        }
+        break;
+      }
       case 'transfer': {
+        if (typeof payload.amount !== 'string')
+          payload.amount = FormatUtils.fromNaiAndSymbol(payload.amount);
+
         const amount = FormatUtils.withCommas(payload.amount, 3);
         if (payload.to === username) {
           messageParams = [amount, payload.from];

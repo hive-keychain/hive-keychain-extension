@@ -4011,6 +4011,18 @@
     "message": "@$1 started a $2 recurrent transfer to @$3 ($4 executions every $5 hours)",
     "description": "Notification recurrent transfer"
   },
+  "notification_follow": {
+    "message": "@$1 started following $2",
+    "description": "Notification follow"
+  },
+  "notification_unfollow": {
+    "message": "@$1 stopped following $2",
+    "description": "Notification unfollow"
+  },
+  "notification_reblog": {
+    "message": "@$1 reblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reblog"
+  },
 
   "notification_account_update": {
     "message": "The account @$1 has been updated",
