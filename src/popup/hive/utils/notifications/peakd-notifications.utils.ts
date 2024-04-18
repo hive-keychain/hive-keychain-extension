@@ -540,11 +540,11 @@ const getSuggestedConfig = (username: string) => {
   });
   configForm.push({
     operation: 'custom_json',
-    conditions: [{ field: '', operand: '', value: '' }],
+    conditions: [{ field: 'id', operand: '==', value: 'follow' }],
   });
   configForm.push({
     operation: 'custom_json',
-    conditions: [{ field: 'json', operand: 'regex', value: username }],
+    conditions: [{ field: 'id', operand: '==', value: 'reblog' }],
   });
   for (const sub of suggestedConfig) {
     configForm.push({
@@ -689,7 +689,8 @@ const getNotifications = async (
         break;
       }
       case 'comment': {
-        if (payload.parent_author === username) {
+        const replyTrigger = `"parent_author":{"==":"${username}"}`;
+        if (notif.trigger.includes(replyTrigger)) {
           // case response
           message = 'notification_answer';
           messageParams = [notif.sender, payload.author, payload.permlink];
@@ -704,10 +705,6 @@ const getNotifications = async (
           ];
         }
         externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
-        break;
-      }
-      case 'custom_json': {
-        // TODO later
         break;
       }
       case 'delegate_vesting_shares': {
