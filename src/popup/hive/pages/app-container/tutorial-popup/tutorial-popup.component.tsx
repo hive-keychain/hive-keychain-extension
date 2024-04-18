@@ -10,19 +10,10 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    init(true);
+    init();
   }, []);
 
-  const init = async (reset?: boolean) => {
-    //TODO remove reset option after finishing tutorial
-    if (reset) {
-      console.log('Reset SKIP_TUTORIAL!');
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.SKIP_TUTORIAL,
-        null,
-      );
-      return;
-    }
+  const init = async () => {
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
@@ -34,12 +25,12 @@ const TutorialPopup = () => {
   const handleClick = (option: 'show' | 'skip') => {
     if (option === 'show') {
       chrome.tabs.create({
-        url: `${Config.tutorial.baseUrl}/extension`,
+        url: `${Config.tutorial.baseUrl}/#/extension`,
       });
     }
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
-      false,
+      true,
     );
     setShow(false);
   };

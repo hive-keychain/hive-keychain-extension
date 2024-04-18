@@ -14,7 +14,7 @@ const HelpSubMenuItems: MenuItem[] = [
     label: 'popup_html_tutorial',
     icon: SVGIcons.MENU_SUPPORT,
     action: () => {
-      chrome.tabs.create({ url: `${Config.tutorial.baseUrl}/extension` });
+      chrome.tabs.create({ url: `${Config.tutorial.baseUrl}/#/extension` });
     },
   },
 ];
