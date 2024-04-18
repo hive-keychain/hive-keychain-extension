@@ -26,6 +26,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
@@ -633,7 +634,10 @@ const reorderAccounts = (
 };
 
 const getAccountFromKey = async (key: Key) => {
-  const pubKey = KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
+  const isLedger = key?.startsWith('#');
+  const pubKey = isLedger
+    ? await LedgerUtils.getKeyFromDerivationPath(key!.replace('#', ''))
+    : KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
   const accountName = (await KeysUtils.getKeyReferences([pubKey!]))[0];
   return AccountUtils.getExtendedAccount(accountName[0]);
 };

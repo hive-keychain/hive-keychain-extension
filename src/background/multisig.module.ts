@@ -562,7 +562,6 @@ const requestSignTransactionFromUser = (
       }
     };
     chrome.runtime.onMessage.addListener(onReceivedMultisigAcceptResponse);
-
     const usernames = await KeysUtils.getKeyReferences([signer.publicKey]);
 
     if (openNewWindow) {
