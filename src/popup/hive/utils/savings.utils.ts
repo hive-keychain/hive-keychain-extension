@@ -122,7 +122,10 @@ const hasBalance = (balance: string | Asset, greaterOrEqualTo: number) => {
     : balance.amount >= greaterOrEqualTo;
 };
 
-const claimSavings = async (activeAccount: ActiveAccount) => {
+const claimSavings = async (
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const { hbd_balance, savings_hbd_balance } = activeAccount.account;
   const hasHbd = hasBalance(hbd_balance, 0.001);
   const hasSavings = hasBalance(savings_hbd_balance, 0.001);
@@ -132,6 +135,7 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
       activeAccount.name!,
       activeAccount.name!,
       activeAccount.keys.active!,
+      options,
     );
   } else if (hasSavings) {
     return SavingsUtils.withdraw(
@@ -139,6 +143,7 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
       activeAccount.name!,
       activeAccount.name!,
       activeAccount.keys.active!,
+      options,
     );
   } else {
     Logger.error(

@@ -507,7 +507,11 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
+const claimAccounts = async (
+  rc: RC,
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
     activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
@@ -527,6 +531,8 @@ const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
         ] as ClaimAccountOperation,
       ],
       activeAccount.keys.active!,
+      false,
+      options,
     );
   } else Logger.info('Not enough RC% to claim account');
 };

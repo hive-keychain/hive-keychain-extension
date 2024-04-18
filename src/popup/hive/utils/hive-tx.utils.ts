@@ -113,6 +113,7 @@ const createSignAndBroadcastTransaction = async (
     }
     let response;
     try {
+      console.log(options);
       if (document) {
         response = await useMultisig(
           transaction,
@@ -137,6 +138,7 @@ const createSignAndBroadcastTransaction = async (
         transactionAccount,
         method,
         signedTransaction?.signatures[0],
+        options,
       );
       return {
         status: 'ok' as string,
@@ -335,6 +337,7 @@ const useMultisigThroughBackgroundOnly = async (
   transactionAccount: ExtendedAccount,
   method: KeychainKeyTypes,
   signature: string,
+  options?: TransactionOptions,
 ) => {
   return MultisigModule.requestSignatures(
     {
@@ -344,6 +347,7 @@ const useMultisigThroughBackgroundOnly = async (
       transactionAccount: transactionAccount,
       method: method,
       signature: signature,
+      options: options,
     } as MultisigRequestSignatures,
     false,
   );

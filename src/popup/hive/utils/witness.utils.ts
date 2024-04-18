@@ -69,6 +69,7 @@ const updateWitnessVote = async (
   witness: Witness,
   approve: boolean,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     approve,
@@ -76,7 +77,12 @@ const updateWitnessVote = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const sendWitnessOperation = async (

@@ -1,4 +1,5 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
@@ -41,6 +42,7 @@ const removeFromIgnoreRenewal = async (username: string) => {
 const renewUsersGovernance = async (
   usernames: string[],
   localAccounts: LocalAccount[],
+  options?: TransactionOptions,
 ) => {
   const promises = [];
   for (const username of usernames) {
@@ -61,22 +63,26 @@ const renewUsersGovernance = async (
               0,
               activeAccount.name!,
               activeAccount.keys.active!,
+              options,
             );
             await ProposalUtils.voteForProposal(
               0,
               activeAccount.name!,
               activeAccount.keys.active!,
+              options,
             );
           } else {
             await ProposalUtils.voteForProposal(
               0,
               activeAccount.name!,
               activeAccount.keys.active!,
+              options,
             );
             await ProposalUtils.unvoteProposal(
               0,
               activeAccount.name!,
               activeAccount.keys.active!,
+              options,
             );
           }
           resolve();

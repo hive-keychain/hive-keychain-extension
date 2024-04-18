@@ -120,6 +120,7 @@ const processSwap = async (
       estimateId,
       activeAccount.keys.active!,
       activeAccount.name!,
+      options,
     );
     return status;
   }

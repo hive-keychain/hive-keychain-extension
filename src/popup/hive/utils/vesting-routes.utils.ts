@@ -1,5 +1,5 @@
 import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   AccountVestingRoutesDifferences,
@@ -156,6 +156,7 @@ const sendVestingRoute = async (
   percent: number,
   autoVest: boolean,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -167,6 +168,8 @@ const sendVestingRoute = async (
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 
@@ -216,6 +219,7 @@ const revertAccountRoutes = async (
   accounts: LocalAccount[],
   differences: VestingRouteDifference[],
   account: string,
+  options?: TransactionOptions,
 ) => {
   const broadcastOperations: SetWithdrawVestingRouteOperation[] = [];
   const activeKey = accounts.find((a) => a.name === account)?.keys.active!;
@@ -234,9 +238,13 @@ const revertAccountRoutes = async (
       }
     });
     try {
+      const options: TransactionOptions = {};
+
       const result = await HiveTxUtils.sendOperation(
         broadcastOperations,
         activeKey,
+        false,
+        options,
       );
     } catch (error) {
       Logger.error('Error while reverting vesting route(s)', true);

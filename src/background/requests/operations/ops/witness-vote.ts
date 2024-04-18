@@ -6,7 +6,7 @@ import {
   RequestId,
   RequestWitnessVote,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -16,6 +16,7 @@ import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 export const broadcastWitnessVote = async (
   requestHandler: RequestsHandler,
   data: RequestWitnessVote & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result,
     err,
@@ -55,6 +56,7 @@ export const broadcastWitnessVote = async (
           { name: data.witness } as Witness,
           data.vote,
           key,
+          options,
         );
         break;
       }
