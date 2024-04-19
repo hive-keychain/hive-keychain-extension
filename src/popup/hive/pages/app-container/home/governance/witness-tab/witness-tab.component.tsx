@@ -202,7 +202,6 @@ const WitnessTab = ({
     }
 
     if (keyType === PrivateKeyType.MULTISIG) {
-      addCaptionToLoading('multisig_transmitting_to_multisig');
       const twoFaAccounts = await MultisigUtils.get2FAAccounts(
         activeAccount.account,
         KeychainKeyTypes.active,
@@ -221,6 +220,7 @@ const WitnessTab = ({
             <MetadataPopup
               initialMetadata={initialMetadata}
               onSubmit={(metadata: TransactionOptionsMetadata) => {
+                addCaptionToLoading('multisig_transmitting_to_multisig');
                 processClick(witness, { metaData: metadata });
                 closeModal();
               }}
