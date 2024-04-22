@@ -3,6 +3,7 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
+import Moralis from 'moralis';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -31,11 +32,20 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
+    init();
   }, []);
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
+  };
+
+  const init = async () => {
+    const response = await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
+      chain: '0x1',
+      address: '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58',
+    });
+    console.log('response');
   };
 
   const initWhatsNew = async () => {
