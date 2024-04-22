@@ -1,15 +1,15 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -102,8 +102,8 @@ const ProxySuggestion = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    isMessageContainerDisplayed: state.errorMessage.key.length > 0,
+    activeAccount: state.hive.activeAccount,
+    isMessageContainerDisplayed: state.message.key.length > 0,
   };
 };
 

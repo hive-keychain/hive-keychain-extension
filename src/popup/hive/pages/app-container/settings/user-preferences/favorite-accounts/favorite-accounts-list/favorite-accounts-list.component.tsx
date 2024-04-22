@@ -3,10 +3,10 @@ import {
   FavoriteUserList,
   FavoriteUserListName,
 } from '@interfaces/favorite-user.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FavoriteAccountsItemComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
-import { RootState } from 'src/popup/hive/store';
 
 interface FavoriteAccountsListProps {
   favoriteList: FavoriteUserList;
@@ -56,7 +56,7 @@ const FavoriteAccountsList = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.hive.activeAccount };
 };
 
 const connector = connect(mapStateToProps, {});

@@ -1,7 +1,7 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import Config from 'src/config';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 const HiveEngineConfigReducer = (
   state: HiveEngineConfig = {
@@ -12,11 +12,11 @@ const HiveEngineConfigReducer = (
   { type, payload }: ActionPayload<Partial<HiveEngineConfig>>,
 ): HiveEngineConfig => {
   switch (type) {
-    case ActionType.HE_SET_ACTIVE_ACCOUNT_HISTORY_API:
+    case HiveActionType.HE_SET_ACTIVE_ACCOUNT_HISTORY_API:
       return { ...state, accountHistoryApi: payload?.accountHistoryApi! };
-    case ActionType.HE_SET_ACTIVE_RPC:
+    case HiveActionType.HE_SET_ACTIVE_RPC:
       return { ...state, rpc: payload?.rpc! };
-    case ActionType.HE_LOAD_CONFIG:
+    case HiveActionType.HE_LOAD_CONFIG:
       return {
         ...state,
         rpc: payload?.rpc!,

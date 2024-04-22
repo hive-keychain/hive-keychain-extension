@@ -1,4 +1,17 @@
 import { AuthorityType } from '@hiveio/dhive';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,19 +19,6 @@ import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirma
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  goBack,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 
@@ -143,7 +143,7 @@ const AccountAuthoritiesListItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

@@ -4,10 +4,12 @@ import {
   ConnectDisconnectMessage,
   MultisigAccountConfig,
 } from '@interfaces/multisig.interface';
-import { setErrorMessage } from '@popup/hive/actions/message.actions';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -15,8 +17,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 
 const defaultConfig: MultisigAccountConfig = {
   isEnabled: false,
@@ -208,7 +208,10 @@ const Multisig = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts, activeAccount: state.activeAccount };
+  return {
+    accounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
+  };
 };
 
 const connector = connect(mapStateToProps, {

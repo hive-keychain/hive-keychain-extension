@@ -1,24 +1,24 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppThunk } from 'src/popup/hive/actions/interfaces';
-import { store } from 'src/popup/hive/store';
+import { AppThunk } from '@popup/multichain/actions/interfaces';
+import { store } from '@popup/multichain/store';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 
 export const initAccountTransactions =
   (accountName: string): AppThunk =>
   async (dispatch, getState) => {
-    const memoKey = getState().accounts.find(
+    const memoKey = getState().hive.accounts.find(
       (a: LocalAccount) => a.name === accountName,
     )!.keys.memo;
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       -1,
-      store.getState().globalProperties.globals!,
+      store.getState().hive.globalProperties.globals!,
       memoKey!,
     );
 
     dispatch({
-      type: ActionType.INIT_TRANSACTIONS,
+      type: HiveActionType.INIT_TRANSACTIONS,
       payload: result,
     });
   };
@@ -26,18 +26,18 @@ export const initAccountTransactions =
 export const fetchAccountTransactions =
   (accountName: string, start: number): AppThunk =>
   async (dispatch, getState) => {
-    const memoKey = getState().accounts.find(
+    const memoKey = getState().hive.accounts.find(
       (a: LocalAccount) => a.name === accountName,
     )!.keys.memo;
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       start,
-      store.getState().globalProperties.globals!,
+      store.getState().hive.globalProperties.globals!,
       memoKey!,
     );
 
     dispatch({
-      type: ActionType.ADD_TRANSACTIONS,
+      type: HiveActionType.ADD_TRANSACTIONS,
       payload: result,
     });
   };

@@ -1,11 +1,12 @@
+import { BuyCoinType } from '@popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import BuyExchanges from '@popup/hive/pages/app-container/home/buy-coins/buy-exchanges/buy-exchanges.component';
 import BuyRamps from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
+import CurrencyUtils from '@popup/hive/utils/currency.utils';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
-import { RootState } from 'src/popup/hive/store';
 
 const BuyCoins = ({
   setTitleContainerProperties,
@@ -65,8 +66,11 @@ const BuyCoins = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccountName: state.activeAccount.name!,
-    price: state.currencyPrices,
+    price: state.hive.currencyPrices,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    activeAccountName: state.hive.activeAccount.name!,
   };
 };
 

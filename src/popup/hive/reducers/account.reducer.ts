@@ -1,25 +1,25 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 export const AccountReducer = (
   state: LocalAccount[] = [],
   { type, payload }: ActionPayload<any>,
 ): LocalAccount[] => {
   switch (type) {
-    case ActionType.GET_ACCOUNTS: {
+    case HiveActionType.GET_ACCOUNTS: {
       const accounts: LocalAccount[] = payload;
       return accounts!;
     }
-    case ActionType.SET_ACCOUNTS: {
+    case HiveActionType.SET_ACCOUNTS: {
       const accounts: LocalAccount[] = payload;
       return accounts;
     }
-    case ActionType.ADD_ACCOUNT: {
+    case HiveActionType.ADD_ACCOUNT: {
       const account: LocalAccount = payload;
       return [...state, account];
     }
-    case ActionType.RESET_ACCOUNT:
+    case HiveActionType.RESET_ACCOUNT:
       return [];
     default:
       return state;
