@@ -159,6 +159,7 @@
   &.closed {
     .react-dropdown-select-dropdown {
       visibility: hidden;
+      pointer-events: none;
     }
   }
 

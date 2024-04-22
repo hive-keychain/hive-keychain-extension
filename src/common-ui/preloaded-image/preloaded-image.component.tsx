@@ -26,10 +26,18 @@ export const PreloadedImage = ({
   const [image, setImage] = useState<HTMLImageElement>();
   const [background, setBackground] = useState<string>('transparent');
   const { theme } = useThemeContext();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    preload();
-  }, [src]);
+    setMounted(true);
+    return function cleanup() {
+      setMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mounted) preload();
+  }, [src, mounted]);
 
   const preload = () => {
     const img = new Image();

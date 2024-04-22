@@ -1,4 +1,17 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React from 'react';
@@ -7,19 +20,6 @@ import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirma
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
@@ -115,7 +115,7 @@ const PendingSavingsWithdrawalItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

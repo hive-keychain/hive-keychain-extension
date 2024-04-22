@@ -11,6 +11,7 @@ const UserPreferencesMenuItems = (
       icon: SVGIcons.MENU_USER_PREFERENCES_OPERATIONS,
       nextScreen: Screen.SETTINGS_AUTHORIZED_OPERATIONS,
     },
+
     {
       label: 'popup_html_automated_tasks',
       icon: SVGIcons.MENU_USER_PREFERENCES_AUTOMATED_TASKS,
@@ -25,6 +26,11 @@ const UserPreferencesMenuItems = (
       label: 'popup_html_multisig',
       icon: SVGIcons.MENU_USER_PREFERENCES_MULTISIG,
       nextScreen: Screen.SETTINGS_MULTISIG,
+    },
+    {
+      label: 'popup_html_export_transactions',
+      icon: SVGIcons.MENU_ACCOUNTS_EXPORT,
+      nextScreen: Screen.SETTINGS_EXPORT_TRANSACTIONS,
     },
     // {
     //   label: 'popup_html_theme',

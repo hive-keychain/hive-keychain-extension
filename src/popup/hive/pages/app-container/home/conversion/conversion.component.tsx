@@ -4,6 +4,20 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,21 +32,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -277,11 +277,13 @@ const Conversion = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
-    conversions: state.conversions as Conversion[],
+    conversions: state.hive.conversions as Conversion[],
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

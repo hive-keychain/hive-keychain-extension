@@ -1,13 +1,13 @@
-import React from 'react';
-import { ConnectedProps, connect } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   goBack,
   navigateTo,
   resetNav,
-} from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
+import React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
 export interface PageTitleProps {

@@ -1,6 +1,6 @@
+import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppThunk } from 'src/popup/hive/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const TIME_REFERENCE = 1643236071000;
@@ -12,9 +12,9 @@ export const refreshActiveAccount =
       3000,
     );
     setTimeout(() => {
-      const account = getState().accounts.find(
+      const account = getState().hive.accounts.find(
         (localAccount: LocalAccount) =>
-          localAccount.name === getState().activeAccount.name,
+          localAccount.name === getState().hive.activeAccount.name,
       );
       dispatch(loadActiveAccount(account!));
     }, delay);
@@ -22,7 +22,7 @@ export const refreshActiveAccount =
 
 export const refreshKeys = (localAccount: LocalAccount) => {
   return {
-    type: ActionType.SET_ACTIVE_ACCOUNT,
+    type: HiveActionType.SET_ACTIVE_ACCOUNT,
     payload: {
       keys: localAccount.keys,
     },
@@ -34,8 +34,8 @@ export const loadActiveAccount =
   async (dispatch, getState) => {
     if (
       account &&
-      getState().activeRpc &&
-      getState().activeRpc?.uri !== 'NULL'
+      getState().hive.activeRpc &&
+      getState().hive.activeRpc?.uri !== 'NULL'
     ) {
       dispatch(refreshKeys(account));
       dispatch(getAccountRC(account.name));
@@ -43,7 +43,7 @@ export const loadActiveAccount =
         account.name,
       );
       dispatch({
-        type: ActionType.SET_ACTIVE_ACCOUNT,
+        type: HiveActionType.SET_ACTIVE_ACCOUNT,
         payload: {
           account: extendedAccount,
           name: account.name,
@@ -57,13 +57,13 @@ export const getAccountRC =
   async (dispatch) => {
     const rc = await AccountUtils.getRCMana(username);
     dispatch({
-      type: ActionType.SET_ACTIVE_ACCOUNT_RC,
+      type: HiveActionType.SET_ACTIVE_ACCOUNT_RC,
       payload: rc,
     });
   };
 
 export const resetActiveAccount = () => {
   return {
-    type: ActionType.RESET_ACTIVE_ACCOUNT,
+    type: HiveActionType.RESET_ACTIVE_ACCOUNT,
   };
 };

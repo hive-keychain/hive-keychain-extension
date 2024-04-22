@@ -1,5 +1,15 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -7,16 +17,6 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { navigateTo } from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -148,8 +148,8 @@ const TopBar = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

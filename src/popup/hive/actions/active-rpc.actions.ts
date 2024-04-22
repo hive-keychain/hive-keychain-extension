@@ -1,6 +1,6 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { Rpc } from 'src/interfaces/rpc.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 export const setActiveRpc = (rpc: Rpc) => {
@@ -10,7 +10,7 @@ export const setActiveRpc = (rpc: Rpc) => {
     value: rpc,
   });
   return {
-    type: ActionType.SET_ACTIVE_RPC,
+    type: HiveActionType.SET_ACTIVE_RPC,
     payload: rpc,
   };
 };

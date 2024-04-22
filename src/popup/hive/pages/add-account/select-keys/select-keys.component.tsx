@@ -1,3 +1,6 @@
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -5,9 +8,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { Keys } from 'src/interfaces/keys.interface';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
 export interface SelectKeysProps {
