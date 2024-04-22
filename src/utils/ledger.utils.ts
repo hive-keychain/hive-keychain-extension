@@ -40,12 +40,18 @@ const isLedgerSupported = async () => {
 };
 /* istanbul ignore next */
 const getSettings = async () => {
-  let ledger = await LedgerUtils.getLedgerInstance();
+  const ledger = await LedgerUtils.getLedgerInstance();
   return ledger.getSettings();
 };
 /* istanbul ignore next */
 const getKeyFromDerivationPath = async (path: string) => {
-  return hiveLedger.getPublicKey(path);
+  try {
+    const ledger = await LedgerUtils.getLedgerInstance();
+    const publicKey = await ledger.getPublicKey(path);
+    return publicKey;
+  } catch (e) {
+    throw ErrorUtils.parseLedger(e);
+  }
 };
 
 const getKeyForAccount = async (
@@ -76,8 +82,12 @@ const getKeyForAccount = async (
 };
 
 const getKeysForAccount = async (username: string) => {
-  const allKeys = await LedgerUtils.getAllAccounts();
-  return allKeys.find((a) => a.name === username)?.keys;
+  try {
+    const allKeys = await LedgerUtils.getAllAccounts();
+    return allKeys.find((a) => a.name === username)?.keys;
+  } catch (e) {
+    throw ErrorUtils.parseLedger(e);
+  }
 };
 
 /* istanbul ignore next */
@@ -101,7 +111,6 @@ const getAllAccounts = async (): Promise<LocalAccount[]> => {
     const active = await hiveLedger.getPublicKey(activePath);
     const posting = await hiveLedger.getPublicKey(postingPath);
     const memo = await hiveLedger.getPublicKey(memoPath);
-
     const [ownerReference, activeReference, postingReference, memoReference] =
       await KeysUtils.getKeyReferences([owner, active, posting, memo]);
 

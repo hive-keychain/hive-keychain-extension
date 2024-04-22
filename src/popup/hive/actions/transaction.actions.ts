@@ -29,7 +29,6 @@ export const fetchAccountTransactions =
     const memoKey = getState().hive.accounts.find(
       (a: LocalAccount) => a.name === accountName,
     )!.keys.memo;
-    console.log({ u: accountName, memoKey: memoKey }); //TODO remove line
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       start,
