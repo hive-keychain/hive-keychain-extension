@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -42,11 +44,9 @@ const TutorialPopup = () => {
         <div className="popup-title">
           {chrome.i18n.getMessage('popup_html_tutorial_popup_title')}
         </div>
-        <img
-          src={'/assets/images/popup/landscape_tutorial_popup.png'}
-          alt="tutorial-popup-image"
-          className="image"
-        />
+
+        <SVGIcon className="image" icon={SVGIcons.KEYCHAIN_LOGO_SPLASHSCREEN} />
+
         <div
           className="sub-title"
           dangerouslySetInnerHTML={{
