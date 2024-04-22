@@ -1,10 +1,10 @@
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -67,9 +67,8 @@ const EstimatedAccountValueSection = ({
   ]);
 
   const openPortfolio = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/portfolio.html`,
+      url: `portfolio.html`,
     });
   };
 
@@ -132,12 +131,12 @@ const EstimatedAccountValueSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyPrices: state.currencyPrices,
-    globalProperties: state.globalProperties,
-    tokensBalance: state.userTokens.list,
-    tokensMarket: state.tokenMarket,
-    tokens: state.tokens,
+    activeAccount: state.hive.activeAccount,
+    currencyPrices: state.hive.currencyPrices,
+    globalProperties: state.hive.globalProperties,
+    tokensBalance: state.hive.userTokens.list,
+    tokensMarket: state.hive.tokenMarket,
+    tokens: state.hive.tokens,
   };
 };
 

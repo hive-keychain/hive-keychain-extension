@@ -1,0 +1,94 @@
+.vesting-routes-popup {
+  .popup-content {
+    width: -webkit-fill-available;
+    margin: 0px 0px;
+    row-gap: 12px !important;
+    padding-bottom: 0px;
+    .popup-title {
+      text-align: center;
+      font-size: 18px;
+    }
+    .slider-wrapper {
+      height: 284px;
+      .carousel-item-container {
+        display: inline-block;
+        width: 330px;
+        .account-title {
+          @include poppins400(14px);
+          color: var(--main-font-color);
+          margin-bottom: 8px;
+        }
+
+        .vesting-routes-titles-container {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          margin-bottom: 8px;
+
+          .vesting-route-title {
+            @include poppins400(14px);
+            color: var(--main-font-color);
+            &.old-route {
+              margin-left: 16px;
+            }
+
+            &.new-route {
+              margin-right: 16px;
+            }
+          }
+        }
+
+        .vesting-item-list-container {
+          display: inline-block;
+          height: 150px;
+          width: 330px;
+          overflow-y: scroll;
+          .vesting-route-card-item {
+            @include small-card();
+            margin: 0px 0px;
+            margin-bottom: 8px;
+            flex-direction: row;
+            justify-content: space-between;
+            .vesting-item-card-row-container {
+              display: flex;
+              flex-direction: row;
+              width: -webkit-fill-available;
+              justify-content: space-between;
+              align-items: center;
+              .title {
+                @include poppins400(12px);
+                color: var(--main-font-color);
+              }
+            }
+            .vesting-item-details-container {
+              display: flex;
+              flex-direction: column;
+              .title {
+                @include poppins400(12px);
+                color: var(--main-font-color);
+              }
+
+              &.new {
+                align-items: flex-end;
+              }
+              &.old {
+                align-items: flex-start;
+              }
+            }
+          }
+        }
+        .vesting-action-buttons-container {
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          padding-bottom: 20px;
+          justify-content: space-between;
+          .vesting-action-button {
+            width: 45%;
+            @include poppins600(12px);
+          }
+        }
+      }
+    }
+  }
+}

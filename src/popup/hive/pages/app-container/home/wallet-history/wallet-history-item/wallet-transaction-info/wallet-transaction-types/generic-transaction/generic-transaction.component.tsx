@@ -1,4 +1,5 @@
 import { Transaction } from '@interfaces/transaction.interface';
+import { RootState } from '@popup/multichain/store';
 import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -6,7 +7,6 @@ import 'react-tabs/style/react-tabs.scss';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { RootState } from 'src/popup/hive/store';
 
 interface GenericTransactionProps {
   transaction: Transaction;
