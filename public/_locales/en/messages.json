@@ -3986,5 +3986,9 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_proposal_vote": {
+    "message": "Keychain Proposal",
+    "description": "Proposal vote"
   }
 }
