@@ -3998,5 +3998,9 @@
   "popup_html_transaction_metadata": {
     "message": "Transaction metadata",
     "description": "Transaction metadata"
+  },
+  "popup_html_proposal_vote": {
+    "message": "Keychain Proposal",
+    "description": "Proposal vote"
   }
 }

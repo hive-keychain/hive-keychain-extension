@@ -19,7 +19,6 @@ export const MetadataPopup = ({
 }: MetadataPopupProps) => {
   const [metadataForm, setMetadataForm] =
     useState<TransactionOptionsMetadata>(initialMetadata);
-  console.log(initialMetadata);
 
   const updateMetadataForm = (
     section: keyof TransactionOptionsMetadata,

@@ -202,6 +202,8 @@ const Home = ({
           closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
+    } else {
+      return <ProposalVotingSectionComponent />;
     }
   };
 
@@ -235,7 +237,6 @@ const Home = ({
           <ActionsSectionComponent
             additionalClass={showBottomBar ? undefined : 'down'}
           />
-          <ProposalVotingSectionComponent />
         </>
       )}
 
