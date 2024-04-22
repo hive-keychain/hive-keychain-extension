@@ -270,7 +270,7 @@ const PowerUpDown = ({
 
   const handleCancelButtonClick = (form: PowerUpDownForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      title: '',
+      title: 'popup_html_confirm_cancel_power_down_title',
       method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_power_down_message',
