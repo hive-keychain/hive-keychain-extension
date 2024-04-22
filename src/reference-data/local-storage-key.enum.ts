@@ -31,8 +31,18 @@ export enum LocalStorageKeyEnum {
   NO_KEY_CHECK = 'NO_KEY_CHECK',
   WITNESS_LAST_SIGNING_KEY = 'WITNESS_LAST_SIGNING_KEY',
   LAST_PRICE = 'LAST_PRICE',
+  MULTISIG_CONFIG = 'MULTISIG_CONFIG',
+  LAST_VESTING_ROUTES = 'LAST_VESTING_ROUTES',
+
+  PORTFOLIO_FILTER = 'PORTFOLIO_FILTER',
 
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_THEME = 'ACTIVE_THEME',
+
+  // To show the right type of account value
+  ACCOUNT_VALUE_TYPE = 'ACCOUNT_VALUE_TYPE',
+
+  // To check if some account (regardless of chain) has been setup
+  HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
 }

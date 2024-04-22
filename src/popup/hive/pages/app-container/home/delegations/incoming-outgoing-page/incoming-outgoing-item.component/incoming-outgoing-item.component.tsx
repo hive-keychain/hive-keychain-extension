@@ -3,27 +3,29 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from '@popup/hive/actions/delegations.actions';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { Separator } from 'src/common-ui/separator/separator.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
+} from '@popup/multichain/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
+} from '@popup/multichain/actions/message.actions';
 import {
   goBack,
   navigateTo,
   navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -75,6 +77,7 @@ const IncomingOutgoing = ({
 
   const cancelDelegation = async () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
@@ -91,7 +94,9 @@ const IncomingOutgoing = ({
             activeAccount.keys.active!,
           );
           if (success) {
-            setSuccessMessage('popup_html_cancel_delegation_successful');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_cancel_delegation_successful');
             await refreshDelegations();
             goBack();
           } else {
@@ -103,7 +108,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const enterEditMode = () => {
@@ -133,6 +138,7 @@ const IncomingOutgoing = ({
     )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
         value,
         `@${username}`,
@@ -154,7 +160,9 @@ const IncomingOutgoing = ({
             activeAccount.keys.active!,
           );
           if (success) {
-            setSuccessMessage('popup_html_delegation_successful');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_delegation_successful');
             await refreshDelegations();
             goBack();
           } else {
@@ -166,7 +174,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const refreshDelegations = async () => {
@@ -276,9 +284,11 @@ const IncomingOutgoing = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties.globals,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
   };
 };
 

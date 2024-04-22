@@ -1,37 +1,41 @@
 import { joiResolver } from '@hookform/resolvers/joi';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
-  RcDelegation,
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
+import {
   RCDelegationValue,
+  RcDelegation,
 } from '@interfaces/rc-delegation.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
@@ -47,10 +51,15 @@ interface DelegationForm {
   currency: string;
 }
 
+export interface IncomingOutgoingRCDelegationParams {
+  delegationType: DelegationType;
+  delegations: RcDelegation[];
+}
+
 const rules = FormUtils.createRules<DelegationForm>({
   delegatee: Joi.string().required(),
   delegator: Joi.string().required(),
-  gigaRcValue: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+  gigaRcValue: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
 const RCDelegations = ({
@@ -174,6 +183,7 @@ const RCDelegations = ({
     ];
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.posting,
       message: chrome.i18n.getMessage(
         isCancel
           ? 'popup_html_cancel_rc_delegation_confirm_text'
@@ -212,8 +222,9 @@ const RCDelegations = ({
               form.delegatee,
               activeAccount,
             );
-
-            if (!isCancel) {
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else if (!isCancel) {
               setSuccessMessage('popup_html_rc_delegation_successful', [
                 `@${form.delegatee}`,
               ]);
@@ -235,7 +246,7 @@ const RCDelegations = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const loadAutocompleteTransferUsernames = async () => {
@@ -376,9 +387,11 @@ const RCDelegations = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    properties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    properties: state.hive.globalProperties,
     formParams:
       state.navigation.stack[0].params?.formParams ||
       (state.navigation.stack[0].previousParams?.formParams as RcDelegation),

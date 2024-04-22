@@ -1,32 +1,36 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
@@ -189,6 +193,7 @@ const TokensTransfer = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
@@ -227,7 +232,11 @@ const TokensTransfer = ({
             activeAccount.keys.active!,
             activeAccount.name!,
           );
-          if (transactionStatus.broadcasted) {
+
+          if (transactionStatus.isUsingMultisig) {
+            navigateTo(Screen.HOME_PAGE, true);
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else if (transactionStatus.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList('html_popup_transfer_token_operation');
 
@@ -255,7 +264,7 @@ const TokensTransfer = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (
@@ -329,16 +338,18 @@ const TokensTransfer = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
     tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
-    phishing: state.phishing,
-    localAccounts: state.accounts,
+    phishing: state.hive.phishing,
+    localAccounts: state.hive.accounts,
   };
 };
 

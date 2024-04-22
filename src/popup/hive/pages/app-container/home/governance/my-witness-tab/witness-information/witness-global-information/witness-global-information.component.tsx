@@ -1,9 +1,9 @@
 import { WitnessInfo } from '@interfaces/witness.interface';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
 interface WitnessGlobalInformationProps {
@@ -90,10 +90,12 @@ const WitnessGlobalInformation = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyPrices: state.currencyPrices,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    currencyPrices: state.hive.currencyPrices,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    globalProperties: state.hive.globalProperties,
   };
 };
 

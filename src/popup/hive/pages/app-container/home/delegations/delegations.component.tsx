@@ -1,12 +1,27 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -18,21 +33,7 @@ import {
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from 'src/popup/hive/actions/delegations.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
@@ -46,9 +47,14 @@ interface DelegationForm {
   currency: string;
 }
 
+export interface IncomingOutgoingParams {
+  delegationType: DelegationType;
+  totalPendingOutgoingUndelegation?: string | number;
+  available?: number;
+}
 const rules = FormUtils.createRules<DelegationForm>({
   username: Joi.string().required(),
-  amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
+  amount: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
 const Delegations = ({
@@ -219,6 +225,7 @@ const Delegations = ({
     )} ${currencyLabels.hp}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
         stringifiedAmount,
         `@${form.username}`,
@@ -248,7 +255,10 @@ const Delegations = ({
               form.username,
               activeAccount,
             );
-            setSuccessMessage('popup_html_delegation_successful');
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_delegation_successful');
           } else {
             setErrorMessage('popup_html_delegation_fail');
           }
@@ -258,11 +268,13 @@ const Delegations = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const cancelDelegation = (form: DelegationForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
+
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
@@ -288,7 +300,10 @@ const Delegations = ({
               form.username,
               activeAccount,
             );
-            setSuccessMessage('popup_html_cancel_delegation_successful');
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_html_cancel_delegation_successful');
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
           }
@@ -298,7 +313,7 @@ const Delegations = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getFormParams = () => {
@@ -398,11 +413,13 @@ const Delegations = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    localAccounts: state.accounts,
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    delegations: state.delegations,
-    globalProperties: state.globalProperties.globals,
+    localAccounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
+    delegations: state.hive.delegations,
+    globalProperties: state.hive.globalProperties.globals,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

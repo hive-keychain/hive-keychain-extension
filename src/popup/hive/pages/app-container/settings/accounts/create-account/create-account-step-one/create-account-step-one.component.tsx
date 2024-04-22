@@ -4,6 +4,10 @@ import {
   AccountCreationType,
   AccountCreationUtils,
 } from '@popup/hive/utils/account-creation.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -15,13 +19,6 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { navigateToWithParams } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
@@ -34,7 +31,6 @@ const CreateAccountStepOne = ({
   activeAccount,
   accounts,
   currencyLabels,
-  setErrorMessage,
   setTitleContainerProperties,
   navigateToWithParams,
 }: PropsFromRedux) => {
@@ -188,15 +184,15 @@ const CreateAccountStepOne = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    accounts: state.accounts,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
   };
 };
 
 const connector = connect(mapStateToProps, {
-  setErrorMessage,
-  setSuccessMessage,
   setTitleContainerProperties,
   navigateToWithParams,
 });

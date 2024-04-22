@@ -1,11 +1,11 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonProps,
 } from 'src/common-ui/button/button.component';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 
 type Props = PropsFromRedux & ButtonProps & { requiredKey: KeychainKeyTypesLC };
 
@@ -28,7 +28,7 @@ const OperationButton = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.hive.activeAccount };
 };
 
 const connector = connect(mapStateToProps, { setErrorMessage });

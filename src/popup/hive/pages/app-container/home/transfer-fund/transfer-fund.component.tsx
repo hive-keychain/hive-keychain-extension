@@ -1,6 +1,23 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,6 +25,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -16,21 +34,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils, {
   CurrencyLabels,
@@ -233,6 +237,7 @@ const TransferFunds = ({
     );
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         isCancelRecurrent
           ? 'popup_html_transfer_confirm_cancel_recurrent'
@@ -291,7 +296,9 @@ const TransferFunds = ({
               activeAccount,
             );
 
-            if (!form.isRecurrent) {
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else if (!form.isRecurrent) {
               setSuccessMessage('popup_html_transfer_successful', [
                 `@${form.receiverUsername}`,
                 stringifiedAmount,
@@ -322,7 +329,7 @@ const TransferFunds = ({
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return (
@@ -452,14 +459,16 @@ const TransferFunds = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     navParams: state.navigation.stack[0].params,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
-    phishing: state.phishing,
-    localAccounts: state.accounts,
+    phishing: state.hive.phishing,
+    localAccounts: state.hive.accounts,
   };
 };
 

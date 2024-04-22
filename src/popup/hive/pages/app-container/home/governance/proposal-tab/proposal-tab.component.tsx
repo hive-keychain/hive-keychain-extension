@@ -1,27 +1,14 @@
 import { Proposal } from '@interfaces/proposal.interface';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
 import { ProposalItemComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-item/proposal-item.component';
-import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
-const ProposalTab = ({
-  activeAccount,
-  globalProperties,
-  addToLoadingList,
-  removeFromLoadingList,
-}: PropsFromRedux) => {
+const ProposalTab = ({ activeAccount, globalProperties }: PropsFromRedux) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [displayingProxyVotes, setDisplayingProxyVotes] = useState(false);
@@ -94,17 +81,12 @@ const ProposalTab = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    globalProperties: state.hive.globalProperties,
   };
 };
 
-const connector = connect(mapStateToProps, {
-  addToLoadingList,
-  removeFromLoadingList,
-  setErrorMessage,
-  setSuccessMessage,
-});
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const ProposalTabComponent = connector(ProposalTab);

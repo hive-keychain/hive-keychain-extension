@@ -1,15 +1,17 @@
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
+import { goBack } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { goBack } from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
-import { RootState } from 'src/popup/hive/store';
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -22,6 +24,7 @@ export interface ConfirmationPageParams {
   afterConfirmAction: () => {};
   afterCancelAction?: () => {};
   formParams?: any;
+  method: KeychainKeyTypes | null;
 }
 
 const ConfirmationPage = ({
@@ -34,9 +37,14 @@ const ConfirmationPage = ({
   skipWarningTranslation,
   title,
   skipTitleTranslation,
+  activeAccount,
+  method,
   goBack,
   setTitleContainerProperties,
+  addCaptionToLoading,
 }: PropsType) => {
+  const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
+  const [hasField] = useState(fields && fields.length !== 0);
   useEffect(() => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
@@ -53,11 +61,45 @@ const ConfirmationPage = ({
         }
       },
     });
+
+    checkForMultsig();
   }, []);
-  const hasField = fields && fields.length !== 0;
+
+  const checkForMultsig = async () => {
+    let useMultisig = false;
+    switch (method) {
+      case KeychainKeyTypes.active: {
+        if (activeAccount.keys.active) {
+          useMultisig = KeysUtils.isUsingMultisig(
+            activeAccount.keys.active,
+            activeAccount.account,
+            activeAccount.account,
+            method.toLowerCase() as KeychainKeyTypesLC,
+          );
+          setWillUseMultisig(useMultisig);
+        }
+        break;
+      }
+      case KeychainKeyTypes.posting: {
+        if (activeAccount.keys.posting) {
+          useMultisig = KeysUtils.isUsingMultisig(
+            activeAccount.keys.posting,
+            activeAccount.account,
+            activeAccount.account,
+            method.toLowerCase() as KeychainKeyTypesLC,
+          );
+          setWillUseMultisig(useMultisig);
+        }
+        break;
+      }
+    }
+  };
 
   const handleClickOnConfirm = () => {
-    AnalyticsUtils.sendRequestEvent(title);
+    // AnalyticsUtils.sendRequestEvent(title);
+    if (willUseMultisig) {
+      addCaptionToLoading('multisig_transmitting_to_multisig');
+    }
     afterConfirmAction();
   };
 
@@ -84,6 +126,14 @@ const ConfirmationPage = ({
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
+          </div>
+        )}
+        {willUseMultisig && (
+          <div data-testid="use-multisig-message" className="multisig-message">
+            <img src="/assets/images/multisig/logo.png" className="logo" />
+            <div className="message">
+              {chrome.i18n.getMessage('multisig_disclaimer_message')}
+            </div>
           </div>
         )}
         {hasField && (
@@ -120,7 +170,10 @@ const ConfirmationPage = ({
         <ButtonComponent
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
-          onClick={handleClickOnConfirm}
+          onClick={($event: BaseSyntheticEvent) => {
+            $event.target.disabled = true;
+            handleClickOnConfirm();
+          }}
           type={ButtonType.IMPORTANT}></ButtonComponent>
       </div>
     </div>
@@ -139,12 +192,15 @@ const mapStateToProps = (state: RootState) => {
     afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
+    method: state.navigation.stack[0].params.method as KeychainKeyTypes,
+    activeAccount: state.hive.activeAccount,
   };
 };
 
 const connector = connect(mapStateToProps, {
   goBack,
   setTitleContainerProperties,
+  addCaptionToLoading,
 });
 type PropsType = ConnectedProps<typeof connector> & ConfirmationPageParams;
 

@@ -1,6 +1,6 @@
 import { Rpc } from '@interfaces/rpc.interface';
-import { ActionType } from '@popup/hive/actions/action-type.enum';
-import { ActionPayload } from '@popup/hive/actions/interfaces';
+import { HiveActionType } from '@popup/hive/actions/action-type.enum';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 
 type Switcher = {
   display: boolean;
@@ -11,9 +11,9 @@ export const RpcSwitcherReducer = (
   { type, payload }: ActionPayload<boolean | Rpc>,
 ): Switcher => {
   switch (type) {
-    case ActionType.SET_SWITCH_TO_RPC:
+    case HiveActionType.SET_SWITCH_TO_RPC:
       return { ...state, rpc: payload as Rpc };
-    case ActionType.SET_DISPLAY_SWITCH_RPC:
+    case HiveActionType.SET_DISPLAY_SWITCH_RPC:
       return { ...state, display: payload as boolean };
     default:
       return state;

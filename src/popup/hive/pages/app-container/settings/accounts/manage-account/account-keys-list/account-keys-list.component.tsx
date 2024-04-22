@@ -1,16 +1,16 @@
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { AccountKeysListItemComponent } from '@popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
+import { WrongKeysOnUser } from '@popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from '@popup/hive/actions/loading.actions';
+} from '@popup/multichain/actions/loading.actions';
 import {
   navigateTo,
   navigateToWithParams,
-} from '@popup/hive/actions/navigation.actions';
-import { AccountKeysListItemComponent } from '@popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
-import { WrongKeysOnUser } from '@popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
-import { RootState } from '@popup/hive/store';
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -20,6 +20,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -77,9 +78,11 @@ const AccountKeysList = ({
     );
     if (hasAuthorizedAccountLinkedToActiveAccount) {
       warningMessage = 'popup_html_deleting_account_linked_to_authorized';
-      warningParams = [activeAccount.name];
+      warningParams = [activeAccount.name!];
     }
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: null,
+      fields: [],
       message: chrome.i18n.getMessage(
         'popup_html_delete_account_confirmation_message',
         [activeAccount.name!],
@@ -138,7 +141,7 @@ const AccountKeysList = ({
         navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const toggleQRCode = () => {
@@ -235,8 +238,8 @@ const AccountKeysList = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    accounts: state.accounts as LocalAccount[],
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts as LocalAccount[],
   };
 };
 

@@ -1,18 +1,18 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Witness } from '@interfaces/witness.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
@@ -45,7 +45,10 @@ const WitnessVotingSection = ({
           await BlockchainTransactionUtils.delayRefresh();
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           refreshActiveAccount();
-          setSuccessMessage(`html_popup_vote_${account}_witness_success`);
+          if (transactionConfirmed.isUsingMultisig) {
+            setSuccessMessage('multisig_transaction_sent_to_signers');
+          } else
+            setSuccessMessage(`html_popup_vote_${account}_witness_success`);
         }
       } catch (err: any) {
         setErrorMessage(err.message);
@@ -87,7 +90,7 @@ const WitnessVotingSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

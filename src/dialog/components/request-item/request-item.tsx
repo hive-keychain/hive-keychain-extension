@@ -10,6 +10,7 @@ type Props = {
   content: string | string[];
   red?: boolean; // show balance red
   type?: RequestItemType;
+  xsFont?: boolean;
 };
 
 const renderContent = (content: any, type: RequestItemType) => {
@@ -34,6 +35,7 @@ const renderContent = (content: any, type: RequestItemType) => {
 const RequestItem = ({
   title,
   content,
+  xsFont,
   type = RequestItemType.STRING,
 }: Props) => {
   return (
@@ -41,7 +43,9 @@ const RequestItem = ({
       <React.Fragment key={title}>
         <div className="field">
           <div className="label">{chrome.i18n.getMessage(title)}</div>
-          <div className={`value`}>{renderContent(content, type)}</div>
+          <div className={`value ${xsFont ? 'xs-font' : ''}`}>
+            {renderContent(content, type)}
+          </div>
         </div>
       </React.Fragment>
     </>

@@ -1,4 +1,9 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -6,11 +11,6 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import { RootState } from 'src/popup/hive/store';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -48,13 +48,14 @@ const ProposalVotingSection = ({
   };
 
   const handleVoteForProposalClicked = async () => {
-    if (
-      await ProposalUtils.voteForKeychainProposal(
-        activeAccount.name!,
-        activeAccount.keys.active!,
-      )
-    ) {
-      setSuccessMessage('popup_html_kc_proposal_vote_successful');
+    const success = await ProposalUtils.voteForKeychainProposal(
+      activeAccount.name!,
+      activeAccount.keys.active!,
+    );
+    if (success) {
+      if (success.isUsingMultisig) {
+        setSuccessMessage('multisig_transaction_sent_to_signers');
+      } else setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');
     }
@@ -107,9 +108,9 @@ const ProposalVotingSection = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    isMessageContainerDisplayed: state.errorMessage.key.length > 0,
-    globalProperties: state.globalProperties,
+    activeAccount: state.hive.activeAccount,
+    isMessageContainerDisplayed: state.message.key.length > 0,
+    globalProperties: state.hive.globalProperties,
   };
 };
 

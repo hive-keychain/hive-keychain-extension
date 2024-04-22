@@ -3,32 +3,33 @@ import {
   WitnessInfo,
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  goBack,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
 import { WitnessGlobalInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
-import { RootState } from 'src/popup/hive/store';
 import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils, {
   WITNESS_DISABLED_KEY,
@@ -86,6 +87,8 @@ const WitnessInformation = ({
 
   const disableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
+      fields: [],
       message: chrome.i18n.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
@@ -118,7 +121,9 @@ const WitnessInformation = ({
           refreshActiveAccount();
           if (success) {
             goBack();
-            setSuccessMessage('popup_success_witness_account_update');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_success_witness_account_update');
           } else {
             setErrorMessage('popup_error_witness_account_update', [
               `${activeAccount.name!}`,
@@ -133,10 +138,11 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
   const enableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
@@ -145,7 +151,7 @@ const WitnessInformation = ({
       fields: [
         {
           label: 'popup_html_witness_information_signing_key_label',
-          value: lastSigningKey,
+          value: lastSigningKey!,
           valueClassName: 'xs-font',
         },
       ],
@@ -170,7 +176,9 @@ const WitnessInformation = ({
           refreshActiveAccount();
           if (success) {
             goBack();
-            setSuccessMessage('popup_success_witness_account_update');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else setSuccessMessage('popup_success_witness_account_update');
           } else {
             setErrorMessage('popup_error_witness_account_update', [
               `${activeAccount.name!}`,
@@ -185,7 +193,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const changeSelectedScreen = (selectedValue: WitnessInfoScreen) => {
@@ -300,7 +308,7 @@ const WitnessInformation = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

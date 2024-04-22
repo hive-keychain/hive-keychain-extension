@@ -32,7 +32,7 @@ const getTransferWarning = (
     return chrome.i18n.getMessage('popup_warning_phishing', [account]);
   }
 
-  return null;
+  return;
 };
 
 const getTransferFromToSavingsValidationWarning = (
@@ -59,7 +59,7 @@ const getExchangeValidationWarning = (
   isRecurrent?: boolean,
 ) => {
   const exchange = exchanges.find((exchange) => exchange.username === account);
-  if (!exchange) return null;
+  if (!exchange) return;
   if (!exchange.acceptedCoins.includes(currency)) {
     return chrome.i18n.getMessage('popup_warning_exchange_deposit', [currency]);
   }
@@ -74,7 +74,7 @@ const getExchangeValidationWarning = (
   //     return chrome.i18n.getMessage('popup_warning_exchange_wallet');
   //   }
   // }
-  return null;
+  return;
 };
 
 const sendTransfer = (

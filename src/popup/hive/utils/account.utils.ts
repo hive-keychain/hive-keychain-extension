@@ -7,6 +7,8 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -19,8 +21,10 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
@@ -98,6 +102,15 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
     encyptedAccounts,
   );
 };
+
+const getAccountFromLocalStorage = async (
+  username: string,
+): Promise<LocalAccount | undefined> => {
+  const mk = await MkUtils.getMkFromLocalStorage();
+  const accounts = await getAccountsFromLocalStorage(mk);
+  return accounts.find((acc) => acc.name === username);
+};
+
 /* istanbul ignore next */
 const getAccountsFromLocalStorage = async (
   mk: string,
@@ -180,7 +193,7 @@ const addAuthorizedAccount = async (
     throw new KeychainError('popup_no_auth_account', [authorizedAccount]);
   } else {
     localAuthorizedAccount = existingAccounts.find(
-      (localAccount: LocalAccount) => localAccount.name,
+      (localAccount: LocalAccount) => localAccount.name === authorizedAccount,
     )!;
   }
 
@@ -346,22 +359,44 @@ const getAccountValue = (
     vesting_shares,
     savings_balance,
     savings_hbd_balance,
+    name,
   }: ExtendedAccount,
-  { hive, hive_dollar }: CurrencyPrices,
+  prices: CurrencyPrices,
   props: DynamicGlobalProperties,
+  tokensBalance: TokenBalance[],
+  tokensMarket: TokenMarket[],
+  accountValueType: AccountValueType,
+  tokens: Token[],
 ) => {
-  if (!hive_dollar?.usd || !hive?.usd) return 0;
-  return FormatUtils.withCommas(
-    (
-      (parseFloat(hbd_balance as string) +
-        parseFloat(savings_hbd_balance as string)) *
-        hive_dollar.usd +
-      (FormatUtils.toHP(vesting_shares as string, props) +
-        parseFloat(balance as string) +
-        parseFloat(savings_balance as string)) *
-        hive.usd
-    ).toString(),
+  if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
+  if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
+  const userLayerTwoPortfolio = PortfolioUtils.generateUserLayerTwoPortolio(
+    {
+      username: name,
+      tokensBalance: tokensBalance,
+    },
+    prices,
+    tokensMarket,
+    tokens,
   );
+  const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
+    (acc, curr) => acc + curr.usdValue,
+    0,
+  );
+  const dollarValue =
+    (parseFloat(hbd_balance as string) +
+      parseFloat(savings_hbd_balance as string)) *
+      prices.hive_dollar.usd +
+    (FormatUtils.toHP(vesting_shares as string, props) +
+      parseFloat(balance as string) +
+      parseFloat(savings_balance as string)) *
+      prices.hive.usd +
+    layerTwoTokensTotalValue;
+  const value =
+    accountValueType === AccountValueType.DOLLARS
+      ? dollarValue
+      : dollarValue / prices.hive.usd;
+  return FormatUtils.withCommas(value.toString());
 };
 /* istanbul ignore next */
 const getPublicMemo = async (username: string): Promise<string> => {
@@ -584,9 +619,19 @@ const reorderAccounts = (
   return list;
 };
 
+const getAccountFromKey = async (key: Key) => {
+  const isLedger = key?.startsWith('#');
+  const pubKey = isLedger
+    ? await LedgerUtils.getKeyFromDerivationPath(key!.replace('#', ''))
+    : KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
+  const accountName = (await KeysUtils.getKeyReferences([pubKey!]))[0];
+  return AccountUtils.getExtendedAccount(accountName[0]);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
+  getAccountFromLocalStorage,
   saveAccounts,
   hasStoredAccounts,
   addAuthorizedAccount,
@@ -617,6 +662,7 @@ const AccountUtils = {
   addAccount,
   reorderAccounts,
   addAuthorizedKey,
+  getAccountFromKey,
 };
 
 export const BackgroundAccountUtils = {

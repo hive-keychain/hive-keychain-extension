@@ -3,6 +3,9 @@
 // Colors
 $dark-red: #a5112c;
 $red: #e31337;
+$red-opacity: #e3133790;
+$green-success: #2aa034;
+$green-success-shadow: #2aa03470;
 $light-red: #fbe8ec;
 $dark-blue: #212838;
 $darker-blue: #293144;
@@ -102,4 +105,9 @@ a {
 
 #root {
   user-select: none;
+}
+
+rect,
+path {
+  transition: fill 0.225s linear;
 }

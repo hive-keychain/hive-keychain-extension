@@ -1,23 +1,24 @@
 import { AuthorityType } from '@hiveio/dhive';
-import { Screen } from '@reference-data/screen.enum';
-import React from 'react';
-import { ConnectedProps, connect } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
+} from '@popup/multichain/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
+} from '@popup/multichain/actions/message.actions';
 import {
   goBack,
   navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { RootState } from 'src/popup/hive/store';
+} from '@popup/multichain/actions/navigation.actions';
+import { RootState } from '@popup/multichain/store';
+import { Screen } from '@reference-data/screen.enum';
+import React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 
@@ -45,6 +46,7 @@ const AccountAuthoritiesListItem = ({
     authorizedAccountName: string,
   ) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: null,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_remove_account_authority_message',
         [role, authorizedAccountName],
@@ -76,7 +78,12 @@ const AccountAuthoritiesListItem = ({
           );
           if (success) {
             goBack();
-            setSuccessMessage('popup_html_remove_account_authority_successful');
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else
+              setSuccessMessage(
+                'popup_html_remove_account_authority_successful',
+              );
           } else {
             setErrorMessage('popup_html_remove_account_authority_fail');
           }
@@ -88,7 +95,7 @@ const AccountAuthoritiesListItem = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   return authority.account_auths.length > 0 ? (
@@ -136,7 +143,7 @@ const AccountAuthoritiesListItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
+    activeAccount: state.hive.activeAccount,
   };
 };
 

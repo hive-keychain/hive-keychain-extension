@@ -107,6 +107,10 @@
     "message": "Confirm",
     "description": "Generic button"
   },
+  "popup_html_download": {
+    "message": "Download",
+    "description": "Generic button"
+  },
   "popup_html_submit": {
     "message": "Submit",
     "description": "Generic button"
@@ -188,7 +192,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market trades, transfers, or transactions.",
+    "message": "The estimated account value is a ballpark idea of what your funds are worth.<br><br>You can switch between the USD, HIVE or hidden modes by clicking on the displayed amount.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
@@ -210,6 +214,14 @@
   "popup_html_username": {
     "message": "Username",
     "description": "placeholder for entering username"
+  },
+  "popup_html_start_date": {
+    "message": "Start Date",
+    "description": "placeholder for entering a starting date"
+  },
+  "popup_html_end_date": {
+    "message": "End Date",
+    "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
     "message": "Import keys",
@@ -344,7 +356,11 @@
     "description": "on settings page"
   },
   "popup_html_operations": {
-    "message": "Operations",
+    "message": "Whitelisted operations",
+    "description": "on settings page"
+  },
+  "popup_html_export_transactions": {
+    "message": "Export transactions",
     "description": "on settings page"
   },
   "popup_html_favorite_accounts": {
@@ -482,6 +498,18 @@
   "popup_html_pref_info": {
     "message": "For a better experience, you can whitelist non-active authority operations when dApps request them. You won't receive a confirmation prompt for these operations.",
     "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_info": {
+    "message": "Download your account's monetary transactions as a .csv file. You can omit the start or end date if necessary.<br/><br/>Depending on the number of transactions, this may take a little while. ",
+    "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_downloading_loading_message": {
+    "message": "Downloading transactions",
+    "description": "Downloading transactions"
+  },
+  "popup_html_pref_export_transactions_generating_csv_loading_message": {
+    "message": "Generating CSV file",
+    "description": "Generating csv"
   },
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
@@ -1832,7 +1860,7 @@
     "description": "In confirmation page"
   },
   "popup_html_user_preferences": {
-    "message": "User preferences",
+    "message": "User operations",
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
@@ -2018,6 +2046,10 @@
   "html_popup_conversion_operation": {
     "message": "Conversion",
     "description": "conversion operation"
+  },
+  "html_popup_revert_vesting_route_operation": {
+    "message": "Reverting Vesting route(s)",
+    "description": "when the user decides to revert all vesting routes in his account"
   },
   "html_popup_delegation_operation": {
     "message": "Delegating",
@@ -2729,8 +2761,64 @@
     "message": "Got it!",
     "description": "What's new popup button"
   },
+  "popup_html_vesting_routes_title": {
+    "message": "Your vesting routes have changed",
+    "description": "Vesting shares popup title"
+  },
+  "popup_html_vesting_routes_warning_message": {
+    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>.",
+    "description": "Vesting shares popup warning message"
+  },
+  "popup_html_vesting_routes_handled_successfully": {
+    "message": "Your vesting routes have been secured!",
+    "description": "Vesting shares end list being handled by user"
+  },
+  "popup_html_vesting_route_account_item_label": {
+    "message": "Account",
+    "description": "wrong vesting routes popup, account item label"
+  },
+  "popup_html_vesting_route_account_item_old_route_title": {
+    "message": "Old Route",
+    "description": "wrong vesting routes popup, account item, old route label/title"
+  },
+  "popup_html_vesting_route_account_item_new_route_title": {
+    "message": "New Route",
+    "description": "wrong vesting routes popup, account item, new route label/title"
+  },
+  "popup_html_vesting_route_account_item_button_revert_label": {
+    "message": "Revert All",
+    "description": "wrong vesting routes popup, account item, revert button label"
+  },
+  "popup_html_vesting_route_account_item_button_skip_label": {
+    "message": "These changes were intentional",
+    "description": "wrong vesting routes popup, account item, revert skip label"
+  },
+  "popup_html_vesting_route_item_details_non_existent_label": {
+    "message": "None",
+    "description": "wrong vesting routes popup, item details, non existent label"
+  },
+  "popup_html_vesting_route_item_details_id_title": {
+    "message": "Id: ",
+    "description": "wrong vesting routes popup, item details, id label/title"
+  },
+  "popup_html_vesting_route_item_details_from_title": {
+    "message": "From: ",
+    "description": "wrong vesting routes popup, item details, from label/title"
+  },
+  "popup_html_vesting_route_item_details_to_title": {
+    "message": "To: ",
+    "description": "wrong vesting routes popup, item details, to label/title"
+  },
+  "popup_html_vesting_route_item_details_percent_title": {
+    "message": "Percent: ",
+    "description": "wrong vesting routes popup, item details, percent label/title"
+  },
+  "popup_html_vesting_route_item_details_autovest_title": {
+    "message": "Auto vest: ",
+    "description": "wrong vesting routes popup, item details, autovest label/title"
+  },
   "html_popup_tokens_timeout": {
-    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
     "description": "Token timeout error"
   },
   "popup_html_create_account_buy_account": {
@@ -3295,6 +3383,10 @@
     "message": "No account found on your Ledger. Make sure your added at least one and try again.",
     "description": "synchronize ledger caption"
   },
+  "no_account_found_on_portfolio_error": {
+    "message": "No account found on your Keychain Portfolio. Make sure you add at least one and try again.",
+    "description": "portfolio section, loading accounts"
+  },
   "all_ledger_accounts_already_imported": {
     "message": "All the accounts on your Ledger have already been linked to Keychain",
     "description": "while synchronizing ledger"
@@ -3391,8 +3483,48 @@
     "message": "We detected an account using Ledger within the accounts you imported. To be able to use it please click <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>here</a> to link your Ledger.",
     "description": "link device error"
   },
+  "portfolio": {
+    "message": "Keychain Portfolio",
+    "description": "portfolio button click"
+  },
+  "portfolio_total_value_usd": {
+    "message": "Total Value:",
+    "description": "portfolio main page"
+  },
+  "portfolio_caption_message_total_value": {
+    "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
+    "description": "portfolio main page, information total value"
+  },
+  "portfolio_filter_placeholder": {
+    "message": "Filter account",
+    "description": "portfolio filter"
+  },
+  "portfolio_clear_filter_link": {
+    "message": "Clear",
+    "description": "clear filter"
+  },
+  "portfolio_data_cell_zero_or_no_balance_text": {
+    "message": "-",
+    "description": "portfolio displayed when 0 or no balances found on tokens"
+  },
+  "portfolio_table_column_header_account": {
+    "message": "Account",
+    "description": "portfolio table headers"
+  },
+  "portfolio_table_column_sticky_totals": {
+    "message": "Total",
+    "description": "portfolio table columns"
+  },
+  "portfolio_table_column_total_hive": {
+    "message": "Total Hive",
+    "description": "portfolio table columns"
+  },
+  "portfolio_table_column_sticky_total_usd": {
+    "message": "Total USD",
+    "description": "portfolio table columns"
+  },
   "broadcast_error_transaction_expired": {
-    "message": "Your transaction has expired. Please try to broadcast it again.",
+    "message": "This transaction has expired. This might be due to an invalid time on your device. Please make sure that your device time is synchronized online.",
     "description": "transaction expireed error"
   },
   "html_popup_swap_token_confirm_title": {
@@ -3743,6 +3875,94 @@
     "message": "Cancel token unstake has failed",
     "description": "Loading message unstake"
   },
+  "popup_html_multisig": {
+    "message": "Multisig",
+    "description": "Multisig menu item"
+  },
+  "min_chrome_version": {
+    "message": "Please update your Chromium browser to the version 116 or newer, to be able to use the multisig features",
+    "description": "When enabling multisig on old browsers"
+  },
+  "popup_html_multisig_intro": {
+    "message": "Enable Hive Multisig to listen to multisig requests for this account.\n Find more information about multisig in <a href='https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain' target='__blank'>this blog.</a>\nTo modify your account into a multisig account, use <a href='https://multisig.hive-keychain.com/' target='__blank'>the Hive Multisig dApp.</a>\nThis is an advanced feature, only use it if you know what you are doing.",
+    "description": "Multisig page intro"
+  },
+  "popup_html_enable_multisig": {
+    "message": "Enable multisig",
+    "description": "Multisig page enable multisig"
+  },
+  "popup_html_enable_active_key_multisig": {
+    "message": "Enable active key multisig",
+    "description": "Multisig page enable active key multisig"
+  },
+  "popup_html_enable_posting_key_multisig": {
+    "message": "Enable posting key multisig",
+    "description": "Multisig page enable posting key multisig"
+  },
+  "multisig_dialog_accept_tx": {
+    "message": "Accept",
+    "description": "accept transaction coming from multisig"
+  },
+  "multisig_dialog_reject_tx": {
+    "message": "Reject",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_accept_reject_tx_caption": {
+    "message": "You received a signature request.",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_transaction_signed_successfully": {
+    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig_dialog_transaction_broadcasted": {
+    "message": "Transaction broadcasted",
+    "description": "Reject transaction coming from multisig"
+  },
+  "multisig": {
+    "message": "Multisig",
+    "description": "Multisig"
+  },
+  "multisig_tx": {
+    "message": "Transaction",
+    "description": "Multisig transaction"
+  },
+  "multisig_initiator": {
+    "message": "Initiator",
+    "description": "Multisig transaction initiator"
+  },
+  "multisig_requested_signer_username": {
+    "message": "Requested signer",
+    "description": "Multisig transaction requested signer"
+  },
+  "multisig_requested_signer_public_key": {
+    "message": "Requested public key",
+    "description": "Multisig transaction requested signer"
+  },
+  "multisig_key_is_ledger_hint": {
+    "message": "Your key uses Ledger. It is not compatible with our version of Multisig",
+    "description": "Explanation of why Ledger cannot work with multisig"
+  },
+  "multisig_processing_tx_through_multisig_server": {
+    "message": "Your transaction will be processed using the multisig server",
+    "description": "Using multisig to process transaction"
+  },
+  "multisig_transaction_sent_to_signers": {
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "description": "Tx sent to multisig backend success message"
+  },
+  "multisig_disclaimer_message": {
+    "message": "Multisig detected : This transaction will be sent to the Hive Multisig server",
+    "description": "Message to inform user that multisig will be used"
+  },
+  "multisig_transmitting_to_multisig": {
+    "message": "Sending encoded transaction to Multisig server and potential signers",
+    "description": "Message to inform user transmiting to multisig backend"
+  },
+  "swap_multisig_transaction_sent_to_signers": {
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted. Once broadcasted, your swap will be processed.",
+    "description": "Tx sent to multisig backend success message"
+  },
   "html_popup_ecosystem_retrieving_error": {
     "message": "There was an error while retrieving the ecosystem. Please try again later",
     "description": "Ecosystem retrieving error"
@@ -3750,5 +3970,21 @@
   "html_popup_click_to_refresh": {
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
+  },
+  "portfolio_fetch_progress": {
+    "message": "Fetching data... $1/$2... Currently fetching @$3",
+    "description": "Portfolio fetching message"
+  },
+  "export_transactions_fetching_error": {
+    "message": "There was an error while fetching your transactions. Please try again later",
+    "description": "Error while downloading transactions"
+  },
+  "export_transactions_incorrect_dates": {
+    "message": "Start date should be before end date",
+    "description": "Error while downloading transactions"
+  },
+  "popup_html_pref_export_transactions_loading_caption": {
+    "message": "$1%",
+    "description": "Caption for download data"
   }
 }

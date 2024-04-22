@@ -38,7 +38,7 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
       ).split(' ')[0],
     );
     const newBalance = FormatUtils.formatCurrencyValue(
-      parseFloat(currentBalance) - amount,
+      parseFloat(currentBalance.replace(/,/g, '')) - amount,
       3,
     );
     setBalance(`${currentBalance} ${currencyParsed}`);

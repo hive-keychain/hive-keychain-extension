@@ -1,8 +1,8 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Keys } from '@interfaces/keys.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { ActionType } from 'src/popup/hive/actions/action-type.enum';
-import { ActionPayload } from 'src/popup/hive/actions/interfaces';
+import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 export const ActiveAccountReducer = (
   state: ActiveAccount = {
@@ -13,13 +13,13 @@ export const ActiveAccountReducer = (
   { type, payload }: ActionPayload<any>,
 ): ActiveAccount => {
   switch (type) {
-    case ActionType.SET_ACTIVE_ACCOUNT:
+    case HiveActionType.SET_ACTIVE_ACCOUNT:
       return { ...state, ...payload };
-    case ActionType.SET_ACTIVE_ACCOUNT_RC:
+    case HiveActionType.SET_ACTIVE_ACCOUNT_RC:
       return { ...state, rc: payload };
-    case ActionType.FORGET_ACCOUNT:
-    case ActionType.FORGET_ACCOUNTS:
-    case ActionType.RESET_ACTIVE_ACCOUNT:
+    case HiveActionType.FORGET_ACCOUNT:
+    case HiveActionType.FORGET_ACCOUNTS:
+    case HiveActionType.RESET_ACTIVE_ACCOUNT:
       return {
         account: {} as ExtendedAccount,
         keys: {},

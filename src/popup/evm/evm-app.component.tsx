@@ -1,5 +1,5 @@
+import { Chain, useChainContext } from '@popup/multichain/multichain.context';
 import React from 'react';
-import { Chain, useChainContext } from 'src/popup/multichain.context';
 
 export const EvmAppComponent = () => {
   const { setChain } = useChainContext();

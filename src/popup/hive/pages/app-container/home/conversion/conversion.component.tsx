@@ -1,12 +1,30 @@
 import { Asset } from '@hiveio/dhive';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from '@interfaces/keychain.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -14,21 +32,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from 'src/popup/hive/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from 'src/popup/hive/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/hive/actions/navigation.actions';
-import { setTitleContainerProperties } from 'src/popup/hive/actions/title-container.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { RootState } from 'src/popup/hive/store';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -143,6 +147,7 @@ const Conversion = ({
     )} ${form.currency}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
           ? 'popup_html_confirm_hbd_to_hive_conversion'
@@ -167,11 +172,16 @@ const Conversion = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            setSuccessMessage(
-              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-                ? 'popup_html_hbd_to_hive_conversion_success'
-                : 'popup_html_hive_to_hbd_conversion_success',
-            );
+
+            if (success.isUsingMultisig) {
+              setSuccessMessage('multisig_transaction_sent_to_signers');
+            } else {
+              setSuccessMessage(
+                conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                  ? 'popup_html_hbd_to_hive_conversion_success'
+                  : 'popup_html_hive_to_hbd_conversion_success',
+              );
+            }
           } else {
             setErrorMessage(
               conversionType === ConversionType.CONVERT_HBD_TO_HIVE
@@ -185,7 +195,7 @@ const Conversion = ({
           removeFromLoadingList('html_popup_conversion_operation');
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const setToMax = () => {
@@ -267,11 +277,13 @@ const Conversion = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.hive.activeAccount,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(
+      state.hive.activeRpc?.testnet!,
+    ),
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
-    conversions: state.conversions as Conversion[],
+    conversions: state.hive.conversions as Conversion[],
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

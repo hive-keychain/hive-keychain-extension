@@ -19,33 +19,38 @@ const RequestResponse = ({ data }: Props) => {
     }, 3000);
   }
   return (
-    <div className="response-message-container">
-      <div className="message-card">
-        <SVGIcon
-          icon={
-            data.msg.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
-          }
-        />
-        <div className="title">
-          {chrome.i18n.getMessage(
-            data.msg.success
-              ? 'message_container_title_success'
-              : 'message_container_title_fail',
-          )}
+    <>
+      <div className="response-message-container">
+        <div className="message-card">
+          <SVGIcon
+            icon={
+              data.msg.success
+                ? SVGIcons.MESSAGE_SUCCESS
+                : SVGIcons.MESSAGE_ERROR
+            }
+          />
+          <div className={`title ${data.msg.success ? 'success' : ''}`}>
+            {chrome.i18n.getMessage(
+              data.msg.success
+                ? 'message_container_title_success'
+                : 'message_container_title_fail',
+            )}
+          </div>
+          <div className="message">
+            {data.msg.message.split(/<br\s?\/?>/g).map((msg, index) => (
+              <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
+                {msg}
+              </p>
+            ))}
+          </div>
         </div>
-        <div className="message">
-          {data.msg.message.split(/<br\s?\/?>/g).map((msg, index) => (
-            <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
-              {msg}
-            </p>
-          ))}
-        </div>
-        <ButtonComponent
-          label="message_container_close_button"
-          onClick={close}
-        />
       </div>
-    </div>
+      <ButtonComponent
+        additionalClass={data.msg.success ? 'success-button' : ''}
+        label="message_container_close_button"
+        onClick={close}
+      />
+    </>
   );
 };
 
