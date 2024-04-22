@@ -14,6 +14,7 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { RootState } from '@popup/multichain/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -27,6 +28,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ProposalVotingSection = ({
   activeAccount,
@@ -40,7 +42,6 @@ const ProposalVotingSection = ({
 }: PropsFromRedux) => {
   const [hasVoted, sethasVoted] = useState(true);
   const [forceClosed, setForcedClosed] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (activeAccount.name) {
@@ -52,6 +53,15 @@ const ProposalVotingSection = ({
     if (
       await ProposalUtils.isRequestingProposalVotes(globalProperties.globals!)
     ) {
+      let localSkipped = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.PROPOSAL_SKIPPED,
+      );
+
+      localSkipped =
+        localSkipped &&
+        localSkipped[activeAccount.name!] &&
+        localSkipped[activeAccount.name!].includes(Config.KEYCHAIN_PROPOSAL);
+
       // Consider as already voted if it is, or if the account has a proxy or few HP
       const hasVoted =
         (await ProposalUtils.hasVotedForProposal(activeAccount.name!)) ||
@@ -59,9 +69,9 @@ const ProposalVotingSection = ({
         FormatUtils.toHP(
           activeAccount.account.vesting_shares.toString(),
           globalProperties.globals,
-        ) < 100;
-      // sethasVoted(hasVoted);
-      sethasVoted(false);
+        ) < 100 ||
+        localSkipped;
+      sethasVoted(hasVoted);
     }
   };
 
@@ -119,11 +129,32 @@ const ProposalVotingSection = ({
     });
   };
 
-  const handleClose = (event: any) => {
+  const handleClose = async (event: any) => {
     event.nativeEvent.stopImmediatePropagation();
     setForcedClosed(true);
+    let localSkipped = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.PROPOSAL_SKIPPED,
+    );
+
+    if (!localSkipped) {
+      localSkipped = {};
+    }
+    if (!localSkipped[activeAccount.name!]) {
+      localSkipped[activeAccount.name!] = [];
+    }
+
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.PROPOSAL_SKIPPED,
+      {
+        ...localSkipped,
+        [activeAccount.name!]: [
+          ...localSkipped[activeAccount.name!],
+          Config.KEYCHAIN_PROPOSAL,
+        ],
+      },
+    );
   };
-  if (forceClosed) return null;
+  if (forceClosed || hasVoted) return null;
   return (
     <PopupContainer className="proposal-voting-section">
       <div className="popup-title">
