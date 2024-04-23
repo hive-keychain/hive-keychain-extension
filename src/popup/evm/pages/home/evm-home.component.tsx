@@ -1,9 +1,9 @@
+import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
-import Moralis from 'moralis';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -20,7 +20,12 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
-const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
+const Home = ({
+  accounts,
+  resetTitleContainerProperties,
+  activeAccount,
+  getEvmActiveAccount,
+}: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
@@ -39,13 +44,17 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
   };
-
+  console.log('accounts', accounts);
+  console.log('active account tokens', activeAccount);
+  console.log(
+    'total value',
+    activeAccount.reduce((a, b) => a + b.usdValue, 0),
+  );
   const init = async () => {
-    const response = await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
-      chain: '0x1',
-      address: '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58',
-    });
-    console.log('response');
+    // TODO : this should actually be called before mobing to the homepage
+    // getEvmActiveAccount('0x1', accounts[0].wallet.address);
+    // TODO : remove  hardcoded wallet address
+    getEvmActiveAccount('0x1', '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58');
   };
 
   const initWhatsNew = async () => {
@@ -130,6 +139,7 @@ const Home = ({ accounts, resetTitleContainerProperties }: PropsFromRedux) => {
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
+    activeAccount: state.evm.activeAccount,
   };
 };
 
@@ -137,6 +147,7 @@ const connector = connect(mapStateToProps, {
   loadCurrencyPrices,
   resetTitleContainerProperties,
   setSuccessMessage,
+  getEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
