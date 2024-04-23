@@ -13,6 +13,8 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { Screen } from 'src/reference-data/screen.enum';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
@@ -59,12 +61,15 @@ const ImportWalletConfirmation = ({
     <div
       data-testid={`${Screen.IMPORT_EVM_WALLET_CONFIRMATION}-page`}
       className="import-evm-wallet-confirmation-page">
-      <div
-        className="caption"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('html_popup_evm_choose_account_text'),
-        }}></div>
-      <div className="form-container">
+      <FormContainer>
+        <div
+          className="caption"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(
+              'html_popup_evm_choose_account_text',
+            ),
+          }}></div>
+        <Separator type="horizontal" />
         {wallets.map((e, i) => {
           return (
             <CheckboxPanelComponent
@@ -84,12 +89,13 @@ const ImportWalletConfirmation = ({
             />
           );
         })}
+        <div className="fill-space"></div>
         <ButtonComponent
           dataTestId="submit-button"
           label={'html_popup_evm_create_new_wallet'}
           onClick={submitForm}
         />
-      </div>
+      </FormContainer>
     </div>
   );
 };

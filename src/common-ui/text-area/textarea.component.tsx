@@ -74,7 +74,9 @@ const TextArea = React.forwardRef((props: TextAreaProps, ref: any) => {
     event.stopPropagation();
     event.preventDefault();
 
-    const pastedData = (event as any).nativeEvent.clipboardData.getData('Text');
+    const pastedData = (event as any).nativeEvent.clipboardData
+      .getData('Text')
+      .trim();
 
     if (props.useChips) {
       const newChips = [...chips, ...pastedData.split(' ')];

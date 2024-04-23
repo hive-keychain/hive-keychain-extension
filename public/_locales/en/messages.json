@@ -3928,7 +3928,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_choose_account_text": {
-    "message": "We've preselected accounts with a non-null $1 balance.<br/><br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
+    "message": "We've preselected accounts with a non-null $1 balance.<br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet": {
