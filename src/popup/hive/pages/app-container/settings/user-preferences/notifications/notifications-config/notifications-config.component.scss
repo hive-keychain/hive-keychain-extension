@@ -11,5 +11,6 @@
 
   .link-to-advanced-settings {
     @include link();
+    font-size: 14px;
   }
 }

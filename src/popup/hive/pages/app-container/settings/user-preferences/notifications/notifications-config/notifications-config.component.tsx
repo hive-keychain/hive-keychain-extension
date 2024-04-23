@@ -50,7 +50,7 @@ const NotificationConfigPage = ({
 
   const openAdvancedConfiguration = async () => {
     chrome.tabs.create({
-      url: `peakd-notifications-config.html`,
+      url: `peak-open-notifications-config.html`,
     });
   };
 

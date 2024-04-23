@@ -206,7 +206,9 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const setDefaultConfig = () => {
-    setConfigForm(PeakDNotificationsUtils.getDefaultConfig());
+    setConfigForm(
+      PeakDNotificationsUtils.getSuggestedConfig(selectedAccount!.name),
+    );
   };
   const setAll = () => {
     if (configForm) {

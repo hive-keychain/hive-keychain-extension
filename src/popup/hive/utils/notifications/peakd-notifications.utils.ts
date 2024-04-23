@@ -570,17 +570,6 @@ const saveConfiguration = async (
   );
 };
 
-const getDefaultConfig = () => {
-  const configForm: NotificationConfigForm = [];
-  for (const sub of defaultActiveSubs) {
-    configForm.push({
-      operation: sub as NotificationOperationName,
-      conditions: [{ field: '', operand: '', value: '' }],
-    });
-  }
-  return configForm;
-};
-
 const getNotifications = async (
   username: string,
   globalProperties: DynamicGlobalProperties,
@@ -1027,7 +1016,6 @@ export const PeakDNotificationsUtils = {
   operationFieldList,
   initializeForm,
   saveConfiguration,
-  getDefaultConfig,
   getNotifications,
   markAllAsRead,
   deleteAccountConfig,

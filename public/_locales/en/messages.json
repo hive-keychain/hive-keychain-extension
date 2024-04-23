@@ -4025,7 +4025,7 @@
   },
 
   "notification_account_update": {
-    "message": "The account @$1 has been updated",
+    "message": "@$1's notification settings have been updated",
     "description": "Notification account updated"
   },
   "notification_mention": {
