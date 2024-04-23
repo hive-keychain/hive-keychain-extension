@@ -1,23 +1,29 @@
-import { resetMessage } from '@popup/multichain/actions/message.actions';
-import { RootState } from '@popup/multichain/store';
+import { Message } from '@interfaces/message.interface';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 const DEFAULT_TIMEOUT = 3000;
 
-const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
+interface MessageContainerProps {
+  message: Message;
+  onResetMessage: () => void;
+}
+
+const MessageContainer = ({
+  message,
+  onResetMessage,
+}: MessageContainerProps) => {
   useEffect(() => {
-    if (errorMessage.type !== MessageType.ERROR) {
+    if (message.type !== MessageType.ERROR) {
       setTimeout(() => close(), DEFAULT_TIMEOUT);
     }
   }, []);
 
   const close = () => {
-    resetMessage();
+    onResetMessage();
   };
 
   const getIcon = (errorType: MessageType) => {
@@ -33,8 +39,8 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
     }
   };
 
-  const getTitle = (errorType: MessageType) => {
-    switch (errorType) {
+  const getTitle = (messageType: MessageType) => {
+    switch (messageType) {
       case MessageType.SUCCESS:
         return 'message_container_title_success';
       case MessageType.ERROR:
@@ -50,24 +56,21 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
     <div className="message-container">
       <div className="overlay"></div>
       <div className="message-card">
-        <SVGIcon icon={getIcon(errorMessage.type)} />
+        <SVGIcon icon={getIcon(message.type)} />
         <div
           className={`title ${
-            errorMessage.type === MessageType.SUCCESS ? 'success' : ''
+            message.type === MessageType.SUCCESS ? 'success' : ''
           }`}>
-          {chrome.i18n.getMessage(getTitle(errorMessage.type))}
+          {chrome.i18n.getMessage(getTitle(message.type))}
         </div>
         <div
           className="message"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
-              errorMessage.key,
-              errorMessage.params,
-            ),
+            __html: chrome.i18n.getMessage(message.key, message.params),
           }}></div>
         <ButtonComponent
           additionalClass={
-            errorMessage.type === MessageType.SUCCESS ? 'success-button' : ''
+            message.type === MessageType.SUCCESS ? 'success-button' : ''
           }
           label="message_container_close_button"
           onClick={close}
@@ -77,13 +80,4 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    errorMessage: state.errorMessage,
-  };
-};
-
-const connector = connect(mapStateToProps, { resetMessage });
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export const MessageContainerComponent = connector(MessageContainer);
+export const MessageContainerComponent = MessageContainer;

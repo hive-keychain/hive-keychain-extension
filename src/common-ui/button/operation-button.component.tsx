@@ -18,7 +18,9 @@ const OperationButton = ({
 }: Props) => {
   const handleClick = () => {
     if (requiredKey && !activeAccount.keys[requiredKey]) {
-      setErrorMessage('popup_missing_key', [requiredKey]);
+      setErrorMessage('popup_missing_key', [
+        chrome.i18n.getMessage(requiredKey),
+      ]);
     } else {
       onClick();
     }

@@ -1,0 +1,130 @@
+.notifications-panel {
+  display: block;
+  position: absolute;
+  top: calc(100% + 16px);
+  width: calc(100% - 32px);
+  height: 0px;
+  transition: height 0.25s ease-out;
+  overflow: hidden;
+  z-index: 3;
+  margin: 0px 16px 16px 16px;
+  border-radius: 16px;
+  &.opened {
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    height: 500px;
+    transition: height 0.25s ease-in;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notification-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    row-gap: 16px;
+    height: 100%;
+    box-sizing: border-box;
+    .set-all-as-read {
+      height: 24px;
+      min-height: 24px;
+      width: max-content;
+      padding: 2px 8px;
+      align-self: flex-end;
+      font-size: 13px;
+    }
+    .notification-list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      overflow: auto;
+
+      .notification-item {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        &.clickable {
+          cursor: pointer;
+        }
+
+        .notification-dot {
+          background: $red;
+          min-height: 6px;
+          min-width: 6px;
+          border-radius: 50%;
+          display: inline-block;
+
+          &.read {
+            background: transparent;
+          }
+        }
+
+        .notification-content {
+          display: flex;
+          flex-direction: column;
+          .message {
+            color: var(--main-font-color);
+            font-size: 13px;
+          }
+          .date {
+            color: var(--main-font-color);
+            font-size: 11px;
+            font-style: italic;
+          }
+        }
+      }
+
+      .load-more-panel {
+        display: flex;
+        align-self: center;
+        height: 50px;
+        width: 50px;
+        .rotating-logo {
+          height: 50px;
+          width: 50px;
+          svg {
+            height: 50px;
+            width: 50px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.notifications-button-container {
+  position: relative;
+  --notification-color: #{$red};
+  --notification-background-color: white;
+  --notification-border-color: #{$light-grey-border};
+
+  .notification-button {
+    &:hover {
+      --notification-background-color: #{$red};
+      --notification-color: white;
+      --notification-border-color: #{$red};
+    }
+  }
+
+  .notifications-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    height: 24px;
+    width: 24px;
+    font-size: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--notification-background-color);
+    background-color: var(--notification-color);
+  }
+
+  &:hover {
+    .notifications-count {
+      background-color: var(--notification-background-color);
+      color: var(--notification-color);
+    }
+  }
+}
