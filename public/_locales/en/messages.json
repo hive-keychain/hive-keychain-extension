@@ -4245,7 +4245,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_chain_selector_page_title": {
-    "message": "Set up blockchain",
+    "message": "Choose a blockchain",
     "description": "setup blockchain page title"
   },
   "html_popup_chain_selector_page_caption": {
