@@ -1,4 +1,5 @@
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { removeFromLoadingList } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -6,8 +7,10 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
 import { Screen } from 'src/reference-data/screen.enum';
 const ImportWalletFromSeed = ({
   navigateToWithParams,
@@ -15,7 +18,8 @@ const ImportWalletFromSeed = ({
   setErrorMessage,
   hasFinishedSignup,
 }: PropsType) => {
-  const [seed, setSeed] = useState('');
+  const [seed, setSeed] = useState<string[]>([]);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -27,9 +31,12 @@ const ImportWalletFromSeed = ({
 
   const submitForm = async (): Promise<void> => {
     const { wallet, error, errorParams } =
-      EvmWalletUtils.getWalletFromSeedPhrase(seed);
+      EvmWalletUtils.getWalletFromSeedPhrase(seed.join(' '));
     if (wallet) {
+      setLoading(true);
       const derivedWallets = await EvmWalletUtils.deriveWallets(wallet);
+      setLoading(false);
+      removeFromLoadingList('html_popup_deriving_wallets');
       navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
         wallet,
         derivedWallets,
@@ -39,34 +46,35 @@ const ImportWalletFromSeed = ({
     }
   };
 
-  //TODO: - make input field a textarea (already passed as a type property to the input)
-  //TODO: - add loader while deriving wallets
-
   return (
     <div
       data-testid={`${Screen.IMPORT_EVM_WALLET}-page`}
       className="import-evm-wallet">
-      <div
-        className="caption"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('html_popup_evm_setup_import_text'),
-        }}></div>
-      <div className="form-container">
-        <InputComponent
+      <FormContainer>
+        <div
+          className="caption"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage('html_popup_evm_setup_import_text'),
+          }}></div>
+        <Separator type="horizontal" />
+        <TextAreaComponent
           dataTestId="input-seed-key"
           value={seed}
           onChange={setSeed}
           label="html_popup_evm_seed_phrase"
           placeholder="html_popup_evm_seed_phrase_placeholder"
-          type={InputType.TEXT_AREA}
-          onEnterPress={submitForm}
+          rows={4}
+          useChips
+          maxChips={12}
         />
+        <div className="fill-space"></div>
         <ButtonComponent
           dataTestId="submit-button"
           label={'popup_html_submit'}
           onClick={submitForm}
         />
-      </div>
+      </FormContainer>
+      <LoadingComponent hide={!isLoading} />
     </div>
   );
 };

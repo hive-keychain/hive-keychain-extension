@@ -3900,7 +3900,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Import your EVM wallet using the seed phrase you obtained when originally creating your account.<br/><br/>This seed phrase is a 12-words that allows you to recover your accounts.<br/><br/>Make sure to always keep it safe offline.",
+    "message": "Import your EVM wallet using the seed phrase you obtained when originally creating your account.<br/>This seed phrase is a 12-words that allows you to recover your accounts.<br/>Make sure to always keep it safe offline.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
@@ -3938,5 +3938,17 @@
   "html_popup_evm_error_select_account": {
     "message": "Please select at least one account",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_chain_selector_page_title": {
+    "message": "Set up blockchain",
+    "description": "setup blockchain page title"
+  },
+  "html_popup_chain_selector_page_caption": {
+    "message": "Choose your first blockchain to create or import an account. Don't worry, you can add more accounts later on.",
+    "description": "setup blockchain page caption"
+  },
+  "html_popup_deriving_wallets": {
+    "message": "Deriving wallets",
+    "description": "Deriving wallets"
   }
 }

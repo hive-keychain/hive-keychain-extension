@@ -3,16 +3,31 @@
   flex-direction: column;
   row-gap: 12px;
   height: 100%;
-  .caption {
-    @include caption();
-    font-size: a {
-      color: $red;
+  align-items: center;
+
+  .setup-image {
+    height: 200px;
+    width: auto;
+    svg {
+      height: 200px;
+      width: auto;
     }
   }
-
   .form-container {
-    @include pageLayoutRowGap;
-    row-gap: 32px;
-    margin-top: 16px;
+    width: 100%;
+    box-sizing: border-box;
+
+    .caption {
+      @include form-container-text;
+    }
+
+    .inputs-container {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      padding: 16px 24px;
+      width: 100%;
+      box-sizing: border-box;
+    }
   }
 }

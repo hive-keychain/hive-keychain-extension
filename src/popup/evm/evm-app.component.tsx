@@ -34,8 +34,9 @@ const EvmApp = ({
   };
 
   return (
-    <div className={`App Evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      <EvmRouterComponent /> {displaySplashscreen && <SplashscreenComponent />}
+    <div className={`App evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+      <EvmRouterComponent />
+      {displaySplashscreen && <SplashscreenComponent />}
     </div>
   );
 };

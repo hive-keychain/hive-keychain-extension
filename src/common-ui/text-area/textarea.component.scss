@@ -1,0 +1,156 @@
+$autoCompleteItemHeight: 30px;
+.custom-input {
+  width: 100%;
+  .label {
+    @include input-label;
+  }
+  .custom-input-content {
+    display: flex;
+    column-gap: 12px;
+    width: 100%;
+    margin: 0;
+    user-select: none;
+
+    background: var(--input-background);
+    padding: 12px;
+    box-sizing: border-box;
+    color: var(--main-font-color);
+    border-style: unset;
+    border-radius: 24px;
+    border: 1px solid var(--input-border);
+
+    .input-container {
+      display: flex;
+      position: relative;
+      flex: 1;
+      column-gap: 4px;
+      row-gap: 8px;
+
+      &.use-chips {
+        flex-wrap: wrap;
+        padding-top: 12px;
+      }
+
+      .chip {
+        border: solid 1px var(--card-border);
+        border-radius: 8px;
+        height: fit-content;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        column-gap: 4px;
+        .chip-label {
+        }
+        .chip-delete {
+          display: none;
+          height: 12px;
+          width: 12px;
+          svg {
+            height: 12px;
+            width: 12px;
+          }
+        }
+        &:hover {
+          .chip-delete {
+            display: block;
+          }
+        }
+      }
+      textarea {
+        min-width: 50px;
+        resize: none;
+        width: calc(100% - 32px);
+        flex: 1;
+        border-style: unset;
+        border: none;
+        background: var(--input-background);
+        @include poppins500($input-font-size);
+        color: var(--main-font-color);
+        &::placeholder {
+          color: var(--placeholder-color);
+          @include poppins400(15px);
+        }
+
+        &:focus {
+          outline: none !important;
+          border-color: white;
+        }
+      }
+
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      input[type='number'] {
+        -moz-appearance: textfield;
+      }
+
+      &.has-left-logo > input {
+        padding-left: 24px;
+      }
+      &.has-right-logo {
+        input {
+          padding-right: 60px !important;
+        }
+        .erase {
+          right: 32px !important;
+        }
+      }
+
+      &.password-type > input {
+        padding-right: 32px;
+      }
+
+      .input-img {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        height: 20px;
+        width: 20px;
+
+        &.left {
+          left: 0;
+        }
+
+        &.right {
+          right: 8px;
+        }
+      }
+
+      .erase {
+        display: none;
+      }
+
+      &:hover {
+        .erase {
+          display: block;
+        }
+      }
+    }
+
+    .right-action {
+      display: flex;
+      column-gap: 12px;
+      .right-action-logo {
+        height: 25px;
+        &.rotate {
+          @include rotate-logo-mixin;
+        }
+      }
+    }
+
+    &.has-error {
+      border-color: $red !important;
+    }
+  }
+  .error {
+    @include poppins400(12px);
+    color: $red;
+    padding-left: 6px;
+  }
+}

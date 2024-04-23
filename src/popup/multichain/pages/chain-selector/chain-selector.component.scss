@@ -3,4 +3,27 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
+
+  .caption {
+    @include caption();
+  }
+
+  .chain-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    width: 100%;
+    padding: 0px 24px;
+    box-sizing: border-box;
+
+    .chain-card {
+      @include small-card();
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      margin: 0;
+      @include poppins500(15px);
+      cursor: pointer;
+    }
+  }
 }

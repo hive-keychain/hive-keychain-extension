@@ -1,4 +1,10 @@
 export enum SVGIcons {
+  BLOCKCHAIN_AVALANCHE = 'blockchains/avalanche',
+  BLOCKCHAIN_BNB = 'blockchains/bnb',
+  BLOCKCHAIN_ETHEREUM = 'blockchains/ethereum',
+  BLOCKCHAIN_POLYGON = 'blockchains/polygon',
+  BLOCKCHAIN_HIVE = 'blockchains/hive',
+
   BOTTOM_BAR_BUY = 'bottom-bar/buy',
   BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
   BOTTOM_BAR_SEND = 'bottom-bar/send',
@@ -13,6 +19,8 @@ export enum SVGIcons {
   BUY_UPBIT = 'buy/upbit',
 
   CHECKBOX_CHECKED = 'checkbox/checked',
+
+  EVM_SETUP_IMAGE = 'evm-setup/coin-img',
 
   FAVORITE_ACCOUNTS_EDIT = 'favorite-accounts/edit',
   FAVORITE_ACCOUNTS_DELETE = 'favorite-accounts/delete',
