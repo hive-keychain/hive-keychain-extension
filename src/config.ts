@@ -1,5 +1,6 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RampConfig } from '@interfaces/ramps.interface';
+import { SwapCryptosConfig } from '@interfaces/swap-cryptos.interface';
 
 const Config = {
   hiveEngine: {
@@ -58,6 +59,14 @@ const Config = {
         : 'https://api.ramp.network',
       apiKey: process.env.RAMP_DEV_API_KEY || '',
     } as RampConfig,
+  },
+  swapCryptos: {
+    autoRefreshPeriodSec: 30,
+    stealthex: {
+      baseUrl: 'https://api.stealthex.io/api/v2/',
+      apiKey: process.env.STEALHEX_DEV_API_KEY || '',
+      headerKey: 'X-SX-API-KEY',
+    } as SwapCryptosConfig,
   },
   multisig: {
     baseURL:

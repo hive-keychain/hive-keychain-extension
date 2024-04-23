@@ -3471,6 +3471,10 @@
     "message": "Fiat",
     "description": "In Buy page"
   },
+  "crypto": {
+    "message": "Crypto",
+    "description": "In Buy page"
+  },
   "liquid_balance": {
     "message": "Liquid balance",
     "description": "Value of token in USD"
