@@ -2,6 +2,7 @@ import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosyst
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
+import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
@@ -167,6 +168,8 @@ const AppRouter = ({
         return <MultisigComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
+      case Screen.SETTINGS_HELP:
+        return <HelpSubMenuComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:
         return <CreateAccountStepOneComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_TWO:

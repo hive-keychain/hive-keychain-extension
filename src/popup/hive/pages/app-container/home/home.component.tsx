@@ -1,4 +1,5 @@
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -249,6 +250,7 @@ const Home = ({
         displayWrongKeyPopup,
         vestingRoutesDifferences,
       )}
+      <TutorialPopupComponent />
     </div>
   );
 };

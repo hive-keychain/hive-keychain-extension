@@ -11,6 +11,22 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_tutorial_popup_title": {
+    "message": "Welcome to Keychain!",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_description": {
+    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_show_label": {
+    "message": "Show",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_skip_label": {
+    "message": "Skip",
+    "description": "tutorial popup"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"
@@ -2291,8 +2307,16 @@
     "message": "Close",
     "description": "general"
   },
+  "popup_html_help": {
+    "message": "Help",
+    "description": "Contact support"
+  },
   "popup_html_contact_support": {
     "message": "Contact support",
+    "description": "Contact support"
+  },
+  "popup_html_tutorial": {
+    "message": "Tutorial",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
