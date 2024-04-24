@@ -27,14 +27,17 @@
 }
 html {
   height: 100%;
+  width: 100%;
   scrollbar-width: 0;
   body {
     margin: 0px;
     height: 100%;
+    width: 100%;
     overflow: hidden;
     #root {
       display: block;
       height: 100%;
+      width: 100%;
     }
     .dialog {
       display: flex;

@@ -1,4 +1,4 @@
-import { ErrorMessage } from '@interfaces/errorMessage.interface';
+import { Message } from '@interfaces/message.interface';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import {
@@ -48,10 +48,7 @@ export const addKey =
   (
     privateKey: string,
     keyType: KeyType,
-    setErrorMessage: (
-      key: string,
-      params?: string[],
-    ) => ActionPayload<ErrorMessage>,
+    setErrorMessage: (key: string, params?: string[]) => ActionPayload<Message>,
   ): AppThunk =>
   async (dispatch, getState) => {
     const {

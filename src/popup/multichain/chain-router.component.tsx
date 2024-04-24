@@ -6,6 +6,7 @@ import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
 import { HiveAppComponent } from '@popup/hive/hive-app.component';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
+import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { Chain } from '@popup/multichain/multichain.context';
 import ChainSelector from '@popup/multichain/pages/chain-selector/chain-selector.component';
@@ -28,13 +29,14 @@ type Props = { screen: SignUpScreen; selectedChain?: Chain };
 const ChainRouter = ({
   screen,
   selectedChain,
-  errorMessage,
+  message,
   mk,
   setMk,
   setIsLedgerSupported,
   hasFinishedSignup,
   setHasFinishedSignup,
   currentPage,
+  resetMessage,
 }: Props & PropsFromRedux) => {
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -107,7 +109,12 @@ const ChainRouter = ({
   return (
     <>
       {renderChain()}
-      {errorMessage?.key && <MessageContainerComponent />}
+      {message?.key && (
+        <MessageContainerComponent
+          message={message}
+          onResetMessage={resetMessage}
+        />
+      )}
       {hasFinishedSignup === null && !currentPage && <SplashscreenComponent />}
     </>
   );
@@ -115,7 +122,7 @@ const ChainRouter = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    errorMessage: state.errorMessage,
+    message: state.message,
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
     currentPage: state.navigation.stack[0],
@@ -126,6 +133,7 @@ const connector = connect(mapStateToProps, {
   setIsLedgerSupported,
   setMk,
   setHasFinishedSignup,
+  resetMessage,
 });
 //TODO : setIsLedgerSupported : move out of appStatus with other global app statuses
 type PropsFromRedux = ConnectedProps<typeof connector> & ActionButton;

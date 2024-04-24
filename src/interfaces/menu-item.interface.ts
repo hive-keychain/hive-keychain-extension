@@ -7,4 +7,5 @@ export interface MenuItem {
   nextScreen?: Screen;
   action?(params?: any): any;
   rightPanel?: any;
+  experimental?: boolean;
 }

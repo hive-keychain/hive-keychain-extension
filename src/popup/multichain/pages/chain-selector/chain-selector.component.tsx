@@ -21,14 +21,14 @@ const ChainSelector = () => {
           }}>
           <SVGIcon icon={SVGIcons.BLOCKCHAIN_HIVE} />
           <div className="chain-name">Hive</div>
-        </div>
+        </div>{' '}
         <div
           className="chain-card"
           onClick={() => {
             setChain(Chain.EVM);
           }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_AVALANCHE} />
-          <div className="chain-name">Avalanche</div>
+          <SVGIcon icon={SVGIcons.BLOCKCHAIN_ETHEREUM} />
+          <div className="chain-name">Ethereum</div>
         </div>
         <div
           className="chain-card"
@@ -51,8 +51,8 @@ const ChainSelector = () => {
           onClick={() => {
             setChain(Chain.EVM);
           }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_ETHEREUM} />
-          <div className="chain-name">Ethereum</div>
+          <SVGIcon icon={SVGIcons.BLOCKCHAIN_AVALANCHE} />
+          <div className="chain-name">Avalanche</div>
         </div>
       </div>
     </div>
