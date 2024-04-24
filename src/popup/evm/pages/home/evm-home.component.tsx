@@ -10,9 +10,12 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import {
+  AccountValueType,
+  EstimatedAccountValueSectionComponent2,
+} from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
-import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { WalletInfoSectionComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
@@ -135,7 +138,16 @@ const Home = ({
         accountSelector={<EvmSelectAccountSectionComponent />}
       />
       <div className={'home-page-content'} onScroll={handleScroll}>
-        <EstimatedAccountValueSectionComponent />
+        <EstimatedAccountValueSectionComponent2
+          accountValues={{
+            [AccountValueType.DOLLARS]: `$${activeAccount
+              .reduce((a, b) => a + b.usdValue, 0)
+              .toFixed(2)}`,
+            [AccountValueType.TOKEN]: `${activeAccount
+              .reduce((a, b) => a + b.usdValue, 0)
+              .toFixed(2)} ETH`,
+          }}
+        />
         <WalletInfoSectionComponent />
       </div>
       <ActionsSectionComponent
