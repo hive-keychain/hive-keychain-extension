@@ -3931,8 +3931,8 @@
     "message": "We've preselected accounts with a non-null $1 balance.<br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
-  "html_popup_evm_create_new_wallet": {
-    "message": "Create Wallet",
+  "html_popup_evm_create_new_wallet_title": {
+    "message": "Save your secret seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_error_select_account": {
@@ -3950,5 +3950,49 @@
   "html_popup_deriving_wallets": {
     "message": "Deriving wallets",
     "description": "Deriving wallets"
+  },
+  "html_popup_mnemonic_overlay": {
+    "message": "Make sure nobody is looking",
+    "description": "text on overlay while creating evm account"
+  },
+  "html_popup_evm_create_wallet_caption": {
+    "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_tips": {
+    "message": "Tips",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips1": {
+    "message": "Save in a password manager",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips2": {
+    "message": "Store in a safe deposit box",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips3": {
+    "message": "Write down and store in multiple secret places",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_display_mnemonic": {
+    "message": "Display seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_hide_mnemonic": {
+    "message": "Hide seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copy_mnemonic": {
+    "message": "Copy seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copied_mnemonic": {
+    "message": "Seed phrase copied to clipboard",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copy_seed_phrase_error": {
+    "message": "You haven't copied your seed phrase, please copy it before continuing",
+    "description": "Error if seed phrase not copied"
   }
 }

@@ -164,6 +164,13 @@
   line-height: normal;
 }
 
+@mixin poppins200($fontSize) {
+  font-family: Poppins;
+  font-size: $fontSize;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 147%;
+}
 @mixin poppins300($fontSize) {
   font-family: Poppins;
   font-size: $fontSize;

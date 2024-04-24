@@ -21,6 +21,9 @@ export enum SVGIcons {
   CHECKBOX_CHECKED = 'checkbox/checked',
 
   EVM_SETUP_IMAGE = 'evm-setup/coin-img',
+  EVM_SETUP_DISPLAY_MNEMONIC = 'evm-setup/display-mnemonic',
+  EVM_SETUP_COPY_MNEMONIC = 'evm-setup/copy-mnemonic',
+  EVM_SETUP_HIDE_MNEMONIC = 'evm-setup/hide-mnemonic',
 
   FAVORITE_ACCOUNTS_EDIT = 'favorite-accounts/edit',
   FAVORITE_ACCOUNTS_DELETE = 'favorite-accounts/delete',
