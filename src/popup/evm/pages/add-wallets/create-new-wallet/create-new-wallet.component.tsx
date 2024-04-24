@@ -91,8 +91,9 @@ const CreateNewWallet = ({
             }`}>
             {wallet &&
               wallet.mnemonic?.phrase &&
-              wallet.mnemonic?.phrase.split(' ').map((word) => (
-                <div className="word-card" key={`word-card-${word}`}>
+              wallet.mnemonic?.phrase.split(' ').map((word, index) => (
+                <div className="word-card" key={`word-card-${index}`}>
+                  <span className="number">{index + 1}</span>
                   {word}
                 </div>
               ))}

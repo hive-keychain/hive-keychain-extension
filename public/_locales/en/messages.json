@@ -4264,6 +4264,18 @@
     "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
     "description": "evm account creation caption"
   },
+  "html_popup_evm_create_wallet_verification_caption": {
+    "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_verification_enter_word": {
+    "message": "Enter word #$1",
+    "description": "label of number to enter in verification page"
+  },
+  "html_popup_evm_create_wallet_verification_verify_word_error": {
+    "message": "Incorrect word",
+    "description": "Verify word error"
+  },
   "html_popup_evm_create_wallet_tips": {
     "message": "Tips",
     "description": "tips"
@@ -4299,6 +4311,18 @@
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
     "message": "You haven't copied your seed phrase, please copy it before continuing",
     "description": "Error if seed phrase not copied"
+  },
+  "html_popup_evm_create_wallet_safely_copied_seed": {
+    "message": "I have safely copied my seed phrase and saved it outside of Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_storage_understanding": {
+    "message": "I understand that Keychain should not be considered as the primary place of storage for my seed phrase",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_condition_missing": {
+    "message": "You need to accept the conditions before creating an account.",
+    "description": "checkbox content on create account page"
   },
   "notification_confirm_save": {
     "message": "Are you sure you want to save your changes ?",

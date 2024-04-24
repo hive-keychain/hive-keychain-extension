@@ -6,10 +6,15 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { HDNodeWallet } from 'ethers';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
+import { MathUtils } from 'src/utils/math.utils';
 
 const CreateNewWalletVerification = ({
   navigateToWithParams,
@@ -19,16 +24,46 @@ const CreateNewWalletVerification = ({
   mk,
   setEvmAccounts,
 }: PropsType) => {
+  const [hiddenWordIndexes, setHiddenWordIndexes] = useState<number[]>([]);
+  const [currentWord, setCurrentWord] = useState('');
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [words, setWords] = useState<string[]>([]);
+  const missingWordsInput = useRef<HTMLInputElement | null>(null);
+
+  const [allWordsVerified, setAllWordsVerified] = useState(false);
+  const [safelyCopied, setSafelyCopied] = useState(false);
+  const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
+    useState(false);
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: true,
     });
+
+    const randoms = MathUtils.generateOrderedRandomWithoutDuplicates(0, 11, 3);
+    setHiddenWordIndexes(randoms);
+    if (wallet.mnemonic) {
+      const displayedWords = wallet.mnemonic?.phrase
+        .split(' ')
+        .map((w, index) => {
+          return randoms.includes(index) ? '' : w;
+        });
+      setWords(displayedWords);
+    }
   }, []);
 
+  useEffect(() => {
+    if (missingWordsInput && missingWordsInput.current)
+      missingWordsInput.current.focus();
+  }, [missingWordsInput]);
+
   const submitForm = async (): Promise<void> => {
-    //TODO: Show error if comparison between real seed and the one typed by the user fails
+    if (!safelyCopied || !notPrimaryStorageUnderstanding) {
+      setErrorMessage('html_popup_evm_create_wallet_condition_missing');
+      return;
+    }
 
     const derivedWallet = wallet.deriveChild(0);
     const account: EvmAccount = {
@@ -40,28 +75,96 @@ const CreateNewWalletVerification = ({
     setEvmAccounts([account]);
   };
 
-  //TODO : Check design at https://www.figma.com/file/dNbTAJVEhzc6N9Vyc3KWO2/Hive-Keychain?type=design&node-id=2030-10481&mode=design&t=K3XrHi52olosr08f-0
-  //       Try changing the style a little bit because the designers literally copied it from MM, same for text.
-  //       The 1 2 3 step indicator is also not necessary and copied from MM.
-  //       We don't need both the word by word verification and the whole seed phrase. let's stick with the word by word (let's ask for 4 words randomly placed)
-  //       Add triple checkbox like on Hive account creation to make sure the user has properly saved the account
+  const verifyWord = () => {
+    const newWords = [...words];
+    if (
+      wallet.mnemonic?.phrase.split(' ')[
+        hiddenWordIndexes[currentWordIndex]
+      ] === currentWord
+    ) {
+      newWords[hiddenWordIndexes[currentWordIndex]] = currentWord;
+      setWords(newWords);
+      setCurrentWord('');
+      setCurrentWordIndex((old) => old + 1);
+      setAllWordsVerified(currentWordIndex >= hiddenWordIndexes.length - 1);
+    } else {
+      setErrorMessage(
+        'html_popup_evm_create_wallet_verification_verify_word_error',
+      );
+    }
+  };
 
   return (
     <div
       data-testid={`${Screen.CREATE_EVM_WALLET_VERIFICATION}-page`}
       className="create-new-wallet-verification-page">
-      <div
-        className="caption"
-        dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('html_popup_evm_create_new_wallet'),
-        }}></div>
-      <div className="form-container">
+      <FormContainer>
+        <div className="caption">
+          {chrome.i18n.getMessage(
+            'html_popup_evm_create_wallet_verification_caption',
+          )}
+        </div>
+        <div className="mnemonic-container">
+          <div className={`words-container`}>
+            {hiddenWordIndexes.length &&
+              words.length > 0 &&
+              words.map((word, index) => (
+                <div
+                  className={`word-card ${
+                    hiddenWordIndexes.includes(index) && word.length === 0
+                      ? 'empty'
+                      : ''
+                  } ${
+                    hiddenWordIndexes.includes(index) && word.length > 0
+                      ? 'filled'
+                      : ''
+                  } `}
+                  key={`word-card-${index}`}>
+                  <span className="number">{index + 1}</span>
+                  {word}
+                </div>
+              ))}
+          </div>
+        </div>
+        {!allWordsVerified && (
+          <InputComponent
+            ref={missingWordsInput}
+            value={currentWord}
+            onChange={setCurrentWord}
+            onEnterPress={() => verifyWord()}
+            label={chrome.i18n.getMessage(
+              'html_popup_evm_create_wallet_verification_enter_word',
+              [(hiddenWordIndexes[currentWordIndex] + 1).toString()],
+            )}
+            skipLabelTranslation
+            type={InputType.TEXT}
+          />
+        )}
+        {allWordsVerified && (
+          <>
+            <CheckboxPanelComponent
+              title="html_popup_evm_create_wallet_safely_copied_seed"
+              checked={safelyCopied}
+              onChange={() => {
+                setSafelyCopied(!safelyCopied);
+              }}></CheckboxPanelComponent>
+            <CheckboxPanelComponent
+              title="html_popup_evm_create_wallet_storage_understanding"
+              checked={notPrimaryStorageUnderstanding}
+              onChange={() => {
+                setNotPrimaryStorageUnderstanding(
+                  !notPrimaryStorageUnderstanding,
+                );
+              }}></CheckboxPanelComponent>
+          </>
+        )}
+        <div className="fill-space"></div>
         <ButtonComponent
           dataTestId="submit-button"
           label={'popup_html_submit'}
           onClick={submitForm}
         />
-      </div>
+      </FormContainer>
     </div>
   );
 };

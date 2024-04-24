@@ -3,16 +3,84 @@
   flex-direction: column;
   row-gap: 6px;
   height: 100%;
-  .caption {
-    @include caption();
-    font-size: a {
-      color: $red;
-    }
+  .title {
+    @include poppins200(18px);
+    color: var(--main-font-color);
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
   }
 
   .form-container {
     @include pageLayoutRowGap;
     row-gap: 8px;
-    margin-top: 16px;
+
+    .caption {
+      @include caption();
+    }
+
+    .mnemonic-container {
+      @include small-card();
+      position: relative;
+      padding: 8px;
+
+      .mnemonic-overlay {
+        background: black;
+        opacity: 0.7;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        z-index: 6;
+      }
+      .words-container {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        column-gap: 8px;
+        justify-content: center;
+        &.hidden {
+          filter: blur(3px);
+        }
+        .word-card {
+          @include small-card();
+          margin: 0;
+          color: var(--main-font-color);
+          padding: 4px 8px;
+          border-radius: 12px;
+          width: 90px;
+          justify-content: flex-start;
+          .number {
+            line-height: 16px;
+            border: 1px solid var(--main-font-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            font-size: 11px;
+            text-align: center;
+          }
+          &.empty {
+            border-color: $red;
+            .number {
+              border-color: $red;
+              color: $red;
+            }
+          }
+          &.filled {
+            border-color: var(--green-success);
+            .number {
+              border-color: var(--green-success);
+              color: var(--green-success);
+            }
+          }
+        }
+      }
+    }
   }
 }

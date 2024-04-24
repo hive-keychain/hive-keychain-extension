@@ -14,7 +14,7 @@
 
   .form-container {
     @include pageLayoutRowGap;
-    row-gap: 16px;
+    row-gap: 8px;
 
     .caption {
       @include caption();
@@ -35,6 +35,7 @@
     .mnemonic-container {
       @include small-card();
       position: relative;
+      padding: 8px;
 
       .mnemonic-overlay {
         background: black;
@@ -55,6 +56,8 @@
         flex-wrap: wrap;
         row-gap: 8px;
         column-gap: 8px;
+        justify-content: center;
+
         &.hidden {
           filter: blur(3px);
         }
@@ -64,6 +67,18 @@
           color: var(--main-font-color);
           padding: 4px 8px;
           border-radius: 12px;
+          width: 90px;
+          justify-content: flex-start;
+          .number {
+            line-height: 16px;
+            border: 1px solid var(--main-font-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            font-size: 11px;
+            text-align: center;
+          }
         }
       }
     }
