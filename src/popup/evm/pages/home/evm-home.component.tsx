@@ -1,5 +1,6 @@
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -7,6 +8,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
+import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -84,6 +86,10 @@ const Home = ({
     }
   };
 
+  const refresh = async () => {
+    await init();
+  };
+
   const renderPopup = (
     displayWhatsNew: boolean,
     surveyToDisplay: Survey | undefined,
@@ -119,6 +125,14 @@ const Home = ({
 
   return (
     <HomepageContainer datatestId={`${Screen.EVM_HOME}-page`}>
+      <TopBarComponent
+        onMenuButtonClicked={async () => {
+          navigateTo(Screen.SETTINGS_MAIN_PAGE);
+          return;
+        }}
+        onRefreshButtonClicked={refresh}
+        accountSelector={<div>Hello</div>}
+      />
       <div className={'home-page-content'} onScroll={handleScroll}>
         <EstimatedAccountValueSectionComponent />
         <WalletInfoSectionComponent />

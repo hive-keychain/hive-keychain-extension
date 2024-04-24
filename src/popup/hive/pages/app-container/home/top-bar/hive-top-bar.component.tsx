@@ -165,4 +165,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const TopBarComponent = connector(TopBar);
+export const HiveTopBarComponent = connector(TopBar);
