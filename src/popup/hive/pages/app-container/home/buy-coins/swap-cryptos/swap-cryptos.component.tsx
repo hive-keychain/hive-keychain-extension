@@ -1,6 +1,6 @@
-import { SwapCryptosCurrencyInfo } from '@interfaces/swap-cryptos.interface';
+import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
+import { SwapCryptosUtils } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
@@ -13,88 +13,153 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import Config from 'src/config';
+import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+const HIVE_OPTION_ITEM = {
+  label: 'HIVE',
+  subLabel: 'HIVE',
+  value: 'HIVE',
+  img: `/assets/images/wallet/hive-logo.svg`,
+} as OptionItem;
+
 const SwapCryptos = ({ price }: PropsFromRedux) => {
-  const [currencies, setCurrencies] = useState<SwapCryptosCurrencyInfo[]>([]);
+  //TODO cleanup
+  // const [currencies, setCurrencies] = useState<SwapCryptosCurrencyInfo[]>([]);
   const [amount, setAmount] = useState('');
-  const [fromCrypto, setFromCrypto] =
-    useState<OptionItem<SwapCryptosCurrencyInfo>>();
-  const [toCrypto, setToCrypto] =
-    useState<OptionItem<SwapCryptosCurrencyInfo>>();
+  const [startToken, setStartToken] = useState<OptionItem>();
+  const [exchangeRangeAmount, setExchangeRangeAmount] = useState({
+    min: 0,
+    max: 0,
+  });
+  const [endToken, setEndToken] = useState<OptionItem>();
+  const [startTokenListOptions, setStartTokenListOptions] = useState<
+    OptionItem[]
+  >([]);
+  const [endTokenListOptions, setEndTokenListOptions] = useState<OptionItem[]>(
+    [],
+  );
+  const [estimations, setEstimations] = useState<
+    SwapCryptosEstimationDisplay[]
+  >([]);
+
   useEffect(() => {
-    testInit();
+    init();
   }, []);
 
   //TODO important
-  //    - use swap as example.
-  //        -> create from, to lists.
-  //    - get estimate after amount is set.
-  //    - after getting that working, implement in classes.
-  const testInit = async () => {
+  //    - Implement in classes.
+  const init = async () => {
     try {
-      const baseUrl = Config.swapCryptos.stealthex.baseUrl;
-      let headers: { [key: string]: string } = {};
-      headers[`${Config.swapCryptos.stealthex.headerKey}`] =
-        Config.swapCryptos.stealthex.apiKey;
-      const hiveAvailablePairList = await axios.get(baseUrl + 'pairs/HIVE', {
-        headers,
-      });
-      console.log({ hiveAvailablePairList }); //TODO remove line
-      //Fetch info of only 10 while testing
-      //TODo bellow create interface of currencyInfo
-      let currencyOptions: SwapCryptosCurrencyInfo[] = [];
-      const tempHivePairsList = (hiveAvailablePairList.data as string[]).slice(
-        0,
-        10,
+      const currencyOptions = await SwapCryptosUtils.getPairedCurrencies(
+        'HIVE',
       );
-      for (const pairedSymbol of tempHivePairsList) {
-        const { data } = await axios.get(baseUrl + `currency/${pairedSymbol}`, {
-          headers,
-        });
-        if (data) {
-          const { symbol, image, name, network } = data;
-          currencyOptions.push({
-            symbol,
-            iconUrl: image,
-            name,
-            network,
-          });
-        }
-      }
-      setCurrencies(currencyOptions);
       console.log({ currencyOptions }); //TODO remove line
-      setFromCrypto({
-        value: currencyOptions[0],
-        label: currencyOptions[0].name,
-        subLabel: currencyOptions[0].symbol,
-        img: currencyOptions[0].iconUrl,
-      });
+      setStartToken(HIVE_OPTION_ITEM);
+      setStartTokenListOptions([HIVE_OPTION_ITEM]);
+      setEndTokenListOptions(
+        currencyOptions.map((i) => {
+          return {
+            value: i,
+            label: i.name,
+            subLabel: i.symbol,
+            img: i.iconUrl,
+          };
+        }),
+      );
     } catch (error) {
       Logger.log({ error });
     }
   };
 
+  const getMinAndMax = async (
+    startTokenSymbol: string,
+    endTokenSymbol: string,
+  ) => {
+    try {
+      const response = await SwapCryptosUtils.getMinAndMaxAmountAccepted(
+        startTokenSymbol,
+        endTokenSymbol,
+      );
+      console.log({ response }); //TODO remove line
+      if (response) {
+        setExchangeRangeAmount({ min: response.min_amount, max: 0 });
+      }
+    } catch (error) {
+      Logger.log({ error });
+    }
+  };
+
+  useEffect(() => {
+    if (endTokenListOptions.length !== 0 && endToken === undefined) {
+      setEndToken(endTokenListOptions[0]);
+    }
+  }, [endTokenListOptions]);
+
+  useEffect(() => {
+    if (startToken && endToken) {
+      getMinAndMax(startToken.subLabel!, endToken.subLabel!);
+    }
+  }, [startToken, endToken]);
+
+  useEffect(() => {
+    if (
+      parseFloat(amount) > 0 &&
+      parseFloat(amount) >= exchangeRangeAmount.min &&
+      startToken &&
+      endToken
+    ) {
+      getExchangeEstimate(amount, startToken, endToken);
+    }
+  }, [amount]);
+
+  const getExchangeEstimate = async (
+    amount: string,
+    startToken: OptionItem,
+    endToken: OptionItem,
+  ) => {
+    try {
+      const estimation = await SwapCryptosUtils.getExchangeEstimation(
+        amount,
+        startToken.subLabel!,
+        endToken.subLabel!,
+      );
+      setEstimations([estimation]);
+      console.log({ estimation });
+    } catch (error) {
+      Logger.log({ error });
+    }
+  };
+
+  const swapStartAndEnd = () => {
+    const tempStarTokentListOptions = [...startTokenListOptions];
+    const tempEndTokenListOptions = [...endTokenListOptions];
+    const tempStartToken = { ...startToken! };
+    const tempEndToken = { ...endToken! };
+    setEndToken(tempStartToken);
+    setStartToken(tempEndToken);
+    setStartTokenListOptions(tempEndTokenListOptions);
+    setEndTokenListOptions(tempStarTokentListOptions);
+    getExchangeEstimate(amount, tempEndToken, tempStartToken);
+  };
+
   return (
     <div className="swap-cryptos">
-      {currencies.length !== 0 && fromCrypto ? (
+      {startTokenListOptions.length !== 0 &&
+      startToken &&
+      endTokenListOptions.length !== 0 &&
+      endToken ? (
         <FormContainer>
           <div className="form-fields">
-            <div className="fiat-token">
+            <div className="start-token">
               <div className="inputs">
                 <ComplexeCustomSelect
                   //@ts-ignore
-                  selectedItem={fromCrypto}
-                  options={currencies.map((e) => ({
-                    label: e.name,
-                    value: e,
-                    img: e.iconUrl,
-                    subLabel: e.symbol,
-                  }))}
-                  setSelectedItem={setFromCrypto}
-                  label="crypto"
-                  filterable
+                  selectedItem={startToken}
+                  options={startTokenListOptions}
+                  setSelectedItem={setStartToken}
+                  label="token"
+                  filterable={startTokenListOptions.length > 1}
                 />
                 <InputComponent
                   type={InputType.NUMBER}
@@ -106,48 +171,48 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                 />
               </div>
             </div>
-            <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
+            {exchangeRangeAmount.min > 0 && (
+              <div className="min-amount">
+                Min Accepted:{' '}
+                {FormatUtils.formatCurrencyValue(exchangeRangeAmount.min)}
+              </div>
+            )}
+            <SVGIcon
+              icon={SVGIcons.SWAPS_SWITCH}
+              className="swap-icon"
+              onClick={swapStartAndEnd}
+            />
             <div className="end-token">
               <div className="inputs">
                 <ComplexeCustomSelect
-                  selectedItem={{
-                    label: 'HIVE',
-                    value: 'HIVE',
-                    img: `/assets/images/wallet/hive-logo.svg`,
-                  }}
-                  options={[
-                    {
-                      label: 'HIVE',
-                      value: 'HIVE',
-                      img: `/assets/images/wallet/hive-logo.svg`,
-                    },
-                  ]}
-                  setSelectedItem={() => {}}
+                  selectedItem={endToken}
+                  options={endTokenListOptions}
+                  setSelectedItem={setEndToken}
                   label="token"
+                  filterable={endTokenListOptions.length > 1}
                 />
               </div>
             </div>
-            {/* <div className="estimations">
+            <div className="estimations">
               <div className="quote-label-wrapper">
                 {estimations.length !== 0 && (
                   <span className="quote-label">
                     {chrome.i18n.getMessage('quotes')}
                   </span>
                 )}
-                {!!countdown && (
+                {/* {!!countdown && (
                   <span className="countdown">
                     {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
                   </span>
-                )}
+                )} */}
               </div>
               <div className="quotes">
                 {estimations.map((estimation) => {
                   const key =
                     estimation.name +
-                    estimation.paymentMethod.method +
-                    estimation.fiat +
-                    estimation.amount +
-                    estimation.crypto;
+                    estimation.from +
+                    estimation.to +
+                    estimation.amount;
                   return (
                     <div
                       className="quote"
@@ -156,7 +221,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                         window.open(estimation.link, '__blank');
                       }}>
                       <SVGIcon icon={estimation.logo} />
-                      <span className="method">
+                      {/* <span className="method">
                         <SVGIcon
                           key={key}
                           icon={estimation.paymentMethod.icon}
@@ -165,15 +230,12 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                           tooltipDelayShow={1000}
                           tooltipMessage={estimation.paymentMethod.title}
                         />
-                      </span>
+                      </span> */}
                       <div className="receive">
-                        <span>{estimation.estimation}</span>
+                        <span>{estimation.to}</span>
                         <span className="amount">
-                          {CurrencyPricesUtils.getTokenUSDPrice(
-                            estimation.estimation + '',
-                            'HIVE',
-                            price,
-                            [],
+                          {FormatUtils.formatCurrencyValue(
+                            estimation.estimation,
                           )}
                         </span>
                       </div>
@@ -184,7 +246,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                   );
                 })}
               </div>
-            </div> */}
+            </div>
           </div>
         </FormContainer>
       ) : (

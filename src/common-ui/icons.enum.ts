@@ -187,4 +187,5 @@ export enum SVGIcons {
   PROBIT = 'probit',
   TRANSAK = 'transak',
   UPBIT = 'upbit',
+  STEALTHEX = 'stealthex',
 }

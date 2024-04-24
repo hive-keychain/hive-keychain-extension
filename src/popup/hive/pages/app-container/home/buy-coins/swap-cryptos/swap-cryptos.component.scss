@@ -21,7 +21,7 @@
         width: 20px !important;
         border-radius: unset !important;
       }
-      .fiat-token {
+      .start-token {
         display: flex;
         flex-direction: column;
 
@@ -32,6 +32,15 @@
           column-gap: 12px;
         }
       }
+      .end-token {
+        display: flex;
+        flex-direction: column;
+      }
+      .min-amount {
+        @include poppins500(12px);
+        color: var(--main-font-color);
+        text-align: center;
+      }
     }
   }
 
@@ -39,5 +48,63 @@
     align-self: center;
     margin-top: 10px;
     margin-bottom: -10px;
+  }
+
+  .quote-label-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    align-items: center;
+
+    .countdown {
+      width: auto;
+      font-size: 13px;
+      color: var(--main-font-color);
+    }
+
+    .quote-label {
+      @include input-label;
+      width: auto;
+      margin-bottom: 0;
+    }
+  }
+  .quotes {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    .quote {
+      border: solid 1px var(--card-border);
+      border-radius: 15px;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 3px 15px;
+
+      color: var(--main-font-color);
+      cursor: pointer;
+      .amount {
+        display: flex;
+        flex-direction: column;
+      }
+      .svg-icon {
+        width: 100px;
+        svg {
+          width: 100px;
+        }
+      }
+      .receive {
+        width: 100px;
+        text-align: right;
+      }
+      .chevron {
+        width: 20px;
+        svg {
+          width: 20px;
+        }
+      }
+    }
   }
 }
