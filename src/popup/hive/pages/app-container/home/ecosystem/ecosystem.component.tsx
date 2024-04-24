@@ -8,7 +8,7 @@ import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';

@@ -6,8 +6,8 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';

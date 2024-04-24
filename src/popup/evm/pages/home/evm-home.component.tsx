@@ -6,6 +6,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -117,22 +118,17 @@ const Home = ({
   };
 
   return (
-    <div className={'home-page-evm'} data-testid={`${Screen.EVM_HOME}-page`}>
-      {
-        <>
-          <div className={'home-page-content'} onScroll={handleScroll}>
-            <EstimatedAccountValueSectionComponent />
-            <WalletInfoSectionComponent />
-          </div>
-          <ActionsSectionComponent
-            additionalClass={showBottomBar ? undefined : 'down'}
-          />
-          <ProposalVotingSectionComponent />
-        </>
-      }
-
+    <HomepageContainer datatestId={`${Screen.EVM_HOME}-page`}>
+      <div className={'home-page-content'} onScroll={handleScroll}>
+        <EstimatedAccountValueSectionComponent />
+        <WalletInfoSectionComponent />
+      </div>
+      <ActionsSectionComponent
+        additionalClass={showBottomBar ? undefined : 'down'}
+      />
+      <ProposalVotingSectionComponent />
       {renderPopup(displayWhatsNew, surveyToDisplay)}
-    </div>
+    </HomepageContainer>
   );
 };
 

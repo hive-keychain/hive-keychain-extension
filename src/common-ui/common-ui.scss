@@ -22,9 +22,10 @@
 @import './service-unavailable-page/service-unavailable-page.component.scss';
 @import './custom-select/custom-select.component.scss';
 @import './error-fallback/error-fallback.component.scss';
-@import './form-container/form-container.component.scss';
 @import './tabs/tabs.component.scss';
 @import './popup-container/popup-container.component.scss';
 @import './preloaded-image/preloaded-image.component.scss';
 @import './message-container/message-container.component.scss';
 @import './text-area/textarea.component.scss';
+@import './_containers/form-container/form-container.component.scss';
+@import './_containers/homepage-container/homepage-container.component.scss';

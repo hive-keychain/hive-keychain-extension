@@ -17,6 +17,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
   ButtonType,
@@ -29,7 +30,6 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';

@@ -1,4 +1,5 @@
 import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
+import { HiveHomeComponent } from '@popup/hive/pages/app-container/home/hive-home.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
@@ -22,7 +23,6 @@ import { PendingConersionPageComponent } from 'src/popup/hive/pages/app-containe
 import { DelegationsComponent } from 'src/popup/hive/pages/app-container/home/delegations/delegations.component';
 import { IncomingOutgoingPageComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from 'src/popup/hive/pages/app-container/home/governance/governance.component';
-import { HomeComponent } from 'src/popup/hive/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from 'src/popup/hive/pages/app-container/home/power-up-down/power-up-down.component';
 import { IncomingOutgoingRcPageComponent } from 'src/popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
 import { RcDelegationsComponent } from 'src/popup/hive/pages/app-container/home/rc-delegations/rc-delegations.component';
@@ -66,7 +66,7 @@ const AppRouter = ({
   const renderAccountPage = (page: Screen) => {
     switch (page) {
       case Screen.HOME_PAGE:
-        return <HomeComponent />;
+        return <HiveHomeComponent />;
       case Screen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;
       case Screen.TRANSFER_FUND_PAGE:

@@ -11,9 +11,9 @@ import { RootState } from '@popup/multichain/store';
 import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { Screen } from 'src/reference-data/screen.enum';
 const ImportWalletConfirmation = ({

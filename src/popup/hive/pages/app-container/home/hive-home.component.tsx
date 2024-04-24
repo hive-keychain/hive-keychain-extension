@@ -9,6 +9,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -224,7 +225,7 @@ const Home = ({
   };
 
   return (
-    <div className={'home-page'} data-testid={`${Screen.HOME_PAGE}-page`}>
+    <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       {activeAccount &&
         activeAccount.name &&
         activeRpc &&
@@ -251,7 +252,7 @@ const Home = ({
         vestingRoutesDifferences,
       )}
       <TutorialPopupComponent />
-    </div>
+    </HomepageContainer>
   );
 };
 
@@ -272,4 +273,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const HomeComponent = connector(Home);
+export const HiveHomeComponent = connector(Home);
