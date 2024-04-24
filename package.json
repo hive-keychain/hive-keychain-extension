@@ -68,6 +68,7 @@
     "locate-path": "7.1.1",
     "lodash": "^4.17.21",
     "md5": "2.3.0",
+    "minidenticons": "^2.0.0",
     "moment": "2.29.4",
     "moralis": "^2.25.4",
     "node-fetch": "3.2.10",

@@ -1,4 +1,5 @@
 import { KeyType } from '@interfaces/keys.interface';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
@@ -16,7 +17,6 @@ import {
   CheckboxPanelComponent,
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 
 const NotificationConfigPage = ({
   activeAccount,

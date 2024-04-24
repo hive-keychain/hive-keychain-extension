@@ -4,6 +4,7 @@ import {
   ConnectDisconnectMessage,
   MultisigAccountConfig,
 } from '@interfaces/multisig.interface';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
@@ -15,7 +16,6 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 
 const defaultConfig: MultisigAccountConfig = {

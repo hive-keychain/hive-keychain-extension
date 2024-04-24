@@ -1,6 +1,7 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
 import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -14,7 +15,6 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';

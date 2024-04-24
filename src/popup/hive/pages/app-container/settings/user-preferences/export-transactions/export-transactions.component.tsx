@@ -1,3 +1,4 @@
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import {
   addToLoadingList,
@@ -12,7 +13,6 @@ import { FormContainer } from 'src/common-ui/_containers/form-container/form-con
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
 import { RootState } from 'src/popup/multichain/store';

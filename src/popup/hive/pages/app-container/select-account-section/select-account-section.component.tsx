@@ -1,5 +1,6 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
+import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
@@ -14,7 +15,6 @@ import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { SelectAccountSectionItemComponent } from 'src/common-ui/select-account-section/select-account-section-item.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';

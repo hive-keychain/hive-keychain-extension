@@ -1,4 +1,5 @@
 import { NoConfirm, NoConfirmWebsite } from '@interfaces/no-confirm.interface';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -8,7 +9,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
