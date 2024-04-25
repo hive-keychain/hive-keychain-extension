@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChainSelectorComponent } from 'src/common-ui/chain-selector/chain-selector.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -37,6 +38,7 @@ export const TopBarComponent = ({
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
       />
+      <ChainSelectorComponent />
       {extraComponents}
       <div className="spacer"></div>
       {accountSelector}

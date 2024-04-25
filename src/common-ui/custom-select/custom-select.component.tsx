@@ -24,6 +24,7 @@ export interface CustomSelectProps<T> {
   background?: 'white';
   onDelete?: (...params: any) => void;
   filterable?: boolean;
+  additionalClassname?: string;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -113,7 +114,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   };
 
   return (
-    <div className="custom-select-container">
+    <div
+      className={`custom-select-container ${
+        itemProps.additionalClassname ?? ''
+      }`}>
       {itemProps.label && (
         <div className="label">
           {itemProps.skipLabelTranslation
