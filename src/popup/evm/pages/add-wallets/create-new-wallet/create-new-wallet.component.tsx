@@ -27,7 +27,7 @@ const CreateNewWallet = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_setup',
+      title: 'popup_html_create_new_wallet_create_seed',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: true,
     });
@@ -61,23 +61,7 @@ const CreateNewWallet = ({
       </div>
       <div className="form-container">
         <div className="caption">
-          {chrome.i18n.getMessage('html_popup_evm_create_wallet_caption')}
-        </div>
-        <div className="tips">
-          <div className="tips-title">
-            {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips')}
-          </div>
-          <ul>
-            <li>
-              {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips1')}
-            </li>
-            <li>
-              {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips2')}
-            </li>
-            <li>
-              {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips3')}
-            </li>
-          </ul>
+          {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips')}
         </div>
         <div className="mnemonic-container">
           {!isMnemonicDisplayed && (

@@ -92,7 +92,7 @@ const ImportWalletConfirmation = ({
         <div className="fill-space"></div>
         <ButtonComponent
           dataTestId="submit-button"
-          label={'html_popup_evm_create_new_wallet'}
+          label={'html_popup_evm_create_new_wallet_import'}
           onClick={submitForm}
         />
       </FormContainer>

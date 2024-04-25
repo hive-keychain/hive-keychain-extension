@@ -5,6 +5,9 @@
   padding: 16px 24px;
   align-items: center;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
   .title {
     user-select: none;
     flex: 1;
@@ -13,9 +16,10 @@
     height: 28px;
     overflow: hidden;
     @include poppins500(20px);
-    left: 50%;
-    transform: translate(-50%);
     position: absolute;
+    width: 100%;
+    text-align: center;
+    left: 0;
   }
 
   .icon-button {

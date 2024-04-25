@@ -11,6 +11,6 @@ export const getEvmActiveAccount =
     });
     dispatch({
       type: EvmActionType.GET_ACTIVE_ACCOUNT,
-      payload: response.response.result,
+      payload: response.response.result.sort((a, b) => b.usdValue - a.usdValue),
     });
   };

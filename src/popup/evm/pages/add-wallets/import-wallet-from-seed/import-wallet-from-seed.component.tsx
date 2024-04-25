@@ -23,7 +23,7 @@ const ImportWalletFromSeed = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_setup',
+      title: 'popup_html_import_wallet_from_seed',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: !hasFinishedSignup,
     });

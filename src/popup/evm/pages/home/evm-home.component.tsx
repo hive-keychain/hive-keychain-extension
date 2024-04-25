@@ -24,6 +24,7 @@ import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interfa
 import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
@@ -142,10 +143,12 @@ const Home = ({
       <div className={'home-page-content'} onScroll={handleScroll}>
         <EstimatedAccountValueSectionComponent2
           accountValues={{
-            [AccountValueType.DOLLARS]: `$${activeAccount
-              .reduce((a, b) => a + b.usdValue, 0)
-              .toFixed(2)}`,
-            [AccountValueType.TOKEN]: `12.00000000 ETH`,
+            [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
+              activeAccount.reduce((a, b) => a + b.usdValue, 0).toString(),
+            )}`,
+            [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
+              (12.0).toString(),
+            )} ETH`,
           }}
         />
         <EvmWalletInfoSectionComponent evmTokens={activeAccount} />

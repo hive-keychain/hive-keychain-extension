@@ -14,7 +14,6 @@
 
   .form-container {
     @include pageLayoutRowGap;
-    row-gap: 8px;
 
     .caption {
       @include caption();
@@ -22,21 +21,14 @@
 
     .tips {
       color: var(--main-font-color);
-      .tips-title {
-        @include poppins500(15px);
-      }
-      ul {
-        @include poppins400(13px);
-        margin-block-start: 0;
-        margin-block-end: 0;
-      }
+      @include poppins400(14px);
     }
-
     .mnemonic-container {
       @include small-card();
       position: relative;
       padding: 8px;
-
+      margin: 0;
+      margin-top: 24px;
       .mnemonic-overlay {
         background: black;
         opacity: 0.7;
@@ -67,7 +59,7 @@
           color: var(--main-font-color);
           padding: 4px 8px;
           border-radius: 12px;
-          width: 90px;
+          width: 100px;
           justify-content: flex-start;
           .number {
             line-height: 16px;

@@ -4205,7 +4205,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Import your EVM wallet using the seed phrase you obtained when originally creating your account.<br/>This seed phrase is a 12-words that allows you to recover your accounts.<br/>Make sure to always keep it safe offline.",
+    "message": "Use your 12-words seed phrase to import your accounts into Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
@@ -4236,9 +4236,21 @@
     "message": "We've preselected accounts with a non-null $1 balance.<br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
+  "popup_html_import_wallet_from_seed": {
+    "message": "Import from seed",
+    "description": "Import wallet from seed phrase title"
+  },
+  "popup_html_create_new_wallet_create_seed": {
+    "message": "Create seed phrase",
+    "description": "Create seed phrase title"
+  },
   "html_popup_evm_create_new_wallet_title": {
     "message": "Save your secret seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_create_new_wallet_import": {
+    "message": "Import",
+    "description": "import accounts"
   },
   "html_popup_evm_error_select_account": {
     "message": "Please select at least one account",
@@ -4264,8 +4276,12 @@
     "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
     "description": "evm account creation caption"
   },
+  "html_popup_evm_create_wallet_verification_title": {
+    "message": "Seed phrase verification",
+    "description": "evm account creation caption"
+  },
   "html_popup_evm_create_wallet_verification_caption": {
-    "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
+    "message": "Enter your words one by one. Between each word, press Enter to verify it.",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_enter_word": {
@@ -4277,7 +4293,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Tips",
+    "message": "Make sure to store your seed phrase in multiple places and offline. If this seed phrase is lost, you won't be able to recover your account",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {

@@ -37,7 +37,7 @@ const CreateNewWalletVerification = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_setup',
+      title: 'html_popup_evm_create_wallet_verification_title',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: true,
     });
