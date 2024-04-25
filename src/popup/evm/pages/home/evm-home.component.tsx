@@ -1,5 +1,6 @@
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/select-account-section/select-account-section.component';
+import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -14,10 +15,10 @@ import {
   AccountValueType,
   EstimatedAccountValueSectionComponent2,
 } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
+import { EvmWalletInfoSectionComponent } from 'src/common-ui/wallet-info-section/wallet-info-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
-import { WalletInfoSectionComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
 import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
@@ -51,16 +52,17 @@ const Home = ({
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
   };
-  console.log('accounts', accounts);
-  console.log('active account tokens', activeAccount);
-  console.log(
-    'total value',
-    activeAccount.reduce((a, b) => a + b.usdValue, 0),
-  );
   const init = async () => {
+    await MoralisUtils.initialise();
     // TODO : this should actually be called before mobing to the homepage
     // getEvmActiveAccount('0x1', accounts[0].wallet.address);
     // TODO : remove  hardcoded wallet address
+    console.log('accounts', accounts);
+    console.log('active account tokens', activeAccount);
+    console.log(
+      'total value',
+      activeAccount.reduce((a, b) => a + b.usdValue, 0),
+    );
     getEvmActiveAccount('0x1', '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58');
   };
 
@@ -91,7 +93,7 @@ const Home = ({
   };
 
   const refresh = async () => {
-    await init();
+    getEvmActiveAccount('0x1', '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58');
   };
 
   const renderPopup = (
@@ -143,12 +145,10 @@ const Home = ({
             [AccountValueType.DOLLARS]: `$${activeAccount
               .reduce((a, b) => a + b.usdValue, 0)
               .toFixed(2)}`,
-            [AccountValueType.TOKEN]: `${activeAccount
-              .reduce((a, b) => a + b.usdValue, 0)
-              .toFixed(2)} ETH`,
+            [AccountValueType.TOKEN]: `12.00000000 ETH`,
           }}
         />
-        <WalletInfoSectionComponent />
+        <EvmWalletInfoSectionComponent evmTokens={activeAccount} />
       </div>
       <ActionsSectionComponent
         additionalClass={showBottomBar ? undefined : 'down'}

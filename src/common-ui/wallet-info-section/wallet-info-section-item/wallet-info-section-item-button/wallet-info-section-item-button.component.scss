@@ -1,0 +1,35 @@
+.wallet-action-button {
+  display: flex;
+  column-gap: 8px;
+  padding: 8px 12px;
+  width: 150px;
+  min-height: 58px;
+  border-radius: 13px;
+  border: 1px solid var(--wallet-card-darker-border);
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  transition: 0.225s linear;
+  .title {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+  svg path:not(.savings) {
+    stroke: $red;
+  }
+  svg .savings {
+    fill: $red;
+  }
+  &:hover {
+    background: $red;
+    .title {
+      color: white;
+    }
+    svg path:not(.savings) {
+      stroke: white;
+    }
+    svg .savings {
+      fill: white;
+    }
+  }
+}

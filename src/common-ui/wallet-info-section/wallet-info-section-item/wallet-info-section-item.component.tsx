@@ -151,21 +151,13 @@ const walletInfoSectionItem = ({
           });
       }}>
       <div className="information-panel">
-        {typeof icon === 'string' && (
-          <PreloadedImage
-            src={icon}
-            className="currency-icon"
-            addBackground
-            useDefaultSVG={icon}
-          />
-        )}
-        {typeof icon !== 'string' && !tokenInfo && (
+        {!tokenInfo && (
           <SVGIcon
             icon={icon}
             className={`currency-icon ${addBackground ? 'add-background' : ''}`}
           />
         )}
-        {typeof icon !== 'string' && tokenInfo && (
+        {tokenInfo && (
           <PreloadedImage
             src={tokenInfo?.metadata.icon}
             className="currency-icon"
