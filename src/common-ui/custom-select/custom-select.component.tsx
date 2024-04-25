@@ -98,7 +98,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         )}
         {filteredOptions.map((option, index) => (
           <CustomSelectItemComponent
-            key={`option-${option.label}`}
+            key={`option-${option.label}-${index}`}
             isLast={props.options.length === index}
             item={option}
             isSelected={option.value === itemProps.selectedItem.value}

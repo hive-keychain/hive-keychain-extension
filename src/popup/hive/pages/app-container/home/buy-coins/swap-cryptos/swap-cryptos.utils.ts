@@ -1,9 +1,9 @@
 import {
   SwapCryptos,
-  SwapCryptosCurrencyInfo,
   SwapCryptosEstimationDisplay,
 } from '@interfaces/swap-cryptos.interface';
 import axios from 'axios';
+import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 
@@ -22,34 +22,42 @@ const buildUrl = (route: string) => {
   return `${baseUrl}${route}`;
 };
 
-const getPairedCurrencies = async (pairedToSymbol: string) => {
-  let currencyOptions: SwapCryptosCurrencyInfo[] = [];
-  const hiveAvailablePairList = await axios.get(
+const getSupportedCurrenciesList = async () => {
+  const allCurrencies = await axios.get(buildUrl('currency'), {
+    headers,
+  });
+  return allCurrencies.data;
+};
+
+//TODo bellow check if needed at all
+const getSupportedCurrenciesListCustomFee = async () => {
+  const allCurrencies = await axios.get(buildUrl('fee/currency'), {
+    headers,
+  });
+  return allCurrencies.data;
+};
+
+const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
+  const supportedCurrenciesList =
+    await SwapCryptosUtils.getSupportedCurrenciesList();
+  let pairedCurrencyOptionsList: OptionItem[] = [];
+  const { data: hiveAvailablePairList } = await axios.get(
     buildUrl(`pairs/${pairedToSymbol}`),
     {
       headers,
     },
   );
-  //TODO for now just using first 20.
-  const tempHivePairsList = (hiveAvailablePairList.data as string[]).slice(
-    0,
-    20,
-  );
-  for (const pairedSymbol of tempHivePairsList) {
-    const { data } = await axios.get(buildUrl(`currency/${pairedSymbol}`), {
-      headers,
-    });
-    if (data) {
-      const { symbol, image, name, network } = data;
-      currencyOptions.push({
-        symbol,
-        iconUrl: image,
-        name,
-        network,
+  supportedCurrenciesList.map((x: any) => {
+    if (hiveAvailablePairList.includes(x.symbol)) {
+      pairedCurrencyOptionsList.push({
+        label: x.name,
+        subLabel: x.symbol,
+        img: x.image,
+        value: x,
       });
     }
-  }
-  return currencyOptions;
+  });
+  return pairedCurrencyOptionsList;
 };
 
 const getMinAndMaxAmountAccepted = async (
@@ -93,5 +101,7 @@ const getExchangeEstimation = async (
 export const SwapCryptosUtils = {
   getExchangeEstimation,
   getMinAndMaxAmountAccepted,
-  getPairedCurrencies,
+  getPairedCurrencyOptionItemList,
+  getSupportedCurrenciesList,
+  getSupportedCurrenciesListCustomFee,
 };

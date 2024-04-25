@@ -24,8 +24,6 @@ const HIVE_OPTION_ITEM = {
 } as OptionItem;
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
-  //TODO cleanup
-  // const [currencies, setCurrencies] = useState<SwapCryptosCurrencyInfo[]>([]);
   const [amount, setAmount] = useState('');
   const [startToken, setStartToken] = useState<OptionItem>();
   const [exchangeRangeAmount, setExchangeRangeAmount] = useState({
@@ -51,22 +49,47 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   //    - Implement in classes.
   const init = async () => {
     try {
-      const currencyOptions = await SwapCryptosUtils.getPairedCurrencies(
-        'HIVE',
-      );
-      console.log({ currencyOptions }); //TODO remove line
+      //TODO here
+      //  - get supported list
+      //  - get HIVE PAIR data
+      //  - filter.
+      // const supportedCurrenciesList =
+      //   await SwapCryptosUtils.getSupportedCurrenciesList();
+      // const supportedCurrenciesListCustomFee =
+      //   await SwapCryptosUtils.getSupportedCurrenciesListCustomFee();
+      // if (
+      //   Array.isArray(supportedCurrenciesList) &&
+      //   Array.isArray(supportedCurrenciesListCustomFee)
+      // ) {
+      //   let symDifference = supportedCurrenciesList
+      //     .filter(
+      //       (x) =>
+      //         !supportedCurrenciesListCustomFee.find(
+      //           (x1) => x1.symbol === x.symbol,
+      //         ),
+      //     )
+      //     .concat(
+      //       supportedCurrenciesListCustomFee.filter(
+      //         (x) =>
+      //           !supportedCurrenciesList.find((x1) => x1.symbol === x.symbol),
+      //       ),
+      //     );
+      //   console.log({
+      //     supportedCurrenciesList,
+      //     supportedCurrenciesListCustomFee,
+      //     symDifference,
+      //   }); //TODO remove line
+      // }
+      // const currencyOptions = await SwapCryptosUtils.getPairedCurrencies(
+      //   'HIVE',
+      // );
+
+      const pairedCurrencyOptionsList =
+        await SwapCryptosUtils.getPairedCurrencyOptionItemList('HIVE');
+      console.log({ pairedCurrencyOptionsList }); //TODO remove line
       setStartToken(HIVE_OPTION_ITEM);
       setStartTokenListOptions([HIVE_OPTION_ITEM]);
-      setEndTokenListOptions(
-        currencyOptions.map((i) => {
-          return {
-            value: i,
-            label: i.name,
-            subLabel: i.symbol,
-            img: i.iconUrl,
-          };
-        }),
-      );
+      setEndTokenListOptions(pairedCurrencyOptionsList);
     } catch (error) {
       Logger.log({ error });
     }
@@ -125,7 +148,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         endToken.subLabel!,
       );
       setEstimations([estimation]);
-      console.log({ estimation });
+      console.log({ estimation }); //TODO remove line
     } catch (error) {
       Logger.log({ error });
     }
@@ -220,7 +243,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                       onClick={() => {
                         window.open(estimation.link, '__blank');
                       }}>
-                      <SVGIcon icon={estimation.logo} />
+                      <SVGIcon icon={`buy/${estimation.logo}` as SVGIcons} />
                       {/* <span className="method">
                         <SVGIcon
                           key={key}
@@ -268,3 +291,6 @@ const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SwapCryptosComponent = connector(SwapCryptos);
+function buildUrl(arg0: string): string {
+  throw new Error('Function not implemented.');
+}
