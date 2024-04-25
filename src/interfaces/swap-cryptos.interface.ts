@@ -4,6 +4,8 @@ export interface SwapCryptosConfig {
   baseUrl: string;
   apiKey: string;
   headerKey: string;
+  newExchangeBaseUrl: string;
+  refId: string;
 }
 
 export interface SwapCryptosCurrencyInfo {

@@ -98,7 +98,14 @@
       }
       .receive {
         width: 100px;
-        text-align: right;
+        text-align: center;
+        .icon-label {
+          display: flex;
+          flex-direction: row;
+          column-gap: 4px;
+          justify-content: center;
+          align-items: center;
+        }
       }
       .chevron {
         width: 20px;

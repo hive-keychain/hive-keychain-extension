@@ -11,6 +11,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -24,6 +25,11 @@ const HIVE_OPTION_ITEM = {
 } as OptionItem;
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
+  const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
+  const [
+    pairedCurrencyOptionsInitialList,
+    setPairedCurrencyOptionsInitialList,
+  ] = useState<OptionItem[]>([]);
   const [amount, setAmount] = useState('');
   const [startToken, setStartToken] = useState<OptionItem>();
   const [exchangeRangeAmount, setExchangeRangeAmount] = useState({
@@ -49,44 +55,10 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   //    - Implement in classes.
   const init = async () => {
     try {
-      //TODO here
-      //  - get supported list
-      //  - get HIVE PAIR data
-      //  - filter.
-      // const supportedCurrenciesList =
-      //   await SwapCryptosUtils.getSupportedCurrenciesList();
-      // const supportedCurrenciesListCustomFee =
-      //   await SwapCryptosUtils.getSupportedCurrenciesListCustomFee();
-      // if (
-      //   Array.isArray(supportedCurrenciesList) &&
-      //   Array.isArray(supportedCurrenciesListCustomFee)
-      // ) {
-      //   let symDifference = supportedCurrenciesList
-      //     .filter(
-      //       (x) =>
-      //         !supportedCurrenciesListCustomFee.find(
-      //           (x1) => x1.symbol === x.symbol,
-      //         ),
-      //     )
-      //     .concat(
-      //       supportedCurrenciesListCustomFee.filter(
-      //         (x) =>
-      //           !supportedCurrenciesList.find((x1) => x1.symbol === x.symbol),
-      //       ),
-      //     );
-      //   console.log({
-      //     supportedCurrenciesList,
-      //     supportedCurrenciesListCustomFee,
-      //     symDifference,
-      //   }); //TODO remove line
-      // }
-      // const currencyOptions = await SwapCryptosUtils.getPairedCurrencies(
-      //   'HIVE',
-      // );
-
       const pairedCurrencyOptionsList =
         await SwapCryptosUtils.getPairedCurrencyOptionItemList('HIVE');
       console.log({ pairedCurrencyOptionsList }); //TODO remove line
+      setPairedCurrencyOptionsInitialList(pairedCurrencyOptionsList);
       setStartToken(HIVE_OPTION_ITEM);
       setStartTokenListOptions([HIVE_OPTION_ITEM]);
       setEndTokenListOptions(pairedCurrencyOptionsList);
@@ -104,10 +76,10 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         startTokenSymbol,
         endTokenSymbol,
       );
-      console.log({ response }); //TODO remove line
       if (response) {
         setExchangeRangeAmount({ min: response.min_amount, max: 0 });
       }
+      setLoadingMinMaxAccepted(false);
     } catch (error) {
       Logger.log({ error });
     }
@@ -121,6 +93,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
 
   useEffect(() => {
     if (startToken && endToken) {
+      setLoadingMinMaxAccepted(true);
+      console.log('getting minMax'); //TODO remove line
       getMinAndMax(startToken.subLabel!, endToken.subLabel!);
     }
   }, [startToken, endToken]);
@@ -129,12 +103,13 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     if (
       parseFloat(amount) > 0 &&
       parseFloat(amount) >= exchangeRangeAmount.min &&
+      !loadingMinMaxAccepted &&
       startToken &&
       endToken
     ) {
       getExchangeEstimate(amount, startToken, endToken);
     }
-  }, [amount]);
+  }, [amount, endToken, loadingMinMaxAccepted]);
 
   const getExchangeEstimate = async (
     amount: string,
@@ -148,7 +123,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         endToken.subLabel!,
       );
       setEstimations([estimation]);
-      console.log({ estimation }); //TODO remove line
     } catch (error) {
       Logger.log({ error });
     }
@@ -163,7 +137,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     setStartToken(tempEndToken);
     setStartTokenListOptions(tempEndTokenListOptions);
     setEndTokenListOptions(tempStarTokentListOptions);
-    getExchangeEstimate(amount, tempEndToken, tempStartToken);
+    setEstimations([]);
+    setAmount('');
   };
 
   return (
@@ -236,6 +211,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                     estimation.from +
                     estimation.to +
                     estimation.amount;
+                  console.log({ l: estimation.link }); //TODO remove line
                   return (
                     <div
                       className="quote"
@@ -244,18 +220,21 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                         window.open(estimation.link, '__blank');
                       }}>
                       <SVGIcon icon={`buy/${estimation.logo}` as SVGIcons} />
-                      {/* <span className="method">
-                        <SVGIcon
-                          key={key}
-                          icon={estimation.paymentMethod.icon}
-                          skipTooltipTranslation
-                          tooltipPosition="bottom"
-                          tooltipDelayShow={1000}
-                          tooltipMessage={estimation.paymentMethod.title}
-                        />
-                      </span> */}
                       <div className="receive">
-                        <span>{estimation.to}</span>
+                        <div className="icon-label">
+                          <PreloadedImage
+                            className="left-image"
+                            src={
+                              estimation.to === 'HIVE'
+                                ? HIVE_OPTION_ITEM.img!
+                                : pairedCurrencyOptionsInitialList.find(
+                                    (i) => i.subLabel === estimation.to,
+                                  )?.img!
+                            }
+                            alt={`side-icon-${estimation.to}`}
+                          />
+                          <span>{estimation.to}</span>
+                        </div>
                         <span className="amount">
                           {FormatUtils.formatCurrencyValue(
                             estimation.estimation,

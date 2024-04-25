@@ -29,17 +29,11 @@ const getSupportedCurrenciesList = async () => {
   return allCurrencies.data;
 };
 
-//TODo bellow check if needed at all
-const getSupportedCurrenciesListCustomFee = async () => {
-  const allCurrencies = await axios.get(buildUrl('fee/currency'), {
-    headers,
-  });
-  return allCurrencies.data;
-};
-
 const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
+  //get token info full list from exchange
   const supportedCurrenciesList =
     await SwapCryptosUtils.getSupportedCurrenciesList();
+  //get paired to HIVE but no custom fees
   let pairedCurrencyOptionsList: OptionItem[] = [];
   const { data: hiveAvailablePairList } = await axios.get(
     buildUrl(`pairs/${pairedToSymbol}`),
@@ -47,8 +41,25 @@ const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
       headers,
     },
   );
+  //get paired to HIVE but with custom fees
+  const { data: hiveAvailablePairCustomFeeList } = await axios.get(
+    buildUrl(`fee/pairs/${pairedToSymbol}`),
+    { headers },
+  );
+  //get possible missing tokens comparing both lists
+  const symDifference = hiveAvailablePairList
+    .filter((x: string) => !hiveAvailablePairCustomFeeList.includes(x))
+    .concat(
+      hiveAvailablePairCustomFeeList.filter(
+        (x: string) => !hiveAvailablePairList.includes(x),
+      ),
+    );
   supportedCurrenciesList.map((x: any) => {
-    if (hiveAvailablePairList.includes(x.symbol)) {
+    //adding optionitem list using both lists + token info list
+    if (
+      hiveAvailablePairList.includes(x.symbol) ||
+      symDifference.includes(x.symbol)
+    ) {
       pairedCurrencyOptionsList.push({
         label: x.name,
         subLabel: x.symbol,
@@ -85,9 +96,18 @@ const getExchangeEstimation = async (
       },
     },
   );
+  console.log({ est: response.data }); //TODO remove line
+  const getRefOperationLink = (
+    amount: string,
+    fromToken: string,
+    toToken: string,
+  ) => {
+    return `https://stealthex.io/?ref=${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromToken}&to=${toToken}`;
+  };
+  //https://stealthex.io/?ref=ldJCcGZA9H&amount=0.91&from=BTC&to=ETH
   return {
     swapCrypto: SwapCryptos.STEALTHEX,
-    link: '//TODO',
+    link: getRefOperationLink(amount, startTokenSymbol, endTokenSymbol),
     logo: SVGIcons.STEALTHEX,
     network: '//TODO',
     name: SwapCryptos.STEALTHEX,
@@ -103,5 +123,4 @@ export const SwapCryptosUtils = {
   getMinAndMaxAmountAccepted,
   getPairedCurrencyOptionItemList,
   getSupportedCurrenciesList,
-  getSupportedCurrenciesListCustomFee,
 };

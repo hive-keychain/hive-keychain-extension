@@ -66,6 +66,9 @@ const Config = {
       baseUrl: 'https://api.stealthex.io/api/v2/',
       apiKey: process.env.STEALHEX_DEV_API_KEY || '',
       headerKey: 'X-SX-API-KEY',
+      newExchangeBaseUrl: 'https://stealthex.io/exchange/new/?',
+      //TODO add keychain id & api_key as well.
+      refId: 'ldJCcGZA9H',
     } as SwapCryptosConfig,
   },
   multisig: {
