@@ -2,7 +2,8 @@ import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface
 import { SwapCryptosUtils } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import { ThrottleSettings, throttle } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
   ComplexeCustomSelect,
@@ -15,6 +16,8 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import Config from 'src/config';
+import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -25,6 +28,9 @@ const HIVE_OPTION_ITEM = {
   value: 'HIVE',
   img: `/assets/images/wallet/hive-logo.svg`,
 } as OptionItem;
+
+//TODO important
+//    - Implement in classes.
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
@@ -49,18 +55,83 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     SwapCryptosEstimationDisplay[]
   >([]);
   const [loadingEstimation, setLoadingEstimation] = useState(false);
-
+  const { countdown, refreshCountdown, nullifyCountdown } = useCountdown(
+    Config.swapCryptos.autoRefreshPeriodSec,
+    () => {
+      if (
+        parseFloat(amount) > 0 &&
+        Number(amount) >= exchangeRangeAmount.min &&
+        !loadingMinMaxAccepted &&
+        startToken &&
+        endToken
+      ) {
+        setLoadingEstimation(true);
+        getExchangeEstimate(
+          amount,
+          startToken,
+          endToken,
+          loadingMinMaxAccepted,
+          exchangeRangeAmount,
+        );
+      }
+    },
+  );
   useEffect(() => {
     init();
+    return () => {
+      throttledRefresh.cancel();
+    };
   }, []);
 
-  //TODO important
-  //    - Implement in classes.
+  const throttledRefresh = useMemo(() => {
+    return throttle(
+      (
+        newAmount,
+        newStartToken,
+        newEndToken,
+        newLoadingMinMaxAccepted,
+        newExchangeRangeAmount,
+      ) => {
+        getExchangeEstimate(
+          newAmount,
+          newStartToken,
+          newEndToken,
+          newLoadingMinMaxAccepted,
+          newExchangeRangeAmount,
+        );
+      },
+      1000,
+      { leading: false } as ThrottleSettings,
+    );
+  }, []);
+
+  useEffect(() => {
+    throttledRefresh(
+      amount,
+      startToken,
+      endToken,
+      loadingMinMaxAccepted,
+      exchangeRangeAmount,
+    );
+  }, [
+    amount,
+    startToken,
+    endToken,
+    loadingMinMaxAccepted,
+    exchangeRangeAmount,
+  ]);
+
+  useEffect(() => {
+    if (startToken && endToken) {
+      setLoadingMinMaxAccepted(true);
+      getMinAndMax(startToken.subLabel!, endToken.subLabel!);
+    }
+  }, [startToken, endToken]);
+
   const init = async () => {
     try {
       const pairedCurrencyOptionsList =
         await SwapCryptosUtils.getPairedCurrencyOptionItemList('HIVE');
-      console.log({ pairedCurrencyOptionsList }); //TODO remove line
       setPairedCurrencyOptionsInitialList(pairedCurrencyOptionsList);
 
       const lastCryptoEstimation =
@@ -121,48 +192,44 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     }
   };
 
-  useEffect(() => {
-    if (startToken && endToken) {
-      setLoadingMinMaxAccepted(true);
-      getMinAndMax(startToken.subLabel!, endToken.subLabel!);
-    }
-  }, [startToken, endToken]);
-
-  useEffect(() => {
+  const getExchangeEstimate = async (
+    newAmount: string,
+    newStartToken: OptionItem,
+    newEndToken: OptionItem,
+    loadingMinMaxAccepted: boolean,
+    newExchangeRangeAmount: { min: number; max: number },
+  ) => {
     if (
-      parseFloat(amount) > 0 &&
-      Number(amount) >= exchangeRangeAmount.min &&
+      parseFloat(newAmount) > 0 &&
+      parseFloat(newAmount) >= newExchangeRangeAmount.min &&
       !loadingMinMaxAccepted &&
-      startToken &&
-      endToken
+      newStartToken &&
+      newEndToken
     ) {
       setLoadingEstimation(true);
-      getExchangeEstimate(amount, startToken, endToken);
-    }
-  }, [amount, endToken, loadingMinMaxAccepted]);
-
-  const getExchangeEstimate = async (
-    amount: string,
-    startToken: OptionItem,
-    endToken: OptionItem,
-  ) => {
-    try {
-      const estimation = await SwapCryptosUtils.getExchangeEstimationCustomFee(
-        amount,
-        startToken.subLabel!,
-        endToken.subLabel!,
-      );
-      setEstimations([estimation]);
-      await LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
-        {
-          from: startToken.subLabel!,
-          to: endToken.subLabel!,
-        },
-      );
-      setLoadingEstimation(false);
-    } catch (error) {
-      Logger.log({ error });
+      try {
+        const estimation =
+          await SwapCryptosUtils.getExchangeEstimationCustomFee(
+            newAmount,
+            newStartToken.subLabel!,
+            newEndToken.subLabel!,
+          );
+        setEstimations([estimation]);
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
+          {
+            from: newStartToken.subLabel!,
+            to: newEndToken.subLabel!,
+          },
+        );
+        setLoadingEstimation(false);
+        refreshCountdown();
+      } catch (error) {
+        Logger.log({ error });
+      }
+    } else if (parseFloat(newAmount) === 0 || !newAmount.trim().length) {
+      setEstimations([]);
+      nullifyCountdown();
     }
   };
 
@@ -236,11 +303,11 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                     {chrome.i18n.getMessage('quotes')}
                   </span>
                 )}
-                {/* {!!countdown && (
+                {!!countdown && estimations.length !== 0 && (
                   <span className="countdown">
                     {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
                   </span>
-                )} */}
+                )}
               </div>
               <div className="quotes">
                 {loadingEstimation && (
