@@ -119,32 +119,41 @@ const TextArea = React.forwardRef((props: TextAreaProps, ref: any) => {
               />
             </div>
           ))}
-          <textarea
-            disabled={props.disabled}
-            data-testid={props.dataTestId}
-            ref={ref}
-            placeholder={`${
-              props.placeholder
-                ? props.skipPlaceholderTranslation
-                  ? props.placeholder
-                  : chrome.i18n.getMessage(props.placeholder)
-                : ''
-            } ${props.required ? '*' : ''}`}
-            value={props.useChips ? localValue : props.value}
-            onChange={(e) =>
-              props.useChips
-                ? setLocalValue(e.target.value)
-                : props.onChange(e.target.value)
-            }
-            onKeyPress={(e) => {
-              if (e.key === ' ' && props.useChips) {
-                addChips();
+          {
+            <textarea
+              disabled={props.disabled}
+              data-testid={props.dataTestId}
+              ref={ref}
+              placeholder={`${
+                props.placeholder
+                  ? props.skipPlaceholderTranslation
+                    ? props.placeholder
+                    : chrome.i18n.getMessage(props.placeholder)
+                  : ''
+              } ${props.required ? '*' : ''}`}
+              value={props.useChips ? localValue : props.value}
+              onChange={(e) =>
+                props.useChips
+                  ? setLocalValue(e.target.value)
+                  : props.onChange(e.target.value)
               }
-            }}
-            onFocus={() => handleOnFocus()}
-            onBlur={() => handleOnBlur()}
-            onPaste={($event) => handlePaste($event)}
-          />
+              onKeyPress={(e) => {
+                if (e.key === ' ' && props.useChips) {
+                  addChips();
+                }
+              }}
+              onFocus={() => handleOnFocus()}
+              onBlur={() => handleOnBlur()}
+              onPaste={($event) => handlePaste($event)}
+              className={`${
+                props.useChips &&
+                props.maxChips &&
+                chips.length >= props.maxChips
+                  ? 'force-hide'
+                  : ''
+              }`}
+            />
+          }
 
           {!props.disabled && props.value && props.value.length > 0 && (
             <SVGIcon

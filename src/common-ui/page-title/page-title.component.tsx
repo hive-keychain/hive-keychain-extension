@@ -61,13 +61,15 @@ const PageTitle = ({
   };
   return (
     <div className="title-section">
-      {isBackButtonEnabled && (canGoBack || onBackAdditional) && (
+      {isBackButtonEnabled && (canGoBack || onBackAdditional) ? (
         <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
           icon={SVGIcons.TOP_BAR_BACK_BTN}
           className="icon-button"
         />
+      ) : (
+        <div></div>
       )}
       <div className="title">
         {skipTitleTranslation

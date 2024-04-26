@@ -75,6 +75,10 @@ $autoCompleteItemHeight: 30px;
           outline: none !important;
           border-color: white;
         }
+
+        &.force-hide {
+          display: none;
+        }
       }
 
       /* Chrome, Safari, Edge, Opera */
