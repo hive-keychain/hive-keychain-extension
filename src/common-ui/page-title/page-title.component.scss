@@ -1,13 +1,10 @@
 .title-section {
-  display: flex;
+  display: grid;
+  grid-template-columns: 18px 1fr 18px;
   column-gap: 16px;
   height: 48px;
   padding: 16px 24px;
   align-items: center;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 8px;
   .title {
     user-select: none;
     flex: 1;
@@ -15,11 +12,8 @@
     pointer-events: none;
     height: 28px;
     overflow: hidden;
-    @include poppins500(20px);
-    position: absolute;
-    width: 100%;
     text-align: center;
-    left: 0;
+    @include poppins500(20px);
   }
 
   .icon-button {
