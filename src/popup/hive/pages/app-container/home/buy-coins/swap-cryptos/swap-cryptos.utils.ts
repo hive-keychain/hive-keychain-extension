@@ -63,7 +63,7 @@ const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
   return pairedCurrencyCustomFeeOptionsList;
 };
 
-const getMinAndMaxAmountAccepted = async (
+const getMinAndMaxAmountAcceptedCustomFee = async (
   startTokenSymbol: string,
   endTokenSymbol: string,
 ) => {
@@ -116,7 +116,7 @@ const getExchangeEstimationCustomFee = async (
 
 export const SwapCryptosUtils = {
   getExchangeEstimationCustomFee,
-  getMinAndMaxAmountAccepted,
+  getMinAndMaxAmountAcceptedCustomFee,
   getPairedCurrencyOptionItemList,
   getSupportedCurrenciesCustomFeeList,
 };

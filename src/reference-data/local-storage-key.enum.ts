@@ -45,4 +45,7 @@ export enum LocalStorageKeyEnum {
 
   // To check if some account (regardless of chain) has been setup
   HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
+
+  //exchanges
+  LAST_CRYPTO_ESTIMATION = 'LAST_CRYPTO_ESTIMATION',
 }
