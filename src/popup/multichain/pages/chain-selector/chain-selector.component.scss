@@ -24,6 +24,7 @@
       margin: 0;
       @include poppins500(15px);
       cursor: pointer;
+      color: var(--main-font-color);
     }
   }
 }
