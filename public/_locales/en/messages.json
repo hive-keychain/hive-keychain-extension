@@ -3591,6 +3591,10 @@
     "message": "There was an error while sending tokens to @$1.",
     "description": "token swap general error message"
   },
+  "html_popup_swap_crypto_min_accepted_label": {
+    "message": "Min Accepted:",
+    "description": "swap cryptos minimum amount form"
+  },
   "local_accounts": {
     "message": "Local accounts",
     "description": "General word"

@@ -276,7 +276,9 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             </div>
             {exchangeRangeAmount.min > 0 && (
               <div className="min-amount">
-                Min Accepted:{' '}
+                {chrome.i18n.getMessage(
+                  'html_popup_swap_crypto_min_accepted_label',
+                )}{' '}
                 {FormatUtils.formatCurrencyValue(exchangeRangeAmount.min)}
               </div>
             )}
