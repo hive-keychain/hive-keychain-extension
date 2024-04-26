@@ -63,12 +63,13 @@ const Config = {
   swapCryptos: {
     autoRefreshPeriodSec: 30,
     stealthex: {
+      //TODO add keychain data
       baseUrl: 'https://api.stealthex.io/api/v2/',
+      baseRefereeUrl: 'https://stealthex.io/?ref=',
       apiKey: process.env.STEALHEX_DEV_API_KEY || '',
       headerKey: 'X-SX-API-KEY',
-      newExchangeBaseUrl: 'https://stealthex.io/exchange/new/?',
-      //TODO add keychain id & api_key as well.
       refId: 'ldJCcGZA9H',
+      partner_fee: 20,
     } as SwapCryptosConfig,
   },
   multisig: {

@@ -67,41 +67,45 @@ const getMinAndMaxAmountAccepted = async (
   startTokenSymbol: string,
   endTokenSymbol: string,
 ) => {
-  const response = await axios.get(
-    buildUrl(`range/${startTokenSymbol}/${endTokenSymbol}`),
-    { headers },
+  const responseCustomFee = await axios(
+    buildUrl(`fee/range/${startTokenSymbol}/${endTokenSymbol}`),
+    {
+      headers,
+      params: {
+        partner_fee: Config.swapCryptos.stealthex.partner_fee ?? 0,
+      },
+    },
   );
-  return response.data;
+  return responseCustomFee.data;
 };
 
-const getExchangeEstimation = async (
+const getExchangeEstimationCustomFee = async (
   amount: string,
   startTokenSymbol: string,
   endTokenSymbol: string,
 ): Promise<SwapCryptosEstimationDisplay> => {
   const response = await axios.get(
-    buildUrl(`estimate/${startTokenSymbol}/${endTokenSymbol}`),
+    buildUrl(`fee/estimate/${startTokenSymbol}/${endTokenSymbol}`),
     {
       headers,
       params: {
         amount: parseFloat(amount),
+        partner_fee: Config.swapCryptos.stealthex.partner_fee ?? 0,
       },
     },
   );
-  console.log({ est: response.data }); //TODO remove line
   const getRefOperationLink = (
     amount: string,
     fromToken: string,
     toToken: string,
   ) => {
-    return `https://stealthex.io/?ref=${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromToken}&to=${toToken}`;
+    return `${Config.swapCryptos.stealthex.baseRefereeUrl}${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromToken}&to=${toToken}`;
   };
-  //https://stealthex.io/?ref=ldJCcGZA9H&amount=0.91&from=BTC&to=ETH
   return {
     swapCrypto: SwapCryptos.STEALTHEX,
     link: getRefOperationLink(amount, startTokenSymbol, endTokenSymbol),
     logo: SVGIcons.STEALTHEX,
-    network: '//TODO',
+    network: 'not_needed',
     name: SwapCryptos.STEALTHEX,
     from: startTokenSymbol,
     to: endTokenSymbol,
@@ -111,7 +115,7 @@ const getExchangeEstimation = async (
 };
 
 export const SwapCryptosUtils = {
-  getExchangeEstimation,
+  getExchangeEstimationCustomFee,
   getMinAndMaxAmountAccepted,
   getPairedCurrencyOptionItemList,
   getSupportedCurrenciesCustomFeeList,

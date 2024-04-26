@@ -2,10 +2,11 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface SwapCryptosConfig {
   baseUrl: string;
+  baseRefereeUrl: string;
   apiKey: string;
   headerKey: string;
-  newExchangeBaseUrl: string;
   refId: string;
+  partner_fee?: number;
 }
 
 export interface SwapCryptosCurrencyInfo {

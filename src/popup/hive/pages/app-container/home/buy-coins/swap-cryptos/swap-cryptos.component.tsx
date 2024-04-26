@@ -94,7 +94,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   useEffect(() => {
     if (startToken && endToken) {
       setLoadingMinMaxAccepted(true);
-      console.log('getting minMax'); //TODO remove line
       getMinAndMax(startToken.subLabel!, endToken.subLabel!);
     }
   }, [startToken, endToken]);
@@ -117,7 +116,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     endToken: OptionItem,
   ) => {
     try {
-      const estimation = await SwapCryptosUtils.getExchangeEstimation(
+      const estimation = await SwapCryptosUtils.getExchangeEstimationCustomFee(
         amount,
         startToken.subLabel!,
         endToken.subLabel!,
