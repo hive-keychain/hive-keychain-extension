@@ -3,7 +3,10 @@ import {
   SwapCryptosEstimationDisplay,
 } from '@interfaces/swap-cryptos.interface';
 import axios from 'axios';
-import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
+import {
+  OptionItem,
+  OptionItemBadgeType,
+} from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 
@@ -22,53 +25,42 @@ const buildUrl = (route: string) => {
   return `${baseUrl}${route}`;
 };
 
-const getSupportedCurrenciesList = async () => {
-  const allCurrencies = await axios.get(buildUrl('currency'), {
+const getSupportedCurrenciesCustomFeeList = async () => {
+  const allCurrencies = await axios.get(buildUrl('fee/currency'), {
     headers,
   });
   return allCurrencies.data;
 };
 
 const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
-  //get token info full list from exchange
-  const supportedCurrenciesList =
-    await SwapCryptosUtils.getSupportedCurrenciesList();
-  //get paired to HIVE but no custom fees
-  let pairedCurrencyOptionsList: OptionItem[] = [];
-  const { data: hiveAvailablePairList } = await axios.get(
-    buildUrl(`pairs/${pairedToSymbol}`),
-    {
-      headers,
-    },
-  );
-  //get paired to HIVE but with custom fees
+  let pairedCurrencyCustomFeeOptionsList: OptionItem[] = [];
+  //get token info full list from exchange with supported custom fee
+  const supportedCurrenciesListCustomFee =
+    await SwapCryptosUtils.getSupportedCurrenciesCustomFeeList();
+  //get paired to HIVE with custom fees
   const { data: hiveAvailablePairCustomFeeList } = await axios.get(
     buildUrl(`fee/pairs/${pairedToSymbol}`),
     { headers },
   );
-  //get possible missing tokens comparing both lists
-  const symDifference = hiveAvailablePairList
-    .filter((x: string) => !hiveAvailablePairCustomFeeList.includes(x))
-    .concat(
-      hiveAvailablePairCustomFeeList.filter(
-        (x: string) => !hiveAvailablePairList.includes(x),
-      ),
-    );
-  supportedCurrenciesList.map((x: any) => {
+  supportedCurrenciesListCustomFee.map((x: any) => {
     //adding optionitem list using both lists + token info list
-    if (
-      hiveAvailablePairList.includes(x.symbol) ||
-      symDifference.includes(x.symbol)
-    ) {
-      pairedCurrencyOptionsList.push({
+    if (hiveAvailablePairCustomFeeList.includes(x.symbol)) {
+      const bagde = x.network
+        ? {
+            type: OptionItemBadgeType.BADGE_GREEN,
+            label: x.network,
+          }
+        : undefined;
+      pairedCurrencyCustomFeeOptionsList.push({
         label: x.name,
         subLabel: x.symbol,
         img: x.image,
         value: x,
+        bagde,
       });
     }
   });
-  return pairedCurrencyOptionsList;
+  return pairedCurrencyCustomFeeOptionsList;
 };
 
 const getMinAndMaxAmountAccepted = async (
@@ -122,5 +114,5 @@ export const SwapCryptosUtils = {
   getExchangeEstimation,
   getMinAndMaxAmountAccepted,
   getPairedCurrencyOptionItemList,
-  getSupportedCurrenciesList,
+  getSupportedCurrenciesCustomFeeList,
 };
