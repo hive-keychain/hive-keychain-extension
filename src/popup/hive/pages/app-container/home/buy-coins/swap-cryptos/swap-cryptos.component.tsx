@@ -43,6 +43,13 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   //TODO bellow cleanup
   const [swapCryptos, setSetswamCryptos] = useState<SwapCryptosMerger>();
 
+  //TODO bellow for now just testing in first load
+  //TODO important:
+  //  1. From now on use newSwapCryptos data.
+  //    - when getting both optionLists, merge them but removing duplicates if any.
+  //      -> this will be your pairedCurrencyOptionsInitialList
+  //    - when getting the minMax, ask quentin how to handle, see how to display this??
+  //
   useEffect(() => {
     const newSwapCryptos = new SwapCryptosMerger([
       new StealthexProvider(false),
@@ -52,7 +59,16 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     newSwapCryptos.getCurrencyOptions('HIVE').then((currencyOptions) => {
       console.log({ currencyOptions });
     });
+    newSwapCryptos.getMinMaxAccepted('BCH', 'HIVE').then((minAcceptedList) => {
+      console.log({ minAcceptedList });
+    });
+    newSwapCryptos
+      .getExchangeEstimation('1', 'BCH', 'HIVE')
+      .then((estimations) => {
+        console.log({ estimations });
+      });
   }, []);
+  //end testing
 
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const [
