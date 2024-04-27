@@ -188,4 +188,5 @@ export enum SVGIcons {
   TRANSAK = 'transak',
   UPBIT = 'upbit',
   STEALTHEX = 'stealthex',
+  SIMPLESWAP = 'simpleswap',
 }

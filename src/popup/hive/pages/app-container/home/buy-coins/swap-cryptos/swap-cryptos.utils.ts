@@ -1,4 +1,5 @@
 import {
+  GenericObjectKeypair,
   SwapCryptos,
   SwapCryptosEstimationDisplay,
 } from '@interfaces/swap-cryptos.interface';
@@ -10,23 +11,18 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 
-interface GenericObjectKeypair {
-  [key: string]: string;
-}
-
 let headers: GenericObjectKeypair = {};
 headers[`${Config.swapCryptos.stealthex.headerKey}`] =
   Config.swapCryptos.stealthex.apiKey;
 
-//TODO define this in class
-//specific for stealthx
 const buildUrl = (route: string) => {
-  const baseUrl = Config.swapCryptos.stealthex.baseUrl;
+  const baseUrl = Config.swapCryptos.stealthex.urls.baseUrl;
   return `${baseUrl}${route}`;
 };
 
 const getSupportedCurrenciesCustomFeeList = async () => {
-  const allCurrencies = await axios.get(buildUrl('fee/currency'), {
+  const route = `${Config.swapCryptos.stealthex.urls.routes.allCurrencies}`;
+  const allCurrencies = await axios.get(buildUrl(route), {
     headers,
   });
   return allCurrencies.data;
@@ -38,8 +34,9 @@ const getPairedCurrencyOptionItemList = async (pairedToSymbol: string) => {
   const supportedCurrenciesListCustomFee =
     await SwapCryptosUtils.getSupportedCurrenciesCustomFeeList();
   //get paired to HIVE with custom fees
+  const pairRoute = `${Config.swapCryptos.stealthex.urls.routes.currencyPair}${pairedToSymbol}`;
   const { data: hiveAvailablePairCustomFeeList } = await axios.get(
-    buildUrl(`fee/pairs/${pairedToSymbol}`),
+    buildUrl(pairRoute),
     { headers },
   );
   supportedCurrenciesListCustomFee.map((x: any) => {
@@ -67,15 +64,13 @@ const getMinAndMaxAmountAcceptedCustomFee = async (
   startTokenSymbol: string,
   endTokenSymbol: string,
 ) => {
-  const responseCustomFee = await axios(
-    buildUrl(`fee/range/${startTokenSymbol}/${endTokenSymbol}`),
-    {
-      headers,
-      params: {
-        partner_fee: Config.swapCryptos.stealthex.partner_fee ?? 0,
-      },
+  const route = `${Config.swapCryptos.stealthex.urls.routes.minMaxAccepted}${startTokenSymbol}/${endTokenSymbol}`;
+  const responseCustomFee = await axios(buildUrl(route), {
+    headers,
+    params: {
+      partner_fee: Config.swapCryptos.stealthex.partnerFeeAmount ?? 0,
     },
-  );
+  });
   return responseCustomFee.data;
 };
 
@@ -84,22 +79,21 @@ const getExchangeEstimationCustomFee = async (
   startTokenSymbol: string,
   endTokenSymbol: string,
 ): Promise<SwapCryptosEstimationDisplay> => {
-  const response = await axios.get(
-    buildUrl(`fee/estimate/${startTokenSymbol}/${endTokenSymbol}`),
-    {
-      headers,
-      params: {
-        amount: parseFloat(amount),
-        partner_fee: Config.swapCryptos.stealthex.partner_fee ?? 0,
-      },
+  const route = `${Config.swapCryptos.stealthex.urls.routes.estimation}${startTokenSymbol}/${endTokenSymbol}`;
+  const response = await axios.get(buildUrl(route), {
+    headers,
+    params: {
+      amount: parseFloat(amount),
+      partner_fee: Config.swapCryptos.stealthex.partnerFeeAmount ?? 0,
     },
-  );
+  });
   const getRefOperationLink = (
     amount: string,
     fromToken: string,
     toToken: string,
   ) => {
-    return `${Config.swapCryptos.stealthex.baseRefereeUrl}${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromToken}&to=${toToken}`;
+    const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromToken}&to=${toToken}`;
+    return link;
   };
   return {
     swapCrypto: SwapCryptos.STEALTHEX,

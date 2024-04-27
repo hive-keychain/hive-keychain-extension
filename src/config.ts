@@ -64,12 +64,36 @@ const Config = {
     autoRefreshPeriodSec: 30,
     stealthex: {
       //TODO add keychain data
-      baseUrl: 'https://api.stealthex.io/api/v2/',
-      baseRefereeUrl: 'https://stealthex.io/?ref=',
+      urls: {
+        baseUrl: 'https://api.stealthex.io/api/v2/',
+        referalBaseUrl: 'https://stealthex.io/?ref=',
+        routes: {
+          allCurrencies: 'fee/currency',
+          currencyPair: 'fee/pairs/',
+          minMaxAccepted: 'fee/range/',
+          estimation: 'fee/estimate/',
+        },
+      },
       apiKey: process.env.STEALHEX_DEV_API_KEY || '',
       headerKey: 'X-SX-API-KEY',
       refId: 'ldJCcGZA9H',
-      partner_fee: 20,
+      partnerFeeAmount: 20,
+    } as SwapCryptosConfig,
+    simpleswap: {
+      urls: {
+        baseUrl: 'https://api.simpleswap.io/',
+        referalBaseUrl: 'https://simpleswap.io/?ref=',
+        routes: {
+          allCurrencies: 'get_all_currencies',
+          currencyPair: 'get_pairs',
+          minMaxAccepted: 'get_ranges',
+          estimation: 'get_estimated',
+        },
+      },
+      apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',
+      headerKey: '',
+      refId: 'a81a6051c500',
+      //Note: fee is set in the website.
     } as SwapCryptosConfig,
   },
   multisig: {

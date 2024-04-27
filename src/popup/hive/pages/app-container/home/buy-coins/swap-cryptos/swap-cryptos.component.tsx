@@ -1,4 +1,9 @@
 import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
+import {
+  SimpleSwapProvider,
+  StealthexProvider,
+  SwapCryptosMerger,
+} from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-classes';
 import { SwapCryptosUtils } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -31,8 +36,24 @@ const HIVE_OPTION_ITEM = {
 
 //TODO important
 //    - Implement in classes.
+//    - add another exchange & test both, adjust & mark as ready for review
+//      -> https://api.simpleswap.io/#/Exchange/ExchangeController_getEstimated
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
+  //TODO bellow cleanup
+  const [swapCryptos, setSetswamCryptos] = useState<SwapCryptosMerger>();
+
+  useEffect(() => {
+    const newSwapCryptos = new SwapCryptosMerger([
+      new StealthexProvider(false),
+      new SimpleSwapProvider(true),
+    ]);
+    setSetswamCryptos(newSwapCryptos);
+    newSwapCryptos.getCurrencyOptions('HIVE').then((currencyOptions) => {
+      console.log({ currencyOptions });
+    });
+  }, []);
+
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const [
     pairedCurrencyOptionsInitialList,
