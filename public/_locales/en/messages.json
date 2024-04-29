@@ -4036,11 +4036,11 @@
     "description": "Notification recurrent transfer"
   },
   "notification_follow": {
-    "message": "@$1 started following $2",
+    "message": "@$1 started following @$2",
     "description": "Notification follow"
   },
   "notification_unfollow": {
-    "message": "@$1 stopped following $2",
+    "message": "@$1 stopped following @$2",
     "description": "Notification unfollow"
   },
   "notification_reblog": {

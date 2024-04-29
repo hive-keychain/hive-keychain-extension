@@ -682,7 +682,11 @@ const getNotifications = async (
         if (notif.trigger.includes(replyTrigger)) {
           // case response
           message = 'notification_answer';
-          messageParams = [notif.sender, payload.author, payload.permlink];
+          messageParams = [
+            notif.sender,
+            payload.author,
+            payload.parent_permlink,
+          ];
         } else {
           // case mention
           message = 'notification_mention';
