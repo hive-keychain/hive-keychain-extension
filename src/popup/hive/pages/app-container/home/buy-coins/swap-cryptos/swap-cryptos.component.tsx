@@ -4,7 +4,6 @@ import {
   StealthexProvider,
   SwapCryptosMerger,
 } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-classes';
-import { SwapCryptosUtils } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
@@ -34,42 +33,8 @@ const HIVE_OPTION_ITEM = {
   img: `/assets/images/wallet/hive-logo.svg`,
 } as OptionItem;
 
-//TODO important
-//    - Implement in classes.
-//    - add another exchange & test both, adjust & mark as ready for review
-//      -> https://api.simpleswap.io/#/Exchange/ExchangeController_getEstimated
-
 const SwapCryptos = ({ price }: PropsFromRedux) => {
-  //TODO bellow cleanup
-  const [swapCryptos, setSetswamCryptos] = useState<SwapCryptosMerger>();
-
-  //TODO bellow for now just testing in first load
-  //TODO important:
-  //  1. From now on use newSwapCryptos data.
-  //    - when getting both optionLists, merge them but removing duplicates if any.
-  //      -> this will be your pairedCurrencyOptionsInitialList
-  //    - when getting the minMax, ask quentin how to handle, see how to display this??
-  //
-  useEffect(() => {
-    const newSwapCryptos = new SwapCryptosMerger([
-      new StealthexProvider(false),
-      new SimpleSwapProvider(true),
-    ]);
-    setSetswamCryptos(newSwapCryptos);
-    newSwapCryptos.getCurrencyOptions('HIVE').then((currencyOptions) => {
-      console.log({ currencyOptions });
-    });
-    newSwapCryptos.getMinMaxAccepted('BCH', 'HIVE').then((minAcceptedList) => {
-      console.log({ minAcceptedList });
-    });
-    newSwapCryptos
-      .getExchangeEstimation('1', 'BCH', 'HIVE')
-      .then((estimations) => {
-        console.log({ estimations });
-      });
-  }, []);
-  //end testing
-
+  const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const [
     pairedCurrencyOptionsInitialList,
@@ -100,7 +65,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         Number(amount) >= exchangeRangeAmount.min &&
         !loadingMinMaxAccepted &&
         startToken &&
-        endToken
+        endToken &&
+        swapCryptos
       ) {
         setLoadingEstimation(true);
         getExchangeEstimate(
@@ -109,6 +75,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           endToken,
           loadingMinMaxAccepted,
           exchangeRangeAmount,
+          swapCryptos,
         );
       }
     },
@@ -128,6 +95,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         newEndToken,
         newLoadingMinMaxAccepted,
         newExchangeRangeAmount,
+        newSwapCryptos,
       ) => {
         getExchangeEstimate(
           newAmount,
@@ -135,6 +103,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           newEndToken,
           newLoadingMinMaxAccepted,
           newExchangeRangeAmount,
+          newSwapCryptos,
         );
       },
       1000,
@@ -149,6 +118,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       endToken,
       loadingMinMaxAccepted,
       exchangeRangeAmount,
+      swapCryptos,
     );
   }, [
     amount,
@@ -161,68 +131,91 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   useEffect(() => {
     if (startToken && endToken) {
       setLoadingMinMaxAccepted(true);
-      getMinAndMax(startToken.subLabel!, endToken.subLabel!);
+      getMinAndMax(startToken, endToken);
     }
   }, [startToken, endToken]);
 
   const init = async () => {
     try {
-      const pairedCurrencyOptionsList =
-        await SwapCryptosUtils.getPairedCurrencyOptionItemList('HIVE');
-      setPairedCurrencyOptionsInitialList(pairedCurrencyOptionsList);
-
-      const lastCryptoEstimation =
-        await LocalStorageUtils.getValueFromLocalStorage(
-          LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
-        );
-      let tempStartTokenOptionItem = HIVE_OPTION_ITEM;
-      let tempStartTokenOptionItemList = [HIVE_OPTION_ITEM];
-      let tempEndtTokenOptionItem = pairedCurrencyOptionsList[0];
-      let tempEndTokenOptionItemList = pairedCurrencyOptionsList;
-      if (lastCryptoEstimation) {
-        tempStartTokenOptionItem =
-          lastCryptoEstimation.from === HIVE_OPTION_ITEM.subLabel!
-            ? HIVE_OPTION_ITEM
-            : pairedCurrencyOptionsList.find(
-                (i) => i.subLabel! === lastCryptoEstimation.from,
-              )!;
-        tempStartTokenOptionItemList =
-          lastCryptoEstimation.from === HIVE_OPTION_ITEM.subLabel!
-            ? [HIVE_OPTION_ITEM]
-            : pairedCurrencyOptionsList;
-        tempEndtTokenOptionItem =
-          lastCryptoEstimation.to === HIVE_OPTION_ITEM.subLabel!
-            ? HIVE_OPTION_ITEM
-            : pairedCurrencyOptionsList.find(
-                (i) => i.subLabel! === lastCryptoEstimation.to,
-              )!;
-        tempEndTokenOptionItemList =
-          lastCryptoEstimation.to === HIVE_OPTION_ITEM.subLabel!
-            ? [HIVE_OPTION_ITEM]
-            : pairedCurrencyOptionsList;
-      }
-      setStartToken(tempStartTokenOptionItem);
-      setStartTokenListOptions(tempStartTokenOptionItemList);
-      setEndToken(tempEndtTokenOptionItem);
-      setEndTokenListOptions(tempEndTokenOptionItemList);
+      const newSwapCryptos = new SwapCryptosMerger([
+        new StealthexProvider(false),
+        new SimpleSwapProvider(true),
+      ]);
+      setSetswapCryptos(newSwapCryptos);
+      newSwapCryptos.getCurrencyOptions('HIVE').then((currencyOptions) => {
+        setPairedCurrencyOptionsInitialList(currencyOptions);
+      });
     } catch (error) {
       Logger.log({ error });
     }
   };
 
+  useEffect(() => {
+    if (pairedCurrencyOptionsInitialList.length) {
+      initializeFromStorage(pairedCurrencyOptionsInitialList);
+    }
+  }, [pairedCurrencyOptionsInitialList]);
+
+  const initializeFromStorage = async (
+    pairedCurrencyOptionsList: OptionItem[],
+  ) => {
+    const lastCryptoEstimation =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
+      );
+    let tempStartTokenOptionItem = HIVE_OPTION_ITEM;
+    let tempStartTokenOptionItemList = [HIVE_OPTION_ITEM];
+    let tempEndtTokenOptionItem = pairedCurrencyOptionsList[0];
+    let tempEndTokenOptionItemList = pairedCurrencyOptionsList;
+    if (lastCryptoEstimation) {
+      tempStartTokenOptionItem =
+        lastCryptoEstimation.from === HIVE_OPTION_ITEM.subLabel!
+          ? HIVE_OPTION_ITEM
+          : pairedCurrencyOptionsList.find(
+              (i) => i.subLabel! === lastCryptoEstimation.from,
+            )!;
+      tempStartTokenOptionItemList =
+        lastCryptoEstimation.from === HIVE_OPTION_ITEM.subLabel!
+          ? [HIVE_OPTION_ITEM]
+          : pairedCurrencyOptionsList;
+      tempEndtTokenOptionItem =
+        lastCryptoEstimation.to === HIVE_OPTION_ITEM.subLabel!
+          ? HIVE_OPTION_ITEM
+          : pairedCurrencyOptionsList.find(
+              (i) => i.subLabel! === lastCryptoEstimation.to,
+            )!;
+      tempEndTokenOptionItemList =
+        lastCryptoEstimation.to === HIVE_OPTION_ITEM.subLabel!
+          ? [HIVE_OPTION_ITEM]
+          : pairedCurrencyOptionsList;
+    }
+    setStartToken(tempStartTokenOptionItem);
+    setStartTokenListOptions(tempStartTokenOptionItemList);
+    setEndToken(tempEndtTokenOptionItem);
+    setEndTokenListOptions(tempEndTokenOptionItemList);
+  };
+
   const getMinAndMax = async (
-    startTokenSymbol: string,
-    endTokenSymbol: string,
+    startTokenOption: OptionItem,
+    endTokenOption: OptionItem,
   ) => {
     try {
-      const response =
-        await SwapCryptosUtils.getMinAndMaxAmountAcceptedCustomFee(
-          startTokenSymbol,
-          endTokenSymbol,
-        );
-      if (response) {
-        setExchangeRangeAmount({ min: response.min_amount, max: 0 });
-      }
+      await swapCryptos
+        ?.getMinMaxAccepted(startTokenOption, endTokenOption)
+        .then((res) => {
+          if (res) {
+            if (res.length === 1) {
+              setExchangeRangeAmount({ min: res[0].amount, max: 0 });
+            } else if (res.length > 1) {
+              const minValue = res.sort((a, b) => a.amount - b.amount)[0]
+                .amount;
+              setExchangeRangeAmount({
+                min: minValue,
+                max: 0,
+              });
+            }
+          }
+        });
       setLoadingMinMaxAccepted(false);
     } catch (error) {
       Logger.log({ error });
@@ -233,32 +226,40 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     newAmount: string,
     newStartToken: OptionItem,
     newEndToken: OptionItem,
-    loadingMinMaxAccepted: boolean,
+    newLoadingMinMaxAccepted: boolean,
     newExchangeRangeAmount: { min: number; max: number },
+    newSwapCryptos: SwapCryptosMerger,
   ) => {
     if (
       parseFloat(newAmount) > 0 &&
       parseFloat(newAmount) >= newExchangeRangeAmount.min &&
-      !loadingMinMaxAccepted &&
+      !newLoadingMinMaxAccepted &&
       newStartToken &&
-      newEndToken
+      newEndToken &&
+      newSwapCryptos
     ) {
-      setLoadingEstimation(true);
       try {
-        const estimation =
-          await SwapCryptosUtils.getExchangeEstimationCustomFee(
+        setLoadingEstimation(true);
+        newSwapCryptos
+          .getExchangeEstimation(
             newAmount,
             newStartToken.subLabel!,
             newEndToken.subLabel!,
-          );
-        setEstimations([estimation]);
-        LocalStorageUtils.saveValueInLocalStorage(
-          LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
-          {
-            from: newStartToken.subLabel!,
-            to: newEndToken.subLabel!,
-          },
-        );
+          )
+          .then((res) => {
+            setEstimations(
+              res.map(({ estimation }) => {
+                return { ...estimation };
+              }),
+            );
+            LocalStorageUtils.saveValueInLocalStorage(
+              LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
+              {
+                from: newStartToken.subLabel!,
+                to: newEndToken.subLabel!,
+              },
+            );
+          });
         setLoadingEstimation(false);
         refreshCountdown();
       } catch (error) {

@@ -33,10 +33,8 @@ export class StealthexProvider
   };
   getPairedCurrencyOptionItemList = async (symbol: string) => {
     let pairedCurrencyOptionsList: OptionItem[] = [];
-    //build headers //TODO add to a method
     let requestHeaders: GenericObjectKeypair = {};
     requestHeaders[`${this.headerKey}`] = this.apiKey;
-    //end headers
 
     const currenciesRoute = this.urls.routes.allCurrencies;
     if (this.logInfo) {
@@ -46,7 +44,7 @@ export class StealthexProvider
         buildUrl: this.buildUrl('-'),
       });
     }
-    //TODO bellow include this as allCurrencyRoute in the config.
+
     const allCurrencies = (
       await axios.get(this.buildUrl(currenciesRoute), {
         headers: requestHeaders,
@@ -75,7 +73,7 @@ export class StealthexProvider
           label: x.name,
           subLabel: x.symbol,
           img: x.image,
-          value: x,
+          value: { ...x, exchanges: [SwapCryptos.STEALTHEX] },
           bagde,
         });
       }
@@ -83,25 +81,23 @@ export class StealthexProvider
     return pairedCurrencyOptionsList;
   };
   getMinMaxAmountAccepted = async (from: string, to: string) => {
-    //build headers //TODO add to a method
     let requestHeaders: GenericObjectKeypair = {};
     requestHeaders[`${this.headerKey}`] = this.apiKey;
-    //end headers
+
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
     const minMaxRoute = `${this.urls.routes.minMaxAccepted}${from}/${to}`;
     if (this.logInfo) {
       Logger.log('minMaxRoute', { minMaxRoute, requestHeaders });
     }
-    return (
+    const response = (
       await axios.get(this.buildUrl(minMaxRoute), { headers: requestHeaders })
-    ).data.min_amount;
+    ).data;
+    return response.min_amount;
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
-    //build headers //TODO add to a method
     let requestHeaders: GenericObjectKeypair = {};
     requestHeaders[`${this.headerKey}`] = this.apiKey;
-    //end headers
 
     const requestConfig = {
       headers: requestHeaders,
@@ -112,7 +108,9 @@ export class StealthexProvider
     };
 
     const estimationRoute = `${this.urls.routes.estimation}${from}/${to}`;
-    const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${from}&to=${to}`;
+    const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${
+      Config.swapCryptos.stealthex.refId
+    }&amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}`;
     if (this.logInfo) {
       Logger.log('estimationRoute', { estimationRoute, requestConfig, link });
     }
@@ -182,7 +180,7 @@ export class SimpleSwapProvider
           label: x.name.split(' ')[0],
           subLabel: x.symbol,
           img: x.image,
-          value: x,
+          value: { ...x, exchanges: [SwapCryptos.SIMPLESWAP] },
           bagde,
         });
       }
@@ -196,12 +194,14 @@ export class SimpleSwapProvider
     if (this.logInfo) {
       Logger.log('minMaxRoute', { minMaxRoute });
     }
-    return (await axios.get(this.buildUrl(minMaxRoute))).data;
+    const response = (await axios.get(this.buildUrl(minMaxRoute))).data;
+    return response.min;
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
     const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
-    //https://simpleswap.io/?ref=a81a6051c500&from=hive&to=btc&amount=1000
-    const link = `${this.urls.referalBaseUrl}${this.refId}&from=${from}&to=${to}&amount=${amount}`;
+    const link = `${this.urls.referalBaseUrl}${
+      this.refId
+    }&from=${from.toLowerCase()}&to=${to.toLowerCase()}&amount=${amount}`;
     if (this.logInfo) {
       Logger.log('estimationRoute', { estimationRoute, link });
     }
@@ -226,45 +226,61 @@ export class SwapCryptosMerger {
   constructor(providers: SwapCryptosBaseProviderInterface[]) {
     this.providers = providers;
   }
-  getCurrencyOptions = async (
-    symbol: string,
-  ): Promise<
-    {
-      provider: SwapCryptos;
-      list: OptionItem[];
-    }[]
-  > => {
-    let providerCurrencyOptionsList = [];
+  getCurrencyOptions = async (symbol: string): Promise<OptionItem[]> => {
+    let providersCurrencyOptionsList: OptionItem[] = [];
     for (const provider of this.providers) {
-      const currencyList = await provider.getPairedCurrencyOptionItemList(
-        symbol,
-      );
-      providerCurrencyOptionsList.push({
-        provider: provider.name as SwapCryptos,
-        list: currencyList,
-      });
+      try {
+        const currencyOptionList =
+          await provider.getPairedCurrencyOptionItemList(symbol);
+        for (const currencyOption of currencyOptionList) {
+          const i = providersCurrencyOptionsList.findIndex(
+            (e) => e.value.symbol === currencyOption.value.symbol,
+          );
+          if (i >= 0) {
+            const exchanges: string[] =
+              providersCurrencyOptionsList[i].value.exchanges;
+            exchanges.push(currencyOption.value.exchanges[0]);
+            providersCurrencyOptionsList[i] = {
+              ...providersCurrencyOptionsList[i],
+              value: {
+                ...providersCurrencyOptionsList[i].value,
+                exchanges: exchanges,
+              },
+            };
+          } else {
+            providersCurrencyOptionsList.push(currencyOption);
+          }
+        }
+      } catch (error) {
+        Logger.log('Error getting exchange currencies', { provider, error });
+      }
     }
-    return providerCurrencyOptionsList;
+
+    return providersCurrencyOptionsList;
   };
   getMinMaxAccepted = async (
-    startTokenSymbol: string,
-    endTokenSymbol: string,
+    startTokenOption: OptionItem,
+    endTokenOption: OptionItem,
   ): Promise<
     {
       provider: SwapCryptos;
-      amount: string;
+      amount: number;
     }[]
   > => {
     let providerMinMaxAmountList = [];
     for (const provider of this.providers) {
-      const minMaxAccepted = await provider.getMinMaxAmountAccepted(
-        startTokenSymbol,
-        endTokenSymbol,
-      );
-      providerMinMaxAmountList.push({
-        provider: provider.name as SwapCryptos,
-        amount: minMaxAccepted,
-      });
+      try {
+        const minMaxAccepted = await provider.getMinMaxAmountAccepted(
+          startTokenOption.subLabel!,
+          endTokenOption.subLabel!,
+        );
+        providerMinMaxAmountList.push({
+          provider: provider.name as SwapCryptos,
+          amount: parseFloat(minMaxAccepted),
+        });
+      } catch (error) {
+        Logger.log('No min/max available in Exchange', { provider, error });
+      }
     }
     return providerMinMaxAmountList;
   };
@@ -280,11 +296,19 @@ export class SwapCryptosMerger {
   > => {
     let providerEstimationList = [];
     for (const provider of this.providers) {
-      const estimation = await provider.getExchangeEstimation(amount, from, to);
-      providerEstimationList.push({
-        provider: provider.name as SwapCryptos,
-        estimation: estimation,
-      });
+      try {
+        const estimation = await provider.getExchangeEstimation(
+          amount,
+          from,
+          to,
+        );
+        providerEstimationList.push({
+          provider: provider.name as SwapCryptos,
+          estimation: estimation,
+        });
+      } catch (error) {
+        Logger.log('No estimation available in Exchange', { provider, error });
+      }
     }
     return providerEstimationList;
   };

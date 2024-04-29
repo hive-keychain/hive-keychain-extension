@@ -74,7 +74,7 @@ const Config = {
           estimation: 'fee/estimate/',
         },
       },
-      apiKey: process.env.STEALHEX_DEV_API_KEY || '',
+      apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
       headerKey: 'X-SX-API-KEY',
       refId: 'ldJCcGZA9H',
       partnerFeeAmount: 20,
