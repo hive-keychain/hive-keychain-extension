@@ -8,10 +8,10 @@ import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
-import { Chain } from '@popup/multichain/multichain.context';
-import ChainSelector from '@popup/multichain/pages/chain-selector/chain-selector.component';
+import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
+import { Chain, ChainType } from '@popup/multichain/reducers/chain.reducer';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -24,11 +24,10 @@ import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 
-type Props = { screen: SignUpScreen; selectedChain?: Chain };
+type Props = { screen: SignUpScreen };
 
 const ChainRouter = ({
   screen,
-  selectedChain,
   message,
   mk,
   setMk,
@@ -37,6 +36,7 @@ const ChainRouter = ({
   setHasFinishedSignup,
   currentPage,
   resetMessage,
+  chain,
 }: Props & PropsFromRedux) => {
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -95,13 +95,13 @@ const ChainRouter = ({
         return <SignInRouterComponent />;
       }
     } else {
-      switch (selectedChain) {
-        case Chain.HIVE:
+      switch (chain?.type) {
+        case ChainType.HIVE:
           return <HiveAppComponent />;
-        case Chain.EVM:
+        case ChainType.EVM:
           return <EvmAppComponent />;
         default:
-          return <ChainSelector />;
+          return <ChainSelectorPageComponent />;
       }
     }
   };
@@ -126,6 +126,7 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
     currentPage: state.navigation.stack[0],
+    chain: state.chain as Chain,
   };
 };
 

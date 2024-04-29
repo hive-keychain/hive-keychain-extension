@@ -1,6 +1,6 @@
+import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -13,14 +13,15 @@ const AddWalletMain = ({
   navigateTo,
   setTitleContainerProperties,
   hasFinishedSignup,
+  chain,
+  resetChain,
 }: PropsFromRedux) => {
-  const { setChain } = useChainContext();
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
       onBackAdditional: () => {
-        setChain();
+        resetChain();
       },
       isCloseButtonDisabled: !hasFinishedSignup,
     });
@@ -116,12 +117,14 @@ const AddWalletMain = ({
 const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
+    chain: state.chain,
   };
 };
 
 const connector = connect(mapStateToProps, {
   navigateTo,
   setTitleContainerProperties,
+  resetChain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

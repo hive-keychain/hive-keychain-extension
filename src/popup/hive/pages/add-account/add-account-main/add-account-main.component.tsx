@@ -1,6 +1,6 @@
+import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -18,14 +18,15 @@ const AddAccountMain = ({
   setAccounts,
   setTitleContainerProperties,
   isLedgerSupported,
+  chain,
+  resetChain,
 }: PropsFromRedux) => {
-  const { setChain } = useChainContext();
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
       onBackAdditional: () => {
-        setChain();
+        resetChain();
       },
       isCloseButtonDisabled: !accounts || !accounts.length,
     });
@@ -123,6 +124,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
     isLedgerSupported: state.hive.appStatus.isLedgerSupported,
+    chain: state.chain,
   };
 };
 
@@ -130,6 +132,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setAccounts,
   setTitleContainerProperties,
+  resetChain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

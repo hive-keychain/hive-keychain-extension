@@ -4,7 +4,6 @@ import {
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { useChainContext } from '@popup/multichain/multichain.context';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -15,9 +14,10 @@ import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 
-export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
-  const { chain } = useChainContext();
-
+export const Ecosystem = ({
+  setTitleContainerProperties,
+  chain,
+}: PropsFromRedux) => {
   const [tabs, setTabs] = useState<Tab[]>();
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -80,7 +80,7 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return { chain: state.chain };
 };
 
 const connector = connect(mapStateToProps, {

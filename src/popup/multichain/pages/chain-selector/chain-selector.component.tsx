@@ -1,11 +1,24 @@
-import { Chain, useChainContext } from '@popup/multichain/multichain.context';
-import React from 'react';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { Chain } from '@popup/multichain/reducers/chain.reducer';
+import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { EnumUtils } from 'src/utils/enum.utils';
 
-const ChainSelector = () => {
-  const { setChain } = useChainContext();
+const ChainSelector = ({ setChain }: PropsFromRedux) => {
+  const [chains, setChains] = useState<Chain[]>();
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    setChains(await ChainUtils.getChains());
+  };
 
   return (
     <div className="chain-selector-page">
@@ -14,49 +27,37 @@ const ChainSelector = () => {
         isCloseButtonDisabled></PageTitleComponent>
       <div className="caption">{chrome.i18n.getMessage('')}</div>
       <div className="chain-cards-container">
-        <div
-          className="chain-card"
-          onClick={() => {
-            setChain(Chain.HIVE);
-          }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_HIVE} />
-          <div className="chain-name">Hive</div>
-        </div>{' '}
-        <div
-          className="chain-card"
-          onClick={() => {
-            setChain(Chain.EVM);
-          }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_ETHEREUM} />
-          <div className="chain-name">Ethereum</div>
-        </div>
-        <div
-          className="chain-card"
-          onClick={() => {
-            setChain(Chain.EVM);
-          }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_BNB} />
-          <div className="chain-name">BNB</div>
-        </div>
-        <div
-          className="chain-card"
-          onClick={() => {
-            setChain(Chain.EVM);
-          }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_POLYGON} />
-          <div className="chain-name">Polygon</div>
-        </div>
-        <div
-          className="chain-card"
-          onClick={() => {
-            setChain(Chain.EVM);
-          }}>
-          <SVGIcon icon={SVGIcons.BLOCKCHAIN_AVALANCHE} />
-          <div className="chain-name">Avalanche</div>
-        </div>
+        {chains &&
+          chains.length > 0 &&
+          chains.map((chain: Chain, index: number) => (
+            <div
+              key={`chain-${chain.name}-${index}`}
+              className="chain-card"
+              onClick={() => {
+                setChain(chain);
+              }}>
+              {EnumUtils.isValueOf(chain.logo, SVGIcons) && (
+                <SVGIcon icon={chain.logo as SVGIcons} />
+              )}
+              {!EnumUtils.isValueOf(chain.logo, SVGIcons) && (
+                <img src={chain.logo} />
+              )}
+              <div className="chain-name">{chain.name}</div>
+            </div>
+          ))}
       </div>
     </div>
   );
 };
 
-export default ChainSelector;
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const connector = connect(mapStateToProps, {
+  setChain,
+});
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const ChainSelectorPageComponent = connector(ChainSelector);

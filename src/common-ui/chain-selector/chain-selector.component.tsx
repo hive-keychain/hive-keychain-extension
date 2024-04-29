@@ -6,12 +6,6 @@ import {
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 
-interface Chain {
-  name: string;
-  symbol: string;
-  logo: string;
-}
-
 const ChainSelector = ({ chains }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<OptionItem>();

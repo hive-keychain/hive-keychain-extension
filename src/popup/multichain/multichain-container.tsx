@@ -1,5 +1,5 @@
 import ChainRouter from '@popup/multichain/chain-router.component';
-import { Chain, ChainContext } from '@popup/multichain/multichain.context';
+import { Chain } from '@popup/multichain/reducers/chain.reducer';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -74,11 +74,9 @@ export const MultichainContainer = () => {
     <>
       {ready && theme && (
         <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-          <ChainContext.Provider value={{ chain, setChain }}>
-            <div className={`theme ${theme}`}>
-              <ChainComponentWithBoundary theme={theme} chain={chain} />
-            </div>
-          </ChainContext.Provider>
+          <div className={`theme ${theme}`}>
+            <ChainComponentWithBoundary theme={theme} chain={chain} />
+          </div>
         </ThemeContext.Provider>
       )}
     </>
@@ -86,6 +84,7 @@ export const MultichainContainer = () => {
 };
 
 const ChainComponent = ({ chain }: { theme: Theme; chain?: Chain }) => {
+  console.log(chain);
   return (
     <Provider store={store}>
       {<ChainRouter screen={screen} selectedChain={chain} />}

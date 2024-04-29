@@ -2,6 +2,10 @@ export enum MultichainActionType {
   TEST_MSG = 'TEST_MSG',
   SET_MK = 'SET_MK',
 
+  // CHAIN ACTIONS
+  SET_CHAIN = 'SET_CHAIN',
+  RESET_CHAIN = 'RESET_CHAIN',
+
   // ERROR ACTIONS
   SET_MESSAGE = 'SET_MESSAGE',
 
