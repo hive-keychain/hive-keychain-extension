@@ -10,4 +10,16 @@
   .react-dropdown-select-dropdown {
     top: 36px !important;
   }
+
+  .add-blockchain-panel {
+    flex-direction: row;
+    .title {
+    }
+    .svg-icon {
+      @include icon-size(16px);
+      svg {
+        @include icon-size(16px);
+      }
+    }
+  }
 }

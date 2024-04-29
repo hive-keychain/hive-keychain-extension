@@ -3,19 +3,36 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 
 const getDefaultChains = (): Chain[] => {
   return [
-    { name: 'Hive', type: ChainType.HIVE, logo: SVGIcons.BLOCKCHAIN_HIVE },
+    {
+      name: 'HIVE',
+      symbol: 'HIVE',
+      type: ChainType.HIVE,
+      logo: SVGIcons.BLOCKCHAIN_HIVE,
+    },
     {
       name: 'Avalanche',
+      symbol: 'Avalanche',
       type: ChainType.EVM,
       logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
     },
-    { name: 'BNB', type: ChainType.EVM, logo: SVGIcons.BLOCKCHAIN_BNB },
+    {
+      name: 'BNB',
+      symbol: 'BNB',
+      type: ChainType.EVM,
+      logo: SVGIcons.BLOCKCHAIN_BNB,
+    },
     {
       name: 'Ethereum',
+      symbol: 'ETH',
       type: ChainType.EVM,
       logo: SVGIcons.BLOCKCHAIN_ETHEREUM,
     },
-    { name: 'Polygon', type: ChainType.EVM, logo: SVGIcons.BLOCKCHAIN_POLYGON },
+    {
+      name: 'Polygon',
+      symbol: 'Polygon',
+      type: ChainType.EVM,
+      logo: SVGIcons.BLOCKCHAIN_POLYGON,
+    },
   ];
 };
 

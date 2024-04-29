@@ -5,6 +5,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { EnumUtils } from 'src/utils/enum.utils';
 
 export interface OptionItem {
   label: string;
@@ -25,6 +26,7 @@ export interface CustomSelectProps<T> {
   onDelete?: (...params: any) => void;
   filterable?: boolean;
   additionalClassname?: string;
+  footer?: JSX.Element;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -55,7 +57,14 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           selectProps.methods.dropDown('close');
         }}>
         {itemProps.selectedItem.img && (
-          <img className="left-image" src={itemProps.selectedItem.img} />
+          <>
+            {EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+              <SVGIcon icon={itemProps.selectedItem.img as SVGIcons} />
+            )}
+            {!EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+              <img className="left-image" src={itemProps.selectedItem.img} />
+            )}
+          </>
         )}
         <span>{itemProps.selectedItem.label}</span>
       </div>
@@ -109,6 +118,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             canDelete={option.canDelete}
           />
         ))}
+        {itemProps.footer && itemProps.footer}
       </div>
     );
   };

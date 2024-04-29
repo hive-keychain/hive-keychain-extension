@@ -9,17 +9,17 @@ export enum ChainType {
 
 export interface Chain {
   name: string;
+  symbol: string;
   type?: ChainType;
   logo: SVGIcons | string;
 }
 
 export const ChainReducer = (
-  state: Chain = { name: '', type: undefined, logo: '' },
+  state: Chain = { name: '', type: undefined, logo: '', symbol: '' },
   { type, payload }: ActionPayload<Partial<Chain>>,
 ) => {
   switch (type) {
     case MultichainActionType.SET_CHAIN: {
-      console.log('set chain', payload);
       return payload;
     }
     case MultichainActionType.RESET_CHAIN: {
