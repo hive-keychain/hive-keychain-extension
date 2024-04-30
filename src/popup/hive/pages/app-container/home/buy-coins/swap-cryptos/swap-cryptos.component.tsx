@@ -3,7 +3,7 @@ import {
   SimpleSwapProvider,
   StealthexProvider,
   SwapCryptosMerger,
-} from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-classes';
+} from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';

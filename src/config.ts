@@ -93,7 +93,6 @@ const Config = {
       apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',
       headerKey: '',
       refId: 'a81a6051c500',
-      //Note: fee is set in the website.
     } as SwapCryptosConfig,
   },
   multisig: {
