@@ -7,7 +7,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export enum OptionItemBadgeType {
-  BADGE_GREEN = 'badge-green',
+  BADGE_RED = 'badge-red',
 }
 export interface OptionItemBagde {
   type: OptionItemBadgeType;

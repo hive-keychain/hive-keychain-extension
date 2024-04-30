@@ -65,7 +65,7 @@ export class StealthexProvider
       if (pairedCurrencyList.includes(x.symbol)) {
         const bagde = x.network
           ? {
-              type: OptionItemBadgeType.BADGE_GREEN,
+              type: OptionItemBadgeType.BADGE_RED,
               label: x.network,
             }
           : undefined;
@@ -172,7 +172,7 @@ export class SimpleSwapProvider
       if (pairedCurrencyList.includes(x.symbol)) {
         const bagde = x.network
           ? {
-              type: OptionItemBadgeType.BADGE_GREEN,
+              type: OptionItemBadgeType.BADGE_RED,
               label: x.network,
             }
           : undefined;

@@ -40,10 +40,10 @@
           width: 40px;
           border-radius: 50%;
         }
-        .badge-green {
+        .badge-red {
           border: 1px solid;
           border-radius: 24px;
-          border-color: green;
+          border-color: $red;
           padding-top: 4px;
           padding-bottom: 4px;
           padding-left: 12px;
@@ -122,10 +122,10 @@
             margin-left: 10px;
           }
 
-          .badge-green {
+          .badge-red {
             border: 1px solid;
             border-radius: 24px;
-            border-color: green;
+            border-color: $red;
             padding-top: 4px;
             padding-bottom: 4px;
             padding-left: 12px;
@@ -149,7 +149,7 @@
             display: none;
           }
           &:hover {
-            .badge-green {
+            .badge-red {
               border-color: white;
               color: white;
             }
