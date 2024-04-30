@@ -45,24 +45,22 @@ export class StealthexProvider
       });
     }
 
-    const allCurrencies = (
-      await axios.get(this.buildUrl(currenciesRoute), {
-        headers: requestHeaders,
-      })
-    ).data;
-
     const pairedCurrencyRoute = `${this.urls.routes.currencyPair}${symbol}`;
     if (this.logInfo) {
       Logger.log('pairedCurrencyRoute', { pairedCurrencyRoute });
     }
 
-    const pairedCurrencyList = (
-      await axios.get(this.buildUrl(pairedCurrencyRoute), {
+    const [allCurrencies, pairedCurrencyList] = await Promise.all([
+      axios.get(this.buildUrl(currenciesRoute), {
         headers: requestHeaders,
-      })
-    ).data;
-    allCurrencies.map((x: any) => {
-      if (pairedCurrencyList.includes(x.symbol)) {
+      }),
+      axios.get(this.buildUrl(pairedCurrencyRoute), {
+        headers: requestHeaders,
+      }),
+    ]);
+
+    allCurrencies.data.map((x: any) => {
+      if (pairedCurrencyList.data.includes(x.symbol)) {
         const bagde = x.network
           ? {
               type: OptionItemBadgeType.BADGE_RED,
@@ -159,17 +157,17 @@ export class SimpleSwapProvider
         buildUrl: this.buildUrl('-'),
       });
     }
-    const allCurrencies = (await axios.get(this.buildUrl(currenciesRoute)))
-      .data;
     const pairedCurrencyRoute = `${this.urls.routes.currencyPair}?api_key=${this.apiKey}&fixed=false&symbol=${symbol}`;
     if (this.logInfo) {
       Logger.log('pairedCurrencyRoute', { pairedCurrencyRoute });
     }
-    const pairedCurrencyList = (
-      await axios.get(this.buildUrl(pairedCurrencyRoute))
-    ).data;
-    allCurrencies.map((x: any) => {
-      if (pairedCurrencyList.includes(x.symbol)) {
+    const [allCurrencies, pairedCurrencyList] = await Promise.all([
+      axios.get(this.buildUrl(currenciesRoute)),
+      axios.get(this.buildUrl(pairedCurrencyRoute)),
+    ]);
+
+    allCurrencies.data.map((x: any) => {
+      if (pairedCurrencyList.data.includes(x.symbol)) {
         const bagde = x.network
           ? {
               type: OptionItemBadgeType.BADGE_RED,
