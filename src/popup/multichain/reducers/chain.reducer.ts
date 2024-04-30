@@ -1,21 +1,15 @@
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-
-export enum ChainType {
-  HIVE = 'HIVE',
-  EVM = 'EVM',
-}
-
-export interface Chain {
-  name: string;
-  symbol: string;
-  type?: ChainType;
-  logo: SVGIcons | string;
-}
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 
 export const ChainReducer = (
-  state: Chain = { name: '', type: undefined, logo: '', symbol: '' },
+  state: Chain = {
+    name: '',
+    type: undefined,
+    logo: '',
+    symbol: '',
+    chainId: '',
+  },
   { type, payload }: ActionPayload<Partial<Chain>>,
 ) => {
   switch (type) {

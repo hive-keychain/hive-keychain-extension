@@ -1,5 +1,5 @@
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import { Chain } from '@popup/multichain/reducers/chain.reducer';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';

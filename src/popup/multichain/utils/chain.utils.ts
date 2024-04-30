@@ -1,4 +1,9 @@
-import { Chain, ChainType } from '@popup/multichain/reducers/chain.reducer';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 const getDefaultChains = (): Chain[] => {
@@ -8,31 +13,45 @@ const getDefaultChains = (): Chain[] => {
       symbol: 'HIVE',
       type: ChainType.HIVE,
       logo: SVGIcons.BLOCKCHAIN_HIVE,
-    },
-    {
-      name: 'Avalanche',
-      symbol: 'Avalanche',
-      type: ChainType.EVM,
-      logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
-    },
-    {
-      name: 'BNB',
-      symbol: 'BNB',
-      type: ChainType.EVM,
-      logo: SVGIcons.BLOCKCHAIN_BNB,
-    },
+      chainId: '',
+      mainTokens: {
+        hbd: 'HBD',
+        hive: 'HIVE',
+        hp: 'HP',
+      },
+    } as HiveChain,
     {
       name: 'Ethereum',
       symbol: 'ETH',
       type: ChainType.EVM,
       logo: SVGIcons.BLOCKCHAIN_ETHEREUM,
-    },
+      chainId: '0x1',
+      mainToken: 'ETH',
+    } as EvmChain,
+    {
+      name: 'Avalanche',
+      symbol: 'Avalanche',
+      type: ChainType.EVM,
+      logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
+      chainId: '0xa86a',
+      mainToken: 'AVAX',
+    } as EvmChain,
+    {
+      name: 'BNB',
+      symbol: 'BNB',
+      type: ChainType.EVM,
+      logo: SVGIcons.BLOCKCHAIN_BNB,
+      chainId: '0x38',
+      mainToken: 'BNB',
+    } as EvmChain,
     {
       name: 'Polygon',
       symbol: 'Polygon',
       type: ChainType.EVM,
       logo: SVGIcons.BLOCKCHAIN_POLYGON,
-    },
+      chainId: '0x89',
+      mainToken: 'MATIC',
+    } as EvmChain,
   ];
 };
 

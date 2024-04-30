@@ -2,11 +2,22 @@ import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 
-const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {
-  const currency = nb.split(' ')[1];
+const withCommas = (
+  nb: string | number,
+  decimals = 3,
+  removeTrailingZeros = false,
+) => {
+  let currency;
 
-  const value = parseFloat(nb).toFixed(decimals);
-  var parts = value.split('.');
+  if (typeof nb === 'string') {
+    currency = nb.split(' ')[1];
+  }
+  let value;
+  if (typeof nb === 'number') {
+    nb = nb.toString();
+  }
+  value = parseFloat(nb).toFixed(decimals);
+  let parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
 

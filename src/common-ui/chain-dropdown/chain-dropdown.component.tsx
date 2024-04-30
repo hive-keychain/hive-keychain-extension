@@ -1,5 +1,5 @@
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import { Chain } from '@popup/multichain/reducers/chain.reducer';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
-const ChainDropdown = ({ chain }: PropsFromRedux) => {
+const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
@@ -27,6 +27,10 @@ const ChainDropdown = ({ chain }: PropsFromRedux) => {
     setOptions(optionItems);
   };
 
+  const handleOnAddBlockchainClicked = () => {
+    // TODO navigate to add blockchain page
+  };
+
   return (
     <>
       {options && chain && (
@@ -37,7 +41,9 @@ const ChainDropdown = ({ chain }: PropsFromRedux) => {
           setSelectedItem={(item) => setChain(item.value)}
           background="white"
           footer={
-            <div className="add-blockchain-panel">
+            <div
+              className="add-blockchain-panel"
+              onClick={handleOnAddBlockchainClicked}>
               <SVGIcon icon={SVGIcons.SELECT_ADD} />
               <div className="text">
                 {chrome.i18n.getMessage('html_popup_add_blockchain')}

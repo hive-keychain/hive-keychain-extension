@@ -1,9 +1,11 @@
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/select-account-section/select-account-section.component';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -30,6 +32,7 @@ import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
 const Home = ({
+  chain,
   accounts,
   resetTitleContainerProperties,
   activeAccount,
@@ -49,22 +52,16 @@ const Home = ({
     init();
   }, []);
 
+  useEffect(() => {
+    if (chain) refreshAccountBalances();
+  }, [chain]);
+
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
   };
   const init = async () => {
     await MoralisUtils.initialise();
-    // TODO : this should actually be called before mobing to the homepage
-    // getEvmActiveAccount('0x1', accounts[0].wallet.address);
-    // TODO : remove  hardcoded wallet address
-    console.log('accounts', accounts);
-    console.log('active account tokens', activeAccount);
-    console.log(
-      'total value',
-      activeAccount.reduce((a, b) => a + b.usdValue, 0),
-    );
-    getEvmActiveAccount('0x1', '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58');
   };
 
   const initWhatsNew = async () => {
@@ -93,8 +90,8 @@ const Home = ({
     }
   };
 
-  const refresh = async () => {
-    getEvmActiveAccount('0x1', '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58');
+  const refreshAccountBalances = async () => {
+    getEvmActiveAccount(chain.chainId, accounts[0].wallet.address);
   };
 
   const renderPopup = (
@@ -137,18 +134,18 @@ const Home = ({
           navigateTo(Screen.SETTINGS_MAIN_PAGE);
           return;
         }}
-        onRefreshButtonClicked={refresh}
+        onRefreshButtonClicked={refreshAccountBalances}
         accountSelector={<EvmSelectAccountSectionComponent />}
       />
       <div className={'home-page-content'} onScroll={handleScroll}>
         <EstimatedAccountValueSectionComponent2
           accountValues={{
             [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
-              activeAccount.reduce((a, b) => a + b.usdValue, 0).toString(),
+              EvmTokensUtils.getTotalBalanceInUsd(activeAccount),
             )}`,
             [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
-              (12.0).toString(),
-            )} ETH`,
+              EvmTokensUtils.getTotalBalanceInMainToken(activeAccount, chain),
+            )} ${chain.mainToken}`,
           }}
         />
         <EvmWalletInfoSectionComponent evmTokens={activeAccount} />
@@ -164,6 +161,7 @@ const Home = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
   };

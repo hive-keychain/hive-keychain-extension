@@ -1,5 +1,5 @@
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
-import { Chain } from '@popup/multichain/reducers/chain.reducer';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 
 export const resetChain = () => {
   return {
@@ -9,7 +9,6 @@ export const resetChain = () => {
 };
 
 export const setChain = (chain: Chain) => {
-  console.log(chain);
   return {
     type: MultichainActionType.SET_CHAIN,
     payload: chain,

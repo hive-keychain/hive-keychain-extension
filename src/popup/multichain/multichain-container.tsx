@@ -1,5 +1,5 @@
 import ChainRouter from '@popup/multichain/chain-router.component';
-import { Chain } from '@popup/multichain/reducers/chain.reducer';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';

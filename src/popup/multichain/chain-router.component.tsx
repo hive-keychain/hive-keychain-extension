@@ -8,10 +8,13 @@ import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
-import { Chain, ChainType } from '@popup/multichain/reducers/chain.reducer';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
