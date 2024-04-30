@@ -4324,6 +4324,10 @@
     "message": "Seed phrase copied to clipboard",
     "description": "display seed phrase"
   },
+  "html_popup_add_blockchain": {
+    "message": "Add blockchain",
+    "description": "display seed phrase"
+  },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
     "message": "You haven't copied your seed phrase, please copy it before continuing",
     "description": "Error if seed phrase not copied"

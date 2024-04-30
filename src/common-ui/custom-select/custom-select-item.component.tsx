@@ -1,9 +1,9 @@
 import React, { BaseSyntheticEvent } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { EnumUtils } from 'src/utils/enum.utils';
 
 interface CustomSelectItemProps<T> {
   isLast: boolean;
@@ -40,11 +40,14 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           closeDropdown();
         }}>
         {item.img && (
-          <PreloadedImage
-            className="left-image"
-            src={item.img}
-            alt={item.imgBackup}
-          />
+          <>
+            {EnumUtils.isValueOf(item.img, SVGIcons) && (
+              <SVGIcon className="left-svg" icon={item.img as SVGIcons} />
+            )}
+            {!EnumUtils.isValueOf(item.img, SVGIcons) && (
+              <img className="left-image" src={item.img} />
+            )}
+          </>
         )}
         <div className="item-label">{item.label}</div>
         {onDelete && canDelete && !isSelected && (

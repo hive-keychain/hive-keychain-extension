@@ -153,6 +153,12 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
   }
 };
 
+const shortenString = (string: string, length: number = 3) => {
+  return `${string.substring(length, 0)}...${string
+    ?.toString()
+    .slice(-length)}`;
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -170,6 +176,7 @@ const FormatUtils = {
   trimUselessZero,
   getUSDFromVests,
   getOrdinalLabelTranslation,
+  shortenString,
 };
 
 export default FormatUtils;

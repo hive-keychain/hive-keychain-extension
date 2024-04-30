@@ -40,7 +40,7 @@
           width: 24px;
           border-radius: 50%;
         }
-        .svg-icon {
+        .left-svg {
           height: 24px;
           width: 24px;
           svg {
@@ -63,7 +63,7 @@
 
     .react-dropdown-select-dropdown {
       border-radius: 8px;
-      width: 100%;
+      width: max-content;
       max-height: 210px;
       border: 1px solid var(--input-border);
       top: 60px;
@@ -97,9 +97,9 @@
         }
       }
       .option {
-        &:has(~ .option > .custom-select-item:hover) {
+        &:has(+ .option > .custom-select-item:hover) {
           .separator {
-            background: var(--input-background);
+            background: var(--card-background);
           }
         }
         .custom-select-item {
@@ -133,11 +133,6 @@
           &:hover {
             .item-label {
               color: white;
-            }
-            .sepa .active-icon {
-              svg {
-                color: white;
-              }
             }
             .right-action-icon {
               display: block;

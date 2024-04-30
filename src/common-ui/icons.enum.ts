@@ -140,6 +140,7 @@ export enum SVGIcons {
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',
   SELECT_DELETE = 'select/delete',
+  SELECT_ADD = 'select/add-circle',
 
   SWAPS_SWITCH = 'swaps/swap-switch',
   SWAPS_HISTORY = 'swaps/history',

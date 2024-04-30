@@ -44,6 +44,8 @@ const getChains = async () => {
   return [...getDefaultChains(), ...(await getCustomChains())];
 };
 
+const getSetupChains = async () => {};
+
 export const ChainUtils = {
   getDefaultChains,
   getChains,

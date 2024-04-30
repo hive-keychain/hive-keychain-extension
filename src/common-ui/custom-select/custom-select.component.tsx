@@ -27,6 +27,8 @@ export interface CustomSelectProps<T> {
   filterable?: boolean;
   additionalClassname?: string;
   footer?: JSX.Element;
+  formatSelectedItem?: (...params: any) => string;
+  renderOnlyIcon?: boolean;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -59,14 +61,23 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         {itemProps.selectedItem.img && (
           <>
             {EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
-              <SVGIcon icon={itemProps.selectedItem.img as SVGIcons} />
+              <SVGIcon
+                className="left-svg"
+                icon={itemProps.selectedItem.img as SVGIcons}
+              />
             )}
             {!EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
               <img className="left-image" src={itemProps.selectedItem.img} />
             )}
           </>
         )}
-        <span>{itemProps.selectedItem.label}</span>
+        {!itemProps.renderOnlyIcon && (
+          <span>
+            {itemProps.formatSelectedItem
+              ? itemProps.formatSelectedItem(itemProps.selectedItem.label)
+              : itemProps.selectedItem.label}
+          </span>
+        )}
       </div>
     );
   };

@@ -1,4 +1,8 @@
 .chain-selector {
+  .custom-select {
+    min-width: unset;
+  }
+
   .react-dropdown-select {
     height: 32px !important;
   }
@@ -6,19 +10,42 @@
     height: 20px !important;
     width: 20px !important;
   }
+  .left-svg {
+    height: 20px !important;
+    width: 20px !important;
+    svg {
+      height: 20px !important;
+      width: 20px !important;
+    }
+  }
 
   .react-dropdown-select-dropdown {
     top: 36px !important;
   }
 
   .add-blockchain-panel {
-    flex-direction: row;
-    .title {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    column-gap: 12px;
+    padding: 10px 6px;
+    box-sizing: border-box;
+    @include poppins500(14px);
+    --add-icon-color: #{$red};
+    .text {
+      color: var(--main-font-color);
+    }
+    &:hover {
+      background: $red;
+      --add-icon-color: white;
+      .text {
+        color: white;
+      }
     }
     .svg-icon {
-      @include icon-size(16px);
+      @include icon-size(20px);
       svg {
-        @include icon-size(16px);
+        @include icon-size(20px);
       }
     }
   }
