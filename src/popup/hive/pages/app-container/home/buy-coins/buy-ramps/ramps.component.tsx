@@ -32,6 +32,7 @@ const BuyRamps = ({
   price: CurrencyPrices;
 }) => {
   const [ramps, setRamps] = useState<RampMerger>();
+  const [errorInApi, setErrorInApi] = useState<string>();
   const [currencies, setCurrencies] = useState<RampFiatCurrency[]>([]);
   const [fiat, setFiat] = useState<OptionItem<RampFiatCurrency>>();
   const [amount, setAmount] = useState('');
@@ -75,7 +76,13 @@ const BuyRamps = ({
         'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
       );
 
-      setEstimations(estimations);
+      if (estimations) {
+        setErrorInApi(undefined);
+        setEstimations(estimations);
+      } else {
+        setErrorInApi('buy_coins_swap_cryptos_error_api');
+      }
+
       if (shouldRefresh) refreshCountdown();
     }
   };
@@ -124,6 +131,7 @@ const BuyRamps = ({
           estimations={estimations}
           countdown={countdown}
           price={price}
+          errorMessage={errorInApi}
         />
       ) : (
         <div className="rotating-logo-container">

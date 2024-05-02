@@ -33,6 +33,15 @@
         }
       }
     }
+    .error {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @include poppins500(16px);
+      color: var(--main-font-color);
+      text-align: center;
+    }
   }
 
   .swap-icon {

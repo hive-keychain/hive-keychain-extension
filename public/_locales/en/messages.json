@@ -3691,6 +3691,10 @@
     "message": "Network Timeout Error: Please check your connection!",
     "description": "General word"
   },
+  "buy_coins_swap_cryptos_error_api": {
+    "message": "There may be an error from Third party API, please try again later",
+    "description": "buy fiat crypto swap error message"
+  },
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
     "description": "Need more RC"

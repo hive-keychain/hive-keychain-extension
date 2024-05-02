@@ -11,6 +11,7 @@ import {
 import CountriesUtils from '@popup/hive/utils/countries.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
+import Logger from 'src/utils/logger.utils';
 
 //TODO : Add minimum for each fiat
 const APP_CUSTOMIZATION = {
@@ -66,7 +67,10 @@ export class TransakProvider
       await Promise.all(
         paymentOptions!.map((po) => {
           return BaseApi.get(
-            BaseApi.buildUrl(this.baseUrl, 'api/v1/pricing/public/quotes'),
+            BaseApi.buildUrl(
+              this.baseUrl,
+              'api-errores/v1/pricing/public/quotes',
+            ), //TODO update as original as 'api/v1/pricing/public/quotes'
             {
               partnerApiKey: this.apiKey,
               fiatCurrency: fiatCurrency,
@@ -164,7 +168,7 @@ export class RampProvider
       const result = await BaseApi.post(
         BaseApi.buildUrl(
           this.baseUrl,
-          `api/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`,
+          `api-asdasda/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`, //TODO change to original as `api/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`
         ),
         {
           cryptoAssetSymbol: `${cryptoCurrency}_${network}`,
@@ -245,7 +249,7 @@ export class RampMerger {
     cryptoCurrency: string,
     network: string,
     name: string,
-  ): Promise<RampEstimationDisplay[]> => {
+  ): Promise<RampEstimationDisplay[] | undefined> => {
     const estimations = await Promise.all(
       this.providers.map(async (provider) => {
         return (
@@ -267,10 +271,14 @@ export class RampMerger {
             } as RampEstimationDisplay),
         );
       }),
-    );
+    ).catch((e) => {
+      Logger.log('Ramp error: ', { e });
+    });
     const cleanEstimations = estimations
-      .reduce((acc, val) => [...acc, ...val], [])
-      .sort((a, b) => b.estimation - a.estimation);
+      ? estimations
+          .reduce((acc, val) => [...acc, ...val], [])
+          .sort((a, b) => b.estimation - a.estimation)
+      : undefined;
     return cleanEstimations;
   };
 }

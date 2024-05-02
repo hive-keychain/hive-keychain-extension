@@ -19,6 +19,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
+  const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const [
@@ -232,6 +233,11 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             newEndToken.subLabel!,
           )
           .then((res) => {
+            if (!res) {
+              setErrorInApi('buy_coins_swap_cryptos_error_api');
+              return;
+            }
+            setErrorInApi(undefined);
             setEstimations(
               res.map(({ estimation }) => {
                 return { ...estimation };
@@ -294,6 +300,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           minAcceptedAmount={exchangeRangeAmount.min}
           swapTokens={swapStartAndEnd}
           displayReceiveTokenLogo
+          errorMessage={errorInApi}
         />
       ) : (
         <div className="rotating-logo-container">

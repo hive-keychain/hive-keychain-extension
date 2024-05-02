@@ -95,7 +95,8 @@ export class StealthexProvider
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
     let requestHeaders: GenericObjectKeypair = {};
-    requestHeaders[`${this.headerKey}`] = this.apiKey;
+    //TODO bellow update again to the proper apiKey as this.apiKey;
+    requestHeaders[`${this.headerKey}`] = this.apiKey + 'producing-error';
 
     const requestConfig = {
       headers: requestHeaders,
@@ -199,7 +200,8 @@ export class SimpleSwapProvider
    * Note: For simpleswap fee is set in the website, specifically: https://partners.simpleswap.io/webtools/api
    */
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
-    const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
+    //TODO bellow important after testing the error update as `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`
+    const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}-error-testing&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
     const link = `${this.urls.referalBaseUrl}${
       this.refId
     }&from=${from.toLowerCase()}&to=${to.toLowerCase()}&amount=${amount}`;
@@ -290,10 +292,11 @@ export class SwapCryptosMerger {
     from: string,
     to: string,
   ): Promise<
-    {
-      provider: SwapCryptos;
-      estimation: SwapCryptosEstimationDisplay;
-    }[]
+    | {
+        provider: SwapCryptos;
+        estimation: SwapCryptosEstimationDisplay;
+      }[]
+    | undefined
   > => {
     let providerEstimationList = [];
     for (const provider of this.providers) {
@@ -311,6 +314,6 @@ export class SwapCryptosMerger {
         Logger.log('No estimation available in Exchange', { provider, error });
       }
     }
-    return providerEstimationList;
+    return providerEstimationList.length ? providerEstimationList : undefined;
   };
 }

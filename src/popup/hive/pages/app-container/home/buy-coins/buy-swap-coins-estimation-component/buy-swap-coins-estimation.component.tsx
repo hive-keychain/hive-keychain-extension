@@ -36,6 +36,7 @@ interface Props {
   minAmountLabel?: string;
   swapTokens?: () => void;
   displayReceiveTokenLogo?: boolean;
+  errorMessage?: string;
 }
 
 const BuySwapCoinsEstimation = ({
@@ -58,6 +59,7 @@ const BuySwapCoinsEstimation = ({
   minAmountLabel,
   swapTokens,
   displayReceiveTokenLogo,
+  errorMessage,
 }: Props) => {
   return (
     <FormContainer>
@@ -198,6 +200,11 @@ const BuySwapCoinsEstimation = ({
             })}
           </div>
         </div>
+        {errorMessage && (
+          <div className="error">
+            {chrome.i18n.getMessage('buy_coins_swap_cryptos_error_api')}
+          </div>
+        )}
       </div>
     </FormContainer>
   );
