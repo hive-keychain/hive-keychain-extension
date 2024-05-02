@@ -13,6 +13,9 @@ export enum SVGIcons {
   BUY_RAMP = 'buy/ramp-mono',
   BUY_UPBIT = 'buy/upbit',
 
+  SWAP_CRYPTOS_STEALTHEX = 'buy/stealthex',
+  SWAP_CRYPTOS_SIMPLESWAP = 'buy/simpleswap',
+
   BUY_METHOD_CARD = 'buy/payment-methods/card',
   BUY_METHOD_GOOGLE_PAY = 'buy/payment-methods/google-pay',
   BUY_METHOD_APPLE_PAY = 'buy/payment-methods/apple-pay',
@@ -187,6 +190,4 @@ export enum SVGIcons {
   PROBIT = 'probit',
   TRANSAK = 'transak',
   UPBIT = 'upbit',
-  STEALTHEX = 'stealthex',
-  SIMPLESWAP = 'simpleswap',
 }

@@ -21,7 +21,7 @@ export class StealthexProvider
   constructor(logInfo?: boolean) {
     super(Config.swapCryptos.stealthex);
     this.name = 'Stealthex';
-    this.logo = SVGIcons.STEALTHEX;
+    this.logo = SVGIcons.SWAP_CRYPTOS_STEALTHEX;
     this.logInfo = logInfo;
   }
   name: string;
@@ -120,7 +120,7 @@ export class StealthexProvider
     return {
       swapCrypto: SwapCryptos.STEALTHEX,
       link: link,
-      logo: SVGIcons.STEALTHEX,
+      logo: SVGIcons.SWAP_CRYPTOS_STEALTHEX,
       network: 'not_needed',
       name: SwapCryptos.STEALTHEX,
       from: from,
@@ -138,7 +138,7 @@ export class SimpleSwapProvider
   constructor(logInfo?: boolean) {
     super(Config.swapCryptos.simpleswap);
     this.name = 'Simpleswap';
-    this.logo = SVGIcons.SIMPLESWAP;
+    this.logo = SVGIcons.SWAP_CRYPTOS_SIMPLESWAP;
     this.logInfo = logInfo;
   }
   name: string;
@@ -211,7 +211,7 @@ export class SimpleSwapProvider
     return {
       swapCrypto: SwapCryptos.SIMPLESWAP,
       link: link,
-      logo: SVGIcons.SIMPLESWAP,
+      logo: SVGIcons.SWAP_CRYPTOS_SIMPLESWAP,
       network: 'not_needed',
       name: SwapCryptos.SIMPLESWAP,
       from: from,

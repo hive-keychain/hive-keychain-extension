@@ -166,13 +166,14 @@ const BuyRamps = ({
                 )}
               </div>
               <div className="quotes">
-                {estimations.map((estimation) => {
+                {estimations.map((estimation, index) => {
                   const key =
                     estimation.name +
                     estimation.paymentMethod.method +
                     estimation.fiat +
                     estimation.amount +
-                    estimation.crypto;
+                    estimation.crypto +
+                    index.toString();
                   return (
                     <div
                       className="quote"
@@ -183,7 +184,6 @@ const BuyRamps = ({
                       <SVGIcon icon={estimation.logo} />
                       <span className="method">
                         <SVGIcon
-                          key={key}
                           icon={estimation.paymentMethod.icon}
                           skipTooltipTranslation
                           tooltipPosition="bottom"

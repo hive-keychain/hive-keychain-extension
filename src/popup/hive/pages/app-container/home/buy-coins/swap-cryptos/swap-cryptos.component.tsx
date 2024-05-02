@@ -138,7 +138,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   const init = async () => {
     try {
       const newSwapCryptos = new SwapCryptosMerger([
-        new StealthexProvider(false),
+        new StealthexProvider(true),
         new SimpleSwapProvider(true),
       ]);
       setSetswapCryptos(newSwapCryptos);
@@ -369,7 +369,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                         onClick={() => {
                           window.open(estimation.link, '__blank');
                         }}>
-                        <SVGIcon icon={`buy/${estimation.logo}` as SVGIcons} />
+                        <SVGIcon icon={`${estimation.logo}` as SVGIcons} />
                         <div className="receive">
                           <div className="icon-label">
                             <PreloadedImage

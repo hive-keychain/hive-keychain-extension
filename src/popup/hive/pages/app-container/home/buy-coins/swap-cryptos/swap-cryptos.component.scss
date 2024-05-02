@@ -39,7 +39,8 @@
       .min-amount {
         @include poppins500(12px);
         color: var(--main-font-color);
-        text-align: center;
+        text-align: right;
+        padding-right: 12px;
       }
     }
   }
@@ -108,9 +109,9 @@
         }
       }
       .chevron {
-        width: 20px;
+        width: 12px;
         svg {
-          width: 20px;
+          width: 12px;
         }
       }
     }

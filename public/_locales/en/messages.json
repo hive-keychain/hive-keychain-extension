@@ -3592,7 +3592,7 @@
     "description": "token swap general error message"
   },
   "html_popup_swap_crypto_min_accepted_label": {
-    "message": "Min Accepted:",
+    "message": "Min:",
     "description": "swap cryptos minimum amount form"
   },
   "local_accounts": {
