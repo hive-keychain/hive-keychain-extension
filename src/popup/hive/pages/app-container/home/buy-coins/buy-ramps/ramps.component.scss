@@ -21,7 +21,7 @@
         width: 20px !important;
         border-radius: unset !important;
       }
-      .fiat-token {
+      .start-token {
         display: flex;
         flex-direction: column;
 
@@ -98,13 +98,14 @@
         }
       }
       .receive {
-        width: 100px;
-        text-align: right;
-      }
-      .chevron {
-        width: 12px;
-        svg {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .chevron {
           width: 12px;
+          svg {
+            width: 12px;
+          }
         }
       }
     }

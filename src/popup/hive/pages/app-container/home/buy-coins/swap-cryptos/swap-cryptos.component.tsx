@@ -1,5 +1,6 @@
 import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
+import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
 import {
   SimpleSwapProvider,
   StealthexProvider,
@@ -10,20 +11,10 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import {
-  ComplexeCustomSelect,
-  OptionItem,
-} from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -284,119 +275,26 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       startToken &&
       endTokenListOptions.length !== 0 &&
       endToken ? (
-        <FormContainer>
-          <div className="form-fields">
-            <div className="start-token">
-              <div className="inputs">
-                <ComplexeCustomSelect
-                  //@ts-ignore
-                  selectedItem={startToken}
-                  options={startTokenListOptions}
-                  setSelectedItem={setStartToken}
-                  label="token"
-                  filterable={startTokenListOptions.length > 1}
-                />
-                <InputComponent
-                  type={InputType.NUMBER}
-                  value={amount}
-                  onChange={setAmount}
-                  label="popup_html_transfer_amount"
-                  placeholder="popup_html_transfer_amount"
-                  min={0}
-                />
-              </div>
-            </div>
-            {exchangeRangeAmount.min > 0 && (
-              <div className="min-amount">
-                {chrome.i18n.getMessage(
-                  'html_popup_swap_crypto_min_accepted_label',
-                )}{' '}
-                {FormatUtils.formatCurrencyValue(exchangeRangeAmount.min)}
-              </div>
-            )}
-            <SVGIcon
-              icon={SVGIcons.SWAPS_SWITCH}
-              className="swap-icon"
-              onClick={swapStartAndEnd}
-            />
-            <div className="end-token">
-              <div className="inputs">
-                <ComplexeCustomSelect
-                  selectedItem={endToken}
-                  options={endTokenListOptions}
-                  setSelectedItem={setEndToken}
-                  label="token"
-                  filterable={endTokenListOptions.length > 1}
-                />
-              </div>
-            </div>
-            <div className="estimations">
-              <div className="quote-label-wrapper">
-                {estimations.length !== 0 && (
-                  <span className="quote-label">
-                    {chrome.i18n.getMessage('quotes')}
-                  </span>
-                )}
-                {!!countdown && estimations.length !== 0 && (
-                  <span className="countdown">
-                    {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
-                  </span>
-                )}
-              </div>
-              <div className="quotes">
-                {loadingEstimation && (
-                  <div className="rotating-logo-container">
-                    <RotatingLogoComponent />
-                  </div>
-                )}
-                {!loadingEstimation &&
-                  estimations.map((estimation) => {
-                    const key =
-                      estimation.name +
-                      estimation.from +
-                      estimation.to +
-                      estimation.amount;
-                    return (
-                      <div
-                        className="quote"
-                        key={key}
-                        onClick={() => {
-                          window.open(estimation.link, '__blank');
-                        }}>
-                        <SVGIcon icon={`${estimation.logo}` as SVGIcons} />
-                        <div className="receive">
-                          <div className="receive-token">
-                            <div className="icon-label">
-                              <PreloadedImage
-                                className="left-image"
-                                src={
-                                  estimation.to === 'HIVE'
-                                    ? HIVE_OPTION_ITEM.img!
-                                    : pairedCurrencyOptionsInitialList.find(
-                                        (i) => i.subLabel === estimation.to,
-                                      )?.img!
-                                }
-                                alt={`side-icon-${estimation.to}`}
-                              />
-                              <span>{estimation.to}</span>
-                            </div>
-                            <span className="amount">
-                              {FormatUtils.formatCurrencyValue(
-                                estimation.estimation,
-                              )}
-                            </span>
-                          </div>
-                          <span className="chevron">
-                            <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        </FormContainer>
+        <BuySwapCoinsEstimationComponent
+          startToken={startToken}
+          startTokenList={startTokenListOptions}
+          setStartToken={setStartToken}
+          startTokenLabel="token"
+          endToken={endToken}
+          endTokenList={endTokenListOptions}
+          setEndToken={setEndToken}
+          endTokenLabel="token"
+          amount={amount}
+          setAmount={setAmount}
+          inputAmountLabel={'popup_html_transfer_amount'}
+          inputPlaceHolder={'popup_html_transfer_amount'}
+          estimations={estimations}
+          countdown={countdown}
+          minAmountLabel={'html_popup_swap_crypto_min_accepted_label'}
+          minAcceptedAmount={exchangeRangeAmount.min}
+          swapTokens={swapStartAndEnd}
+          displayReceiveTokenLogo
+        />
       ) : (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />

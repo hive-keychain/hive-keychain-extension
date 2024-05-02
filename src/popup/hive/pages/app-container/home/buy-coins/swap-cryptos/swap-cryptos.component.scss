@@ -102,6 +102,10 @@
         flex-direction: row;
         align-items: center;
         .receive-token {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
           padding-right: 8px;
           text-align: center;
           .icon-label {
@@ -112,11 +116,11 @@
             align-items: center;
           }
         }
-      }
-      .chevron {
-        width: 12px;
-        svg {
+        .chevron {
           width: 12px;
+          svg {
+            width: 12px;
+          }
         }
       }
     }
