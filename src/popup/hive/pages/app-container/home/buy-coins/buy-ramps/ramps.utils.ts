@@ -67,10 +67,7 @@ export class TransakProvider
       await Promise.all(
         paymentOptions!.map((po) => {
           return BaseApi.get(
-            BaseApi.buildUrl(
-              this.baseUrl,
-              'api-errores/v1/pricing/public/quotes',
-            ), //TODO update as original as 'api/v1/pricing/public/quotes'
+            BaseApi.buildUrl(this.baseUrl, 'api/v1/pricing/public/quotes'),
             {
               partnerApiKey: this.apiKey,
               fiatCurrency: fiatCurrency,
@@ -168,7 +165,7 @@ export class RampProvider
       const result = await BaseApi.post(
         BaseApi.buildUrl(
           this.baseUrl,
-          `api-asdasda/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`, //TODO change to original as `api/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`
+          `api/host-api/v3/onramp/quote/all\?hostApiKey\=${this.apiKey}`,
         ),
         {
           cryptoAssetSymbol: `${cryptoCurrency}_${network}`,

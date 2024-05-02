@@ -17,7 +17,12 @@ import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-
+//TODO imporant:
+//  - generate an error in both init(remove the apiKeys from .env) ramps & swapcryptos.
+//  - find a way to handle and show error api in both!
+//  - after this work in adding a new method for class, following tickets:
+//    -> form with data needed and a nice way to present both options for the user.
+//      - quote / keychain-exchange, maybe adding a switch so the results may change or a new page to input + confirm the transaction
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();

@@ -95,8 +95,7 @@ export class StealthexProvider
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
     let requestHeaders: GenericObjectKeypair = {};
-    //TODO bellow update again to the proper apiKey as this.apiKey;
-    requestHeaders[`${this.headerKey}`] = this.apiKey + 'producing-error';
+    requestHeaders[`${this.headerKey}`] = this.apiKey;
 
     const requestConfig = {
       headers: requestHeaders,
@@ -200,8 +199,7 @@ export class SimpleSwapProvider
    * Note: For simpleswap fee is set in the website, specifically: https://partners.simpleswap.io/webtools/api
    */
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
-    //TODO bellow important after testing the error update as `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`
-    const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}-error-testing&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
+    const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
     const link = `${this.urls.referalBaseUrl}${
       this.refId
     }&from=${from.toLowerCase()}&to=${to.toLowerCase()}&amount=${amount}`;
