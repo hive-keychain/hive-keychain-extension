@@ -1,4 +1,5 @@
 import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
+import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import {
   SimpleSwapProvider,
   StealthexProvider,
@@ -25,13 +26,6 @@ import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-
-const HIVE_OPTION_ITEM = {
-  label: 'HIVE',
-  subLabel: 'HIVE',
-  value: 'HIVE',
-  img: `/assets/images/wallet/hive-logo.svg`,
-} as OptionItem;
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();

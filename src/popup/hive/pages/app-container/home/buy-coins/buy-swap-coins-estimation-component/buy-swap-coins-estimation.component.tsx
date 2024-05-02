@@ -1,0 +1,158 @@
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { RampEstimationDisplay } from '@interfaces/ramps.interface';
+import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
+import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
+import React from 'react';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
+
+interface Props {
+  startTokenList: OptionItem[];
+  endTokenList: OptionItem[];
+  setStartToken: (token: OptionItem) => void;
+  setEndToken: (token: OptionItem) => void;
+  startToken: OptionItem;
+  endToken: OptionItem;
+  amount: string;
+  setAmount: (amount: string) => void;
+  startTokenLabel: string;
+  endTokenLabel: string;
+  inputAmountLabel: string;
+  inputPlaceHolder: string;
+  estimations: RampEstimationDisplay[] | SwapCryptosEstimationDisplay[];
+  countdown: number | null;
+  price?: CurrencyPrices;
+}
+
+const BuySwapCoinsEstimation = ({
+  startTokenList,
+  endTokenList,
+  setStartToken,
+  setEndToken,
+  amount,
+  setAmount,
+  startTokenLabel,
+  inputAmountLabel,
+  inputPlaceHolder,
+  startToken,
+  endToken,
+  endTokenLabel,
+  estimations,
+  countdown,
+  price,
+}: Props) => {
+  return (
+    <FormContainer>
+      <div className="form-fields">
+        <div className="fiat-token">
+          <div className="inputs">
+            <ComplexeCustomSelect
+              //@ts-ignore
+              selectedItem={startToken}
+              options={startTokenList}
+              setSelectedItem={setStartToken}
+              label={startTokenLabel}
+              filterable
+            />
+            <InputComponent
+              type={InputType.NUMBER}
+              value={amount}
+              onChange={setAmount}
+              label={inputAmountLabel}
+              placeholder={inputPlaceHolder}
+              min={0}
+            />
+          </div>
+        </div>
+        <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
+        <div className="end-token">
+          <div className="inputs">
+            <ComplexeCustomSelect
+              selectedItem={endToken}
+              options={endTokenList}
+              setSelectedItem={setEndToken}
+              label={endTokenLabel}
+            />
+          </div>
+        </div>
+        <div className="estimations">
+          <div className="quote-label-wrapper">
+            {estimations.length !== 0 && (
+              <span className="quote-label">
+                {chrome.i18n.getMessage('quotes')}
+              </span>
+            )}
+            {!!countdown && (
+              <span className="countdown">
+                {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
+              </span>
+            )}
+          </div>
+          <div className="quotes">
+            {estimations.map((estimation, index) => {
+              const key =
+                estimation.name + estimation.amount + index.toString();
+              return (
+                <div
+                  className="quote"
+                  key={key}
+                  onClick={() => {
+                    window.open(estimation.link, '__blank');
+                  }}>
+                  <SVGIcon icon={estimation.logo} />
+                  {(estimation as RampEstimationDisplay).hasOwnProperty(
+                    'paymentMethod',
+                  ) && (
+                    <span className="method">
+                      <SVGIcon
+                        icon={
+                          (estimation as RampEstimationDisplay).paymentMethod
+                            .icon
+                        }
+                        skipTooltipTranslation
+                        tooltipPosition="bottom"
+                        tooltipDelayShow={1000}
+                        tooltipMessage={
+                          (estimation as RampEstimationDisplay).paymentMethod
+                            .title
+                        }
+                      />
+                    </span>
+                  )}
+                  <div className="receive">
+                    <span>{estimation.estimation}</span>
+                    <span className="amount">
+                      {price
+                        ? CurrencyPricesUtils.getTokenUSDPrice(
+                            estimation.estimation + '',
+                            'HIVE',
+                            price,
+                            [],
+                          )
+                        : FormatUtils.formatCurrencyValue(
+                            estimation.estimation,
+                          )}
+                    </span>
+                  </div>
+                  <span className="chevron">
+                    <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </FormContainer>
+  );
+};
+
+export const BuySwapCoinsEstimationComponent = BuySwapCoinsEstimation;
