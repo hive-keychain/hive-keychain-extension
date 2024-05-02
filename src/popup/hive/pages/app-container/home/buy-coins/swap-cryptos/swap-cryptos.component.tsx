@@ -371,29 +371,31 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
                         }}>
                         <SVGIcon icon={`${estimation.logo}` as SVGIcons} />
                         <div className="receive">
-                          <div className="icon-label">
-                            <PreloadedImage
-                              className="left-image"
-                              src={
-                                estimation.to === 'HIVE'
-                                  ? HIVE_OPTION_ITEM.img!
-                                  : pairedCurrencyOptionsInitialList.find(
-                                      (i) => i.subLabel === estimation.to,
-                                    )?.img!
-                              }
-                              alt={`side-icon-${estimation.to}`}
-                            />
-                            <span>{estimation.to}</span>
+                          <div className="receive-token">
+                            <div className="icon-label">
+                              <PreloadedImage
+                                className="left-image"
+                                src={
+                                  estimation.to === 'HIVE'
+                                    ? HIVE_OPTION_ITEM.img!
+                                    : pairedCurrencyOptionsInitialList.find(
+                                        (i) => i.subLabel === estimation.to,
+                                      )?.img!
+                                }
+                                alt={`side-icon-${estimation.to}`}
+                              />
+                              <span>{estimation.to}</span>
+                            </div>
+                            <span className="amount">
+                              {FormatUtils.formatCurrencyValue(
+                                estimation.estimation,
+                              )}
+                            </span>
                           </div>
-                          <span className="amount">
-                            {FormatUtils.formatCurrencyValue(
-                              estimation.estimation,
-                            )}
+                          <span className="chevron">
+                            <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
                           </span>
                         </div>
-                        <span className="chevron">
-                          <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
-                        </span>
                       </div>
                     );
                   })}

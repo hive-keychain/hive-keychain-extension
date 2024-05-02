@@ -98,14 +98,19 @@
         }
       }
       .receive {
-        width: 100px;
-        text-align: center;
-        .icon-label {
-          display: flex;
-          flex-direction: row;
-          column-gap: 4px;
-          justify-content: center;
-          align-items: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .receive-token {
+          padding-right: 8px;
+          text-align: center;
+          .icon-label {
+            display: flex;
+            flex-direction: row;
+            column-gap: 4px;
+            justify-content: center;
+            align-items: center;
+          }
         }
       }
       .chevron {
