@@ -121,6 +121,9 @@
           align-items: center;
           padding-right: 12px;
           text-align: center;
+          .estimation-span {
+            margin-left: 4px;
+          }
           .icon-label {
             display: flex;
             flex-direction: row;

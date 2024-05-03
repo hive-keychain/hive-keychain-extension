@@ -175,7 +175,7 @@ const BuySwapCoinsEstimation = ({
                             (estimation as SwapCryptosEstimationDisplay).to
                           }`}
                         />
-                        <span>
+                        <span className="estimation-span">
                           {FormatUtils.formatCurrencyValue(
                             estimation.estimation,
                           )}{' '}
