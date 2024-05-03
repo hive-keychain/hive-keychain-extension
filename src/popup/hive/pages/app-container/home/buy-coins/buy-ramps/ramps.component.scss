@@ -110,6 +110,9 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        .receive-token {
+          padding-right: 12px;
+        }
         .chevron {
           width: 12px;
           svg {

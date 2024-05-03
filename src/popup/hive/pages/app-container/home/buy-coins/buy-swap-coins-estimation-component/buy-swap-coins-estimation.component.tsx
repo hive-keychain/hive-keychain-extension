@@ -177,7 +177,7 @@ const BuySwapCoinsEstimation = ({
                         </span>
                       </div>
                     ) : (
-                      <div>
+                      <div className="receive-token">
                         <span>{estimation.estimation}</span>
                         {price && (
                           <span className="amount">
