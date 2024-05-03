@@ -13,6 +13,36 @@
       display: flex;
       flex-direction: column;
       row-gap: 6px;
+      .provider-icon-label {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        column-gap: 8px;
+        .amount-to-exchange {
+          @include poppins500(16px);
+          color: var(--main-font-color);
+        }
+        .svg-icon {
+          width: 80px;
+          svg {
+            width: 80px;
+            height: 40px;
+          }
+        }
+      }
+      .exchange-tokens {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        @include poppins500(16px);
+        color: var(--main-font-color);
+        margin-bottom: 12px;
+        .token-label {
+          display: flex;
+          flex-direction: row;
+        }
+      }
       input::-webkit-input-placeholder {
         font-size: 14px;
       }
@@ -42,6 +72,15 @@
         text-align: right;
         padding-right: 12px;
         height: 20px;
+      }
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .button {
+        width: 40%;
       }
     }
 
@@ -96,9 +135,7 @@
       flex-direction: row;
       justify-content: space-between;
       padding: 3px 15px;
-
       color: var(--main-font-color);
-      cursor: pointer;
       .amount {
         display: flex;
         flex-direction: column;
@@ -114,6 +151,18 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        .buttons-container {
+          display: flex;
+          flex-direction: row;
+          column-gap: 8px;
+          .act-button {
+            width: 16px;
+            svg,
+            .svg-icon {
+              width: 16px;
+            }
+          }
+        }
         .receive-token {
           display: flex;
           flex-direction: row;

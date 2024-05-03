@@ -1,4 +1,8 @@
-import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  SwapCryptos as ProviderName,
+  SwapCryptosEstimationDisplay,
+} from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
 import {
@@ -6,19 +10,65 @@ import {
   StealthexProvider,
   SwapCryptosMerger,
 } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
+import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { FormInputComponent } from 'src/common-ui/input/form-input.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
+import { FormUtils } from 'src/utils/form.utils';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
-const SwapCryptos = ({ price }: PropsFromRedux) => {
+/**Note: Partner fee in percents (e.g. 1, 2, 5.3, 20) Max: 20 */
+interface ExchangeOperationForm {
+  amountFrom: string;
+  refundAddress: string;
+  addressTo: string;
+  currencyFrom: string;
+  currencyTo: string;
+  partnerFee: number;
+}
+
+//TODO fill bellow if needed.
+//  - remember there are some validation rules comming from each API
+const exchangeOperationFormRules = FormUtils.createRules<ExchangeOperationForm>(
+  {},
+);
+
+const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
+  const { control, handleSubmit, watch, setValue } =
+    useForm<ExchangeOperationForm>({
+      defaultValues: {
+        amountFrom: '',
+        refundAddress: '',
+        addressTo: '',
+        currencyFrom: '',
+        currencyTo: '',
+        partnerFee: 20,
+      },
+    });
+  const getFormParams = () => {
+    return watch();
+  };
+  const [step, setStep] = useState(1);
+  const [providerSelected, setProviderSelected] = useState<ProviderName>();
   const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loading, setLoading] = useState(true);
@@ -286,38 +336,140 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     setAmount('');
   };
 
+  const handleClickOnSend = async (form: ExchangeOperationForm) => {
+    console.log({ form }); //TODO remove line
+    if (form.addressTo.trim().length === 0) {
+      setErrorMessage('popup_html_need_destination_address');
+      return;
+    }
+    // let fields = [
+    //   { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
+    //   { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
+    //   { label: 'popup_html_transfer_amount', value: stringifiedAmount },
+    //   { label: 'popup_html_transfer_memo', value: memoField },
+    // ];
+  };
+
+  const setFormParams = () => {
+    setValue('currencyFrom', startToken.subLabel!);
+    setValue('currencyTo', endToken.subLabel!);
+    setValue('amountFrom', amount);
+    setStep(2);
+  };
+  //TODo bellow add missing tr if needed
   return (
     <div className="swap-cryptos">
-      {!loading &&
-      startTokenListOptions.length !== 0 &&
-      startToken &&
-      endTokenListOptions.length !== 0 &&
-      endToken ? (
-        <BuySwapCoinsEstimationComponent
-          startToken={startToken}
-          startTokenList={startTokenListOptions}
-          setStartToken={setStartToken}
-          startTokenLabel="token"
-          endToken={endToken}
-          endTokenList={endTokenListOptions}
-          setEndToken={setEndToken}
-          endTokenLabel="token"
-          amount={amount}
-          setAmount={setAmount}
-          inputAmountLabel={'popup_html_transfer_amount'}
-          inputPlaceHolder={'popup_html_transfer_amount'}
-          estimations={estimations}
-          countdown={countdown}
-          minAmountLabel={'html_popup_swap_crypto_min_accepted_label'}
-          minAcceptedAmount={exchangeRangeAmount.min}
-          swapTokens={swapStartAndEnd}
-          displayReceiveTokenLogo
-          errorMessage={errorInApi}
-        />
-      ) : (
+      {loading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />
         </div>
+      )}
+      {!loading &&
+        startTokenListOptions.length !== 0 &&
+        startToken &&
+        endTokenListOptions.length !== 0 &&
+        step === 1 &&
+        endToken && (
+          <BuySwapCoinsEstimationComponent
+            startToken={startToken}
+            startTokenList={startTokenListOptions}
+            setStartToken={setStartToken}
+            startTokenLabel="token"
+            endToken={endToken}
+            endTokenList={endTokenListOptions}
+            setEndToken={setEndToken}
+            endTokenLabel="token"
+            amount={amount}
+            setAmount={setAmount}
+            inputAmountLabel={'popup_html_transfer_amount'}
+            inputPlaceHolder={'popup_html_transfer_amount'}
+            estimations={estimations}
+            countdown={countdown}
+            minAmountLabel={'html_popup_swap_crypto_min_accepted_label'}
+            minAcceptedAmount={exchangeRangeAmount.min}
+            swapTokens={swapStartAndEnd}
+            displayReceiveTokenLogo
+            errorMessage={errorInApi}
+            setStep={setFormParams}
+            setProviderSelected={(provider) => setProviderSelected(provider)}
+          />
+        )}
+      {!loading && step === 2 && (
+        <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
+          <div className="form-fields">
+            <div className="provider-icon-label">
+              <SVGIcon
+                icon={
+                  providerSelected === ProviderName.STEALTHEX
+                    ? SVGIcons.SWAP_CRYPTOS_STEALTHEX
+                    : SVGIcons.SWAP_CRYPTOS_SIMPLESWAP
+                }
+              />
+              <div className="amount-to-exchange">
+                Amount:{' '}
+                {FormatUtils.formatCurrencyValue(getFormParams().amountFrom)}
+              </div>
+            </div>
+            <div className="exchange-tokens">
+              <div className="token-label">
+                <div className="label">
+                  From: {getFormParams().currencyFrom}
+                </div>
+                <PreloadedImage
+                  className="left-image"
+                  src={startToken.img!}
+                  alt={`side-icon-${startToken.label}`}
+                />
+              </div>
+              <div className="token-label">
+                <div className="label">To: {getFormParams().currencyTo}</div>
+                <PreloadedImage
+                  className="left-image"
+                  src={endToken.img!}
+                  alt={`side-icon-${endToken.label}`}
+                />
+              </div>
+            </div>
+            <FormInputComponent
+              name="addressTo"
+              control={control}
+              dataTestId="exchange-operation-addressTo"
+              type={InputType.TEXT}
+              //TODO add tr keys
+              skipLabelTranslation
+              skipPlaceholderTranslation
+              placeholder={'address To'}
+              label={'Receive address'}
+            />
+            <FormInputComponent
+              name="refundAddress"
+              control={control}
+              dataTestId="exchange-operation-refundAddress"
+              type={InputType.TEXT}
+              //TODO add tr keys
+              skipLabelTranslation
+              skipPlaceholderTranslation
+              placeholder={'Refund Address (Optional)'}
+              label={'Refund address(Optional)'}
+            />
+          </div>
+          <div className="buttons-container">
+            <ButtonComponent
+              onClick={() => setStep(1)}
+              skipLabelTranslation
+              label="Cancel"
+              type={ButtonType.ALTERNATIVE}
+              additionalClass="button"
+            />
+            <OperationButtonComponent
+              dataTestId="send-texchange-operation"
+              requiredKey={KeychainKeyTypesLC.posting}
+              onClick={handleSubmit(handleClickOnSend)}
+              label={'popup_html_send'}
+              additionalClass="button"
+            />
+          </div>
+        </FormContainer>
       )}
     </div>
   );
@@ -329,10 +481,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { setErrorMessage });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SwapCryptosComponent = connector(SwapCryptos);
-function buildUrl(arg0: string): string {
-  throw new Error('Function not implemented.');
-}

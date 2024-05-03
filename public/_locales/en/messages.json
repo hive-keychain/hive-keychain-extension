@@ -2251,6 +2251,10 @@
     "message": "Amount needs to be greater than 0",
     "description": "Amount error in form"
   },
+  "popup_html_need_destination_address": {
+    "message": "Destination Address is mandatory!",
+    "description": "address to error in form"
+  },
   "popup_html_deleting_account_linked_to_authorized": {
     "message": "Some of your accounts are using @$1 as an authorized account and won't be able to perform operations anymore.",
     "description": "when deleting account from keychain"
