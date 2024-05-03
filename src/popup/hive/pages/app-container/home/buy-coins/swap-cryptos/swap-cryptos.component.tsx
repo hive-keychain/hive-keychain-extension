@@ -17,33 +17,29 @@ import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-//TODO imporant:
-//  - generate an error in both init(remove the apiKeys from .env) ramps & swapcryptos.
-//  - find a way to handle and show error api in both!
-//  - after this work in adding a new method for class, following tickets:
-//    -> form with data needed and a nice way to present both options for the user.
-//      - quote / keychain-exchange, maybe adding a switch so the results may change or a new page to input + confirm the transaction
+
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
+  const [loading, setLoading] = useState(true);
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const [
     pairedCurrencyOptionsInitialList,
     setPairedCurrencyOptionsInitialList,
   ] = useState<OptionItem[]>([]);
   const [amount, setAmount] = useState('');
-  const [startToken, setStartToken] = useState<OptionItem>();
+  const [startToken, setStartToken] = useState<OptionItem>(HIVE_OPTION_ITEM);
   const [exchangeRangeAmount, setExchangeRangeAmount] = useState({
     min: 0,
     max: 0,
   });
-  const [endToken, setEndToken] = useState<OptionItem>();
+  const [endToken, setEndToken] = useState<OptionItem>(HIVE_OPTION_ITEM);
   const [startTokenListOptions, setStartTokenListOptions] = useState<
     OptionItem[]
-  >([]);
-  const [endTokenListOptions, setEndTokenListOptions] = useState<OptionItem[]>(
-    [],
-  );
+  >([HIVE_OPTION_ITEM]);
+  const [endTokenListOptions, setEndTokenListOptions] = useState<OptionItem[]>([
+    HIVE_OPTION_ITEM,
+  ]);
   const [estimations, setEstimations] = useState<
     SwapCryptosEstimationDisplay[]
   >([]);
@@ -120,32 +116,42 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   ]);
 
   useEffect(() => {
-    if (startToken && endToken) {
+    if (startToken && endToken && !errorInApi) {
       setLoadingMinMaxAccepted(true);
       getMinAndMax(startToken, endToken);
     }
-  }, [startToken, endToken]);
+  }, [startToken, endToken, errorInApi]);
 
   const init = async () => {
-    try {
-      const newSwapCryptos = new SwapCryptosMerger([
-        new StealthexProvider(true),
-        new SimpleSwapProvider(true),
-      ]);
-      setSetswapCryptos(newSwapCryptos);
-      newSwapCryptos.getCurrencyOptions('HIVE').then((currencyOptions) => {
-        setPairedCurrencyOptionsInitialList(currencyOptions);
+    const newSwapCryptos = new SwapCryptosMerger([
+      new StealthexProvider(true),
+      new SimpleSwapProvider(true),
+    ]);
+    setSetswapCryptos(newSwapCryptos);
+    newSwapCryptos
+      .getCurrencyOptions('HIVE')
+      .then((currencyOptions) => {
+        if (currencyOptions.length === 0) {
+          setErrorInApi('buy_coins_swap_cryptos_error_api');
+          return;
+        }
+        setErrorInApi(undefined);
+        setPairedCurrencyOptionsInitialList(
+          currencyOptions.map((i) => {
+            return { ...i, label: i.label.toUpperCase() };
+          }),
+        );
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    } catch (error) {
-      Logger.log({ error });
-    }
   };
 
   useEffect(() => {
-    if (pairedCurrencyOptionsInitialList.length) {
+    if (pairedCurrencyOptionsInitialList.length && !errorInApi) {
       initializeFromStorage(pairedCurrencyOptionsInitialList);
     }
-  }, [pairedCurrencyOptionsInitialList]);
+  }, [pairedCurrencyOptionsInitialList, errorInApi]);
 
   const initializeFromStorage = async (
     pairedCurrencyOptionsList: OptionItem[],
@@ -282,7 +288,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
 
   return (
     <div className="swap-cryptos">
-      {startTokenListOptions.length !== 0 &&
+      {!loading &&
+      startTokenListOptions.length !== 0 &&
       startToken &&
       endTokenListOptions.length !== 0 &&
       endToken ? (
