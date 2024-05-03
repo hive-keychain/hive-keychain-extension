@@ -61,7 +61,6 @@ const BuySwapCoinsEstimation = ({
   displayReceiveTokenLogo,
   errorMessage,
 }: Props) => {
-  console.log({ minAcceptedAmount }); //TODO remove line
   return (
     <FormContainer>
       <div className="form-fields">
