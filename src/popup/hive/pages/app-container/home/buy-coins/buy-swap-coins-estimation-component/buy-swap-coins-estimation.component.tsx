@@ -61,6 +61,7 @@ const BuySwapCoinsEstimation = ({
   displayReceiveTokenLogo,
   errorMessage,
 }: Props) => {
+  console.log({ minAcceptedAmount }); //TODO remove line
   return (
     <FormContainer>
       <div className="form-fields">
@@ -84,12 +85,16 @@ const BuySwapCoinsEstimation = ({
             />
           </div>
         </div>
-        {minAcceptedAmount && minAmountLabel && (
-          <div className="min-amount">
-            {chrome.i18n.getMessage(minAmountLabel)}{' '}
-            {FormatUtils.formatCurrencyValue(minAcceptedAmount)}
-          </div>
-        )}
+        <div className="min-amount">
+          {minAcceptedAmount && minAmountLabel ? (
+            <div>
+              {chrome.i18n.getMessage(minAmountLabel)}{' '}
+              {minAcceptedAmount > 0
+                ? FormatUtils.formatCurrencyValue(minAcceptedAmount)
+                : ''}
+            </div>
+          ) : null}
+        </div>
         <SVGIcon
           icon={SVGIcons.SWAPS_SWITCH}
           className="swap-icon"
@@ -173,7 +178,10 @@ const BuySwapCoinsEstimation = ({
                         <span>
                           {FormatUtils.formatCurrencyValue(
                             estimation.estimation,
-                          )}
+                          )}{' '}
+                          {(
+                            estimation as SwapCryptosEstimationDisplay
+                          ).to.toUpperCase()}
                         </span>
                       </div>
                     ) : (
