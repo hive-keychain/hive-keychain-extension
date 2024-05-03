@@ -1,8 +1,8 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
 import { setAccounts } from '@popup/hive/actions/account.actions';
-import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { identicon } from 'minidenticons';
@@ -17,6 +17,7 @@ import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   background?: 'white';
@@ -95,9 +96,7 @@ const SelectAccountSection = ({
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
-          {`${selectedAddress?.substring(4, 0)}...${selectedAddress
-            ?.toString()
-            .slice(-4)}`}
+          {FormatUtils.shortenString(selectedAddress, 4)}
         </div>
       </div>
     );
@@ -144,12 +143,12 @@ const SelectAccountSection = ({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}>
-                        <SelectAccountSectionItemComponent
+                        <EvmSelectAccountSectionItemComponent
                           key={`option-${option.value}`}
                           isLast={options.length === index}
                           item={option}
                           selectedAccount={selectedAddress}
-                          handleItemClicked={(value) =>
+                          handleItemClicked={(value: any) =>
                             handleItemClicked(value)
                           }
                           isOnMain={isOnMain}

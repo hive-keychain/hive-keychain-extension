@@ -28,10 +28,13 @@
       @include poppins500(14px);
       user-select: none;
       color: var(--select-font-color);
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
     }
     .user-picture {
-      height: 30px;
-      width: 30px;
+      height: 24px;
+      width: 24px;
       background: white;
       border-radius: 50%;
     }
@@ -98,7 +101,7 @@
         }
 
         .account-name {
-          width: 120px;
+          width: max-content;
         }
         .icons-wrapper {
           width: 50px;

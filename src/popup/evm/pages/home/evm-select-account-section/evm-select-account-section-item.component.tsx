@@ -1,9 +1,11 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import { identicon } from 'minidenticons';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
 
 interface AccountItemProps {
   isLast: boolean;
@@ -16,7 +18,7 @@ interface AccountItemProps {
   isOnMain: boolean;
 }
 
-export const SelectAccountSectionItemComponent = ({
+export const EvmSelectAccountSectionItemComponent = ({
   item,
   selectedAccount,
   isLast,
@@ -96,14 +98,16 @@ export const SelectAccountSectionItemComponent = ({
           handleItemClicked(item.value);
           closeDropdown();
         }}>
-        <PreloadedImage
+        <div
           className="user-picture"
-          src={`https://images.hive.blog/u/${item.label}/avatar`}
-          alt={'/assets/images/menu/accounts.svg'}
-          placeholder={'/assets/images/menu/accounts.svg'}
+          dangerouslySetInnerHTML={{
+            __html: identicon(item.label, 90, 50),
+          }}
         />
-        <div className="account-name">{item.label}</div>
-        {renderCheckedAccount()}
+        <div className="account-name pipou">
+          {FormatUtils.shortenString(item.label, 4)}
+          {renderCheckedAccount()}
+        </div>
       </div>
       {!isLast && <div className="separator"></div>}
     </div>
