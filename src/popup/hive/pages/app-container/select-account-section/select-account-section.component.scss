@@ -1,4 +1,5 @@
-.select-account-section {
+.hive-select-account-section {
+  margin: 0px 16px;
   .select-account-select {
     border: unset !important;
     border: 1px solid var(--select-border-color) !important;
@@ -30,8 +31,8 @@
     }
     .user-picture {
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      width: 24px;
+      height: 24px;
     }
 
     .react-dropdown-select-content {
@@ -39,7 +40,7 @@
         display: flex;
         align-items: center;
         column-gap: 8px;
-        padding: 6px 6px;
+        padding: 2px 6px;
         box-sizing: border-box;
         width: 100%;
       }
@@ -58,6 +59,8 @@
 
     .react-dropdown-select-dropdown {
       @include radius-bound-dropdown-scrollbar;
+      background-color: var(--input-background);
+
       .custom-select-dropdown {
         .option {
           display: flex;
@@ -78,7 +81,7 @@
       }
       width: auto;
       border: 1px solid var(--select-border-color);
-      top: 50px;
+      top: 36px;
       background-color: var(--select-dropdown-bg-color);
       border-radius: 16px;
       right: -1px;
@@ -147,8 +150,8 @@
     }
     .user-picture {
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
     }
     .react-dropdown-select-dropdown {
       top: 72px;

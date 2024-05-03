@@ -1,20 +1,63 @@
 .top-bar {
-  height: 56px;
-  padding: 14px 18px 0px 0px;
+  height: 74px;
+  padding: 8px 8px 0px 0px;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   user-select: none;
   column-gap: 8px;
   position: relative;
 
+  .account-selector-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .chain-selector {
+    margin-top: 12px;
+  }
+
+  .logo-container {
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 50%;
+  }
   .logo {
-    height: 32px;
-    width: auto;
+    height: 28px;
+    width: 28px;
+    svg {
+      height: 28px;
+      width: 28px;
+    }
     cursor: pointer;
 
     &.rotate {
       animation: rotation 1s linear;
+    }
+  }
+
+  .top-bar-actions {
+    display: flex;
+    column-gap: 12px;
+    .claim-button {
+      height: 24px;
+      width: 24px;
+      svg {
+        height: 24px;
+        width: 24px;
+      }
+
+      &:hover {
+        --action-button-background-color: #{$red};
+        --action-button-color: white;
+        --action-button-border-color: #{$red};
+      }
     }
   }
 

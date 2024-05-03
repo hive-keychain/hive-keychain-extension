@@ -7,12 +7,12 @@ interface TopBarProps {
   onMenuButtonClicked: () => Promise<void>;
   onRefreshButtonClicked: () => Promise<void>;
   accountSelector: JSX.Element;
-  extraComponents?: JSX.Element;
+  actions?: JSX.Element;
 }
 
 export const TopBarComponent = ({
   accountSelector,
-  extraComponents,
+  actions,
   onMenuButtonClicked,
   onRefreshButtonClicked,
 }: TopBarProps) => {
@@ -32,16 +32,20 @@ export const TopBarComponent = ({
         onClick={() => onMenuButtonClicked()}
         className="button settings-button"
       />
-      <SVGIcon
-        className={`logo ${rotateLogo ? 'rotate' : ''}`}
-        icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
-        onClick={refresh}
-        data-testid="top-bar-refresh-icon"
-      />
+      <div className="logo-container">
+        <SVGIcon
+          className={`logo ${rotateLogo ? 'rotate' : ''}`}
+          icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
+          onClick={refresh}
+          data-testid="top-bar-refresh-icon"
+        />
+      </div>
+
+      <div className="account-selector-panel">
+        {accountSelector}
+        <div className="top-bar-actions">{actions}</div>
+      </div>
       <ChainDropdownComponent />
-      {extraComponents}
-      <div className="spacer"></div>
-      {accountSelector}
     </div>
   );
 };

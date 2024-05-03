@@ -10,7 +10,6 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 
 const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
@@ -50,7 +49,6 @@ const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
               </div>
             </div>
           }
-          formatSelectedItem={FormatUtils.shortenString}
           renderOnlyIcon
         />
       )}

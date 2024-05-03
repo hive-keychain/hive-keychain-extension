@@ -172,16 +172,16 @@ const SelectAccountSection = ({
     <>
       {selectedAddress && options && (
         <div
-          className={`select-account-section ${fullSize ? 'fullsize' : ''} ${
-            isOpened ? 'opened' : 'closed'
-          }`}>
+          className={`evm-select-account-section ${
+            fullSize ? 'fullsize' : ''
+          } ${isOpened ? 'opened' : 'closed'}`}>
           <Select
             keepOpen
             values={[selectedAddress as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
-            className={`select-account-select ${background ? background : ''}`}
+            className={`select-account-select ${background ? background : ''} `}
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />

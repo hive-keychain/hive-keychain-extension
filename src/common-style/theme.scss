@@ -32,6 +32,9 @@ $dark: (
   //top bar
   --keychain-logo-color: white,
   --topbar-button-color: white,
+  --action-button-color: #{$red},
+  --action-button-background-color: $darker-blue,
+  --action-button-border-color: #{$blue-border},
   // Select
   --select-font-color: white,
   --select-icon-color: white,
@@ -130,6 +133,9 @@ $light: (
   // Top
   --keychain-logo-color: $blue-border,
   --topbar-button-color: $darker-blue,
+  --action-button-color: #{$red},
+  --action-button-background-color: white,
+  --action-button-border-color: #{$lighter-grey-border},
   // Select account section
   --select-font-color: $darker-grey,
   --select-icon-color: $darker-grey,

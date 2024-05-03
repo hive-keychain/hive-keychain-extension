@@ -130,16 +130,16 @@
           .right-action-icon {
             display: none;
           }
-          &:hover {
-            .item-label {
-              color: white;
-            }
-            .right-action-icon {
-              display: block;
-            }
-            + .separator {
-              background: $red;
-            }
+        }
+        &:hover {
+          .item-label {
+            color: white;
+          }
+          .right-action-icon {
+            display: block;
+          }
+          .separator {
+            background: $red;
           }
         }
       }

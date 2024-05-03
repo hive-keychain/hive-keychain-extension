@@ -1,9 +1,22 @@
+import { sleep } from '@hiveio/dhive/lib/utils';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
-import { HiveTopBarComponent } from '@popup/hive/pages/app-container/home/top-bar/hive-top-bar.component';
+import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
+import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { RewardsUtils } from '@popup/hive/utils/rewards.utils';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
-import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -11,6 +24,9 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
+import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -33,6 +49,7 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
@@ -42,10 +59,18 @@ const Home = ({
   activeAccount,
   accounts,
   activeRpc,
+  globalProperties,
   refreshActiveAccount,
   resetTitleContainerProperties,
   setSuccessMessage,
+  navigateTo,
+  loadGlobalProperties,
+  loadUserTokens,
+  removeFromLoadingList,
+  setErrorMessage,
 }: PropsFromRedux) => {
+  const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
+
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
     string[]
@@ -80,6 +105,23 @@ const Home = ({
           .map((localAccount: LocalAccount) => localAccount.name),
       );
   }, [activeRpc]);
+
+  useEffect(() => {
+    if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      setHasRewardToClaim(
+        RewardsUtils.hasReward(
+          activeAccount.account.reward_hbd_balance as string,
+          FormatUtils.toHP(
+            activeAccount.account.reward_vesting_balance
+              .toString()
+              .replace('VESTS', ''),
+            globalProperties.globals,
+          ).toString(),
+          activeAccount.account.reward_hive_balance as string,
+        ),
+      );
+    }
+  }, [activeAccount]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
     const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(
@@ -224,6 +266,63 @@ const Home = ({
     }
   };
 
+  const refresh = async () => {
+    refreshActiveAccount();
+    loadGlobalProperties();
+    loadUserTokens(activeAccount.name!);
+  };
+
+  const claim = async (): Promise<void> => {
+    if (!activeAccount.keys.posting) {
+      setErrorMessage('popup_accounts_err_claim');
+      return;
+    }
+    addToLoadingList('popup_html_claiming_rewards');
+    try {
+      const claimSuccessful = await RewardsUtils.claimRewards(
+        activeAccount.name!,
+        activeAccount.account.reward_hive_balance,
+        activeAccount.account.reward_hbd_balance,
+        activeAccount.account.reward_vesting_balance,
+        activeAccount.keys.posting!,
+      );
+      await sleep(3000);
+      refreshActiveAccount();
+      if (claimSuccessful) {
+        if (claimSuccessful.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          const rewardHp =
+            FormatUtils.withCommas(
+              FormatUtils.toHP(
+                activeAccount.account.reward_vesting_balance
+                  .toString()
+                  .replace('VESTS', ''),
+                globalProperties.globals,
+              ).toString(),
+            ) + ' HP';
+          let claimedResources = [
+            activeAccount.account.reward_hive_balance,
+            activeAccount.account.reward_hbd_balance,
+            rewardHp,
+          ].filter(
+            (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+          );
+          setSuccessMessage('popup_html_claim_success', [
+            claimedResources.join(', '),
+          ]);
+        }
+        refresh();
+      } else {
+        setErrorMessage('popup_html_claim_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_claiming_rewards');
+    }
+  };
+
   return (
     <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       {activeAccount &&
@@ -231,7 +330,33 @@ const Home = ({
         activeRpc &&
         activeRpc.uri !== 'NULL' && (
           <>
-            <HiveTopBarComponent />
+            <TopBarComponent
+              onMenuButtonClicked={async () => {
+                navigateTo(Screen.SETTINGS_MAIN_PAGE);
+                return;
+              }}
+              onRefreshButtonClicked={refresh}
+              actions={
+                <>
+                  {hasRewardToClaim && (
+                    <SVGIcon
+                      icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
+                      dataTestId="reward-claim-icon"
+                      className="claim-button"
+                      onClick={() => claim()}
+                      hoverable
+                    />
+                  )}
+                  {activeAccount.name && globalProperties.globals && (
+                    <NotificationsComponent />
+                  )}
+                </>
+              }
+              accountSelector={
+                <SelectAccountSectionComponent isOnMain background="white" />
+              }
+            />
+
             <div className={'home-page-content'} onScroll={handleScroll}>
               <ResourcesSectionComponent />
               <EstimatedAccountValueSectionComponent />
@@ -270,6 +395,11 @@ const connector = connect(mapStateToProps, {
   refreshActiveAccount,
   resetTitleContainerProperties,
   setSuccessMessage,
+  navigateTo,
+  loadGlobalProperties,
+  loadUserTokens,
+  setErrorMessage,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

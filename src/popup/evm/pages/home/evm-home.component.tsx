@@ -1,5 +1,5 @@
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/select-account-section/select-account-section.component';
+import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -135,8 +135,11 @@ const Home = ({
           return;
         }}
         onRefreshButtonClicked={refreshAccountBalances}
-        accountSelector={<EvmSelectAccountSectionComponent />}
+        accountSelector={
+          <EvmSelectAccountSectionComponent background="white" />
+        }
       />
+
       <div className={'home-page-content'} onScroll={handleScroll}>
         <EstimatedAccountValueSectionComponent2
           accountValues={{

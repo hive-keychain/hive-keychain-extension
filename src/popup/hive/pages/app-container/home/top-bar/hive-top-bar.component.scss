@@ -19,14 +19,14 @@
   }
 
   .claim-button {
-    --claim-rewards-color: #{$red};
-    --claim-rewards-background-color: white;
-    --claim-rewards-border-color: #{$light-grey-border};
+    --action-button-color: #{$red};
+    --action-button-background-color: white;
+    --action-button-border-color: #{$light-grey-border};
 
     &:hover {
-      --claim-rewards-background-color: #{$red};
-      --claim-rewards-color: white;
-      --claim-rewards-border-color: #{$red};
+      --action-button-background-color: #{$red};
+      --action-button-color: white;
+      --action-button-border-color: #{$red};
     }
   }
 
