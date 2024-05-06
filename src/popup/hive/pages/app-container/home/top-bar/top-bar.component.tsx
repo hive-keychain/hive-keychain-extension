@@ -4,6 +4,7 @@ import {
   TransactionOptionsMetadata,
 } from '@interfaces/keys.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import {
   addCaptionToLoading,
@@ -172,11 +173,11 @@ const TopBar = ({
         icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
         data-testid="top-bar-refresh-icon"
-        // tooltipDelayShow={1500}
-        // tooltipMessage="html_popup_click_to_refresh"
-        // tooltipPosition="right"
       />
       <div className="spacer"></div>
+      {activeAccount.name && globalProperties.globals && (
+        <NotificationsComponent />
+      )}
       {hasRewardToClaim && (
         <SVGIcon
           icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
@@ -186,7 +187,6 @@ const TopBar = ({
           hoverable
         />
       )}
-
       <SelectAccountSectionComponent isOnMain />
     </div>
   );

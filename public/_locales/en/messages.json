@@ -11,6 +11,22 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_tutorial_popup_title": {
+    "message": "Welcome to Keychain!",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_description": {
+    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_show_label": {
+    "message": "Show",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_skip_label": {
+    "message": "Skip",
+    "description": "tutorial popup"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"
@@ -22,6 +38,10 @@
   "popup_html_wrong_key_memo": {
     "message": "Wrong key. Please use memo key",
     "description": "while using wrong private key"
+  },
+  "common_experimental": {
+    "message": "Experimental",
+    "description": "experimental"
   },
   "common_yes": {
     "message": "Yes",
@@ -2291,8 +2311,16 @@
     "message": "Close",
     "description": "general"
   },
+  "popup_html_help": {
+    "message": "Help",
+    "description": "Contact support"
+  },
   "popup_html_contact_support": {
     "message": "Contact support",
+    "description": "Contact support"
+  },
+  "popup_html_tutorial": {
+    "message": "Tutorial",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
@@ -3975,6 +4003,195 @@
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
   },
+  "html_popup_settings_notifications": {
+    "message": "Notifications",
+    "description": "Notifications"
+  },
+  "html_popup_settings_notifications_caption": {
+    "message": "Configure your Peak Open Projects notifications. Be aware that changes might take time to be applied, and that this is an experimental feature.",
+    "description": "Notification caption introducing the feature"
+  },
+  "html_popup_settings_notifications_activated": {
+    "message": "Activated",
+    "description": "Notification system active for this account"
+  },
+  "html_popup_settings_notifications_condition": {
+    "message": "Condition",
+    "description": "Condition"
+  },
+  "html_popup_reset_form": {
+    "message": "Reset",
+    "description": "Global word"
+  },
+  "html_popup_notification_default_config": {
+    "message": "Default config",
+    "description": "Notification default config"
+  },
+  "html_popup_add_new_condition": {
+    "message": "Add new condition",
+    "description": "Add new condition"
+  },
+  "html_popup_delete_criteria": {
+    "message": "Delete criteria",
+    "description": "Delete criteria"
+  },
+  "notification_recurrent_transfer": {
+    "message": "@$1 started a $2 recurrent transfer to @$3 ($4 executions every $5 hours)",
+    "description": "Notification recurrent transfer"
+  },
+  "notification_follow": {
+    "message": "@$1 started following @$2",
+    "description": "Notification follow"
+  },
+  "notification_unfollow": {
+    "message": "@$1 stopped following @$2",
+    "description": "Notification unfollow"
+  },
+  "notification_reblog": {
+    "message": "@$1 reblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reblog"
+  },
+
+  "notification_account_update": {
+    "message": "@$1's notification settings have been updated",
+    "description": "Notification account updated"
+  },
+  "notification_mention": {
+    "message": "@$1 mentioned @$2 in <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>$3/$4</a>",
+    "description": "Notification mentioned"
+  },
+  "notification_answer": {
+    "message": "@$1 replied to <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reply"
+  },
+  "notification_account_witness_proxy": {
+    "message": "@$1 has set @$2 as a proxy",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_vote": {
+    "message": "@$1 has voted for @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_unvote": {
+    "message": "@$1 has unvoted @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_delegation": {
+    "message": "@$1 delegated $2 to @$3",
+    "description": "notification delegation hp"
+  },
+  "notification_cancel_delegation": {
+    "message": "@$1 has canceled a delegation to @$2",
+    "description": "notification cancel delegation hp"
+  },
+  "notification_requested_account_recovery": {
+    "message": "@$1 has requested recovery to @$2",
+    "description": "notification recovery request"
+  },
+  "notification_recovered_account": {
+    "message": "@$1 has been recovered",
+    "description": "Notification accouht recovered"
+  },
+  "notification_set_power_down_route": {
+    "message": "Power down route has been changed from @$1 to @$2",
+    "description": "Notification set power down route"
+  },
+  "notification_fill_convert": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification fill convert"
+  },
+  "notification_author_reward": {
+    "message": "@$1 has received $2, $3, $4 as an author reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
+    "description": "Notification author reward"
+  },
+  "notification_comment_reward": {
+    "message": "@$1 has received $2 as an comment reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
+    "description": "Notification comment reward"
+  },
+  "notification_hbd_interest": {
+    "message": "$@1 received $2 as interest",
+    "description": "Notification HBD interest received"
+  },
+  "notification_fill_power_down": {
+    "message": "$@1 received $2 as part of power down",
+    "description": "Notification power down received"
+  },
+  "notification_fill_power_down_other_account": {
+    "message": "$@1 received $2 as part of power down of @$3",
+    "description": "Notification power down received"
+  },
+  "notification_changed_recovery_account": {
+    "message": "@$1's recovery account has been change from @$2 to @$3",
+    "description": "Notification for changed recovery account"
+  },
+  "notification_producer_reward": {
+    "message": "@$1 received $2 as a producer rewards",
+    "description": "Notification for producer rewards"
+  },
+  "notification_curation_reward": {
+    "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>@$3/$4</a>",
+    "description": "Notification for curation rewards"
+  },
+  "notification_failed_recurrent_transfer": {
+    "message": "$1 recurrent transfer from @$2 to @$3 has failed",
+    "description": "Notification for failed recurrent transfer"
+  },
+  "notification_fill_collateralized_convert_request": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification collateralized convert request"
+  },
+  "notification_fill_transfer_from_savings": {
+    "message": "@$1 completed a withdrawal from savings of $2",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_fill_transfer_from_savings_from_other_account": {
+    "message": "@$1 completed a withdrawal from savings of $2 to @$3",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_returned_vesting_delegation": {
+    "message": "@$1 completed an undelegation. $2 are once again available",
+    "description": "Notification for when HP is avalable after undelegating"
+  },
+  "notification_comment_benefactor_reward": {
+    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for <a classname='notification-link' href='https://peakd.com/@$5/$6' target='__blank'>@$5/$6</a>",
+    "description": "Notification author reward"
+  },
+  "notification_fill_order": {
+    "message": "@$1 has filled an order from @$2 on the market. Bought $3 for $4",
+    "description": "Notification fill order"
+  },
+  "notification_change_recovery_account": {
+    "message": "@$1 has changed recovery account to @$2. This change will be effective in 30 days",
+    "description": "Notification change recovery account"
+  },
+  "notification_vote": {
+    "message": "@$1 has voted for <a classname='notification-link' href='https://peakd.com/@$2/$3' target='__blank'>@$2/$3</a>",
+    "description": "Notification for vote"
+  },
+  "notification_clear_config": {
+    "message": "Clear configuration",
+    "description": "clear config notification"
+  },
+  "notification_set_all_as_read": {
+    "message": "Set all as read",
+    "description": "Set all notifications as read"
+  },
+  "notification_setting_all_as_read": {
+    "message": "Setting all notifications as read",
+    "description": "Set all notifications as read"
+  },
+  "notification_settings_advanced_settings": {
+    "message": "Open advanced settings",
+    "description": "Open advanced settings"
+  },
+  "notification_settings_select_all": {
+    "message": "Select all",
+    "description": "Select all criterias"
+  },
+  "notification_settings_nothing_has_changed": {
+    "message": "No changes detected",
+    "description": "Select all criterias"
+  },
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
@@ -3986,6 +4203,10 @@
   "multisig_bot_two_fa_codes": {
     "message": "2FA Codes",
     "description": "Two fa code label"
+  },
+  "notification_confirm_save": {
+    "message": "Are you sure you want to save your changes ?",
+    "description": "Notification save changes message"
   },
   "export_transactions_fetching_error": {
     "message": "There was an error while fetching your transactions. Please try again later",

@@ -1,0 +1,178 @@
+@import '../common-style/common-style.scss';
+@import '../common-ui/common-ui.scss';
+@import '../popup/hive/hive-app.component.scss';
+@import '../popup/evm/evm-app.component.scss';
+
+.theme {
+  &.light {
+    @include spread-map($light);
+  }
+  &.dark {
+    @include spread-map($dark);
+  }
+  background-color: var(--background-color);
+  @include background-bottom;
+}
+
+html {
+  height: 100%;
+
+  body {
+    margin: 0px;
+    height: 100%;
+    #root {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+
+      .notifications-config-page-main-container {
+        background-color: var(--background-color);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .notifications-config-page {
+          flex: 1;
+          color: var(--main-font-color);
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          row-gap: 24px;
+          // position: relative;
+          @include background-top();
+          @include dialogs-title-panel();
+          @include small-card();
+          align-items: stretch;
+          width: 80%;
+          height: 95%;
+          max-width: 900px;
+
+          .form-container {
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 40px;
+            .add-panel {
+              display: flex;
+              align-items: center;
+              column-gap: 16px;
+
+              .add-button {
+                width: 50px;
+                height: 42px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                border: 1px solid var(--input-border);
+                background: transparent;
+                cursor: pointer;
+                color: var(--main-font-color);
+                .svg-icon {
+                  height: 18px;
+                  width: 18px;
+                }
+                &:hover {
+                  background: $red;
+                  color: white;
+                }
+              }
+            }
+            .form-fields {
+              flex: 1;
+              overflow: auto;
+              .criteria {
+                display: flex;
+                flex-direction: column;
+                row-gap: 16px;
+                cursor: pointer;
+
+                .operation-panel {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  .left-panel {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 8px;
+                    .svg-icon {
+                      height: 18px;
+                    }
+                  }
+                  .expand-detail-icon {
+                    @include icon-size(18px);
+                    @include open-close-rotate();
+                  }
+                }
+
+                .conditions {
+                  display: flex;
+                  flex-direction: column;
+                  row-gap: 8px;
+                  width: 100%;
+
+                  .condition-row {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 8px;
+                    .condition-configuration {
+                      display: grid;
+                      grid-template-columns: repeat(
+                        auto-fit,
+                        minmax(150px, 1fr)
+                      );
+                      flex: 1;
+                      column-gap: 8px;
+                    }
+                    .svg-icon {
+                      height: 20px;
+                    }
+                  }
+                  .criteria-button-panel {
+                    display: flex;
+                    column-gap: 16px;
+                    align-items: center;
+                    justify-content: flex-start;
+                    margin-top: 16px;
+                    .new-condition-button,
+                    .delete-criteria-button {
+                      width: fit-content;
+                      padding: 0px 16px;
+                      align-self: flex-start;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .config-buttons-panel {
+            display: flex;
+            align-self: flex-end;
+            column-gap: 8px;
+            max-width: max-content;
+            .clear-config-button,
+            .default-config-button {
+              padding: 0px 16px;
+              min-width: max-content;
+            }
+          }
+
+          .react-dropdown-select-dropdown-handle {
+            margin-top: -10px;
+          }
+          .custom-select {
+            height: 48px;
+          }
+
+          .buttons-panel {
+            display: flex;
+            column-gap: 16px;
+          }
+        }
+      }
+    }
+  }
+}

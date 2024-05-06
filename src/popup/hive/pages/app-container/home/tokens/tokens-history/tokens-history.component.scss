@@ -12,6 +12,7 @@
     @include form-panel;
     row-gap: 8px;
     max-height: 476px;
+    position: relative;
   }
 
   .empty-history-panel {

@@ -29,4 +29,12 @@
     --menu-icon-border-color: white;
     --menu-icon-color: white;
   }
+
+  .experimental {
+    background: $dark-red;
+    padding: 4px 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 11px;
+  }
 }
