@@ -21,7 +21,10 @@ export const TopBarComponent = ({
   const refresh = async () => {
     setRotateLogo(true);
     await onRefreshButtonClicked();
-    setRotateLogo(false);
+
+    setTimeout(() => {
+      setRotateLogo(false);
+    }, 1000);
   };
 
   return (

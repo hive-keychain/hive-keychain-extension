@@ -27,18 +27,18 @@
     background: var(--input-background);
     border: 1px solid var(--input-border);
     border-radius: 50%;
-  }
-  .logo {
-    height: 28px;
-    width: 28px;
-    svg {
+    .logo {
       height: 28px;
       width: 28px;
-    }
-    cursor: pointer;
+      svg {
+        height: 28px;
+        width: 28px;
+      }
+      cursor: pointer;
 
-    &.rotate {
-      animation: rotation 1s linear;
+      &.rotate {
+        animation: rotation 1s linear;
+      }
     }
   }
 
@@ -46,11 +46,11 @@
     display: flex;
     column-gap: 12px;
     .claim-button {
-      height: 24px;
-      width: 24px;
+      height: 26px;
+      width: 26px;
       svg {
-        height: 24px;
-        width: 24px;
+        height: 26px;
+        width: 26px;
       }
 
       &:hover {
