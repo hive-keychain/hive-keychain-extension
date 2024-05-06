@@ -4,7 +4,9 @@ import {
   EvmChain,
   HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getDefaultChains = (): Chain[] => {
   return [
@@ -55,18 +57,58 @@ const getDefaultChains = (): Chain[] => {
   ];
 };
 
-const getCustomChains = async () => {
-  return [];
+const getSetupChains = async (): Promise<Chain[]> => {
+  const chains: Chain[] = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+  );
+
+  if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
+    chains.push(getDefaultChains().find((c) => c.name === 'HIVE')!);
+  }
+  if (!chains.some((c: Chain) => c.type === ChainType.EVM)) {
+    chains.push(getDefaultChains().find((c) => c.name === 'Ethereum')!);
+  }
+
+  return chains;
 };
 
-const getChains = async () => {
-  return [...getDefaultChains(), ...(await getCustomChains())];
+const getNonSetupChains = async (): Promise<Chain[]> => {
+  const [setupChains, allChains] = await Promise.all([
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SETUP_CHAINS,
+    ),
+    getDefaultChains(),
+  ]);
+
+  return allChains.filter(
+    (chain: Chain) =>
+      !(setupChains as Chain[]).map((c) => c.name).includes(chain.name),
+  );
 };
 
-const getSetupChains = async () => {};
+const addChainToSetupChains = async (chain: Chain) => {
+  const chains = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+    [...chains, chain],
+  );
+};
+const removeChainFromSetupChains = async (chain: Chain) => {
+  const chains = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+    chains.filter((c: Chain) => c.name !== chain.name),
+  );
+};
 
 export const ChainUtils = {
   getDefaultChains,
-  getChains,
-  getCustomChains,
+  getSetupChains,
+  addChainToSetupChains,
+  removeChainFromSetupChains,
+  getNonSetupChains,
 };

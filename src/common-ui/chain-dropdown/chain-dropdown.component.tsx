@@ -15,13 +15,15 @@ const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
+    console.log(chain);
     if (chain.name.length > 0) init();
   }, [chain]);
 
   const init = async () => {
-    const chains = await ChainUtils.getChains();
+    const chains = await ChainUtils.getSetupChains();
+    console.log(chains);
     let optionItems: OptionItem[] = chains.map((c) => {
-      return { label: c.symbol, value: c, img: c.logo };
+      return { label: c.name, value: c, img: c.logo };
     });
     setOptions(optionItems);
   };
@@ -36,7 +38,7 @@ const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
         <ComplexeCustomSelect
           additionalClassname="chain-selector"
           options={options}
-          selectedItem={{ label: chain.symbol, value: chain, img: chain.logo }}
+          selectedItem={{ label: chain.name, value: chain, img: chain.logo }}
           setSelectedItem={(item) => setChain(item.value)}
           background="white"
           footer={

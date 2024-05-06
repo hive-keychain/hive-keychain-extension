@@ -17,7 +17,12 @@ const ChainSelector = ({ setChain }: PropsFromRedux) => {
   }, []);
 
   const init = async () => {
-    setChains(await ChainUtils.getChains());
+    setChains(await ChainUtils.getNonSetupChains());
+  };
+
+  const selectChain = async (chain: Chain) => {
+    await ChainUtils.addChainToSetupChains(chain);
+    setChain(chain);
   };
 
   return (
@@ -34,7 +39,7 @@ const ChainSelector = ({ setChain }: PropsFromRedux) => {
               key={`chain-${chain.name}-${index}`}
               className="chain-card"
               onClick={() => {
-                setChain(chain);
+                selectChain(chain);
               }}>
               {EnumUtils.isValueOf(chain.logo, SVGIcons) && (
                 <SVGIcon icon={chain.logo as SVGIcons} />

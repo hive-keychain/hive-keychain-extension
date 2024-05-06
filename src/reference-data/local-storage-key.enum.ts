@@ -39,6 +39,7 @@ export enum LocalStorageKeyEnum {
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_THEME = 'ACTIVE_THEME',
+  SETUP_CHAINS = 'SETUP_CHAINS',
 
   // Onboard Tutorial
   SKIP_TUTORIAL = 'SKIP_TUTORIAL',
@@ -49,4 +50,6 @@ export enum LocalStorageKeyEnum {
   // To check if some account (regardless of chain) has been setup
   HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
   EVM_ACCOUNTS = 'EVM_ACCOUNTS',
+
+  //
 }
