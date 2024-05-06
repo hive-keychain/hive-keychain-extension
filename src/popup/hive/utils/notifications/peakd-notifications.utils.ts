@@ -852,7 +852,7 @@ const getNotifications = async (
           messageParams = [
             payload.from,
             FormatUtils.toFormattedHP(
-              payload.withdraw.toString().replace('VESTS', ''),
+              payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
             ),
           ];
@@ -861,7 +861,7 @@ const getNotifications = async (
           messageParams = [
             payload.from_account,
             FormatUtils.toFormattedHP(
-              payload.withdraw.toString().replace('VESTS', ''),
+              payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
             ),
             payload.to_account,
