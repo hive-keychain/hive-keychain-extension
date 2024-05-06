@@ -91,6 +91,7 @@ const ChainRouter = ({
   };
 
   const renderChain = () => {
+    console.log(chain);
     if (!mk || mk.length === 0) {
       if (!hasFinishedSignup) {
         return <SignUpComponent />;
@@ -142,4 +143,4 @@ const connector = connect(mapStateToProps, {
 //TODO : setIsLedgerSupported : move out of appStatus with other global app statuses
 type PropsFromRedux = ConnectedProps<typeof connector> & ActionButton;
 
-export default connector(ChainRouter);
+export const ChainRouterComponent = connector(ChainRouter);

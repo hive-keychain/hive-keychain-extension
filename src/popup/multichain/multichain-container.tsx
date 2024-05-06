@@ -1,16 +1,14 @@
-import ChainRouter from '@popup/multichain/chain-router.component';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
-import { store } from '@popup/multichain/store';
+import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
-import { withErrorBoundary } from 'react-error-boundary';
-import { Provider } from 'react-redux';
-import { ErrorFallback } from 'src/common-ui/error-fallback/error-fallback.component';
+import { ConnectedProps, connect } from 'react-redux';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-export const MultichainContainer = () => {
-  const [chain, setChain] = useState<Chain>();
+const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   const [theme, setTheme] = useState<Theme>();
   const [ready, setReady] = useState(false);
 
@@ -40,7 +38,9 @@ export const MultichainContainer = () => {
     ]);
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-    setChain(res.ACTIVE_CHAIN);
+    if (res.ACTIVE_CHAIN) {
+      setChain(res.ACTIVE_CHAIN);
+    }
 
     setReady(true);
 
@@ -83,15 +83,15 @@ export const MultichainContainer = () => {
   );
 };
 
-const ChainComponent = ({ chain }: { theme: Theme; chain?: Chain }) => {
-  console.log(chain);
-  return (
-    <Provider store={store}>
-      {<ChainRouter screen={screen} selectedChain={chain} />}
-    </Provider>
-  );
+const mapStateToProps = (state: RootState) => {
+  return {
+    chain: state.chain as Chain,
+  };
 };
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-const ChainComponentWithBoundary = withErrorBoundary(ChainComponent, {
-  FallbackComponent: ErrorFallback,
+const connector = connect(mapStateToProps, {
+  setChain,
 });
+
+export const MultichainContainerComponent = connector(MultichainContainer);
