@@ -4,7 +4,9 @@ import {
   SwapCryptosBaseProvider,
   SwapCryptosBaseProviderInterface,
   SwapCryptosEstimationDisplay,
+  SwapCryptosExchangeResult,
 } from '@interfaces/swap-cryptos.interface';
+import { ExchangeOperationForm } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.component';
 import axios from 'axios';
 import {
   OptionItem,
@@ -20,7 +22,7 @@ export class StealthexProvider
 {
   constructor(logInfo?: boolean) {
     super(Config.swapCryptos.stealthex);
-    this.name = 'Stealthex';
+    this.name = SwapCryptos.STEALTHEX;
     this.logo = SVGIcons.SWAP_CRYPTOS_STEALTHEX;
     this.logInfo = logInfo;
   }
@@ -84,7 +86,7 @@ export class StealthexProvider
 
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
-    const minMaxRoute = `${this.urls.routes.minMaxAccepted}${from}/${to}`;
+    const minMaxRoute = `${this.urls.routes.minMaxAccepted}${from}/${to}?partner_fee=${this.partnerFeeAmount}`;
     if (this.logInfo) {
       Logger.log('minMaxRoute', { minMaxRoute, requestHeaders });
     }
@@ -129,6 +131,41 @@ export class StealthexProvider
       estimation: estimation.estimated_amount,
     } as SwapCryptosEstimationDisplay;
   };
+  getNewExchange = async (
+    formData: ExchangeOperationForm,
+  ): Promise<SwapCryptosExchangeResult> => {
+    let data: GenericObjectKeypair = {
+      fixed: formData.fixed,
+      currency_from: formData.currencyFrom,
+      currency_to: formData.currencyTo,
+      amount_from: parseFloat(formData.amountFrom),
+      partner_fee: Config.swapCryptos.stealthex.partnerFeeAmount,
+      address_to: formData.addressTo,
+    };
+    if (formData.refundAddress.trim().length > 0) {
+      data['refund_address'] = formData.refundAddress;
+    }
+    const requestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const exchangeRoute = this.urls.routes.exchange;
+    const finalUrl = this.buildUrl(exchangeRoute) + `?api_key=${this.apiKey}`;
+    if (this.logInfo) {
+      Logger.log('getNewExchange', {
+        exchangeRoute,
+        requestConfig,
+        data,
+        finalUrl,
+      });
+    }
+    const exchangeResult = await axios.post(finalUrl, data, requestConfig);
+    return {
+      id: exchangeResult.data.id,
+      link: this.urls.fullLinkToExchange + exchangeResult.data.id,
+    } as SwapCryptosExchangeResult;
+  };
 }
 
 export class SimpleSwapProvider
@@ -137,7 +174,7 @@ export class SimpleSwapProvider
 {
   constructor(logInfo?: boolean) {
     super(Config.swapCryptos.simpleswap);
-    this.name = 'Simpleswap';
+    this.name = SwapCryptos.SIMPLESWAP;
     this.logo = SVGIcons.SWAP_CRYPTOS_SIMPLESWAP;
     this.logInfo = logInfo;
   }
@@ -219,6 +256,39 @@ export class SimpleSwapProvider
       amount: parseFloat(amount),
       estimation: estimation,
     } as SwapCryptosEstimationDisplay;
+  };
+  getNewExchange = async (formData: ExchangeOperationForm) => {
+    const data: GenericObjectKeypair = {
+      fixed: formData.fixed,
+      currency_from: formData.currencyFrom,
+      currency_to: formData.currencyTo,
+      amount: parseFloat(formData.amountFrom),
+      address_to: formData.addressTo,
+      extra_id_to: '',
+      user_refund_address:
+        formData.refundAddress.trim().length > 0 ? formData.refundAddress : '',
+      user_refund_extra_id: '',
+    };
+    const requestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const exchangeRoute = this.urls.routes.exchange;
+    const finalUrl = this.buildUrl(exchangeRoute) + `?api_key=${this.apiKey}`;
+    if (this.logInfo) {
+      Logger.log('getNewExchange', {
+        exchangeRoute,
+        requestConfig,
+        data,
+        finalUrl,
+      });
+    }
+    const exchangeResult = await axios.post(finalUrl, data, requestConfig);
+    return {
+      id: exchangeResult.data.id,
+      link: this.urls.fullLinkToExchange + exchangeResult.data.id,
+    } as SwapCryptosExchangeResult;
   };
 }
 
@@ -313,5 +383,20 @@ export class SwapCryptosMerger {
       }
     }
     return providerEstimationList.length ? providerEstimationList : undefined;
+  };
+  getNewExchange = async (
+    formData: ExchangeOperationForm,
+    providerName: SwapCryptos,
+  ): Promise<SwapCryptosExchangeResult | undefined> => {
+    let result: SwapCryptosExchangeResult | undefined = undefined;
+    try {
+      result = await this.providers
+        .find((p) => p.name === providerName)
+        ?.getNewExchange(formData);
+    } catch (error) {
+      Logger.log('Error getting new exchange.', { providerName, error });
+    } finally {
+      return result;
+    }
   };
 }

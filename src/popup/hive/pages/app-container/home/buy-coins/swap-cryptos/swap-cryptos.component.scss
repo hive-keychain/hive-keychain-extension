@@ -19,6 +19,9 @@
         justify-content: center;
         align-items: center;
         column-gap: 8px;
+        .adjust-exchange-amount {
+          width: 40%;
+        }
         .amount-to-exchange {
           @include poppins500(16px);
           color: var(--main-font-color);
@@ -30,6 +33,12 @@
             height: 40px;
           }
         }
+      }
+      .alert-message {
+        text-align: center;
+        @include poppins400(12px);
+        color: var(--main-font-color);
+        margin-bottom: 12px;
       }
       .exchange-tokens {
         display: flex;

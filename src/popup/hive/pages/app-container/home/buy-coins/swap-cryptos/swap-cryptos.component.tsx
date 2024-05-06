@@ -1,4 +1,3 @@
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   SwapCryptos as ProviderName,
   SwapCryptosEstimationDisplay,
@@ -10,34 +9,24 @@ import {
   StealthexProvider,
   SwapCryptosMerger,
 } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos.utils';
-import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { SwapCryptosStepTwoComponent } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-step-two-component/swap-cryptos-step-two-component';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
-import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { FormInputComponent } from 'src/common-ui/input/form-input.component';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 /**Note: Partner fee in percents (e.g. 1, 2, 5.3, 20) Max: 20 */
-interface ExchangeOperationForm {
+export interface ExchangeOperationForm {
+  fixed: boolean;
   amountFrom: string;
   refundAddress: string;
   addressTo: string;
@@ -52,10 +41,11 @@ const exchangeOperationFormRules = FormUtils.createRules<ExchangeOperationForm>(
   {},
 );
 
-const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
+const SwapCryptos = ({ price }: PropsFromRedux) => {
   const { control, handleSubmit, watch, setValue } =
     useForm<ExchangeOperationForm>({
       defaultValues: {
+        fixed: false,
         amountFrom: '',
         refundAddress: '',
         addressTo: '',
@@ -64,11 +54,17 @@ const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
         partnerFee: 20,
       },
     });
+
   const getFormParams = () => {
     return watch();
   };
   const [step, setStep] = useState(1);
+  const [minAmountProviderList, setMinAmountProviderList] = useState<
+    { provider: ProviderName; amount: number }[] | undefined
+  >();
   const [providerSelected, setProviderSelected] = useState<ProviderName>();
+  const [adjustMinAcceptedMessage, setAdjustMinAcceptedMessage] =
+    useState<string>();
   const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loading, setLoading] = useState(true);
@@ -254,6 +250,7 @@ const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
             if (res.length === 1) {
               setExchangeRangeAmount({ min: res[0].amount, max: 0 });
             } else if (res.length > 1) {
+              setMinAmountProviderList(res);
               const minValue = res.sort((a, b) => a.amount - b.amount)[0]
                 .amount;
               setExchangeRangeAmount({
@@ -323,6 +320,32 @@ const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
     }
   };
 
+  const setFormParams = (provider: ProviderName) => {
+    setValue('currencyFrom', startToken.subLabel!);
+    setValue('currencyTo', endToken.subLabel!);
+    setValue('amountFrom', amount);
+    setProviderSelected(provider);
+    if (minAmountProviderList) {
+      const minAmountProviderAccepts = minAmountProviderList.find(
+        (m) => m.provider === provider,
+      );
+      if (
+        minAmountProviderAccepts &&
+        parseFloat(amount) < minAmountProviderAccepts.amount
+      ) {
+        setAdjustMinAcceptedMessage(
+          chrome.i18n.getMessage('buy_coins_swap_cryptos_error_adjust_min', [
+            minAmountProviderAccepts.amount.toFixed(3),
+            startToken.subLabel!,
+          ]),
+        );
+      } else {
+        setAdjustMinAcceptedMessage(undefined);
+      }
+    }
+    setStep(2);
+  };
+
   const swapStartAndEnd = () => {
     const tempStarTokentListOptions = [...startTokenListOptions];
     const tempEndTokenListOptions = [...endTokenListOptions];
@@ -336,27 +359,6 @@ const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
     setAmount('');
   };
 
-  const handleClickOnSend = async (form: ExchangeOperationForm) => {
-    console.log({ form }); //TODO remove line
-    if (form.addressTo.trim().length === 0) {
-      setErrorMessage('popup_html_need_destination_address');
-      return;
-    }
-    // let fields = [
-    //   { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
-    //   { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
-    //   { label: 'popup_html_transfer_amount', value: stringifiedAmount },
-    //   { label: 'popup_html_transfer_memo', value: memoField },
-    // ];
-  };
-
-  const setFormParams = () => {
-    setValue('currencyFrom', startToken.subLabel!);
-    setValue('currencyTo', endToken.subLabel!);
-    setValue('amountFrom', amount);
-    setStep(2);
-  };
-  //TODo bellow add missing tr if needed
   return (
     <div className="swap-cryptos">
       {loading && (
@@ -390,86 +392,25 @@ const SwapCryptos = ({ price, setErrorMessage }: PropsFromRedux) => {
             swapTokens={swapStartAndEnd}
             displayReceiveTokenLogo
             errorMessage={errorInApi}
-            setStep={setFormParams}
-            setProviderSelected={(provider) => setProviderSelected(provider)}
+            setStep={(provider) => setFormParams(provider)}
           />
         )}
       {!loading && step === 2 && (
-        <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
-          <div className="form-fields">
-            <div className="provider-icon-label">
-              <SVGIcon
-                icon={
-                  providerSelected === ProviderName.STEALTHEX
-                    ? SVGIcons.SWAP_CRYPTOS_STEALTHEX
-                    : SVGIcons.SWAP_CRYPTOS_SIMPLESWAP
-                }
-              />
-              <div className="amount-to-exchange">
-                Amount:{' '}
-                {FormatUtils.formatCurrencyValue(getFormParams().amountFrom)}
-              </div>
-            </div>
-            <div className="exchange-tokens">
-              <div className="token-label">
-                <div className="label">
-                  From: {getFormParams().currencyFrom}
-                </div>
-                <PreloadedImage
-                  className="left-image"
-                  src={startToken.img!}
-                  alt={`side-icon-${startToken.label}`}
-                />
-              </div>
-              <div className="token-label">
-                <div className="label">To: {getFormParams().currencyTo}</div>
-                <PreloadedImage
-                  className="left-image"
-                  src={endToken.img!}
-                  alt={`side-icon-${endToken.label}`}
-                />
-              </div>
-            </div>
-            <FormInputComponent
-              name="addressTo"
-              control={control}
-              dataTestId="exchange-operation-addressTo"
-              type={InputType.TEXT}
-              //TODO add tr keys
-              skipLabelTranslation
-              skipPlaceholderTranslation
-              placeholder={'address To'}
-              label={'Receive address'}
-            />
-            <FormInputComponent
-              name="refundAddress"
-              control={control}
-              dataTestId="exchange-operation-refundAddress"
-              type={InputType.TEXT}
-              //TODO add tr keys
-              skipLabelTranslation
-              skipPlaceholderTranslation
-              placeholder={'Refund Address (Optional)'}
-              label={'Refund address(Optional)'}
-            />
-          </div>
-          <div className="buttons-container">
-            <ButtonComponent
-              onClick={() => setStep(1)}
-              skipLabelTranslation
-              label="Cancel"
-              type={ButtonType.ALTERNATIVE}
-              additionalClass="button"
-            />
-            <OperationButtonComponent
-              dataTestId="send-texchange-operation"
-              requiredKey={KeychainKeyTypesLC.posting}
-              onClick={handleSubmit(handleClickOnSend)}
-              label={'popup_html_send'}
-              additionalClass="button"
-            />
-          </div>
-        </FormContainer>
+        <SwapCryptosStepTwoComponent
+          startToken={startToken}
+          endToken={endToken}
+          getFormParams={getFormParams}
+          minAmountProviderList={minAmountProviderList}
+          providerSelected={providerSelected}
+          adjustMinAcceptedMessage={adjustMinAcceptedMessage}
+          swapCryptos={swapCryptos}
+          setStep={(value: number) => setStep(value)}
+          setValue={(name: string, value: any) =>
+            setValue(name as keyof ExchangeOperationForm, value as string)
+          }
+          handleSubmit={(cb: any) => handleSubmit(cb)}
+          control={control}
+        />
       )}
     </div>
   );
@@ -481,7 +422,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { setErrorMessage });
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SwapCryptosComponent = connector(SwapCryptos);

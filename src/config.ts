@@ -67,11 +67,13 @@ const Config = {
       urls: {
         baseUrl: 'https://api.stealthex.io/api/v2/',
         referalBaseUrl: 'https://stealthex.io/?ref=',
+        fullLinkToExchange: 'https://stealthex.io/exchange?id=',
         routes: {
           allCurrencies: 'fee/currency',
           currencyPair: 'fee/pairs/',
           minMaxAccepted: 'fee/range/',
           estimation: 'fee/estimate/',
+          exchange: 'fee/exchange',
         },
       },
       apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
@@ -80,14 +82,18 @@ const Config = {
       partnerFeeAmount: 20,
     } as SwapCryptosConfig,
     simpleswap: {
+      //Note: this exchange set up its partner fee in: https://partners.simpleswap.io/webtools/api
+      // it seems it only accepts 5% as max value.
       urls: {
         baseUrl: 'https://api.simpleswap.io/',
         referalBaseUrl: 'https://simpleswap.io/?ref=',
+        fullLinkToExchange: 'https://simpleswap.io/exchange?id=',
         routes: {
           allCurrencies: 'get_all_currencies',
           currencyPair: 'get_pairs',
           minMaxAccepted: 'get_ranges',
           estimation: 'get_estimated',
+          exchange: 'create_exchange',
         },
       },
       apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',

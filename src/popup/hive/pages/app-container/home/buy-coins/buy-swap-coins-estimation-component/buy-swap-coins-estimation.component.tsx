@@ -32,8 +32,7 @@ interface Props {
   inputPlaceHolder: string;
   estimations: RampEstimationDisplay[] | SwapCryptosEstimationDisplay[];
   countdown: number | null;
-  setProviderSelected?: (provider: SwapCryptos) => void;
-  setStep?: () => void;
+  setStep?: (provider: SwapCryptos) => void;
   price?: CurrencyPrices;
   minAcceptedAmount?: number;
   minAmountLabel?: string;
@@ -64,7 +63,6 @@ const BuySwapCoinsEstimation = ({
   swapTokens,
   displayReceiveTokenLogo,
   errorMessage,
-  setProviderSelected,
 }: Props) => {
   return (
     <FormContainer>
@@ -140,7 +138,6 @@ const BuySwapCoinsEstimation = ({
                   displayReceiveTokenLogo={displayReceiveTokenLogo}
                   estimation={estimation}
                   setStep={setStep}
-                  setProviderSelected={setProviderSelected}
                 />
               );
             })}

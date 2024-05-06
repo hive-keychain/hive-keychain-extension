@@ -18,8 +18,7 @@ interface Props {
   price: CurrencyPrices;
   displayReceiveTokenLogo?: boolean;
   endTokenList: OptionItem[];
-  setProviderSelected?: (provider: SwapCryptos) => void;
-  setStep?: () => void;
+  setStep?: (provider: SwapCryptos) => void;
 }
 
 const BuySwapCoinsEstimationItem = ({
@@ -28,7 +27,6 @@ const BuySwapCoinsEstimationItem = ({
   displayReceiveTokenLogo,
   endTokenList,
   setStep,
-  setProviderSelected,
 }: Props) => {
   const isRamp = (estimation as RampEstimationDisplay).hasOwnProperty(
     'paymentMethod',
@@ -39,9 +37,8 @@ const BuySwapCoinsEstimationItem = ({
   };
 
   const executeOperation = () => {
-    if (setProviderSelected && setStep) {
-      setProviderSelected(estimation.name as SwapCryptos);
-      setStep();
+    if (setStep) {
+      setStep(estimation.name as SwapCryptos);
     }
   };
 
@@ -102,11 +99,11 @@ const BuySwapCoinsEstimationItem = ({
         {!isRamp ? (
           <div className="buttons-container">
             <div className="act-button">
-              <SVGIcon icon={SVGIcons.SELECT_ARROW_UP} onClick={gotoUrl} />
+              <SVGIcon icon={SVGIcons.BOTTOM_BAR_BUY} onClick={gotoUrl} />
             </div>
             <div className="act-button">
               <SVGIcon
-                icon={SVGIcons.SELECT_ARROW_RIGHT}
+                icon={SVGIcons.BOTTOM_BAR_SWAPS}
                 onClick={executeOperation}
               />
             </div>

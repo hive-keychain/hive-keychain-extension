@@ -575,6 +575,10 @@
     "message": "Transfer Funds",
     "description": "When initiating a HIVE or HBD transfer"
   },
+  "popup_html_exchange_operation": {
+    "message": "Exchange Operation",
+    "description": "When initiating a swap cryptos exchange operation"
+  },
   "popup_html_balance": {
     "message": "Balance",
     "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
@@ -595,6 +599,10 @@
     "message": "Please confirm your transfer.<br>This cannot be undone.",
     "description": "On transfer confirmation page"
   },
+  "popup_html_confirm_exchange_operation_text": {
+    "message": "Please confirm your exchange operation.<br>This cannot be undone.",
+    "description": "On transfer confirmation page"
+  },
   "popup_html_transfer_confirm_cancel_recurrent": {
     "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
     "description": "On transfer confirmation page"
@@ -602,6 +610,14 @@
   "popup_html_transfer_from": {
     "message": "From",
     "description": "On transfer confirmation page"
+  },
+  "popup_html_exchange_receive_address": {
+    "message": "Receive address",
+    "description": "On swap cryptos exchange operation confirmation page"
+  },
+  "popup_html_exchange_refund_address": {
+    "message": "Refund address(optional)",
+    "description": "On swap cryptos exchange operation confirmation page"
   },
   "popup_html_transfer_to": {
     "message": "To",
@@ -614,6 +630,14 @@
   "popup_html_transfer_memo": {
     "message": "Memo",
     "description": "On transfer confirmation page"
+  },
+  "popup_html_destination_address": {
+    "message": "Destination Address",
+    "description": "On swap cryptos executing exchange"
+  },
+  "popup_html_refund_address": {
+    "message": "Refund Address",
+    "description": "On swap cryptos executing exchange"
   },
   "popup_html_transfer_recurrence": {
     "message": "Recurrence",
@@ -2147,6 +2171,10 @@
     "message": "Transferring funds",
     "description": "Transfer fund operation"
   },
+  "html_popup_exchange_operation": {
+    "message": "Exchanging $1 to $2 in $3",
+    "description": "Exchange operation swap cryptos"
+  },
   "html_popup_transfer_token_operation": {
     "message": "Transferring tokens",
     "description": "Transfer token operation"
@@ -2251,9 +2279,13 @@
     "message": "Amount needs to be greater than 0",
     "description": "Amount error in form"
   },
-  "popup_html_need_destination_address": {
-    "message": "Destination Address is mandatory!",
-    "description": "address to error in form"
+  "popup_html_need_receive_address": {
+    "message": "Receive Address is mandatory!",
+    "description": "address mandatory in form swap cryptos exchange"
+  },
+  "popup_html_need_adjust_min_exchange_amount": {
+    "message": "Please before to proceed, adjust the amount!",
+    "description": "min amount to error in form"
   },
   "popup_html_deleting_account_linked_to_authorized": {
     "message": "Some of your accounts are using @$1 as an authorized account and won't be able to perform operations anymore.",
@@ -3698,6 +3730,10 @@
   "buy_coins_swap_cryptos_error_api": {
     "message": "There may be an error from Third party API, please try again later",
     "description": "buy fiat crypto swap error message"
+  },
+  "buy_coins_swap_cryptos_error_adjust_min": {
+    "message": "The current exchange accepts a minimun of $1 $2, please adjust accordingly to proceed.",
+    "description": "buy/swap cryptos adjust amount message"
   },
   "not_enough_rc": {
     "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
