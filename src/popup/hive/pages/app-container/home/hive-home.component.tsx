@@ -18,6 +18,7 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -25,13 +26,16 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import {
+  AccountValueType,
+  EstimatedAccountValueSectionComponent,
+} from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
-import { EstimatedAccountValueSectionComponent } from 'src/popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';
 import { ResourcesSectionComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resources-section.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
@@ -60,6 +64,11 @@ const Home = ({
   accounts,
   activeRpc,
   globalProperties,
+  chain,
+  tokens,
+  tokensBalance,
+  tokensMarket,
+  currencyPrices,
   refreshActiveAccount,
   resetTitleContainerProperties,
   setSuccessMessage,
@@ -359,7 +368,29 @@ const Home = ({
 
             <div className={'home-page-content'} onScroll={handleScroll}>
               <ResourcesSectionComponent />
-              <EstimatedAccountValueSectionComponent />
+              <EstimatedAccountValueSectionComponent
+                accountValues={{
+                  [AccountValueType.DOLLARS]: `$${AccountUtils.getAccountValue(
+                    activeAccount.account,
+                    currencyPrices,
+                    globalProperties.globals!,
+                    tokensBalance.list,
+                    tokensMarket,
+                    AccountValueType.DOLLARS,
+                    tokens,
+                  )}`,
+                  [AccountValueType.TOKEN]: `${AccountUtils.getAccountValue(
+                    activeAccount.account,
+                    currencyPrices,
+                    globalProperties.globals!,
+                    tokensBalance.list,
+                    tokensMarket,
+                    AccountValueType.TOKEN,
+                    tokens,
+                  )} ${chain.mainTokens.hive}`,
+                }}
+                hasPortofolio
+              />
               <WalletInfoSectionComponent />
             </div>
             <ActionsSectionComponent
@@ -387,6 +418,11 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.hive.accounts,
     activeRpc: state.hive.activeRpc,
     globalProperties: state.hive.globalProperties,
+    chain: state.chain as HiveChain,
+    currencyPrices: state.hive.currencyPrices,
+    tokensBalance: state.hive.userTokens,
+    tokensMarket: state.hive.tokenMarket,
+    tokens: state.hive.tokens,
   };
 };
 

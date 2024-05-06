@@ -15,7 +15,7 @@ import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import {
   AccountValueType,
-  EstimatedAccountValueSectionComponent2,
+  EstimatedAccountValueSectionComponent,
 } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { EvmWalletInfoSectionComponent } from 'src/common-ui/wallet-info-section/wallet-info-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
@@ -141,7 +141,7 @@ const Home = ({
       />
 
       <div className={'home-page-content'} onScroll={handleScroll}>
-        <EstimatedAccountValueSectionComponent2
+        <EstimatedAccountValueSectionComponent
           accountValues={{
             [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
               EvmTokensUtils.getTotalBalanceInUsd(activeAccount),

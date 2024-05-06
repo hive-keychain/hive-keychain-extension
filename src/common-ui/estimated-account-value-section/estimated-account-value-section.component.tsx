@@ -75,7 +75,6 @@ const EstimatedAccountValueSection = ({
           </CustomTooltip>
         </div>
         <div className="estimated-value-button-container">
-          {' '}
           <div
             data-testid="estimated-account-div-value"
             className={`value ${
@@ -99,5 +98,5 @@ const EstimatedAccountValueSection = ({
   );
 };
 
-export const EstimatedAccountValueSectionComponent2 =
+export const EstimatedAccountValueSectionComponent =
   EstimatedAccountValueSection;

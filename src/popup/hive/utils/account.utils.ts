@@ -8,7 +8,7 @@ import {
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
+import { AccountValueType } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
