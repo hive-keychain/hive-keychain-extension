@@ -849,10 +849,11 @@ const getNotifications = async (
       case 'fill_vesting_withdraw': {
         if (username === payload.from_account) {
           message = 'notification_fill_power_down';
+          console.log(payload);
           messageParams = [
             payload.from,
             FormatUtils.toFormattedHP(
-              payload.withdraw.toString().replace('VESTS', ''),
+              payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
             ),
           ];
@@ -861,7 +862,7 @@ const getNotifications = async (
           messageParams = [
             payload.from_account,
             FormatUtils.toFormattedHP(
-              payload.withdraw.toString().replace('VESTS', ''),
+              payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
             ),
             payload.to_account,

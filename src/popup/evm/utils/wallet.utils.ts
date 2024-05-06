@@ -10,7 +10,6 @@ import { EthersError, HDNodeWallet, ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getWalletFromSeedPhrase = (seed: string) => {
-  console.log(seed);
   let wallet: HDNodeWallet | undefined, error;
   let errorParams: string[] = [];
   try {

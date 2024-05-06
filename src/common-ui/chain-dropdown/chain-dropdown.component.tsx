@@ -15,13 +15,11 @@ const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
-    console.log(chain);
     if (chain.name.length > 0) init();
   }, [chain]);
 
   const init = async () => {
     const chains = await ChainUtils.getSetupChains();
-    console.log(chains);
     let optionItems: OptionItem[] = chains.map((c) => {
       return { label: c.name, value: c, img: c.logo };
     });

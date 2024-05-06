@@ -91,7 +91,6 @@ const ChainRouter = ({
   };
 
   const renderChain = () => {
-    console.log(chain);
     if (!mk || mk.length === 0) {
       if (!hasFinishedSignup) {
         return <SignUpComponent />;
