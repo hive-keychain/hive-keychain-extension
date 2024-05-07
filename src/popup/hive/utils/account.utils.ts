@@ -166,7 +166,7 @@ const addAuthorizedKey = async (
   if (!authorizedAccount || !localActiveAccount) return; // check error
 
   localActiveAccount.keys[keyType.toLowerCase() as keyof Keys] =
-    authorizedAccount.keys.active;
+    authorizedAccount.keys[keyType.toLowerCase() as keyof Keys];
   localActiveAccount.keys[
     `${keyType.toLowerCase()}Pubkey` as keyof Keys
   ] = `@${authorizedAccountName}`;
@@ -206,7 +206,6 @@ const addAuthorizedAccount = async (
   }
 
   const hiveAccounts = await AccountUtils.getAccount(username);
-
   if (!hiveAccounts || hiveAccounts.length === 0) {
     throw new KeychainError('popup_accounts_incorrect_user', []);
   }
@@ -223,7 +222,6 @@ const addAuthorizedAccount = async (
   const postingAuth = postingKeyInfo.account_auths.find(
     (accountAuth) => accountAuth[0] === authorizedAccount,
   );
-
   if (!activeAuth && !postingAuth) {
     throw new KeychainError('popup_accounts_no_auth', [
       authorizedAccount,
@@ -231,15 +229,20 @@ const addAuthorizedAccount = async (
     ]);
   }
 
-  if (activeAuth && activeAuth[1] >= activeKeyInfo.weight_threshold) {
+  if (activeAuth && activeAuth[1] <= activeKeyInfo.weight_threshold) {
     keys.active = localAuthorizedAccount.keys.active;
     keys.activePubkey = `@${authorizedAccount}`;
   }
-  if (postingAuth && postingAuth[1] >= postingKeyInfo.weight_threshold) {
+  if (postingAuth && postingAuth[1] <= postingKeyInfo.weight_threshold) {
     keys.posting = localAuthorizedAccount.keys.posting;
     keys.postingPubkey = `@${authorizedAccount}`;
   }
-
+  if (!keys.posting && !keys.active) {
+    throw new KeychainError('popup_accounts_no_auth', [
+      authorizedAccount,
+      username,
+    ]);
+  }
   return keys;
 };
 
