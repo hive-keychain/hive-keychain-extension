@@ -73,7 +73,9 @@ const ConfirmationPage = ({
           useMultisig = KeysUtils.isUsingMultisig(
             activeAccount.keys.active,
             activeAccount.account,
-            activeAccount.account,
+            activeAccount.keys.activePubkey?.startsWith('@')
+              ? activeAccount.keys.activePubkey.replace('@', '')
+              : activeAccount.account.name,
             method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
@@ -85,7 +87,9 @@ const ConfirmationPage = ({
           useMultisig = KeysUtils.isUsingMultisig(
             activeAccount.keys.posting,
             activeAccount.account,
-            activeAccount.account,
+            activeAccount.keys.postingPubkey?.startsWith('@')
+              ? activeAccount.keys.postingPubkey.replace('@', '')
+              : activeAccount.account.name,
             method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);

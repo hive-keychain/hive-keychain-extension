@@ -13,6 +13,7 @@ import { Key } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -93,16 +94,25 @@ const createSignAndBroadcastTransaction = async (
   const transactionAccount = await AccountUtils.getExtendedAccount(
     username!.toString(),
   );
-  const initiatorAccount = await AccountUtils.getAccountFromKey(key);
+
+  const localAccount = (
+    await AccountUtils.getAccountsFromLocalStorage(
+      await MkUtils.getMkFromLocalStorage(),
+    )
+  ).find(
+    (account) => account.keys.posting === key || account.keys.active === key,
+  );
+  const initiatorAccount = await AccountUtils.getExtendedAccount(
+    localAccount?.name!,
+  );
   const method = await KeysUtils.isKeyActiveOrPosting(key, initiatorAccount);
 
   const isUsingMultisig = await KeysUtils.isUsingMultisig(
     key,
     transactionAccount,
-    initiatorAccount,
+    initiatorAccount.name,
     method.toLowerCase() as KeychainKeyTypesLC,
   );
-
   if (isUsingMultisig) {
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {

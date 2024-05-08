@@ -229,20 +229,15 @@ const addAuthorizedAccount = async (
     ]);
   }
 
-  if (activeAuth && activeAuth[1] <= activeKeyInfo.weight_threshold) {
+  if (activeAuth) {
     keys.active = localAuthorizedAccount.keys.active;
     keys.activePubkey = `@${authorizedAccount}`;
   }
-  if (postingAuth && postingAuth[1] <= postingKeyInfo.weight_threshold) {
+  if (postingAuth) {
     keys.posting = localAuthorizedAccount.keys.posting;
     keys.postingPubkey = `@${authorizedAccount}`;
   }
-  if (!keys.posting && !keys.active) {
-    throw new KeychainError('popup_accounts_no_auth', [
-      authorizedAccount,
-      username,
-    ]);
-  }
+
   return keys;
 };
 
