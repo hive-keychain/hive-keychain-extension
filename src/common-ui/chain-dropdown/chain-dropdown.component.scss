@@ -9,10 +9,12 @@
   .left-image {
     height: 20px !important;
     width: 20px !important;
+    margin-left: unset !important;
   }
   .left-svg {
     height: 20px !important;
     width: 20px !important;
+
     svg {
       height: 20px !important;
       width: 20px !important;

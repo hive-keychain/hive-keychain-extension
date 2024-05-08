@@ -7,6 +7,7 @@ import {
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -20,7 +21,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
 interface AccountItemOption extends OptionItem {
@@ -186,9 +186,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
   };
 };
 

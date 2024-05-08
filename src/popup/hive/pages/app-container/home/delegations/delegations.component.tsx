@@ -14,6 +14,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
@@ -27,14 +28,12 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import {
   loadDelegatees,
   loadDelegators,
   loadPendingOutgoingUndelegations,
 } from 'src/popup/hive/actions/delegations.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -415,9 +414,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     localAccounts: state.hive.accounts,
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     delegations: state.hive.delegations,
     globalProperties: state.hive.globalProperties.globals,
     formParams: state.navigation.stack[0].previousParams?.formParams

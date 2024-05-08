@@ -1,0 +1,12 @@
+.add-custom-blockchain-page {
+  .logo-panel {
+    display: flex;
+    align-items: flex-end;
+    column-gap: 8px;
+    img {
+      @include icon-size(36px);
+      margin-bottom: 8px;
+      border-radius: 50%;
+    }
+  }
+}

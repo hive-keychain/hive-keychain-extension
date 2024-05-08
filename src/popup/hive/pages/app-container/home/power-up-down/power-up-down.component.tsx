@@ -18,6 +18,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -35,7 +36,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { loadDelegatees } from 'src/popup/hive/actions/delegations.actions';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -418,9 +418,7 @@ const PowerUpDown = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     powerType: state.navigation.stack[0].params.powerType as PowerType,
     globalProperties: state.hive.globalProperties,
     formParams: state.navigation.stack[0].previousParams?.formParams

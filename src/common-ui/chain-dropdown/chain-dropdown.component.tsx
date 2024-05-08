@@ -1,7 +1,9 @@
 import { setChain } from '@popup/multichain/actions/chain.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
@@ -11,7 +13,7 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
+const ChainDropdown = ({ chain, setChain, navigateTo }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const ChainDropdown = ({ chain, setChain }: PropsFromRedux) => {
   };
 
   const handleOnAddBlockchainClicked = () => {
-    // TODO navigate to add blockchain page
+    navigateTo(Screen.SELECT_BLOCKCHAIN_PAGE);
   };
 
   return (
@@ -64,6 +66,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setChain,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

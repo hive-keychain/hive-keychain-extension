@@ -5,7 +5,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 export const ActionButtonList: ActionButton[] = [
   {
     label: 'ecosystem',
-    nextScreen: Screen.CHAINS,
+    nextScreen: Screen.ECOSYSTEM_PAGE,
     icon: SVGIcons.BOTTOM_BAR_ECOSYSTEM,
   },
   {

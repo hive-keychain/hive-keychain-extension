@@ -4359,5 +4359,57 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_create_blockchain": {
+    "message": "Create",
+    "description": "Create blockchain button"
+  },
+  "popup_html_create_blockchain_chain_type": {
+    "message": "Chain type",
+    "description": "Blockchain chain type"
+  },
+  "popup_html_create_blockchain_name": {
+    "message": "Name",
+    "description": "Blockchain chain name"
+  },
+  "popup_html_create_blockchain_symbol": {
+    "message": "Symbol",
+    "description": "Blockchain chain symbol"
+  },
+  "popup_html_create_blockchain_logo": {
+    "message": "Logo",
+    "description": "Blockchain logo"
+  },
+  "popup_html_create_blockchain_testnet": {
+    "message": "Testnet",
+    "description": "Blockchain testnet"
+  },
+  "popup_html_create_blockchain_chain_id": {
+    "message": "Chain ID",
+    "description": "Blockchain chain id"
+  },
+  "popup_html_create_blockchain_block_explorer": {
+    "message": "Block explorer",
+    "description": "Blockchain chain block explorer"
+  },
+  "popup_html_create_blockchain_main_token": {
+    "message": "Main token's name",
+    "description": "Blockchain main token"
+  },
+  "popup_html_create_blockchain_token_hive": {
+    "message": "Hive token's name",
+    "description": "Blockchain hive token"
+  },
+  "popup_html_create_blockchain_token_hbd": {
+    "message": "HBD token's name",
+    "description": "Blockchain hbd token"
+  },
+  "popup_html_create_blockchain_token_hp": {
+    "message": "HP token's name",
+    "description": "Blockchain hp token"
+  },
+  "popup_html_create_blockchain_custom_chain": {
+    "message": "Custom chain",
+    "description": "Blockchain add custom chain"
   }
 }

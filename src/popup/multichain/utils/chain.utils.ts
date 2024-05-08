@@ -15,7 +15,8 @@ const getDefaultChains = (): Chain[] => {
       symbol: 'HIVE',
       type: ChainType.HIVE,
       logo: SVGIcons.BLOCKCHAIN_HIVE,
-      chainId: '',
+      chainId:
+        'beeab0de00000000000000000000000000000000000000000000000000000000',
       mainTokens: {
         hbd: 'HBD',
         hive: 'HIVE',

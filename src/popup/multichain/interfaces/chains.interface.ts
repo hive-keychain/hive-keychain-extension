@@ -23,6 +23,7 @@ export interface Chain {
   logo: SVGIcons | string;
   chainId: string;
   testnet?: boolean;
+  blockExplorer?: string;
 
   // TODO remove optional
   rpc?: MultichainRpc;

@@ -4,12 +4,12 @@ import {
 } from '@interfaces/rc-delegation.interface';
 import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-delegation-item.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 
 const IncomingOutgoingRcPage = ({
@@ -157,9 +157,7 @@ const mapStateToProps = (state: RootState) => {
       .delegationType as DelegationType,
     delegations: state.navigation.stack[0].params.delegations as RcDelegation[],
     globalProperties: state.hive.globalProperties,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
   };
 };
 

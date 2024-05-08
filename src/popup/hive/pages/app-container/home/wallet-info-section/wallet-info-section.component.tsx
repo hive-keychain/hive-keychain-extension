@@ -10,6 +10,7 @@ import {
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -22,7 +23,6 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -260,9 +260,7 @@ const WalletInfoSection = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     globalProperties: state.hive.globalProperties,
     delegations: state.hive.delegations,
     conversions: state.hive.conversions,

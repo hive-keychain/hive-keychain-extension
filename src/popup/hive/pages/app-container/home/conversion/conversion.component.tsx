@@ -1,5 +1,6 @@
 import { Asset } from '@hiveio/dhive';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { Conversion } from '@interfaces/conversion.interface';
 import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
@@ -17,6 +18,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -30,11 +32,9 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { Conversion } from 'src/interfaces/conversion.interface';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -50,7 +50,7 @@ const rules = FormUtils.createRules<ConversionForm>({
   amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
 });
 
-const Conversion = ({
+const ConversionPage = ({
   currencyLabels,
   activeAccount,
   conversionType,
@@ -278,9 +278,7 @@ const Conversion = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
     conversions: state.hive.conversions as Conversion[],
@@ -302,4 +300,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const ConversionComponent = connector(Conversion);
+export const ConversionComponent = connector(ConversionPage);

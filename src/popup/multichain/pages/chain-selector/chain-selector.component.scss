@@ -16,6 +16,8 @@
     padding: 0px 24px;
     box-sizing: border-box;
 
+    --add-icon-color: #{$red};
+
     .chain-card {
       @include small-card();
       display: flex;
@@ -25,6 +27,26 @@
       @include poppins500(15px);
       cursor: pointer;
       color: var(--main-font-color);
+      text-align: center;
+
+      .svg-icon {
+        @include icon-size(45px);
+        svg {
+          @include icon-size(45px);
+        }
+      }
+      img {
+        @include icon-size(45px);
+      }
+
+      &.add-custom-chain {
+        .svg-icon {
+          @include icon-size(36px);
+          svg {
+            @include icon-size(36px);
+          }
+        }
+      }
     }
   }
 }

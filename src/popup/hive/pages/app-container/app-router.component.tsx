@@ -7,6 +7,8 @@ import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/h
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
+import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
+import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -176,8 +178,12 @@ const AppRouter = ({
         return <CreateAccountStepTwoComponent />;
       case Screen.SETTINGS_ANALYTICS:
         return <AnalyticsComponent />;
-      case Screen.CHAINS:
+      case Screen.ECOSYSTEM_PAGE:
         return <EcosystemComponent />;
+      case Screen.SELECT_BLOCKCHAIN_PAGE:
+        return <ChainSelectorPageComponent hasBackButton />;
+      case Screen.CREATE_BLOCKCHAIN_PAGE:
+        return <AddCustomChainPage />;
       default:
         return null;
     }

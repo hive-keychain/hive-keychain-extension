@@ -16,6 +16,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -26,7 +27,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
@@ -286,9 +286,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     globalProperties: state.hive.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
   };
 };
 

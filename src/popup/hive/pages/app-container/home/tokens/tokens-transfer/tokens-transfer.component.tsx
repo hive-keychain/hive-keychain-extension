@@ -18,6 +18,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -32,7 +33,6 @@ import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -339,9 +339,7 @@ const TokensTransfer = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
     tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,
