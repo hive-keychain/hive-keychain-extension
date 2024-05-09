@@ -1,8 +1,8 @@
+import { Screen } from '@interfaces/screen.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { PowerType } from '@popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { TokenOperationType } from '@popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
-import { Screen } from '@reference-data/screen.enum';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {

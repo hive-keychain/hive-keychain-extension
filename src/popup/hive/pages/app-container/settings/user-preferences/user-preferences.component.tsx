@@ -1,6 +1,6 @@
+import { Screen } from '@interfaces/screen.interface';
 import { RootState } from '@popup/multichain/store';
 import { useThemeContext } from '@popup/theme.context';
-import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';

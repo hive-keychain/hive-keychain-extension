@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -15,7 +16,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const SignUp = ({
   setErrorMessage,

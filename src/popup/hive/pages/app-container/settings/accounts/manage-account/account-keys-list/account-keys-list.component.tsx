@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { AccountKeysListItemComponent } from '@popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
@@ -12,7 +13,6 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';

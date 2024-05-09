@@ -1,8 +1,8 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';

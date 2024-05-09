@@ -1,14 +1,13 @@
-import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
+import { Screen } from '@interfaces/screen.interface';
 import { HiveHomeComponent } from '@popup/hive/pages/app-container/home/hive-home.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
-import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
-import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
-import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { globalRouter } from '@popup/multichain/global-router';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -37,7 +36,6 @@ import { TokensHistoryComponent } from 'src/popup/hive/pages/app-container/home/
 import { TokensTransferComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
 import { TransferFundsComponent } from 'src/popup/hive/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
-import { AboutPageComponent } from 'src/popup/hive/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu.component';
 import { CreateAccountStepOneComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
 import { CreateAccountStepTwoComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
@@ -45,20 +43,13 @@ import { ManageAccountAuthoritiesComponent } from 'src/popup/hive/pages/app-cont
 import { AddKeyComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings.component';
-import { AnalyticsComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
-import { AutoLockComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
-import { ChangePasswordComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
-import { ClearAllDataComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
 import { ImportExportPreferencesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
-import { KeychainifyComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
-import { RpcNodesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { SettingsMainPageComponent } from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
 import { FavoriteAccountsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { OperationPopupComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const AppRouter = ({
   currentPage,
@@ -67,131 +58,110 @@ const AppRouter = ({
 }: PropsFromRedux) => {
   const renderAccountPage = (page: Screen) => {
     switch (page) {
-      case Screen.HOME_PAGE:
+      case HiveScreen.HOME_PAGE:
         return <HiveHomeComponent />;
-      case Screen.GOVERNANCE_PAGE:
+      case HiveScreen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;
-      case Screen.TRANSFER_FUND_PAGE:
+      case HiveScreen.TRANSFER_FUND_PAGE:
         return <TransferFundsComponent />;
-      case Screen.POWER_UP_PAGE:
+      case HiveScreen.POWER_UP_PAGE:
         return <PowerUpDownComponent />;
-      case Screen.POWER_DOWN_PAGE:
+      case HiveScreen.POWER_DOWN_PAGE:
         return <PowerUpDownComponent />;
-      case Screen.BUY_COINS_PAGE:
+      case HiveScreen.BUY_COINS_PAGE:
         return <BuyCoinsComponent />;
-      case Screen.WALLET_HISTORY_PAGE:
+      case HiveScreen.WALLET_HISTORY_PAGE:
         return <WalletHistoryComponent />;
-      case Screen.CONFIRMATION_PAGE:
+      case HiveScreen.CONFIRMATION_PAGE:
         return <ConfirmationPageComponent />;
-      case Screen.CONVERSION_PAGE:
+      case HiveScreen.CONVERSION_PAGE:
         return <ConversionComponent />;
-      case Screen.PENDING_CONVERSION_PAGE:
+      case HiveScreen.PENDING_CONVERSION_PAGE:
         return <PendingConersionPageComponent />;
-      case Screen.SAVINGS_PAGE:
+      case HiveScreen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
-      case Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE:
+      case HiveScreen.PENDING_SAVINGS_WITHDRAWAL_PAGE:
         return <PendingSavingsWithdrawalPageComponent />;
-      case Screen.DELEGATION_PAGE:
+      case HiveScreen.DELEGATION_PAGE:
         return <DelegationsComponent />;
-      case Screen.INCOMING_OUTGOING_PAGE:
+      case HiveScreen.INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingPageComponent />;
-      case Screen.RC_DELEGATIONS_PAGE:
+      case HiveScreen.RC_DELEGATIONS_PAGE:
         return <RcDelegationsComponent />;
-      case Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
+      case HiveScreen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingRcPageComponent />;
       //Tokens
-      case Screen.TOKENS_HISTORY:
+      case HiveScreen.TOKENS_HISTORY:
         return <TokensHistoryComponent />;
-      case Screen.TOKENS_TRANSFER:
+      case HiveScreen.TOKENS_TRANSFER:
         return <TokensTransferComponent />;
-      case Screen.TOKENS_OPERATION:
+      case HiveScreen.TOKENS_OPERATION:
         return <TokensOperationComponent />;
-      case Screen.TOKENS_DELEGATIONS:
+      case HiveScreen.TOKENS_DELEGATIONS:
         return <TokenIncomingOutgoingPageComponent />;
-      case Screen.TOKENS_FILTER:
+      case HiveScreen.TOKENS_FILTER:
         return <TokensFilterComponent />;
-      case Screen.TOKEN_SWAP_PAGE:
+      case HiveScreen.TOKEN_SWAP_PAGE:
         return <TokenSwapsComponent />;
-      case Screen.TOKENS_SWAP_HISTORY:
+      case HiveScreen.TOKENS_SWAP_HISTORY:
         return <TokenSwapsHistoryComponent />;
-      case Screen.TOKENS_PENDING_UNSTAKE:
+      case HiveScreen.TOKENS_PENDING_UNSTAKE:
         return <TokenPendingUnstakePage />;
 
       //Settings Routes
-      case Screen.SETTINGS_MAIN_PAGE:
+      case HiveScreen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;
-      case Screen.SETTINGS_ACCOUNTS:
+      case HiveScreen.SETTINGS_ACCOUNTS:
         return <AccountSubMenuComponent />;
-      case Screen.ACCOUNT_PAGE_INIT_ACCOUNT:
+      case HiveScreen.ACCOUNT_PAGE_INIT_ACCOUNT:
         return <AddAccountRouterComponent />;
-      case Screen.ACCOUNT_PAGE_ADD_BY_KEYS:
+      case HiveScreen.ACCOUNT_PAGE_ADD_BY_KEYS:
         return <AddByKeysComponent />;
-      case Screen.ACCOUNT_PAGE_ADD_BY_AUTH:
+      case HiveScreen.ACCOUNT_PAGE_ADD_BY_AUTH:
         return <AddByAuthComponent />;
-      case Screen.ACCOUNT_PAGE_IMPORT_KEYS:
+      case HiveScreen.ACCOUNT_PAGE_IMPORT_KEYS:
         return <ImportKeysComponent />;
-      case Screen.ACCOUNT_PAGE_SELECT_KEYS:
+      case HiveScreen.ACCOUNT_PAGE_SELECT_KEYS:
         return <SelectKeysComponent />;
-      case Screen.SETTINGS_MANAGE_ACCOUNTS:
+      case HiveScreen.SETTINGS_MANAGE_ACCOUNTS:
         return <ManageAccountComponent />;
-      case Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES:
+      case HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES:
         return <ManageAccountAuthoritiesComponent />;
-      case Screen.SETTINGS_ADD_KEY:
+      case HiveScreen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;
-      case Screen.SETTINGS_ADVANCED:
+      case HiveScreen.SETTINGS_ADVANCED:
         return <AdvancedSettingsPageComponent />;
-      case Screen.SETTINGS_CHANGE_PASSWORD:
-        return <ChangePasswordComponent />;
-      case Screen.SETTINGS_RPC_NODES:
-        return <RpcNodesComponent />;
-      case Screen.SETTINGS_AUTO_LOCK:
-        return <AutoLockComponent />;
-      case Screen.SETTINGS_KEYCHAINIFY:
-        return <KeychainifyComponent />;
-      case Screen.SETTINGS_CLEAR_ALL_DATA:
-        return <ClearAllDataComponent />;
-      case Screen.SETTINGS_IMPORT_EXPORT:
+
+      case HiveScreen.SETTINGS_IMPORT_EXPORT:
         return <ImportExportPreferencesComponent />;
-      case Screen.SETTINGS_USER_PREFERENCES:
+      case HiveScreen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;
-      case Screen.SETTINGS_AUTHORIZED_OPERATIONS:
+      case HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS:
         return <AuthorizedOperationsComponent />;
-      case Screen.SETTINGS_EXPORT_TRANSACTIONS:
+      case HiveScreen.SETTINGS_EXPORT_TRANSACTIONS:
         return <ExportTransactionsComponent />;
-      case Screen.SETTINGS_OPERATION_POPUP:
+      case HiveScreen.SETTINGS_OPERATION_POPUP:
         return <OperationPopupComponent />;
-      case Screen.SETTINGS_AUTOMATED_TASKS:
+      case HiveScreen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
-      case Screen.SETTINGS_FAVORITE_ACCOUNTS:
+      case HiveScreen.SETTINGS_FAVORITE_ACCOUNTS:
         return <FavoriteAccountsComponent />;
-      case Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION:
+      case HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION:
         return <NotificationsConfigComponent />;
-      case Screen.SETTINGS_MULTISIG:
+      case HiveScreen.SETTINGS_MULTISIG:
         return <MultisigComponent />;
-      case Screen.SETTINGS_ABOUT:
-        return <AboutPageComponent />;
-      case Screen.SETTINGS_HELP:
-        return <HelpSubMenuComponent />;
-      case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:
+      case HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE:
         return <CreateAccountStepOneComponent />;
-      case Screen.CREATE_ACCOUNT_PAGE_STEP_TWO:
+      case HiveScreen.CREATE_ACCOUNT_PAGE_STEP_TWO:
         return <CreateAccountStepTwoComponent />;
-      case Screen.SETTINGS_ANALYTICS:
-        return <AnalyticsComponent />;
-      case Screen.ECOSYSTEM_PAGE:
-        return <EcosystemComponent />;
-      case Screen.SELECT_BLOCKCHAIN_PAGE:
-        return <ChainSelectorPageComponent hasBackButton />;
-      case Screen.CREATE_BLOCKCHAIN_PAGE:
-        return <AddCustomChainPage />;
       default:
-        return null;
+        return globalRouter(page);
     }
   };
 
   return (
     <div
-      className="app-router"
+      className="hive-router"
       style={{
         height: '100%',
         display: 'grid',

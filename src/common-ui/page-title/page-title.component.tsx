@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   goBack,
   navigateTo,
@@ -8,7 +9,6 @@ import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
 export interface PageTitleProps {
   title: string;

@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { removeFromLoadingList } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -11,7 +12,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
-import { Screen } from 'src/reference-data/screen.enum';
 const ImportWalletFromSeed = ({
   navigateToWithParams,
   setTitleContainerProperties,

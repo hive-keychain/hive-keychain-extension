@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   loadDelegatees,
   loadDelegators,
@@ -28,7 +29,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 
 interface IncomingOutgoingProps {

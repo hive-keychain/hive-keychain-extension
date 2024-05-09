@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
@@ -13,7 +14,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { Screen } from 'src/reference-data/screen.enum';
 import { MathUtils } from 'src/utils/math.utils';
 
 const CreateNewWalletVerification = ({

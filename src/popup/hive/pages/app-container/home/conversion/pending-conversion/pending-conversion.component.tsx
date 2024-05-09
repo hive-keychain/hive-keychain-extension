@@ -1,7 +1,7 @@
 import { Conversion } from '@interfaces/conversion.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';

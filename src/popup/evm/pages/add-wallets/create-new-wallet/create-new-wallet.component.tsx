@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import {
   setErrorMessage,
@@ -12,7 +13,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const CreateNewWallet = ({
   navigateToWithParams,

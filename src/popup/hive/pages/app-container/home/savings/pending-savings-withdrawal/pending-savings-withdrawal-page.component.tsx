@@ -1,7 +1,7 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Separator } from 'src/common-ui/separator/separator.component';

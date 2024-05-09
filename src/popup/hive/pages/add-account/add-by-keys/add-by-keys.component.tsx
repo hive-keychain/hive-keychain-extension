@@ -1,4 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -12,7 +13,6 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const AddByKeys = ({
   navigateToWithParams,

@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -13,7 +14,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { retrieveAccounts } from 'src/popup/hive/actions/account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const SignIn = ({
   setErrorMessage,

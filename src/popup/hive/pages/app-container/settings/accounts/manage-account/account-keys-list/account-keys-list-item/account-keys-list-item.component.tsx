@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import {
   goBack,
@@ -16,7 +17,6 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { removeKey, setAccounts } from 'src/popup/hive/actions/account.actions';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface KeyListItemProps {

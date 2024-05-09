@@ -14,9 +14,9 @@ import { KeyType } from 'src/interfaces/keys.interface';
 import { addKey } from 'src/popup/hive/actions/account.actions';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
+import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import { Screen } from '@reference-data/screen.enum';
 import ArrayUtils from 'src/utils/array.utils';
 
 const AddKey = ({

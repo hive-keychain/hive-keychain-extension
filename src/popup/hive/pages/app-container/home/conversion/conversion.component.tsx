@@ -5,6 +5,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -35,7 +36,6 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 

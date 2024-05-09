@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -10,7 +11,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const AddAccountMain = ({
   navigateTo,

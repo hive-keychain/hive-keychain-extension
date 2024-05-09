@@ -1,6 +1,6 @@
+import { Screen } from '@interfaces/screen.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [

@@ -1,10 +1,10 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';

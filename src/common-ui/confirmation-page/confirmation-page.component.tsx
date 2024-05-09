@@ -1,9 +1,9 @@
+import { Screen } from '@interfaces/screen.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';

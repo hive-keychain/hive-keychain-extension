@@ -1,6 +1,6 @@
+import { Screen } from '@interfaces/screen.interface';
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { Screen } from 'src/reference-data/screen.enum';
 
 export interface NavigationState {
   stack: Navigation[];

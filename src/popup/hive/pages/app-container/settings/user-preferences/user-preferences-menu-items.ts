@@ -1,6 +1,6 @@
 import { MenuItem } from '@interfaces/menu-item.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const UserPreferencesMenuItems = (
   toggleTheme: (...params: any) => void,

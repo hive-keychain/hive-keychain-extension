@@ -1,4 +1,5 @@
 import { Rpc } from '@interfaces/rpc.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   retrieveAccounts,
   setAccounts,
@@ -15,6 +16,7 @@ import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
+import { AppRouterComponent } from '@popup/hive/pages/app-container/hive-router.component';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
@@ -27,11 +29,9 @@ import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.c
 import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
-import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 let rpc: string | undefined = '';

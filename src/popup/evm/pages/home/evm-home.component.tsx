@@ -1,5 +1,7 @@
+import { Screen } from '@interfaces/screen.interface';
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -8,7 +10,6 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
@@ -37,6 +38,7 @@ const Home = ({
   resetTitleContainerProperties,
   activeAccount,
   getEvmActiveAccount,
+  navigateTo,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -131,7 +133,7 @@ const Home = ({
     <HomepageContainer datatestId={`${Screen.EVM_HOME}-page`}>
       <TopBarComponent
         onMenuButtonClicked={async () => {
-          navigateTo(Screen.SETTINGS_MAIN_PAGE);
+          navigateTo(EvmScreen.EVM_SETTINGS);
           return;
         }}
         onRefreshButtonClicked={refreshAccountBalances}
@@ -175,6 +177,7 @@ const connector = connect(mapStateToProps, {
   resetTitleContainerProperties,
   setSuccessMessage,
   getEvmActiveAccount,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

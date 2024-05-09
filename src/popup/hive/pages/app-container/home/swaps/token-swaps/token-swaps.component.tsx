@@ -1,4 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { SwapConfig } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import { loadTokensMarket } from '@popup/hive/actions/token.actions';
@@ -21,7 +22,6 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';

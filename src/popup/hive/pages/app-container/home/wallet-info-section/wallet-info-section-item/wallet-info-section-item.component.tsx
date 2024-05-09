@@ -1,4 +1,5 @@
 import { Asset } from '@hiveio/dhive';
+import { Screen } from '@interfaces/screen.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
@@ -9,7 +10,6 @@ import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/hom
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';

@@ -55,6 +55,12 @@ const AddCustomChain = ({}: any) => {
       logo: '',
       symbol: '',
       testnet: false,
+      mainToken: '',
+      mainTokens: {
+        hive: 'TESTS',
+        hbd: 'TBD',
+        hp: 'TP',
+      },
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<NewChainForm>>(formRules, {

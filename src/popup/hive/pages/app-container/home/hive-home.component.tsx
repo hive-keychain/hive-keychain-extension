@@ -1,4 +1,5 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
+import { Screen } from '@interfaces/screen.interface';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
@@ -21,7 +22,6 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';

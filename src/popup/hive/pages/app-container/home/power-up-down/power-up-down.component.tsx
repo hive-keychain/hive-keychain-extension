@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
   addToLoadingList,
@@ -38,7 +39,6 @@ import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { PowerUtils } from 'src/popup/hive/utils/power.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 

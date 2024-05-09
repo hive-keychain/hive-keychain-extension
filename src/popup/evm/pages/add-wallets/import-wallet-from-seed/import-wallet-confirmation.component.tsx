@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import {
   EvmAccount,
@@ -15,7 +16,6 @@ import { FormContainer } from 'src/common-ui/_containers/form-container/form-con
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { Screen } from 'src/reference-data/screen.enum';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
   walletsWithBalance,

@@ -1,8 +1,8 @@
+import { Screen } from '@interfaces/screen.interface';
 import { store } from '@popup/multichain/store';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const AccountSubMenuItems: MenuItem[] = [
   {

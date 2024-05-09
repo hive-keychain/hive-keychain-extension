@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -23,7 +24,6 @@ import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegati
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 
 interface TokenIncomingOutgoingProps {

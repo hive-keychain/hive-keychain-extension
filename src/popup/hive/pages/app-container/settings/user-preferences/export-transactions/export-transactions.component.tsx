@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import {
@@ -6,7 +7,6 @@ import {
   setLoadingPercentage,
 } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';

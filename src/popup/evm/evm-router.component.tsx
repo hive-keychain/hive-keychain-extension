@@ -1,14 +1,17 @@
+import { Screen } from '@interfaces/screen.interface';
 import { AddWalletMainComponent } from '@popup/evm/pages/add-wallets/add-wallets-main.component';
 import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet-verification.component';
 import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
+import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { globalRouter } from '@popup/multichain/global-router';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const EvmAppRouter = ({
   currentPage,
@@ -17,20 +20,25 @@ const EvmAppRouter = ({
 }: PropsFromRedux) => {
   const renderPage = (page: Screen) => {
     switch (page) {
-      case Screen.EVM_ADD_WALLET_MAIN:
+      case EvmScreen.EVM_ADD_WALLET_MAIN:
         return <AddWalletMainComponent />;
-      case Screen.IMPORT_EVM_WALLET:
+      case EvmScreen.IMPORT_EVM_WALLET:
         return <ImportWalletFromSeedComponent />;
-      case Screen.IMPORT_EVM_WALLET_CONFIRMATION:
+      case EvmScreen.IMPORT_EVM_WALLET_CONFIRMATION:
         return <ImportWalletConfirmationComponent />;
-      case Screen.CREATE_EVM_WALLET:
+      case EvmScreen.CREATE_EVM_WALLET:
         return <CreateNewWalletComponent />;
-      case Screen.CREATE_EVM_WALLET_VERIFICATION:
+      case EvmScreen.CREATE_EVM_WALLET_VERIFICATION:
         return <CreateNewWalletVerificationComponent />;
-      case Screen.EVM_HOME:
+      case EvmScreen.EVM_HOME:
         return <EvmHomeComponent />;
+
+      // Settings
+      case EvmScreen.EVM_SETTINGS: {
+        return <EvmSettingPage />;
+      }
       default:
-        return null;
+        return globalRouter(page);
     }
   };
 

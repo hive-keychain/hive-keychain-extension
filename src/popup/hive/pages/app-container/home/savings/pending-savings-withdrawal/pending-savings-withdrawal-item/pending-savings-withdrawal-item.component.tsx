@@ -1,4 +1,5 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -21,7 +22,6 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 
 interface PendingSavingsWithdrawalProps {

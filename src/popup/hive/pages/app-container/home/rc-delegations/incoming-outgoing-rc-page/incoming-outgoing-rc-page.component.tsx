@@ -2,11 +2,11 @@ import {
   RcDelegation,
   RCDelegationValue,
 } from '@interfaces/rc-delegation.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-delegation-item.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';

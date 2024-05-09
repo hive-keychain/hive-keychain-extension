@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { PendingUnstaking, Token } from '@interfaces/tokens.interface';
 import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -15,7 +16,6 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';

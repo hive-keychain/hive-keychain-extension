@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   ClaimReward,
   CollateralizedConvert,
@@ -17,7 +18,6 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';

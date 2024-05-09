@@ -1,9 +1,9 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';

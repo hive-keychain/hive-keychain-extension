@@ -1,8 +1,8 @@
+import { Screen } from '@interfaces/screen.interface';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
 import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Theme, useThemeContext } from '@popup/theme.context';
-import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';

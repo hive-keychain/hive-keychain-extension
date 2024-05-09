@@ -1,4 +1,5 @@
 import { AuthorityType } from '@hiveio/dhive';
+import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -12,7 +13,6 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';

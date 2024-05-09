@@ -1,10 +1,10 @@
+import { Screen } from '@interfaces/screen.interface';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
-import { Screen } from 'src/reference-data/screen.enum';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '../import-keys/import-keys.component';

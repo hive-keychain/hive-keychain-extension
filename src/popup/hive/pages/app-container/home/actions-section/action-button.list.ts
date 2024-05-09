@@ -1,6 +1,6 @@
+import { Screen } from '@interfaces/screen.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ActionButton } from 'src/interfaces/action-button.interface';
-import { Screen } from 'src/reference-data/screen.enum';
 
 export const ActionButtonList: ActionButton[] = [
   {

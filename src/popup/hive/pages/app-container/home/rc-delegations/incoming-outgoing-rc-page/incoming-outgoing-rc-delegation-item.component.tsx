@@ -1,4 +1,5 @@
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { RcDelegationsUtils } from '@popup/hive/utils/rc-delegations.utils';
 import {
   addToLoadingList,
@@ -23,7 +24,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { Screen } from 'src/reference-data/screen.enum';
 
 interface RcIncomingOutgoingProps {
   delegationType: DelegationType;

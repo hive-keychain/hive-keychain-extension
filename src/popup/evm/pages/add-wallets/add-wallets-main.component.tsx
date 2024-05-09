@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -7,7 +8,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const AddWalletMain = ({
   navigateTo,

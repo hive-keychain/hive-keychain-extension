@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -13,7 +14,6 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 
 const ChangePassword = ({
   setErrorMessage,

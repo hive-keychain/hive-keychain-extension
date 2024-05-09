@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   CommentCurationTransaction,
   CURATIONS_REWARDS_TYPES,
@@ -11,7 +12,6 @@ import {
 } from '@interfaces/tokens.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';

@@ -1,6 +1,6 @@
 import { AnalyticsSettings } from '@interfaces/analytics.interface';
+import { Screen } from '@interfaces/screen.interface.js';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './analytics/gtag.js';

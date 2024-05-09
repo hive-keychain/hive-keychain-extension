@@ -1,12 +1,12 @@
+import { Screen } from '@interfaces/screen.interface';
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { Screen } from 'src/reference-data/screen.enum';
 import { AppThunk } from './interfaces';
 
 export type NavigationParams = ConfirmationPageParams | any;
 
 export interface NavigationConfirmationPageParams {
-  screen: Screen.CONFIRMATION_PAGE;
+  screen: Screen;
   params: ConfirmationPageParams;
   resetStack: boolean;
 }

@@ -2,6 +2,7 @@ import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
 } from '@interfaces/hive-engine-rpc.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   setHEActiveAccountHistoryApi,
   setHEActiveRpc,
@@ -14,7 +15,6 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
