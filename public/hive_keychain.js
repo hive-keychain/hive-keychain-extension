@@ -891,7 +891,7 @@ var hive_keychain = {
    *   alert('You do not have hive keychain installed');
    * }
    * @param {String} username username of the account to be added
-   * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
+   * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified. Alternatively, authorized accounts can be specified with @${username}.
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
   requestAddAccount: function (username, keys, callback) {
