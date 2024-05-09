@@ -4,6 +4,7 @@ import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-sele
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -45,7 +46,7 @@ const Home = ({
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
 
   const [scrollTop, setScrollTop] = useState(0);
-  const [showBottomBar, setShowBottomBar] = useState(false);
+  const [showBottomBar, setShowBottomBar] = useState(true);
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -160,6 +161,7 @@ const Home = ({
       />
       <ProposalVotingSectionComponent />
       {renderPopup(displayWhatsNew, surveyToDisplay)}
+      <TutorialPopupComponent />
     </HomepageContainer>
   );
 };
