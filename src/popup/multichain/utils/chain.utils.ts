@@ -90,9 +90,10 @@ const getNonSetupChains = async (): Promise<Chain[]> => {
 };
 
 const addChainToSetupChains = async (chain: Chain) => {
-  const chains = await LocalStorageUtils.getValueFromLocalStorage(
+  let chains = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.SETUP_CHAINS,
   );
+  if (!chains) chains = [];
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.SETUP_CHAINS,
     [...chains, chain],
