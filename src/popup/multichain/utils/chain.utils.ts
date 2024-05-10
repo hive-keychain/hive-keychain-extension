@@ -74,12 +74,14 @@ const getSetupChains = async (): Promise<Chain[]> => {
 };
 
 const getNonSetupChains = async (): Promise<Chain[]> => {
-  const [setupChains, allChains] = await Promise.all([
+  let [setupChains, allChains] = await Promise.all([
     LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SETUP_CHAINS,
     ),
     getDefaultChains(),
   ]);
+
+  if (!setupChains) setupChains = [];
 
   return allChains.filter(
     (chain: Chain) =>
