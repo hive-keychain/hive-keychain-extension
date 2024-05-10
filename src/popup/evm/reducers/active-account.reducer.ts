@@ -1,13 +1,16 @@
-import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 
 const EvmActiveAccountReducer = (
-  state: EvmErc20TokenBalanceWithPrice[] = [],
-  { type, payload }: ActionPayload<EvmErc20TokenBalanceWithPrice[]>,
-): EvmErc20TokenBalanceWithPrice[] => {
+  state: EvmActiveAccount = {
+    address: '',
+    balances: [],
+  },
+  { type, payload }: ActionPayload<EvmActiveAccount>,
+): EvmActiveAccount => {
   switch (type) {
-    case EvmActionType.GET_ACTIVE_ACCOUNT:
+    case EvmActionType.SET_ACTIVE_ACCOUNT:
       return payload!;
     default:
       return state;

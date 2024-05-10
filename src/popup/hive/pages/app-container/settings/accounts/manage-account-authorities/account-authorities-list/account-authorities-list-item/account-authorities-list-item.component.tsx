@@ -15,7 +15,7 @@ import {
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
@@ -46,7 +46,6 @@ const AccountAuthoritiesListItem = ({
     authorizedAccountName: string,
   ) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      method: null,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_remove_account_authority_message',
         [role, authorizedAccountName],

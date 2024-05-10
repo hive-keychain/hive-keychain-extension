@@ -1,31 +1,18 @@
 import { Screen } from '@interfaces/screen.interface';
-import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import {
+  ConfirmationPageFields,
+  EVMConfirmationPageParams,
+} from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
-
-export interface ConfirmationPageParams {
-  fields: ConfirmationPageFields[];
-  message: string;
-  warningMessage?: string;
-  warningParams?: string[];
-  skipWarningTranslation?: boolean;
-  title: string;
-  skipTitleTranslation?: boolean;
-  afterConfirmAction: () => {};
-  afterCancelAction?: () => {};
-  formParams?: any;
-  method: KeychainKeyTypes | null;
-}
 
 const ConfirmationPage = ({
   fields,
@@ -38,12 +25,10 @@ const ConfirmationPage = ({
   title,
   skipTitleTranslation,
   activeAccount,
-  method,
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
 }: PropsType) => {
-  const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
   useEffect(() => {
     setTitleContainerProperties({
@@ -61,45 +46,10 @@ const ConfirmationPage = ({
         }
       },
     });
-
-    checkForMultsig();
   }, []);
-
-  const checkForMultsig = async () => {
-    let useMultisig = false;
-    switch (method) {
-      case KeychainKeyTypes.active: {
-        if (activeAccount.keys.active) {
-          useMultisig = KeysUtils.isUsingMultisig(
-            activeAccount.keys.active,
-            activeAccount.account,
-            activeAccount.account,
-            method.toLowerCase() as KeychainKeyTypesLC,
-          );
-          setWillUseMultisig(useMultisig);
-        }
-        break;
-      }
-      case KeychainKeyTypes.posting: {
-        if (activeAccount.keys.posting) {
-          useMultisig = KeysUtils.isUsingMultisig(
-            activeAccount.keys.posting,
-            activeAccount.account,
-            activeAccount.account,
-            method.toLowerCase() as KeychainKeyTypesLC,
-          );
-          setWillUseMultisig(useMultisig);
-        }
-        break;
-      }
-    }
-  };
 
   const handleClickOnConfirm = () => {
     // AnalyticsUtils.sendRequestEvent(title);
-    if (willUseMultisig) {
-      addCaptionToLoading('multisig_transmitting_to_multisig');
-    }
     afterConfirmAction();
   };
 
@@ -128,14 +78,7 @@ const ConfirmationPage = ({
               : chrome.i18n.getMessage(warningMessage, warningParams)}
           </div>
         )}
-        {willUseMultisig && (
-          <div data-testid="use-multisig-message" className="multisig-message">
-            <img src="/assets/images/multisig/logo.png" className="logo" />
-            <div className="message">
-              {chrome.i18n.getMessage('multisig_disclaimer_message')}
-            </div>
-          </div>
-        )}
+
         {hasField && (
           <div className="fields">
             {fields.map((field, index) => (
@@ -160,6 +103,8 @@ const ConfirmationPage = ({
           </div>
         )}
       </div>
+
+      <div className="gas-fee"></div>
 
       <div className="bottom-panel">
         <ButtonComponent
@@ -192,8 +137,7 @@ const mapStateToProps = (state: RootState) => {
     afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
-    method: state.navigation.stack[0].params.method as KeychainKeyTypes,
-    activeAccount: state.hive.activeAccount,
+    activeAccount: state.evm.activeAccount,
   };
 };
 
@@ -202,6 +146,6 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addCaptionToLoading,
 });
-type PropsType = ConnectedProps<typeof connector> & ConfirmationPageParams;
+type PropsType = ConnectedProps<typeof connector> & EVMConfirmationPageParams;
 
-export const ConfirmationPageComponent = connector(ConfirmationPage);
+export const EVMConfirmationPageComponent = connector(ConfirmationPage);

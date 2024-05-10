@@ -8,10 +8,11 @@ import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { globalRouter } from '@popup/multichain/global-router';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageComponent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth/add-by-auth.component';
@@ -62,18 +63,15 @@ const AppRouter = ({
         return <HiveHomeComponent />;
       case HiveScreen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;
-      case HiveScreen.TRANSFER_FUND_PAGE:
-        return <TransferFundsComponent />;
+
       case HiveScreen.POWER_UP_PAGE:
         return <PowerUpDownComponent />;
       case HiveScreen.POWER_DOWN_PAGE:
         return <PowerUpDownComponent />;
-      case HiveScreen.BUY_COINS_PAGE:
-        return <BuyCoinsComponent />;
+
       case HiveScreen.WALLET_HISTORY_PAGE:
         return <WalletHistoryComponent />;
-      case HiveScreen.CONFIRMATION_PAGE:
-        return <ConfirmationPageComponent />;
+
       case HiveScreen.CONVERSION_PAGE:
         return <ConversionComponent />;
       case HiveScreen.PENDING_CONVERSION_PAGE:
@@ -101,9 +99,15 @@ const AppRouter = ({
         return <TokenIncomingOutgoingPageComponent />;
       case HiveScreen.TOKENS_FILTER:
         return <TokensFilterComponent />;
-      case HiveScreen.TOKEN_SWAP_PAGE:
+      case MultichainScreen.BUY_COINS_PAGE:
+        return <BuyCoinsComponent />;
+      case MultichainScreen.TRANSFER_FUND_PAGE:
+        return <TransferFundsComponent />;
+      case MultichainScreen.CONFIRMATION_PAGE:
+        return <HiveConfirmationPageComponent />;
+      case MultichainScreen.TOKEN_SWAP_PAGE:
         return <TokenSwapsComponent />;
-      case HiveScreen.TOKENS_SWAP_HISTORY:
+      case MultichainScreen.TOKENS_SWAP_HISTORY:
         return <TokenSwapsHistoryComponent />;
       case HiveScreen.TOKENS_PENDING_UNSTAKE:
         return <TokenPendingUnstakePage />;

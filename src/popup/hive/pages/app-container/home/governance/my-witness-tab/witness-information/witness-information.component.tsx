@@ -23,7 +23,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
@@ -138,7 +138,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
   const enableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -193,7 +193,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const changeSelectedScreen = (selectedValue: WitnessInfoScreen) => {

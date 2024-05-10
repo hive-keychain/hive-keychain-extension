@@ -17,7 +17,7 @@ import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -84,7 +84,7 @@ const PendingSavingsWithdrawalItem = ({
           removeFromLoadingList('html_popup_cancel_withdraw_savings_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (

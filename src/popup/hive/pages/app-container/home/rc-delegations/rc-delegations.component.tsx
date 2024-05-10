@@ -31,7 +31,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -246,7 +246,7 @@ const RCDelegations = ({
           );
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const loadAutocompleteTransferUsernames = async () => {

@@ -1,14 +1,18 @@
+import { ActionButtonList } from '@popup/hive/pages/app-container/home/actions-section/action-button.list';
 import React from 'react';
-import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import { ActionButtonComponent } from 'src/popup/hive/pages/app-container/home/actions-section/action-button/action-button.component';
 
 type Props = {
+  selectedToken: string;
   additionalClass?: string;
 };
-export const ActionsSectionComponent = ({ additionalClass }: Props) => {
+export const ActionsSectionComponent = ({
+  selectedToken,
+  additionalClass,
+}: Props) => {
   return (
     <div className={`actions-section ${additionalClass ?? ''}`}>
-      {ActionButtonList.map((actionButton, index) => (
+      {ActionButtonList(selectedToken).map((actionButton, index) => (
         <ActionButtonComponent
           key={index}
           label={actionButton.label}

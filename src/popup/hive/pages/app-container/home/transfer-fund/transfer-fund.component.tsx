@@ -28,7 +28,7 @@ import { FormContainer } from 'src/common-ui/_containers/form-container/form-con
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -328,7 +328,7 @@ const TransferFunds = ({
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (

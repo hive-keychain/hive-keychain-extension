@@ -395,6 +395,7 @@ const Home = ({
             </div>
             <ActionsSectionComponent
               additionalClass={showBottomBar ? undefined : 'down'}
+              selectedToken={'hive'}
             />
             <ProposalVotingSectionComponent />
           </>

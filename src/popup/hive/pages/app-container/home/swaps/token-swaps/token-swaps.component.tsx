@@ -29,7 +29,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -422,7 +422,7 @@ const TokenSwaps = ({
       afterCancelAction: async () => {
         await SwapTokenUtils.cancelSwap(estimateId);
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const getFormParams = () => {

@@ -6,11 +6,14 @@ import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
+import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { globalRouter } from '@popup/multichain/global-router';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { HiveConfirmationPageComponent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 
 const EvmAppRouter = ({
@@ -32,6 +35,16 @@ const EvmAppRouter = ({
         return <CreateNewWalletVerificationComponent />;
       case EvmScreen.EVM_HOME:
         return <EvmHomeComponent />;
+      case MultichainScreen.BUY_COINS_PAGE:
+        return <>EVM on ramp</>;
+      case MultichainScreen.TRANSFER_FUND_PAGE:
+        return <EvmTransferComponent />;
+      case MultichainScreen.CONFIRMATION_PAGE:
+        return <HiveConfirmationPageComponent />;
+      case MultichainScreen.TOKEN_SWAP_PAGE:
+        return <>Evm Swap</>;
+      case MultichainScreen.TOKENS_SWAP_HISTORY:
+        return <>Swap history</>;
 
       // Settings
       case EvmScreen.EVM_SETTINGS: {

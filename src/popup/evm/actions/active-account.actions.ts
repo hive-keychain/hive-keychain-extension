@@ -10,7 +10,12 @@ export const getEvmActiveAccount =
       address,
     });
     dispatch({
-      type: EvmActionType.GET_ACTIVE_ACCOUNT,
-      payload: response.response.result.sort((a, b) => b.usdValue - a.usdValue),
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        address: address,
+        balances: response.response.result.sort(
+          (a, b) => b.usdValue - a.usdValue,
+        ),
+      },
     });
   };

@@ -19,7 +19,7 @@ export const globalRouter = (page: Screen) => {
       return <ChainSelectorPageComponent hasBackButton />;
     case MultichainScreen.CREATE_BLOCKCHAIN_PAGE:
       return <AddCustomChainPage />;
-    case Screen.ECOSYSTEM_PAGE:
+    case MultichainScreen.ECOSYSTEM_PAGE:
       return <EcosystemComponent />;
 
     //Settings

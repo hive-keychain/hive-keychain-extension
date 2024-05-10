@@ -27,7 +27,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -254,7 +254,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_power_down_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const setToMax = () => {
@@ -305,7 +305,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_cancel_power_down_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (

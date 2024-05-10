@@ -147,16 +147,20 @@ const Home = ({
         <EstimatedAccountValueSectionComponent
           accountValues={{
             [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
-              EvmTokensUtils.getTotalBalanceInUsd(activeAccount),
+              EvmTokensUtils.getTotalBalanceInUsd(activeAccount.balances),
             )}`,
             [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
-              EvmTokensUtils.getTotalBalanceInMainToken(activeAccount, chain),
+              EvmTokensUtils.getTotalBalanceInMainToken(
+                activeAccount.balances,
+                chain,
+              ),
             )} ${chain.mainToken}`,
           }}
         />
-        <EvmWalletInfoSectionComponent evmTokens={activeAccount} />
+        <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
       </div>
       <ActionsSectionComponent
+        selectedToken={chain.mainToken}
         additionalClass={showBottomBar ? undefined : 'down'}
       />
       <ProposalVotingSectionComponent />

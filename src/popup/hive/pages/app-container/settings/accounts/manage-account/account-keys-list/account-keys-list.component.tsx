@@ -20,7 +20,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -141,7 +141,7 @@ const AccountKeysList = ({
         navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const toggleQRCode = () => {

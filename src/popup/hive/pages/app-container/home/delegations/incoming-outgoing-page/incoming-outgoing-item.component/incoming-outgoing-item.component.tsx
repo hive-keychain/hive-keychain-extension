@@ -23,7 +23,7 @@ import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -108,7 +108,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const enterEditMode = () => {
@@ -174,7 +174,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const refreshDelegations = async () => {
