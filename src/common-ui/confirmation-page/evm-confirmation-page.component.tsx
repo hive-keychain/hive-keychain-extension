@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -25,6 +26,7 @@ const ConfirmationPage = ({
   title,
   skipTitleTranslation,
   activeAccount,
+  hasGasFee,
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
@@ -102,9 +104,8 @@ const ConfirmationPage = ({
             ))}
           </div>
         )}
+        {hasGasFee && <GasFeePanel />}
       </div>
-
-      <div className="gas-fee"></div>
 
       <div className="bottom-panel">
         <ButtonComponent
@@ -138,6 +139,7 @@ const mapStateToProps = (state: RootState) => {
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
     activeAccount: state.evm.activeAccount,
+    hasGasFee: state.navigation.stack[0].params.hasGasFee,
   };
 };
 

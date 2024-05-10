@@ -13,7 +13,7 @@ import { MultichainScreen } from '@popup/multichain/reference-data/multichain-sc
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { HiveConfirmationPageComponent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
+import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 
 const EvmAppRouter = ({
@@ -40,7 +40,7 @@ const EvmAppRouter = ({
       case MultichainScreen.TRANSFER_FUND_PAGE:
         return <EvmTransferComponent />;
       case MultichainScreen.CONFIRMATION_PAGE:
-        return <HiveConfirmationPageComponent />;
+        return <EVMConfirmationPageComponent />;
       case MultichainScreen.TOKEN_SWAP_PAGE:
         return <>Evm Swap</>;
       case MultichainScreen.TOKENS_SWAP_HISTORY:

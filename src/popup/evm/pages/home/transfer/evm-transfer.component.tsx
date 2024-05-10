@@ -31,6 +31,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { FormUtils } from 'src/utils/form.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface TransferForm {
   receiverAddress: string;
@@ -124,7 +125,10 @@ const EvmTransfer = ({
     }
 
     let fields = [
-      { label: 'popup_html_transfer_from', value: `@${activeAccount.address}` },
+      {
+        label: 'popup_html_transfer_from',
+        value: `@${FormatUtils.shortenString(activeAccount.address, 10)}`,
+      },
       { label: 'popup_html_transfer_to', value: `@${form.receiverAddress}` },
       { label: 'popup_html_transfer_amount', value: form.amount },
     ];
@@ -135,10 +139,10 @@ const EvmTransfer = ({
       fields: fields,
       title: 'popup_html_transfer_funds',
       formParams: watch(),
+      hasGasFee: true,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');
       },
-      extraComponent: <div>Fee estimate</div>,
     } as EVMConfirmationPageParams);
   };
 

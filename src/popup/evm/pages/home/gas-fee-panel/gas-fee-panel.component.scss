@@ -1,0 +1,19 @@
+.gas-fee-panel {
+  @include small-card();
+  flex-direction: column;
+  margin: unset;
+  cursor: pointer;
+  .gas-fee-top-row,
+  .gas-fee-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .label {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      &.duration {
+        color: $red;
+      }
+    }
+  }
+}

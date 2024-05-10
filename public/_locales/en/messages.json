@@ -4411,5 +4411,21 @@
   "popup_html_create_blockchain_custom_chain": {
     "message": "Custom chain",
     "description": "Blockchain add custom chain"
+  },
+  "popup_html_evm_gas_fee_estimate_label": {
+    "message": "Gas fee (estimate)",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee": {
+    "message": "Gas fee",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration": {
+    "message": "Likely is < $1 seconds",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_max_fee_label": {
+    "message": "Max fee",
+    "description": "Evm Gas max fee estimate label"
   }
 }

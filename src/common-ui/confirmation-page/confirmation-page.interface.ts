@@ -13,7 +13,9 @@ export interface ConfirmationPageParams {
   formParams?: any;
 }
 
-export interface EVMConfirmationPageParams extends ConfirmationPageParams {}
+export interface EVMConfirmationPageParams extends ConfirmationPageParams {
+  hasGasFee?: boolean;
+}
 
 export interface HiveConfirmationPageParams extends ConfirmationPageParams {
   method: KeychainKeyTypes | null;
