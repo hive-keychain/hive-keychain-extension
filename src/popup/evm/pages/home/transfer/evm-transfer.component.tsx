@@ -61,9 +61,10 @@ const EvmTransfer = ({
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
-      receiverAddress: formParams.receiverAddress
-        ? formParams.receiverUsername
-        : '',
+      // receiverAddress: formParams.receiverAddress
+      //   ? formParams.receiverUsername
+      //   : '',
+      receiverAddress: '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58',
       selectedToken: formParams.selectedToken
         ? formParams.selectedToken
         : navParams.selectedCurrency,
@@ -133,6 +134,8 @@ const EvmTransfer = ({
       { label: 'popup_html_transfer_amount', value: form.amount },
     ];
 
+    console.log(localAccounts);
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
@@ -143,6 +146,9 @@ const EvmTransfer = ({
       token: activeAccount.balances.find(
         (t) => t.symbol === form.selectedToken,
       ),
+      receiverAddress: form.receiverAddress,
+      amount: form.amount,
+      wallet: localAccounts[0].wallet,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');
       },

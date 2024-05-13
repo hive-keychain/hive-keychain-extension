@@ -9,6 +9,7 @@ export const getEvmActiveAccount =
       chain,
       address,
     });
+    console.log(response);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {

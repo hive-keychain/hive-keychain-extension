@@ -1,14 +1,31 @@
 import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
-import { MetamaskGasFeeApi } from '@popup/evm/api/metamask-gas-fee.api';
 import EthersUtils from '@popup/evm/utils/ethers.utils';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import { HDNodeWallet } from 'ethers';
+const estimate = async (
+  chain: Chain,
+  token: EvmErc20TokenBalanceWithPrice,
+  receiverAddress: string,
+  amount: number,
+  wallet: HDNodeWallet,
+) => {
+  // const totalEstimate = await MetamaskGasFeeApi.get(
+  //   parseInt(chain.chainId).toString(),
+  // );
 
-const estimate = async (chain: Chain, token: EvmErc20TokenBalanceWithPrice) => {
-  const totalEstimate = await MetamaskGasFeeApi.get(
-    parseInt(chain.chainId).toString(),
+  // console.log(totalEstimate);
+
+  const test = (await EthersUtils.getProvider().getFeeData()).maxFeePerGas;
+  console.log(test);
+  const gasAmountRequired = await EthersUtils.getGasAmount(
+    chain,
+    token,
+    receiverAddress,
+    amount,
+    wallet,
   );
 
-  const gasAmountRequired = EthersUtils.getGasAmount(chain, token);
+  console.log(test! * gasAmountRequired);
 
   return 30;
 };

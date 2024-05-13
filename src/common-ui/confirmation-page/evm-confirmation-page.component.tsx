@@ -29,6 +29,9 @@ const ConfirmationPage = ({
   hasGasFee,
   chain,
   token,
+  receiverAddress,
+  amount,
+  wallet,
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
@@ -106,7 +109,15 @@ const ConfirmationPage = ({
             ))}
           </div>
         )}
-        {hasGasFee && <GasFeePanel chain={chain} token={token} />}
+        {hasGasFee && (
+          <GasFeePanel
+            chain={chain}
+            token={token}
+            receiverAddress={receiverAddress}
+            amount={amount}
+            wallet={wallet}
+          />
+        )}
       </div>
 
       <div className="bottom-panel">
@@ -144,6 +155,9 @@ const mapStateToProps = (state: RootState) => {
     hasGasFee: state.navigation.stack[0].params.hasGasFee,
     chain: state.chain,
     token: state.navigation.stack[0].params.token,
+    receiverAddress: state.navigation.stack[0].params.receiverAddress,
+    amount: state.navigation.stack[0].params.amount,
+    wallet: state.navigation.stack[0].params.wallet,
   };
 };
 

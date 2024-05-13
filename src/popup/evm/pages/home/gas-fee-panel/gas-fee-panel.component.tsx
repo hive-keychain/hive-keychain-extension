@@ -1,6 +1,7 @@
 import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
@@ -10,9 +11,18 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 interface GasFeePanelProps {
   chain: Chain;
   token: EvmErc20TokenBalanceWithPrice;
+  receiverAddress: string;
+  amount: number;
+  wallet: HDNodeWallet;
 }
 
-export const GasFeePanel = ({ chain, token }: GasFeePanelProps) => {
+export const GasFeePanel = ({
+  chain,
+  token,
+  receiverAddress,
+  amount,
+  wallet,
+}: GasFeePanelProps) => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +31,13 @@ export const GasFeePanel = ({ chain, token }: GasFeePanelProps) => {
 
   const init = async () => {
     console.log(token);
-    const estimate = await GasFeeUtils.estimate(chain, token);
+    const estimate = await GasFeeUtils.estimate(
+      chain,
+      token,
+      receiverAddress,
+      amount,
+      wallet,
+    );
     console.log(estimate);
   };
 
