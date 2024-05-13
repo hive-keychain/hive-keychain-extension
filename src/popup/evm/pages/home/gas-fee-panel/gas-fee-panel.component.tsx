@@ -1,11 +1,29 @@
+import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-export const GasFeePanel = () => {
+interface GasFeePanelProps {
+  chain: Chain;
+  token: EvmErc20TokenBalanceWithPrice;
+}
+
+export const GasFeePanel = ({ chain, token }: GasFeePanelProps) => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    console.log(token);
+    const estimate = await GasFeeUtils.estimate(chain, token);
+    console.log(estimate);
+  };
 
   return (
     <>
@@ -34,7 +52,13 @@ export const GasFeePanel = () => {
           children={
             <div className="edit-gas-fee-content">
               <div className="title">
-                {chrome.i18n.getMessage('popup_html_evm_edit_gas_fee')}
+                <span>
+                  {chrome.i18n.getMessage('popup_html_evm_edit_gas_fee')}
+                </span>
+                <SVGIcon
+                  icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+                  onClick={() => setIsPanelOpen(false)}
+                />
               </div>
               <Separator fullSize type="horizontal" />
               <div className="custom-fee-row low">

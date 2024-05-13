@@ -1,4 +1,3 @@
-import { PeakDNotificationsApi } from '@api/peakd-notifications';
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeyType } from '@interfaces/keys.interface';
@@ -12,6 +11,7 @@ import {
   NotificationOperationName,
   NotificationType,
 } from '@interfaces/notifications.interface';
+import { PeakDNotificationsApi } from '@popup/hive/api/peakd-notifications';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';

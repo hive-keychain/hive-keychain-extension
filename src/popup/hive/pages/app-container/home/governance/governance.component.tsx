@@ -1,5 +1,5 @@
-import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
+import { KeychainApi } from '@popup/hive/api/keychain';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';

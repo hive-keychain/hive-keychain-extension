@@ -140,6 +140,9 @@ const EvmTransfer = ({
       title: 'popup_html_transfer_funds',
       formParams: watch(),
       hasGasFee: true,
+      token: activeAccount.balances.find(
+        (t) => t.symbol === form.selectedToken,
+      ),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');
       },

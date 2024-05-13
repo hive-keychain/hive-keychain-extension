@@ -1,4 +1,3 @@
-import { KeychainApi } from '@api/keychain';
 import { BackgroundMessage } from '@background/background-message.interface';
 import { MultisigModule } from '@background/multisig.module';
 import Hive from '@engrave/ledger-app-hive';
@@ -12,6 +11,7 @@ import {
 import { Key } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { KeychainApi } from '@popup/hive/api/keychain';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';

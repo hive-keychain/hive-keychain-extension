@@ -27,6 +27,8 @@ const ConfirmationPage = ({
   skipTitleTranslation,
   activeAccount,
   hasGasFee,
+  chain,
+  token,
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
@@ -104,7 +106,7 @@ const ConfirmationPage = ({
             ))}
           </div>
         )}
-        {hasGasFee && <GasFeePanel />}
+        {hasGasFee && <GasFeePanel chain={chain} token={token} />}
       </div>
 
       <div className="bottom-panel">
@@ -140,6 +142,8 @@ const mapStateToProps = (state: RootState) => {
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
     activeAccount: state.evm.activeAccount,
     hasGasFee: state.navigation.stack[0].params.hasGasFee,
+    chain: state.chain,
+    token: state.navigation.stack[0].params.token,
   };
 };
 

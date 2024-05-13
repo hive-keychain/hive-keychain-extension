@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { KeychainApi } from '@popup/hive/api/keychain';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';

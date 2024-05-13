@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { KeychainApi } from '@popup/hive/api/keychain';
 
 const getLastVersion = async () => {
   const response = await KeychainApi.get('hive/last-extension-version');

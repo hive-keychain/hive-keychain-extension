@@ -1,8 +1,8 @@
-import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { KeychainSwapApi } from '@popup/hive/api/keychain-swap';
 import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';

@@ -4,12 +4,13 @@
   margin: unset;
   cursor: pointer;
   align-items: unset;
+  row-gap: 8px;
   .gas-fee-top-row,
   .gas-fee-bottom-row {
     display: flex;
     justify-content: space-between;
     .label {
-      @include poppins400(12px);
+      @include poppins400(14px);
       color: var(--main-font-color);
       &.duration {
         color: $red;
@@ -19,12 +20,16 @@
 }
 .popup-content {
   width: 100%;
+  margin: unset !important;
   .edit-gas-fee-content {
     display: flex;
     flex-direction: column;
     width: 100%;
     row-gap: 8px;
     .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       @include poppins500(15px);
       color: var(--main-font-color);
     }
@@ -32,7 +37,7 @@
       display: grid;
       grid-template-columns: 1fr 2fr 1fr;
       .label {
-        @include poppins400(12px);
+        @include poppins400(13px);
         color: var(--main-font-color);
       }
       .duration {
