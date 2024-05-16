@@ -7,7 +7,6 @@ export const ChainReducer = (
     name: '',
     type: undefined,
     logo: '',
-    symbol: '',
     chainId: '',
   },
   { type, payload }: ActionPayload<Partial<Chain>>,

@@ -1,5 +1,7 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import {
+  BlockExplorer,
+  BlockExporerType,
   ChainType,
   EvmMainToken,
   HiveMainTokens,
@@ -27,7 +29,7 @@ interface NewChainForm {
   logo: string;
   chainId: string;
   testnet: boolean;
-  blockExplorer: string;
+  blockExplorer: BlockExplorer;
   mainToken?: EvmMainToken;
   mainTokens?: HiveMainTokens;
 }
@@ -38,7 +40,7 @@ const formRules = FormUtils.createRules<NewChainForm>({
   type: Joi.string().required(),
   logo: Joi.string().required(),
   chainId: Joi.string().required(),
-  blockExplorer: Joi.string().required(),
+  blockExplorer: Joi.object().required(),
 });
 
 const AddCustomChain = ({}: any) => {
@@ -50,7 +52,10 @@ const AddCustomChain = ({}: any) => {
     defaultValues: {
       type: ChainType.EVM,
       name: '',
-      blockExplorer: '',
+      blockExplorer: {
+        url: '',
+        type: BlockExporerType.ETHERSCAN,
+      },
       chainId: '',
       logo: '',
       symbol: '',

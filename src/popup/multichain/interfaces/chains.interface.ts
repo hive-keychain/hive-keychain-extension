@@ -18,21 +18,31 @@ export interface MultichainRpc {
 
 export interface Chain {
   name: string;
-  symbol: string;
   type?: ChainType;
   logo: SVGIcons | string;
   chainId: string;
   testnet?: boolean;
-  blockExplorer?: string;
+  blockExplorer?: BlockExplorer;
+  network?: string;
 
   // TODO remove optional
   rpc?: MultichainRpc;
+}
+
+export enum BlockExporerType {
+  ETHERSCAN = 'ETHERSCAN',
+}
+
+export interface BlockExplorer {
+  url: string;
+  type: BlockExporerType;
 }
 
 export interface EvmChain extends Chain {
   type: ChainType.EVM;
   mainToken: EvmMainToken;
   providers?: EvmProviders;
+  isEth?: boolean;
 }
 
 export interface EvmProviders {}

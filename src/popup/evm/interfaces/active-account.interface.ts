@@ -1,6 +1,12 @@
-import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
+import { EVMTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 
 export interface EvmActiveAccount {
   address: string;
-  balances: EvmErc20TokenBalanceWithPrice[];
+  balances: EVMBalances[];
+}
+
+export interface EVMBalances {
+  formattedBalance: string;
+  balance: number;
+  tokenInfo: EVMTokenInfoShort;
 }

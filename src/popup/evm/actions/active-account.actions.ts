@@ -1,22 +1,28 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
-import Moralis from 'moralis';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { SigningKey } from 'ethers';
 
 export const getEvmActiveAccount =
-  (chain: string, address: string): AppThunk =>
+  (chain: EvmChain, address: string, signingKey: SigningKey): AppThunk =>
   async (dispatch, getState) => {
-    const response = await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
-      chain,
+    const balances = await EvmTokensUtils.getTokenBalances(
       address,
-    });
-    console.log(response);
+      signingKey,
+      chain,
+    );
+    console.log(balances);
+    // const response = await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
+    //   chain,
+    //   address,
+    // });
+    // console.log(response);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         address: address,
-        balances: response.response.result.sort(
-          (a, b) => b.usdValue - a.usdValue,
-        ),
+        balances: balances,
       },
     });
   };

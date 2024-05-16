@@ -91,12 +91,13 @@ const EvmTransfer = ({
 
   useEffect(() => {
     if (activeAccount) {
+      console.log(activeAccount);
       setTokenOptions(
         activeAccount.balances.map((tokenBalance) => {
           return {
-            label: tokenBalance.symbol,
-            value: tokenBalance.symbol,
-            img: tokenBalance.logo,
+            label: tokenBalance.tokenInfo.symbol,
+            value: tokenBalance.tokenInfo.symbol,
+            img: tokenBalance.tokenInfo.logo,
           };
         }),
       );
@@ -109,9 +110,9 @@ const EvmTransfer = ({
 
   const setBalanceForSelectedToken = (selectedToken: string) => {
     let tokenBalance = activeAccount.balances.find(
-      (t) => t.symbol === selectedToken,
+      (t) => t.tokenInfo.symbol === selectedToken,
     );
-    setBalance(Number(tokenBalance?.balanceFormatted!));
+    setBalance(Number(tokenBalance?.formattedBalance));
   };
 
   const handleClickOnSend = async (form: TransferForm) => {
@@ -128,13 +129,14 @@ const EvmTransfer = ({
     let fields = [
       {
         label: 'popup_html_transfer_from',
-        value: `@${FormatUtils.shortenString(activeAccount.address, 10)}`,
+        value: `${FormatUtils.shortenString(activeAccount.address, 10)}`,
       },
-      { label: 'popup_html_transfer_to', value: `@${form.receiverAddress}` },
+      {
+        label: 'popup_html_transfer_to',
+        value: `${FormatUtils.shortenString(form.receiverAddress, 10)}`,
+      },
       { label: 'popup_html_transfer_amount', value: form.amount },
     ];
-
-    console.log(localAccounts);
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
@@ -144,7 +146,7 @@ const EvmTransfer = ({
       formParams: watch(),
       hasGasFee: true,
       token: activeAccount.balances.find(
-        (t) => t.symbol === form.selectedToken,
+        (t) => t.tokenInfo.symbol === form.selectedToken,
       ),
       receiverAddress: form.receiverAddress,
       amount: form.amount,

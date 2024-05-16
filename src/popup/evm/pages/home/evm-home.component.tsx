@@ -94,7 +94,11 @@ const Home = ({
   };
 
   const refreshAccountBalances = async () => {
-    getEvmActiveAccount(chain.chainId, accounts[0].wallet.address);
+    getEvmActiveAccount(
+      chain,
+      accounts[0].wallet.address,
+      accounts[0].wallet.signingKey,
+    );
   };
 
   const renderPopup = (
@@ -157,7 +161,9 @@ const Home = ({
             )} ${chain.mainToken}`,
           }}
         />
-        <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
+        {activeAccount.balances && activeAccount.balances.length > 0 && (
+          <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
+        )}
       </div>
       <ActionsSectionComponent
         selectedToken={chain.mainToken}
