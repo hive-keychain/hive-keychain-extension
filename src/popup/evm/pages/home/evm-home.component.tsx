@@ -3,7 +3,6 @@ import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
-import { MoralisUtils } from '@popup/evm/utils/moralis.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -52,7 +51,6 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
-    init();
   }, []);
 
   useEffect(() => {
@@ -62,9 +60,6 @@ const Home = ({
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
     setSurveyToDisplay(await SurveyUtils.getSurvey());
-  };
-  const init = async () => {
-    await MoralisUtils.initialise();
   };
 
   const initWhatsNew = async () => {

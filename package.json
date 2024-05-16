@@ -70,7 +70,6 @@
     "md5": "2.3.0",
     "minidenticons": "^2.0.0",
     "moment": "2.29.4",
-    "moralis": "^2.25.4",
     "node-fetch": "3.2.10",
     "node-polyfill-webpack-plugin": "1.1.4",
     "pretty-checkbox": "3.0.3",
