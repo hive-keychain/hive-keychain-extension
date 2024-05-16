@@ -161,9 +161,7 @@ const Home = ({
             )} ${chain.mainToken}`,
           }}
         />
-        {activeAccount.balances && activeAccount.balances.length > 0 && (
-          <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
-        )}
+        <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
       </div>
       <ActionsSectionComponent
         selectedToken={chain.mainToken}

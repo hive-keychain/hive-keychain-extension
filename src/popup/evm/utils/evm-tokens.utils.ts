@@ -1,5 +1,5 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
-import { EVMBalances } from '@popup/evm/interfaces/active-account.interface';
+import { EVMBalance } from '@popup/evm/interfaces/active-account.interface';
 import {
   EVMTokenInfoShort,
   EVMTokenType,
@@ -14,14 +14,15 @@ import {
 import { SigningKey, Wallet, ethers } from 'ethers';
 import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
-const getTotalBalanceInUsd = (tokens: EVMBalances[]) => {
+const getTotalBalanceInUsd = (tokens: EVMBalance[]) => {
   // TODO fix when get price done
   // return tokens.reduce((a, b) => a + b.usdValue ?? 1, 0);
   return tokens.reduce((a, b) => a + 1, 0);
 };
 
-const getTotalBalanceInMainToken = (tokens: EVMBalances[], chain: EvmChain) => {
+const getTotalBalanceInMainToken = (tokens: EVMBalance[], chain: EvmChain) => {
   const mainToken = tokens.find(
     (token) => token.tokenInfo.symbol === chain.mainToken,
   );
@@ -40,7 +41,7 @@ const getTokenBalances = async (
   // TODO get tokens from local storage
   const tokens = await getTokenListForWalletAddress(walletAddress, chain);
 
-  const balances = [];
+  const balances: EVMBalance[] = [];
 
   const provider = EthersUtils.getProvider(chain.network);
   const connectedWallet = new Wallet(walletSigningKey, provider);
@@ -52,19 +53,21 @@ const getTokenBalances = async (
       connectedWallet,
     );
 
-    let formatedBalance;
+    let formattedBalance;
     let balance;
     try {
       balance = await contract.balanceOf(walletAddress);
-      formatedBalance = FormatUtils.formatCurrencyValue(
+      formattedBalance = FormatUtils.formatCurrencyValue(
         Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
       );
-    } catch (err) {}
-    balances.push({
-      tokenInfo: token,
-      formatedBalance: formatedBalance,
-      balance: balance,
-    });
+      balances.push({
+        tokenInfo: token,
+        formattedBalance: formattedBalance,
+        balance: balance,
+      });
+    } catch (err) {
+      Logger.error('Error while formatting evm balances', err);
+    }
   }
   // TODO sort by usdValue
 
@@ -83,9 +86,9 @@ const getTokenBalances = async (
         logo: chain.logo,
         backgroundColor: '',
       } as EVMTokenInfoShort,
-      formatedBalance: mainTokenFormatedBalance,
+      formattedBalance: mainTokenFormatedBalance,
       balance: mainTokenBalance,
-    },
+    } as EVMBalance,
     ...balances,
   ];
 };

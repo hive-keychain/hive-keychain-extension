@@ -2,11 +2,11 @@ import { EVMTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 
 export interface EvmActiveAccount {
   address: string;
-  balances: EVMBalances[];
+  balances: EVMBalance[];
 }
 
-export interface EVMBalances {
+export interface EVMBalance {
   formattedBalance: string;
-  balance: number;
+  balance: bigint;
   tokenInfo: EVMTokenInfoShort;
 }

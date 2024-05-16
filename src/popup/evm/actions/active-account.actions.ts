@@ -12,12 +12,6 @@ export const getEvmActiveAccount =
       signingKey,
       chain,
     );
-    console.log(balances);
-    // const response = await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
-    //   chain,
-    //   address,
-    // });
-    // console.log(response);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
