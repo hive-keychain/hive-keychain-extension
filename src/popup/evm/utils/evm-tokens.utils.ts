@@ -1,11 +1,11 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
-import { EVMBalance } from '@popup/evm/interfaces/active-account.interface';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   EVMTokenInfoShort,
   EVMTokenType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
-import EthersUtils from '@popup/evm/utils/ethers.utils';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { KeychainApi } from '@popup/hive/api/keychain';
 import {
   BlockExporerType,
@@ -16,18 +16,19 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
-const getTotalBalanceInUsd = (tokens: EVMBalance[]) => {
+const getTotalBalanceInUsd = (tokens: EVMToken[]) => {
   // TODO fix when get price done
   // return tokens.reduce((a, b) => a + b.usdValue ?? 1, 0);
   return tokens.reduce((a, b) => a + 1, 0);
 };
 
-const getTotalBalanceInMainToken = (tokens: EVMBalance[], chain: EvmChain) => {
+const getTotalBalanceInMainToken = (tokens: EVMToken[], chain: EvmChain) => {
   const mainToken = tokens.find(
     (token) => token.tokenInfo.symbol === chain.mainToken,
   );
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens);
+    // TODO fix when get price done
     // return valueInUsd / parseFloat(mainToken?.usdPrice);
     return valueInUsd / 1;
   } else return 0;
@@ -41,7 +42,7 @@ const getTokenBalances = async (
   // TODO get tokens from local storage
   const tokens = await getTokenListForWalletAddress(walletAddress, chain);
 
-  const balances: EVMBalance[] = [];
+  const balances: EVMToken[] = [];
 
   const provider = EthersUtils.getProvider(chain.network);
   const connectedWallet = new Wallet(walletSigningKey, provider);
@@ -88,7 +89,7 @@ const getTokenBalances = async (
       } as EVMTokenInfoShort,
       formattedBalance: mainTokenFormatedBalance,
       balance: mainTokenBalance,
-    } as EVMBalance,
+    } as EVMToken,
     ...balances,
   ];
 };

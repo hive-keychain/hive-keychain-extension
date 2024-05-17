@@ -3,7 +3,7 @@ import {
   StoredEvmAccounts,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
-import EthersUtils from '@popup/evm/utils/ethers.utils';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';

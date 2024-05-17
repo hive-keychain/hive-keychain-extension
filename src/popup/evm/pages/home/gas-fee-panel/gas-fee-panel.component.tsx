@@ -1,4 +1,4 @@
-import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { FullGasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -12,7 +12,7 @@ import FormatUtils from 'src/utils/format.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  token: EvmErc20TokenBalanceWithPrice;
+  token: EVMToken;
   receiverAddress: string;
   amount: number;
   wallet: HDNodeWallet;

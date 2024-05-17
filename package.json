@@ -53,7 +53,6 @@
     "@hookform/resolvers": "3.1.1",
     "@ledgerhq/hw-transport": "6.28.8",
     "@ledgerhq/hw-transport-webusb": "^6.27.19",
-    "@moralisweb3/common-evm-utils": "^2.26.1",
     "@types/chrome": "^0.0.243",
     "@types/crypto-js": "4.1.1",
     "@types/yargs": "17.0.11",

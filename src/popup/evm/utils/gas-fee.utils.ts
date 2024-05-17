@@ -1,21 +1,23 @@
-import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
-import { MetamaskGasFeeApi } from '@popup/evm/api/metamask-gas-fee.api';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { FullGasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
-import EthersUtils from '@popup/evm/utils/ethers.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { KeychainApi } from '@popup/hive/api/keychain';
+import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';
 
+const getGasFeeEstimations = async (chain: Chain) => {
+  return await KeychainApi.get(`/evm/gasPriceEstimate/${chain.chainId}`);
+};
+
 const estimate = async (
   chain: EvmChain,
-  token: EvmErc20TokenBalanceWithPrice,
+  token: EVMToken,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
 ) => {
-  const mmEstimates = await MetamaskGasFeeApi.get(
-    parseInt(chain.chainId).toString(),
-  );
+  const estimates = await getGasFeeEstimations(chain);
 
   const gasLimit = await EthersUtils.getGasLimit(
     chain,
@@ -26,22 +28,22 @@ const estimate = async (
   );
 
   const low = Decimal.add(
-    Number(mmEstimates.low.suggestedMaxFeePerGas),
-    Number(mmEstimates.low.suggestedMaxPriorityFeePerGas),
+    Number(estimates.low.suggestedMaxFeePerGas),
+    Number(estimates.low.suggestedMaxPriorityFeePerGas),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
   const medium = Decimal.add(
-    Number(mmEstimates.medium.suggestedMaxFeePerGas),
-    Number(mmEstimates.medium.suggestedMaxPriorityFeePerGas),
+    Number(estimates.medium.suggestedMaxFeePerGas),
+    Number(estimates.medium.suggestedMaxPriorityFeePerGas),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
   const aggressive = Decimal.add(
-    Number(mmEstimates.high.suggestedMaxFeePerGas),
-    Number(mmEstimates.high.suggestedMaxPriorityFeePerGas),
+    Number(estimates.high.suggestedMaxFeePerGas),
+    Number(estimates.high.suggestedMaxPriorityFeePerGas),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
@@ -50,23 +52,23 @@ const estimate = async (
   return {
     suggested: {
       estimatedFee: low,
-      estimatedMaxDuration: mmEstimates.low.maxWaitTimeEstimate / 1000,
+      estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
     },
     low: {
       estimatedFee: low,
-      estimatedMaxDuration: mmEstimates.low.maxWaitTimeEstimate / 1000,
+      estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
     },
     medium: {
       estimatedFee: medium,
-      estimatedMaxDuration: mmEstimates.medium.maxWaitTimeEstimate / 1000,
+      estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
     },
     max: {
       estimatedFee: medium,
-      estimatedMaxDuration: mmEstimates.medium.maxWaitTimeEstimate / 1000,
+      estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
     },
     aggressive: {
       estimatedFee: aggressive,
-      estimatedMaxDuration: mmEstimates.high.maxWaitTimeEstimate / 1000,
+      estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
     },
   } as FullGasFeeEstimation;
 };
