@@ -4325,7 +4325,7 @@
     "description": "display seed phrase"
   },
   "html_popup_add_blockchain": {
-    "message": "Add blockchain",
+    "message": "Add chain",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
@@ -4407,10 +4407,6 @@
   "popup_html_create_blockchain_token_hp": {
     "message": "HP token's name",
     "description": "Blockchain hp token"
-  },
-  "popup_html_create_blockchain_custom_chain": {
-    "message": "Custom chain",
-    "description": "Blockchain add custom chain"
   },
   "popup_html_evm_gas_fee_estimate_label": {
     "message": "Gas fee (estimate)",

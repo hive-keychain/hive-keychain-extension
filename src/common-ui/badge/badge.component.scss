@@ -1,0 +1,12 @@
+.badge {
+  &.experimental {
+    background: $dark-red;
+  }
+  &.testnet {
+    background-color: $light-grey;
+  }
+  padding: 4px 12px;
+  border-radius: 8px;
+  color: white;
+  font-size: 11px;
+}

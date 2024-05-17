@@ -68,9 +68,7 @@ const ChainSelector = ({
             onClick={() => navigateTo(Screen.CREATE_BLOCKCHAIN_PAGE)}>
             <SVGIcon icon={SVGIcons.SELECT_ADD} />
             <div className="chain-name">
-              {chrome.i18n.getMessage(
-                'popup_html_create_blockchain_custom_chain',
-              )}
+              {chrome.i18n.getMessage('html_popup_add_blockchain')}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { MenuItem } from '@interfaces/menu-item.interface';
 import React, { useState } from 'react';
+import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -32,9 +33,10 @@ export const MenuItemComponent = ({
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}
         {menuItem.experimental && (
-          <div className="experimental">
-            {chrome.i18n.getMessage('common_experimental')}
-          </div>
+          <Badge
+            label="common_experimental"
+            badgeType={BadgeType.EXPERIMENTAL}
+          />
         )}
       </div>
       {!isLast && <Separator type={'horizontal'} />}
