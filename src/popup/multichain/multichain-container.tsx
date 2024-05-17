@@ -2,6 +2,7 @@ import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -39,7 +40,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
     if (res.ACTIVE_CHAIN) {
-      setChain(res.ACTIVE_CHAIN);
+      setChain(await ChainUtils.getChain(res.ACTIVE_CHAIN));
     }
 
     setReady(true);
@@ -52,7 +53,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
     if (chain)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
-        chain,
+        chain.chainId,
       );
   }, [chain]);
 

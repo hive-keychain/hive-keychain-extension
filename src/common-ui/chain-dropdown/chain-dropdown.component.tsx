@@ -21,7 +21,7 @@ const ChainDropdown = ({ chain, setChain, navigateTo }: PropsFromRedux) => {
   }, [chain]);
 
   const init = async () => {
-    const chains = await ChainUtils.getSetupChains();
+    const chains = await ChainUtils.getSetupChains(true);
     let optionItems: OptionItem[] = chains.map((c) => {
       return { label: c.name, value: c, img: c.logo };
     });
