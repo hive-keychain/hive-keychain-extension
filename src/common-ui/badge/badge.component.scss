@@ -1,12 +1,19 @@
 .badge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: white;
   &.experimental {
     background: $dark-red;
   }
   &.testnet {
     background-color: $light-grey;
   }
-  padding: 4px 12px;
-  border-radius: 8px;
-  color: white;
-  font-size: 11px;
+  &.mainnet {
+    background-color: $pale-red;
+  }
+  &.small {
+    line-height: normal;
+    font-size: 10px;
+  }
 }

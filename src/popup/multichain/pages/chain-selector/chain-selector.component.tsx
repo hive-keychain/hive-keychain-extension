@@ -6,6 +6,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -60,6 +61,14 @@ const ChainSelector = ({
                   <img src={chain.logo} />
                 )}
                 <div className="chain-name">{chain.name}</div>
+                {
+                  <Badge
+                    small
+                    badgeType={
+                      chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
+                    }
+                  />
+                }
               </div>
             ))}
           <div
