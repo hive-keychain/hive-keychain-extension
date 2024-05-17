@@ -1,11 +1,10 @@
-import { EvmErc20TokenBalanceWithPrice } from '@moralisweb3/common-evm-utils';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet, InfuraProvider, Wallet, ethers } from 'ethers';
 
 const getProvider = (network?: string) => {
-  console.log(network);
   return new InfuraProvider(
     network,
     process.env.INFURA_PROJECT_ID,
@@ -15,7 +14,7 @@ const getProvider = (network?: string) => {
 
 const getGasLimit = async (
   chain: EvmChain,
-  token: EvmErc20TokenBalanceWithPrice,
+  token: EVMToken,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
@@ -23,7 +22,7 @@ const getGasLimit = async (
   const provider = getProvider(chain.network);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
   const erc20 = new ethers.Contract(
-    token.tokenAddress?.lowercase!,
+    token.tokenInfo.address!,
     Erc20Abi,
     connectedWallet,
   );
@@ -38,6 +37,4 @@ const getGasLimit = async (
   return Decimal.mul(Number(estimation), multiplier);
 };
 
-const EthersUtils = { getProvider, getGasLimit };
-
-export default EthersUtils;
+export const EthersUtils = { getProvider, getGasLimit };

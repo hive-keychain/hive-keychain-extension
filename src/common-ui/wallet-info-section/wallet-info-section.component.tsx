@@ -1,9 +1,9 @@
-import { EVMBalance } from '@popup/evm/interfaces/active-account.interface';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import React from 'react';
 
 interface EvmWalletInfoSectionProps {
-  evmTokens: EVMBalance[];
+  evmTokens: EVMToken[];
 }
 
 const WalletInfoSection = ({ evmTokens }: EvmWalletInfoSectionProps) => {
