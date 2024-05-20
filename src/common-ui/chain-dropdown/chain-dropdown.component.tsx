@@ -1,6 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -13,7 +13,11 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-const ChainDropdown = ({ chain, setChain, navigateTo }: PropsFromRedux) => {
+const ChainDropdown = ({
+  chain,
+  setChain,
+  navigateToWithParams,
+}: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
@@ -29,7 +33,9 @@ const ChainDropdown = ({ chain, setChain, navigateTo }: PropsFromRedux) => {
   };
 
   const handleOnAddBlockchainClicked = () => {
-    navigateTo(Screen.SELECT_BLOCKCHAIN_PAGE);
+    navigateToWithParams(Screen.SELECT_BLOCKCHAIN_PAGE, {
+      hasBackButton: true,
+    });
   };
 
   return (
@@ -66,7 +72,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setChain,
-  navigateTo,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

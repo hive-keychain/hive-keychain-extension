@@ -14,9 +14,10 @@ import { MultichainScreen } from '@popup/multichain/reference-data/multichain-sc
 import React from 'react';
 
 export const globalRouter = (page: Screen) => {
+  console.log('ici');
   switch (page) {
     case MultichainScreen.SELECT_BLOCKCHAIN_PAGE:
-      return <ChainSelectorPageComponent hasBackButton />;
+      return <ChainSelectorPageComponent hasBackButton2 />;
     case MultichainScreen.CREATE_BLOCKCHAIN_PAGE:
       return <AddCustomChainPage />;
     case MultichainScreen.ECOSYSTEM_PAGE:

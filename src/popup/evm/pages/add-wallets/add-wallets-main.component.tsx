@@ -1,13 +1,16 @@
 import { Screen } from '@interfaces/screen.interface';
-import { resetChain } from '@popup/multichain/actions/chain.actions';
+import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const AddWalletMain = ({
   navigateTo,
@@ -15,17 +18,28 @@ const AddWalletMain = ({
   hasFinishedSignup,
   chain,
   resetChain,
+  setChain,
 }: PropsFromRedux) => {
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    const chains = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SETUP_CHAINS,
+    );
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
-      onBackAdditional: () => {
-        resetChain();
+      onBackAdditional: async () => {
+        setChain(await ChainUtils.getChain(chains[0]));
+      },
+      onCloseAdditional: async () => {
+        setChain(await ChainUtils.getChain(chains[0]));
       },
       isCloseButtonDisabled: !hasFinishedSignup,
     });
-  });
+  };
 
   const handleCreateEvmWallet = (): void => {
     navigateTo(Screen.CREATE_EVM_WALLET);
@@ -125,6 +139,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setTitleContainerProperties,
   resetChain,
+  setChain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

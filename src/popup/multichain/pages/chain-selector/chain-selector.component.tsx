@@ -13,11 +13,12 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EnumUtils } from 'src/utils/enum.utils';
 
 interface ChainSelectorProps {
-  hasBackButton?: boolean;
+  hasBackButton2?: boolean;
 }
 
 const ChainSelector = ({
   hasBackButton,
+  hasBackButton2,
   setChain,
   navigateTo,
 }: PropsFromRedux & ChainSelectorProps) => {
@@ -25,6 +26,7 @@ const ChainSelector = ({
 
   useEffect(() => {
     init();
+    console.log({ hasBackButton, hasBackButton2 });
   }, []);
 
   const init = async () => {
@@ -87,7 +89,9 @@ const ChainSelector = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    hasBackButton: state.navigation.stack[0].params?.hasBackButton,
+  };
 };
 
 const connector = connect(mapStateToProps, {
