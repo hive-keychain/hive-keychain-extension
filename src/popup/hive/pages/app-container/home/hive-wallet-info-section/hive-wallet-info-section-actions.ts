@@ -13,7 +13,7 @@ export interface ActionButton {
   nextScreenParams?: any;
 }
 
-export const WalletInfoSectionActions = (
+export const HiveWalletInfoSectionActions = (
   tokenSymbol: string,
   tokenInfo?: Token,
   tokenBalance?: TokenBalance,

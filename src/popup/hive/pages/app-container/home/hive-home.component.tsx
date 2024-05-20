@@ -3,6 +3,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { HiveWalletInfoSectionComponent } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section.component';
 import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
 import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
@@ -39,7 +40,6 @@ import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home
 import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';
 import { ResourcesSectionComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resources-section.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
-import { WalletInfoSectionComponent } from 'src/popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
 import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
@@ -391,7 +391,7 @@ const Home = ({
                 }}
                 hasPortofolio
               />
-              <WalletInfoSectionComponent />
+              <HiveWalletInfoSectionComponent />
             </div>
             <ActionsSectionComponent
               additionalClass={showBottomBar ? undefined : 'down'}

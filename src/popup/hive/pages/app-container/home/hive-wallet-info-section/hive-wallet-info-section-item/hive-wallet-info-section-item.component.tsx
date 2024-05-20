@@ -4,9 +4,8 @@ import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
   ActionButton,
-  WalletInfoSectionActions,
-} from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
-import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item-button/wallet-info-section-item-button.component';
+  HiveWalletInfoSectionActions,
+} from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
@@ -16,6 +15,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import FormatUtils from 'src/utils/format.utils';
 
 interface WalletSectionInfoItemProps {
@@ -31,7 +31,7 @@ interface WalletSectionInfoItemProps {
   subValueLabel?: string;
 }
 
-const walletInfoSectionItem = ({
+const WalletInfoSectionItem = ({
   tokenSymbol,
   tokenInfo,
   tokenBalance,
@@ -58,7 +58,7 @@ const walletInfoSectionItem = ({
 
   const init = async () => {
     setActionButtons(
-      WalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
+      HiveWalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
     );
 
     if (
@@ -408,4 +408,6 @@ const connector = connect(mapStateToProps, {
 type PropsFromRedux = ConnectedProps<typeof connector> &
   WalletSectionInfoItemProps;
 
-export const WalletInfoSectionItemComponent = connector(walletInfoSectionItem);
+export const HiveWalletInfoSectionItemComponent = connector(
+  WalletInfoSectionItem,
+);

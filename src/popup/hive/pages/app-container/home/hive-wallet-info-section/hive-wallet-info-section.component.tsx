@@ -8,7 +8,7 @@ import {
   loadTokensMarket,
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
-import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
+import { HiveWalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-item/hive-wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
@@ -147,7 +147,7 @@ const WalletInfoSection = ({
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
       <div className="wallet-info-section">
-        <WalletInfoSectionItemComponent
+        <HiveWalletInfoSectionItemComponent
           tokenSymbol="HIVE"
           icon={SVGIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
@@ -155,7 +155,7 @@ const WalletInfoSection = ({
           subValue={activeAccount.account.savings_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
         />
-        <WalletInfoSectionItemComponent
+        <HiveWalletInfoSectionItemComponent
           tokenSymbol="HBD"
           icon={SVGIcons.WALLET_HBD_LOGO}
           mainValue={activeAccount.account.hbd_balance}
@@ -163,7 +163,7 @@ const WalletInfoSection = ({
           subValue={activeAccount.account.savings_hbd_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
         />
-        <WalletInfoSectionItemComponent
+        <HiveWalletInfoSectionItemComponent
           tokenSymbol="HP"
           icon={SVGIcons.WALLET_HP_LOGO}
           mainValue={FormatUtils.toHP(
@@ -225,7 +225,7 @@ const WalletInfoSection = ({
               <FlatList
                 list={filteredTokenList}
                 renderItem={(token: TokenBalance) => (
-                  <WalletInfoSectionItemComponent
+                  <HiveWalletInfoSectionItemComponent
                     key={`token-${token.symbol}`}
                     tokenSymbol={token.symbol}
                     tokenBalance={token}
@@ -280,4 +280,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const WalletInfoSectionComponent = connector(WalletInfoSection);
+export const HiveWalletInfoSectionComponent = connector(WalletInfoSection);

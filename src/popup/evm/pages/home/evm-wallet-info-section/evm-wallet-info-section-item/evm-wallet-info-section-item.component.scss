@@ -27,6 +27,13 @@ path {
     column-gap: 16px;
     .currency-icon {
       @include icon-size(36px);
+      @include dmSans400(18px);
+      height: 36px;
+      width: 36px;
+      vertical-align: middle;
+      font-weight: 600;
+      line-height: 26px;
+      text-align: center;
       &.add-background {
         background: $light-blue;
         padding: 6px;

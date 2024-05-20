@@ -1,5 +1,5 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
+import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import React from 'react';
 
 interface EvmWalletInfoSectionProps {
@@ -13,12 +13,11 @@ const WalletInfoSection = ({ evmTokens }: EvmWalletInfoSectionProps) => {
       <div className="wallet-info-section">
         {evmTokens &&
           evmTokens.map((token, index) => (
-            <WalletInfoSectionItemComponent
+            <EVMWalletInfoSectionItemComponent
               key={`${token.tokenInfo.name}-${index}`}
-              tokenSymbol={token.tokenInfo.name}
-              icon={token.tokenInfo.logo}
+              token={token}
+              mainValueLabel={token.tokenInfo.name}
               mainValue={token.formattedBalance}
-              mainValueLabel={token.tokenInfo.symbol}
             />
           ))}
       </div>

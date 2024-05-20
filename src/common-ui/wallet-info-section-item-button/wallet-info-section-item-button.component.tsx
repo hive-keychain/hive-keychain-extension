@@ -1,4 +1,4 @@
-import { ActionButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
