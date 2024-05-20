@@ -1,5 +1,7 @@
+import { KeychainApi } from '@api/keychain';
 import axios from 'axios';
-import { Rpc } from 'src/interfaces/rpc.interface';
+import { call, config } from 'hive-tx';
+import { Rpc, RpcStatusResponse } from 'src/interfaces/rpc.interface';
 import { DefaultRpcs } from 'src/reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -87,7 +89,29 @@ const findRpc = async (uri: string) => {
   );
 };
 
-const checkRpcStatus = async (uri: string) => {
+const getRpcStatusFromBackend = async (): Promise<
+  RpcStatusResponse | undefined
+> => {
+  try {
+    return await KeychainApi.get('hive/rpcs/hive');
+  } catch (e) {
+    return undefined;
+  }
+};
+
+const checkRpcStatus = async (uri: string, rpcs?: RpcStatusResponse) => {
+  if (!rpcs || !rpcs.hive || rpcs.updatedAt < +Date.now() - 10 * 60 * 1000) {
+    return checkRpcStatusLegacy(uri);
+  } else {
+    const highestScore = rpcs.hive.sort((a, b) => b.score - a.score)[0].score;
+    const rpc = rpcs.hive.find((e) => e.endpoint === uri);
+    if (!rpc) return checkRpcStatusLegacy(uri);
+    else return rpc.score === highestScore;
+  }
+};
+
+const checkRpcStatusLegacy = async (uri: string) => {
+  Logger.log('Using legacy RPC status');
   axios.interceptors.response.use(
     (response) => {
       return response;
@@ -106,9 +130,15 @@ const checkRpcStatus = async (uri: string) => {
     if (result?.data?.error) {
       return false;
     }
-    return true;
+    config.node = uri;
+    const tests = await Promise.all([
+      call('condenser_api.get_accounts', [['keychain']]),
+      call('condenser_api.get_dynamic_global_properties'),
+      call('rc_api.find_rc_accounts', { accounts: ['keychain'] }),
+    ]);
+    return !!tests;
   } catch (err) {
-    Logger.error('error', err);
+    Logger.log('Failed tests', err);
     return false;
   }
 };
@@ -146,6 +176,7 @@ const RpcUtils = {
   deleteCustomRpc,
   findRpc,
   checkRpcStatus,
+  getRpcStatusFromBackend,
 };
 
 export default RpcUtils;

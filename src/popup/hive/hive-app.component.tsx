@@ -11,10 +11,7 @@ import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
-import {
-  setDisplayChangeRpcPopup,
-  setSwitchToRpc,
-} from '@popup/hive/actions/rpc-switcher';
+import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
@@ -111,12 +108,13 @@ const HiveApp = ({
   }, [appStatus, displaySplashscreen]);
 
   const initActiveRpc = async (rpc: Rpc) => {
-    const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
+    const rpcs = await RpcUtils.getRpcStatusFromBackend();
+    const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri, rpcs);
     setDisplayChangeRpcPopup(!rpcStatusOk);
     if (rpcStatusOk) {
       setActiveRpc(rpc);
     } else {
-      useWorkingRPC(rpc);
+      useWorkingRPC(rpc, rpcs);
     }
   };
 
@@ -279,7 +277,6 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   loadActiveAccount,
   loadGlobalProperties,
-  setSwitchToRpc,
   setActiveRpc,
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
