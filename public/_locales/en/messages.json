@@ -39,6 +39,14 @@
     "message": "Wrong key. Please use memo key",
     "description": "while using wrong private key"
   },
+  "common_testnet": {
+    "message": "Testnet",
+    "description": "EVM blockchain testnet"
+  },
+  "common_mainnet": {
+    "message": "Mainnet",
+    "description": "EVM blockchain mainnet"
+  },
   "common_experimental": {
     "message": "Experimental",
     "description": "experimental"
@@ -4380,10 +4388,7 @@
     "message": "Logo",
     "description": "Blockchain logo"
   },
-  "popup_html_create_blockchain_testnet": {
-    "message": "Testnet",
-    "description": "Blockchain testnet"
-  },
+
   "popup_html_create_blockchain_chain_id": {
     "message": "Chain ID",
     "description": "Blockchain chain id"

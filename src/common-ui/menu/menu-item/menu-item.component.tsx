@@ -32,12 +32,7 @@ export const MenuItemComponent = ({
         </div>
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}
-        {menuItem.experimental && (
-          <Badge
-            label="common_experimental"
-            badgeType={BadgeType.EXPERIMENTAL}
-          />
-        )}
+        {menuItem.experimental && <Badge badgeType={BadgeType.EXPERIMENTAL} />}
       </div>
       {!isLast && <Separator type={'horizontal'} />}
     </div>

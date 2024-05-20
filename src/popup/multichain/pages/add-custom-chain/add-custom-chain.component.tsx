@@ -134,7 +134,7 @@ const AddCustomChain = ({}: any) => {
             label="popup_html_create_blockchain_chain_id"
           />
           <CheckboxFormComponent
-            title="popup_html_create_blockchain_testnet"
+            title="common_testnet"
             control={control}
             name="testnet"
           />

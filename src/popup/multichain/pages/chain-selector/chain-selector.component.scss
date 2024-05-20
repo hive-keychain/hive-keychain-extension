@@ -40,6 +40,7 @@
       }
 
       &.add-custom-chain {
+        justify-content: center;
         .svg-icon {
           @include icon-size(36px);
           svg {
