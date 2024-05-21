@@ -16,7 +16,7 @@ import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
 export const broadcastSwap = async (
   requestHandler: RequestsHandler,
-  data: RequestSwap & RequestId & { swapAccount?: string },
+  data: RequestSwap & RequestId & { swapAccount?: string; swapId?: string },
 ) => {
   let result,
     err: any,
@@ -46,6 +46,7 @@ export const broadcastSwap = async (
       amount,
       username!,
     );
+    data.swapId = swapId;
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
       case PrivateKeyType.LEDGER: {
