@@ -117,7 +117,7 @@ const getTokenListForWalletAddress = async (
             addresses.push(token.contractAddress);
           }
         }
-        await AsyncUtils.sleep(1000);
+        await AsyncUtils.sleep(500);
       } while (result.length === limit);
       let tokensMetadata = [];
       if (addresses.length > 0) {

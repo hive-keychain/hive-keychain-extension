@@ -1,5 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -47,6 +48,8 @@ const Home = ({
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
+  const [tokens, setTokens] = useState<EVMToken[]>();
+
   useEffect(() => {
     resetTitleContainerProperties();
     initWhatsNew();
@@ -54,8 +57,15 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    if (chain) refreshAccountBalances();
+    if (chain) {
+      setTokens(undefined);
+      refreshAccountBalances();
+    }
   }, [chain]);
+
+  useEffect(() => {
+    if (activeAccount.balances?.length > 0) setTokens(activeAccount.balances);
+  }, [activeAccount.balances]);
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
@@ -156,7 +166,7 @@ const Home = ({
             )} ${chain.mainToken}`,
           }}
         />
-        <EvmWalletInfoSectionComponent evmTokens={activeAccount.balances} />
+        <EvmWalletInfoSectionComponent evmTokens={tokens} />
       </div>
       <ActionsSectionComponent
         selectedToken={chain.mainToken}
