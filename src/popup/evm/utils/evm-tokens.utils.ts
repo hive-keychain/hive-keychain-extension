@@ -11,9 +11,12 @@ import {
   BlockExporerType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { SigningKey, Wallet, ethers } from 'ethers';
+import ArrayUtils from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const getTotalBalanceInUsd = (tokens: EVMToken[]) => {
@@ -117,10 +120,30 @@ const getTokenListForWalletAddress = async (
         await AsyncUtils.sleep(1000);
       } while (result.length === limit);
       let tokensMetadata = [];
-      if (addresses.length > 0)
-        tokensMetadata = await KeychainApi.get(
-          `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
-        );
+      if (addresses.length > 0) {
+        try {
+          tokensMetadata = await KeychainApi.get(
+            `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
+          );
+          const localTokens = await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+          );
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+            ArrayUtils.mergeWithoutDuplicate(
+              localTokens,
+              tokensMetadata,
+              'symbol',
+            ),
+          );
+        } catch (err) {
+          Logger.error('Error while fetching tokens metadata', err);
+          tokensMetadata =
+            (await LocalStorageUtils.getValueFromLocalStorage(
+              LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+            )) ?? [];
+        }
+      }
 
       return tokensMetadata;
     }
