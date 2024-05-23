@@ -55,6 +55,7 @@ const ChainSelector = ({
       <PageTitleComponent
         title="html_popup_chain_selector_page_title"
         isBackButtonEnabled={setupChains?.length}
+        isCloseButtonDisabled
         onBackAdditional={onCloseClicked}></PageTitleComponent>
       <div className="chain-selector-page">
         <div className="caption">{chrome.i18n.getMessage('')}</div>
