@@ -12,9 +12,11 @@ import {
   Chain,
   ChainType,
 } from '@popup/multichain/interfaces/chains.interface';
+import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
 import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -37,7 +39,7 @@ const ChainRouter = ({
   setIsLedgerSupported,
   hasFinishedSignup,
   setHasFinishedSignup,
-  currentPage,
+  nav,
   resetMessage,
   chain,
 }: Props & PropsFromRedux) => {
@@ -104,7 +106,11 @@ const ChainRouter = ({
         case ChainType.EVM:
           return <EvmAppComponent />;
         default:
-          return <ChainSelectorPageComponent />;
+          if (nav?.currentPage === MultichainScreen.CREATE_BLOCKCHAIN_PAGE) {
+            return <AddCustomChainPage />;
+          } else {
+            return <ChainSelectorPageComponent />;
+          }
       }
     }
   };
@@ -118,7 +124,7 @@ const ChainRouter = ({
           onResetMessage={resetMessage}
         />
       )}
-      {hasFinishedSignup === null && !currentPage && <SplashscreenComponent />}
+      {hasFinishedSignup === null && !nav && <SplashscreenComponent />}
     </>
   );
 };
@@ -128,7 +134,7 @@ const mapStateToProps = (state: RootState) => {
     message: state.message,
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
-    currentPage: state.navigation.stack[0],
+    nav: state.navigation.stack[0],
     chain: state.chain as Chain,
   };
 };

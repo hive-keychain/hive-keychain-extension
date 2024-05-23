@@ -13,7 +13,6 @@ export interface ActionButton {
 export const EVMWalletInfoSectionActions = (
   token: EVMToken,
 ): ActionButton[] => {
-  console.log('ici');
   return [
     {
       label: 'popup_html_send_transfer',

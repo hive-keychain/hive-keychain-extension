@@ -4444,5 +4444,9 @@
   "popup_html_evm_custom_gas_fee_aggresive": {
     "message": "Aggressive",
     "description": "Evm edit Gas fee label"
+  },
+  "popup_html_add_custom_blockchain": {
+    "message": "Add custom blockchain",
+    "description": "Add custom blockchain page title"
   }
 }

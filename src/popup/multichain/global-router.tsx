@@ -8,16 +8,11 @@ import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/
 import { KeychainifyComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
-import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import React from 'react';
 
 export const globalRouter = (page: Screen) => {
   switch (page) {
-    // case MultichainScreen.SELECT_BLOCKCHAIN_PAGE:
-    //   return <ChainSelectorPageComponent hasBackButton2 />;
-    case MultichainScreen.CREATE_BLOCKCHAIN_PAGE:
-      return <AddCustomChainPage />;
     case MultichainScreen.ECOSYSTEM_PAGE:
       return <EcosystemComponent />;
 

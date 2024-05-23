@@ -103,7 +103,6 @@ const ChainSelector = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    // hasBackButton: state.navigation.stack[0].params?.hasBackButton,
     chain: state.chain,
   };
 };

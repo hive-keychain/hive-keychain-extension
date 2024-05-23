@@ -1,4 +1,5 @@
 import { joiResolver } from '@hookform/resolvers/joi';
+import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import {
   BlockExplorer,
   BlockExporerType,
@@ -6,10 +7,12 @@ import {
   EvmMainToken,
   HiveMainTokens,
 } from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Joi from 'joi';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
@@ -43,7 +46,7 @@ const formRules = FormUtils.createRules<NewChainForm>({
   blockExplorer: Joi.object().required(),
 });
 
-const AddCustomChain = ({}: any) => {
+const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
   const handleClickOnSend = async (form: NewChainForm) => {
     await ChainUtils.addChainToSetupChains(form);
   };
@@ -79,9 +82,10 @@ const AddCustomChain = ({}: any) => {
   return (
     <div className="add-custom-blockchain-page">
       <PageTitleComponent
-        title="html_popup_chain_selector_page_title"
+        title="popup_html_add_custom_blockchain"
         isCloseButtonDisabled
-        isBackButtonEnabled></PageTitleComponent>
+        isBackButtonEnabled
+        onBackAdditional={() => resetNav()}></PageTitleComponent>
       <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
         <div className="form-fields">
           <ComplexeCustomSelect
@@ -195,4 +199,13 @@ const AddCustomChain = ({}: any) => {
   );
 };
 
-export const AddCustomChainPage = AddCustomChain;
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const connector = connect(mapStateToProps, {
+  resetNav,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const AddCustomChainPage = connector(AddCustomChain);
