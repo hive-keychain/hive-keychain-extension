@@ -17,6 +17,7 @@ export interface EVMTokenInfoShort {
   verifiedContract?: boolean;
   chainId: string;
   backgroundColor: string;
+  coingeckoId?: string;
 }
 export interface EVMTokenInfo extends EVMTokenInfoShort {
   totalSupplyFormatted: number;
