@@ -13,7 +13,6 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { SigningKey, Wallet, ethers } from 'ethers';
-import ArrayUtils from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -125,23 +124,22 @@ const getTokenListForWalletAddress = async (
           tokensMetadata = await KeychainApi.get(
             `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
           );
-          const localTokens = await LocalStorageUtils.getValueFromLocalStorage(
+          let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.EVM_TOKENS_METADATA,
           );
+          if (!localTokens) localTokens = {};
           LocalStorageUtils.saveValueInLocalStorage(
             LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-            ArrayUtils.mergeWithoutDuplicate(
-              localTokens,
-              tokensMetadata,
-              'symbol',
-            ),
+            { [localTokens[chain.chainId]]: tokensMetadata },
           );
         } catch (err) {
           Logger.error('Error while fetching tokens metadata', err);
           tokensMetadata =
-            (await LocalStorageUtils.getValueFromLocalStorage(
-              LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-            )) ?? [];
+            (
+              await LocalStorageUtils.getValueFromLocalStorage(
+                LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+              )
+            )[chain.chainId] ?? [];
         }
       }
 
