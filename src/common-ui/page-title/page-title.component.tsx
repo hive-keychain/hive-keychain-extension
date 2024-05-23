@@ -59,6 +59,7 @@ const PageTitle = ({
       rightAction.callback();
     }
   };
+
   return (
     <div className="title-section">
       {isBackButtonEnabled && (canGoBack || onBackAdditional) ? (

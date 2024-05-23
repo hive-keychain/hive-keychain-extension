@@ -24,7 +24,6 @@ export const NavigationReducer = (
   state: NavigationState = { stack: [] },
   { type, payload }: ActionPayload<NavigatePayload>,
 ): NavigationState => {
-  console.log({ type, payload });
   switch (type) {
     case MultichainActionType.RESET_NAV:
       return { stack: [], params: null };

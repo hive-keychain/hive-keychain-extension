@@ -22,6 +22,7 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -104,6 +105,7 @@ const Home = ({
     initSurvey();
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes();
+    ChainUtils.addChainToSetupChains(chain);
   }, []);
 
   useEffect(() => {

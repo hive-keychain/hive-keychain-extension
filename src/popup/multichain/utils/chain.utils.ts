@@ -6,6 +6,15 @@ import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+let previousChain: Chain;
+
+const setPreviousChain = (chain: Chain) => {
+  previousChain = chain;
+};
+const getPreviousChain = () => {
+  return previousChain;
+};
+
 const getDefaultChains = (): Chain[] => {
   return defaultChainList;
 };
@@ -87,4 +96,6 @@ export const ChainUtils = {
   getNonSetupChains,
   getCustomChains,
   getChain,
+  setPreviousChain,
+  getPreviousChain,
 };

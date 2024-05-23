@@ -1,7 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
@@ -12,44 +15,53 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EnumUtils } from 'src/utils/enum.utils';
 
-interface ChainSelectorProps {
-  hasBackButton2?: boolean;
-}
+interface ChainSelectorProps {}
 
 const ChainSelector = ({
-  hasBackButton,
-  hasBackButton2,
+  chain,
   setChain,
   navigateTo,
 }: PropsFromRedux & ChainSelectorProps) => {
-  const [chains, setChains] = useState<Chain[]>();
+  const [nonSetupChains, setNonSetupChains] = useState<Chain[]>();
+  const [setupChains, setSetupChains] = useState<Chain[]>();
 
   useEffect(() => {
     init();
-    console.log({ hasBackButton, hasBackButton2 });
-  }, []);
+  }, [chain]);
 
   const init = async () => {
-    setChains(await ChainUtils.getNonSetupChains());
+    setNonSetupChains(await ChainUtils.getNonSetupChains());
+    setSetupChains(await ChainUtils.getSetupChains());
   };
 
   const selectChain = async (chain: Chain) => {
-    await ChainUtils.addChainToSetupChains(chain);
+    if (
+      chain.type === ChainType.EVM &&
+      setupChains?.some((c) => c.type === ChainType.EVM)
+    ) {
+      await ChainUtils.addChainToSetupChains(chain);
+    }
     setChain(chain);
+  };
+
+  const onCloseClicked = async () => {
+    let previousChain = ChainUtils.getPreviousChain();
+    if (previousChain) setChain(previousChain);
+    else if (setupChains) setChain(setupChains[0]);
   };
 
   return (
     <>
       <PageTitleComponent
         title="html_popup_chain_selector_page_title"
-        isCloseButtonDisabled
-        isBackButtonEnabled={hasBackButton}></PageTitleComponent>
+        isBackButtonEnabled={setupChains?.length}
+        onBackAdditional={onCloseClicked}></PageTitleComponent>
       <div className="chain-selector-page">
         <div className="caption">{chrome.i18n.getMessage('')}</div>
         <div className="chain-cards-container">
-          {chains &&
-            chains.length > 0 &&
-            chains.map((chain: Chain, index: number) => (
+          {nonSetupChains &&
+            nonSetupChains.length > 0 &&
+            nonSetupChains.map((chain: Chain, index: number) => (
               <div
                 key={`chain-${chain.name}-${index}`}
                 className="chain-card"
@@ -90,7 +102,8 @@ const ChainSelector = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    hasBackButton: state.navigation.stack[0].params?.hasBackButton,
+    // hasBackButton: state.navigation.stack[0].params?.hasBackButton,
+    chain: state.chain,
   };
 };
 

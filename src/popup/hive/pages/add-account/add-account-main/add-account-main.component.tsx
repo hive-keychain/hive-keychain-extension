@@ -18,16 +18,14 @@ const AddAccountMain = ({
   setAccounts,
   setTitleContainerProperties,
   isLedgerSupported,
-  chain,
   resetChain,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
-      onBackAdditional: () => {
-        resetChain();
-      },
+      onBackAdditional:
+        !accounts || !accounts.length ? () => resetChain() : undefined,
       isCloseButtonDisabled: !accounts || !accounts.length,
     });
   });

@@ -9,6 +9,7 @@ import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -23,6 +24,7 @@ const ImportWalletConfirmation = ({
   wallet,
   mk,
   setEvmAccounts,
+  chain,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
   useEffect(() => {
@@ -54,6 +56,7 @@ const ImportWalletConfirmation = ({
       }));
       await EvmWalletUtils.saveAccounts(wallet, evmAccounts, mk);
       setEvmAccounts(evmAccounts);
+      await ChainUtils.addChainToSetupChains(chain);
     }
   };
 
@@ -106,6 +109,7 @@ const mapStateToProps = (state: RootState) => {
       .derivedWallets as WalletWithBalance[],
     wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
     mk: state.mk,
+    chain: state.chain,
   };
 };
 
