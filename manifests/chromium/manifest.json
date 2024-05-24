@@ -21,7 +21,8 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["keychainifyBundle.js", "web_interfaceBundle.js"]
+      "js": ["keychainifyBundle.js", "web_interfaceBundle.js"],
+      "all_frames": true
     }
   ],
   "manifest_version": 3
