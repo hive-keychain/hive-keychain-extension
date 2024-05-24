@@ -18,8 +18,6 @@ export const fetchPrices =
 
     const tokensMetadata = chainsTokensMetadata[chain.chainId];
 
-    console.log({ tokensMetadata });
-
     let prices: any = {};
     if (tokensMetadata) {
       try {
@@ -35,7 +33,7 @@ export const fetchPrices =
 
         for (const token of tokensMetadata) {
           prices[token.symbol] =
-            token.coingeckoId || res[token.coingeckoId]
+            token.coingeckoId?.length > 0 || res[token.coingeckoId]
               ? res[token.coingeckoId]
               : { usd: 0 };
         }

@@ -50,7 +50,6 @@ const getTokenBalances = async (
   walletSigningKey: SigningKey,
   chain: EvmChain,
 ) => {
-  // TODO get tokens from local storage
   let tokensMetadata = await getTokenListForWalletAddress(walletAddress, chain);
 
   const balances: EVMToken[] = [];
