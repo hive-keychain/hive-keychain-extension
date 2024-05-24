@@ -1001,6 +1001,8 @@ var hive_keychain = {
    * @param {number} amount Amount of tokens to be swapped
    * @param {number} slippage Max slippage
    * @param {Object} steps Steps returned by KeychainSDK.swaps.getEstimation(), of type IStep[]
+   * @param {string} [partnerUsername=null] Partner Hive account hosting the widget
+   * @param {number} [partnerFee=null] Fee received when executing & hosting a Keychain Swap. 0 - 1%
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -1011,6 +1013,8 @@ var hive_keychain = {
     amount,
     slippage,
     steps,
+    partnerUsername,
+    partnerFee,
     callback,
     rpc,
   ) {
@@ -1022,6 +1026,8 @@ var hive_keychain = {
       amount,
       slippage,
       steps,
+      partnerUsername,
+      partnerFee,
       rpc,
     };
 
