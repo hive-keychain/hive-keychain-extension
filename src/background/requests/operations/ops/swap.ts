@@ -21,6 +21,7 @@ export const broadcastSwap = async (
   let result,
     err: any,
     err_message = null;
+  let swapId: string = '';
   try {
     const {
       username,
@@ -38,7 +39,7 @@ export const broadcastSwap = async (
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
-    const swapId = await SwapTokenUtils.saveEstimate(
+    swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
       startToken,
@@ -125,7 +126,7 @@ export const broadcastSwap = async (
   } finally {
     const message = createMessage(
       err,
-      result,
+      { ...result, swap_id: swapId },
       data,
       await chrome.i18n.getMessage('bgd_ops_swap_start_success', [
         data.amount + '',
