@@ -40,6 +40,7 @@ const Home = ({
   activeAccount,
   getEvmActiveAccount,
   navigateTo,
+  prices,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -156,12 +157,16 @@ const Home = ({
         <EstimatedAccountValueSectionComponent
           accountValues={{
             [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
-              EvmTokensUtils.getTotalBalanceInUsd(activeAccount.balances),
+              EvmTokensUtils.getTotalBalanceInUsd(
+                activeAccount.balances,
+                prices,
+              ),
             )}`,
             [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
               EvmTokensUtils.getTotalBalanceInMainToken(
                 activeAccount.balances,
                 chain,
+                prices,
               ),
             )} ${chain.mainToken}`,
           }}
@@ -184,6 +189,7 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
+    prices: state.evm.prices,
   };
 };
 

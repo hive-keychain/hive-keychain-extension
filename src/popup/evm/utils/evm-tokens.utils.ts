@@ -4,6 +4,7 @@ import {
   EVMTokenInfoShort,
   EVMTokenType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
@@ -18,21 +19,29 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
-const getTotalBalanceInUsd = (tokens: EVMToken[]) => {
+const getTotalBalanceInUsd = (tokens: EVMToken[], prices: EvmPrices) => {
   // TODO fix when get price done
-  // return tokens.reduce((a, b) => a + b.usdValue ?? 1, 0);
-  return tokens.reduce((a, b) => a + 1, 0);
+  return tokens.reduce((a, b) => {
+    return (
+      a +
+        prices[b.tokenInfo.symbol].usd *
+          Number(ethers.formatUnits(b.balance, b.tokenInfo.decimals ?? 18)) ?? 1
+    );
+  }, 0);
+  // return tokens.reduce((a, b) => a + 1, 0);
 };
 
-const getTotalBalanceInMainToken = (tokens: EVMToken[], chain: EvmChain) => {
+const getTotalBalanceInMainToken = (
+  tokens: EVMToken[],
+  chain: EvmChain,
+  prices: EvmPrices,
+) => {
   const mainToken = tokens.find(
     (token) => token.tokenInfo.symbol === chain.mainToken,
   );
   if (mainToken) {
-    const valueInUsd = getTotalBalanceInUsd(tokens);
-    // TODO fix when get price done
-    // return valueInUsd / parseFloat(mainToken?.usdPrice);
-    return valueInUsd / 1;
+    const valueInUsd = getTotalBalanceInUsd(tokens, prices);
+    return valueInUsd / (prices[mainToken.tokenInfo.symbol]?.usd ?? 1);
   } else return 0;
 };
 
@@ -41,16 +50,17 @@ const getTokenBalances = async (
   walletSigningKey: SigningKey,
   chain: EvmChain,
 ) => {
-  console.log(walletAddress);
   // TODO get tokens from local storage
-  const tokens = await getTokenListForWalletAddress(walletAddress, chain);
+  let tokensMetadata = await getTokenListForWalletAddress(walletAddress, chain);
 
   const balances: EVMToken[] = [];
 
   const provider = EthersUtils.getProvider(chain.network);
   const connectedWallet = new Wallet(walletSigningKey, provider);
 
-  for (const token of tokens) {
+  for (const token of tokensMetadata.filter(
+    (t) => t.type !== EVMTokenType.NATIVE,
+  )) {
     const contract = new ethers.Contract(
       token.address!,
       Erc20Abi,
@@ -74,6 +84,25 @@ const getTokenBalances = async (
     }
   }
   // TODO sort by usdValue
+  const res = await KeychainApi.get(`evm/coingecko-id/${chain.chainId}`);
+  const mainTokenMetadata = {
+    type: EVMTokenType.NATIVE,
+    name: chain.mainToken,
+    symbol: chain.mainToken,
+    chainId: chain.chainId,
+    logo: chain.logo,
+    backgroundColor: '',
+    coingeckoId: res.id,
+  } as EVMTokenInfoShort;
+
+  let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+  );
+  if (!localTokens) localTokens = {};
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+    { ...localTokens, [chain.chainId]: [...tokensMetadata, mainTokenMetadata] },
+  );
 
   const mainTokenBalance = await provider.getBalance(walletAddress);
   const mainTokenFormatedBalance = FormatUtils.formatCurrencyValue(
@@ -82,14 +111,7 @@ const getTokenBalances = async (
 
   return [
     {
-      tokenInfo: {
-        type: EVMTokenType.NATIVE,
-        name: chain.mainToken,
-        symbol: chain.mainToken,
-        chainId: chain.chainId,
-        logo: chain.logo,
-        backgroundColor: '',
-      } as EVMTokenInfoShort,
+      tokenInfo: mainTokenMetadata,
       formattedBalance: mainTokenFormatedBalance,
       balance: mainTokenBalance,
     } as EVMToken,
@@ -125,14 +147,6 @@ const getTokenListForWalletAddress = async (
         try {
           tokensMetadata = await KeychainApi.get(
             `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
-          );
-          let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-          );
-          if (!localTokens) localTokens = {};
-          LocalStorageUtils.saveValueInLocalStorage(
-            LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-            { ...localTokens, [chain.chainId]: tokensMetadata },
           );
         } catch (err) {
           Logger.error('Error while fetching tokens metadata', err);

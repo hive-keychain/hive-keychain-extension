@@ -13,14 +13,16 @@ const WalletInfoSection = ({ evmTokens }: EvmWalletInfoSectionProps) => {
       <div className="wallet-background" />
       <div className="wallet-info-section">
         {evmTokens &&
-          evmTokens.map((token, index) => (
-            <EVMWalletInfoSectionItemComponent
-              key={`${token.tokenInfo.name}-${index}`}
-              token={token}
-              mainValueLabel={token.tokenInfo.name}
-              mainValue={token.formattedBalance}
-            />
-          ))}
+          evmTokens
+            .filter((token) => !token.tokenInfo.possibleSpam)
+            .map((token, index) => (
+              <EVMWalletInfoSectionItemComponent
+                key={`${token.tokenInfo.name}-${index}`}
+                token={token}
+                mainValueLabel={token.tokenInfo.name}
+                mainValue={token.formattedBalance}
+              />
+            ))}
         {!evmTokens && <RotatingLogoComponent />}
       </div>
     </div>

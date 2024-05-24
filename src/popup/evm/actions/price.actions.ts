@@ -6,6 +6,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { CoingeckoApi } from 'src/api/coingecko';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const fetchPrices =
   (chain: EvmChain): AppThunk =>
@@ -17,19 +18,29 @@ export const fetchPrices =
 
     const tokensMetadata = chainsTokensMetadata[chain.chainId];
 
-    let prices = {};
+    console.log({ tokensMetadata });
+
+    let prices: any = {};
     if (tokensMetadata) {
       try {
         const res = await CoingeckoApi.get(
           'simple/price',
           `ids=${tokensMetadata
-            .filter((tm: EVMTokenInfoShort) => !tm.possibleSpam)
+            .filter(
+              (tm: EVMTokenInfoShort) => chain.testnet || !tm.possibleSpam,
+            )
             .map((tm: EVMTokenInfoShort) => tm.coingeckoId)
-            .join(',')}&vs_currencies=usd&include_24hr_change=true`,
+            .join(',')}&vs_currencies=usd`,
         );
-        console.log(res);
+
+        for (const token of tokensMetadata) {
+          prices[token.symbol] =
+            token.coingeckoId || res[token.coingeckoId]
+              ? res[token.coingeckoId]
+              : { usd: 0 };
+        }
       } catch (err) {
-        console.log(err);
+        Logger.error('Error while fetching prices', err);
       }
     }
 

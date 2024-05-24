@@ -55,7 +55,6 @@ const SelectAccountSection = ({
     const itemClicked = accounts.find(
       (account: EvmAccount) => account.wallet.address === address,
     );
-    console.log(itemClicked);
     // getEvmActiveAccount(itemClicked!);
     handleClickOnSelector();
   };
