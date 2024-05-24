@@ -1,10 +1,10 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { FullGasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { KeychainApi } from '@popup/hive/api/keychain';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';
+import { KeychainApi } from 'src/api/keychain';
 
 const getGasFeeEstimations = async (chain: Chain) => {
   return await KeychainApi.get(`/evm/gasPriceEstimate/${chain.chainId}`);

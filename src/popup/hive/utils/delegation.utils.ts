@@ -4,7 +4,7 @@ import {
   PendingOutgoingUndelegation,
 } from '@interfaces/delegations.interface';
 import { Key } from '@interfaces/keys.interface';
-import { KeychainApi } from '@popup/hive/api/keychain';
+import { KeychainApi } from 'src/api/keychain';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getDelegators = async (name: string) => {

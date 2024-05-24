@@ -32,7 +32,7 @@ const EvmApp = ({
   useEffect(() => {
     setDisplaySplashscreen(true);
     init();
-    fetchPrices();
+    fetchPrices(chain);
   }, [chain]);
 
   useEffect(() => {

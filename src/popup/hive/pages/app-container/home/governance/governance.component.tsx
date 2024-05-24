@@ -1,11 +1,11 @@
 import { Witness } from '@interfaces/witness.interface';
-import { KeychainApi } from '@popup/hive/api/keychain';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import { KeychainApi } from 'src/api/keychain';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 import { MyWitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/my-witness-tab.component';

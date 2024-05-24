@@ -3,4 +3,6 @@ export enum EvmActionType {
   SET_ACTIVE_ACCOUNT = 'SET_ACTIVE_ACCOUNT',
 
   SET_APP_STATUS = 'SET_APP_STATUS',
+
+  SET_PRICES = 'SET_PRICES',
 }

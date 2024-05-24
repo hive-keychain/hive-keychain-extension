@@ -1,5 +1,5 @@
-import { KeychainApi } from '@popup/hive/api/keychain';
 import { Theme, ThemeOpacity } from '@popup/theme.context';
+import { KeychainApi } from 'src/api/keychain';
 
 let imgColors: any = {};
 

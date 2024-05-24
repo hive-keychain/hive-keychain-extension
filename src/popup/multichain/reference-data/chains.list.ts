@@ -48,7 +48,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_BNB,
     chainId: '0x38',
     mainToken: 'BNB',
-    network: 'bsc',
+    network: 'bnb',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://bscscan.com',
@@ -60,10 +60,10 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_POLYGON,
     chainId: '0x89',
     mainToken: 'MATIC',
-    network: 'polygon',
+    network: 'matic',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://polygonscan.com',
+      url: 'https://api.polygonscan.com',
     },
   } as EvmChain,
   {

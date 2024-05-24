@@ -1,6 +1,6 @@
-import { KeychainApi } from '@popup/hive/api/keychain';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { config as HiveTxConfig } from 'hive-tx';
+import { KeychainApi } from 'src/api/keychain';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 

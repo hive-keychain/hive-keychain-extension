@@ -11,7 +11,6 @@ import {
 import { Key } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { KeychainApi } from '@popup/hive/api/keychain';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -22,6 +21,7 @@ import {
   PrivateKey,
   call,
 } from 'hive-tx';
+import { KeychainApi } from 'src/api/keychain';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
