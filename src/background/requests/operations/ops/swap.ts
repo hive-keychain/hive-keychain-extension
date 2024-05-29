@@ -32,7 +32,7 @@ export const broadcastSwap = async (
       amount,
       swapAccount,
     } = data;
-
+    console.log({ data }); //TODO remove line
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
