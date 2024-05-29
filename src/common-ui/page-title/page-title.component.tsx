@@ -4,7 +4,7 @@ import {
   resetNav,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -16,6 +16,7 @@ export interface PageTitleProps {
   skipTitleTranslation?: boolean;
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
+  showDetachWindowOption?: boolean;
   rightAction?: {
     icon: SVGIcons;
     callback: () => void;
@@ -38,7 +39,23 @@ const PageTitle = ({
   navigateTo,
   canGoBack,
   resetNav,
+  showDetachWindowOption,
 }: PropsType) => {
+  useEffect(() => {
+    if (showDetachWindowOption)
+      document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      if (showDetachWindowOption)
+        document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'd' && event.ctrlKey) {
+      handleDetachWindow();
+    }
+  };
+
   const handleBackButtonClick = (): void => {
     if (onBackAdditional) onBackAdditional();
     if (isBackButtonEnabled) {
@@ -60,6 +77,10 @@ const PageTitle = ({
     }
   };
 
+  const handleDetachWindow = () => {
+    console.log('//TODO detach extension!'); //TODO remove line
+  };
+
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
@@ -75,6 +96,16 @@ const PageTitle = ({
           ? title
           : chrome.i18n.getMessage(title, titleParams)}
       </div>
+      {showDetachWindowOption && (
+        <SVGIcon
+          onClick={handleDetachWindow}
+          icon={SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION}
+          className={`icon-button menu-toggle-theme`}
+          hoverable
+          tooltipMessage="popup_html_detach_window_tooltip_text"
+          tooltipPosition="bottom"
+        />
+      )}
       {rightAction && (
         <SVGIcon
           onClick={handleRightActionButtonClick}

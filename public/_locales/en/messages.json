@@ -575,6 +575,10 @@
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
   },
+  "popup_html_detach_window_tooltip_text": {
+    "message": "Detach window\nShorcut: Ctrl + D",
+    "description": "after clicking on copy username to clipboard button on home page"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" width="30px" height="30px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 256 256" enable-background="new 0 0 256 256" xml:space="preserve">
+<g><g><path stroke-width="var(--menu-icon-border-width)" fill="var(--menu-icon-color)" d="M142.8,246v-29.5h29.5v-177h-29.5V10h59v29.5v177v14.8V246H142.8z M54.3,231.3v-14.8v-177V10h59v29.5H83.8v177h29.5V246h-59V231.3L54.3,231.3z"/></g></g>
+</svg>
