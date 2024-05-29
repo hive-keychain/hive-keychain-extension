@@ -52,6 +52,20 @@ const Swap = (props: Props) => {
     );
   };
 
+  const renderOptionalPartnerParams = () => {
+    return data.partnerUsername && data.partnerFee ? (
+      <>
+        <RequestItem
+          title="swap_partner_username"
+          content={`@${data.partnerUsername}`}
+        />
+        <RequestItem title="swap_partner_fee" content={data.partnerFee + '%'} />
+      </>
+    ) : (
+      <></>
+    );
+  };
+
   const onConfirmSwap = async () => {
     setForceLoading(true);
     chrome.runtime.sendMessage({
@@ -138,7 +152,7 @@ const Swap = (props: Props) => {
           />
         )}
         <RequestItem title="dialog_slippage" content={data.slippage + '%'} />
-        <RequestItem title="swap_partner_fee" content={data.partnerFee + '%'} />
+        {renderOptionalPartnerParams()}
         <RequestItem title="swap_fee" content={swapConfig?.fee.amount + '%'} />
       </Operation>
     );

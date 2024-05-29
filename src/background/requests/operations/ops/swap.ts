@@ -31,14 +31,18 @@ export const broadcastSwap = async (
       steps,
       amount,
       swapAccount,
+      partnerUsername,
+      partnerFee,
     } = data;
-    console.log({ data }); //TODO remove line
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
+    //TODO code in BE using bellow params & remove logs.
+    console.log({ partnerUsername, partnerFee }); //TODO remove line
+    //end block to remove
     swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
