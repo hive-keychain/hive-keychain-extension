@@ -812,6 +812,14 @@
     "message": "Manage authorities",
     "description": "on settings page"
   },
+  "popup_html_export_accounts": {
+    "message": "Export accounts",
+    "description": "on settings page accounts > export acc sub menu"
+  },
+  "popup_html_export_all_accounts_as_QR": {
+    "message": "Export all accounts QR",
+    "description": "on settings page accounts > export acc sub menu"
+  },
   "popup_html_manage_no_accounts_authorities": {
     "message": "No authority has been given to other accounts",
     "description": "On Accounts > Manage Authorities"
