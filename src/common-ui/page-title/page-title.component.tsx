@@ -78,7 +78,6 @@ const PageTitle = ({
   };
 
   const handleDetachWindow = () => {
-    console.log('//TODO detach extension!'); //TODO remove line
     chrome.tabs.create({
       url: `detached_window.html`,
     });
