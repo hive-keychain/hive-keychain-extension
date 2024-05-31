@@ -1,1 +1,39 @@
-//TODO fill bellow + add into accounts.module.scss
+.settings-exported-accounts-qr {
+  @include pageLayoutRowGap();
+  row-gap: 16px;
+  justify-content: flex-start;
+  overflow-y: auto;
+
+  .qr-exported-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 80%;
+    align-self: center;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    z-index: 2;
+    border-radius: 20px;
+    row-gap: 32px;
+
+    .qr-code-disclaimer {
+      @include caption;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 0;
+      max-width: 256px;
+      margin-bottom: -20px;
+      text-align: justify;
+      margin-top: 16px;
+    }
+
+    .button-container {
+      width: 80%;
+    }
+  }
+
+  .text {
+    @include caption();
+  }
+}

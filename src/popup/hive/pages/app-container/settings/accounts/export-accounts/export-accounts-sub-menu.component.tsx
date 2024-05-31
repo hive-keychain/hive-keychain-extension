@@ -8,7 +8,7 @@ import { MenuComponent } from 'src/common-ui/menu/menu.component';
 const ExportAccountsSubMenu = ({}: PropsFromRedux) => {
   return (
     <div
-      className="settings-manage-account-authorities"
+      className="settings-export-accounts-submenu"
       data-testid={`${Screen.SETTINGS_EXPORT_ACCOUNTS}-page`}>
       <MenuComponent
         title="popup_html_export_accounts"
