@@ -3,7 +3,8 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useRef, useState } from 'react';
+import { ThrottleSettings, throttle } from 'lodash';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -16,6 +17,7 @@ const ExportedAccountsQR = ({
   setTitleContainerProperties,
   activeAccount,
   localAccounts,
+  navigateTo,
 }: PropsFromRedux) => {
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const [accountsDataQR, setaccountsDataQR] = useState<
@@ -26,7 +28,6 @@ const ExportedAccountsQR = ({
     }[]
   >([]);
   const [pageIndex, setPageIndex] = useState<number>(0);
-  let displayInterval: NodeJS.Timer;
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -35,7 +36,7 @@ const ExportedAccountsQR = ({
     });
     exportAllAccountsQR();
     return () => {
-      if (displayInterval) clearInterval(displayInterval);
+      throttledRefresh.cancel();
     };
   }, []);
 
@@ -60,27 +61,33 @@ const ExportedAccountsQR = ({
       });
     }
     setaccountsDataQR(tempAccountsDataQR);
-    displayInterval = setInterval(() => {
-      if (pageIndex === accountsDataQR.length - 1) {
-        setPageIndex(0);
-        return;
-      }
-      setPageIndex((prevPageIndex) => prevPageIndex + 1);
-    }, 1000);
   };
 
+  useEffect(() => {
+    throttledRefresh(pageIndex, accountsDataQR);
+  }, [pageIndex, accountsDataQR]);
+
+  const throttledRefresh = useMemo(() => {
+    return throttle(
+      (newPageIndex, newaccountsDataQR) => {
+        if (newPageIndex === newaccountsDataQR.length - 1) {
+          setPageIndex(0);
+        } else {
+          setPageIndex((newPageIndex) => newPageIndex + 1);
+        }
+      },
+      1000,
+      { leading: false } as ThrottleSettings,
+    );
+  }, []);
+
   const closePage = () => {
-    clearInterval(displayInterval);
     navigateTo(Screen.HOME_PAGE, true);
   };
 
-  //   const handleNextQR = () => {
-  //     if (pageIndex === accountsDataQR.length - 1) {
-  //       setPageIndex(0);
-  //       return;
-  //     }
-  //     setPageIndex((prevPageIndex) => prevPageIndex + 1);
-  //   };
+  const encode = (value: string) => {
+    return btoa(value);
+  };
 
   return (
     <div
@@ -104,9 +111,11 @@ const ExportedAccountsQR = ({
               data-testid="qrcode"
               className="qrcode"
               size={240}
-              value={`${QR_CONTENT_PREFIX}${JSON.stringify(
-                accountsDataQR[pageIndex],
-              )}`}
+              value={encode(
+                `${QR_CONTENT_PREFIX}${JSON.stringify(
+                  accountsDataQR[pageIndex],
+                )}`,
+              )}
               bgColor="var(--qrcode-background-color)"
               fgColor="var(--qrcode-foreground-color)"
             />
@@ -134,6 +143,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
