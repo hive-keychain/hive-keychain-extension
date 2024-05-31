@@ -14,7 +14,6 @@ const ExportAccountsSubMenu = ({}: PropsFromRedux) => {
         title="popup_html_export_accounts"
         isBackButtonEnable={true}
         menuItems={ExportAccountsSubMenuItems}></MenuComponent>
-      //TODO
     </div>
   );
 };

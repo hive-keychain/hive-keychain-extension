@@ -3,6 +3,7 @@ import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
+import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
@@ -137,6 +138,8 @@ const AppRouter = ({
         return <ManageAccountAuthoritiesComponent />;
       case Screen.SETTINGS_EXPORT_ACCOUNTS:
         return <ExportAccountsSubMenuComponent />;
+      case Screen.SETTINGS_EXPORTED_ACCOUNTS_QR:
+        return <ExportedAccountsQRComponent />;
       case Screen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;
       case Screen.SETTINGS_ADVANCED:
