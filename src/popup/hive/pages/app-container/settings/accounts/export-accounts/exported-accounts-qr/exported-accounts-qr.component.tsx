@@ -111,11 +111,9 @@ const ExportedAccountsQR = ({
               data-testid="qrcode"
               className="qrcode"
               size={240}
-              value={encode(
-                `${QR_CONTENT_PREFIX}${JSON.stringify(
-                  accountsDataQR[pageIndex],
-                )}`,
-              )}
+              value={`${QR_CONTENT_PREFIX}${encode(
+                JSON.stringify(accountsDataQR[pageIndex]),
+              )}`}
               bgColor="var(--qrcode-background-color)"
               fgColor="var(--qrcode-foreground-color)"
             />
