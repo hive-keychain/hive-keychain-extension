@@ -16,10 +16,10 @@
     <style>
       html,
       body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
+        display: flex;
         height: 100%;
+        align-items: center;
+        justify-content: center;
       }
       #root {
         display: flex;
@@ -27,14 +27,57 @@
         align-items: center;
         justify-content: center;
         .theme {
+          border: solid 1px grey;
+          border-radius: 8px;
+          width: 435px;
+          height: 600px;
+          color: var(--main-font-color);
+          padding: 0px !important;
+          box-sizing: border-box;
           display: flex;
-          height: 100%;
-          align-items: center;
-          justify-content: center;
+          flex-direction: column;
+          row-gap: 24px;
+          font-size: 16px;
+          position: relative;
+          .App {
+            margin-left: unset !important;
+            .splashscreen {
+              width: 435px !important;
+              height: 600px !important;
+              position: relative !important;
+              .loading-animation-container {
+                width: unset !important;
+              }
+              .overlay {
+                border: solid 1px grey !important;
+                border-radius: 8px !important;
+                width: 435px !important;
+                height: 600px !important;
+                .top {
+                  position: relative !important;
+                }
+                .bottom {
+                  top: 0px;
+                  position: absolute;
+                  left: 0px;
+                }
+              }
+            }
+            .home-page-content {
+              border-radius: 0 0 8px 8px !important;
+            }
+            .custom-select-handle {
+              height: unset !important;
+            }
+          }
         }
         .actions-section {
-          width: 435px;
-          left: unset;
+          left: unset !important;
+          bottom: 72px !important;
+          border-radius: 24px 24px 8px 8px !important;
+          width: 400px !important;
+          align-self: center;
+          display: flex;
         }
       }
 
