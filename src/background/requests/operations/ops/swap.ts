@@ -40,9 +40,7 @@ export const broadcastSwap = async (
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
-    //TODO code in BE using bellow params & remove logs.
-    console.log({ partnerUsername, partnerFee }); //TODO remove line
-    //end block to remove
+
     swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
@@ -50,6 +48,8 @@ export const broadcastSwap = async (
       endToken,
       amount,
       username!,
+      partnerFee,
+      partnerUsername,
     );
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
