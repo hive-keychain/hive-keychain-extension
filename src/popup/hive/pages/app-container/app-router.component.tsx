@@ -7,7 +7,7 @@ import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/set
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
 import { RootState } from '@popup/multichain/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
@@ -63,6 +63,25 @@ const AppRouter = ({
   titleProperties,
   hasTitle,
 }: PropsFromRedux) => {
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'd' && event.ctrlKey) {
+      handleDetachWindow();
+    }
+  };
+
+  const handleDetachWindow = () => {
+    chrome.tabs.create({
+      url: `detached_window.html`,
+    });
+  };
+
   const renderAccountPage = (page: Screen) => {
     switch (page) {
       case Screen.HOME_PAGE:

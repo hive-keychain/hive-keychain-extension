@@ -4,7 +4,7 @@ import {
   resetNav,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -41,21 +41,6 @@ const PageTitle = ({
   resetNav,
   showDetachWindowOption,
 }: PropsType) => {
-  useEffect(() => {
-    if (showDetachWindowOption)
-      document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      if (showDetachWindowOption)
-        document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'd' && event.ctrlKey) {
-      handleDetachWindow();
-    }
-  };
-
   const handleBackButtonClick = (): void => {
     if (onBackAdditional) onBackAdditional();
     if (isBackButtonEnabled) {
