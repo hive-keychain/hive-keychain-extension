@@ -3684,7 +3684,7 @@
     "description": "Swap Fee"
   },
   "swap_partner_username": {
-    "message": "Partner username",
+    "message": "Partner",
     "description": "Widget Swap partner username"
   },
   "swap_partner_fee": {
