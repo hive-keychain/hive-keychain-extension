@@ -50,14 +50,12 @@ const ExportedAccountsQR = ({
     for (let i = 0; i < localAccounts.length; i += 2) {
       index++;
       const tempLocalAccountsChunk = [...localAccounts].splice(i, 2);
-      let chunkString = '';
-      tempLocalAccountsChunk.map((t) => {
-        chunkString += AccountUtils.generateQRCode(t);
-      });
       tempAccountsDataQR.push({
-        data: chunkString,
+        data: JSON.stringify(
+          tempLocalAccountsChunk.map((t) => AccountUtils.generateQRCode(t)),
+        ),
         index,
-        total: localAccounts.length,
+        total: Math.ceil(localAccounts.length / 2),
       });
     }
     setaccountsDataQR(tempAccountsDataQR);
@@ -76,7 +74,7 @@ const ExportedAccountsQR = ({
           setPageIndex((newPageIndex) => newPageIndex + 1);
         }
       },
-      1000,
+      2000,
       { leading: false } as ThrottleSettings,
     );
   }, []);
