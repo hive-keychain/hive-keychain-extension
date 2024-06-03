@@ -38,7 +38,7 @@ import TransactionUtils, {
   TRANSFER_TYPE_TRANSACTIONS,
 } from 'src/popup/hive/utils/transaction.utils';
 import { WalletHistoryUtils } from 'src/popup/hive/utils/wallet-history.utils';
-import ArrayUtils from 'src/utils/array.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 type FilterTransactionTypes = {

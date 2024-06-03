@@ -1,8 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
@@ -28,6 +30,7 @@ import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interfa
 import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
@@ -41,6 +44,7 @@ const Home = ({
   getEvmActiveAccount,
   navigateTo,
   prices,
+  fetchPrices,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -55,14 +59,22 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
+    refreshAccountBalances();
   }, []);
 
   useEffect(() => {
-    if (chain) {
-      setTokens(undefined);
-      refreshAccountBalances();
-    }
+    setTokens(undefined);
   }, [chain]);
+
+  useEffect(() => {
+    if (
+      !ArrayUtils.includesAll(
+        Object.keys(prices),
+        activeAccount.balances.map((b) => b.tokenInfo.symbol),
+      )
+    )
+      fetchPrices(activeAccount.balances.map((t) => t.tokenInfo));
+  }, [activeAccount.balances]);
 
   useEffect(() => {
     if (activeAccount.balances?.length > 0) setTokens(activeAccount.balances);
@@ -171,7 +183,7 @@ const Home = ({
             )} ${chain.mainToken}`,
           }}
         />
-        <EvmWalletInfoSectionComponent evmTokens={tokens} />
+        <EvmWalletInfoSectionComponent evmTokens={tokens} prices={prices} />
       </div>
       <ActionsSectionComponent
         selectedToken={chain.mainToken}
@@ -189,7 +201,7 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
-    prices: state.evm.prices,
+    prices: state.evm.prices as EvmPrices,
   };
 };
 
@@ -199,6 +211,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   getEvmActiveAccount,
   navigateTo,
+  fetchPrices,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

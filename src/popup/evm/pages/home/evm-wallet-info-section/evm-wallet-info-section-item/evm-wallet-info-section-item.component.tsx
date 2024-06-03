@@ -100,7 +100,6 @@ const WalletInfoSectionItem = ({
             src={token.tokenInfo?.logo}
             className="currency-icon"
             addBackground
-            symbol={token.tokenInfo.symbol}
             useDefaultSVG={icon}
           />
         )}

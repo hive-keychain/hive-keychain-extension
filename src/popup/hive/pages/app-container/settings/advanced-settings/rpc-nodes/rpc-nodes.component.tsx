@@ -31,7 +31,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import ArrayUtils from 'src/utils/array.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as ValidUrl from 'valid-url';
 
@@ -135,7 +135,7 @@ const RpcNodes = ({
       customAccountHistoryApi,
       DefaultAccountHistoryApis,
     );
-    const accountHistoryApiOpts = accountHistoryApiFullList.map((api) => {
+    const accountHistoryApiOpts = accountHistoryApiFullList.map((api: any) => {
       return {
         panelType: 'account-history-api',
         label: api.replace('http://', '').replace('https://', '').split('/')[0],

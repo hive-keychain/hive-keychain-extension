@@ -1,39 +1,33 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
-import { EVMTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAppStatus } from '@popup/evm/reducers/app-status.reducer';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { CoingeckoApi } from 'src/api/coingecko';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const fetchPrices =
-  (chain: EvmChain): AppThunk =>
+  (tokensMetadata: EvmTokenInfoShort[]): AppThunk =>
   async (dispatch) => {
-    const chainsTokensMetadata =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-      );
-
-    const tokensMetadata = chainsTokensMetadata[chain.chainId];
+    Logger.info('Fetching prices...');
 
     let prices: any = {};
-    if (tokensMetadata) {
+    if (tokensMetadata && tokensMetadata.length > 0) {
       try {
         const res = await CoingeckoApi.get(
           'simple/price',
           `ids=${tokensMetadata
             .filter(
-              (tm: EVMTokenInfoShort) => chain.testnet || !tm.possibleSpam,
+              (tm: EvmTokenInfoShort) =>
+                !!tm.coingeckoId && tm.coingeckoId.length > 0,
             )
-            .map((tm: EVMTokenInfoShort) => tm.coingeckoId)
+            .map((tm: EvmTokenInfoShort) => tm.coingeckoId)
             .join(',')}&vs_currencies=usd`,
         );
 
         for (const token of tokensMetadata) {
           prices[token.symbol] =
-            token.coingeckoId?.length > 0 || res[token.coingeckoId]
+            (token.coingeckoId && token.coingeckoId?.length > 0) ||
+            (token.coingeckoId && res[token.coingeckoId])
               ? res[token.coingeckoId]
               : { usd: 0 };
         }

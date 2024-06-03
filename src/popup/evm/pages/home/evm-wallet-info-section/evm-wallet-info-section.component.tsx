@@ -1,20 +1,27 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import React from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 
 interface EvmWalletInfoSectionProps {
   evmTokens?: EVMToken[];
+  prices: EvmPrices;
 }
 
-const WalletInfoSection = ({ evmTokens }: EvmWalletInfoSectionProps) => {
+const WalletInfoSection = ({
+  evmTokens,
+  prices,
+}: EvmWalletInfoSectionProps) => {
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
       <div className="wallet-info-section">
-        {evmTokens &&
-          evmTokens
-            .filter((token) => !token.tokenInfo.possibleSpam)
+        {prices &&
+          evmTokens &&
+          EvmTokensUtils.sortTokens(evmTokens, prices)
+            // .filter((token) => !token.tokenInfo.possibleSpam)
             .map((token, index) => (
               <EVMWalletInfoSectionItemComponent
                 key={`${token.tokenInfo.name}-${index}`}

@@ -17,7 +17,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import ArrayUtils from 'src/utils/array.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 
 const AddKey = ({
   keyType,

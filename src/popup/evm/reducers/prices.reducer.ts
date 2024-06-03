@@ -13,6 +13,7 @@ export const EvmPricesReducer = (
 ) => {
   switch (type) {
     case EvmActionType.SET_PRICES:
+      console.log('prices reducer: set prices');
       return { ...state, ...payload };
     default:
       return state;

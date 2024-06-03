@@ -27,6 +27,10 @@ path {
     column-gap: 16px;
     .currency-icon {
       @include icon-size(36px);
+      svg {
+        @include icon-size(24px);
+      }
+
       @include dmSans400(18px);
       height: 36px;
       width: 36px;

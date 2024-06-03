@@ -1,8 +1,8 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EVMTokenInfoShort,
   EVMTokenType,
+  EvmTokenInfoShort,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -20,15 +20,21 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const getTotalBalanceInUsd = (tokens: EVMToken[], prices: EvmPrices) => {
-  // TODO fix when get price done
   return tokens.reduce((a, b) => {
+    const price = prices[b.tokenInfo.symbol] ?? 0;
     return (
       a +
-        prices[b.tokenInfo.symbol].usd *
-          Number(ethers.formatUnits(b.balance, b.tokenInfo.decimals ?? 18)) ?? 1
+        price.usd *
+          Number(
+            ethers.formatUnits(
+              b.balance,
+              b.tokenInfo.type === EVMTokenType.ERC20
+                ? b.tokenInfo.decimals
+                : 18,
+            ),
+          ) ?? 1
     );
   }, 0);
-  // return tokens.reduce((a, b) => a + 1, 0);
 };
 
 const getTotalBalanceInMainToken = (
@@ -37,7 +43,8 @@ const getTotalBalanceInMainToken = (
   prices: EvmPrices,
 ) => {
   const mainToken = tokens.find(
-    (token) => token.tokenInfo.symbol === chain.mainToken,
+    (token) =>
+      token.tokenInfo.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
   );
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens, prices);
@@ -56,23 +63,43 @@ const getTokenBalances = async (
 
   const provider = EthersUtils.getProvider(chain.network);
   const connectedWallet = new Wallet(walletSigningKey, provider);
-
-  for (const token of tokensMetadata.filter(
-    (t) => t.type !== EVMTokenType.NATIVE,
-  )) {
-    const contract = new ethers.Contract(
-      token.address!,
-      Erc20Abi,
-      connectedWallet,
-    );
-
-    let formattedBalance;
-    let balance;
+  if (
+    !tokensMetadata.some(
+      (tokenMetadata) => tokenMetadata.type === EVMTokenType.NATIVE,
+    )
+  ) {
+    const mainTokenMetadata = {
+      type: EVMTokenType.NATIVE,
+      name: chain.mainToken,
+      symbol: chain.mainToken,
+      chainId: chain.chainId,
+      logo: chain.logo,
+      backgroundColor: '',
+      coingeckoId: '',
+    } as EvmTokenInfoShort;
+    tokensMetadata.push(mainTokenMetadata);
+  }
+  for (const token of tokensMetadata) {
     try {
-      balance = await contract.balanceOf(walletAddress);
-      formattedBalance = FormatUtils.formatCurrencyValue(
-        Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-      );
+      let formattedBalance;
+      let balance;
+      if (token.type === EVMTokenType.NATIVE) {
+        balance = await provider.getBalance(walletAddress);
+        formattedBalance = FormatUtils.formatCurrencyValue(
+          Number(parseFloat(ethers.formatEther(balance))),
+        );
+      } else {
+        const contract = new ethers.Contract(
+          token.address!,
+          Erc20Abi,
+          connectedWallet,
+        );
+        balance = await contract.balanceOf(walletAddress);
+        formattedBalance = FormatUtils.formatCurrencyValue(
+          Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
+        );
+      }
+
       balances.push({
         tokenInfo: token,
         formattedBalance: formattedBalance,
@@ -82,17 +109,6 @@ const getTokenBalances = async (
       Logger.error('Error while formatting evm balances', err);
     }
   }
-  // TODO sort by usdValue
-  const res = await KeychainApi.get(`evm/coingecko-id/${chain.chainId}`);
-  const mainTokenMetadata = {
-    type: EVMTokenType.NATIVE,
-    name: chain.mainToken,
-    symbol: chain.mainToken,
-    chainId: chain.chainId,
-    logo: chain.logo,
-    backgroundColor: '',
-    coingeckoId: res.id,
-  } as EVMTokenInfoShort;
 
   let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -100,28 +116,16 @@ const getTokenBalances = async (
   if (!localTokens) localTokens = {};
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-    { ...localTokens, [chain.chainId]: [...tokensMetadata, mainTokenMetadata] },
+    { ...localTokens, [chain.chainId]: [...tokensMetadata] },
   );
 
-  const mainTokenBalance = await provider.getBalance(walletAddress);
-  const mainTokenFormatedBalance = FormatUtils.formatCurrencyValue(
-    Number(parseFloat(ethers.formatEther(mainTokenBalance))),
-  );
-
-  return [
-    {
-      tokenInfo: mainTokenMetadata,
-      formattedBalance: mainTokenFormatedBalance,
-      balance: mainTokenBalance,
-    } as EVMToken,
-    ...balances,
-  ];
+  return [...balances];
 };
 
 const getTokenListForWalletAddress = async (
   walletAddress: string,
   chain: EvmChain,
-): Promise<EVMTokenInfoShort[]> => {
+): Promise<EvmTokenInfoShort[]> => {
   switch (chain.blockExplorer?.type) {
     case BlockExporerType.ETHERSCAN: {
       let result;
@@ -134,11 +138,14 @@ const getTokenListForWalletAddress = async (
         let response = await EtherscanApi.get(walletAddress, chain, offset);
         result = response.result;
         for (const token of result) {
-          if (!addresses.includes(token.contractAddress)) {
+          if (
+            !addresses.includes(token.contractAddress) &&
+            !!token.contractAddress
+          ) {
             addresses.push(token.contractAddress);
           }
         }
-        await AsyncUtils.sleep(500);
+        await AsyncUtils.sleep(1000);
       } while (result.length === limit);
 
       let tokensMetadata = [];
@@ -165,8 +172,34 @@ const getTokenListForWalletAddress = async (
   }
 };
 
+const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
+  return tokens.sort((tokenA, tokenB) => {
+    const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
+    const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
+    // console.log({ priceA, priceB });
+    if (tokenA.tokenInfo.type === EVMTokenType.NATIVE) return -1;
+    else if (tokenB.tokenInfo.type === EVMTokenType.NATIVE) return 1;
+    else {
+      const tokenAPrice =
+        priceA.usd *
+          Number(
+            ethers.formatUnits(tokenA.balance, tokenA.tokenInfo.decimals ?? 18),
+          ) ?? 1;
+      const tokenBPrice =
+        priceB.usd *
+          Number(
+            ethers.formatUnits(tokenB.balance, tokenB.tokenInfo.decimals ?? 18),
+          ) ?? 1;
+      // console.log({ name: tokenB.tokenInfo.symbol, tokenAPrice });
+      // console.log({ name: tokenA.tokenInfo.symbol, tokenBPrice });
+      return tokenBPrice - tokenAPrice;
+    }
+  });
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
   getTokenBalances,
+  sortTokens,
 };

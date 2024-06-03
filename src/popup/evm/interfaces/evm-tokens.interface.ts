@@ -1,29 +1,37 @@
-import { SVGIcons } from 'src/common-ui/icons.enum';
-
 export enum EVMTokenType {
   NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
 }
 
-export interface EVMTokenInfoShort {
-  type: EVMTokenType;
-  address?: string;
+export type EvmTokenInfoBase = {
   name: string;
   symbol: string;
-  decimals?: number;
-  logo: string | SVGIcons;
-  validated?: number;
-  possibleSpam?: boolean;
-  verifiedContract?: boolean;
+  logo: string;
   chainId: string;
   backgroundColor: string;
   coingeckoId?: string;
-}
-export interface EVMTokenInfo extends EVMTokenInfoShort {
-  totalSupplyFormatted: number;
-  fullyDilutedValuation: number;
+};
+
+export type EvmTokenInfoShortNative = EvmTokenInfoBase & {
+  type: EVMTokenType.NATIVE;
+  coingeckoId: string;
+};
+
+export type EvmTokenInfoShortErc20 = EvmTokenInfoBase & {
+  type: EVMTokenType.ERC20;
+  address: string;
+  decimals: number;
+  validated: number;
+  possibleSpam: boolean;
+  verifiedContract: boolean;
+};
+export type EvmTokenInfoShort =
+  | EvmTokenInfoShortErc20
+  | EvmTokenInfoShortNative;
+
+export type EvmTokenInfo = EvmTokenInfoShort & {
   blockNumber: number;
   createdAt: string;
   categories: string[];
-  links: { [link: string]: string };
-}
+  links: { [link: string]: any };
+};

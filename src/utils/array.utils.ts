@@ -41,11 +41,16 @@ const findCommons = (listA: any[], listB: any[]) => {
   return commons;
 };
 
-const ArrayUtils = {
+const includesAll = (arr: any[], values: any[], key?: string) => {
+  if (key) {
+    return values.every((v) => arr.map((a: any) => a[key]).includes(v.key));
+  } else return values.every((v) => arr.includes(v));
+};
+
+export const ArrayUtils = {
   mergeWithoutDuplicate,
   getMaxValue,
   getMinValue,
   findCommons,
+  includesAll,
 };
-
-export default ArrayUtils;

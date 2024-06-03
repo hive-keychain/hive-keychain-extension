@@ -19,6 +19,8 @@ export const AppStatusReducer = (
   switch (type) {
     case EvmActionType.SET_APP_STATUS:
       return { ...state, ...payload };
+    case EvmActionType.RESET_APP_STATUS:
+      return INITIAL_STATE;
     default:
       return state;
   }

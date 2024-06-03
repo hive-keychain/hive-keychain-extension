@@ -7,11 +7,12 @@ import { SigningKey } from 'ethers';
 export const getEvmActiveAccount =
   (chain: EvmChain, address: string, signingKey: SigningKey): AppThunk =>
   async (dispatch, getState) => {
-    const balances = await EvmTokensUtils.getTokenBalances(
+    let balances = await EvmTokensUtils.getTokenBalances(
       address,
       signingKey,
       chain,
     );
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {

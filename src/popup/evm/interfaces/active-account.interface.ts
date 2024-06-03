@@ -1,4 +1,4 @@
-import { EVMTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 
 export interface EvmActiveAccount {
   address: string;
@@ -8,5 +8,5 @@ export interface EvmActiveAccount {
 export interface EVMToken {
   formattedBalance: string;
   balance: bigint;
-  tokenInfo: EVMTokenInfoShort;
+  tokenInfo: EvmTokenInfoShort;
 }
