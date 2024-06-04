@@ -63,6 +63,7 @@
     "hive-keychain-commons": "^1.2.6",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "joi": "17.6.0",
+    "keychain-sdk": "^0.6.2",
     "locate-path": "7.1.1",
     "lodash": "4.17.21",
     "md5": "2.3.0",
