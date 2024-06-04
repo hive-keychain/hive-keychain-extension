@@ -48,14 +48,20 @@ const EvmApp = ({
   }, [appStatus, displaySplashscreen]);
 
   const init = async () => {
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
-    const chainsTokensMetadata =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-      );
+    console.log('ici');
+    try {
+      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+      const chainsTokensMetadata =
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+        );
 
-    const tokensMetadata = chainsTokensMetadata[chain.chainId];
-    fetchPrices(tokensMetadata);
+      const tokensMetadata = chainsTokensMetadata[chain.chainId];
+      fetchPrices(tokensMetadata);
+    } catch (err) {
+      console.log('la');
+      setDisplaySplashscreen(false);
+    }
   };
 
   return (
