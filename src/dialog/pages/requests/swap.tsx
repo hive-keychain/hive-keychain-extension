@@ -80,7 +80,7 @@ const Swap = (props: Props) => {
   else if (
     serverStatus.isMaintenanceOn ||
     serverStatus.isServerStopped ||
-    (swapConfig && data.slippage > swapConfig.slippage.min)
+    (swapConfig && data.slippage < swapConfig.slippage.min)
   ) {
     return (
       <DialogError

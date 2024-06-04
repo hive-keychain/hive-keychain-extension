@@ -368,7 +368,7 @@ const getRequestSignatureMessage = async (
   return new Promise(async (resolve, reject) => {
     console.log('trying to create multisig request');
     const potentialSigners = await MultisigUtils.getPotentialSigners(
-      data.initiatorAccount,
+      data.transactionAccount,
       data.key,
       data.method,
     );

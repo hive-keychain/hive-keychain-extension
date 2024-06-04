@@ -1548,7 +1548,7 @@
     "message": "Please save @$1 in Hive Keychain to use it as an authorized account."
   },
   "popup_accounts_no_auth": {
-    "message": "@$1 does not have authority over @$2.",
+    "message": "@$1 does not have sufficient authority over @$2.",
     "description": "When trying to add an account via authority"
   },
   "import_html_title": {
