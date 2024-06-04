@@ -95,6 +95,7 @@ if (store.getState().evm) {
       evm: { accounts },
       hasFinishedSignup,
     } = store.getState();
+    console.log(store.getState());
     if (JSON.stringify(previousAccounts) !== JSON.stringify(accounts)) {
       if (
         previousAccounts.length === 0 &&

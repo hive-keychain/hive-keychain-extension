@@ -48,7 +48,6 @@ const EvmApp = ({
   }, [appStatus, displaySplashscreen]);
 
   const init = async () => {
-    console.log('getting price from init evm app');
     setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
     const chainsTokensMetadata =
       await LocalStorageUtils.getValueFromLocalStorage(
@@ -61,7 +60,7 @@ const EvmApp = ({
 
   return (
     <div className={`App evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {!displaySplashscreen && <EvmRouterComponent />}
+      {<EvmRouterComponent />}
       {displaySplashscreen && <SplashscreenComponent />}
     </div>
   );

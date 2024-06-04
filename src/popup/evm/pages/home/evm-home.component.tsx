@@ -59,11 +59,13 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
-    refreshAccountBalances();
   }, []);
 
   useEffect(() => {
-    setTokens(undefined);
+    if (chain) {
+      refreshAccountBalances();
+      setTokens(undefined);
+    }
   }, [chain]);
 
   useEffect(() => {
