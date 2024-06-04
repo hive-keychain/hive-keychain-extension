@@ -15,7 +15,6 @@ const WalletInfoSection = ({
   evmTokens,
   prices,
 }: EvmWalletInfoSectionProps) => {
-  console.log(evmTokens);
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
