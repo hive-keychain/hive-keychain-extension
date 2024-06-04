@@ -108,7 +108,7 @@ const ExportedAccountsQR = ({
             <QRCode
               data-testid="qrcode"
               className="qrcode"
-              size={240}
+              size={300}
               value={`${QR_CONTENT_PREFIX}${encode(
                 JSON.stringify(accountsDataQR[pageIndex]),
               )}`}
