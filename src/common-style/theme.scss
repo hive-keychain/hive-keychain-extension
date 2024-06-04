@@ -156,7 +156,7 @@ $light: (
   // Buttons
   --button-background-color: $red,
   --button-alternative-background-color: white,
-  --button-alternative-border-color: white,
+  --button-alternative-border-color: $light-grey-border,
   --button-alternative-shadow-color: $white-shadow,
   --popup-alternative-button-color: $alternative-white,
   --popup-alternative-button-border-color: $lighter-blue,
