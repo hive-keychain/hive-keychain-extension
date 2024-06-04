@@ -2,6 +2,9 @@
   @include pageLayoutRowGap;
   row-gap: 32px;
   padding: 0px 24px;
+  button {
+    margin-bottom: 24px;
+  }
   .introduction,
   .proxy-name {
     @include caption();
