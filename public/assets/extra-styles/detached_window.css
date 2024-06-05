@@ -72,7 +72,9 @@ html {
         }
       }
       .favorite-accounts-page,
-      .export-transactions-page {
+      .export-transactions-page,
+      .settings-manage-account,
+      .settings-manage-account-authorities {
         .select-account-section {
           margin: 0px 20px !important;
           width: calc(100% - 40px) !important;
