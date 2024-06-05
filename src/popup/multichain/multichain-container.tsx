@@ -40,7 +40,7 @@ export const MultichainContainer = () => {
     ]);
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-    setChain(res.ACTIVE_CHAIN);
+    setChain(res.ACTIVE_CHAIN ?? Chain.HIVE);
 
     setReady(true);
 
