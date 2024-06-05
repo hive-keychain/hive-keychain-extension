@@ -121,7 +121,7 @@ const createSignAndBroadcastTransaction = async (
     if (!signedTransaction) {
       throw new Error('html_popup_error_while_signing_transaction');
     }
-    let response;
+    let response: any;
     try {
       console.log(options);
       if (document) {
@@ -150,11 +150,15 @@ const createSignAndBroadcastTransaction = async (
         signedTransaction?.signatures[0],
         options,
       );
-      return {
-        status: 'ok' as string,
-        tx_id: response,
-        isUsingMultisig: true,
-      } as HiveTxBroadcastResult;
+      if (response.error) {
+        throw new KeychainError(response.error.message);
+      } else {
+        return {
+          status: 'ok' as string,
+          tx_id: response,
+          isUsingMultisig: true,
+        } as HiveTxBroadcastResult;
+      }
     }
   } else if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;

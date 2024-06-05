@@ -32,7 +32,10 @@ import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { MultisigDialogCommand } from '@reference-data/dialog-message-key.enum';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
@@ -129,7 +132,6 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
-        console.log(data);
         requestSignatures(data, true);
       }
     },
@@ -148,7 +150,7 @@ const requestSignatures = async (
         message,
         withTimeout(
           async (message: string) => {
-            Logger.log(message);
+            Logger.log({ multisigRequestSignatureResponse: message });
             if (useRuntimeMessages) {
               chrome.runtime.sendMessage({
                 command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
@@ -159,8 +161,15 @@ const requestSignatures = async (
             } else {
               // resolve('multisig_transaction_sent_to_signers');
               // in this case try to wait for broadcast notification
-              const txId = await waitForBroadcastToBeDone();
-              resolve(txId);
+              try {
+                const txId = await waitForBroadcastToBeDone();
+                resolve(txId);
+              } catch (err: any) {
+                chrome.runtime.sendMessage({
+                  command: DialogCommand.SEND_DIALOG_ERROR,
+                  msg: { display_msg: await chrome.i18n.getMessage(err) },
+                });
+              }
             }
           },
           () => {
@@ -366,7 +375,6 @@ const getRequestSignatureMessage = async (
   data: MultisigRequestSignatures,
 ): Promise<RequestSignatureMessage> => {
   return new Promise(async (resolve, reject) => {
-    console.log('trying to create multisig request');
     const potentialSigners = await MultisigUtils.getPotentialSigners(
       data.transactionAccount,
       data.key,
@@ -377,9 +385,7 @@ const getRequestSignatureMessage = async (
     for (const [receiverPubKey, weight] of potentialSigners) {
       const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
       const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
-      console.log(usernames);
       let twoFACodes = {};
-      console.log('data option metadata', data.options.metaData);
       if (data.options?.metaData?.twoFACodes) {
         twoFACodes = {
           [usernames[0]]: await encodeMetadata(
@@ -388,7 +394,6 @@ const getRequestSignatureMessage = async (
             receiverPubKey,
           ),
         };
-        console.log('after encode', twoFACodes);
       }
 
       signers.push({
@@ -435,8 +440,6 @@ const getRequestSignatureMessage = async (
         threshold: transactionAccountThreshold,
       },
     };
-
-    console.log(request);
 
     resolve(request);
   });
@@ -673,15 +676,32 @@ const waitForBroadcastToBeDone = async () => {
       txId: string,
     ) => {
       socket.off(
+        SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+        notifyError,
+      );
+      socket.off(
         SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
         broadcastedListener,
       );
       resolve(txId);
     };
+
+    const notifyError = async (res: any) => {
+      socket.off(
+        SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+        notifyError,
+      );
+      socket.off(
+        SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+        broadcastedListener,
+      );
+      reject(res.error.message);
+    };
     socket.on(
       SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
       broadcastedListener,
     );
+    socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, notifyError);
   });
 };
 

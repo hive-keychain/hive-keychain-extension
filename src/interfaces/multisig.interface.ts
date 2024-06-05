@@ -27,6 +27,7 @@ export enum SocketMessageCommand {
   REQUEST_LOCK = 'request_lock',
   NOTIFY_TRANSACTION_BROADCASTED = 'notify_transaction_broadcasted',
   TRANSACTION_BROADCASTED_NOTIFICATION = 'transaction_broadcasted_notification',
+  TRANSACTION_ERROR_NOTIFICATION = 'transaction_error_notification',
 }
 
 export interface SocketMessage {

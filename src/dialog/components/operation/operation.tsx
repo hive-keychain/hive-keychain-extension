@@ -143,6 +143,8 @@ const Operation = ({
 
   const genericOnConfirm = () => {
     setLoading(true);
+    const metadata = { twoFACodes: twoFABots };
+
     chrome.runtime.sendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
@@ -150,7 +152,7 @@ const Operation = ({
         tab: tab,
         domain: domain,
         keep,
-        options: { metaData: { twoFABots } } as TransactionOptions,
+        options: { metaData: metadata } as TransactionOptions,
       },
     });
   };

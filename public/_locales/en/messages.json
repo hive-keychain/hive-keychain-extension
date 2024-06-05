@@ -4227,5 +4227,9 @@
   "popup_html_proposal_vote": {
     "message": "Keychain Proposal",
     "description": "Proposal vote"
+  },
+  "error_otp_not_verified": {
+    "message": "Your One Time Password is incorrect. Please try again",
+    "description": "Error message if otp isn't verified"
   }
 }

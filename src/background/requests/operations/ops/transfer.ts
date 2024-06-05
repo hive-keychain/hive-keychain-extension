@@ -73,7 +73,6 @@ export const broadcastTransfer = async (
         break;
       }
       default: {
-        console.log(options);
         result = await TransferUtils.sendTransfer(
           data.username!,
           data.to,

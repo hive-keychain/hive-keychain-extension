@@ -96,7 +96,6 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
       const { keep, data, tab, domain, options } = backgroundMessage.value;
-      console.log(options);
       performOperation(
         await RequestsHandler.getFromLocalStorage(),
         data,
