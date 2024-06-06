@@ -19,6 +19,7 @@ interface EVMWalletSectionInfoItemProps {
   addBackground?: boolean;
   mainValue: string | Asset | number;
   mainValueLabel: string;
+  mainValueSubLabel: string;
   subValue?: string | Asset | number;
   subValueLabel?: string;
 }
@@ -27,6 +28,7 @@ const WalletInfoSectionItem = ({
   token,
   icon,
   addBackground,
+  mainValueSubLabel,
   mainValue,
   mainValueLabel,
   subValue,
@@ -113,7 +115,10 @@ const WalletInfoSectionItem = ({
             {token.tokenInfo.symbol.slice(0, 2)}
           </div>
         )}
-        <div className="main-value-label">{mainValueLabel}</div>
+        <div className="main-value-label">
+          <div className="label">{mainValueLabel}</div>
+          <div className="sub-label">{mainValueSubLabel}</div>
+        </div>
         <div className="value">
           <div className="main-value">{mainValue}</div>
           {!!subValue &&

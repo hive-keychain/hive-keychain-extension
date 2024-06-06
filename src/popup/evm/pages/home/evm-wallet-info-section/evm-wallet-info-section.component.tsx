@@ -31,8 +31,9 @@ const WalletInfoSection = ({
               <EVMWalletInfoSectionItemComponent
                 key={`${token.tokenInfo.name}-${index}`}
                 token={token}
-                mainValueLabel={token.tokenInfo.name}
+                mainValueLabel={token.tokenInfo.symbol}
                 mainValue={token.formattedBalance}
+                mainValueSubLabel={token.tokenInfo.name}
               />
             ))}
         {!evmTokens && <RotatingLogoComponent />}
