@@ -42,7 +42,7 @@ const EstimatedAccountValueSection = ({
     const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.HIDDEN_TOKENS,
     );
-    setHiddenTokensList(hiddenTokensList);
+    setHiddenTokensList(hiddenTokensList ?? []);
   };
 
   const init = async () => {
@@ -63,19 +63,18 @@ const EstimatedAccountValueSection = ({
       hiveMarketLockedOpenOrdersValues &&
       hiddenTokensList
     ) {
-      setAccountValue(
-        AccountUtils.getAccountValue(
-          activeAccount.account,
-          currencyPrices,
-          globalProperties.globals!,
-          tokensBalance,
-          tokensMarket,
-          accountValueType,
-          tokens,
-          hiveMarketLockedOpenOrdersValues,
-          hiddenTokensList,
-        ),
+      const tempAccountValue = AccountUtils.getAccountValue(
+        activeAccount.account,
+        currencyPrices,
+        globalProperties.globals!,
+        tokensBalance,
+        tokensMarket,
+        accountValueType,
+        tokens,
+        hiveMarketLockedOpenOrdersValues,
+        hiddenTokensList,
       );
+      setAccountValue(tempAccountValue);
     }
   }, [
     activeAccount,

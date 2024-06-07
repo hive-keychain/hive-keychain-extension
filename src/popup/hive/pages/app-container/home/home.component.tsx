@@ -78,9 +78,9 @@ const Home = ({
   }, [activeAccount]);
 
   const loadHiveInternalMarketOrders = async (username: string) => {
-    setHiveMarketLockedOpenOrdersValues(
-      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username),
-    );
+    const tempHiveMarketLockedOpenOrders =
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username);
+    setHiveMarketLockedOpenOrdersValues(tempHiveMarketLockedOpenOrders);
   };
 
   useEffect(() => {
