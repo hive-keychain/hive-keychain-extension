@@ -16,7 +16,7 @@ html {
   align-items: center;
   justify-content: center;
   .theme {
-    border: solid 1px #222222;
+    border: solid 1px var(--card-border-color);
     border-radius: 8px;
     width: 435px;
     height: 600px;
