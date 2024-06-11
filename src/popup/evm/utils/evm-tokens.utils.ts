@@ -147,6 +147,7 @@ const getTokenListForWalletAddress = async (
         }
         await AsyncUtils.sleep(1000);
       } while (result.length === limit);
+      console.log(result);
 
       let tokensMetadata = [];
       if (addresses.length > 0) {
@@ -197,9 +198,41 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
   });
 };
 
+const getHistory = async (
+  token: EVMToken,
+  chain: EvmChain,
+  walletAddress: string,
+  walletSigningKey: SigningKey,
+  lastBlock?: number,
+) => {
+  const limit = 10000;
+  const provider = EthersUtils.getProvider(chain.network);
+  const connectedWallet = new Wallet(walletSigningKey, provider);
+
+  if (token.tokenInfo.type === EVMTokenType.NATIVE) {
+    // TODO
+    console.log('skip native');
+  } else {
+    const contract = new ethers.Contract(
+      token.tokenInfo.address!,
+      Erc20Abi,
+      connectedWallet,
+    );
+
+    const transferInFilter = contract.filters.Transfer(null, walletAddress);
+    const transferOutFilter = contract.filters.Transfer(walletAddress, null);
+
+    const eventsIn = await contract.queryFilter(transferInFilter);
+    const eventsOut = await contract.queryFilter(transferOutFilter);
+
+    console.log({ eventsIn, eventsOut });
+  }
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
   getTokenBalances,
   sortTokens,
+  getHistory,
 };
