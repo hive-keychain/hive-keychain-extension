@@ -22,6 +22,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
@@ -166,7 +167,7 @@ const addAuthorizedKey = async (
   if (!authorizedAccount || !localActiveAccount) return; // check error
 
   localActiveAccount.keys[keyType.toLowerCase() as keyof Keys] =
-    authorizedAccount.keys.active;
+    authorizedAccount.keys[keyType.toLowerCase() as keyof Keys];
   localActiveAccount.keys[
     `${keyType.toLowerCase()}Pubkey` as keyof Keys
   ] = `@${authorizedAccountName}`;
@@ -193,7 +194,7 @@ const addAuthorizedAccount = async (
     throw new KeychainError('popup_no_auth_account', [authorizedAccount]);
   } else {
     localAuthorizedAccount = existingAccounts.find(
-      (localAccount: LocalAccount) => localAccount.name,
+      (localAccount: LocalAccount) => localAccount.name === authorizedAccount,
     )!;
   }
 
@@ -206,7 +207,6 @@ const addAuthorizedAccount = async (
   }
 
   const hiveAccounts = await AccountUtils.getAccount(username);
-
   if (!hiveAccounts || hiveAccounts.length === 0) {
     throw new KeychainError('popup_accounts_incorrect_user', []);
   }
@@ -223,7 +223,6 @@ const addAuthorizedAccount = async (
   const postingAuth = postingKeyInfo.account_auths.find(
     (accountAuth) => accountAuth[0] === authorizedAccount,
   );
-
   if (!activeAuth && !postingAuth) {
     throw new KeychainError('popup_accounts_no_auth', [
       authorizedAccount,
@@ -231,11 +230,11 @@ const addAuthorizedAccount = async (
     ]);
   }
 
-  if (activeAuth && activeAuth[1] >= activeKeyInfo.weight_threshold) {
+  if (activeAuth) {
     keys.active = localAuthorizedAccount.keys.active;
     keys.activePubkey = `@${authorizedAccount}`;
   }
-  if (postingAuth && postingAuth[1] >= postingKeyInfo.weight_threshold) {
+  if (postingAuth) {
     keys.posting = localAuthorizedAccount.keys.posting;
     keys.postingPubkey = `@${authorizedAccount}`;
   }
@@ -627,7 +626,10 @@ const reorderAccounts = (
 };
 
 const getAccountFromKey = async (key: Key) => {
-  const pubKey = KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
+  const isLedger = key?.startsWith('#');
+  const pubKey = isLedger
+    ? await LedgerUtils.getKeyFromDerivationPath(key!.replace('#', ''))
+    : KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
   const accountName = (await KeysUtils.getKeyReferences([pubKey!]))[0];
   return AccountUtils.getExtendedAccount(accountName[0]);
 };

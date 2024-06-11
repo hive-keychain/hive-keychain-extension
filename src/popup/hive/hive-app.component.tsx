@@ -121,7 +121,7 @@ const HiveApp = ({
   };
 
   const initApplication = async () => {
-    await ColorsUtils.downloadColors();
+    ColorsUtils.downloadColors();
     loadCurrencyPrices();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -200,6 +200,7 @@ const HiveApp = ({
         <LoadingComponent
           operations={loadingState.loadingOperations}
           caption={loadingState.caption}
+          loadingPercentage={loadingState.loadingPercentage}
         />
       );
     }

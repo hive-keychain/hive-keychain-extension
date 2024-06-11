@@ -365,7 +365,7 @@ const getRequestSignatureMessage = async (
 ): Promise<RequestSignatureMessage> => {
   return new Promise(async (resolve, reject) => {
     const potentialSigners = await MultisigUtils.getPotentialSigners(
-      data.initiatorAccount,
+      data.transactionAccount,
       data.key,
       data.method,
     );
@@ -540,7 +540,6 @@ const requestSignTransactionFromUser = (
       }
     };
     chrome.runtime.onMessage.addListener(onReceivedMultisigAcceptResponse);
-
     const usernames = await KeysUtils.getKeyReferences([signer.publicKey]);
 
     if (openNewWindow) {

@@ -11,6 +11,22 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_tutorial_popup_title": {
+    "message": "Welcome to Keychain!",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_description": {
+    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_show_label": {
+    "message": "Show",
+    "description": "tutorial popup"
+  },
+  "popup_html_tutorial_popup_skip_label": {
+    "message": "Skip",
+    "description": "tutorial popup"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"
@@ -22,6 +38,10 @@
   "popup_html_wrong_key_memo": {
     "message": "Wrong key. Please use memo key",
     "description": "while using wrong private key"
+  },
+  "common_experimental": {
+    "message": "Experimental",
+    "description": "experimental"
   },
   "common_yes": {
     "message": "Yes",
@@ -105,6 +125,10 @@
   },
   "popup_html_confirm": {
     "message": "Confirm",
+    "description": "Generic button"
+  },
+  "popup_html_download": {
+    "message": "Download",
     "description": "Generic button"
   },
   "popup_html_submit": {
@@ -210,6 +234,14 @@
   "popup_html_username": {
     "message": "Username",
     "description": "placeholder for entering username"
+  },
+  "popup_html_start_date": {
+    "message": "Start Date",
+    "description": "placeholder for entering a starting date"
+  },
+  "popup_html_end_date": {
+    "message": "End Date",
+    "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
     "message": "Import keys",
@@ -344,7 +376,11 @@
     "description": "on settings page"
   },
   "popup_html_operations": {
-    "message": "Operations",
+    "message": "Whitelisted operations",
+    "description": "on settings page"
+  },
+  "popup_html_export_transactions": {
+    "message": "Export transactions",
     "description": "on settings page"
   },
   "popup_html_favorite_accounts": {
@@ -482,6 +518,18 @@
   "popup_html_pref_info": {
     "message": "For a better experience, you can whitelist non-active authority operations when dApps request them. You won't receive a confirmation prompt for these operations.",
     "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_info": {
+    "message": "Download your account's monetary transactions as a .csv file. You can omit the start or end date if necessary.<br/><br/>Depending on the number of transactions, this may take a little while. ",
+    "description": "on preferences"
+  },
+  "popup_html_pref_export_transactions_downloading_loading_message": {
+    "message": "Downloading transactions",
+    "description": "Downloading transactions"
+  },
+  "popup_html_pref_export_transactions_generating_csv_loading_message": {
+    "message": "Generating CSV file",
+    "description": "Generating csv"
   },
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
@@ -1500,7 +1548,7 @@
     "message": "Please save @$1 in Hive Keychain to use it as an authorized account."
   },
   "popup_accounts_no_auth": {
-    "message": "@$1 does not have authority over @$2.",
+    "message": "@$1 does not have sufficient authority over @$2.",
     "description": "When trying to add an account via authority"
   },
   "import_html_title": {
@@ -1832,7 +1880,7 @@
     "description": "In confirmation page"
   },
   "popup_html_user_preferences": {
-    "message": "User preferences",
+    "message": "User operations",
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
@@ -2018,6 +2066,10 @@
   "html_popup_conversion_operation": {
     "message": "Conversion",
     "description": "conversion operation"
+  },
+  "html_popup_revert_vesting_route_operation": {
+    "message": "Reverting Vesting route(s)",
+    "description": "when the user decides to revert all vesting routes in his account"
   },
   "html_popup_delegation_operation": {
     "message": "Delegating",
@@ -2255,8 +2307,16 @@
     "message": "Close",
     "description": "general"
   },
+  "popup_html_help": {
+    "message": "Help",
+    "description": "Contact support"
+  },
   "popup_html_contact_support": {
     "message": "Contact support",
+    "description": "Contact support"
+  },
+  "popup_html_tutorial": {
+    "message": "Tutorial",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
@@ -2728,6 +2788,62 @@
   "popup_html_whats_new_got_it": {
     "message": "Got it!",
     "description": "What's new popup button"
+  },
+  "popup_html_vesting_routes_title": {
+    "message": "Your vesting routes have changed",
+    "description": "Vesting shares popup title"
+  },
+  "popup_html_vesting_routes_warning_message": {
+    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>.",
+    "description": "Vesting shares popup warning message"
+  },
+  "popup_html_vesting_routes_handled_successfully": {
+    "message": "Your vesting routes have been secured!",
+    "description": "Vesting shares end list being handled by user"
+  },
+  "popup_html_vesting_route_account_item_label": {
+    "message": "Account",
+    "description": "wrong vesting routes popup, account item label"
+  },
+  "popup_html_vesting_route_account_item_old_route_title": {
+    "message": "Old Route",
+    "description": "wrong vesting routes popup, account item, old route label/title"
+  },
+  "popup_html_vesting_route_account_item_new_route_title": {
+    "message": "New Route",
+    "description": "wrong vesting routes popup, account item, new route label/title"
+  },
+  "popup_html_vesting_route_account_item_button_revert_label": {
+    "message": "Revert All",
+    "description": "wrong vesting routes popup, account item, revert button label"
+  },
+  "popup_html_vesting_route_account_item_button_skip_label": {
+    "message": "These changes were intentional",
+    "description": "wrong vesting routes popup, account item, revert skip label"
+  },
+  "popup_html_vesting_route_item_details_non_existent_label": {
+    "message": "None",
+    "description": "wrong vesting routes popup, item details, non existent label"
+  },
+  "popup_html_vesting_route_item_details_id_title": {
+    "message": "Id: ",
+    "description": "wrong vesting routes popup, item details, id label/title"
+  },
+  "popup_html_vesting_route_item_details_from_title": {
+    "message": "From: ",
+    "description": "wrong vesting routes popup, item details, from label/title"
+  },
+  "popup_html_vesting_route_item_details_to_title": {
+    "message": "To: ",
+    "description": "wrong vesting routes popup, item details, to label/title"
+  },
+  "popup_html_vesting_route_item_details_percent_title": {
+    "message": "Percent: ",
+    "description": "wrong vesting routes popup, item details, percent label/title"
+  },
+  "popup_html_vesting_route_item_details_autovest_title": {
+    "message": "Auto vest: ",
+    "description": "wrong vesting routes popup, item details, autovest label/title"
   },
   "html_popup_tokens_timeout": {
     "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
@@ -3567,6 +3683,14 @@
     "message": "Fee",
     "description": "Swap Fee"
   },
+  "swap_partner_username": {
+    "message": "Partner",
+    "description": "Widget Swap partner username"
+  },
+  "swap_partner_fee": {
+    "message": "Partner fee",
+    "description": "Widget Swap partner Fee"
+  },
   "swap_last_update": {
     "message": "Last update: $1",
     "description": "swap last update"
@@ -3868,7 +3992,7 @@
     "description": "Message to inform user that multisig will be used"
   },
   "multisig_transmitting_to_multisig": {
-    "message": "Sending encoded to Multisig server and potential signers",
+    "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
   "swap_multisig_transaction_sent_to_signers": {
@@ -3883,8 +4007,213 @@
     "message": "Click to refresh",
     "description": "explanation for keychain icon click"
   },
+  "html_popup_settings_notifications": {
+    "message": "Notifications",
+    "description": "Notifications"
+  },
+  "html_popup_settings_notifications_caption": {
+    "message": "Configure your Peak Open Projects notifications. Be aware that changes might take time to be applied, and that this is an experimental feature.",
+    "description": "Notification caption introducing the feature"
+  },
+  "html_popup_settings_notifications_activated": {
+    "message": "Activated",
+    "description": "Notification system active for this account"
+  },
+  "html_popup_settings_notifications_condition": {
+    "message": "Condition",
+    "description": "Condition"
+  },
+  "html_popup_reset_form": {
+    "message": "Reset",
+    "description": "Global word"
+  },
+  "html_popup_notification_default_config": {
+    "message": "Default config",
+    "description": "Notification default config"
+  },
+  "html_popup_add_new_condition": {
+    "message": "Add new condition",
+    "description": "Add new condition"
+  },
+  "html_popup_delete_criteria": {
+    "message": "Delete criteria",
+    "description": "Delete criteria"
+  },
+  "notification_recurrent_transfer": {
+    "message": "@$1 started a $2 recurrent transfer to @$3 ($4 executions every $5 hours)",
+    "description": "Notification recurrent transfer"
+  },
+  "notification_follow": {
+    "message": "@$1 started following @$2",
+    "description": "Notification follow"
+  },
+  "notification_unfollow": {
+    "message": "@$1 stopped following @$2",
+    "description": "Notification unfollow"
+  },
+  "notification_reblog": {
+    "message": "@$1 reblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reblog"
+  },
+
+  "notification_account_update": {
+    "message": "@$1's notification settings have been updated",
+    "description": "Notification account updated"
+  },
+  "notification_mention": {
+    "message": "@$1 mentioned @$2 in <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>$3/$4</a>",
+    "description": "Notification mentioned"
+  },
+  "notification_answer": {
+    "message": "@$1 replied to <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification reply"
+  },
+  "notification_account_witness_proxy": {
+    "message": "@$1 has set @$2 as a proxy",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_vote": {
+    "message": "@$1 has voted for @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_account_witness_unvote": {
+    "message": "@$1 has unvoted @$2 as a witness",
+    "description": "Notification witness proxy"
+  },
+  "notification_delegation": {
+    "message": "@$1 delegated $2 to @$3",
+    "description": "notification delegation hp"
+  },
+  "notification_cancel_delegation": {
+    "message": "@$1 has canceled a delegation to @$2",
+    "description": "notification cancel delegation hp"
+  },
+  "notification_requested_account_recovery": {
+    "message": "@$1 has requested recovery to @$2",
+    "description": "notification recovery request"
+  },
+  "notification_recovered_account": {
+    "message": "@$1 has been recovered",
+    "description": "Notification accouht recovered"
+  },
+  "notification_set_power_down_route": {
+    "message": "Power down route has been changed from @$1 to @$2",
+    "description": "Notification set power down route"
+  },
+  "notification_fill_convert": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification fill convert"
+  },
+  "notification_author_reward": {
+    "message": "@$1 has received $2, $3, $4 as an author reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
+    "description": "Notification author reward"
+  },
+  "notification_comment_reward": {
+    "message": "@$1 has received $2 as an comment reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a>",
+    "description": "Notification comment reward"
+  },
+  "notification_hbd_interest": {
+    "message": "$@1 received $2 as interest",
+    "description": "Notification HBD interest received"
+  },
+  "notification_fill_power_down": {
+    "message": "$@1 received $2 as part of power down",
+    "description": "Notification power down received"
+  },
+  "notification_fill_power_down_other_account": {
+    "message": "$@1 received $2 as part of power down of @$3",
+    "description": "Notification power down received"
+  },
+  "notification_changed_recovery_account": {
+    "message": "@$1's recovery account has been change from @$2 to @$3",
+    "description": "Notification for changed recovery account"
+  },
+  "notification_producer_reward": {
+    "message": "@$1 received $2 as a producer rewards",
+    "description": "Notification for producer rewards"
+  },
+  "notification_curation_reward": {
+    "message": "@$1 has received $2 as a curation reward for <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>@$3/$4</a>",
+    "description": "Notification for curation rewards"
+  },
+  "notification_failed_recurrent_transfer": {
+    "message": "$1 recurrent transfer from @$2 to @$3 has failed",
+    "description": "Notification for failed recurrent transfer"
+  },
+  "notification_fill_collateralized_convert_request": {
+    "message": "@$1 has completed a conversion : $2 to $3",
+    "description": "Notification collateralized convert request"
+  },
+  "notification_fill_transfer_from_savings": {
+    "message": "@$1 completed a withdrawal from savings of $2",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_fill_transfer_from_savings_from_other_account": {
+    "message": "@$1 completed a withdrawal from savings of $2 to @$3",
+    "description": "Fill withdraw savings notification"
+  },
+  "notification_returned_vesting_delegation": {
+    "message": "@$1 completed an undelegation. $2 are once again available",
+    "description": "Notification for when HP is avalable after undelegating"
+  },
+  "notification_comment_benefactor_reward": {
+    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for <a classname='notification-link' href='https://peakd.com/@$5/$6' target='__blank'>@$5/$6</a>",
+    "description": "Notification author reward"
+  },
+  "notification_fill_order": {
+    "message": "@$1 has filled an order from @$2 on the market. Bought $3 for $4",
+    "description": "Notification fill order"
+  },
+  "notification_change_recovery_account": {
+    "message": "@$1 has changed recovery account to @$2. This change will be effective in 30 days",
+    "description": "Notification change recovery account"
+  },
+  "notification_vote": {
+    "message": "@$1 has voted for <a classname='notification-link' href='https://peakd.com/@$2/$3' target='__blank'>@$2/$3</a>",
+    "description": "Notification for vote"
+  },
+  "notification_clear_config": {
+    "message": "Clear configuration",
+    "description": "clear config notification"
+  },
+  "notification_set_all_as_read": {
+    "message": "Set all as read",
+    "description": "Set all notifications as read"
+  },
+  "notification_setting_all_as_read": {
+    "message": "Setting all notifications as read",
+    "description": "Set all notifications as read"
+  },
+  "notification_settings_advanced_settings": {
+    "message": "Open advanced settings",
+    "description": "Open advanced settings"
+  },
+  "notification_settings_select_all": {
+    "message": "Select all",
+    "description": "Select all criterias"
+  },
+  "notification_settings_nothing_has_changed": {
+    "message": "No changes detected",
+    "description": "Select all criterias"
+  },
   "portfolio_fetch_progress": {
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
+  },
+  "notification_confirm_save": {
+    "message": "Are you sure you want to save your changes ?",
+    "description": "Notification save changes message"
+  },
+  "export_transactions_fetching_error": {
+    "message": "There was an error while fetching your transactions. Please try again later",
+    "description": "Error while downloading transactions"
+  },
+  "export_transactions_incorrect_dates": {
+    "message": "Start date should be before end date",
+    "description": "Error while downloading transactions"
+  },
+  "popup_html_pref_export_transactions_loading_caption": {
+    "message": "$1%",
+    "description": "Caption for download data"
   }
 }

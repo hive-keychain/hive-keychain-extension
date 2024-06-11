@@ -7,9 +7,10 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 type Props = {
   operations?: LoadingOperation[];
   caption?: string;
+  loadingPercentage?: number;
   hide?: boolean;
 };
-const Loading = ({ hide, operations, caption }: Props) => {
+const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
   return (
     <div className={`loading-container ${hide ? 'hide' : ''}`}>
       <div className="overlay"></div>
@@ -26,6 +27,7 @@ const Loading = ({ hide, operations, caption }: Props) => {
           {chrome.i18n.getMessage('popup_html_loading')}
         </div>
       )}
+
       <div className="operations">
         {operations &&
           operations.map((operation) => (
@@ -52,6 +54,15 @@ const Loading = ({ hide, operations, caption }: Props) => {
             </div>
           ))}
       </div>
+      {loadingPercentage && (
+        <div className="progress-bar-container">
+          <div
+            className="progress-bar"
+            style={{ width: `${loadingPercentage}%` }}>
+            {loadingPercentage > 10 && `${loadingPercentage.toFixed(0)}%`}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

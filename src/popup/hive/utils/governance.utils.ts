@@ -104,7 +104,7 @@ const getGovernanceReminderList = async (usernames: string[]) => {
     return (
       !ignoredAccounts[extendedAccounts.name] ||
       moment(moment().utc()).diff(
-        moment(ignoredAccounts[extendedAccounts.name]),
+        moment(new Date(ignoredAccounts[extendedAccounts.name])),
         'year',
       ) >= 1
     );
