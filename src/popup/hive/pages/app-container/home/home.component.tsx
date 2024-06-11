@@ -1,10 +1,6 @@
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
-import {
-  HiveInternalMarketLockedInOrders,
-  HiveInternalMarketUtils,
-} from '@popup/hive/utils/hive-internal-market.utils';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -63,10 +59,6 @@ const Home = ({
   >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
-  const [
-    hiveMarketLockedOpenOrdersValues,
-    setHiveMarketLockedOpenOrdersValues,
-  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -78,18 +70,6 @@ const Home = ({
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes();
   }, []);
-
-  useEffect(() => {
-    if (activeAccount.name) {
-      loadHiveInternalMarketOrders(activeAccount.name);
-    }
-  }, [activeAccount]);
-
-  const loadHiveInternalMarketOrders = async (username: string) => {
-    const tempHiveMarketLockedOpenOrders =
-      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username);
-    setHiveMarketLockedOpenOrdersValues(tempHiveMarketLockedOpenOrders);
-  };
 
   useEffect(() => {
     if (activeRpc && activeRpc.uri !== 'NULL')

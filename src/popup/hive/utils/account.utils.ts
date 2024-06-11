@@ -7,9 +7,9 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
-import { HiveInternalMarketLockedInOrders } from '@popup/hive/utils/hive-internal-market.utils';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';

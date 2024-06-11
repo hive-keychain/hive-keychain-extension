@@ -1,5 +1,7 @@
-import { HiveInternalMarketLockedInOrders } from '@popup/hive/utils/hive-internal-market.utils';
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
+import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { RootState } from '@popup/multichain/store';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,15 +11,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-export enum AccountValueType {
-  DOLLARS = 'DOLLARS',
-  HIVE = 'HIVE',
-  HIDDEN = 'HIDDEN',
-}
-
-interface Props {
-  hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders;
-}
 const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
@@ -25,13 +18,16 @@ const EstimatedAccountValueSection = ({
   tokensBalance,
   tokensMarket,
   tokens,
-  hiveMarketLockedOpenOrdersValues,
-}: PropsFromRedux & Props) => {
+}: PropsFromRedux) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
     AccountValueType.DOLLARS,
   );
   const [hiddenTokensList, setHiddenTokensList] = useState<string[]>();
+  const [
+    hiveMarketLockedOpenOrdersValues,
+    setHiveMarketLockedOpenOrdersValues,
+  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
 
   useEffect(() => {
     init();
@@ -53,6 +49,18 @@ const EstimatedAccountValueSection = ({
     );
   };
 
+  const loadHiveInternalMarketOrders = async (username: string) => {
+    setHiveMarketLockedOpenOrdersValues(
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username),
+    );
+  };
+
+  useEffect(() => {
+    if (activeAccount.name) {
+      loadHiveInternalMarketOrders(activeAccount.name);
+    }
+  }, [activeAccount]);
+
   useEffect(() => {
     if (
       activeAccount &&
@@ -63,18 +71,19 @@ const EstimatedAccountValueSection = ({
       hiveMarketLockedOpenOrdersValues &&
       hiddenTokensList
     ) {
-      const tempAccountValue = AccountUtils.getAccountValue(
-        activeAccount.account,
-        currencyPrices,
-        globalProperties.globals!,
-        tokensBalance,
-        tokensMarket,
-        accountValueType,
-        tokens,
-        hiveMarketLockedOpenOrdersValues,
-        hiddenTokensList,
+      setAccountValue(
+        AccountUtils.getAccountValue(
+          activeAccount.account,
+          currencyPrices,
+          globalProperties.globals!,
+          tokensBalance,
+          tokensMarket,
+          accountValueType,
+          tokens,
+          hiveMarketLockedOpenOrdersValues,
+          hiddenTokensList,
+        ),
       );
-      setAccountValue(tempAccountValue);
     }
   }, [
     activeAccount,

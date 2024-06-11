@@ -1,10 +1,6 @@
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
-
-export interface HiveInternalMarketLockedInOrders {
-  hive: number;
-  hbd: number;
-}
 
 const getHiveInternalMarketOrders = async (username: string) => {
   let totals: HiveInternalMarketLockedInOrders = {
