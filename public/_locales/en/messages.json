@@ -3683,6 +3683,14 @@
     "message": "Fee",
     "description": "Swap Fee"
   },
+  "swap_partner_username": {
+    "message": "Partner",
+    "description": "Widget Swap partner username"
+  },
+  "swap_partner_fee": {
+    "message": "Partner fee",
+    "description": "Widget Swap partner Fee"
+  },
   "swap_last_update": {
     "message": "Last update: $1",
     "description": "swap last update"
