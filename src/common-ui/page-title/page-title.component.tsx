@@ -16,6 +16,7 @@ export interface PageTitleProps {
   skipTitleTranslation?: boolean;
   isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
+  showDetachWindowOption?: boolean;
   rightAction?: {
     icon: SVGIcons;
     callback: () => void;
@@ -38,6 +39,7 @@ const PageTitle = ({
   navigateTo,
   canGoBack,
   resetNav,
+  showDetachWindowOption,
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
     if (onBackAdditional) onBackAdditional();
@@ -60,6 +62,12 @@ const PageTitle = ({
     }
   };
 
+  const handleDetachWindow = () => {
+    chrome.tabs.create({
+      url: `detached_window.html`,
+    });
+  };
+
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
@@ -75,6 +83,16 @@ const PageTitle = ({
           ? title
           : chrome.i18n.getMessage(title, titleParams)}
       </div>
+      {showDetachWindowOption && (
+        <SVGIcon
+          onClick={handleDetachWindow}
+          icon={SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION}
+          className={`icon-button menu-toggle-theme`}
+          hoverable
+          tooltipMessage="popup_html_detach_window_tooltip_text"
+          tooltipPosition="bottom"
+        />
+      )}
       {rightAction && (
         <SVGIcon
           onClick={handleRightActionButtonClick}
