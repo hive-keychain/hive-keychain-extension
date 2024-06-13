@@ -6,12 +6,109 @@
   padding: 0px 24px;
   padding-bottom: 16px;
 
-  .tasks {
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px;
-  }
   .intro {
     @include caption();
+  }
+  .section {
+    padding: 0 20px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    .section-expander {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      cursor: pointer;
+      .section-title-logo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .section-title {
+          color: var(--main-font-color);
+          @include poppins500(16px);
+          padding: 0;
+          margin-right: 8px;
+        }
+        .rotating-logo-container,
+        .rotating-logo,
+        svg {
+          width: 30px;
+          height: 30px;
+        }
+      }
+    }
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      margin-bottom: 12px;
+      .auto-stake-token-list {
+        max-height: 200px;
+        overflow-y: scroll;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        background: var(--input-background);
+        .title-list {
+          text-align: center;
+          margin-top: 4px;
+          margin-bottom: 4px;
+        }
+        .option {
+          &:has(~ .option > .custom-select-item:hover) {
+            .separator {
+              background: var(--input-background);
+            }
+          }
+          .custom-select-item {
+            display: flex;
+            align-items: center;
+            column-gap: 12px;
+            padding: 10px 6px;
+            box-sizing: border-box;
+
+            .left-image {
+              height: 40px;
+              width: 40px;
+              border-radius: 50%;
+              margin-left: 10px;
+            }
+
+            .item-label {
+              flex: 1;
+              color: var(--main-font-color);
+            }
+            .active-icon {
+              svg {
+                height: 20px;
+                width: 20px;
+                color: $red;
+              }
+            }
+            .right-action-icon {
+              display: none;
+            }
+            &:hover {
+              background: var(--wallet-icon-color);
+              border-radius: 12px;
+              .item-label {
+                color: white;
+              }
+              .sepa .active-icon {
+                svg {
+                  color: white;
+                }
+              }
+              .right-action-icon {
+                display: block;
+              }
+              + .separator {
+                background: $red;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
