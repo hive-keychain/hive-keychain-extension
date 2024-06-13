@@ -70,6 +70,8 @@ const saveEstimate = async (
   endToken: string,
   amount: number,
   username: string,
+  partnerFee?: number,
+  partnerUsername?: string,
 ): Promise<string> => {
   const response = await KeychainSwapApi.post(`token-swap/estimate/save`, {
     slipperage,
@@ -78,6 +80,8 @@ const saveEstimate = async (
     endToken,
     amount,
     username,
+    partnerFee,
+    partnerUsername,
   });
   if (response.error) {
     throw response.error;
