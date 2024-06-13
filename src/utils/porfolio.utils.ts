@@ -5,6 +5,7 @@ import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
+import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -97,12 +98,16 @@ const getPortfolio = async (
 
   const portfolio: UserPortfolio[] = [];
   const tokens = await TokensUtils.getAllTokens();
+  const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.HIDDEN_TOKENS,
+  );
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
       prices,
       tokensMarket,
       tokens,
+      hiddenTokensList,
     );
     portfolio.push({
       account: userTokens.username,
@@ -129,12 +134,18 @@ const getPortfolio = async (
     } = extendedAccounts.find(
       (extAcc) => extAcc.name === userPortfolio.account,
     )!;
+    const lockedInOrders =
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(
+        userPortfolio.account,
+      );
     const totalHIVE =
       Asset.fromString(balance.toString()).amount +
-      Asset.fromString(savings_balance.toString()).amount;
+      Asset.fromString(savings_balance.toString()).amount +
+      lockedInOrders.hive;
     const totalHBD =
       Asset.fromString(hbd_balance.toString()).amount +
-      Asset.fromString(savings_hbd_balance.toString()).amount;
+      Asset.fromString(savings_hbd_balance.toString()).amount +
+      lockedInOrders.hbd;
     const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
     const totalHP = FormatUtils.toHP(totalVESTS.toString(), globals);
     userPortfolio.balances.push({
@@ -194,9 +205,12 @@ const generateUserLayerTwoPortolio = (
   prices: CurrencyPrices,
   tokensMarket: TokenMarket[],
   tokens: Token[],
+  hiddenTokensList: string[],
 ) => {
   const userLayerTwoPortfolio: PortfolioBalance[] = [];
-  for (const userToken of userTokens.tokensBalance) {
+  for (const userToken of userTokens.tokensBalance.filter(
+    (token) => !hiddenTokensList.includes(token.symbol),
+  )) {
     userLayerTwoPortfolio.push(
       getPortfolioHETokenData(userToken, tokensMarket, prices, tokens),
     );
