@@ -43,6 +43,10 @@
       flex-direction: column;
       row-gap: 8px;
       margin-bottom: 12px;
+      .custom-select {
+        background: var(--input-background) !important;
+        border-radius: 12px !important;
+      }
       .auto-stake-token-list {
         max-height: 200px;
         overflow-y: scroll;
