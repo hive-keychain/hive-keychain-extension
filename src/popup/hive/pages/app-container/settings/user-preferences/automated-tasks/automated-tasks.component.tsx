@@ -78,6 +78,8 @@ const AutomatedTasks = ({
   }, []);
 
   useEffect(() => {
+    setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
+    setAutoStakeTokenList([]);
     init();
     setOptions(
       accounts.map((account: LocalAccount) => {
@@ -97,7 +99,6 @@ const AutomatedTasks = ({
 
   useEffect(() => {
     if (!userTokens.loading && userTokens.list && market) {
-      setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
       const orderedFiltered = userTokens.list.sort(
         (a, b) =>
           TokensUtils.getHiveEngineTokenValue(b, market, undefined, allTokens) -
@@ -192,12 +193,16 @@ const AutomatedTasks = ({
     ) {
       const copyAutoStakeList = [...autoStakeTokenList];
       copyAutoStakeList.unshift(selected);
-      setAutoStakeTokenList(copyAutoStakeList);
-      await AutomatedTasksUtils.updateAutoStakeTokenList(
-        activeAccount.name!,
-        copyAutoStakeList,
-      );
+      await setAndSaveAutoStakeTokenList(copyAutoStakeList);
     }
+  };
+
+  const setAndSaveAutoStakeTokenList = async (autoStakeData: OptionItem[]) => {
+    setAutoStakeTokenList(autoStakeData);
+    await AutomatedTasksUtils.updateAutoStakeTokenList(
+      activeAccount.name!,
+      autoStakeData,
+    );
   };
 
   const handleRemoveItem = async (item: OptionItem) => {
@@ -205,11 +210,7 @@ const AutomatedTasks = ({
       const copyAutoStakeList = [...autoStakeTokenList].filter(
         (i) => i.value.symbol !== item.value.symbol,
       );
-      setAutoStakeTokenList(copyAutoStakeList);
-      await AutomatedTasksUtils.updateAutoStakeTokenList(
-        activeAccount.name!,
-        copyAutoStakeList,
-      );
+      await setAndSaveAutoStakeTokenList(copyAutoStakeList);
     }
   };
 

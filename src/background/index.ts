@@ -1,4 +1,5 @@
 import AccountModule from '@background/account';
+import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
@@ -28,6 +29,7 @@ import MkModule from './mk.module';
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();
+  AutoStakeTokensModule.start();
   AutolockModule.start();
   AutolockModule.set(
     await LocalStorageUtils.getValueFromLocalStorage(
