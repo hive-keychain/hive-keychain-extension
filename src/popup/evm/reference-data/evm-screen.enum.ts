@@ -7,4 +7,6 @@ export enum EvmScreen {
   EVM_HOME = 'EVM_HOME',
 
   EVM_SETTINGS = 'EVM_SETTINGS',
+
+  EVM_TOKEN_HISTORY = 'EVM_TOKEN_HISTORY',
 }

@@ -69,19 +69,6 @@ const Home = ({
   }, [chain]);
 
   useEffect(() => {
-    if (tokens && tokens?.length > 0) {
-      for (const t of tokens) {
-        EvmTokensUtils.getHistory(
-          t,
-          chain,
-          accounts[0].wallet.address,
-          accounts[0].wallet.signingKey,
-        );
-      }
-    }
-  }, [tokens]);
-
-  useEffect(() => {
     if (
       !ArrayUtils.includesAll(
         Object.keys(prices),

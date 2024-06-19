@@ -147,7 +147,6 @@ const getTokenListForWalletAddress = async (
         }
         await AsyncUtils.sleep(1000);
       } while (result.length === limit);
-      console.log(result);
 
       let tokensMetadata = [];
       if (addresses.length > 0) {
@@ -177,7 +176,6 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
   return tokens.sort((tokenA, tokenB) => {
     const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
     const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
-    // console.log({ priceA, priceB });
     if (tokenA.tokenInfo.type === EVMTokenType.NATIVE) return -1;
     else if (tokenB.tokenInfo.type === EVMTokenType.NATIVE) return 1;
     else {
@@ -191,42 +189,13 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
           Number(
             ethers.formatUnits(tokenB.balance, tokenB.tokenInfo.decimals ?? 18),
           ) ?? 1;
-      // console.log({ name: tokenB.tokenInfo.symbol, tokenAPrice });
-      // console.log({ name: tokenA.tokenInfo.symbol, tokenBPrice });
       return tokenBPrice - tokenAPrice;
     }
   });
 };
 
-const getHistory = async (
-  token: EVMToken,
-  chain: EvmChain,
-  walletAddress: string,
-  walletSigningKey: SigningKey,
-  lastBlock?: number,
-) => {
-  const limit = 10000;
-  const provider = EthersUtils.getProvider(chain.network);
-  const connectedWallet = new Wallet(walletSigningKey, provider);
-
-  if (token.tokenInfo.type === EVMTokenType.NATIVE) {
-    // TODO
-    console.log('skip native');
-  } else {
-    const contract = new ethers.Contract(
-      token.tokenInfo.address!,
-      Erc20Abi,
-      connectedWallet,
-    );
-
-    const transferInFilter = contract.filters.Transfer(null, walletAddress);
-    const transferOutFilter = contract.filters.Transfer(walletAddress, null);
-
-    const eventsIn = await contract.queryFilter(transferInFilter);
-    const eventsOut = await contract.queryFilter(transferOutFilter);
-
-    console.log({ eventsIn, eventsOut });
-  }
+const formatTokenValue = (value: number, decimals = 18) => {
+  return FormatUtils.withCommas(ethers.formatUnits(value, decimals));
 };
 
 export const EvmTokensUtils = {
@@ -234,5 +203,5 @@ export const EvmTokensUtils = {
   getTotalBalanceInUsd,
   getTokenBalances,
   sortTokens,
-  getHistory,
+  formatTokenValue,
 };

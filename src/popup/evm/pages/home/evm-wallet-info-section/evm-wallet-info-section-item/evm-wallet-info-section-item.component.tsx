@@ -1,6 +1,7 @@
 import { Asset } from '@hiveio/dhive';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
@@ -71,11 +72,7 @@ const WalletInfoSectionItem = ({
 
   const handleHistoryClick = (event: BaseSyntheticEvent, token?: EVMToken) => {
     event.stopPropagation();
-    // if (tokenBalance) {
-    //   navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance });
-    // } else {
-    //   navigateToWithParams(Screen.WALLET_HISTORY_PAGE, []);
-    // }
+    navigateToWithParams(EvmScreen.EVM_TOKEN_HISTORY, { token });
   };
 
   const goToTokenWebsite = (token: EVMToken) => {
