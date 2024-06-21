@@ -4,6 +4,7 @@ import {
   EvmTokenHistoryItem,
   EvmTokenHistoryItemType,
   EvmTokenTransferInHistoryItem,
+  EvmTokenTransferOutHistoryItem,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -56,6 +57,8 @@ const fetchHistory = async (
       //     await provider.lookupAddress(e.args[1]),
       //   ]);
 
+      const block = await e.getBlock();
+
       const event: EvmTokenTransferInHistoryItem = {
         ...getCommonHistoryItem(e),
         type: EvmTokenHistoryItemType.TRANSFER_IN,
@@ -65,11 +68,13 @@ const fetchHistory = async (
           e.args[2],
           token.tokenInfo.decimals,
         ),
+        timestamp: new Date(block.timestamp * 1000),
       };
       finalEvents.push(event);
     }
     for (const e of eventsOut) {
-      const event = {
+      const block = await e.getBlock();
+      const event: EvmTokenTransferOutHistoryItem = {
         ...getCommonHistoryItem(e),
         type: EvmTokenHistoryItemType.TRANSFER_OUT,
         from: e.args[0],
@@ -78,6 +83,7 @@ const fetchHistory = async (
           e.args[2],
           token.tokenInfo.decimals,
         ),
+        timestamp: new Date(block.timestamp * 1000),
       };
       finalEvents.push(event);
     }

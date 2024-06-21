@@ -4448,5 +4448,13 @@
   "popup_html_add_custom_blockchain": {
     "message": "Add custom blockchain",
     "description": "Add custom blockchain page title"
+  },
+  "popup_html_evm_history_transfer_in": {
+    "message": "You received $1 from $2",
+    "description": "EVM history item transfer in"
+  },
+  "popup_html_evm_history_transfer_out": {
+    "message": "You sent $1 to $2",
+    "description": "EVM history item transfer in"
   }
 }

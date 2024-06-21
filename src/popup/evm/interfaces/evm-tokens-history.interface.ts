@@ -10,10 +10,17 @@ export interface EvmTokenHistoryItem {
   index: number;
   transactionHash: string;
   transactionIndex: number;
+  timestamp: Date;
 }
 
 export interface EvmTokenTransferInHistoryItem extends EvmTokenHistoryItem {
   type: EvmTokenHistoryItemType.TRANSFER_IN;
+  from: string;
+  to: string;
+  amount: string;
+}
+export interface EvmTokenTransferOutHistoryItem extends EvmTokenHistoryItem {
+  type: EvmTokenHistoryItemType.TRANSFER_OUT;
   from: string;
   to: string;
   amount: string;
