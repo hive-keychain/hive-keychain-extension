@@ -62,14 +62,14 @@ const EvmTokenHistoryPage = ({
             list={history.events}
             renderItem={(event: any) => (
               <EvmTokenHistoryItemComponent
-                historyItem={event}
                 key={event.transactionHash}
+                historyItem={event}
+                chain={chain}
               />
             )}
             renderOnScroll
             renderWhenEmpty={() => {
-              if (loading) {
-              } else {
+              if (!loading) {
                 return (
                   <div className="empty-history-panel">
                     <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />

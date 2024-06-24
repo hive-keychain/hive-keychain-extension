@@ -11,6 +11,8 @@ export interface EvmTokenHistoryItem {
   transactionHash: string;
   transactionIndex: number;
   timestamp: Date;
+  label: string;
+  details?: string;
 }
 
 export interface EvmTokenTransferInHistoryItem extends EvmTokenHistoryItem {

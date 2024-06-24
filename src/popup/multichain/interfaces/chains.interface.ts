@@ -23,6 +23,7 @@ export interface Chain {
   chainId: string;
   testnet?: boolean;
   blockExplorer?: BlockExplorer;
+  blockExplorerApi?: BlockExplorer;
   network?: string;
 
   // TODO remove optional

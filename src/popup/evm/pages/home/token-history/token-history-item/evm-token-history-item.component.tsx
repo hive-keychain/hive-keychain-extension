@@ -2,22 +2,26 @@ import {
   EvmTokenHistoryItem,
   EvmTokenHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { BaseSyntheticEvent, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 interface EvmTokenHistoryItemProps {
   historyItem: EvmTokenHistoryItem;
-  expandableContent?: string;
+  chain: Chain;
 }
 
 export const EvmTokenHistoryItemComponent = ({
   historyItem,
-  expandableContent,
+  chain,
 }: EvmTokenHistoryItemProps) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
+  const [expandableContent, setExpandableContent] = useState(
+    historyItem.details,
+  );
 
   const toggleExpandableContent = () => {
     if (expandableContent) {
@@ -35,6 +39,13 @@ export const EvmTokenHistoryItemComponent = ({
     }
   };
 
+  const goToBlockchainExplorer = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    window.open(
+      `${chain.blockExplorer?.url}/tx/${historyItem.transactionHash}`,
+    );
+  };
+
   return (
     <div className="wallet-history-item">
       <div className="wallet-transaction-info">
@@ -49,12 +60,10 @@ export const EvmTokenHistoryItemComponent = ({
             <SVGIcon
               className="operation-icon"
               icon={getIcon()}
-              onClick={() => console.log('click on icon')}
+              onClick={goToBlockchainExplorer}
             />
             <div className="right-panel">
-              <div className="detail">
-                {chrome.i18n.getMessage('popup_html_wallet_info_claim_account')}
-              </div>
+              <div className="detail">{historyItem.label}</div>
               <CustomTooltip
                 dataTestId="scustom-tool-tip"
                 additionalClassName="history-tooltip"

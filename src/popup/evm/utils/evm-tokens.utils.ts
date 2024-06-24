@@ -126,7 +126,7 @@ const getTokenListForWalletAddress = async (
   walletAddress: string,
   chain: EvmChain,
 ): Promise<EvmTokenInfoShort[]> => {
-  switch (chain.blockExplorer?.type) {
+  switch (chain.blockExplorerApi?.type) {
     case BlockExporerType.ETHERSCAN: {
       let result;
       let addresses: string[] = [];

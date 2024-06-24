@@ -26,6 +26,10 @@ export const defaultChainList = [
     mainToken: 'ETH',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
+      url: 'https://etherscan.io',
+    },
+    blockExplorerApi: {
+      type: BlockExporerType.ETHERSCAN,
       url: 'https://api.etherscan.io',
     },
     isEth: true,
@@ -41,6 +45,10 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://snowscan.xyz',
     },
+    blockExplorerApi: {
+      type: BlockExporerType.ETHERSCAN,
+      url: 'https://snowscan.xyz',
+    },
   } as EvmChain,
   {
     name: 'BNB',
@@ -50,6 +58,10 @@ export const defaultChainList = [
     mainToken: 'BNB',
     network: 'bnb',
     blockExplorer: {
+      type: BlockExporerType.ETHERSCAN,
+      url: 'https://bscscan.com',
+    },
+    blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://bscscan.com',
     },
@@ -63,6 +75,10 @@ export const defaultChainList = [
     network: 'matic',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
+      url: 'https://polygonscan.com',
+    },
+    blockExplorerApi: {
+      type: BlockExporerType.ETHERSCAN,
       url: 'https://api.polygonscan.com',
     },
   } as EvmChain,
@@ -74,6 +90,10 @@ export const defaultChainList = [
     mainToken: 'SepoliaEth',
     network: 'sepolia',
     blockExplorer: {
+      type: BlockExporerType.ETHERSCAN,
+      url: 'https://sepolia.etherscan.io',
+    },
+    blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api-sepolia.etherscan.io',
     },
