@@ -161,10 +161,36 @@
     }
   }
 
-  .logo-container {
-    height: 100%;
+  .rotating-logo-container {
+    min-height: 100%;
+    flex: 1;
     display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 12px;
+    .caption {
+      @include poppins400(14px);
+      color: var(--main-font-color);
+    }
+  }
+
+  .load-more-panel {
+    @include small-card;
+    height: 62px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    row-gap: 4px;
+    cursor: pointer;
+    .icon-component {
+      height: 20px;
+      width: 20px;
+    }
+    .label {
+      @include poppins400(14px);
+      color: var(--main-font-color);
+    }
   }
 }

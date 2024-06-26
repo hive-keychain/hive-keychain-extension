@@ -14,6 +14,9 @@ import EvmFormatUtils from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { SigningKey, Wallet, ethers } from 'ethers';
 
+const MIN_NEW_TRANSACTION = 1;
+const LIMIT = 20000;
+
 const fetchHistory = async (
   token: EVMToken,
   chain: EvmChain,
@@ -21,7 +24,6 @@ const fetchHistory = async (
   walletSigningKey: SigningKey,
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
-  const limit = 1000000;
   const provider = EthersUtils.getProvider(chain.network);
   const connectedWallet = new Wallet(walletSigningKey, provider);
 
@@ -41,76 +43,89 @@ const fetchHistory = async (
     const transferOutFilter = contract.filters.Transfer(walletAddress, null);
     let eventsIn: any[];
     let eventsOut: any[];
-    eventsIn = await contract.queryFilter(
-      transferInFilter,
-      lastBlock - limit,
-      lastBlock,
-    );
-    eventsOut = await contract.queryFilter(transferOutFilter);
+    const finalEvents: EvmTokenHistoryItem[] = [];
+    try {
+      eventsIn = await contract.queryFilter(
+        transferInFilter,
+        lastBlock - LIMIT,
+        lastBlock,
+      );
+      for (const e of eventsIn) {
+        //   console.log([
+        //     await provider.lookupAddress(e.args[0]),
+        //     await provider.lookupAddress(e.args[1]),
+        //   ]);
+
+        const block = await e.getBlock();
+
+        const event: EvmTokenTransferInHistoryItem = {
+          ...getCommonHistoryItem(e),
+          type: EvmTokenHistoryItemType.TRANSFER_IN,
+          from: e.args[0],
+          to: e.args[1],
+          amount: EvmTokensUtils.formatTokenValue(
+            e.args[2],
+            token.tokenInfo.decimals,
+          ),
+          timestamp: new Date(block.timestamp * 1000),
+          label: '',
+        };
+        event.label = chrome.i18n.getMessage(
+          'popup_html_evm_history_transfer_in',
+          [
+            event.amount,
+            token.tokenInfo.symbol,
+            EvmFormatUtils.formatAddress(event.from),
+          ],
+        );
+        finalEvents.push(event);
+      }
+    } catch (err) {
+      console.log(err, 'eventIn');
+    }
+
+    try {
+      eventsOut = await contract.queryFilter(
+        transferOutFilter,
+        lastBlock - LIMIT,
+        lastBlock,
+      );
+      for (const e of eventsOut) {
+        const block = await e.getBlock();
+        const event: EvmTokenTransferOutHistoryItem = {
+          ...getCommonHistoryItem(e),
+          type: EvmTokenHistoryItemType.TRANSFER_OUT,
+          from: e.args[0],
+          to: e.args[1],
+          amount: EvmTokensUtils.formatTokenValue(
+            e.args[2],
+            token.tokenInfo.decimals,
+          ),
+          timestamp: new Date(block.timestamp * 1000),
+          details: 'Fee was paid',
+          label: '',
+        };
+        event.label = chrome.i18n.getMessage(
+          'popup_html_evm_history_transfer_out',
+          [
+            event.amount,
+            token.tokenInfo.symbol,
+            EvmFormatUtils.formatAddress(event.to),
+          ],
+        );
+        finalEvents.push(event);
+      }
+    } catch (err) {
+      console.log(err, 'event out');
+    }
+
     // const events = [...eventsIn, ...eventsOut].sort(
     //   (a, b) => b.timestamp - a.timestamp,
     // );
 
-    const finalEvents: EvmTokenHistoryItem[] = [];
-    for (const e of eventsIn) {
-      //   console.log([
-      //     await provider.lookupAddress(e.args[0]),
-      //     await provider.lookupAddress(e.args[1]),
-      //   ]);
-
-      const block = await e.getBlock();
-
-      const event: EvmTokenTransferInHistoryItem = {
-        ...getCommonHistoryItem(e),
-        type: EvmTokenHistoryItemType.TRANSFER_IN,
-        from: e.args[0],
-        to: e.args[1],
-        amount: EvmTokensUtils.formatTokenValue(
-          e.args[2],
-          token.tokenInfo.decimals,
-        ),
-        timestamp: new Date(block.timestamp * 1000),
-        label: '',
-      };
-      event.label = chrome.i18n.getMessage(
-        'popup_html_evm_history_transfer_in',
-        [
-          event.amount,
-          token.tokenInfo.symbol,
-          EvmFormatUtils.formatAddress(event.from),
-        ],
-      );
-      finalEvents.push(event);
-    }
-    for (const e of eventsOut) {
-      const block = await e.getBlock();
-      const event: EvmTokenTransferOutHistoryItem = {
-        ...getCommonHistoryItem(e),
-        type: EvmTokenHistoryItemType.TRANSFER_OUT,
-        from: e.args[0],
-        to: e.args[1],
-        amount: EvmTokensUtils.formatTokenValue(
-          e.args[2],
-          token.tokenInfo.decimals,
-        ),
-        timestamp: new Date(block.timestamp * 1000),
-        details: 'Fee was paid',
-        label: '',
-      };
-      event.label = chrome.i18n.getMessage(
-        'popup_html_evm_history_transfer_out',
-        [
-          event.amount,
-          token.tokenInfo.symbol,
-          EvmFormatUtils.formatAddress(event.to),
-        ],
-      );
-      finalEvents.push(event);
-    }
-
     return {
       events: finalEvents,
-      lastBlock: lastBlock - limit,
+      lastBlock: lastBlock - LIMIT,
     };
   }
 };
@@ -120,12 +135,17 @@ const getHistory = async (
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,
+  sendFeedback?: (progression: {
+    nbBlocks: number;
+    totalBlocks: number;
+  }) => void,
   lastBlock?: number,
 ): Promise<EvmTokenHistory> => {
   const provider = EthersUtils.getProvider(chain.network);
-  const lastBlockNumber = lastBlock ?? (await provider.getBlockNumber());
+  const currentBlockchainBlockNumber = await provider.getBlockNumber();
+  const lastBlockNumber = lastBlock ?? currentBlockchainBlockNumber;
   const history: EvmTokenHistory = { events: [], lastBlock: lastBlockNumber };
-
+  console.log({ lastBlockNumber, lastBlock });
   do {
     const h = await fetchHistory(
       token,
@@ -136,8 +156,15 @@ const getHistory = async (
     );
     history.events = [...history.events, ...h.events];
     history.lastBlock = h.lastBlock;
-    // } while (history.events.length === 0);
-  } while (history.lastBlock > 0);
+    if (sendFeedback)
+      sendFeedback({
+        nbBlocks: currentBlockchainBlockNumber - h.lastBlock,
+        totalBlocks: currentBlockchainBlockNumber,
+      });
+  } while (
+    history.events.length < MIN_NEW_TRANSACTION ||
+    history.lastBlock <= 0
+  );
   return history;
 };
 
