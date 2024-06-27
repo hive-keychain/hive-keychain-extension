@@ -4455,7 +4455,7 @@
   },
   "popup_html_evm_history_transfer_out": {
     "message": "You sent $1 $2 to $3",
-    "description": "EVM history item transfer in"
+    "description": "EVM history item transfer out"
   },
   "popup_html_evm_history_loading_progression": {
     "message": "$1 out of $2 blocks processed",

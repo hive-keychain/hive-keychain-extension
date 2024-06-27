@@ -41,7 +41,9 @@ const fetchHistory = async (
       };
       event.transactionHash = e.hash;
       event.label = chrome.i18n.getMessage(
-        'popup_html_evm_history_transfer_in',
+        event.from === walletAddress
+          ? 'popup_html_evm_history_transfer_out'
+          : 'popup_html_evm_history_transfer_in',
         [
           event.amount,
           token.tokenInfo.symbol,
