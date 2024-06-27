@@ -3,18 +3,29 @@
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BaseApi } from 'src/api/base';
 
-const buildUrl = (walletAddress: string, chain: EvmChain, offset: number) => {
-  return `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&startblock=0&endblock=99999999&offset=${offset}&sort=asc`;
+const getTokenTx = (walletAddress: string, chain: EvmChain, offset: number) => {
+  return get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&startblock=0&endblock=99999999&offset=${offset}&sort=asc`,
+  );
 };
 
-const get = async (
+const getHistory = (
   walletAddress: string,
   chain: EvmChain,
-  limit: number,
-): Promise<any> => {
-  return await BaseApi.get(buildUrl(walletAddress, chain, limit));
+  page: number,
+  offset: number,
+) => {
+  return get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999`,
+  );
+};
+
+const get = async (url: string): Promise<any> => {
+  return await BaseApi.get(url);
 };
 
 export const EtherscanApi = {
   get,
+  getTokenTx,
+  getHistory,
 };

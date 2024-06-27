@@ -135,7 +135,11 @@ const getTokenListForWalletAddress = async (
       let offset = 0;
 
       do {
-        let response = await EtherscanApi.get(walletAddress, chain, offset);
+        let response = await EtherscanApi.getTokenTx(
+          walletAddress,
+          chain,
+          offset,
+        );
         result = response.result;
         for (const token of result) {
           if (
@@ -197,6 +201,9 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
 const formatTokenValue = (value: number, decimals = 18) => {
   return FormatUtils.withCommas(ethers.formatUnits(value, decimals));
 };
+const formatEtherValue = (value: string) => {
+  return FormatUtils.withCommas(ethers.formatEther(value));
+};
 
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
@@ -204,4 +211,5 @@ export const EvmTokensUtils = {
   getTokenBalances,
   sortTokens,
   formatTokenValue,
+  formatEtherValue,
 };

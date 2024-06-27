@@ -1,3 +1,4 @@
+import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmTokenHistory,
@@ -13,6 +14,7 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import EvmFormatUtils from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { SigningKey, Wallet, ethers } from 'ethers';
+import Logger from 'src/utils/logger.utils';
 
 const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
@@ -24,14 +26,35 @@ const fetchHistory = async (
   walletSigningKey: SigningKey,
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
-  const provider = EthersUtils.getProvider(chain.network);
-  const connectedWallet = new Wallet(walletSigningKey, provider);
-
   if (token.tokenInfo.type === EVMTokenType.NATIVE) {
-    // TODO
-    console.log('skip native');
-    return { events: [], lastBlock: -1 };
+    const response = await EtherscanApi.getHistory(walletAddress, chain, 1, 0);
+    const events = [];
+    for (const e of response.result) {
+      const event: EvmTokenTransferInHistoryItem = {
+        ...getCommonHistoryItem(e),
+        type: EvmTokenHistoryItemType.TRANSFER_IN,
+        from: e.from,
+        to: e.to,
+        amount: EvmTokensUtils.formatEtherValue(e.value),
+        timestamp: new Date(e.timeStamp * 1000),
+        label: '',
+      };
+      event.transactionHash = e.hash;
+      event.label = chrome.i18n.getMessage(
+        'popup_html_evm_history_transfer_in',
+        [
+          event.amount,
+          token.tokenInfo.symbol,
+          EvmFormatUtils.formatAddress(event.from),
+        ],
+      );
+      events.push(event);
+    }
+
+    return { events: events, lastBlock: -1 };
   } else {
+    const provider = EthersUtils.getProvider(chain.network);
+    const connectedWallet = new Wallet(walletSigningKey, provider);
     const contract = new ethers.Contract(
       token.tokenInfo.address!,
       Erc20Abi,
@@ -81,7 +104,7 @@ const fetchHistory = async (
         finalEvents.push(event);
       }
     } catch (err) {
-      console.log(err, 'eventIn');
+      Logger.error('Error while parsing transfer in', err);
     }
 
     try {
@@ -116,7 +139,7 @@ const fetchHistory = async (
         finalEvents.push(event);
       }
     } catch (err) {
-      console.log(err, 'event out');
+      Logger.error('Error while parsing transfer out', err);
     }
 
     // const events = [...eventsIn, ...eventsOut].sort(
@@ -145,7 +168,6 @@ const getHistory = async (
   const currentBlockchainBlockNumber = await provider.getBlockNumber();
   const lastBlockNumber = lastBlock ?? currentBlockchainBlockNumber;
   const history: EvmTokenHistory = { events: [], lastBlock: lastBlockNumber };
-  console.log({ lastBlockNumber, lastBlock });
   do {
     const h = await fetchHistory(
       token,
@@ -163,7 +185,7 @@ const getHistory = async (
       });
   } while (
     history.events.length < MIN_NEW_TRANSACTION ||
-    history.lastBlock <= 0
+    history.lastBlock > 0
   );
   return history;
 };
