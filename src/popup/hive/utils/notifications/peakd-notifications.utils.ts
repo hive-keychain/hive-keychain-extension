@@ -601,23 +601,20 @@ const getNotifications = async (
     let message: string = `notification_${notif.operation}`;
     let externalUrl;
     switch (notif.operation_type) {
-      case 'custom_json': {
+      case 'custom_json.follow': {
         const json = payload.json[1];
-        switch (notif.custom_json_id) {
-          case 'follow':
-            message =
-              json.what.length > 0
-                ? 'notification_follow'
-                : 'notification_unfollow';
-            messageParams = [json.follower, json.following];
-            break;
-          case 'reblog':
-            message = 'notification_reblog';
-            messageParams = [json.account, json.author, json.permlink];
-            break;
-        }
+        message =
+          json.what && json.what.length > 0
+            ? 'notification_follow'
+            : 'notification_unfollow';
+        messageParams = [json.follower, json.following];
         break;
       }
+      case 'custom_json.reblog':
+        const json = payload.json[1];
+        message = json.delete ? 'notification_unreblog' : 'notification_reblog';
+        messageParams = [json.account, json.author, json.permlink];
+        break;
       case 'transfer': {
         if (typeof payload.amount !== 'string')
           payload.amount = FormatUtils.fromNaiAndSymbol(payload.amount);
@@ -772,7 +769,6 @@ const getNotifications = async (
             payload.vesting_shares.toString().replace('VESTS', ''),
             globalProperties,
           ),
-          ,
           payload.account,
         ];
         break;

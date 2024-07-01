@@ -4,6 +4,7 @@ import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Notification } from '@interfaces/notifications.interface';
 import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/notifications/notification-panel.component';
 import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
+import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -39,12 +40,17 @@ const Notifications = ({
     username: string,
     dynamicGlobalProperties: DynamicGlobalProperties,
   ) => {
-    const { notifs, hasMore } = await NotificationsUtils.getNotifications(
-      username,
-      dynamicGlobalProperties,
-    );
-    setNotifications(notifs);
-    setHasMoreData(hasMore);
+    setNotifications([]);
+    setHasMoreData(false);
+    const userConfig = await PeakDNotificationsUtils.getAccountConfig(username);
+    if (userConfig) {
+      const { notifs, hasMore } = await NotificationsUtils.getNotifications(
+        username,
+        dynamicGlobalProperties,
+      );
+      setNotifications(notifs);
+      setHasMoreData(hasMore);
+    }
   };
 
   const toggleNotificationPanel = () => {

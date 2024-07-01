@@ -1449,7 +1449,7 @@
     "message": "Powered up $1 HIVE on @$2."
   },
   "bgd_ops_pd": {
-    "message": "Started a $1 HP power down on @$2."
+    "message": "Started a $1 power down on @$2."
   },
   "bgd_ops_pd_stop": {
     "message": "Stopped Power Down on @$1."
@@ -4059,7 +4059,10 @@
     "message": "@$1 reblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
     "description": "Notification reblog"
   },
-
+  "notification_unreblog": {
+    "message": "@$1 unreblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification unreblog"
+  },
   "notification_account_update": {
     "message": "@$1's notification settings have been updated",
     "description": "Notification account updated"
@@ -4117,15 +4120,15 @@
     "description": "Notification comment reward"
   },
   "notification_hbd_interest": {
-    "message": "$@1 received $2 as interest",
+    "message": "@$1 received $2 as interest",
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "$@1 received $2 as part of power down",
+    "message": "@$1 received $2 as part of power down",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "$@1 received $2 as part of power down of @$3",
+    "message": "@$1 received $2 as part of power down of @$3",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {
