@@ -48,4 +48,8 @@ export enum LocalStorageKeyEnum {
 
   // Onboard Tutorial
   SKIP_TUTORIAL = 'SKIP_TUTORIAL',
+
+  //Auto Stake Engine Tokens
+  LAYER_TWO_AUTO_STAKE = 'LAYER_TWO_AUTO_STAKE',
+  LAYER_TWO_AUTO_STAKE_TOKENS = 'LAYER_TWO_AUTO_STAKE_TOKENS',
 }

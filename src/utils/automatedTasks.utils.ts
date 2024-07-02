@@ -1,6 +1,7 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import Config from 'src/config';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -147,6 +148,66 @@ const canClaimAccountErrorMessage = (activeAccount: ActiveAccount) => {
   }
 };
 
+const getUsernameAutoStake = async (username: string) => {
+  const autoStake = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE,
+  );
+  return autoStake && autoStake[username] ? true : false;
+};
+
+const saveUsernameAutoStake = async (username: string, value: boolean) => {
+  const autoStake = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE,
+  );
+  let autoStakeUsers: any = autoStake ?? {};
+  if (Object.keys(autoStakeUsers).length > 0) {
+    autoStakeUsers[username] = value;
+  } else {
+    autoStakeUsers = {
+      ...autoStakeUsers,
+      [username]: value,
+    };
+  }
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE,
+    autoStakeUsers,
+  );
+};
+
+const getUsernameAutoStakeList = async (username: string) => {
+  const autoStakeList = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE_TOKENS,
+  );
+  return autoStakeList && autoStakeList[username]
+    ? autoStakeList[username]
+    : [];
+};
+
+const updateAutoStakeTokenList = async (
+  username: string,
+  list: OptionItem[],
+) => {
+  const reMappedList = list.map((c) => {
+    return { symbol: c.value.symbol };
+  });
+  const currentList = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE_TOKENS,
+  );
+  let autoStakeList: any = currentList ?? {};
+  if (Object.keys(autoStakeList).length > 0) {
+    autoStakeList[username] = reMappedList;
+  } else {
+    autoStakeList = {
+      ...autoStakeList,
+      [username]: reMappedList,
+    };
+  }
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.LAYER_TWO_AUTO_STAKE_TOKENS,
+    autoStakeList,
+  );
+};
+
 const AutomatedTasksUtils = {
   getClaims,
   saveClaims,
@@ -158,6 +219,10 @@ const AutomatedTasksUtils = {
   canClaimSavingsErrorMessage,
   canClaimAccountErrorMessage,
   canClaimRewardsErrorMessage,
+  getUsernameAutoStake,
+  saveUsernameAutoStake,
+  updateAutoStakeTokenList,
+  getUsernameAutoStakeList,
 };
 
 export default AutomatedTasksUtils;
