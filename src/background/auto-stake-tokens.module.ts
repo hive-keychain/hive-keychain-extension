@@ -2,7 +2,6 @@ import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
-import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -83,9 +82,6 @@ const iterateAutoStakeAccounts = async (
   const localAccounts: LocalAccount[] = (
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk)
   ).filter((l) => users.includes(l.name));
-  //TODO line bellow when added makes work the getUserBalance, waiting for fix!
-  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
-
   for (const acc of localAccounts) {
     let loggerMessage = null;
     if (!acc.keys.active) {
