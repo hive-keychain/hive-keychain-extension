@@ -1,5 +1,8 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { EvmTokenInfoShortErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EVMTokenType,
+  EvmTokenInfoShortErc20,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
@@ -22,20 +25,25 @@ const getGasLimit = async (
 ) => {
   const provider = getProvider(chain.network);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
-  const erc20 = new ethers.Contract(
-    (token.tokenInfo as EvmTokenInfoShortErc20).address!,
-    Erc20Abi,
-    connectedWallet,
-  );
 
-  const estimation = await erc20.transfer.estimateGas(
-    receiverAddress,
-    amount * 1000000,
-  );
+  if (token.tokenInfo.type === EVMTokenType.ERC20) {
+    const erc20 = new ethers.Contract(
+      (token.tokenInfo as EvmTokenInfoShortErc20).address!,
+      Erc20Abi,
+      connectedWallet,
+    );
+    const estimation = await erc20.transfer.estimateGas(
+      receiverAddress,
+      amount * 1000000,
+    );
 
-  let multiplier = chain.isEth ? 1.5 : 1;
-
-  return Decimal.mul(Number(estimation), multiplier);
+    let multiplier = chain.isEth ? 1.5 : 1;
+    console.log(Decimal.mul(Number(estimation), multiplier).toString());
+    return Decimal.mul(Number(estimation), multiplier);
+  } else {
+    const test = await provider.getFeeData();
+    return 21000;
+  }
 };
 
 export const EthersUtils = { getProvider, getGasLimit };

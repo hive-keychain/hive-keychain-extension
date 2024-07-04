@@ -7,7 +7,7 @@ import { HDNodeWallet } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 
 const getGasFeeEstimations = async (chain: Chain) => {
-  return await KeychainApi.get(`/evm/gasPriceEstimate/${chain.chainId}`);
+  return await KeychainApi.get(`evm/gasPriceEstimate/${chain.chainId}`);
 };
 
 const estimate = async (
@@ -63,8 +63,8 @@ const estimate = async (
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
     },
     max: {
-      estimatedFee: medium,
-      estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
+      estimatedFee: aggressive,
+      estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
     },
     aggressive: {
       estimatedFee: aggressive,

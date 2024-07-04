@@ -91,7 +91,6 @@ const EvmTransfer = ({
 
   useEffect(() => {
     if (activeAccount) {
-      console.log(activeAccount);
       setTokenOptions(
         activeAccount.balances.map((tokenBalance) => {
           return {
@@ -112,7 +111,7 @@ const EvmTransfer = ({
     let tokenBalance = activeAccount.balances.find(
       (t) => t.tokenInfo.symbol === selectedToken,
     );
-    setBalance(Number(tokenBalance?.formattedBalance));
+    if (tokenBalance) setBalance(tokenBalance.balanceInteger);
   };
 
   const handleClickOnSend = async (form: TransferForm) => {
@@ -135,7 +134,12 @@ const EvmTransfer = ({
         label: 'popup_html_transfer_to',
         value: `${FormatUtils.shortenString(form.receiverAddress, 10)}`,
       },
-      { label: 'popup_html_transfer_amount', value: form.amount },
+      {
+        label: 'popup_html_transfer_amount',
+        value: `${FormatUtils.formatCurrencyValue(form.amount)} ${
+          form.selectedToken
+        }`,
+      },
     ];
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {

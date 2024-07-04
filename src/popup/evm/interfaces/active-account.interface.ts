@@ -8,5 +8,6 @@ export interface EvmActiveAccount {
 export interface EVMToken {
   formattedBalance: string;
   balance: bigint;
+  balanceInteger: number;
   tokenInfo: EvmTokenInfoShort;
 }

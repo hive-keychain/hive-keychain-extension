@@ -55,7 +55,8 @@ export const GasFeePanel = ({
               {FormatUtils.formatCurrencyValue(
                 feeEstimation.suggested.estimatedFee,
                 8,
-              )}
+              )}{' '}
+              {chain.mainToken}
             </div>
           </div>
           <div className="gas-fee-bottom-row">
@@ -71,7 +72,8 @@ export const GasFeePanel = ({
               {FormatUtils.formatCurrencyValue(
                 feeEstimation.max.estimatedFee,
                 8,
-              )}
+              )}{' '}
+              {chain.mainToken}
             </div>
           </div>
         </div>

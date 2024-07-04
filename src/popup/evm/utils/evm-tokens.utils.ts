@@ -83,11 +83,13 @@ const getTokenBalances = async (
     try {
       let formattedBalance;
       let balance;
+      let balanceInteger;
       if (token.type === EVMTokenType.NATIVE) {
         balance = await provider.getBalance(walletAddress);
         formattedBalance = FormatUtils.formatCurrencyValue(
           Number(parseFloat(ethers.formatEther(balance))),
         );
+        balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
       } else {
         const contract = new ethers.Contract(
           token.address!,
@@ -98,12 +100,16 @@ const getTokenBalances = async (
         formattedBalance = FormatUtils.formatCurrencyValue(
           Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
         );
+        balanceInteger = Number(
+          parseFloat(ethers.formatUnits(balance, token.decimals)),
+        );
       }
 
       balances.push({
         tokenInfo: token,
         formattedBalance: formattedBalance,
         balance: balance,
+        balanceInteger: balanceInteger,
       });
     } catch (err) {
       Logger.error('Error while formatting evm balances', err);
