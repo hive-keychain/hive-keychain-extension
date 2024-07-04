@@ -38,7 +38,6 @@ const getGasLimit = async (
     );
 
     let multiplier = chain.isEth ? 1.5 : 1;
-    console.log(Decimal.mul(Number(estimation), multiplier).toString());
     return Decimal.mul(Number(estimation), multiplier);
   } else {
     const test = await provider.getFeeData();
