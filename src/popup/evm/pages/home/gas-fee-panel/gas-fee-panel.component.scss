@@ -5,20 +5,37 @@
   cursor: pointer;
   align-items: unset;
   row-gap: 8px;
-  .gas-fee-top-row,
-  .gas-fee-bottom-row {
+
+  .title-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    .label {
-      @include poppins400(14px);
+
+    .title {
+      @include poppins500(14px);
       color: var(--main-font-color);
-      &.duration {
-        color: $red;
+    }
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .gas-fee-top-row,
+    .gas-fee-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      .label {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        &.duration {
+          color: $red;
+        }
       }
     }
   }
 }
-.popup-content {
+.edit-gas-fee-popup {
   width: 100%;
   margin: unset !important;
   .edit-gas-fee-content {
@@ -34,8 +51,12 @@
       color: var(--main-font-color);
     }
     .custom-fee-row {
+      @include small-card-no-padding;
+      margin: 0;
+      padding: 4px 12px;
       display: grid;
       grid-template-columns: 1fr 2fr 1fr;
+      cursor: pointer;
       .label {
         @include poppins400(13px);
         color: var(--main-font-color);
@@ -47,6 +68,16 @@
       .gas-fee {
         text-align: right;
       }
+    }
+  }
+  .custom-gas-fee-panel {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 16px;
+
+    .submit-button {
+      margin-top: 8px;
     }
   }
 }

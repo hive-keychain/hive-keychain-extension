@@ -23,6 +23,7 @@
     @include small-card();
     flex-direction: column;
     row-gap: 24px;
+    width: 100%;
 
     .popup-title {
       @include poppins500(20px);

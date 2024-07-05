@@ -20,6 +20,8 @@ export enum SVGIcons {
 
   CHECKBOX_CHECKED = 'checkbox/checked',
 
+  EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
+
   EVM_SETUP_IMAGE = 'evm-setup/coin-img',
   EVM_SETUP_DISPLAY_MNEMONIC = 'evm-setup/display-mnemonic',
   EVM_SETUP_COPY_MNEMONIC = 'evm-setup/copy-mnemonic',

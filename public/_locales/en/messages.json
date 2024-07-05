@@ -4422,7 +4422,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
-    "message": "Likely is < $1 seconds",
+    "message": "< $1 seconds",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_max_fee_label": {
@@ -4445,6 +4445,10 @@
     "message": "Aggressive",
     "description": "Evm edit Gas fee label"
   },
+  "popup_html_evm_custom_gas_fee_custom": {
+    "message": "Custom",
+    "description": "Evm edit Gas fee label"
+  },
   "popup_html_add_custom_blockchain": {
     "message": "Add custom blockchain",
     "description": "Add custom blockchain page title"
@@ -4460,5 +4464,13 @@
   "popup_html_evm_history_loading_progression": {
     "message": "$1 out of $2 blocks processed",
     "description": "EVM history loading progress"
+  },
+  "popup_html_evm_gas_fee_form_base_fee": {
+    "message": "Max base fee (Gwei)",
+    "description": "Max base fee evm transfer"
+  },
+  "popup_html_evm_gas_fee_form_priority_fee": {
+    "message": "Priority fee (Gwei)",
+    "description": "Evm priority fee"
   }
 }

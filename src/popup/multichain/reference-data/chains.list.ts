@@ -40,7 +40,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
     chainId: '0xa86a',
     mainToken: 'AVAX',
-    network: 'avaxcchain',
+    network: 'avaxchain',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://snowscan.xyz',
