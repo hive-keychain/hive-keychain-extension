@@ -85,7 +85,6 @@ const iterateAutoStakeAccounts = async (
   }[],
   mk: string,
 ) => {
-  console.log({ tokens, users }); //TODO remove line
   const localAccounts: LocalAccount[] = (
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk)
   ).filter((l) => users.includes(l.name));
