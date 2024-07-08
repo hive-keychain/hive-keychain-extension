@@ -28,7 +28,9 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 
 const DEFAULT_SELECTED_TOKEN_OPTION = {
-  label: 'Please select an option for auto-stake',
+  label: chrome.i18n.getMessage(
+    'popup_html_automated_hive_section_default_option_message',
+  ),
   value: '',
 };
 
@@ -187,7 +189,7 @@ const AutomatedTasks = ({
   };
 
   const handleSetSelectedToken = async (selected: OptionItem) => {
-    setSelectedUserTokenOption(selected);
+    setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
     if (
       !autoStakeTokenList?.find((a) => a.value.symbol === selected.value.symbol)
     ) {
@@ -382,13 +384,18 @@ const AutomatedTasks = ({
               hint="popup_html_enable_autostake_tokens_info"
             />
             {selectedUserTokenOption &&
-              userTokenOptionList &&
+              userTokenOptionList?.length &&
               enabledAutoStake && (
                 <ComplexeCustomSelect
                   selectedItem={selectedUserTokenOption}
-                  options={userTokenOptionList}
+                  options={userTokenOptionList.filter(
+                    (u) =>
+                      !autoStakeTokenList.find(
+                        (a) => a.value.symbol === u.value.symbol,
+                      ),
+                  )}
                   setSelectedItem={handleSetSelectedToken}
-                  label="token"
+                  label="tokens"
                   filterable
                 />
               )}
