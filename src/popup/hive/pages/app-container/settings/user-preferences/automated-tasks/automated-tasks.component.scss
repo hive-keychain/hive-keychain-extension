@@ -80,27 +80,13 @@
               flex: 1;
               color: var(--main-font-color);
             }
-            .active-icon {
-              svg {
-                height: 20px;
-                width: 20px;
-                color: $red;
-              }
-            }
             .right-action-icon {
               display: none;
+              svg {
+                color: var(--main-font-color) !important;
+              }
             }
             &:hover {
-              background: var(--wallet-icon-color);
-              border-radius: 12px;
-              .item-label {
-                color: white;
-              }
-              .sepa .active-icon {
-                svg {
-                  color: white;
-                }
-              }
               .right-action-icon {
                 display: block;
               }
