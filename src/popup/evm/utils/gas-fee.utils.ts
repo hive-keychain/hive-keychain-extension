@@ -50,6 +50,7 @@ const estimate = async (
     .toNumber();
 
   return {
+    gasLimit: gasLimit,
     suggested: {
       estimatedFee: low,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,

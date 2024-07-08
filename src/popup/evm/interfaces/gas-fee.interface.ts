@@ -4,6 +4,7 @@ export interface GasFeeEstimation {
 }
 
 export interface FullGasFeeEstimation {
+  gasLimit: number;
   [FeeEstimationType.LOW]: GasFeeEstimation;
   [FeeEstimationType.MEDIUM]: GasFeeEstimation;
   [FeeEstimationType.AGGRESSIVE]: GasFeeEstimation;
@@ -23,6 +24,8 @@ export enum FeeEstimationType {
 
 export interface CustomGasFeeForm {
   maxBaseFeeInGwei: number;
+  maxBaseFeeValue?: number;
   priorityFeeInGwei: number;
+  priorityFeeValue?: number;
   gasLimit: number;
 }

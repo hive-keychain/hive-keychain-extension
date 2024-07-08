@@ -11,7 +11,7 @@ import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
-import EvmFormatUtils from '@popup/evm/utils/format.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { SigningKey, Wallet, ethers } from 'ethers';
 import Logger from 'src/utils/logger.utils';

@@ -4,11 +4,15 @@ import {
   FullGasFeeEstimation,
   GasFeeEstimation,
 } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -68,14 +72,45 @@ export const GasFeePanel = ({
     setIsAdvancedPanelOpen(false);
   };
 
-  const updateCustomFee = (key: keyof CustomGasFeeForm, value: number) => {
+  const updateCustomFee = (
+    key: 'maxBaseFee' | 'priorityFee',
+    value: number,
+  ) => {
     const newState = { ...customGasFeeForm };
-    newState[key] = value;
+
+    newState[`${key}InGwei` as keyof CustomGasFeeForm] = value;
+    newState[`${key}Value` as keyof CustomGasFeeForm] =
+      EvmFormatUtils.gweiToEther(value * feeEstimation?.gasLimit!);
     setCustomGasFeeForm(newState);
   };
 
   const saveCustomFee = () => {
-    // TODO calculate custom fee
+    const customEstimatedFee = Decimal.add(
+      customGasFeeForm.maxBaseFeeValue!,
+      customGasFeeForm.priorityFeeValue!,
+    ).toNumber();
+    let customDuration = 0;
+    if (!feeEstimation) return;
+    if (customEstimatedFee >= feeEstimation!.aggressive!.estimatedFee) {
+      customDuration = feeEstimation.aggressive.estimatedMaxDuration;
+    } else if (customEstimatedFee >= feeEstimation!.medium!.estimatedFee) {
+      customDuration = feeEstimation.medium.estimatedMaxDuration;
+    } else {
+      customDuration = feeEstimation.low.estimatedMaxDuration;
+    }
+
+    const custom: GasFeeEstimation = {
+      estimatedFee: customEstimatedFee,
+      estimatedMaxDuration: customDuration,
+    } as GasFeeEstimation;
+    setSelectedFee(custom);
+
+    const fullGasFeeEstimation = {
+      ...feeEstimation,
+      custom: custom,
+    };
+
+    setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
     setCustomFeePanelOpened(false);
   };
 
@@ -223,12 +258,20 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom
-                        ? feeEstimation.custom?.estimatedMaxDuration
+                        ? chrome.i18n.getMessage(
+                            'popup_html_evm_gas_fee_estimate_duration',
+                            [
+                              feeEstimation.custom.estimatedMaxDuration.toString(),
+                            ],
+                          )
                         : '-'}
                     </div>
                     <div className="label gas-fee">
                       {feeEstimation.custom
-                        ? feeEstimation.custom?.estimatedFee
+                        ? FormatUtils.formatCurrencyValue(
+                            feeEstimation.custom.estimatedFee,
+                            8,
+                          )
                         : '-'}
                     </div>
                   </div>
@@ -241,23 +284,36 @@ export const GasFeePanel = ({
                     placeholder="popup_html_evm_gas_fee_form_base_fee"
                     type={InputType.NUMBER}
                     value={customGasFeeForm.maxBaseFeeInGwei}
-                    onChange={(value) =>
-                      updateCustomFee('maxBaseFeeInGwei', value)
-                    }
+                    onChange={(value) => updateCustomFee('maxBaseFee', value)}
+                    hint={`≈${customGasFeeForm.maxBaseFeeValue?.toString()} ${
+                      chain.mainToken
+                    }`}
+                    skipHintTranslation
                   />
                   <InputComponent
                     label="popup_html_evm_gas_fee_form_priority_fee"
                     placeholder="popup_html_evm_gas_fee_form_priority_fee"
                     type={InputType.NUMBER}
                     value={customGasFeeForm.priorityFeeInGwei}
-                    onChange={(value) =>
-                      updateCustomFee('priorityFeeInGwei', value)
-                    }
+                    onChange={(value) => updateCustomFee('priorityFee', value)}
+                    hint={`≈${customGasFeeForm.priorityFeeValue?.toString()} ${
+                      chain.mainToken
+                    }`}
+                    skipHintTranslation
                   />
-                  <ButtonComponent
-                    label="popup_html_operation_button_save"
-                    onClick={saveCustomFee}
-                  />
+                  <div className="button-panel">
+                    <ButtonComponent
+                      type={ButtonType.ALTERNATIVE}
+                      height="small"
+                      label="popup_html_button_label_cancel"
+                      onClick={() => setCustomFeePanelOpened(false)}
+                    />
+                    <ButtonComponent
+                      height="small"
+                      label="popup_html_operation_button_save"
+                      onClick={saveCustomFee}
+                    />
+                  </div>
                 </div>
               )}
             </div>

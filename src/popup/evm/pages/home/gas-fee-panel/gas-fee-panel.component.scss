@@ -55,7 +55,7 @@
       margin: 0;
       padding: 4px 12px;
       display: grid;
-      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-columns: 2fr 3fr 2fr;
       cursor: pointer;
       .label {
         @include poppins400(13px);
@@ -76,8 +76,13 @@
     flex-direction: column;
     row-gap: 16px;
 
-    .submit-button {
+    .button-panel {
+      width: 100%;
       margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      column-gap: 8px;
     }
   }
 }
