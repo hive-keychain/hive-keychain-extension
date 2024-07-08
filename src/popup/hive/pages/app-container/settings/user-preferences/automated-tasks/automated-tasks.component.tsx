@@ -106,26 +106,32 @@ const AutomatedTasks = ({
           TokensUtils.getHiveEngineTokenValue(b, market, undefined, allTokens) -
           TokensUtils.getHiveEngineTokenValue(a, market, undefined, allTokens),
       );
-      let list = orderedFiltered.map((token) => {
-        const tokenInfo = allTokens.find(
-          (t) => t.symbol === token.symbol && t.stakingEnabled,
-        );
-        let img = '';
-        let imgBackup = '';
-        if (tokenInfo) {
-          img =
-            tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
-              ? tokenInfo.metadata.icon
-              : '/assets/images/wallet/hive-engine.svg';
-          imgBackup = '/assets/images/wallet/hive-engine.svg';
-        }
-        return {
-          value: token,
-          label: token.symbol,
-          img: img,
-          imgBackup,
-        };
-      });
+
+      let list = orderedFiltered
+        .filter((o) =>
+          allTokens.find((a) => a.symbol === o.symbol && a.stakingEnabled),
+        )
+        .map((token) => {
+          const tokenInfo = allTokens.find(
+            (t) => t.symbol === token.symbol && t.stakingEnabled === true,
+          );
+          let img = '';
+          let imgBackup = '';
+          if (tokenInfo) {
+            img =
+              tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
+                ? tokenInfo.metadata.icon
+                : '/assets/images/wallet/hive-engine.svg';
+            imgBackup = '/assets/images/wallet/hive-engine.svg';
+          }
+          return {
+            value: token,
+            label: token.symbol,
+            img: img,
+            imgBackup,
+          };
+        });
+
       if (list) {
         setUserTokenOptionList(list);
       }
