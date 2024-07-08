@@ -55,7 +55,7 @@ const initAutoStakeTokens = async (
     const users = Object.keys(autoStakeUserList).filter(
       (user) => autoStakeUserList[user] === true,
     );
-    let tokens: any = [];
+    let tokens: any[] = [];
     Object.entries(autoStakeTokenList).map((value) => {
       if (value[1].length > 0) {
         tokens.push({
@@ -64,7 +64,12 @@ const initAutoStakeTokens = async (
         });
       }
     });
-    await iterateAutoStakeAccounts(users, tokens, mk);
+
+    if (tokens.length === 0) {
+      Logger.warn('startAutoStakeTokens: no tokens set!');
+    } else {
+      await iterateAutoStakeAccounts(users, tokens, mk);
+    }
   } else {
     Logger.error(
       'startAutoStakeTokens: autoStakeUserList/autoStakeTokenList not defined',
@@ -80,6 +85,7 @@ const iterateAutoStakeAccounts = async (
   }[],
   mk: string,
 ) => {
+  console.log({ tokens, users }); //TODO remove line
   const localAccounts: LocalAccount[] = (
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk)
   ).filter((l) => users.includes(l.name));
@@ -99,27 +105,34 @@ const iterateAutoStakeAccounts = async (
       await AutomatedTasksUtils.saveUsernameAutoStake(acc.name, false);
       continue;
     }
-    const userTokens = tokens.find((t) => t.user === acc.name)!;
-    let tokensBalance: TokenBalance[] = (
-      await TokensUtils.getUserBalance(acc.name)
-    ).filter(
-      (tb) =>
-        userTokens.tokenList.includes(tb.symbol) && parseFloat(tb.balance) > 0,
-    );
-    let tokenOperationResult: HiveEngineTransactionStatus;
-    for (const token of tokensBalance) {
-      tokenOperationResult = await TokensUtils.stakeToken(
-        acc.name,
-        token.symbol,
-        token.balance,
-        acc.keys.active!,
-        acc.name!,
+    const userTokens = tokens.find((t) => t.user === acc.name);
+    if (userTokens) {
+      let tokensBalance: TokenBalance[] = (
+        await TokensUtils.getUserBalance(acc.name)
+      ).filter(
+        (tb) =>
+          userTokens.tokenList.includes(tb.symbol) &&
+          parseFloat(tb.balance) > 0,
       );
-      if (tokenOperationResult.tx_id) {
-        Logger.info(
-          `autostake module staked ${token.balance} ${token.symbol} using @${acc.name}`,
+      let tokenOperationResult: HiveEngineTransactionStatus;
+      for (const token of tokensBalance) {
+        tokenOperationResult = await TokensUtils.stakeToken(
+          acc.name,
+          token.symbol,
+          token.balance,
+          acc.keys.active!,
+          acc.name!,
         );
+        if (tokenOperationResult.tx_id) {
+          Logger.info(
+            `autostake module staked ${token.balance} ${token.symbol} using @${acc.name}`,
+          );
+        }
       }
+    } else {
+      Logger.warn(
+        `autostake module @${acc.name} have no set tokens to autostake!`,
+      );
     }
   }
 };
