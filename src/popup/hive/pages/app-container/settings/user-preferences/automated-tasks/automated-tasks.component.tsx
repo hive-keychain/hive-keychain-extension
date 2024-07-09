@@ -408,25 +408,27 @@ const AutomatedTasks = ({
                 />
               )}
             {autoStakeTokenList.length > 0 && enabledAutoStake && (
-              <div className="auto-stake-token-list">
+              <>
                 <div className="intro title-list">
                   {chrome.i18n.getMessage(
                     'popup_html_automated_hive_engine_list_title',
                   )}
                 </div>
-                {autoStakeTokenList.map((o, index) => (
-                  <CustomSelectItemComponent
-                    key={`option-${o.label}`}
-                    isLast={true}
-                    item={o}
-                    isSelected={false}
-                    handleItemClicked={() => {}}
-                    closeDropdown={() => {}}
-                    onDelete={() => handleRemoveItem(o)}
-                    canDelete={true}
-                  />
-                ))}
-              </div>
+                <div className="auto-stake-token-list">
+                  {autoStakeTokenList.map((o, index) => (
+                    <CustomSelectItemComponent
+                      key={`option-${o.label}`}
+                      isLast={true}
+                      item={o}
+                      isSelected={false}
+                      handleItemClicked={() => {}}
+                      closeDropdown={() => {}}
+                      onDelete={() => handleRemoveItem(o)}
+                      canDelete={true}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}

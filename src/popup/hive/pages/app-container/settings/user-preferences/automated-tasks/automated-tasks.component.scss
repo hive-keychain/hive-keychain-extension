@@ -41,6 +41,14 @@
       flex-direction: column;
       row-gap: 8px;
       margin-bottom: 12px;
+
+      .custom-select-container {
+        .label {
+          padding-left: 0px;
+          font-weight: 500;
+          font-size: 16px;
+        }
+      }
       .custom-select {
         background: var(--input-background) !important;
         border-radius: 12px !important;
@@ -67,19 +75,18 @@
           }
         }
       }
+
+      .title-list {
+        @include poppins500(16px);
+        padding: 0px;
+      }
+
       .auto-stake-token-list {
         max-height: 200px;
         overflow-y: scroll;
         border: unset;
         border-radius: 12px;
         background: var(--input-background);
-        .title-list {
-          @include poppins500(14px);
-          margin-top: 4px;
-          margin-bottom: 4px;
-          padding: 0px;
-          padding-left: 16px;
-        }
 
         .option {
           &:has(~ .option > .custom-select-item:hover) {
