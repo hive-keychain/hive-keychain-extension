@@ -55,7 +55,7 @@ const fetchHistory = async (
 
     return { events: events, lastBlock: -1 };
   } else {
-    const provider = EthersUtils.getProvider(chain.network);
+    const provider = EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(walletSigningKey, provider);
     const contract = new ethers.Contract(
       token.tokenInfo.address!,
@@ -166,7 +166,7 @@ const getHistory = async (
   }) => void,
   lastBlock?: number,
 ): Promise<EvmTokenHistory> => {
-  const provider = EthersUtils.getProvider(chain.network);
+  const provider = EthersUtils.getProvider(chain);
   const currentBlockchainBlockNumber = await provider.getBlockNumber();
   const lastBlockNumber = lastBlock ?? currentBlockchainBlockNumber;
   const history: EvmTokenHistory = { events: [], lastBlock: lastBlockNumber };

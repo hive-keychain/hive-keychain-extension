@@ -5,6 +5,7 @@ import {
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -38,13 +39,14 @@ const getWalletFromSeedPhrase = (seed: string) => {
 
 const deriveWallets = async (
   wallet: HDNodeWallet,
+  chain: EvmChain,
 ): Promise<WalletWithBalance[]> => {
   const wallets = [];
   let i = 0,
     consecutiveEmptyWallets = 0;
   while (1) {
     const derivedWallet = wallet.deriveChild(i);
-    const wei = await EthersUtils.getProvider().getBalance(
+    const wei = await EthersUtils.getProvider(chain).getBalance(
       derivedWallet.address,
     );
     const balance = Number(parseFloat(ethers.formatEther(wei)).toFixed(6));

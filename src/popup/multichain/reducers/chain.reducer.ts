@@ -8,6 +8,7 @@ export const ChainReducer = (
     type: undefined,
     logo: '',
     chainId: '',
+    rpc: [],
   },
   { type, payload }: ActionPayload<Partial<Chain>>,
 ) => {
@@ -16,7 +17,7 @@ export const ChainReducer = (
       return payload;
     }
     case MultichainActionType.RESET_CHAIN: {
-      return { name: '', type: undefined, logo: '' };
+      return { name: '', type: undefined, logo: '', rpc: [] };
     }
     default:
       return state;

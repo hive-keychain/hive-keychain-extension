@@ -27,7 +27,7 @@ export interface Chain {
   network?: string;
 
   // TODO remove optional
-  rpc?: MultichainRpc;
+  rpc: MultichainRpc[];
 }
 
 export enum BlockExporerType {

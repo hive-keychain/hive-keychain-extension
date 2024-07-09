@@ -6,6 +6,7 @@ import {
   ChainType,
   EvmMainToken,
   HiveMainTokens,
+  MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -35,6 +36,7 @@ interface NewChainForm {
   blockExplorer: BlockExplorer;
   mainToken?: EvmMainToken;
   mainTokens?: HiveMainTokens;
+  rpc: MultichainRpc[];
 }
 
 const formRules = FormUtils.createRules<NewChainForm>({
@@ -69,6 +71,7 @@ const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
         hbd: 'TBD',
         hp: 'TP',
       },
+      rpc: [],
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<NewChainForm>>(formRules, {

@@ -33,6 +33,10 @@ export const defaultChainList = [
       url: 'https://api.etherscan.io',
     },
     isEth: true,
+    rpc: [
+      { url: 'https://ethereum-rpc.publicnode.com' },
+      { url: 'https://eth.drpc.org' },
+    ],
   } as EvmChain,
   {
     name: 'Avalanche',
@@ -49,6 +53,10 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api.snowscan.xyz',
     },
+    rpc: [
+      { url: 'https://avalanche-c-chain-rpc.publicnode.com' },
+      { url: 'https://avalanche.drpc.org' },
+    ],
   } as EvmChain,
   {
     name: 'BNB',
@@ -65,6 +73,10 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api.bscscan.com',
     },
+    rpc: [
+      { url: 'https://bsc-rpc.publicnode.com' },
+      { url: 'https://bsc.drpc.org' },
+    ],
   } as EvmChain,
   {
     name: 'Polygon',
@@ -81,6 +93,10 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api.polygonscan.com',
     },
+    rpc: [
+      { url: 'https://polygon-bor-rpc.publicnode.com' },
+      { url: 'https://polygon.drpc.org' },
+    ],
   } as EvmChain,
   {
     name: 'Sepolia',
@@ -99,5 +115,9 @@ export const defaultChainList = [
     },
     testnet: true,
     isEth: true,
+    rpc: [
+      { url: 'https://ethereum-sepolia-rpc.publicnode.com' },
+      { url: 'https://sepolia.drpc.org' },
+    ],
   } as EvmChain,
 ];

@@ -61,7 +61,7 @@ const getTokenBalances = async (
 
   const balances: EVMToken[] = [];
 
-  const provider = EthersUtils.getProvider(chain.network);
+  const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(walletSigningKey, provider);
   if (
     !tokensMetadata.some(

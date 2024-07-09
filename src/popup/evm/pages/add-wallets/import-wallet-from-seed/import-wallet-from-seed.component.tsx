@@ -4,6 +4,7 @@ import { removeFromLoadingList } from '@popup/multichain/actions/loading.actions
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -13,6 +14,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
 const ImportWalletFromSeed = ({
+  chain,
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
@@ -34,7 +36,7 @@ const ImportWalletFromSeed = ({
       EvmWalletUtils.getWalletFromSeedPhrase(seed.join(' '));
     if (wallet) {
       setLoading(true);
-      const derivedWallets = await EvmWalletUtils.deriveWallets(wallet);
+      const derivedWallets = await EvmWalletUtils.deriveWallets(wallet, chain);
       setLoading(false);
       removeFromLoadingList('html_popup_deriving_wallets');
       navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
@@ -80,7 +82,10 @@ const ImportWalletFromSeed = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { hasFinishedSignup: state.hasFinishedSignup };
+  return {
+    hasFinishedSignup: state.hasFinishedSignup,
+    chain: state.chain as EvmChain,
+  };
 };
 
 const connector = connect(mapStateToProps, {

@@ -6,14 +6,15 @@ import {
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet, InfuraProvider, Wallet, ethers } from 'ethers';
+import { HDNodeWallet, Wallet, ethers } from 'ethers';
 
-const getProvider = (network?: string) => {
-  return new InfuraProvider(
-    network,
-    process.env.INFURA_PROJECT_ID,
-    process.env.INFURA_SECRET,
-  );
+const getProvider = (chain: EvmChain) => {
+  return new ethers.JsonRpcProvider(chain.rpc[0].url);
+  // return new InfuraProvider(
+  //   network,
+  //   process.env.INFURA_PROJECT_ID,
+  //   process.env.INFURA_SECRET,
+  // );
 };
 
 const getGasLimit = async (
@@ -23,7 +24,7 @@ const getGasLimit = async (
   amount: number,
   wallet: HDNodeWallet,
 ) => {
-  const provider = getProvider(chain.network);
+  const provider = getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 
   if (token.tokenInfo.type === EVMTokenType.ERC20) {
