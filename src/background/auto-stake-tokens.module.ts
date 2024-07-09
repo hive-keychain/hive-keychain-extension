@@ -65,9 +65,7 @@ const initAutoStakeTokens = async (
       }
     });
 
-    if (tokens.length === 0) {
-      Logger.warn('startAutoStakeTokens: no tokens set!');
-    } else {
+    if (tokens.length > 0) {
       await iterateAutoStakeAccounts(users, tokens, mk);
     }
   } else {
@@ -128,10 +126,6 @@ const iterateAutoStakeAccounts = async (
           );
         }
       }
-    } else {
-      Logger.warn(
-        `autostake module @${acc.name} have no set tokens to autostake!`,
-      );
     }
   }
 };

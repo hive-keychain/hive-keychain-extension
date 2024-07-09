@@ -57,6 +57,12 @@
           .option {
             &:hover {
               background-color: unset !important;
+              .separator {
+                background: var(--separator-color) !important;
+              }
+              .item-label {
+                color: var(--main-font-color);
+              }
             }
           }
         }
@@ -64,20 +70,21 @@
       .auto-stake-token-list {
         max-height: 200px;
         overflow-y: scroll;
-        border: 1px solid var(--card-border);
+        border: unset;
         border-radius: 12px;
         background: var(--input-background);
         .title-list {
           @include poppins500(14px);
-          text-align: center;
           margin-top: 4px;
           margin-bottom: 4px;
+          padding: 0px;
+          padding-left: 16px;
         }
 
         .option {
           &:has(~ .option > .custom-select-item:hover) {
             .separator {
-              background: var(--input-background);
+              background: var(--separator-color) !important;
             }
           }
           .custom-select-item {
@@ -97,7 +104,7 @@
             .item-label {
               @include poppins500(14px);
               flex: 1;
-              color: var(--main-font-color);
+              color: var(--main-font-color) !important;
             }
             .right-action-icon {
               display: none;
@@ -108,9 +115,10 @@
             &:hover {
               .right-action-icon {
                 display: block;
+                margin-right: 10px;
               }
-              + .separator {
-                background: $red;
+              .separator {
+                background: var(--separator-color) !important;
               }
             }
           }

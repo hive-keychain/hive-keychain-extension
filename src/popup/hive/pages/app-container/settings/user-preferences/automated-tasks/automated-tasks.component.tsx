@@ -403,6 +403,8 @@ const AutomatedTasks = ({
                   setSelectedItem={handleSetSelectedToken}
                   label="tokens"
                   filterable
+                  rightActionIcon
+                  rightActionClicked={() => {}}
                 />
               )}
             {autoStakeTokenList.length > 0 && enabledAutoStake && (
