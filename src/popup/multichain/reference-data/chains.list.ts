@@ -40,14 +40,14 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
     chainId: '0xa86a',
     mainToken: 'AVAX',
-    network: 'avaxchain',
+    network: 'avalanche-mainnet',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://snowscan.xyz',
     },
     blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://snowscan.xyz',
+      url: 'https://api.snowscan.xyz',
     },
   } as EvmChain,
   {
@@ -63,7 +63,7 @@ export const defaultChainList = [
     },
     blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://bscscan.com',
+      url: 'https://api.bscscan.com',
     },
   } as EvmChain,
   {

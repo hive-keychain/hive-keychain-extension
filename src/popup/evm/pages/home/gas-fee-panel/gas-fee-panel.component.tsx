@@ -59,6 +59,7 @@ export const GasFeePanel = ({
       amount,
       wallet,
     );
+    console.log(estimate);
     setFeeEstimation(estimate);
     setSelectedFee(estimate.suggested);
   };

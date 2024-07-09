@@ -27,24 +27,15 @@ const estimate = async (
     wallet,
   );
 
-  const low = Decimal.add(
-    Number(estimates.low.suggestedMaxFeePerGas),
-    Number(estimates.low.suggestedMaxPriorityFeePerGas),
-  )
+  const low = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
-  const medium = Decimal.add(
-    Number(estimates.medium.suggestedMaxFeePerGas),
-    Number(estimates.medium.suggestedMaxPriorityFeePerGas),
-  )
+  const medium = new Decimal(Number(estimates.medium.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
-  const aggressive = Decimal.add(
-    Number(estimates.high.suggestedMaxFeePerGas),
-    Number(estimates.high.suggestedMaxPriorityFeePerGas),
-  )
+  const aggressive = new Decimal(Number(estimates.high.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
