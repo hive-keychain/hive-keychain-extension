@@ -63,6 +63,7 @@ const getTokenBalances = async (
 
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(walletSigningKey, provider);
+  console.log(tokensMetadata);
   if (
     !tokensMetadata.some(
       (tokenMetadata) => tokenMetadata.type === EVMTokenType.NATIVE,
@@ -159,20 +160,18 @@ const getTokenListForWalletAddress = async (
       } while (result.length === limit);
 
       let tokensMetadata = [];
-      if (addresses.length > 0) {
-        try {
-          tokensMetadata = await KeychainApi.get(
-            `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
-          );
-        } catch (err) {
-          Logger.error('Error while fetching tokens metadata', err);
-          tokensMetadata =
-            (
-              await LocalStorageUtils.getValueFromLocalStorage(
-                LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-              )
-            )[chain.chainId] ?? [];
-        }
+      try {
+        tokensMetadata = await KeychainApi.get(
+          `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
+        );
+      } catch (err) {
+        Logger.error('Error while fetching tokens metadata', err);
+        tokensMetadata =
+          (
+            await LocalStorageUtils.getValueFromLocalStorage(
+              LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+            )
+          )[chain.chainId] ?? [];
       }
 
       return tokensMetadata;
