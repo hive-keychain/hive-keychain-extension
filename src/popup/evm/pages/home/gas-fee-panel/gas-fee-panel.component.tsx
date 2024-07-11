@@ -27,6 +27,8 @@ interface GasFeePanelProps {
   receiverAddress: string;
   amount: number;
   wallet: HDNodeWallet;
+  selectedFee?: GasFeeEstimation;
+  onSelectFee: (fee: GasFeeEstimation) => void;
 }
 
 export const GasFeePanel = ({
@@ -35,10 +37,12 @@ export const GasFeePanel = ({
   receiverAddress,
   amount,
   wallet,
+  selectedFee,
+  onSelectFee,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
-  const [selectedFee, setSelectedFee] = useState<GasFeeEstimation>();
+
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
   const [customGasFeeForm, setCustomGasFeeForm] = useState<CustomGasFeeForm>({
@@ -59,9 +63,8 @@ export const GasFeePanel = ({
       amount,
       wallet,
     );
-    console.log(estimate);
     setFeeEstimation(estimate);
-    setSelectedFee(estimate.suggested);
+    onSelectFee(estimate.suggested);
   };
 
   const openCustomFeePanel = () => {
@@ -69,7 +72,7 @@ export const GasFeePanel = ({
   };
 
   const selectGasFee = (gasFee: GasFeeEstimation) => {
-    setSelectedFee(gasFee);
+    onSelectFee(gasFee);
     setIsAdvancedPanelOpen(false);
   };
 
@@ -104,7 +107,7 @@ export const GasFeePanel = ({
       estimatedFee: customEstimatedFee,
       estimatedMaxDuration: customDuration,
     } as GasFeeEstimation;
-    setSelectedFee(custom);
+    onSelectFee(custom);
 
     const fullGasFeeEstimation = {
       ...feeEstimation,

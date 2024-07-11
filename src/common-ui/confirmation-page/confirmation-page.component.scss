@@ -63,11 +63,9 @@
   }
 
   .bottom-panel {
-    position: fixed;
-    left: 24px;
-    bottom: 32px;
-    width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;
+    padding: 0px 24px;
+    padding-bottom: 16px;
   }
 }

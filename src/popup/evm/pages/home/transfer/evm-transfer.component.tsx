@@ -1,6 +1,7 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -93,15 +94,17 @@ const EvmTransfer = ({
   useEffect(() => {
     if (activeAccount) {
       setTokenOptions(
-        activeAccount.balances.map((tokenBalance, index) => {
-          return {
-            label: tokenBalance.tokenInfo.symbol.toUpperCase(),
-            subLabel: tokenBalance.tokenInfo.name,
-            value: tokenBalance,
-            img: tokenBalance.tokenInfo.logo,
-            key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
-          };
-        }),
+        EvmAccountUtils.filterSpamTokens(activeAccount.balances).map(
+          (tokenBalance, index) => {
+            return {
+              label: tokenBalance.tokenInfo.symbol.toUpperCase(),
+              subLabel: tokenBalance.tokenInfo.name,
+              value: tokenBalance,
+              img: tokenBalance.tokenInfo.logo,
+              key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
+            };
+          },
+        ),
       );
     }
   }, [activeAccount]);

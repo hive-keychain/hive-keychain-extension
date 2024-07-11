@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
@@ -37,6 +38,8 @@ const ConfirmationPage = ({
   addCaptionToLoading,
 }: PropsType) => {
   const [hasField] = useState(fields && fields.length !== 0);
+  const [selectedFee, setSelectedFee] = useState<GasFeeEstimation>();
+
   useEffect(() => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
@@ -116,6 +119,8 @@ const ConfirmationPage = ({
             receiverAddress={receiverAddress}
             amount={amount}
             wallet={wallet}
+            selectedFee={selectedFee}
+            onSelectFee={setSelectedFee}
           />
         )}
       </div>
