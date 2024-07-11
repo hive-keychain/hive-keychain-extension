@@ -18,7 +18,7 @@ export const EVMWalletInfoSectionActions = (
       label: 'popup_html_send_transfer',
       nextScreen: Screen.TRANSFER_FUND_PAGE,
       nextScreenParams: {
-        selectedCurrency: token.tokenInfo.symbol,
+        selectedCurrency: token,
       },
       icon: SVGIcons.WALLET_SEND,
     },

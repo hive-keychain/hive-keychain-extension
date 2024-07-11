@@ -1,5 +1,6 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
+import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -35,14 +36,14 @@ import FormatUtils from 'src/utils/format.utils';
 
 interface TransferForm {
   receiverAddress: string;
-  selectedToken: string;
+  selectedToken: EVMToken;
   amount: number;
 }
 
 const transferFormRules = FormUtils.createRules<TransferForm>({
   receiverAddress: Joi.string().required(),
   amount: Joi.number().required().positive().max(Joi.ref('$balance')),
-  selectedToken: Joi.string().required(),
+  selectedToken: Joi.object().required(),
 });
 
 const EvmTransfer = ({
@@ -92,11 +93,13 @@ const EvmTransfer = ({
   useEffect(() => {
     if (activeAccount) {
       setTokenOptions(
-        activeAccount.balances.map((tokenBalance) => {
+        activeAccount.balances.map((tokenBalance, index) => {
           return {
-            label: tokenBalance.tokenInfo.symbol,
-            value: tokenBalance.tokenInfo.symbol,
+            label: tokenBalance.tokenInfo.symbol.toUpperCase(),
+            subLabel: tokenBalance.tokenInfo.name,
+            value: tokenBalance,
             img: tokenBalance.tokenInfo.logo,
+            key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
           };
         }),
       );
@@ -104,15 +107,8 @@ const EvmTransfer = ({
   }, [activeAccount]);
 
   useEffect(() => {
-    setBalanceForSelectedToken(watch('selectedToken'));
+    setBalance(watch('selectedToken').balanceInteger);
   }, [watch('selectedToken')]);
-
-  const setBalanceForSelectedToken = (selectedToken: string) => {
-    let tokenBalance = activeAccount.balances.find(
-      (t) => t.tokenInfo.symbol === selectedToken,
-    );
-    if (tokenBalance) setBalance(tokenBalance.balanceInteger);
-  };
 
   const handleClickOnSend = async (form: TransferForm) => {
     if (form.amount <= 0) {
@@ -136,9 +132,9 @@ const EvmTransfer = ({
       },
       {
         label: 'popup_html_transfer_amount',
-        value: `${FormatUtils.formatCurrencyValue(form.amount)} ${
-          form.selectedToken
-        }`,
+        value: `${FormatUtils.formatCurrencyValue(
+          form.amount,
+        )} ${form.selectedToken.tokenInfo.symbol.toUpperCase()}`,
       },
     ];
 
@@ -149,9 +145,7 @@ const EvmTransfer = ({
       title: 'popup_html_transfer_funds',
       formParams: watch(),
       hasGasFee: true,
-      token: activeAccount.balances.find(
-        (t) => t.tokenInfo.symbol === form.selectedToken,
-      ),
+      token: form.selectedToken,
       receiverAddress: form.receiverAddress,
       amount: form.amount,
       wallet: localAccounts[0].wallet,
@@ -172,7 +166,7 @@ const EvmTransfer = ({
         data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
         <BalanceSectionComponent
           value={balance}
-          unit={watch('selectedToken')}
+          unit={watch('selectedToken').tokenInfo.symbol}
           label="popup_html_balance"
         />
 
@@ -195,12 +189,15 @@ const EvmTransfer = ({
                   selectedItem={
                     {
                       value: watch('selectedToken'),
-                      label: watch('selectedToken'),
+                      label:
+                        watch('selectedToken').tokenInfo.symbol.toUpperCase(),
+                      subLabel: watch('selectedToken').tokenInfo.name,
+                      img: watch('selectedToken').tokenInfo.logo,
                     } as OptionItem
                   }
-                  setSelectedItem={(item) =>
-                    setValue('selectedToken', item.value)
-                  }
+                  setSelectedItem={(item) => {
+                    setValue('selectedToken', item.value);
+                  }}
                 />
 
                 <div className="value-input-panel">

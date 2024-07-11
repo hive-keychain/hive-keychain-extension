@@ -46,7 +46,6 @@ const WalletInfoSectionItem = ({
   }, []);
 
   useEffect(() => {
-    console.log(token);
     if (token && !token.tokenInfo.logo) {
       setColor(ColorsUtils.stringToColor(token.tokenInfo.name));
     }

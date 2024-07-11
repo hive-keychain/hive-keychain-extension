@@ -24,6 +24,7 @@ const getGasLimit = async (
   amount: number,
   wallet: HDNodeWallet,
 ) => {
+  console.log(token);
   const provider = getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 

@@ -10,6 +10,7 @@ export type EvmTokenInfoBase = {
   chainId: string;
   backgroundColor: string;
   coingeckoId?: string;
+  address: string;
 };
 
 export type EvmTokenInfoShortNative = EvmTokenInfoBase & {
@@ -19,7 +20,6 @@ export type EvmTokenInfoShortNative = EvmTokenInfoBase & {
 
 export type EvmTokenInfoShortErc20 = EvmTokenInfoBase & {
   type: EVMTokenType.ERC20;
-  address: string;
   decimals: number;
   validated: number;
   possibleSpam: boolean;

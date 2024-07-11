@@ -33,7 +33,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   return (
     <div className="option">
       <div
-        data-testid={`custom-select-item-${item.value}`}
+        data-testid={`custom-select-item-${item.key}`}
         className={`custom-select-item ${isSelected ? 'selected' : ''}`}
         onClick={() => {
           handleItemClicked();

@@ -14,6 +14,7 @@ export interface OptionItem {
   subLabel?: string;
   img?: string;
   imgBackup?: string;
+  key?: string;
 }
 
 export interface CustomSelectProps<T> {
@@ -119,11 +120,14 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         )}
         {filteredOptions.map((option, index) => (
           <CustomSelectItemComponent
-            key={`option-${option.label}`}
+            key={option.key ?? `option-${option.label}`}
             isLast={props.options.length === index}
             item={option}
-            isSelected={option.value === itemProps.selectedItem.value}
-            handleItemClicked={() => itemProps.setSelectedItem(option)}
+            // isSelected={option.value === itemProps.selectedItem.value}
+            isSelected={false}
+            handleItemClicked={() => {
+              itemProps.setSelectedItem(option);
+            }}
             closeDropdown={() => methods.dropDown('close')}
             onDelete={itemProps.onDelete}
             canDelete={option.canDelete}
@@ -147,7 +151,6 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         </div>
       )}
       <Select
-        values={[itemProps.selectedItem]}
         options={itemProps.options}
         onChange={() => undefined}
         dropdownHandleRenderer={customHandleRenderer}
@@ -156,6 +159,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         className={`custom-select ${
           itemProps.background ? itemProps.background : ''
         }`}
+        values={[]}
       />
     </div>
   );
