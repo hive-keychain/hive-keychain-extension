@@ -24,6 +24,8 @@ export interface CustomSelectProps<T> {
   background?: 'white';
   onDelete?: (...params: any) => void;
   filterable?: boolean;
+  rightActionIcon?: boolean;
+  rightActionClicked?: () => void;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -94,6 +96,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             type={InputType.TEXT}
             ref={ref}
             classname="filter-input"
+            rightActionIcon={
+              itemProps.rightActionIcon ? SVGIcons.WALLET_SEARCH : undefined
+            }
+            rightActionClicked={itemProps.rightActionClicked ?? undefined}
           />
         )}
         {filteredOptions.map((option, index) => (

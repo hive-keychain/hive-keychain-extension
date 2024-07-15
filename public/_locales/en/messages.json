@@ -1726,6 +1726,18 @@
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
   },
+  "popup_html_automated_hive_section_title": {
+    "message": "Hive",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_engine_section_title": {
+    "message": "Hive Engine",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_engine_list_title": {
+    "message": "Tokens set for automatic staking",
+    "description": "When on automated tasks page"
+  },
   "popup_html_favorite_accounts_intro": {
     "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
     "description": "When on favorite accounts page"
@@ -1734,8 +1746,20 @@
     "message": "Claim Rewards",
     "description": "When on automated tasks page"
   },
+  "popup_html_enable_autostake_tokens": {
+    "message": "Auto Staking",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_section_default_option_message": {
+    "message": "Add a token to auto-staking",
+    "description": "When on automated tasks page > auto staking default option"
+  },
   "popup_html_enable_autoclaim_rewards_info": {
     "message": "Regularly claiming your rewards can increase your gains.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autostake_tokens_info": {
+    "message": "Automatically staking can increase your gains",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
@@ -3486,6 +3510,10 @@
   "token": {
     "message": "Token",
     "description": "Value of token in USD"
+  },
+  "tokens": {
+    "message": "Tokens",
+    "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
     "message": "Liquid balance",
