@@ -10,11 +10,6 @@ import { HDNodeWallet, Wallet, ethers } from 'ethers';
 
 const getProvider = (chain: EvmChain) => {
   return new ethers.JsonRpcProvider(chain.rpc[0].url);
-  // return new InfuraProvider(
-  //   network,
-  //   process.env.INFURA_PROJECT_ID,
-  //   process.env.INFURA_SECRET,
-  // );
 };
 
 const getGasLimit = async (
@@ -24,7 +19,6 @@ const getGasLimit = async (
   amount: number,
   wallet: HDNodeWallet,
 ) => {
-  console.log(token);
   const provider = getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 
@@ -39,10 +33,10 @@ const getGasLimit = async (
       amount * 1000000,
     );
 
-    let multiplier = chain.isEth ? 1.5 : 1;
+    // let multiplier = chain.isEth ? 1 : 1.5;
+    let multiplier = 1.5;
     return Decimal.mul(Number(estimation), multiplier);
   } else {
-    // const feeData = await provider.getFeeData();
     return 21000;
   }
 };

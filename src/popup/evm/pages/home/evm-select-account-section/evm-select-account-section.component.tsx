@@ -45,6 +45,7 @@ const SelectAccountSection = ({
   useEffect(() => {
     setOptions(
       accounts.map((account: EvmAccount) => {
+        console.log(account.wallet.address);
         return { label: account.wallet.address, value: account.wallet.address };
       }),
     );

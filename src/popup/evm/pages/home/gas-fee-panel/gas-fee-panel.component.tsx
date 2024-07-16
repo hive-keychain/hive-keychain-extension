@@ -283,17 +283,22 @@ export const GasFeePanel = ({
               )}
               {isCustomFeePanelOpened && customGasFeeForm && (
                 <div className="custom-gas-fee-panel">
-                  <InputComponent
-                    label="popup_html_evm_gas_fee_form_base_fee"
-                    placeholder="popup_html_evm_gas_fee_form_base_fee"
-                    type={InputType.NUMBER}
-                    value={customGasFeeForm.maxBaseFeeInGwei}
-                    onChange={(value) => updateCustomFee('maxBaseFee', value)}
-                    hint={`≈${customGasFeeForm.maxBaseFeeValue?.toString()} ${
-                      chain.mainToken
-                    }`}
-                    skipHintTranslation
-                  />
+                  <div className="base-fee-panel">
+                    <InputComponent
+                      label="popup_html_evm_gas_fee_form_base_fee"
+                      placeholder="popup_html_evm_gas_fee_form_base_fee"
+                      type={InputType.NUMBER}
+                      value={customGasFeeForm.maxBaseFeeInGwei}
+                      onChange={(value) => updateCustomFee('maxBaseFee', value)}
+                      hint={`≈${customGasFeeForm.maxBaseFeeValue?.toString()} ${
+                        chain.mainToken
+                      }`}
+                      skipHintTranslation
+                    />
+                    <div className="data-panel"></div>
+                  </div>
+
+                  <div className="priority-fee-panel"></div>
                   <InputComponent
                     label="popup_html_evm_gas_fee_form_priority_fee"
                     placeholder="popup_html_evm_gas_fee_form_priority_fee"
