@@ -1,4 +1,5 @@
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -8,7 +9,7 @@ export interface ConfirmationPageParams {
   skipWarningTranslation?: boolean;
   title: string;
   skipTitleTranslation?: boolean;
-  afterConfirmAction: () => {};
+  afterConfirmAction: <T>(params?: T) => {};
   afterCancelAction?: () => {};
   formParams?: any;
 }
@@ -27,4 +28,9 @@ export interface ConfirmationPageFields {
   labelParams?: string[];
   valueParams?: string[];
   valueClassName?: string;
+}
+
+export interface EvmConfirmationPageGasFee {
+  gasLimit: number;
+  gasFee: GasFeeEstimation;
 }

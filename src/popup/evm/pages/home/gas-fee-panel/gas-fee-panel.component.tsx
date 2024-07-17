@@ -64,6 +64,7 @@ export const GasFeePanel = ({
       wallet,
     );
     setFeeEstimation(estimate);
+
     onSelectFee(estimate.suggested);
   };
 
@@ -84,7 +85,7 @@ export const GasFeePanel = ({
 
     newState[`${key}InGwei` as keyof CustomGasFeeForm] = value;
     newState[`${key}Value` as keyof CustomGasFeeForm] =
-      EvmFormatUtils.gweiToEther(value * feeEstimation?.gasLimit!);
+      EvmFormatUtils.gweiToEther(value * feeEstimation?.custom?.gasLimit!);
     setCustomGasFeeForm(newState);
   };
 

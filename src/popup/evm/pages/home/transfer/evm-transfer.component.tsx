@@ -1,7 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmTransferUtils } from '@popup/evm/utils/evm-transfer.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -34,6 +36,7 @@ import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 interface TransferForm {
   receiverAddress: string;
@@ -63,10 +66,9 @@ const EvmTransfer = ({
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
-      // receiverAddress: formParams.receiverAddress
-      //   ? formParams.receiverUsername
-      //   : '',
-      receiverAddress: '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58',
+      receiverAddress: formParams.receiverAddress
+        ? formParams.receiverUsername
+        : '',
       selectedToken: formParams.selectedToken
         ? formParams.selectedToken
         : navParams.selectedCurrency,
@@ -152,8 +154,25 @@ const EvmTransfer = ({
       receiverAddress: form.receiverAddress,
       amount: form.amount,
       wallet: localAccounts[0].wallet,
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (gasFee: GasFeeEstimation) => {
         addToLoadingList('html_popup_transfer_fund_operation');
+        try {
+          const transactionReceipt = await EvmTransferUtils.transfer(
+            chain,
+            form.selectedToken,
+            form.receiverAddress,
+            form.amount,
+            localAccounts[0].wallet,
+            gasFee,
+          );
+          Logger.log(transactionReceipt);
+          setSuccessMessage('popup_html_evm_transfer_successful');
+        } catch (err) {
+          Logger.error('Error during transfer', err);
+          setErrorMessage('popup_html_transfer_failed');
+        } finally {
+          removeFromLoadingList('html_popup_transfer_fund_operation');
+        }
       },
     } as EVMConfirmationPageParams);
   };

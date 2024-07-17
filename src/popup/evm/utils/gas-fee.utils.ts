@@ -27,6 +27,8 @@ const estimate = async (
     wallet,
   );
 
+  console.log(estimates);
+
   const low = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
@@ -41,26 +43,41 @@ const estimate = async (
     .toNumber();
 
   return {
-    gasLimit: gasLimit,
     suggested: {
       estimatedFee: low,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
+      priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
+      gasLimit: gasLimit,
     },
     low: {
       estimatedFee: low,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
+      priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
+      gasLimit: gasLimit,
     },
     medium: {
       estimatedFee: medium,
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
+      priorityFee: estimates.medium.suggestedMaxPriorityFeePerGas,
+      gasLimit: gasLimit,
     },
     max: {
       estimatedFee: aggressive,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
+      priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
+      gasLimit: gasLimit,
     },
     aggressive: {
       estimatedFee: aggressive,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
+      priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
+      gasLimit: gasLimit,
+    },
+    custom: {
+      estimatedFee: -1,
+      estimatedMaxDuration: -1,
+      priorityFee: -1,
+      gasLimit: gasLimit,
     },
   } as FullGasFeeEstimation;
 };

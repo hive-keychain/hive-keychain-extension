@@ -4472,5 +4472,13 @@
   "popup_html_evm_gas_fee_form_priority_fee": {
     "message": "Priority fee (Gwei)",
     "description": "Evm priority fee"
+  },
+  "popup_html_evm_transfer_successful": {
+    "message": "Transfer successful (to change)",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_gas_fee_not_selected": {
+    "message": "You need to select the gas fee before you can confirm",
+    "description": "Evm transfer"
   }
 }

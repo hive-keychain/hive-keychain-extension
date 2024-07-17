@@ -5,10 +5,12 @@ import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -19,6 +21,8 @@ const EvmApp = ({
   isCurrentPageHomePage,
   appStatus,
   chain,
+  loadingState,
+  loading,
   navigateTo,
   setEvmAccounts,
   fetchPrices,
@@ -48,7 +52,6 @@ const EvmApp = ({
   }, [appStatus, displaySplashscreen]);
 
   const init = async () => {
-    console.log('ici');
     try {
       setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
       const chainsTokensMetadata =
@@ -59,7 +62,6 @@ const EvmApp = ({
       const tokensMetadata = chainsTokensMetadata[chain.chainId];
       fetchPrices(tokensMetadata);
     } catch (err) {
-      console.log('la');
       setDisplaySplashscreen(false);
     }
   };
@@ -68,6 +70,13 @@ const EvmApp = ({
     <div className={`App evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {<EvmRouterComponent />}
       {displaySplashscreen && <SplashscreenComponent />}
+      {loading && (
+        <LoadingComponent
+          operations={loadingState.loadingOperations}
+          caption={loadingState.caption}
+          loadingPercentage={loadingState.loadingPercentage}
+        />
+      )}
     </div>
   );
 };
@@ -80,6 +89,8 @@ const mapStateToProps = (state: RootState) => {
       state.navigation.stack[0]?.currentPage === Screen.EVM_HOME,
     appStatus: state.evm.appStatus,
     chain: state.chain as EvmChain,
+    loadingState: state.loading as LoadingState,
+    loading: state.loading.loadingOperations.length > 0,
   };
 };
 

@@ -40,6 +40,7 @@ export const EvmSelectAccountSectionItemComponent = ({
     }
   };
   const renderCheckedAccount = () => {
+    console.log(isOnMain);
     if (isOnMain)
       return (
         <div className="icons-wrapper">
@@ -88,7 +89,7 @@ export const EvmSelectAccountSectionItemComponent = ({
       onMouseEnter={() => {
         setHovered(true);
       }}
-      onMouseLeave={() => setHovered(false)}>
+      onMouseLeave={() => setHovered(true)}>
       <div
         data-testid={`select-account-item-${item.value}`}
         className={`select-account-item ${

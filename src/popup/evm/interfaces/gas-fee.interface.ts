@@ -1,16 +1,17 @@
 export interface GasFeeEstimation {
   estimatedFee: number;
   estimatedMaxDuration: number;
+  priorityFee: number;
+  gasLimit: number;
 }
 
 export interface FullGasFeeEstimation {
-  gasLimit: number;
   [FeeEstimationType.LOW]: GasFeeEstimation;
   [FeeEstimationType.MEDIUM]: GasFeeEstimation;
   [FeeEstimationType.AGGRESSIVE]: GasFeeEstimation;
   [FeeEstimationType.MAX]: GasFeeEstimation;
   [FeeEstimationType.SUGGESTED]: GasFeeEstimation;
-  [FeeEstimationType.CUSTOM]?: GasFeeEstimation;
+  [FeeEstimationType.CUSTOM]: GasFeeEstimation;
 }
 
 export enum FeeEstimationType {

@@ -1,7 +1,7 @@
 import { Screen } from '@interfaces/screen.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -35,7 +35,7 @@ const ConfirmationPage = ({
   wallet,
   goBack,
   setTitleContainerProperties,
-  addCaptionToLoading,
+  setErrorMessage,
 }: PropsType) => {
   const [hasField] = useState(fields && fields.length !== 0);
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimation>();
@@ -60,7 +60,9 @@ const ConfirmationPage = ({
 
   const handleClickOnConfirm = () => {
     // AnalyticsUtils.sendRequestEvent(title);
-    afterConfirmAction();
+    if ((hasGasFee && !!selectedFee) || !hasGasFee)
+      afterConfirmAction(selectedFee);
+    else setErrorMessage('popup_html_evm_gas_fee_not_selected');
   };
 
   const handleClickOnCancel = async () => {
@@ -169,7 +171,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   goBack,
   setTitleContainerProperties,
-  addCaptionToLoading,
+  setErrorMessage,
 });
 type PropsType = ConnectedProps<typeof connector> & EVMConfirmationPageParams;
 
