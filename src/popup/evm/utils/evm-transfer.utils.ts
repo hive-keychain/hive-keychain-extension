@@ -14,9 +14,10 @@ const transfer = async (
   wallet: HDNodeWallet,
   gasFee: GasFeeEstimation,
 ) => {
+  const provider = EthersUtils.getProvider(chain);
+  const connectedWallet = new Wallet(wallet.signingKey, provider);
+  let transactionRequest: TransactionRequest;
   if (token.tokenInfo.type === EVMTokenType.ERC20) {
-    const provider = EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(wallet.signingKey, provider);
     const contract = new ethers.Contract(
       token.tokenInfo.address!,
       Erc20Abi,
@@ -28,7 +29,7 @@ const transfer = async (
       amount * 1000000,
     ]);
 
-    const transactionRequest: TransactionRequest = {
+    transactionRequest = {
       to: token.tokenInfo.address!,
       value: 0,
       data: data,
@@ -43,7 +44,21 @@ const transfer = async (
       transactionRequest,
     );
     return transactionResponse.wait();
+  } else {
+    transactionRequest = {
+      to: receiverAddress,
+      value: amount * 1000000000000000000,
+      from: connectedWallet.address,
+      nonce: await connectedWallet.getNonce(),
+      maxPriorityFeePerGas: BigInt(gasFee.priorityFee),
+      gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
+      chainId: chain.chainId,
+    };
   }
+  const transactionResponse = await connectedWallet.sendTransaction(
+    transactionRequest,
+  );
+  return transactionResponse.wait();
 };
 
 export const EvmTransferUtils = { transfer };

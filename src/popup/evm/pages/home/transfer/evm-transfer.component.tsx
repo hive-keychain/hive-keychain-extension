@@ -1,6 +1,7 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmTransferUtils } from '@popup/evm/utils/evm-transfer.utils';
@@ -126,6 +127,11 @@ const EvmTransfer = ({
       return;
     }
 
+    const decimals =
+      form.selectedToken.tokenInfo.type === EVMTokenType.ERC20
+        ? form.selectedToken.tokenInfo.decimals
+        : 18;
+
     let fields = [
       {
         label: 'popup_html_transfer_from',
@@ -139,6 +145,7 @@ const EvmTransfer = ({
         label: 'popup_html_transfer_amount',
         value: `${FormatUtils.formatCurrencyValue(
           form.amount,
+          decimals,
         )} ${form.selectedToken.tokenInfo.symbol.toUpperCase()}`,
       },
     ];
