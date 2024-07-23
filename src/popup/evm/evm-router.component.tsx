@@ -7,6 +7,7 @@ import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/impo
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
+import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { globalRouter } from '@popup/multichain/global-router';
@@ -44,6 +45,8 @@ const EvmAppRouter = ({
         return <>EVM on ramp</>;
       case MultichainScreen.TRANSFER_FUND_PAGE:
         return <EvmTransferComponent />;
+      case EvmScreen.EVM_TRANSFER_RESULT_PAGE:
+        return <EvmTransactionResultComponent />;
       case MultichainScreen.CONFIRMATION_PAGE:
         return <EVMConfirmationPageComponent />;
       case MultichainScreen.TOKEN_SWAP_PAGE:

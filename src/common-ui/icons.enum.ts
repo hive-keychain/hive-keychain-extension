@@ -22,6 +22,10 @@ export enum SVGIcons {
 
   EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
 
+  EVM_TRANSACTION_STATUS_PROCESSING = 'evm-tx-status/processing',
+  EVM_TRANSACTION_STATUS_FINISHED = 'evm-tx-status/finished',
+  EVM_TRANSACTION_STATUS_CANCELED = 'evm-tx-status/canceled',
+
   EVM_SETUP_IMAGE = 'evm-setup/coin-img',
   EVM_SETUP_DISPLAY_MNEMONIC = 'evm-setup/display-mnemonic',
   EVM_SETUP_COPY_MNEMONIC = 'evm-setup/copy-mnemonic',

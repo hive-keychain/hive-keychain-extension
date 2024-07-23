@@ -2,6 +2,7 @@ export interface GasFeeEstimation {
   estimatedFee: number;
   estimatedMaxDuration: number;
   priorityFee: number;
+  maxFeePerGas: number;
   gasLimit: number;
 }
 

@@ -26,7 +26,6 @@ const ConfirmationPage = ({
   skipWarningTranslation,
   title,
   skipTitleTranslation,
-  activeAccount,
   hasGasFee,
   chain,
   token,
@@ -59,7 +58,6 @@ const ConfirmationPage = ({
   }, []);
 
   const handleClickOnConfirm = () => {
-    // AnalyticsUtils.sendRequestEvent(title);
     if ((hasGasFee && !!selectedFee) || !hasGasFee)
       afterConfirmAction(selectedFee);
     else setErrorMessage('popup_html_evm_gas_fee_not_selected');
@@ -126,7 +124,6 @@ const ConfirmationPage = ({
           />
         )}
       </div>
-
       <div className="bottom-panel">
         <ButtonComponent
           dataTestId="dialog_cancel-button"

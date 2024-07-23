@@ -4480,5 +4480,73 @@
   "popup_html_evm_gas_fee_not_selected": {
     "message": "You need to select the gas fee before you can confirm",
     "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_speed_up": {
+    "message": "Speed up",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_cancel": {
+    "message": "Cancel",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_status_pending": {
+    "message": "Pending...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_success": {
+    "message": "Success",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_failed": {
+    "message": "Failed",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_canceling": {
+    "message": "Canceling...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_canceled": {
+    "message": "Canceled",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transaction_info_block_number": {
+    "message": "Block number",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_limit": {
+    "message": "Gas limit",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_total_fee_per_gas": {
+    "message": "Total fee per gas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_priority_fee": {
+    "message": "Priority fee",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_price": {
+    "message": "Gas price",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_to": {
+    "message": "To",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_tx_hash": {
+    "message": "Transaction hash",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_from": {
+    "message": "From",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_final_gas_fee": {
+    "message": "Final gas fee",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_speed_up_transaction": {
+    "message": "Speed up",
+    "description": "Evm transaction info"
   }
 }

@@ -46,7 +46,10 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
   parseFloat(props.total_vesting_shares + '');
 
-const formatCurrencyValue = (value: string | Asset | number, digits = 3) => {
+const formatCurrencyValue = (
+  value: string | Asset | number | bigint,
+  digits = 3,
+) => {
   if (value === undefined || value === null) {
     return '...';
   }

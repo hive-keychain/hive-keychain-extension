@@ -3,6 +3,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmTransferUtils } from '@popup/evm/utils/evm-transfer.utils';
 import {
@@ -63,7 +64,6 @@ const EvmTransfer = ({
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
-  navigateTo,
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
@@ -164,7 +164,7 @@ const EvmTransfer = ({
       afterConfirmAction: async (gasFee: GasFeeEstimation) => {
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
-          const transactionReceipt = await EvmTransferUtils.transfer(
+          const transactionResult = await EvmTransferUtils.transfer(
             chain,
             form.selectedToken,
             form.receiverAddress,
@@ -172,7 +172,15 @@ const EvmTransfer = ({
             localAccounts[0].wallet,
             gasFee,
           );
-          Logger.log(transactionReceipt);
+
+          Logger.log(transactionResult);
+          navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+            transactionResponse: transactionResult,
+            token: form.selectedToken,
+            receiverAddress: form.receiverAddress,
+            amount: form.amount,
+            gasFee: gasFee,
+          });
           setSuccessMessage('popup_html_evm_transfer_successful');
         } catch (err) {
           Logger.error('Error during transfer', err);
