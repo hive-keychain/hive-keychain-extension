@@ -89,7 +89,7 @@ const ExportedAccountsQR = ({
 
   return (
     <div
-      data-testid={`${Screen.SETTINGS_EXPORTED_ACCOUNTS_QR}-page`}
+      data-testid={`${Screen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR}-page`}
       className="settings-exported-accounts-qr">
       {accountsDataQR.length > 0 && (
         <div className="qr-exported-item">

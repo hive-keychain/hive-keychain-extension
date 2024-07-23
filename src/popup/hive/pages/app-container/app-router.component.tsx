@@ -138,7 +138,7 @@ const AppRouter = ({
         return <ManageAccountAuthoritiesComponent />;
       case Screen.SETTINGS_EXPORT_ACCOUNTS:
         return <ExportAccountsSubMenuComponent />;
-      case Screen.SETTINGS_EXPORTED_ACCOUNTS_QR:
+      case Screen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR:
         return <ExportedAccountsQRComponent />;
       case Screen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;

@@ -18,7 +18,7 @@ const ExportAccountsSubMenuItems: MenuItem[] = [
   {
     label: 'popup_html_export_all_accounts_as_QR',
     icon: SVGIcons.MENU_EXPORT_ACCOUNTS_QR,
-    nextScreen: Screen.SETTINGS_EXPORTED_ACCOUNTS_QR,
+    nextScreen: Screen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR,
   },
 ];
 

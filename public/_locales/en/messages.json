@@ -829,7 +829,7 @@
     "description": "on settings page accounts > export acc sub menu"
   },
   "popup_html_export_all_accounts_as_QR": {
-    "message": "Export all accounts QR",
+    "message": "Export all accounts by QR Code",
     "description": "on settings page accounts > export acc sub menu"
   },
   "popup_html_manage_no_accounts_authorities": {
