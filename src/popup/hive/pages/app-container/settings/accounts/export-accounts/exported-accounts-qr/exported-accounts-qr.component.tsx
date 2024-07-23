@@ -7,9 +7,6 @@ import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { ConnectedProps, connect } from 'react-redux';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
 
 export const QR_CONTENT_PREFIX = 'keychain://add_accounts=';
 
@@ -28,7 +25,6 @@ const ExportedAccountsQR = ({
     }[]
   >([]);
   const [pageIndex, setPageIndex] = useState<number>(0);
-
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_exported_accounts_QR',
@@ -86,7 +82,6 @@ const ExportedAccountsQR = ({
   const encode = (value: string) => {
     return btoa(value);
   };
-
   return (
     <div
       data-testid={`${Screen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR}-page`}
@@ -95,15 +90,22 @@ const ExportedAccountsQR = ({
         <div className="qr-exported-item">
           <div>
             <div className="qr-code-disclaimer">
-              <span>
+              <div>
                 {chrome.i18n.getMessage(
                   'popup_html_qr_exported_set_disclaimer1',
                 ) + ' '}
-              </span>
-              <span>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</span>
+              </div>
+              <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</div>
             </div>
           </div>
           <div className="qr-code-container">
+            <div>
+              {accountsDataQR[pageIndex].index}/
+              {accountsDataQR[pageIndex].total} : @
+              {JSON.parse(accountsDataQR[pageIndex].data)
+                .map((e: string) => JSON.parse(e).name)
+                .join(', @')}
+            </div>
             <div ref={qrCodeRef}></div>
             <QRCode
               data-testid="qrcode"
@@ -114,14 +116,6 @@ const ExportedAccountsQR = ({
               )}`}
               bgColor="var(--qrcode-background-color)"
               fgColor="var(--qrcode-foreground-color)"
-            />
-          </div>
-          <div className="button-container">
-            <ButtonComponent
-              dataTestId="button-next-page"
-              type={ButtonType.IMPORTANT}
-              label="popup_html_close"
-              onClick={closePage}
             />
           </div>
         </div>

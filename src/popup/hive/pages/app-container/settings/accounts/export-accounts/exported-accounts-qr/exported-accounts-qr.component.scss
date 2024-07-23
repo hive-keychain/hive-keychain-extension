@@ -15,21 +15,15 @@
     border: 1px solid var(--card-border);
     z-index: 2;
     border-radius: 20px;
-    row-gap: 32px;
 
-    .qr-code-disclaimer {
+    .qr-code-disclaimer,
+    .qr-code-container {
       @include caption;
-      font-weight: 500;
-      font-size: 12px;
-      padding: 0;
-      max-width: 256px;
-      margin-bottom: -20px;
+      padding: 12px;
       text-align: justify;
-      margin-top: 16px;
-    }
-
-    .button-container {
-      width: 80%;
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
     }
   }
 
