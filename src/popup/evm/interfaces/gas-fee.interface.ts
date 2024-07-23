@@ -13,6 +13,7 @@ export interface FullGasFeeEstimation {
   [FeeEstimationType.MAX]: GasFeeEstimation;
   [FeeEstimationType.SUGGESTED]: GasFeeEstimation;
   [FeeEstimationType.CUSTOM]: GasFeeEstimation;
+  [FeeEstimationType.INCREASED]?: GasFeeEstimation;
 }
 
 export enum FeeEstimationType {
@@ -22,6 +23,7 @@ export enum FeeEstimationType {
   MAX = 'max',
   SUGGESTED = 'suggested',
   CUSTOM = 'custom',
+  INCREASED = 'increased',
 }
 
 export interface CustomGasFeeForm {

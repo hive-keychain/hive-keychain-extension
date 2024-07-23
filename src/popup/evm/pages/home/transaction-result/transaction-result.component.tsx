@@ -1,5 +1,7 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EvmTokenInfoShortErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
@@ -32,6 +34,9 @@ const EvmTransactionResult = ({
   const [txResult, setTxResult] = useState<TransactionResponse>();
 
   const [isCanceled, setCanceled] = useState<boolean>(false);
+  const [isGasPanelOpened, setGasPanelOpened] = useState<boolean>(false);
+  const [increasedGasFee, setIncreasedGasFee] =
+    useState<GasFeeEstimation>(gasFee);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -186,12 +191,23 @@ const EvmTransactionResult = ({
             <ButtonComponent
               dataTestId="dialog_confirm-button"
               label={'popup_html_evm_speed_up_transaction'}
-              onClick={speedUpTransaction}
+              onClick={() => setGasPanelOpened(true)}
               type={ButtonType.IMPORTANT}
               height="small"></ButtonComponent>
           </div>
         )}
       </div>
+      {isGasPanelOpened && (
+        <GasFeePanel
+          chain={chain}
+          token={token}
+          receiverAddress={receiverAddress}
+          amount={amount}
+          wallet={localAccounts[0].wallet}
+          onSelectFee={(value) => setIncreasedGasFee(value)}
+          selectedFee={increasedGasFee}
+        />
+      )}
       {txResult && (
         <div className="transaction-info">
           <SmallDataCardComponent

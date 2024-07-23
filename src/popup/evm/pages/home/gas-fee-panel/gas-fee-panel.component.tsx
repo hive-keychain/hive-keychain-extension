@@ -29,6 +29,7 @@ interface GasFeePanelProps {
   wallet: HDNodeWallet;
   selectedFee?: GasFeeEstimation;
   onSelectFee: (fee: GasFeeEstimation) => void;
+  multiplier?: number;
 }
 
 export const GasFeePanel = ({
@@ -39,6 +40,7 @@ export const GasFeePanel = ({
   wallet,
   selectedFee,
   onSelectFee,
+  multiplier = 1,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -65,7 +67,21 @@ export const GasFeePanel = ({
     );
     setFeeEstimation(estimate);
 
-    onSelectFee(estimate.suggested);
+    if (!selectedFee) onSelectFee(estimate.suggested);
+    else {
+      const increasedFee: GasFeeEstimation = {
+        ...selectedFee,
+        maxFeePerGas: new Decimal(selectedFee.maxFeePerGas)
+          .mul(multiplier)
+          .toNumber(),
+        priorityFee: new Decimal(selectedFee.priorityFee)
+          .mul(multiplier)
+          .toNumber(),
+      };
+      increasedFee.estimatedFee =
+        increasedFee.gasLimit * increasedFee.maxFeePerGas;
+      onSelectFee(selectedFee);
+    }
   };
 
   const openCustomFeePanel = () => {
