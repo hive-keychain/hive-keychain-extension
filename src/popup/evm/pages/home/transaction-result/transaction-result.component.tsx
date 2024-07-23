@@ -1,7 +1,7 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EvmTokenInfoShortErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmTransferUtils } from '@popup/evm/utils/evm-transfer.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -64,11 +64,9 @@ const EvmTransactionResult = ({
   const cancelTransaction = async () => {
     setCanceled(true);
     setWaitingForTx(true);
-    const cancelTransactionResponse = await EvmTransferUtils.cancel(
+    const cancelTransactionResponse = await EvmTransactionsUtils.cancel(
       transactionResponse,
       chain,
-      token,
-      receiverAddress,
       gasFee,
       localAccounts[0].wallet,
     );

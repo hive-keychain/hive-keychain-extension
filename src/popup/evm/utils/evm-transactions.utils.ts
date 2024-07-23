@@ -80,8 +80,6 @@ const transfer = async (
 const cancel = async (
   transactionResponse: TransactionResponse,
   chain: EvmChain,
-  token: EVMToken,
-  receiverAddress: string,
   gasFee: GasFeeEstimation,
   wallet: HDNodeWallet,
 ) => {
@@ -90,10 +88,11 @@ const cancel = async (
     maxFeePerGas: new Decimal(gasFee.maxFeePerGas).mul(1.5).toNumber(),
     priorityFee: new Decimal(gasFee.priorityFee).mul(1.5).toNumber(),
   };
+
   return transfer(
     chain,
-    token,
-    receiverAddress,
+    { tokenInfo: { type: EVMTokenType.NATIVE } } as EVMToken,
+    ethers.ZeroAddress,
     0,
     wallet,
     newGasFee,
@@ -101,4 +100,4 @@ const cancel = async (
   );
 };
 
-export const EvmTransferUtils = { transfer, cancel };
+export const EvmTransactionsUtils = { transfer, cancel };

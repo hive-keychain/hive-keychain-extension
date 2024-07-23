@@ -5,7 +5,7 @@ import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
-import { EvmTransferUtils } from '@popup/evm/utils/evm-transfer.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -164,7 +164,7 @@ const EvmTransfer = ({
       afterConfirmAction: async (gasFee: GasFeeEstimation) => {
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
-          const transactionResult = await EvmTransferUtils.transfer(
+          const transactionResult = await EvmTransactionsUtils.transfer(
             chain,
             form.selectedToken,
             form.receiverAddress,
