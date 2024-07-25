@@ -8,7 +8,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
     width: 80%;
     align-self: center;
     background: var(--card-background);
@@ -24,6 +23,20 @@
       display: flex;
       flex-direction: column;
       row-gap: 8px;
+      .qrcode {
+        align-self: center;
+      }
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      width: 100%;
+      margin-bottom: 16px;
+      .button-export-accounts-qr {
+        width: 45%;
+      }
     }
   }
 

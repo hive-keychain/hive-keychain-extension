@@ -3,10 +3,12 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import { ThrottleSettings, throttle } from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 
 export const QR_CONTENT_PREFIX = 'keychain://add_accounts=';
 
@@ -31,9 +33,6 @@ const ExportedAccountsQR = ({
       isBackButtonEnabled: true,
     });
     exportAllAccountsQR();
-    return () => {
-      throttledRefresh.cancel();
-    };
   }, []);
 
   const exportAllAccountsQR = () => {
@@ -57,23 +56,21 @@ const ExportedAccountsQR = ({
     setaccountsDataQR(tempAccountsDataQR);
   };
 
-  useEffect(() => {
-    throttledRefresh(pageIndex, accountsDataQR);
-  }, [pageIndex, accountsDataQR]);
+  const moveNext = () => {
+    if (pageIndex === accountsDataQR.length - 1) {
+      setPageIndex(0);
+    } else {
+      setPageIndex((newPageIndex) => newPageIndex + 1);
+    }
+  };
 
-  const throttledRefresh = useMemo(() => {
-    return throttle(
-      (newPageIndex, newaccountsDataQR) => {
-        if (newPageIndex === newaccountsDataQR.length - 1) {
-          setPageIndex(0);
-        } else {
-          setPageIndex((newPageIndex) => newPageIndex + 1);
-        }
-      },
-      2000,
-      { leading: false } as ThrottleSettings,
-    );
-  }, []);
+  const movePrevious = () => {
+    if (pageIndex === 0) {
+      setPageIndex(0);
+    } else {
+      setPageIndex((newPageIndex) => newPageIndex - 1);
+    }
+  };
 
   const closePage = () => {
     navigateTo(Screen.HOME_PAGE, true);
@@ -110,12 +107,25 @@ const ExportedAccountsQR = ({
             <QRCode
               data-testid="qrcode"
               className="qrcode"
-              size={300}
+              size={260}
               value={`${QR_CONTENT_PREFIX}${encode(
                 JSON.stringify(accountsDataQR[pageIndex]),
               )}`}
               bgColor="var(--qrcode-background-color)"
               fgColor="var(--qrcode-foreground-color)"
+            />
+          </div>
+          <div className="buttons-container">
+            <ButtonComponent
+              label="popup_html_whats_new_previous"
+              onClick={movePrevious}
+              type={ButtonType.ALTERNATIVE}
+              additionalClass="button-export-accounts-qr"
+            />
+            <ButtonComponent
+              label="popup_html_whats_new_next"
+              onClick={moveNext}
+              additionalClass="button-export-accounts-qr"
             />
           </div>
         </div>
