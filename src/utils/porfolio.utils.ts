@@ -98,9 +98,10 @@ const getPortfolio = async (
 
   const portfolio: UserPortfolio[] = [];
   const tokens = await TokensUtils.getAllTokens();
-  const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.HIDDEN_TOKENS,
-  );
+  const hiddenTokensList =
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    )) || [];
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
@@ -208,9 +209,12 @@ const generateUserLayerTwoPortolio = (
   hiddenTokensList: string[],
 ) => {
   const userLayerTwoPortfolio: PortfolioBalance[] = [];
-  for (const userToken of userTokens.tokensBalance.filter(
+  console.log('1', userTokens);
+  const userTokensList = userTokens.tokensBalance.filter(
     (token) => !hiddenTokensList.includes(token.symbol),
-  )) {
+  );
+  console.log('2', userTokensList);
+  for (const userToken of userTokensList) {
     userLayerTwoPortfolio.push(
       getPortfolioHETokenData(userToken, tokensMarket, prices, tokens),
     );
