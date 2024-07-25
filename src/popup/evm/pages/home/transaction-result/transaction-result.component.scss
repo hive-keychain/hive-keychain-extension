@@ -46,4 +46,20 @@
     gap: 12px;
     margin: 12px;
   }
+  .popup-container {
+    .title-panel {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .title {
+        @include poppins500(16px);
+        color: var(--main-font-color);
+      }
+    }
+    .gas-fee-panel {
+      width: 100%;
+      border: unset;
+      padding: unset;
+    }
+  }
 }

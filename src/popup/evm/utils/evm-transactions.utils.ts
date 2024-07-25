@@ -22,6 +22,8 @@ const transfer = async (
   gasFee: GasFeeEstimation,
   nonce?: number,
 ) => {
+  console.log({ chain, token, receiverAddress, amount, gasFee, nonce });
+
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
   let transactionRequest: TransactionRequest;

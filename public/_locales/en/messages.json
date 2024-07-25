@@ -4414,7 +4414,11 @@
     "description": "Blockchain hp token"
   },
   "popup_html_evm_gas_fee_estimate_label": {
-    "message": "Gas fee (estimate)",
+    "message": "Estimate",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration_label": {
+    "message": "Duration",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
@@ -4431,6 +4435,10 @@
   },
   "popup_html_evm_edit_gas_fee": {
     "message": "Edit gas fee",
+    "description": "Evm edit Gas fee label"
+  },
+  "popup_html_evm_custom_gas_fee_increased": {
+    "message": "Increased",
     "description": "Evm edit Gas fee label"
   },
   "popup_html_evm_custom_gas_fee_low": {
@@ -4509,6 +4517,10 @@
     "message": "Canceled",
     "description": "Evm transfer status"
   },
+  "popup_html_evm_transfer_status_speeding_up": {
+    "message": "Speeding up...",
+    "description": "Evm transfer status"
+  },
   "popup_html_evm_transaction_info_block_number": {
     "message": "Block number",
     "description": "Evm transaction info"
@@ -4547,6 +4559,10 @@
   },
   "popup_html_evm_speed_up_transaction": {
     "message": "Speed up",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_select_fee": {
+    "message": "Select fee",
     "description": "Evm transaction info"
   }
 }

@@ -4,26 +4,17 @@ export interface GasFeeEstimation {
   priorityFee: number;
   maxFeePerGas: number;
   gasLimit: number;
+  deactivated?: boolean;
 }
 
 export interface FullGasFeeEstimation {
-  [FeeEstimationType.LOW]: GasFeeEstimation;
-  [FeeEstimationType.MEDIUM]: GasFeeEstimation;
-  [FeeEstimationType.AGGRESSIVE]: GasFeeEstimation;
-  [FeeEstimationType.MAX]: GasFeeEstimation;
-  [FeeEstimationType.SUGGESTED]: GasFeeEstimation;
-  [FeeEstimationType.CUSTOM]: GasFeeEstimation;
-  [FeeEstimationType.INCREASED]?: GasFeeEstimation;
-}
-
-export enum FeeEstimationType {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  AGGRESSIVE = 'aggressive',
-  MAX = 'max',
-  SUGGESTED = 'suggested',
-  CUSTOM = 'custom',
-  INCREASED = 'increased',
+  low: GasFeeEstimation;
+  medium: GasFeeEstimation;
+  aggressive: GasFeeEstimation;
+  max: GasFeeEstimation;
+  suggested: GasFeeEstimation;
+  custom: GasFeeEstimation;
+  increased?: GasFeeEstimation;
 }
 
 export interface CustomGasFeeForm {

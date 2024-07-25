@@ -15,6 +15,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -34,6 +35,8 @@ const EvmTransactionResult = ({
   const [txResult, setTxResult] = useState<TransactionResponse>();
 
   const [isCanceled, setCanceled] = useState<boolean>(false);
+  const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
+    useState<boolean>(false);
   const [isGasPanelOpened, setGasPanelOpened] = useState<boolean>(false);
   const [increasedGasFee, setIncreasedGasFee] =
     useState<GasFeeEstimation>(gasFee);
@@ -50,7 +53,6 @@ const EvmTransactionResult = ({
     try {
       const transactionReceipt = await transactionResponse.wait();
       console.log({ transactionReceipt });
-      setWaitingForTx(false);
       if (transactionReceipt) {
         const transactionResult = await EthersUtils.getProvider(
           chain,
@@ -60,9 +62,11 @@ const EvmTransactionResult = ({
         if (transactionResult) setTxResult(transactionResult);
       }
     } catch (err) {
+      console.log(err);
       if (!isCanceled) {
         // Display error message
       }
+      setWaitingForTx(false);
     }
   };
 
@@ -79,7 +83,7 @@ const EvmTransactionResult = ({
       await cancelTransactionResponse.wait();
       const cancelTransactionReceipt = await cancelTransactionResponse.wait();
       console.log({ canceltransactionReceipt: cancelTransactionReceipt });
-      setWaitingForTx(false);
+
       if (cancelTransactionReceipt) {
         const cancelTransactionResult = await EthersUtils.getProvider(
           chain,
@@ -89,11 +93,46 @@ const EvmTransactionResult = ({
         if (cancelTransactionResult) setTxResult(cancelTransactionResult);
       }
     } catch (err) {
+      console.log(err);
       // catch error
     }
+    setWaitingForTx(false);
   };
 
-  const speedUpTransaction = async () => {};
+  const speedUpTransaction = async () => {
+    setTransactionSpeedingUp(true);
+    setGasPanelOpened(false);
+    console.log('speeding up transaction');
+
+    const speedUpTransactionResponse = await EvmTransactionsUtils.transfer(
+      chain,
+      token,
+      receiverAddress,
+      amount,
+      localAccounts[0].wallet,
+      increasedGasFee,
+      transactionResponse.nonce,
+    );
+
+    try {
+      await speedUpTransactionResponse.wait();
+      const speedUpTransactionReceipt = await speedUpTransactionResponse.wait();
+      console.log({ speedUpTransactionReceipt: speedUpTransactionReceipt });
+
+      if (speedUpTransactionReceipt) {
+        const speedUpTransactionResult = await EthersUtils.getProvider(
+          chain,
+        ).getTransaction(speedUpTransactionReceipt.hash);
+        console.log({ speedUpTransactionResult: speedUpTransactionResult });
+        setTxReceipt(speedUpTransactionReceipt);
+        if (speedUpTransactionResult) setTxResult(speedUpTransactionResult);
+      }
+    } catch (err) {
+      console.log(err);
+      // catch error
+    }
+    setWaitingForTx(false);
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -115,6 +154,8 @@ const EvmTransactionResult = ({
         return 'popup_html_evm_transfer_status_success';
       case 'pending':
         return 'popup_html_evm_transfer_status_pending';
+      case 'speeding':
+        return 'popup_html_evm_transfer_status_speeding_up';
       case 'failed':
         return 'popup_html_evm_transfer_status_failed';
       case 'canceling':
@@ -131,6 +172,7 @@ const EvmTransactionResult = ({
       if (isCanceled) {
         return 'canceling';
       }
+      if (isTransactionSpeedingUp) return 'speeding';
       return 'pending';
     }
     if (txReceipt) {
@@ -180,7 +222,7 @@ const EvmTransactionResult = ({
             </div>
           </div>
         </div>
-        {waitingForTx && !isCanceled && (
+        {waitingForTx && (!isCanceled || isTransactionSpeedingUp) && (
           <div className="buttons-panel">
             <ButtonComponent
               dataTestId="dialog_cancel-button"
@@ -198,15 +240,32 @@ const EvmTransactionResult = ({
         )}
       </div>
       {isGasPanelOpened && (
-        <GasFeePanel
-          chain={chain}
-          token={token}
-          receiverAddress={receiverAddress}
-          amount={amount}
-          wallet={localAccounts[0].wallet}
-          onSelectFee={(value) => setIncreasedGasFee(value)}
-          selectedFee={increasedGasFee}
-        />
+        <PopupContainer>
+          <div className="title-panel">
+            <div className="title">
+              {chrome.i18n.getMessage('popup_html_evm_transaction_select_fee')}
+            </div>
+            <SVGIcon
+              icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+              onClick={() => setGasPanelOpened(false)}
+            />
+          </div>
+          <GasFeePanel
+            chain={chain}
+            token={token}
+            receiverAddress={receiverAddress}
+            amount={amount}
+            wallet={localAccounts[0].wallet}
+            onSelectFee={(value) => setIncreasedGasFee(value)}
+            selectedFee={increasedGasFee}
+            multiplier={1.5}
+          />
+          <ButtonComponent
+            label="popup_html_confirm"
+            onClick={() => speedUpTransaction()}
+            height="small"
+          />
+        </PopupContainer>
       )}
       {txResult && (
         <div className="transaction-info">

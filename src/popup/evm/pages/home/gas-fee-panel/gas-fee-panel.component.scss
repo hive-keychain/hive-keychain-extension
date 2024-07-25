@@ -68,6 +68,11 @@
       .gas-fee {
         text-align: right;
       }
+      &.deactivated {
+        pointer-events: none;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
     }
   }
   .custom-gas-fee-panel {
