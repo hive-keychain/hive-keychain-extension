@@ -35,7 +35,7 @@ const EvmAppRouter = ({
         return <CreateNewWalletComponent />;
       case EvmScreen.CREATE_EVM_WALLET_VERIFICATION:
         return <CreateNewWalletVerificationComponent />;
-      case EvmScreen.EVM_HOME:
+      case MultichainScreen.HOME_PAGE:
         return <EvmHomeComponent />;
 
       case EvmScreen.EVM_TOKEN_HISTORY:

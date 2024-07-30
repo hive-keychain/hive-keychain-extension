@@ -59,7 +59,7 @@ const AppRouter = ({
 }: PropsFromRedux) => {
   const renderAccountPage = (page: Screen) => {
     switch (page) {
-      case HiveScreen.HOME_PAGE:
+      case MultichainScreen.HOME_PAGE:
         return <HiveHomeComponent />;
       case HiveScreen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;

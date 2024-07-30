@@ -32,7 +32,7 @@ const EvmApp = ({
     if (!accounts.length) {
       navigateTo(Screen.EVM_ADD_WALLET_MAIN);
     } else {
-      navigateTo(Screen.EVM_HOME);
+      navigateTo(Screen.HOME_PAGE);
     }
   }, [accounts.length]);
 
@@ -86,7 +86,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.evm.accounts,
     mk: state.mk,
     isCurrentPageHomePage:
-      state.navigation.stack[0]?.currentPage === Screen.EVM_HOME,
+      state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
     appStatus: state.evm.appStatus,
     chain: state.chain as EvmChain,
     loadingState: state.loading as LoadingState,

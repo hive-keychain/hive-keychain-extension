@@ -155,7 +155,7 @@ const Home = ({
   };
 
   return (
-    <HomepageContainer datatestId={`${Screen.EVM_HOME}-page`}>
+    <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       <TopBarComponent
         onMenuButtonClicked={async () => {
           navigateTo(EvmScreen.EVM_SETTINGS);
