@@ -20,6 +20,7 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
+import { MathUtils } from 'src/utils/math.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
@@ -65,17 +66,23 @@ export const GasFeePanel = ({
       amount,
       wallet,
     );
-    console.log(selectedFee);
     if (!!multiplier && selectedFee) {
-      console.log(multiplier, selectedFee, 'set increased fee');
+      console.log(
+        MathUtils.countDecimals(selectedFee.maxFeePerGas),
+        MathUtils.countDecimals(selectedFee.priorityFee),
+      );
       const increasedFee: GasFeeEstimation = {
         ...selectedFee,
-        maxFeePerGas: new Decimal(selectedFee.maxFeePerGas)
-          .mul(multiplier)
-          .toNumber(),
-        priorityFee: new Decimal(selectedFee.priorityFee)
-          .mul(multiplier)
-          .toNumber(),
+        maxFeePerGas: Number(
+          new Decimal(selectedFee.maxFeePerGas)
+            .mul(multiplier)
+            .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
+        ),
+        priorityFee: Number(
+          new Decimal(selectedFee.priorityFee)
+            .mul(multiplier)
+            .toFixed(MathUtils.countDecimals(selectedFee.priorityFee)),
+        ),
       };
       increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
         increasedFee.gasLimit * increasedFee.maxFeePerGas,
@@ -86,13 +93,11 @@ export const GasFeePanel = ({
       if (estimate.medium.estimatedFee < increasedFee.estimatedFee)
         estimate.medium.deactivated = true;
 
-      onSelectFee(selectedFee);
+      onSelectFee(increasedFee);
       estimate.increased = increasedFee;
     } else {
-      console.log('using suggested');
       onSelectFee(estimate.suggested);
     }
-    console.log(estimate);
     setFeeEstimation(estimate);
   };
 

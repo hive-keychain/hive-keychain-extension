@@ -27,8 +27,15 @@ const generateOrderedRandomWithoutDuplicates = (
   );
 };
 
+const countDecimals = (number: string | bigint | number) => {
+  const value = number.toString().split('.');
+  if (value[1]) return value[1].length;
+  else return 0;
+};
+
 export const MathUtils = {
   generateRandom,
   generateMultipleRandomWithoutDuplicates,
   generateOrderedRandomWithoutDuplicates,
+  countDecimals,
 };
