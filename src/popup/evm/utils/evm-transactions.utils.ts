@@ -1,17 +1,24 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTokenInfoShort,
+  EVMTokenType,
+  PendingTransactionData,
+  UserPendingTransactions,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import {
+  ethers,
   HDNodeWallet,
   TransactionRequest,
   TransactionResponse,
   Wallet,
-  ethers,
 } from 'ethers';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const transfer = async (
   chain: EvmChain,
@@ -53,11 +60,6 @@ const transfer = async (
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
       chainId: chain.chainId,
     };
-
-    const transactionResponse = await connectedWallet.sendTransaction(
-      transactionRequest,
-    );
-    return transactionResponse;
   } else {
     transactionRequest = {
       to: receiverAddress,
@@ -76,6 +78,14 @@ const transfer = async (
   const transactionResponse = await connectedWallet.sendTransaction(
     transactionRequest,
   );
+
+  await addPendingTransaction(
+    transactionResponse,
+    connectedWallet.address,
+    token.tokenInfo,
+    amount,
+  );
+
   return transactionResponse;
 };
 
@@ -102,4 +112,76 @@ const cancel = async (
   );
 };
 
-export const EvmTransactionsUtils = { transfer, cancel };
+const addPendingTransaction = async (
+  transactionResponse: TransactionResponse,
+  address: string,
+  tokenInfo: EvmTokenInfoShort,
+  amount: number,
+) => {
+  console.log('addPendingTransaction');
+
+  let transactions: UserPendingTransactions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    );
+  if (!transactions) {
+    transactions = {};
+  }
+  if (!transactions[address]) {
+    transactions[address] = [];
+  }
+  transactions[address].push({
+    transaction: transactionResponse,
+    amount,
+    tokenInfo,
+  });
+
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    transactions,
+  );
+};
+
+const deleteFromPendingTransactions = async (
+  address: string,
+  nonce: number,
+) => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+  );
+
+  data[address] = data[address].filter(
+    (pendingTransaction: PendingTransactionData) =>
+      pendingTransaction.transaction.nonce !== nonce,
+  );
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    data,
+  );
+};
+
+const getPendingTransactions = async (
+  address: string,
+  tokenInfo: EvmTokenInfoShort,
+) => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+  );
+
+  if (!data) return [];
+  if (!data[address]) return [];
+  return data[address].filter(
+    (pendingTransaction: PendingTransactionData) =>
+      pendingTransaction.tokenInfo.symbol === tokenInfo.symbol &&
+      pendingTransaction.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
+  );
+};
+
+export const EvmTransactionsUtils = {
+  transfer,
+  cancel,
+  getPendingTransactions,
+  addPendingTransaction,
+  deleteFromPendingTransactions,
+};

@@ -39,9 +39,10 @@ const fetchHistory = async (
         timestamp: new Date(e.timeStamp * 1000),
         label: '',
       };
+
       event.transactionHash = e.hash;
       event.label = chrome.i18n.getMessage(
-        event.from === walletAddress
+        event.from.toLowerCase() === walletAddress.toLowerCase()
           ? 'popup_html_evm_history_transfer_out'
           : 'popup_html_evm_history_transfer_in',
         [
@@ -148,6 +149,12 @@ const fetchHistory = async (
     //   (a, b) => b.timestamp - a.timestamp,
     // );
 
+    console.log(
+      `Fetching from ${lastBlock} to ${lastBlock - LIMIT}: found ${
+        finalEvents.length
+      }`,
+    );
+
     return {
       events: finalEvents,
       lastBlock: lastBlock - LIMIT,
@@ -186,7 +193,7 @@ const getHistory = async (
         totalBlocks: currentBlockchainBlockNumber,
       });
   } while (
-    history.events.length < MIN_NEW_TRANSACTION ||
+    history.events.length < MIN_NEW_TRANSACTION &&
     history.lastBlock > 0
   );
   return history;

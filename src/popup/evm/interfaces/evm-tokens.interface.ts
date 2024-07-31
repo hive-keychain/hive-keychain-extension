@@ -35,3 +35,13 @@ export type EvmTokenInfo = EvmTokenInfoShort & {
   categories: string[];
   links: { [link: string]: any };
 };
+
+export interface UserPendingTransactions {
+  [userAddress: string]: PendingTransactionData[];
+}
+
+export interface PendingTransactionData {
+  transaction: any;
+  amount: number;
+  tokenInfo: EvmTokenInfoShort;
+}

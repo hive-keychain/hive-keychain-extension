@@ -32,12 +32,10 @@ if (store.getState().hive) {
 
   store.subscribe(() => {
     const {
-      navigation,
       mk,
       hive: { accounts, activeRpc, activeAccount, hiveEngineConfig },
       hasFinishedSignup,
     } = store.getState();
-    console.log({ navigation });
     if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
       if (
         previousAccounts.length === 0 &&

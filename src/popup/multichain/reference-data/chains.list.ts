@@ -30,7 +30,8 @@ export const defaultChainList = [
     },
     blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://api.etherscan.io',
+      // url: 'https://api.etherscan.io',
+      url: 'https://eth.blockscout.com',
     },
     isEth: true,
     rpc: [
@@ -91,7 +92,8 @@ export const defaultChainList = [
     },
     blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://api.polygonscan.com',
+      // url: 'https://api.polygonscan.com',
+      url: 'https://polygon.blockscout.com',
     },
     rpc: [
       { url: 'https://polygon-bor-rpc.publicnode.com' },
@@ -111,7 +113,8 @@ export const defaultChainList = [
     },
     blockExplorerApi: {
       type: BlockExporerType.ETHERSCAN,
-      url: 'https://api-sepolia.etherscan.io',
+      // url: 'https://api-sepolia.etherscan.io',
+      url: 'https://eth-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,

@@ -1,8 +1,11 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EvmTokenHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
+import { EvmTokenHistoryPendingItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-pending-item.component';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -12,6 +15,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 const EvmTokenHistoryPage = ({
@@ -20,6 +24,8 @@ const EvmTokenHistoryPage = ({
   chain,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
+  const [pendingTransactions, setPendingTransactions] =
+    useState<PendingTransactionData[]>();
   const [history, setHistory] = useState<EvmTokenHistory>();
   const [loading, setLoading] = useState<{ state: boolean; message?: string }>({
     state: false,
@@ -43,7 +49,7 @@ const EvmTokenHistoryPage = ({
     load();
   }, []);
 
-  const load = async () => {
+  const load = async (history?: EvmTokenHistory) => {
     if (!history || (history?.lastBlock && history.lastBlock >= 0)) {
       setLoading({ state: true });
       const res = await EvmTokensHistoryUtils.getHistory(
@@ -63,9 +69,25 @@ const EvmTokenHistoryPage = ({
           }),
         history ? history.lastBlock : undefined,
       );
+      const pendingTransactions =
+        await EvmTransactionsUtils.getPendingTransactions(
+          account.wallet.address,
+          token.tokenInfo,
+        );
+      console.log({ pendingTransactions });
+      setPendingTransactions(pendingTransactions);
+
       setHistory(res);
       setLoading({ state: false });
     }
+  };
+
+  const reload = () => {
+    load();
+  };
+
+  const goToDetailsPage = (pendingTransactionData: PendingTransactionData) => {
+    // Go to page
   };
 
   return (
@@ -76,6 +98,25 @@ const EvmTokenHistoryPage = ({
         className="wallet-item-list">
         {history && (
           <>
+            {pendingTransactions && pendingTransactions.length > 0 && (
+              <>
+                <div className="pending-transactions">
+                  {pendingTransactions.map((pendingTransaction) => (
+                    <EvmTokenHistoryPendingItemComponent
+                      key={`pending-${pendingTransaction.transaction.hash}`}
+                      chain={chain}
+                      pendingTransactionData={pendingTransaction}
+                      goToDetailsPage={() =>
+                        goToDetailsPage(pendingTransaction)
+                      }
+                      triggerRefreshHistory={() => reload()}
+                    />
+                  ))}
+                </div>
+                <Separator type="horizontal" fullSize />
+              </>
+            )}
+
             <FlatList
               list={history.events}
               renderItem={(event: any) => (
@@ -109,7 +150,7 @@ const EvmTokenHistoryPage = ({
               }}
             />
             {history.lastBlock > 0 && !loading.state && (
-              <div className="load-more-panel" onClick={load}>
+              <div className="load-more-panel" onClick={() => load(history)}>
                 <span className="label">
                   {chrome.i18n.getMessage('popup_html_load_more')}
                 </span>
