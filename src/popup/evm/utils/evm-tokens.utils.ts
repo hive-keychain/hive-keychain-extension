@@ -204,10 +204,14 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
 };
 
 const formatTokenValue = (value: number, decimals = 18) => {
-  return FormatUtils.withCommas(ethers.formatUnits(value, decimals));
+  return FormatUtils.withCommas(
+    ethers.formatUnits(value, decimals),
+    decimals,
+    true,
+  );
 };
 const formatEtherValue = (value: string) => {
-  return FormatUtils.withCommas(ethers.formatEther(value));
+  return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
 };
 
 export const EvmTokensUtils = {

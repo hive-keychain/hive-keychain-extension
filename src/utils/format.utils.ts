@@ -22,7 +22,7 @@ const withCommas = (
   let finalNumber = parts.join('.');
 
   if (removeTrailingZeros) {
-    finalNumber = finalNumber.replace(/\.0+$/, '');
+    finalNumber = removeZeros(finalNumber.replace(/\.0+$/, ''));
   }
 
   if (currency) {
@@ -30,6 +30,16 @@ const withCommas = (
   }
 
   return finalNumber;
+};
+
+const removeZeros = (value: string) => {
+  const decimals = value.split('.');
+  if (decimals[1]) {
+    decimals[1] = parseFloat('0.' + decimals[1])
+      .toString()
+      .split('.')[1];
+  }
+  return decimals.join('.');
 };
 
 const toHP = (vests: string, props?: DynamicGlobalProperties) =>

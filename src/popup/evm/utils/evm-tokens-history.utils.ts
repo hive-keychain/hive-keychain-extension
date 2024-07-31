@@ -128,7 +128,6 @@ const fetchHistory = async (
             token.tokenInfo.decimals,
           ),
           timestamp: new Date(block.timestamp * 1000),
-          details: 'Fee was paid',
           label: '',
         };
         event.label = chrome.i18n.getMessage(
@@ -145,18 +144,18 @@ const fetchHistory = async (
       Logger.error('Error while parsing transfer out', err);
     }
 
-    // const events = [...eventsIn, ...eventsOut].sort(
-    //   (a, b) => b.timestamp - a.timestamp,
-    // );
+    const events = finalEvents.sort(
+      (a, b) => a.timestamp.getMilliseconds() - b.timestamp.getMilliseconds(),
+    );
 
-    console.log(
+    Logger.info(
       `Fetching from ${lastBlock} to ${lastBlock - LIMIT}: found ${
         finalEvents.length
       }`,
     );
 
     return {
-      events: finalEvents,
+      events: events,
       lastBlock: lastBlock - LIMIT,
     };
   }
