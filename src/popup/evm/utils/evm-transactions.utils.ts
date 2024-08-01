@@ -28,8 +28,6 @@ const transfer = async (
   gasFee: GasFeeEstimation,
   nonce?: number,
 ) => {
-  console.log({ chain, tokenInfo, receiverAddress, amount, gasFee, nonce });
-
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
   let transactionRequest: TransactionRequest;
@@ -121,8 +119,6 @@ const addPendingTransaction = async (
   gasFee: GasFeeEstimation,
   receiverAddress: string,
 ) => {
-  console.log('addPendingTransaction');
-
   let transactions: UserPendingTransactions =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,

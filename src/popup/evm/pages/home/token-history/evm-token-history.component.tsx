@@ -78,7 +78,6 @@ const EvmTokenHistoryPage = ({
           account.wallet.address,
           token.tokenInfo,
         );
-      console.log({ pendingTransactions });
       setPendingTransactions(pendingTransactions);
 
       setHistory(res);

@@ -15,9 +15,6 @@ const getHistory = (
   page: number,
   offset: number,
 ) => {
-  console.log(
-    `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc`,
-  );
   return get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc`,
   );

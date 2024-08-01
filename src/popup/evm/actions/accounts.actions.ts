@@ -6,7 +6,6 @@ import { AppThunk } from '@popup/multichain/actions/interfaces';
 export const setEvmAccounts =
   (accounts: EvmAccount[]): AppThunk =>
   async (dispatch, getState) => {
-    console.log({ accounts });
     dispatch({ type: EvmActionType.SET_ACCOUNTS, payload: accounts });
     dispatch({
       type: EvmActionType.SET_APP_STATUS,

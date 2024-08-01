@@ -27,8 +27,6 @@ const estimate = async (
     wallet,
   );
 
-  console.log(estimates);
-
   const low = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)

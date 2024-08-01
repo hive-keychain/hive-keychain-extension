@@ -36,7 +36,6 @@ export const EvmTokenHistoryPendingItemComponent = ({
     );
     setTransactionResponse(txResponse);
     const transactionReceipt = await txResponse.wait();
-    console.log(transactionReceipt);
     if (transactionReceipt) {
       await EvmTransactionsUtils.deleteFromPendingTransactions(
         transactionReceipt?.from,

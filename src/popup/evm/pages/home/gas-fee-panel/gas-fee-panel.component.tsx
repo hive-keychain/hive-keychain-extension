@@ -59,7 +59,6 @@ export const GasFeePanel = ({
   }, []);
 
   const init = async () => {
-    console.log({ tokenInfo }, 'hello');
     const estimate = await GasFeeUtils.estimate(
       chain,
       tokenInfo,
@@ -68,10 +67,6 @@ export const GasFeePanel = ({
       wallet,
     );
     if (!!multiplier && selectedFee) {
-      console.log(
-        MathUtils.countDecimals(selectedFee.maxFeePerGas),
-        MathUtils.countDecimals(selectedFee.priorityFee),
-      );
       const increasedFee: GasFeeEstimation = {
         ...selectedFee,
         maxFeePerGas: Number(

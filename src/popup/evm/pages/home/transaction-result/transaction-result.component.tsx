@@ -50,15 +50,6 @@ const EvmTransactionResult = ({
       isBackButtonEnabled: true,
     });
     getTransactionStatus();
-    console.log({
-      chain,
-      transactionResponse,
-      tokenInfo,
-      amount,
-      receiverAddress,
-      gasFee,
-      localAccounts,
-    });
   }, []);
 
   const getTransactionStatus = async () => {
@@ -111,8 +102,6 @@ const EvmTransactionResult = ({
   };
 
   const speedUpTransaction = async () => {
-    console.log('speeding up transaction');
-
     const speedUpTransactionResponse = await EvmTransactionsUtils.transfer(
       chain,
       tokenInfo,

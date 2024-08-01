@@ -63,7 +63,6 @@ const getTokenBalances = async (
 
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(walletSigningKey, provider);
-  console.log(tokensMetadata);
   if (
     !tokensMetadata.some(
       (tokenMetadata) => tokenMetadata.type === EVMTokenType.NATIVE,

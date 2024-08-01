@@ -40,7 +40,6 @@ export const EvmSelectAccountSectionItemComponent = ({
     }
   };
   const renderCheckedAccount = () => {
-    console.log(isOnMain);
     if (isOnMain)
       return (
         <div className="icons-wrapper">

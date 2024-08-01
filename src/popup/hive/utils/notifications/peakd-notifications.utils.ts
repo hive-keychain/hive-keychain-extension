@@ -849,7 +849,6 @@ const getNotifications = async (
       case 'fill_vesting_withdraw': {
         if (username === payload.from_account) {
           message = 'notification_fill_power_down';
-          console.log(payload);
           messageParams = [
             payload.from,
             FormatUtils.toFormattedHP(
