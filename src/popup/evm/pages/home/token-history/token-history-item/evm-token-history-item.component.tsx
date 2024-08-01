@@ -12,11 +12,13 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 interface EvmTokenHistoryItemProps {
   historyItem: EvmTokenHistoryItem;
   chain: Chain;
+  goToDetailsPage: () => void;
 }
 
 export const EvmTokenHistoryItemComponent = ({
   historyItem,
   chain,
+  goToDetailsPage,
 }: EvmTokenHistoryItemProps) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
   const [expandableContent, setExpandableContent] = useState(
@@ -47,7 +49,7 @@ export const EvmTokenHistoryItemComponent = ({
   };
 
   return (
-    <div className="wallet-history-item">
+    <div className="wallet-history-item" onClick={goToDetailsPage}>
       <div className="wallet-transaction-info">
         <div
           data-testid="transaction-expandable-area"

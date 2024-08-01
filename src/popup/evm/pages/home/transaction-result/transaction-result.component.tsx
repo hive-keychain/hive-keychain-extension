@@ -222,11 +222,13 @@ const EvmTransactionResult = ({
           <div className="amount-row">
             {tokenInfo && (
               <div className="amount">
-                {FormatUtils.withCommas(
-                  amount,
-                  (tokenInfo as EvmTokenInfoShortErc20).decimals ?? 18,
-                  true,
-                )}{' '}
+                {amount
+                  ? FormatUtils.withCommas(
+                      amount,
+                      (tokenInfo as EvmTokenInfoShortErc20).decimals ?? 18,
+                      true,
+                    )
+                  : 1}{' '}
                 {tokenInfo.symbol}
               </div>
             )}

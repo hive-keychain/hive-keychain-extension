@@ -112,6 +112,15 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
   });
 };
 
+const isWalletAddress = async (address: string, chain: EvmChain) => {
+  try {
+    const code = await EthersUtils.getProvider(chain).getCode(address);
+    if (code !== '0x') return false;
+  } catch (error) {}
+  // if it comes here, then it's not a contract.
+  return true;
+};
+
 const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
@@ -119,6 +128,7 @@ const EvmWalletUtils = {
   saveAccounts,
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
+  isWalletAddress,
 };
 
 export default EvmWalletUtils;

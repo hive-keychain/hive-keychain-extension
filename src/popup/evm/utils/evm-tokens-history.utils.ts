@@ -12,6 +12,7 @@ import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { SigningKey, Wallet, ethers } from 'ethers';
 import Logger from 'src/utils/logger.utils';
@@ -30,6 +31,19 @@ const fetchHistory = async (
     const response = await EtherscanApi.getHistory(walletAddress, chain, 1, 0);
     const events = [];
     for (const e of response.result) {
+      console.log(e);
+
+      const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
+
+      if (
+        !(await EvmWalletUtils.isWalletAddress(
+          isTransferIn ? e.from : e.to,
+          chain,
+        ))
+      ) {
+        continue;
+      }
+
       const event: EvmTokenTransferInHistoryItem = {
         ...getCommonHistoryItem(e),
         type: EvmTokenHistoryItemType.TRANSFER_IN,
@@ -41,6 +55,9 @@ const fetchHistory = async (
       };
 
       event.transactionHash = e.hash;
+
+      event.details = `${event.from.toLowerCase()} === ${walletAddress.toLowerCase()}`;
+
       event.label = chrome.i18n.getMessage(
         event.from.toLowerCase() === walletAddress.toLowerCase()
           ? 'popup_html_evm_history_transfer_out'
@@ -48,7 +65,11 @@ const fetchHistory = async (
         [
           event.amount,
           token.tokenInfo.symbol,
-          EvmFormatUtils.formatAddress(event.from),
+          EvmFormatUtils.formatAddress(
+            event.from.toLowerCase() === walletAddress.toLowerCase()
+              ? event.to
+              : event.from,
+          ),
         ],
       );
       events.push(event);
@@ -83,7 +104,6 @@ const fetchHistory = async (
         //   ]);
 
         const block = await e.getBlock();
-
         const event: EvmTokenTransferInHistoryItem = {
           ...getCommonHistoryItem(e),
           type: EvmTokenHistoryItemType.TRANSFER_IN,

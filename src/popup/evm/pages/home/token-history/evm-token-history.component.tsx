@@ -1,5 +1,8 @@
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { EvmTokenHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import {
+  EvmTokenHistory,
+  EvmTokenHistoryItem,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
@@ -89,7 +92,9 @@ const EvmTokenHistoryPage = ({
     load();
   };
 
-  const goToDetailsPage = (pendingTransactionData: PendingTransactionData) => {
+  const goToPendingDetailsPage = (
+    pendingTransactionData: PendingTransactionData,
+  ) => {
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: pendingTransactionData.transaction,
       token: pendingTransactionData.tokenInfo,
@@ -97,6 +102,36 @@ const EvmTokenHistoryPage = ({
       amount: pendingTransactionData.amount,
       gasFee: pendingTransactionData.gasFee,
     });
+  };
+
+  const goToDetailsPage = async (
+    transactionHash: string,
+    historyItem: EvmTokenHistoryItem,
+  ) => {
+    // const transactionResponse = await EthersUtils.getProvider(
+    //   chain,
+    // ).getTransaction(transactionHash);
+    // console.log(transactionResponse);
+    // switch (historyItem.type) {
+    //   case EvmTokenHistoryItemType.TRANSFER_IN: {
+    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+    //       transactionResponse: transactionResponse,
+    //       token: token.tokenInfo,
+    //       receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
+    //       amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
+    //     });
+    //     break;
+    //   }
+    //   case EvmTokenHistoryItemType.TRANSFER_OUT: {
+    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+    //       transactionResponse: transactionResponse,
+    //       token: token.tokenInfo,
+    //       receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
+    //       amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+    //     });
+    //     break;
+    //   }
+    // }
   };
 
   return (
@@ -118,7 +153,7 @@ const EvmTokenHistoryPage = ({
                       goToDetailsPage={(
                         transactionResponse: TransactionResponse,
                       ) =>
-                        goToDetailsPage({
+                        goToPendingDetailsPage({
                           ...pendingTransaction,
                           transaction: transactionResponse,
                         })
@@ -138,6 +173,9 @@ const EvmTokenHistoryPage = ({
                   key={event.transactionHash}
                   historyItem={event}
                   chain={chain}
+                  goToDetailsPage={() =>
+                    goToDetailsPage(event.transactionHash, event)
+                  }
                 />
               )}
               renderOnScroll
