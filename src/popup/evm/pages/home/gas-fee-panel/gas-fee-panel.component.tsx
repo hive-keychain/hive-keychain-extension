@@ -1,4 +1,4 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CustomGasFeeForm,
   FullGasFeeEstimation,
@@ -24,7 +24,7 @@ import { MathUtils } from 'src/utils/math.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  token: EVMToken;
+  tokenInfo: EvmTokenInfoShort;
   receiverAddress: string;
   amount: number;
   wallet: HDNodeWallet;
@@ -35,7 +35,7 @@ interface GasFeePanelProps {
 
 export const GasFeePanel = ({
   chain,
-  token,
+  tokenInfo,
   receiverAddress,
   amount,
   wallet,
@@ -59,9 +59,10 @@ export const GasFeePanel = ({
   }, []);
 
   const init = async () => {
+    console.log({ tokenInfo }, 'hello');
     const estimate = await GasFeeUtils.estimate(
       chain,
-      token,
+      tokenInfo,
       receiverAddress,
       amount,
       wallet,

@@ -157,7 +157,7 @@ const EvmTransfer = ({
       title: 'popup_html_transfer_funds',
       formParams: watch(),
       hasGasFee: true,
-      token: form.selectedToken,
+      tokenInfo: form.selectedToken.tokenInfo,
       receiverAddress: form.receiverAddress,
       amount: form.amount,
       wallet: localAccounts[0].wallet,
@@ -166,7 +166,7 @@ const EvmTransfer = ({
         try {
           const transactionResult = await EvmTransactionsUtils.transfer(
             chain,
-            form.selectedToken,
+            form.selectedToken.tokenInfo,
             form.receiverAddress,
             form.amount,
             localAccounts[0].wallet,
@@ -176,7 +176,7 @@ const EvmTransfer = ({
           Logger.log(transactionResult);
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
             transactionResponse: transactionResult,
-            token: form.selectedToken,
+            tokenInfo: form.selectedToken.tokenInfo,
             receiverAddress: form.receiverAddress,
             amount: form.amount,
             gasFee: gasFee,

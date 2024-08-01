@@ -1,4 +1,4 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import { FullGasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -12,7 +12,7 @@ const getGasFeeEstimations = async (chain: Chain) => {
 
 const estimate = async (
   chain: EvmChain,
-  token: EVMToken,
+  tokenInfo: EvmTokenInfoShort,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
@@ -21,7 +21,7 @@ const estimate = async (
 
   const gasLimit = await EthersUtils.getGasLimit(
     chain,
-    token,
+    tokenInfo,
     receiverAddress,
     amount,
     wallet,

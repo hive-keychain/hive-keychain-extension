@@ -28,7 +28,7 @@ const ConfirmationPage = ({
   skipTitleTranslation,
   hasGasFee,
   chain,
-  token,
+  tokenInfo,
   receiverAddress,
   amount,
   wallet,
@@ -115,7 +115,7 @@ const ConfirmationPage = ({
         {hasGasFee && (
           <GasFeePanel
             chain={chain}
-            token={token}
+            tokenInfo={tokenInfo}
             receiverAddress={receiverAddress}
             amount={amount}
             wallet={wallet}
@@ -158,7 +158,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.evm.activeAccount,
     hasGasFee: state.navigation.stack[0].params.hasGasFee,
     chain: state.chain,
-    token: state.navigation.stack[0].params.token,
+    tokenInfo: state.navigation.stack[0].params.tokenInfo,
     receiverAddress: state.navigation.stack[0].params.receiverAddress,
     amount: state.navigation.stack[0].params.amount,
     wallet: state.navigation.stack[0].params.wallet,

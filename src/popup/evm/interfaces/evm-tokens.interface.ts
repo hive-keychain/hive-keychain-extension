@@ -1,3 +1,5 @@
+import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+
 export enum EVMTokenType {
   NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
@@ -44,4 +46,6 @@ export interface PendingTransactionData {
   transaction: any;
   amount: number;
   tokenInfo: EvmTokenInfoShort;
+  gasFee: GasFeeEstimation;
+  receiverAddress: string;
 }

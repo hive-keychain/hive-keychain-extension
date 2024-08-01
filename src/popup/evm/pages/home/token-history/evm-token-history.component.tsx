@@ -4,11 +4,14 @@ import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interfa
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmTokenHistoryPendingItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-pending-item.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { TransactionResponse } from 'ethers';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -23,6 +26,7 @@ const EvmTokenHistoryPage = ({
   account,
   chain,
   setTitleContainerProperties,
+  navigateToWithParams,
 }: PropsFromRedux) => {
   const [pendingTransactions, setPendingTransactions] =
     useState<PendingTransactionData[]>();
@@ -87,7 +91,13 @@ const EvmTokenHistoryPage = ({
   };
 
   const goToDetailsPage = (pendingTransactionData: PendingTransactionData) => {
-    // Go to page
+    navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+      transactionResponse: pendingTransactionData.transaction,
+      token: pendingTransactionData.tokenInfo,
+      receiverAddress: pendingTransactionData.receiverAddress,
+      amount: pendingTransactionData.amount,
+      gasFee: pendingTransactionData.gasFee,
+    });
   };
 
   return (
@@ -106,8 +116,13 @@ const EvmTokenHistoryPage = ({
                       key={`pending-${pendingTransaction.transaction.hash}`}
                       chain={chain}
                       pendingTransactionData={pendingTransaction}
-                      goToDetailsPage={() =>
-                        goToDetailsPage(pendingTransaction)
+                      goToDetailsPage={(
+                        transactionResponse: TransactionResponse,
+                      ) =>
+                        goToDetailsPage({
+                          ...pendingTransaction,
+                          transaction: transactionResponse,
+                        })
                       }
                       triggerRefreshHistory={() => reload()}
                     />
@@ -183,6 +198,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

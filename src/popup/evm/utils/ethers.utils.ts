@@ -1,6 +1,6 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   EVMTokenType,
+  EvmTokenInfoShort,
   EvmTokenInfoShortErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -14,7 +14,7 @@ const getProvider = (chain: EvmChain) => {
 
 const getGasLimit = async (
   chain: EvmChain,
-  token: EVMToken,
+  tokenInfo: EvmTokenInfoShort,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
@@ -22,9 +22,9 @@ const getGasLimit = async (
   const provider = getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 
-  if (token.tokenInfo.type === EVMTokenType.ERC20) {
+  if (tokenInfo.type === EVMTokenType.ERC20) {
     const erc20 = new ethers.Contract(
-      (token.tokenInfo as EvmTokenInfoShortErc20).address!,
+      (tokenInfo as EvmTokenInfoShortErc20).address!,
       Erc20Abi,
       connectedWallet,
     );

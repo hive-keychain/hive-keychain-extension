@@ -1,4 +1,3 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmTokenInfoShort,
   EVMTokenType,
@@ -22,21 +21,21 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const transfer = async (
   chain: EvmChain,
-  token: EVMToken,
+  tokenInfo: EvmTokenInfoShort,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
   gasFee: GasFeeEstimation,
   nonce?: number,
 ) => {
-  console.log({ chain, token, receiverAddress, amount, gasFee, nonce });
+  console.log({ chain, tokenInfo, receiverAddress, amount, gasFee, nonce });
 
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
   let transactionRequest: TransactionRequest;
-  if (token.tokenInfo.type === EVMTokenType.ERC20) {
+  if (tokenInfo.type === EVMTokenType.ERC20) {
     const contract = new ethers.Contract(
-      token.tokenInfo.address!,
+      tokenInfo.address!,
       Erc20Abi,
       connectedWallet,
     );
@@ -47,7 +46,7 @@ const transfer = async (
     ]);
 
     transactionRequest = {
-      to: token.tokenInfo.address!,
+      to: tokenInfo.address!,
       value: 0,
       data: data,
       from: connectedWallet.address,
@@ -82,8 +81,10 @@ const transfer = async (
   await addPendingTransaction(
     transactionResponse,
     connectedWallet.address,
-    token.tokenInfo,
+    tokenInfo,
     amount,
+    gasFee,
+    receiverAddress,
   );
 
   return transactionResponse;
@@ -103,7 +104,7 @@ const cancel = async (
 
   return transfer(
     chain,
-    { tokenInfo: { type: EVMTokenType.NATIVE } } as EVMToken,
+    { type: EVMTokenType.NATIVE } as EvmTokenInfoShort,
     ethers.ZeroAddress,
     0,
     wallet,
@@ -117,6 +118,8 @@ const addPendingTransaction = async (
   address: string,
   tokenInfo: EvmTokenInfoShort,
   amount: number,
+  gasFee: GasFeeEstimation,
+  receiverAddress: string,
 ) => {
   console.log('addPendingTransaction');
 
@@ -134,6 +137,8 @@ const addPendingTransaction = async (
     transaction: transactionResponse,
     amount,
     tokenInfo,
+    gasFee,
+    receiverAddress,
   });
 
   LocalStorageUtils.saveValueInLocalStorage(

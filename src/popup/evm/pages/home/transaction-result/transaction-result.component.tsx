@@ -1,5 +1,7 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { EvmTokenInfoShortErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTokenInfoShort,
+  EvmTokenInfoShortErc20,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
@@ -24,7 +26,7 @@ import Logger from 'src/utils/logger.utils';
 const EvmTransactionResult = ({
   chain,
   transactionResponse,
-  token,
+  tokenInfo,
   amount,
   receiverAddress,
   gasFee,
@@ -48,6 +50,15 @@ const EvmTransactionResult = ({
       isBackButtonEnabled: true,
     });
     getTransactionStatus();
+    console.log({
+      chain,
+      transactionResponse,
+      tokenInfo,
+      amount,
+      receiverAddress,
+      gasFee,
+      localAccounts,
+    });
   }, []);
 
   const getTransactionStatus = async () => {
@@ -68,6 +79,7 @@ const EvmTransactionResult = ({
         Logger.info('Transaction replaced');
       }
     } finally {
+      setWaitingForTx(false);
     }
   };
 
@@ -103,7 +115,7 @@ const EvmTransactionResult = ({
 
     const speedUpTransactionResponse = await EvmTransactionsUtils.transfer(
       chain,
-      token,
+      tokenInfo,
       receiverAddress,
       amount,
       localAccounts[0].wallet,
@@ -163,12 +175,6 @@ const EvmTransactionResult = ({
   };
 
   const getStatus = () => {
-    console.log({
-      waitingForTx,
-      isCanceled: isCanceling,
-      isTransactionSpeedingUp,
-      txReceipt,
-    });
     if (waitingForTx) {
       if (isCanceling) {
         return 'canceling';
@@ -225,14 +231,16 @@ const EvmTransactionResult = ({
             className={`transaction-status`}
           />
           <div className="amount-row">
-            <div className="amount">
-              {FormatUtils.withCommas(
-                amount,
-                (token.tokenInfo as EvmTokenInfoShortErc20).decimals ?? 18,
-                true,
-              )}{' '}
-              {token.tokenInfo.symbol}
-            </div>
+            {tokenInfo && (
+              <div className="amount">
+                {FormatUtils.withCommas(
+                  amount,
+                  (tokenInfo as EvmTokenInfoShortErc20).decimals ?? 18,
+                  true,
+                )}{' '}
+                {tokenInfo.symbol}
+              </div>
+            )}
             <div className="status">
               {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
             </div>
@@ -274,7 +282,7 @@ const EvmTransactionResult = ({
           </div>
           <GasFeePanel
             chain={chain}
-            token={token}
+            tokenInfo={tokenInfo}
             receiverAddress={receiverAddress}
             amount={amount}
             wallet={localAccounts[0].wallet}
@@ -346,7 +354,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.evm.activeAccount,
     transactionResponse: state.navigation.stack[0].params
       .transactionResponse as TransactionResponse,
-    token: state.navigation.stack[0].params.token as EVMToken,
+    tokenInfo: state.navigation.stack[0].params.tokenInfo as EvmTokenInfoShort,
     amount: state.navigation.stack[0].params.amount,
     receiverAddress: state.navigation.stack[0].params.receiverAddress,
     gasFee: state.navigation.stack[0].params.gasFee,
