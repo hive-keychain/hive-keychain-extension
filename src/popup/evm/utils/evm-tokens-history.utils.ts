@@ -31,8 +31,6 @@ const fetchHistory = async (
     const response = await EtherscanApi.getHistory(walletAddress, chain, 1, 0);
     const events = [];
     for (const e of response.result) {
-      console.log(e);
-
       const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
 
       if (
@@ -55,8 +53,6 @@ const fetchHistory = async (
       };
 
       event.transactionHash = e.hash;
-
-      event.details = `${event.from.toLowerCase()} === ${walletAddress.toLowerCase()}`;
 
       event.label = chrome.i18n.getMessage(
         event.from.toLowerCase() === walletAddress.toLowerCase()

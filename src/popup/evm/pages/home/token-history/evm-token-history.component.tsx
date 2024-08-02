@@ -2,12 +2,16 @@ import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmTokenHistory,
   EvmTokenHistoryItem,
+  EvmTokenHistoryItemType,
+  EvmTokenTransferInHistoryItem,
+  EvmTokenTransferOutHistoryItem,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmTokenHistoryPendingItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-pending-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
@@ -97,7 +101,7 @@ const EvmTokenHistoryPage = ({
   ) => {
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: pendingTransactionData.transaction,
-      token: pendingTransactionData.tokenInfo,
+      tokenInfo: pendingTransactionData.tokenInfo,
       receiverAddress: pendingTransactionData.receiverAddress,
       amount: pendingTransactionData.amount,
       gasFee: pendingTransactionData.gasFee,
@@ -108,30 +112,29 @@ const EvmTokenHistoryPage = ({
     transactionHash: string,
     historyItem: EvmTokenHistoryItem,
   ) => {
-    // const transactionResponse = await EthersUtils.getProvider(
-    //   chain,
-    // ).getTransaction(transactionHash);
-    // console.log(transactionResponse);
-    // switch (historyItem.type) {
-    //   case EvmTokenHistoryItemType.TRANSFER_IN: {
-    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-    //       transactionResponse: transactionResponse,
-    //       token: token.tokenInfo,
-    //       receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
-    //       amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
-    //     });
-    //     break;
-    //   }
-    //   case EvmTokenHistoryItemType.TRANSFER_OUT: {
-    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-    //       transactionResponse: transactionResponse,
-    //       token: token.tokenInfo,
-    //       receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
-    //       amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
-    //     });
-    //     break;
-    //   }
-    // }
+    const transactionResponse = await EthersUtils.getProvider(
+      chain,
+    ).getTransaction(transactionHash);
+    switch (historyItem.type) {
+      case EvmTokenHistoryItemType.TRANSFER_IN: {
+        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+          transactionResponse: transactionResponse,
+          tokenInfo: token.tokenInfo,
+          receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
+          amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
+        });
+        break;
+      }
+      case EvmTokenHistoryItemType.TRANSFER_OUT: {
+        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+          transactionResponse: transactionResponse,
+          token: token.tokenInfo,
+          receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
+          amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+        });
+        break;
+      }
+    }
   };
 
   return (
