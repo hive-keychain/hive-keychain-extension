@@ -135,7 +135,6 @@
     }
 
     .rotating-logo-container {
-      min-height: 100%;
       flex: 1;
       display: flex;
       justify-content: center;
@@ -143,6 +142,11 @@
         align-self: center;
         justify-self: center;
         @include icon-size(80px);
+      }
+
+      .caption {
+        @include poppins400(14px);
+        color: var(--main-font-color);
       }
     }
 
@@ -164,20 +168,6 @@
         height: 20px;
         width: 20px;
       }
-    }
-  }
-
-  .rotating-logo-container {
-    min-height: 100%;
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 12px;
-    .caption {
-      @include poppins400(14px);
-      color: var(--main-font-color);
     }
   }
 

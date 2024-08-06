@@ -1,20 +1,26 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import {
+  EvmLocalHistory,
   EvmTokenHistory,
   EvmTokenHistoryItem,
   EvmTokenHistoryItemType,
   EvmTokenTransferInHistoryItem,
   EvmTokenTransferOutHistoryItem,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTokenInfoShort,
+  EVMTokenType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { SigningKey, Wallet, ethers } from 'ethers';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { ethers, SigningKey, Wallet } from 'ethers';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const MIN_NEW_TRANSACTION = 1;
@@ -25,12 +31,22 @@ const fetchHistory = async (
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,
+  firstBlock: number,
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
+  Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
   if (token.tokenInfo.type === EVMTokenType.NATIVE) {
-    const response = await EtherscanApi.getHistory(walletAddress, chain, 1, 0);
+    const response = await EtherscanApi.getHistory(
+      walletAddress,
+      chain,
+      1,
+      0,
+      firstBlock,
+      lastBlock,
+    );
     const events = [];
     for (const e of response.result) {
+      console.log(e);
       const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
 
       if (
@@ -71,7 +87,7 @@ const fetchHistory = async (
       events.push(event);
     }
 
-    return { events: events, lastBlock: -1 };
+    return { events: events, lastBlock: lastBlock, firstBlock: firstBlock };
   } else {
     const provider = EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(walletSigningKey, provider);
@@ -80,7 +96,6 @@ const fetchHistory = async (
       Erc20Abi,
       connectedWallet,
     );
-    let iface = new ethers.Interface(Erc20Abi);
 
     const transferInFilter = contract.filters.Transfer(null, walletAddress);
     const transferOutFilter = contract.filters.Transfer(walletAddress, null);
@@ -90,7 +105,7 @@ const fetchHistory = async (
     try {
       eventsIn = await contract.queryFilter(
         transferInFilter,
-        lastBlock - LIMIT,
+        firstBlock,
         lastBlock,
       );
       for (const e of eventsIn) {
@@ -129,7 +144,7 @@ const fetchHistory = async (
     try {
       eventsOut = await contract.queryFilter(
         transferOutFilter,
-        lastBlock - LIMIT,
+        firstBlock,
         lastBlock,
       );
       for (const e of eventsOut) {
@@ -165,19 +180,20 @@ const fetchHistory = async (
     );
 
     Logger.info(
-      `Fetching from ${lastBlock} to ${lastBlock - LIMIT}: found ${
+      `Fetching from ${firstBlock} to ${firstBlock - LIMIT}: found ${
         finalEvents.length
       }`,
     );
 
     return {
       events: events,
-      lastBlock: lastBlock - LIMIT,
+      lastBlock: firstBlock,
+      firstBlock: firstBlock - LIMIT,
     };
   }
 };
 
-const getHistory = async (
+const loadHistory = async (
   token: EVMToken,
   chain: EvmChain,
   walletAddress: string,
@@ -186,31 +202,110 @@ const getHistory = async (
     nbBlocks: number;
     totalBlocks: number;
   }) => void,
-  lastBlock?: number,
 ): Promise<EvmTokenHistory> => {
+  const localHistory = await getSavedHistory(
+    chain.chainId,
+    walletAddress,
+    token.tokenInfo,
+  );
+
   const provider = EthersUtils.getProvider(chain);
   const currentBlockchainBlockNumber = await provider.getBlockNumber();
-  const lastBlockNumber = lastBlock ?? currentBlockchainBlockNumber;
-  const history: EvmTokenHistory = { events: [], lastBlock: lastBlockNumber };
+  let firstBlock;
+  let lastBlock;
+
+  const history: EvmTokenHistory = {
+    events: localHistory ? localHistory.events : [],
+    firstBlock: -1,
+    lastBlock: -1,
+  };
+
+  if (localHistory) {
+    firstBlock = localHistory.lastBlock + 1;
+    lastBlock = firstBlock + LIMIT;
+
+    history.firstBlock = localHistory.firstBlock;
+    history.lastBlock = currentBlockchainBlockNumber;
+    do {
+      const h = await fetchHistory(
+        token,
+        chain,
+        walletAddress,
+        walletSigningKey,
+        firstBlock,
+        lastBlock,
+      );
+      history.events = [...history.events, ...h.events];
+
+      firstBlock = lastBlock + 1;
+      lastBlock = firstBlock + LIMIT;
+    } while (lastBlock < currentBlockchainBlockNumber);
+  } else {
+    firstBlock = currentBlockchainBlockNumber - LIMIT;
+    lastBlock = currentBlockchainBlockNumber;
+    history.lastBlock = currentBlockchainBlockNumber;
+    do {
+      console.log(`Fetch toward start ${firstBlock} to ${lastBlock}`);
+      const h = await fetchHistory(
+        token,
+        chain,
+        walletAddress,
+        walletSigningKey,
+        firstBlock,
+        lastBlock,
+      );
+      history.events = [...history.events, ...h.events];
+      history.firstBlock = h.firstBlock;
+      lastBlock = firstBlock - 1;
+      firstBlock = lastBlock - LIMIT;
+    } while (
+      history.events.length < MIN_NEW_TRANSACTION &&
+      history.lastBlock > 0
+    );
+  }
+  history.events = history.events.sort(
+    (a, b) => Number(b.timestamp) - Number(a.timestamp),
+  );
+
+  await saveLocalHistory({ ...history }, walletAddress, token.tokenInfo, chain);
+  return history;
+};
+
+const loadMore = async (
+  token: EVMToken,
+  chain: EvmChain,
+  walletAddress: string,
+  walletSigningKey: SigningKey,
+  history: EvmTokenHistory,
+  sendFeedback?: (progression: {
+    nbBlocks: number;
+    totalBlocks: number;
+  }) => void,
+) => {
+  let firstBlock = history.firstBlock - 1 - LIMIT;
+  let lastBlock = history.firstBlock - 1;
+  let h: EvmTokenHistory;
   do {
-    const h = await fetchHistory(
+    console.log(`Fetch toward start ${firstBlock} to ${lastBlock}`);
+    h = await fetchHistory(
       token,
       chain,
       walletAddress,
       walletSigningKey,
-      history.lastBlock,
+      firstBlock,
+      lastBlock,
     );
     history.events = [...history.events, ...h.events];
-    history.lastBlock = h.lastBlock;
-    if (sendFeedback)
-      sendFeedback({
-        nbBlocks: currentBlockchainBlockNumber - h.lastBlock,
-        totalBlocks: currentBlockchainBlockNumber,
-      });
-  } while (
-    history.events.length < MIN_NEW_TRANSACTION &&
-    history.lastBlock > 0
+    history.firstBlock = h.firstBlock;
+    lastBlock = firstBlock - 1;
+    firstBlock = lastBlock - LIMIT;
+  } while (h.events.length < MIN_NEW_TRANSACTION && history.firstBlock > 0);
+
+  history.events = history.events.sort(
+    (a, b) => Number(b.timestamp) - Number(a.timestamp),
   );
+
+  await saveLocalHistory({ ...history }, walletAddress, token.tokenInfo, chain);
   return history;
 };
 
@@ -224,7 +319,66 @@ const getCommonHistoryItem = (e: any) => {
   };
 };
 
+const getSavedHistory = async (
+  chain: string,
+  walletAddress: string,
+  tokenInfo: EvmTokenInfoShort,
+): Promise<EvmTokenHistory | undefined> => {
+  let localHistory: EvmLocalHistory =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
+    );
+  console.log({ localHistory });
+  let chainHistory;
+  let userHistory;
+  let tokenHistory;
+
+  if (localHistory) {
+    chainHistory = localHistory[chain];
+    if (chainHistory) {
+      userHistory = chainHistory[walletAddress];
+      if (userHistory) {
+        tokenHistory =
+          userHistory[`${tokenInfo.symbol}-${tokenInfo.coingeckoId}`];
+      }
+    }
+  }
+  return tokenHistory;
+};
+
+const saveLocalHistory = async (
+  history: EvmTokenHistory,
+  address: string,
+  tokenInfo: EvmTokenInfoShort,
+  chain: EvmChain,
+) => {
+  let localHistory: EvmLocalHistory =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
+    );
+
+  if (!localHistory) {
+    localHistory = {};
+  }
+  if (!localHistory[chain.chainId]) {
+    localHistory[chain.chainId] = {};
+  }
+  if (!localHistory[chain.chainId][address]) {
+    localHistory[chain.chainId][address] = {};
+  }
+  localHistory[chain.chainId][address][
+    `${tokenInfo.symbol}-${tokenInfo.coingeckoId}`
+  ] = history;
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
+    localHistory,
+  );
+};
+
 export const EvmTokensHistoryUtils = {
-  getHistory,
   fetchHistory,
+  getSavedHistory,
+  saveLocalHistory,
+  loadHistory,
+  loadMore,
 };

@@ -1,6 +1,7 @@
 export interface EvmTokenHistory {
   events: EvmTokenHistoryItem[];
-  lastBlock: number;
+  firstBlock: number; // oldest block
+  lastBlock: number; // newest block
 }
 
 export interface EvmTokenHistoryItem {
@@ -31,4 +32,14 @@ export interface EvmTokenTransferOutHistoryItem extends EvmTokenHistoryItem {
 export enum EvmTokenHistoryItemType {
   TRANSFER_IN = 'TRANSFER_IN',
   TRANSFER_OUT = 'TRANSFER_OUT',
+}
+
+export interface EvmUserHistory {
+  [chain: string]: {
+    [token: string]: EvmTokenHistory;
+  };
+}
+
+export interface EvmLocalHistory {
+  [address: string]: EvmUserHistory;
 }

@@ -61,9 +61,17 @@ const EvmTokenHistoryPage = ({
   }, []);
 
   const load = async (history?: EvmTokenHistory) => {
+    const pendingTransactions =
+      await EvmTransactionsUtils.getPendingTransactions(
+        account.wallet.address,
+        token.tokenInfo,
+      );
+    setPendingTransactions(pendingTransactions);
+
     if (!history || (history?.lastBlock && history.lastBlock >= 0)) {
       setLoading({ state: true });
-      const res = await EvmTokensHistoryUtils.getHistory(
+
+      const res = await EvmTokensHistoryUtils.loadHistory(
         token,
         chain,
         account.wallet.address,
@@ -78,14 +86,7 @@ const EvmTokenHistoryPage = ({
               ),
             };
           }),
-        history ? history.lastBlock : undefined,
       );
-      const pendingTransactions =
-        await EvmTransactionsUtils.getPendingTransactions(
-          account.wallet.address,
-          token.tokenInfo,
-        );
-      setPendingTransactions(pendingTransactions);
 
       setHistory(res);
       setLoading({ state: false });
@@ -137,75 +138,98 @@ const EvmTokenHistoryPage = ({
     }
   };
 
+  const loadMore = async () => {
+    setLoading({ state: true });
+    const res = await EvmTokensHistoryUtils.loadMore(
+      token,
+      chain,
+      account.wallet.address,
+      account.wallet.signingKey,
+      history!,
+      (progression) =>
+        setLoading((oldLoading) => {
+          return {
+            ...oldLoading,
+            message: chrome.i18n.getMessage(
+              'popup_html_evm_history_loading_progression',
+              [String(progression.nbBlocks), String(progression.totalBlocks)],
+            ),
+          };
+        }),
+    );
+    setHistory({ ...history, ...res });
+    setLoading({ state: false });
+  };
+
   return (
     <div className="evm-token-history">
       <div
         data-testid="wallet-item-list"
         ref={historyItemList}
         className="wallet-item-list">
+        {pendingTransactions && pendingTransactions.length > 0 && (
+          <>
+            <div className="pending-transactions">
+              {pendingTransactions.map((pendingTransaction) => (
+                <EvmTokenHistoryPendingItemComponent
+                  key={`pending-${pendingTransaction.transaction.hash}`}
+                  chain={chain}
+                  pendingTransactionData={pendingTransaction}
+                  goToDetailsPage={(transactionResponse: TransactionResponse) =>
+                    goToPendingDetailsPage({
+                      ...pendingTransaction,
+                      transaction: transactionResponse,
+                    })
+                  }
+                  triggerRefreshHistory={() => reload()}
+                />
+              ))}
+            </div>
+            <Separator type="horizontal" fullSize />
+          </>
+        )}
+
         {history && (
           <>
-            {pendingTransactions && pendingTransactions.length > 0 && (
-              <>
-                <div className="pending-transactions">
-                  {pendingTransactions.map((pendingTransaction) => (
-                    <EvmTokenHistoryPendingItemComponent
-                      key={`pending-${pendingTransaction.transaction.hash}`}
-                      chain={chain}
-                      pendingTransactionData={pendingTransaction}
-                      goToDetailsPage={(
-                        transactionResponse: TransactionResponse,
-                      ) =>
-                        goToPendingDetailsPage({
-                          ...pendingTransaction,
-                          transaction: transactionResponse,
-                        })
-                      }
-                      triggerRefreshHistory={() => reload()}
-                    />
-                  ))}
-                </div>
-                <Separator type="horizontal" fullSize />
-              </>
-            )}
-
-            <FlatList
-              list={history.events}
-              renderItem={(event: any) => (
-                <EvmTokenHistoryItemComponent
-                  key={event.transactionHash}
-                  historyItem={event}
-                  chain={chain}
-                  goToDetailsPage={() =>
-                    goToDetailsPage(event.transactionHash, event)
-                  }
-                />
-              )}
-              renderOnScroll
-              renderWhenEmpty={() => {
-                if (!loading) {
-                  return (
-                    <div className="empty-history-panel">
-                      <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-                      <div className="text">
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty',
-                          )}
-                        </div>
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty_try_clear_filter',
-                          )}
+            {history.events.length > 0 && (
+              <FlatList
+                list={history.events}
+                renderItem={(event: any) => (
+                  <EvmTokenHistoryItemComponent
+                    key={event.transactionHash}
+                    historyItem={event}
+                    chain={chain}
+                    goToDetailsPage={() =>
+                      goToDetailsPage(event.transactionHash, event)
+                    }
+                  />
+                )}
+                renderOnScroll
+                renderWhenEmpty={() => {
+                  if (!loading) {
+                    return (
+                      <div className="empty-history-panel">
+                        <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+                        <div className="text">
+                          <div>
+                            {chrome.i18n.getMessage(
+                              'popup_html_transaction_list_is_empty',
+                            )}
+                          </div>
+                          <div>
+                            {chrome.i18n.getMessage(
+                              'popup_html_transaction_list_is_empty_try_clear_filter',
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              }}
-            />
-            {history.lastBlock > 0 && !loading.state && (
-              <div className="load-more-panel" onClick={() => load(history)}>
+                    );
+                  }
+                }}
+              />
+            )}
+            {history.firstBlock > 0 && !loading.state && (
+              <div className="load-more-panel" onClick={() => loadMore()}>
                 <span className="label">
                   {chrome.i18n.getMessage('popup_html_load_more')}
                 </span>
