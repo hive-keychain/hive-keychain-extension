@@ -18,7 +18,7 @@ const getHistory = (
   lastBlock: number,
 ) => {
   return get(
-    `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&startblock=${firstBlock}&endblock=${lastBlock}&sort=desc`,
+    `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&startblock=${firstBlock}&endblock=${lastBlock}&sort=desc&page=${page}`,
   );
 };
 

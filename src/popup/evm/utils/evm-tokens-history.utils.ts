@@ -12,11 +12,12 @@ import {
   EvmTokenInfoShort,
   EVMTokenType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmAddressType } from '@popup/evm/interfaces/wallet.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers, SigningKey, Wallet } from 'ethers';
@@ -34,58 +35,63 @@ const fetchHistory = async (
   firstBlock: number,
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
+  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
   if (token.tokenInfo.type === EVMTokenType.NATIVE) {
-    const response = await EtherscanApi.getHistory(
-      walletAddress,
-      chain,
-      1,
-      0,
-      firstBlock,
-      lastBlock,
-    );
+    let response;
     const events = [];
-    for (const e of response.result) {
-      console.log(e);
-      const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
+    let page = 1;
+    do {
+      response = await EtherscanApi.getHistory(
+        walletAddress,
+        chain,
+        page,
+        0,
+        firstBlock,
+        lastBlock,
+      );
+      page++;
+      for (const e of response.result) {
+        const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
 
-      if (
-        !(await EvmWalletUtils.isWalletAddress(
+        const addressType = await EvmAddressesUtils.getAddressType(
           isTransferIn ? e.from : e.to,
           chain,
-        ))
-      ) {
-        continue;
+        );
+
+        if (addressType === EvmAddressType.SMART_CONTRACT) {
+          continue;
+        }
+
+        const event: EvmTokenTransferInHistoryItem = {
+          ...getCommonHistoryItem(e),
+          type: EvmTokenHistoryItemType.TRANSFER_IN,
+          from: e.from,
+          to: e.to,
+          amount: EvmTokensUtils.formatEtherValue(e.value),
+          timestamp: new Date(e.timeStamp * 1000),
+          label: '',
+        };
+
+        event.transactionHash = e.hash;
+
+        event.label = chrome.i18n.getMessage(
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? 'popup_html_evm_history_transfer_out'
+            : 'popup_html_evm_history_transfer_in',
+          [
+            event.amount,
+            token.tokenInfo.symbol,
+            EvmFormatUtils.formatAddress(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? event.to
+                : event.from,
+            ),
+          ],
+        );
+        events.push(event);
       }
-
-      const event: EvmTokenTransferInHistoryItem = {
-        ...getCommonHistoryItem(e),
-        type: EvmTokenHistoryItemType.TRANSFER_IN,
-        from: e.from,
-        to: e.to,
-        amount: EvmTokensUtils.formatEtherValue(e.value),
-        timestamp: new Date(e.timeStamp * 1000),
-        label: '',
-      };
-
-      event.transactionHash = e.hash;
-
-      event.label = chrome.i18n.getMessage(
-        event.from.toLowerCase() === walletAddress.toLowerCase()
-          ? 'popup_html_evm_history_transfer_out'
-          : 'popup_html_evm_history_transfer_in',
-        [
-          event.amount,
-          token.tokenInfo.symbol,
-          EvmFormatUtils.formatAddress(
-            event.from.toLowerCase() === walletAddress.toLowerCase()
-              ? event.to
-              : event.from,
-          ),
-        ],
-      );
-      events.push(event);
-    }
+    } while (response.result.length > 0);
 
     return { events: events, lastBlock: lastBlock, firstBlock: firstBlock };
   } else {
@@ -245,14 +251,13 @@ const loadHistory = async (
     lastBlock = currentBlockchainBlockNumber;
     history.lastBlock = currentBlockchainBlockNumber;
     do {
-      console.log(`Fetch toward start ${firstBlock} to ${lastBlock}`);
       const h = await fetchHistory(
         token,
         chain,
         walletAddress,
         walletSigningKey,
-        firstBlock,
-        lastBlock,
+        0,
+        99999999,
       );
       history.events = [...history.events, ...h.events];
       history.firstBlock = h.firstBlock;
@@ -286,7 +291,6 @@ const loadMore = async (
   let lastBlock = history.firstBlock - 1;
   let h: EvmTokenHistory;
   do {
-    console.log(`Fetch toward start ${firstBlock} to ${lastBlock}`);
     h = await fetchHistory(
       token,
       chain,
@@ -328,7 +332,6 @@ const getSavedHistory = async (
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
     );
-  console.log({ localHistory });
   let chainHistory;
   let userHistory;
   let tokenHistory;
