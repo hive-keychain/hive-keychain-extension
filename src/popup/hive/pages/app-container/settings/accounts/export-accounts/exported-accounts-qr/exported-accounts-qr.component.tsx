@@ -59,19 +59,11 @@ const ExportedAccountsQR = ({
   };
 
   const moveNext = () => {
-    if (pageIndex === accountsDataQR.length - 1) {
-      setPageIndex(0);
-    } else {
-      setPageIndex((newPageIndex) => newPageIndex + 1);
-    }
+    setPageIndex((newPageIndex) => newPageIndex + 1);
   };
 
   const movePrevious = () => {
-    if (pageIndex === 0) {
-      setPageIndex(0);
-    } else {
-      setPageIndex((newPageIndex) => newPageIndex - 1);
-    }
+    setPageIndex((newPageIndex) => newPageIndex - 1);
   };
 
   const closePage = () => {
@@ -122,12 +114,16 @@ const ExportedAccountsQR = ({
               label="popup_html_whats_new_previous"
               onClick={movePrevious}
               type={ButtonType.ALTERNATIVE}
-              additionalClass="button-export-accounts-qr"
+              additionalClass={`button-export-accounts-qr ${
+                pageIndex === 0 ? 'hidden' : ''
+              }`}
             />
             <ButtonComponent
               label="popup_html_whats_new_next"
               onClick={moveNext}
-              additionalClass="button-export-accounts-qr"
+              additionalClass={`button-export-accounts-qr ${
+                pageIndex === accountsDataQR.length - 1 ? 'hidden' : ''
+              }`}
             />
           </div>
         </div>
