@@ -135,9 +135,12 @@
     }
 
     .rotating-logo-container {
-      flex: 1;
       display: flex;
+      flex: 1;
+      flex-direction: column;
       justify-content: center;
+      align-items: center;
+      row-gap: 8px;
       .rotating-logo {
         align-self: center;
         justify-self: center;

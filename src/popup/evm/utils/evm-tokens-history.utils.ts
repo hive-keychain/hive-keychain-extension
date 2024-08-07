@@ -256,8 +256,8 @@ const loadHistory = async (
         chain,
         walletAddress,
         walletSigningKey,
-        0,
-        99999999,
+        token.tokenInfo.type === EVMTokenType.NATIVE ? 0 : firstBlock,
+        lastBlock,
       );
       history.events = [...history.events, ...h.events];
       history.firstBlock = h.firstBlock;
@@ -287,6 +287,9 @@ const loadMore = async (
     totalBlocks: number;
   }) => void,
 ) => {
+  const initialBlock = history.firstBlock;
+  let blockChecked = 0;
+
   let firstBlock = history.firstBlock - 1 - LIMIT;
   let lastBlock = history.firstBlock - 1;
   let h: EvmTokenHistory;
@@ -303,6 +306,9 @@ const loadMore = async (
     history.firstBlock = h.firstBlock;
     lastBlock = firstBlock - 1;
     firstBlock = lastBlock - LIMIT;
+    blockChecked += LIMIT;
+    if (sendFeedback)
+      sendFeedback({ totalBlocks: initialBlock, nbBlocks: blockChecked });
   } while (h.events.length < MIN_NEW_TRANSACTION && history.firstBlock > 0);
 
   history.events = history.events.sort(
