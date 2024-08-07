@@ -7,8 +7,9 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -365,6 +366,8 @@ const getAccountValue = (
   tokensMarket: TokenMarket[],
   accountValueType: AccountValueType,
   tokens: Token[],
+  hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders,
+  hiddenTokensList: string[],
 ) => {
   if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
@@ -376,11 +379,15 @@ const getAccountValue = (
     prices,
     tokensMarket,
     tokens,
+    hiddenTokensList,
   );
   const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
     (acc, curr) => acc + curr.usdValue,
     0,
   );
+  const totalLockedValueInHiveMarket =
+    hiveMarketLockedOpenOrdersValues.hbd * prices.hive_dollar.usd +
+    hiveMarketLockedOpenOrdersValues.hive * prices.hive.usd;
   const dollarValue =
     (parseFloat(hbd_balance as string) +
       parseFloat(savings_hbd_balance as string)) *
@@ -389,7 +396,8 @@ const getAccountValue = (
       parseFloat(balance as string) +
       parseFloat(savings_balance as string)) *
       prices.hive.usd +
-    layerTwoTokensTotalValue;
+    layerTwoTokensTotalValue +
+    totalLockedValueInHiveMarket;
   const value =
     accountValueType === AccountValueType.DOLLARS
       ? dollarValue

@@ -15,6 +15,9 @@ const Config = {
       delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
   },
+  autoStakeTokens: {
+    FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
+  },
   analytics: {
     frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
   },
