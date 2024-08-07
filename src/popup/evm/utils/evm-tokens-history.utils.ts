@@ -35,7 +35,6 @@ const fetchHistory = async (
   firstBlock: number,
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
-  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
   if (token.tokenInfo.type === EVMTokenType.NATIVE) {
     let response;
