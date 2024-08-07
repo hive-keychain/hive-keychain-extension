@@ -47,7 +47,9 @@ const ExportedAccountsQR = ({
       const tempLocalAccountsChunk = [...localAccounts].splice(i, 2);
       tempAccountsDataQR.push({
         data: JSON.stringify(
-          tempLocalAccountsChunk.map((t) => AccountUtils.generateQRCode(t)),
+          tempLocalAccountsChunk.map((t) =>
+            AccountUtils.generateQRCode(t, false),
+          ),
         ),
         index,
         total: Math.ceil(localAccounts.length / 2),
