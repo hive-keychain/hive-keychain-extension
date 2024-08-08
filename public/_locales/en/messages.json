@@ -1759,7 +1759,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autostake_tokens_info": {
-    "message": "Automatically staking can increase your gains",
+    "message": "Automatically staking your tokens can increase your gains",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
