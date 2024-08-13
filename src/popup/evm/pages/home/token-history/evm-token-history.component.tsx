@@ -123,6 +123,7 @@ const EvmTokenHistoryPage = ({
           tokenInfo: token.tokenInfo,
           receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
           amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
+          isCanceled: historyItem.isCanceled,
         });
         break;
       }
@@ -132,6 +133,7 @@ const EvmTokenHistoryPage = ({
           token: token.tokenInfo,
           receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
           amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+          isCanceled: historyItem.isCanceled,
         });
         break;
       }

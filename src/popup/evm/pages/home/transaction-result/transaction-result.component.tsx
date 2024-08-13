@@ -31,6 +31,7 @@ const EvmTransactionResult = ({
   receiverAddress,
   gasFee,
   localAccounts,
+  isCanceled,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
@@ -167,6 +168,7 @@ const EvmTransactionResult = ({
   };
 
   const getStatus = () => {
+    if (isCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
         return 'canceling';
@@ -354,6 +356,7 @@ const mapStateToProps = (state: RootState) => {
     gasFee: state.navigation.stack[0].params.gasFee,
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
+    isCanceled: state.navigation.stack[0].params.isCanceled,
   };
 };
 

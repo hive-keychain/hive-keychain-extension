@@ -350,7 +350,9 @@ const loadHistory = async (
               EvmFormatUtils.formatAddress(localTxCanceled.to),
             ],
           ),
-        });
+          amount: localTxCanceled.amount,
+          isCanceled: true,
+        } as EvmTokenHistoryItem);
       } else {
         //delete tx from canceled tx
       }
