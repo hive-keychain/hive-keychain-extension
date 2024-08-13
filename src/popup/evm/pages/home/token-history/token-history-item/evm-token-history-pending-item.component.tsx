@@ -34,6 +34,20 @@ export const EvmTokenHistoryPendingItemComponent = ({
       pendingTransactionData.transaction,
       EthersUtils.getProvider(chain),
     );
+
+    const transactionResult = await EthersUtils.getProvider(
+      chain,
+    ).getTransaction(txResponse.hash);
+
+    if (!transactionResult) {
+      await EvmTransactionsUtils.deleteFromPendingTransactions(
+        txResponse?.from,
+        pendingTransactionData.transaction.nonce,
+      );
+      triggerRefreshHistory();
+      return;
+    }
+
     setTransactionResponse(txResponse);
     const transactionReceipt = await txResponse.wait();
     if (transactionReceipt) {
