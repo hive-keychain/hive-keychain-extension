@@ -327,9 +327,18 @@ const loadHistory = async (
         tx.tokenInfo.symbol === token.tokenInfo.symbol,
     );
     for (const localTxCanceled of tokenCanceledTransactions) {
+      if (
+        history.events
+          .map((event) => event.nonce)
+          .includes(localTxCanceled.nonce)
+      ) {
+        continue;
+      }
+
       const canceledTx = mainTokenHistory?.events.find(
         (tx) => tx.nonce === localTxCanceled.nonce,
       );
+
       if (canceledTx) {
         finalHistory.events.push({
           ...canceledTx,
