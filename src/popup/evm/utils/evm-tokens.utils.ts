@@ -210,7 +210,20 @@ const formatTokenValue = (value: number, decimals = 18) => {
   );
 };
 const formatEtherValue = (value: string) => {
+  console.log(ethers.formatEther(value));
   return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
+};
+
+const getMainTokenInfo = async (chain: EvmChain) => {
+  const tokens = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+  );
+  if (tokens && tokens[chain.chainId]) {
+    return tokens[chain.chainId].find(
+      (t: EvmTokenInfoShort) =>
+        t.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
+    );
+  }
 };
 
 export const EvmTokensUtils = {
@@ -220,4 +233,5 @@ export const EvmTokensUtils = {
   sortTokens,
   formatTokenValue,
   formatEtherValue,
+  getMainTokenInfo,
 };

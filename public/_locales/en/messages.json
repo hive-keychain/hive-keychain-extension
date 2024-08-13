@@ -4564,5 +4564,9 @@
   "popup_html_evm_transaction_select_fee": {
     "message": "Select fee",
     "description": "Evm transaction info"
+  },
+  "popup_html_evm_history_transaction_canceled": {
+    "message": "Transaction canceled",
+    "description": "Evm history transaction canceled"
   }
 }

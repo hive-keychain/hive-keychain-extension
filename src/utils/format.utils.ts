@@ -16,29 +16,41 @@ const withCommas = (
   if (typeof nb === 'number') {
     nb = nb.toString();
   }
+
   value = parseFloat(nb).toFixed(decimals);
   let parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
-
   if (removeTrailingZeros) {
-    finalNumber = removeZeros(finalNumber.replace(/\.0+$/, ''));
+    const validNumber = finalNumber.match(/^0*(\d+(?:\.(?:(?!0+$)\d)+)?)/);
+    if (validNumber) finalNumber = validNumber[0];
   }
 
   if (currency) {
     finalNumber = finalNumber + ' ' + currency;
   }
-
   return finalNumber;
 };
 
 const removeZeros = (value: string) => {
+  console.log(value, 'removeZeros');
   const decimals = value.split('.');
   if (decimals[1]) {
+    console.log(decimals[1]);
+
+    let dec = parseFloat('0.' + decimals[1]);
+    console.log({ dec });
+    let fullDecimalS = `0.${decimals[1]}`;
+    let fullDecimal = Number(fullDecimalS).toString();
+
+    console.log({ fullDecimalS, fullDecimal });
+
     decimals[1] = parseFloat('0.' + decimals[1])
       .toString()
       .split('.')[1];
+    console.log(decimals[1]);
   }
+
   return decimals.join('.');
 };
 

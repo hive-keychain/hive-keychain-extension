@@ -17,6 +17,7 @@ import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -28,7 +29,7 @@ const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
 
 const fetchHistory = async (
-  token: EVMToken,
+  tokenInfo: EvmTokenInfoShort,
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,
@@ -36,7 +37,7 @@ const fetchHistory = async (
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
   Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
-  if (token.tokenInfo.type === EVMTokenType.NATIVE) {
+  if (tokenInfo.type === EVMTokenType.NATIVE) {
     let response;
     const events = [];
     let page = 1;
@@ -62,14 +63,18 @@ const fetchHistory = async (
           continue;
         }
 
+        console.log(e);
         const event: EvmTokenTransferInHistoryItem = {
           ...getCommonHistoryItem(e),
           type: EvmTokenHistoryItemType.TRANSFER_IN,
           from: e.from,
           to: e.to,
-          amount: EvmTokensUtils.formatEtherValue(e.value),
+          amount: Number(e.value)
+            ? EvmTokensUtils.formatEtherValue(e.value)
+            : '0',
           timestamp: new Date(e.timeStamp * 1000),
           label: '',
+          isCanceled: Number(e.value) === 0,
         };
 
         event.transactionHash = e.hash;
@@ -80,7 +85,7 @@ const fetchHistory = async (
             : 'popup_html_evm_history_transfer_in',
           [
             event.amount,
-            token.tokenInfo.symbol,
+            tokenInfo.symbol,
             EvmFormatUtils.formatAddress(
               event.from.toLowerCase() === walletAddress.toLowerCase()
                 ? event.to
@@ -97,7 +102,7 @@ const fetchHistory = async (
     const provider = EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(walletSigningKey, provider);
     const contract = new ethers.Contract(
-      token.tokenInfo.address!,
+      tokenInfo.address!,
       Erc20Abi,
       connectedWallet,
     );
@@ -127,7 +132,7 @@ const fetchHistory = async (
           to: e.args[1],
           amount: EvmTokensUtils.formatTokenValue(
             e.args[2],
-            token.tokenInfo.decimals,
+            tokenInfo.decimals,
           ),
           timestamp: new Date(block.timestamp * 1000),
           label: '',
@@ -136,7 +141,7 @@ const fetchHistory = async (
           'popup_html_evm_history_transfer_in',
           [
             event.amount,
-            token.tokenInfo.symbol,
+            tokenInfo.symbol,
             EvmFormatUtils.formatAddress(event.from),
           ],
         );
@@ -161,7 +166,7 @@ const fetchHistory = async (
           to: e.args[1],
           amount: EvmTokensUtils.formatTokenValue(
             e.args[2],
-            token.tokenInfo.decimals,
+            tokenInfo.decimals,
           ),
           timestamp: new Date(block.timestamp * 1000),
           label: '',
@@ -170,7 +175,7 @@ const fetchHistory = async (
           'popup_html_evm_history_transfer_out',
           [
             event.amount,
-            token.tokenInfo.symbol,
+            tokenInfo.symbol,
             EvmFormatUtils.formatAddress(event.to),
           ],
         );
@@ -214,6 +219,18 @@ const loadHistory = async (
     token.tokenInfo,
   );
 
+  const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(chain);
+  const mainTokenHistory = await getSavedHistory(
+    chain.chainId,
+    walletAddress,
+    mainTokenInfo,
+  );
+
+  console.log({ mainTokenHistory });
+
+  const canceledTransactions =
+    await EvmTransactionsUtils.getAllCanceledTransactions(chain, walletAddress);
+
   const provider = EthersUtils.getProvider(chain);
   const currentBlockchainBlockNumber = await provider.getBlockNumber();
   let firstBlock;
@@ -233,7 +250,7 @@ const loadHistory = async (
     history.lastBlock = currentBlockchainBlockNumber;
     do {
       const h = await fetchHistory(
-        token,
+        token.tokenInfo,
         chain,
         walletAddress,
         walletSigningKey,
@@ -244,6 +261,17 @@ const loadHistory = async (
 
       firstBlock = lastBlock + 1;
       lastBlock = firstBlock + LIMIT;
+
+      history.events = history.events.sort(
+        (a, b) => Number(b.timestamp) - Number(a.timestamp),
+      );
+
+      await saveLocalHistory(
+        { ...history },
+        walletAddress,
+        token.tokenInfo,
+        chain,
+      );
     } while (lastBlock < currentBlockchainBlockNumber);
   } else {
     firstBlock = currentBlockchainBlockNumber - LIMIT;
@@ -251,7 +279,7 @@ const loadHistory = async (
     history.lastBlock = currentBlockchainBlockNumber;
     do {
       const h = await fetchHistory(
-        token,
+        token.tokenInfo,
         chain,
         walletAddress,
         walletSigningKey,
@@ -262,17 +290,54 @@ const loadHistory = async (
       history.firstBlock = h.firstBlock;
       lastBlock = firstBlock - 1;
       firstBlock = lastBlock - LIMIT;
+
+      history.events = history.events.sort(
+        (a, b) => Number(b.timestamp) - Number(a.timestamp),
+      );
+
+      await saveLocalHistory(
+        { ...history },
+        walletAddress,
+        token.tokenInfo,
+        chain,
+      );
     } while (
       history.events.length < MIN_NEW_TRANSACTION &&
       history.lastBlock > 0
     );
   }
-  history.events = history.events.sort(
-    (a, b) => Number(b.timestamp) - Number(a.timestamp),
-  );
 
-  await saveLocalHistory({ ...history }, walletAddress, token.tokenInfo, chain);
-  return history;
+  const finalHistory: EvmTokenHistory = {
+    events: [],
+    firstBlock: history.firstBlock,
+    lastBlock: history.lastBlock,
+  };
+  // console.log(canceledTransactions);
+  // console.log(history);
+  for (const historyItem of history.events) {
+    const canceledTransaction = canceledTransactions.find(
+      (transaction) => transaction.nonce === historyItem.nonce,
+    );
+    console.log({ historyItem, canceledTransaction });
+
+    if (canceledTransaction) {
+      if (token.tokenInfo.type === EVMTokenType.ERC20) {
+        historyItem.cancelDetails = canceledTransaction;
+        finalHistory.events.push(historyItem);
+      }
+    } else {
+      if (historyItem.isCanceled) {
+        historyItem.label = chrome.i18n.getMessage(
+          'popup_html_evm_history_transaction_canceled',
+        );
+      }
+      finalHistory.events.push(historyItem);
+    }
+  }
+
+  console.log({ history, finalHistory, canceledTransactions });
+
+  return finalHistory;
 };
 
 const loadMore = async (
@@ -294,7 +359,7 @@ const loadMore = async (
   let h: EvmTokenHistory;
   do {
     h = await fetchHistory(
-      token,
+      token.tokenInfo,
       chain,
       walletAddress,
       walletSigningKey,
@@ -325,6 +390,7 @@ const getCommonHistoryItem = (e: any) => {
     index: e.index,
     transactionHash: e.transactionHash,
     transactionIndex: e.transactionIndex,
+    nonce: Number(e.nonce),
   };
 };
 
@@ -383,10 +449,49 @@ const saveLocalHistory = async (
   );
 };
 
+const fetchFullMainTokenHistory = async (
+  chain: EvmChain,
+  tokenInfo: EvmTokenInfoShort,
+  walletAddress: string,
+  walletSigningKey: SigningKey,
+) => {
+  const localHistory = await getSavedHistory(
+    chain.chainId,
+    walletAddress,
+    tokenInfo,
+  );
+
+  const firstBlock = localHistory ? localHistory.lastBlock : 0;
+
+  const provider = EthersUtils.getProvider(chain);
+  const currentBlockchainBlockNumber = await provider.getBlockNumber();
+  const history = await fetchHistory(
+    tokenInfo,
+    chain,
+    walletAddress,
+    walletSigningKey,
+    firstBlock,
+    currentBlockchainBlockNumber,
+  );
+
+  let newLocalHistory;
+  if (localHistory) {
+    newLocalHistory = {
+      firstBlock: 0,
+      lastBlock: history.lastBlock,
+      events: [...history.events, ...localHistory.events],
+    };
+  } else {
+    newLocalHistory = history;
+  }
+  await saveLocalHistory(newLocalHistory, walletAddress, tokenInfo, chain);
+};
+
 export const EvmTokensHistoryUtils = {
   fetchHistory,
   getSavedHistory,
   saveLocalHistory,
   loadHistory,
   loadMore,
+  fetchFullMainTokenHistory,
 };

@@ -49,7 +49,10 @@ export const EvmTokenHistoryItemComponent = ({
   };
 
   return (
-    <div className="wallet-history-item" onClick={goToDetailsPage}>
+    <div
+      className="wallet-history-item"
+      onClick={goToDetailsPage}
+      title={historyItem.nonce.toString()}>
       <div className="wallet-transaction-info">
         <div
           data-testid="transaction-expandable-area"

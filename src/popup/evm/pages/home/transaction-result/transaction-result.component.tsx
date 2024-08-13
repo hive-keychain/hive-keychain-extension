@@ -81,6 +81,9 @@ const EvmTransactionResult = ({
       chain,
       gasFee,
       localAccounts[0].wallet,
+      amount,
+      tokenInfo,
+      receiverAddress,
     );
     try {
       await cancelTransactionResponse.wait();

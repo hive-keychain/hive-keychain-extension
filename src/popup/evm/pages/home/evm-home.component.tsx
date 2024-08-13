@@ -2,10 +2,12 @@ import { Screen } from '@interfaces/screen.interface';
 import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -81,6 +83,20 @@ const Home = ({
   useEffect(() => {
     if (activeAccount.balances?.length > 0) setTokens(activeAccount.balances);
   }, [activeAccount.balances]);
+
+  useEffect(() => {
+    if (tokens && tokens.length > 0) {
+      const mainToken = tokens.find(
+        (token) => token.tokenInfo.type === EVMTokenType.NATIVE,
+      );
+      EvmTokensHistoryUtils.fetchFullMainTokenHistory(
+        chain,
+        mainToken!.tokenInfo,
+        activeAccount.address,
+        accounts[0].wallet.signingKey,
+      );
+    }
+  }, [tokens]);
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {

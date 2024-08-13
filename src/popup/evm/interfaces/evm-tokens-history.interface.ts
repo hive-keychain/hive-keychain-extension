@@ -1,3 +1,5 @@
+import { CanceledTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
+
 export interface EvmTokenHistory {
   events: EvmTokenHistoryItem[];
   firstBlock: number; // oldest block
@@ -13,7 +15,10 @@ export interface EvmTokenHistoryItem {
   transactionIndex: number;
   timestamp: Date;
   label: string;
+  nonce: number;
   details?: string;
+  cancelDetails?: CanceledTransactionData;
+  isCanceled?: boolean;
 }
 
 export interface EvmTokenTransferInHistoryItem extends EvmTokenHistoryItem {

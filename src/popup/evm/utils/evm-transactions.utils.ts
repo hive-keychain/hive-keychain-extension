@@ -4,6 +4,10 @@ import {
   PendingTransactionData,
   UserPendingTransactions,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  CanceledTransactionData,
+  UserCanceledTransactions,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
@@ -93,12 +97,24 @@ const cancel = async (
   chain: EvmChain,
   gasFee: GasFeeEstimation,
   wallet: HDNodeWallet,
+  amount: number,
+  tokenInfo: EvmTokenInfoShort,
+  receiverAddress: string,
 ) => {
   const newGasFee: GasFeeEstimation = {
     ...gasFee,
     maxFeePerGas: new Decimal(gasFee.maxFeePerGas).mul(1.5).toNumber(),
     priorityFee: new Decimal(gasFee.priorityFee).mul(1.5).toNumber(),
   };
+
+  addCanceledTransaction(
+    transactionResponse,
+    wallet.address,
+    tokenInfo,
+    amount,
+    receiverAddress,
+    chain,
+  );
 
   return transfer(
     chain,
@@ -178,6 +194,71 @@ const getPendingTransactions = async (
       pendingTransaction.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
   );
 };
+const getCanceledTransactions = async (
+  chain: EvmChain,
+  address: string,
+  tokenInfo: EvmTokenInfoShort,
+): Promise<CanceledTransactionData[]> => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+  );
+
+  if (!data) return [];
+  if (!data[chain.chainId]) return [];
+  if (!data[chain.chainId][address]) return [];
+  return data[address].filter(
+    (canceledTransactions: CanceledTransactionData) =>
+      canceledTransactions.tokenInfo.symbol === tokenInfo.symbol &&
+      canceledTransactions.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
+  );
+};
+
+const getAllCanceledTransactions = async (
+  chain: EvmChain,
+  address: string,
+): Promise<CanceledTransactionData[]> => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+  );
+  if (!data) return [];
+  if (!data[chain.chainId]) return [];
+  return data[chain.chainId][address] ?? [];
+};
+
+const addCanceledTransaction = async (
+  transactionResponse: TransactionResponse,
+  address: string,
+  tokenInfo: EvmTokenInfoShort,
+  amount: number,
+  receiverAddress: string,
+  chain: EvmChain,
+) => {
+  let transactions: UserCanceledTransactions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    );
+  if (!transactions) {
+    transactions = {};
+  }
+  if (!transactions[chain.chainId]) {
+    transactions[chain.chainId] = {};
+  }
+  if (!transactions[chain.chainId][address]) {
+    transactions[chain.chainId][address] = [];
+  }
+  transactions[chain.chainId][address].push({
+    nonce: transactionResponse.nonce,
+    amount,
+    tokenInfo,
+    from: address,
+    to: receiverAddress,
+  });
+
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    transactions,
+  );
+};
 
 export const EvmTransactionsUtils = {
   transfer,
@@ -185,4 +266,7 @@ export const EvmTransactionsUtils = {
   getPendingTransactions,
   addPendingTransaction,
   deleteFromPendingTransactions,
+  getCanceledTransactions,
+  addCanceledTransaction,
+  getAllCanceledTransactions,
 };
