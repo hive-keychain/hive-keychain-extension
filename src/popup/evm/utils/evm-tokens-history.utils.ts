@@ -122,7 +122,6 @@ const fetchHistory = async (
         //     await provider.lookupAddress(e.args[0]),
         //     await provider.lookupAddress(e.args[1]),
         //   ]);
-        console.log(e);
         const block = await e.getBlock();
         const event: EvmTokenTransferInHistoryItem = {
           ...getCommonHistoryItem(e),
@@ -352,8 +351,6 @@ const loadHistory = async (
       (a, b) => Number(b.timestamp) - Number(a.timestamp),
     );
   }
-
-  console.log({ history, finalHistory, canceledTransactions });
 
   return finalHistory;
 };
