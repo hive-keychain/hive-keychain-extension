@@ -13,7 +13,7 @@ export interface EvmTokenHistoryItem {
   index: number;
   transactionHash: string;
   transactionIndex: number;
-  timestamp: Date;
+  timestamp: number;
   label: string;
   nonce: number;
   details?: string;

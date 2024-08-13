@@ -210,7 +210,6 @@ const formatTokenValue = (value: number, decimals = 18) => {
   );
 };
 const formatEtherValue = (value: string) => {
-  console.log(ethers.formatEther(value));
   return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
 };
 

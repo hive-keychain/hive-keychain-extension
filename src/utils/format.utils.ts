@@ -32,28 +32,6 @@ const withCommas = (
   return finalNumber;
 };
 
-const removeZeros = (value: string) => {
-  console.log(value, 'removeZeros');
-  const decimals = value.split('.');
-  if (decimals[1]) {
-    console.log(decimals[1]);
-
-    let dec = parseFloat('0.' + decimals[1]);
-    console.log({ dec });
-    let fullDecimalS = `0.${decimals[1]}`;
-    let fullDecimal = Number(fullDecimalS).toString();
-
-    console.log({ fullDecimalS, fullDecimal });
-
-    decimals[1] = parseFloat('0.' + decimals[1])
-      .toString()
-      .split('.')[1];
-    console.log(decimals[1]);
-  }
-
-  return decimals.join('.');
-};
-
 const toHP = (vests: string, props?: DynamicGlobalProperties) =>
   props
     ? (parseFloat(vests) * parseFloat(props.total_vesting_fund_hive + '')) /

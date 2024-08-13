@@ -63,7 +63,6 @@ const fetchHistory = async (
           continue;
         }
 
-        console.log(e);
         const event: EvmTokenTransferInHistoryItem = {
           ...getCommonHistoryItem(e),
           type: EvmTokenHistoryItemType.TRANSFER_IN,
@@ -72,7 +71,7 @@ const fetchHistory = async (
           amount: Number(e.value)
             ? EvmTokensUtils.formatEtherValue(e.value)
             : '0',
-          timestamp: new Date(e.timeStamp * 1000),
+          timestamp: e.timeStamp * 1000,
           label: '',
           isCanceled: Number(e.value) === 0,
         };
@@ -123,7 +122,7 @@ const fetchHistory = async (
         //     await provider.lookupAddress(e.args[0]),
         //     await provider.lookupAddress(e.args[1]),
         //   ]);
-
+        console.log(e);
         const block = await e.getBlock();
         const event: EvmTokenTransferInHistoryItem = {
           ...getCommonHistoryItem(e),
@@ -134,7 +133,7 @@ const fetchHistory = async (
             e.args[2],
             tokenInfo.decimals,
           ),
-          timestamp: new Date(block.timestamp * 1000),
+          timestamp: block.timestamp * 1000,
           label: '',
         };
         event.label = chrome.i18n.getMessage(
@@ -168,7 +167,7 @@ const fetchHistory = async (
             e.args[2],
             tokenInfo.decimals,
           ),
-          timestamp: new Date(block.timestamp * 1000),
+          timestamp: block.timestamp * 1000,
           label: '',
         };
         event.label = chrome.i18n.getMessage(
@@ -185,9 +184,7 @@ const fetchHistory = async (
       Logger.error('Error while parsing transfer out', err);
     }
 
-    const events = finalEvents.sort(
-      (a, b) => a.timestamp.getMilliseconds() - b.timestamp.getMilliseconds(),
-    );
+    const events = finalEvents.sort((a, b) => a.timestamp - b.timestamp);
 
     Logger.info(
       `Fetching from ${firstBlock} to ${firstBlock - LIMIT}: found ${
@@ -226,8 +223,6 @@ const loadHistory = async (
     mainTokenInfo,
   );
 
-  console.log({ mainTokenHistory });
-
   const canceledTransactions =
     await EvmTransactionsUtils.getAllCanceledTransactions(chain, walletAddress);
 
@@ -241,7 +236,6 @@ const loadHistory = async (
     firstBlock: -1,
     lastBlock: -1,
   };
-
   if (localHistory) {
     firstBlock = localHistory.lastBlock + 1;
     lastBlock = firstBlock + LIMIT;
@@ -312,27 +306,51 @@ const loadHistory = async (
     firstBlock: history.firstBlock,
     lastBlock: history.lastBlock,
   };
-  // console.log(canceledTransactions);
-  // console.log(history);
   for (const historyItem of history.events) {
     const canceledTransaction = canceledTransactions.find(
       (transaction) => transaction.nonce === historyItem.nonce,
     );
-    console.log({ historyItem, canceledTransaction });
-
-    if (canceledTransaction) {
-      if (token.tokenInfo.type === EVMTokenType.ERC20) {
-        historyItem.cancelDetails = canceledTransaction;
-        finalHistory.events.push(historyItem);
-      }
-    } else {
+    if (token.tokenInfo.type === EVMTokenType.NATIVE) {
       if (historyItem.isCanceled) {
         historyItem.label = chrome.i18n.getMessage(
           'popup_html_evm_history_transaction_canceled',
         );
+        historyItem.cancelDetails = canceledTransaction;
       }
-      finalHistory.events.push(historyItem);
     }
+    finalHistory.events.push(historyItem);
+  }
+
+  if (token.tokenInfo.type === EVMTokenType.ERC20) {
+    const tokenCanceledTransactions = canceledTransactions.filter(
+      (tx) =>
+        tx.tokenInfo.coingeckoId === token.tokenInfo.coingeckoId &&
+        tx.tokenInfo.symbol === token.tokenInfo.symbol,
+    );
+    for (const localTxCanceled of tokenCanceledTransactions) {
+      const canceledTx = mainTokenHistory?.events.find(
+        (tx) => tx.nonce === localTxCanceled.nonce,
+      );
+      if (canceledTx) {
+        finalHistory.events.push({
+          ...canceledTx,
+          label: chrome.i18n.getMessage(
+            'popup_html_evm_history_transaction_canceled_transfer_out_details',
+            [
+              localTxCanceled.amount.toString(),
+              localTxCanceled.tokenInfo.symbol,
+              EvmFormatUtils.formatAddress(localTxCanceled.to),
+            ],
+          ),
+        });
+      } else {
+        //delete tx from canceled tx
+      }
+    }
+
+    finalHistory.events = finalHistory.events.sort(
+      (a, b) => Number(b.timestamp) - Number(a.timestamp),
+    );
   }
 
   console.log({ history, finalHistory, canceledTransactions });
