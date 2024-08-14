@@ -77,9 +77,30 @@
   }
   .custom-gas-fee-panel {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     flex-direction: column;
     row-gap: 16px;
+
+    .data-panel {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .data-block {
+        @include poppins400(10px);
+        .label {
+          font-weight: 500;
+        }
+        .value {
+          &.up {
+            color: $green-success;
+          }
+          &.down {
+            color: $red;
+          }
+        }
+      }
+    }
 
     .button-panel {
       width: 100%;

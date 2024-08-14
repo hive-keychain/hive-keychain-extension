@@ -1,5 +1,8 @@
 import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
-import { FullGasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  EvmFeeTrend,
+  FullGasFeeEstimation,
+} from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
@@ -16,7 +19,7 @@ const estimate = async (
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
-) => {
+): Promise<FullGasFeeEstimation> => {
   const estimates = await getGasFeeEstimations(chain);
 
   const gasLimit = await EthersUtils.getGasLimit(
@@ -46,44 +49,67 @@ const estimate = async (
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
     low: {
       estimatedFee: low,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
     medium: {
       estimatedFee: medium,
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.medium.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.medium.suggestedMaxFeePerGas),
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
     max: {
       estimatedFee: aggressive,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
     aggressive: {
       estimatedFee: aggressive,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
     custom: {
       estimatedFee: -1,
       estimatedMaxDuration: -1,
       priorityFee: -1,
       maxFeePerGas: -1,
-      gasLimit: gasLimit,
+      gasLimit: Number(gasLimit),
     },
-  } as FullGasFeeEstimation;
+    extraInfo: {
+      baseFee: {
+        baseFeeRange: {
+          min: Number(estimates.historicalBaseFeeRange[0]).toFixed(2),
+          max: Number(estimates.historicalBaseFeeRange[1]).toFixed(2),
+        },
+        estimated: Number(estimates.estimatedBaseFee).toFixed(2),
+      },
+      priorityFee: {
+        history: {
+          min: Number(estimates.historicalPriorityFeeRange[0]).toFixed(2),
+          max: Number(estimates.historicalPriorityFeeRange[1]).toFixed(2),
+        },
+        latest: {
+          min: Number(estimates.latestPriorityFeeRange[0]).toFixed(2),
+          max: Number(estimates.latestPriorityFeeRange[1]).toFixed(2),
+        },
+      },
+      trends: {
+        baseFee: estimates.baseFeeTrend as EvmFeeTrend,
+        priorityFee: estimates.priorityFeeTrend as EvmFeeTrend,
+      },
+    },
+  };
 };
 
 export const GasFeeUtils = {

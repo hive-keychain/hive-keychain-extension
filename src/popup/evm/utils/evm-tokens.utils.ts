@@ -225,6 +225,12 @@ const getMainTokenInfo = async (chain: EvmChain) => {
   }
 };
 
+const displayValue = (value: number, tokenInfo: EvmTokenInfoShort) => {
+  const decimals =
+    tokenInfo.type === EVMTokenType.NATIVE ? 18 : tokenInfo.decimals;
+  return FormatUtils.withCommas(value, decimals, true);
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -233,4 +239,5 @@ export const EvmTokensUtils = {
   formatTokenValue,
   formatEtherValue,
   getMainTokenInfo,
+  displayValue,
 };

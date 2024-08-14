@@ -143,10 +143,9 @@ const EvmTransfer = ({
       },
       {
         label: 'popup_html_transfer_amount',
-        value: `${FormatUtils.formatCurrencyValue(
-          form.amount,
-          decimals,
-        )} ${form.selectedToken.tokenInfo.symbol.toUpperCase()}`,
+        value: `${FormatUtils.withCommas(form.amount, decimals, true)} ${
+          form.selectedToken.tokenInfo.symbol
+        }`,
       },
     ];
 
