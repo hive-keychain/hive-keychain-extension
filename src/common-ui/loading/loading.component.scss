@@ -1,7 +1,7 @@
 .loading-container {
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   height: 100%;
@@ -12,7 +12,7 @@
   .overlay {
     height: 100%;
     width: 100%;
-    position: fixed;
+    position: absolute;
     background: $dark-blue;
     opacity: 0.8;
   }
