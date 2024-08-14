@@ -21,6 +21,7 @@ export const broadcastSwap = async (
   let result,
     err: any,
     err_message = null;
+  let swapId: string = '';
   try {
     const {
       username,
@@ -30,21 +31,25 @@ export const broadcastSwap = async (
       steps,
       amount,
       swapAccount,
+      partnerUsername,
+      partnerFee,
     } = data;
-
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
-    const swapId = await SwapTokenUtils.saveEstimate(
+
+    swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
       startToken,
       endToken,
       amount,
       username!,
+      partnerFee,
+      partnerUsername,
     );
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
@@ -125,7 +130,7 @@ export const broadcastSwap = async (
   } finally {
     const message = createMessage(
       err,
-      result,
+      { ...result, swap_id: swapId },
       data,
       await chrome.i18n.getMessage('bgd_ops_swap_start_success', [
         data.amount + '',
