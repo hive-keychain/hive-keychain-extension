@@ -1028,6 +1028,18 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
+  "dialog_contract_id": {
+    "message": "Contract ID",
+    "description": "When website request a vsc call"
+  },
+  "dialog_action": {
+    "message": "Action",
+    "description": "When website request a vsc call"
+  },
+  "dialog_payload": {
+    "message": "Payload",
+    "description": "When website request a vsc call"
+  },
 
   "dialog_slippage": {
     "message": "Slippage",
@@ -1195,6 +1207,10 @@
   },
   "dialog_title_custom": {
     "message": "Custom Transaction",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_call_contract": {
+    "message": "VSC Contract Call",
     "description": "Website request title"
   },
   "dialog_title_decode": {
