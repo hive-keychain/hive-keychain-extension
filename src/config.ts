@@ -57,6 +57,14 @@ const Config = {
   tutorial: {
     baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
   },
+  vsc: {
+    ID: 'vsc.tx',
+    BASE_JSON: {
+      __v: '0.1',
+      __t: 'vsc-tx',
+      net_id: 'testnet/0bf2e474-6b9e-4165-ad4e-a0d78968d20c',
+    },
+  },
 };
 
 export default Config;

@@ -27,6 +27,7 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.vote:
       return KeychainKeyTypesLC.posting;
     case KeychainRequestTypes.custom:
+    case KeychainRequestTypes.vscCallContract:
       return !request.method
         ? KeychainKeyTypesLC.posting
         : (request.method.toLowerCase() as KeychainKeyTypesLC);
