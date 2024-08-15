@@ -1035,6 +1035,52 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
+  /**
+   * Request a VSC contract call
+   * @example
+   * // Let's make a test call to a VSC contract
+   *
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestVscCallContract('keychain',
+   *    'vs41q9c3ygynfp6kl86qnlaswuwvam748s5lvugns5schg4hte5vhusnx7sg5u8falrt',
+   *    'testJSON', {
+   *      hello: "World",
+   *    }, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} contractId Smart contract ID
+   * @param {String} action Contract action
+   * @param {Object} payload Contract payload
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+  
+   */
+  requestVscCallContract: function (
+    username,
+    contractId,
+    action,
+    payload,
+
+    callback,
+    rpc,
+  ) {
+    const request = {
+      type: 'vscCallContract',
+      username,
+      contractId,
+      action,
+      payload,
+      rpc,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
   // Send the customEvent
   dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;
