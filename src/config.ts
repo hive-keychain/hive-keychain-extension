@@ -59,6 +59,7 @@ const Config = {
   },
   vsc: {
     ID: 'vsc.tx',
+    API_URL: 'https://api.vsc.eco/api/v1/graphql',
     BASE_JSON: {
       __v: '0.1',
       __t: 'vsc-tx',

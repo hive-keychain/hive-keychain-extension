@@ -1,0 +1,5 @@
+export enum VscStatus {
+  UNCONFIRMED = 'UNCONFIRMED',
+  CONFIRMED = 'CONFIRMED',
+  INCLUDED = 'INCLUDED',
+}
