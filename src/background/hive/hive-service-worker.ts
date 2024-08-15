@@ -21,7 +21,7 @@ import init from './requests/init';
 import { performOperation } from './requests/operations';
 import { RequestsHandler } from './requests/request-handler';
 
-const initializeHiveServiceWorker = async () => {
+const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
   await RPCModule.init();
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
@@ -128,7 +128,7 @@ export const performOperationFromIndex = async (
 };
 
 export const HiveServiceWorker = {
-  initializeHiveServiceWorker,
+  initializeServiceWorker,
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
