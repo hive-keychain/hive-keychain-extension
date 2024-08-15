@@ -7,7 +7,9 @@ import {
   RequestVscCallContract,
 } from '@interfaces/keychain.interface';
 import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
+import { VscStatus } from '@interfaces/vsc.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
+import { VscUtils } from '@popup/hive/utils/vsc.utils';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -34,7 +36,7 @@ export const vscCallContract = async (
       data.method.toLowerCase() as KeychainKeyTypesLC,
     ) as [string, string];
   }
-  let result, err, err_message;
+  let result, vscResult, err, err_message;
 
   try {
     switch (KeysUtils.getKeyType(key!)) {
@@ -67,6 +69,12 @@ export const vscCallContract = async (
         break;
       }
     }
+    vscResult = {
+      ...result,
+      vscConfirmed: result
+        ? await VscUtils.waitForStatus(result?.tx_id)
+        : VscStatus.UNCONFIRMED,
+    };
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
@@ -77,7 +85,7 @@ export const vscCallContract = async (
   } finally {
     const message = await createMessage(
       err,
-      result,
+      vscResult,
       data,
       await chrome.i18n.getMessage('bgd_ops_broadcast'),
       err_message,
