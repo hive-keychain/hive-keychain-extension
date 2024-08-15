@@ -1,7 +1,7 @@
 import {
   BackgroundMessage,
   MultisigDialogMessage,
-} from '@background/background-message.interface';
+} from '@background/hive/background-message.interface';
 import {
   MultisigAcceptRejectTxData,
   MultisigData,

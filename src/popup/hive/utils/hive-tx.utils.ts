@@ -1,5 +1,5 @@
-import { BackgroundMessage } from '@background/background-message.interface';
-import { MultisigModule } from '@background/multisig.module';
+import { BackgroundMessage } from '@background/hive/background-message.interface';
+import { MultisigModule } from '@background/hive/modules/multisig.module';
 import Hive from '@engrave/ledger-app-hive';
 import { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {

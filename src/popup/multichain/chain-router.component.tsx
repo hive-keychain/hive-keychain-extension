@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/hive/background-message.interface';
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { EvmAppComponent } from '@popup/evm/evm-app.component';

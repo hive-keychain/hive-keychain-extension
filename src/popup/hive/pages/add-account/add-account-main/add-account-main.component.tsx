@@ -1,3 +1,4 @@
+import { BackgroundMessage } from '@background/hive/background-message.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -5,7 +6,6 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';

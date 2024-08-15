@@ -1,4 +1,3 @@
-import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   AutoCompleteCategory,
@@ -10,6 +9,7 @@ import {
   FavoriteUserListName,
 } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -68,7 +68,7 @@ const saveFavoriteUser = async (
   const mk = await LocalStorageUtils.getValueFromSessionStorage(
     LocalStorageKeyEnum.__MK,
   );
-  const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+  const localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   let favoriteUser = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
   );
