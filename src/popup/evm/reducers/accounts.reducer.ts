@@ -2,7 +2,7 @@ import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 
-const EvmAccountsReducer = (
+export const EvmAccountsReducer = (
   state: EvmAccount[] = [],
   { type, payload }: ActionPayload<EvmAccount[]>,
 ): EvmAccount[] => {
@@ -13,5 +13,3 @@ const EvmAccountsReducer = (
       return state;
   }
 };
-
-export default EvmAccountsReducer;

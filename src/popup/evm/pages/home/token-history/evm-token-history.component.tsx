@@ -7,7 +7,6 @@ import {
   EvmTokenTransferOutHistoryItem,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmTokenHistoryPendingItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-pending-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -30,7 +29,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 const EvmTokenHistoryPage = ({
   token,
-  account,
+  activeAccount,
   chain,
   setTitleContainerProperties,
   navigateToWithParams,
@@ -63,7 +62,7 @@ const EvmTokenHistoryPage = ({
   const load = async (history?: EvmTokenHistory) => {
     const pendingTransactions =
       await EvmTransactionsUtils.getPendingTransactions(
-        account.wallet.address,
+        activeAccount.wallet.address,
         token.tokenInfo,
       );
     setPendingTransactions(pendingTransactions);
@@ -74,8 +73,8 @@ const EvmTokenHistoryPage = ({
       const res = await EvmTokensHistoryUtils.loadHistory(
         token,
         chain,
-        account.wallet.address,
-        account.wallet.signingKey,
+        activeAccount.wallet.address,
+        activeAccount.wallet.signingKey,
         (progression) =>
           setLoading((oldLoading) => {
             return {
@@ -145,8 +144,8 @@ const EvmTokenHistoryPage = ({
     const res = await EvmTokensHistoryUtils.loadMore(
       token,
       chain,
-      account.wallet.address,
-      account.wallet.signingKey,
+      activeAccount.wallet.address,
+      activeAccount.wallet.signingKey,
       history!,
       (progression) =>
         setLoading((oldLoading) => {
@@ -258,7 +257,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     token: state.navigation.params.token as EVMToken,
     chain: state.chain as EvmChain,
-    account: state.evm.accounts[0] as EvmAccount,
+    activeAccount: state.evm.activeAccount,
   };
 };
 

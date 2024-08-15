@@ -1,11 +1,13 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
+import { HDNodeWallet } from 'ethers';
 
-const EvmActiveAccountReducer = (
+export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
     balances: [],
+    wallet: {} as HDNodeWallet,
   },
   { type, payload }: ActionPayload<EvmActiveAccount>,
 ): EvmActiveAccount => {
@@ -16,5 +18,3 @@ const EvmActiveAccountReducer = (
       return state;
   }
 };
-
-export default EvmActiveAccountReducer;

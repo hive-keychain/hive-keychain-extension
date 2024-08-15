@@ -1,5 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
-import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
@@ -7,6 +7,7 @@ import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-sele
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
@@ -43,7 +44,7 @@ const Home = ({
   accounts,
   resetTitleContainerProperties,
   activeAccount,
-  getEvmActiveAccount,
+  loadEvmActiveAccount,
   navigateTo,
   prices,
   fetchPrices,
@@ -64,11 +65,15 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    if (chain) {
+    loadActiveAccount(chain);
+  }, [chain]);
+
+  useEffect(() => {
+    if (activeAccount.wallet.address) {
       refreshAccountBalances();
       setTokens(undefined);
     }
-  }, [chain]);
+  }, [activeAccount.address]);
 
   useEffect(() => {
     if (
@@ -93,10 +98,20 @@ const Home = ({
         chain,
         mainToken!.tokenInfo,
         activeAccount.address,
-        accounts[0].wallet.signingKey,
+        activeAccount.wallet.signingKey,
       );
     }
   }, [tokens]);
+
+  const loadActiveAccount = async (chain: EvmChain) => {
+    if (chain) {
+      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
+        chain,
+        accounts,
+      );
+      loadEvmActiveAccount(chain, wallet);
+    }
+  };
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
@@ -130,11 +145,7 @@ const Home = ({
   };
 
   const refreshAccountBalances = async () => {
-    getEvmActiveAccount(
-      chain,
-      accounts[0].wallet.address,
-      accounts[0].wallet.signingKey,
-    );
+    loadEvmActiveAccount(chain, activeAccount.wallet);
   };
 
   const renderPopup = (
@@ -227,7 +238,7 @@ const connector = connect(mapStateToProps, {
   loadCurrencyPrices,
   resetTitleContainerProperties,
   setSuccessMessage,
-  getEvmActiveAccount,
+  loadEvmActiveAccount,
   navigateTo,
   fetchPrices,
 });

@@ -1,5 +1,5 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import { getEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
 import { setAccounts } from '@popup/hive/actions/account.actions';
@@ -30,7 +30,8 @@ const SelectAccountSection = ({
   fullSize,
   accounts,
   activeAccount,
-  getEvmActiveAccount,
+  chain,
+  loadEvmActiveAccount,
   setInfoMessage,
   isOnMain = false,
 }: PropsFromRedux & Props) => {
@@ -39,7 +40,7 @@ const SelectAccountSection = ({
   const [isOpened, setIsOpened] = useState(false);
   const [options, setOptions] = useState(defaultOptions);
   const [selectedAddress, setSelectedAddress] = useState(
-    accounts[0].wallet.address,
+    activeAccount.wallet.address,
   );
 
   useEffect(() => {
@@ -48,15 +49,17 @@ const SelectAccountSection = ({
         return { label: account.wallet.address, value: account.wallet.address };
       }),
     );
-    setSelectedAddress(accounts[0].wallet.address);
+    setSelectedAddress(activeAccount.wallet.address);
   }, [accounts, activeAccount]);
 
   const handleItemClicked = (address: string) => {
     const itemClicked = accounts.find(
       (account: EvmAccount) => account.wallet.address === address,
     );
-    // getEvmActiveAccount(itemClicked!);
-    handleClickOnSelector();
+    if (itemClicked) {
+      loadEvmActiveAccount(chain, itemClicked?.wallet);
+      handleClickOnSelector();
+    }
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -199,11 +202,12 @@ const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
+    chain: state.chain,
   };
 };
 
 const connector = connect(mapStateToProps, {
-  getEvmActiveAccount,
+  loadEvmActiveAccount,
   setInfoMessage,
   setAccounts,
 });
