@@ -1046,7 +1046,7 @@ var hive_keychain = {
    *    'vs41q9c3ygynfp6kl86qnlaswuwvam748s5lvugns5schg4hte5vhusnx7sg5u8falrt',
    *    'testJSON', {
    *      hello: "World",
-   *    }, (response) => {
+   *    },'Posting', (response) => {
    *     console.log(response);
    *   });
    * } else {
@@ -1056,6 +1056,7 @@ var hive_keychain = {
    * @param {String} contractId Smart contract ID
    * @param {String} action Contract action
    * @param {Object} payload Contract payload
+   * @param {String} method Type of key. Can be 'Posting' or 'Active'
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
   
@@ -1065,7 +1066,7 @@ var hive_keychain = {
     contractId,
     action,
     payload,
-
+    method,
     callback,
     rpc,
   ) {
@@ -1075,6 +1076,7 @@ var hive_keychain = {
       contractId,
       action,
       payload,
+      method,
       rpc,
     };
 
