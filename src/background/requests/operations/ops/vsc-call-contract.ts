@@ -87,7 +87,9 @@ export const vscCallContract = async (
       err,
       vscResult,
       data,
-      await chrome.i18n.getMessage('bgd_ops_broadcast'),
+      vscResult?.vscConfirmed === VscStatus.INCLUDED
+        ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
+        : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,
     );
 

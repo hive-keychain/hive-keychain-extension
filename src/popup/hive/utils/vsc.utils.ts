@@ -9,7 +9,7 @@ const waitForStatus = async (id: string): Promise<VscStatus> => {
 
   while (iterations < MAX_ITERATIONS) {
     status = await checkStatus(id);
-    if (status === VscStatus.CONFIRMED) return status;
+    if (status === VscStatus.INCLUDED) return status;
     iterations++;
     await new Promise((resolve) => setTimeout(resolve, WAIT_TIME));
   }
