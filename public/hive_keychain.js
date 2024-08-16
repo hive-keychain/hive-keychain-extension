@@ -1083,6 +1083,40 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
+  /**
+   * Requests a VSC Deposit
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscDeposit(username, '0x0000000000000000000000000000000000000000', amount.toFixed(3),'HIVE',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} account Hive account to perform the request
+   * @param {String} address EVM Address
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscDeposit: function (
+    account,
+    address,
+    amount,
+    currency,
+    callback,
+    rpc,
+  ) {
+    var request = {
+      type: 'vscDeposit',
+      username: account,
+      address,
+      amount,
+      currency,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
   // Send the customEvent
   dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;

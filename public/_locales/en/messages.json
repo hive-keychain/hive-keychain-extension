@@ -1093,6 +1093,10 @@
     "message": "To",
     "description": "When website request a transfer"
   },
+  "dialog_evm_address": {
+    "message": "EVM Address",
+    "description": "When website request a vsc deposit"
+  },
   "dialog_tx": {
     "message": "Transaction",
     "description": "When website request signing a tx"
@@ -1211,6 +1215,14 @@
   },
   "dialog_title_vsc_call_contract": {
     "message": "VSC Contract Call",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit": {
+    "message": "VSC Deposit",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit_header": {
+    "message": "Send $1 tokens to your EVM address on VSC",
     "description": "Website request title"
   },
   "dialog_title_decode": {

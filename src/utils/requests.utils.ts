@@ -51,6 +51,7 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.removeAccountAuthority:
     case KeychainRequestTypes.removeKeyAuthority:
     case KeychainRequestTypes.addKeyAuthority:
+    case KeychainRequestTypes.vscDeposit:
     default:
       return KeychainKeyTypesLC.active;
   }

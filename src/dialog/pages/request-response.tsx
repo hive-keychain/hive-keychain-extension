@@ -22,7 +22,10 @@ const RequestResponse = ({ data }: Props) => {
       () => {
         window.close();
       },
-      data.msg.data.type === KeychainRequestTypes.vscCallContract
+      [
+        KeychainRequestTypes.vscCallContract,
+        KeychainRequestTypes.vscDeposit,
+      ].includes(data.msg.data.type)
         ? 10000
         : 3000,
     );

@@ -337,6 +337,14 @@ const vscCallContract = Joi.object({
   rpc,
 });
 
+const vscDeposit = Joi.object({
+  username,
+  address: Joi.string().required(),
+  amount: Joi.string().required(),
+  currency: Joi.string().required(),
+  rpc,
+});
+
 const schemas = {
   encodeMultisig,
   decode,
@@ -369,6 +377,7 @@ const schemas = {
   recurrentTransfer,
   swap,
   vscCallContract,
+  vscDeposit,
 };
 
 export const commonRequestParams = {
