@@ -6,6 +6,7 @@ declare module '@hiveio/hive-js/lib/auth';
 interface Window {
   dataLayer: Array<any>;
   gtag: (a: string, b: any, c?: any) => void;
+  ethereum: any;
 }
 
 declare module '*.svg' {

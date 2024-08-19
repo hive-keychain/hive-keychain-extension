@@ -11,11 +11,19 @@
   },
   "icons": { "128": "/assets/images/iconhive.png" },
   "background": { "scripts": ["backgroundBundle.js"], "persistent": true },
-  "web_accessible_resources": ["/images/logo.png", "hive_keychain.js"],
+  "web_accessible_resources": [
+    "/images/logo.png",
+    "hive_keychain.js",
+    "evm_keychain.js"
+  ],
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["web_interfaceBundle.js", "keychainifyBundle.js"]
+      "js": [
+        "web_interfaceBundle.js",
+        "keychainifyBundle.js",
+        "evmWebInterfaceBundle.js"
+      ]
     }
   ],
   "manifest_version": 2

@@ -17,8 +17,9 @@ const config = {
     linkLedgerDevice: './src/ledger/link-device/index.tsx',
     peakdNotificationsConfig: './src/peakd-notifications-config/index.tsx',
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
-    web_interface: './src/content-scripts/web-interface/index.ts',
-    keychainify: './src/content-scripts/keychainify/index.ts',
+    web_interface: './src/content-scripts/hive/web-interface/index.ts',
+    keychainify: './src/content-scripts/hive/keychainify/index.ts',
+    evmWebInterface: './src/content-scripts/evm/web-interface/web-interface.ts',
     portfolio: './src/portfolio/index.tsx',
   },
   module: {
