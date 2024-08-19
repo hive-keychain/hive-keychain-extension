@@ -7,7 +7,7 @@ import {
   RequestVscCallContract,
 } from '@interfaces/keychain.interface';
 import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
-import { VscStatus } from '@interfaces/vsc.interface';
+import { VscHistoryType, VscStatus } from '@interfaces/vsc.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import { VscUtils } from '@popup/hive/utils/vsc.utils';
 import Config from 'src/config';
@@ -72,7 +72,10 @@ export const vscCallContract = async (
     vscResult = {
       ...result,
       vscConfirmed: result
-        ? await VscUtils.waitForStatus(result?.tx_id)
+        ? await VscUtils.waitForStatus(
+            result?.tx_id,
+            VscHistoryType.CONTRACT_CALL,
+          )
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {

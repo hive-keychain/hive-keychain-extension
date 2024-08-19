@@ -3,3 +3,8 @@ export enum VscStatus {
   CONFIRMED = 'CONFIRMED',
   INCLUDED = 'INCLUDED',
 }
+
+export enum VscHistoryType {
+  CONTRACT_CALL = 'CONTRACT_CALL',
+  TRANSFER = 'TRANSFER',
+}

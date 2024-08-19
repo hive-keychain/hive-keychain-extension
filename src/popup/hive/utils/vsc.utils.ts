@@ -1,14 +1,17 @@
-import { VscStatus } from '@interfaces/vsc.interface';
+import { VscHistoryType, VscStatus } from '@interfaces/vsc.interface';
 import Config from 'src/config';
 
-const waitForStatus = async (id: string): Promise<VscStatus> => {
+const waitForStatus = async (
+  id: string,
+  type: VscHistoryType,
+): Promise<VscStatus> => {
   const MAX_ITERATIONS = 20;
   const WAIT_TIME = 500;
   let iterations = 0;
   let status: VscStatus = VscStatus.UNCONFIRMED;
 
   while (iterations < MAX_ITERATIONS) {
-    status = await checkStatus(id);
+    status = await checkStatus(id, type);
     if (status === VscStatus.INCLUDED) return status;
     iterations++;
     await new Promise((resolve) => setTimeout(resolve, WAIT_TIME));
@@ -16,8 +19,10 @@ const waitForStatus = async (id: string): Promise<VscStatus> => {
   return status;
 };
 
-const checkStatus = (id: string): Promise<VscStatus> => {
-  const query = `{
+const checkStatus = (id: string, type: VscHistoryType): Promise<VscStatus> => {
+  let query;
+  if (type === VscHistoryType.CONTRACT_CALL) {
+    query = `{
     findTransaction(
       filterOptions: {byId:"${id}-0"}
     ) {
@@ -26,6 +31,11 @@ const checkStatus = (id: string): Promise<VscStatus> => {
       }
     }
   }`;
+  } else if (type === VscHistoryType.TRANSFER) {
+    query = `{
+    
+  }`;
+  }
   return fetch(Config.vsc.API_URL, {
     method: 'POST',
     headers: {

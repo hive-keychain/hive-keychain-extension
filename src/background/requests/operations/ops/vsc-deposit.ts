@@ -7,7 +7,7 @@ import {
   RequestVscCDeposit,
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
-import { VscStatus } from '@interfaces/vsc.interface';
+import { VscHistoryType, VscStatus } from '@interfaces/vsc.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { VscUtils } from '@popup/hive/utils/vsc.utils';
 import Config from 'src/config';
@@ -71,7 +71,7 @@ export const vscDeposit = async (
     vscResult = {
       ...result,
       vscConfirmed: result
-        ? await VscUtils.waitForStatus(result?.tx_id)
+        ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.TRANSFER)
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {
