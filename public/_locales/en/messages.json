@@ -4284,5 +4284,9 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_vsc_history": {
+    "message": "VSC History",
+    "description": "Upon clicking on VSC History"
   }
 }

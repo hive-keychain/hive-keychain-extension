@@ -179,7 +179,20 @@ const WalletInfoSection = ({
                 '.'
           }
         />
-        <div className="hive-engine-separator">
+        <div className="l2-separator">
+          <span>
+            <img src="assets/images/wallet/vsc.png" className="no-pointer" />
+          </span>
+          <div className="line" />
+          <SVGIcon
+            icon={SVGIcons.WALLET_HISTORY_NO_BORDER}
+            onClick={() => {
+              navigateTo(Screen.VSC_HISTORY_PAGE);
+            }}
+          />
+        </div>
+
+        <div className="l2-separator">
           <span>
             <SVGIcon icon={SVGIcons.HIVE_ENGINE} className="no-pointer" />
           </span>

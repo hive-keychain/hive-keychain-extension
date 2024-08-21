@@ -153,6 +153,7 @@ export enum SVGIcons {
   WALLET_CONVERT = 'wallet/common/convert',
   WALLET_SEND = 'wallet/common/send',
   WALLET_HISTORY_BUTTON = 'wallet/common/history',
+  WALLET_HISTORY_NO_BORDER = 'wallet/common/history-no-border',
   WALLET_TOKEN_DELEGATIONS = 'wallet/tokens/delegations',
   WALLET_TOKEN_STAKE = 'wallet/tokens/stake',
   WALLET_TOKEN_UNSTAKE = 'wallet/tokens/unstake',
