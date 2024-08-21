@@ -3,6 +3,7 @@ import {
   VscHistoryType,
   VscStatus,
 } from '@interfaces/vsc.interface';
+import moment from 'moment';
 import Config from 'src/config';
 
 const waitForStatus = async (
@@ -80,7 +81,6 @@ const fetchHistory = async (username: string): Promise<VscHistoryResponse> => {
       status
       id
       anchored_height
-      first_seen
       data {
         action
         contract_id
@@ -99,27 +99,39 @@ const getOrganizedHistory = async (username: string) => {
   const organizedHistory = [
     ...history.findLedgerTXs.txs.map((e) => {
       e.type = VscHistoryType.TRANSFER;
+      e.timestamp = blockHeightToTimestamp(e.block_height);
       return e;
     }),
     ...history.findTransaction.txs.map((e) => {
       e.type = VscHistoryType.CONTRACT_CALL;
+      e.timestamp = blockHeightToTimestamp(e.anchored_height);
+
       return e;
     }),
   ].sort((a, b) => {
-    let aHeight: number, bHeight: number;
-    if (a.type === VscHistoryType.TRANSFER) aHeight = a.block_height;
-    else if (a.type === VscHistoryType.CONTRACT_CALL)
-      aHeight = a.anchored_height;
-    if (b.type === VscHistoryType.TRANSFER) bHeight = b.block_height;
-    else if (b.type === VscHistoryType.CONTRACT_CALL)
-      bHeight = b.anchored_height;
-    return bHeight! - aHeight!;
+    return b.timestamp.getTime() - a.timestamp.getTime();
   });
   return organizedHistory;
+};
+
+const blockHeightToTimestamp = (height: number) => {
+  const START_BLOCK = 88079516;
+  const START_BLOCK_TIME = moment('2024-08-16T02:46:48Z');
+  return START_BLOCK_TIME.clone()
+    .add((height - START_BLOCK) * 3, 'seconds')
+    .toDate();
+};
+
+const getAddressFromDid = (did: string) => {
+  const regex = new RegExp(':([a-zA-Z0-9]*)$');
+  const matches = did.match(regex);
+  console.log(matches);
+  return matches?.[matches.length - 1];
 };
 
 export const VscUtils = {
   checkStatus,
   waitForStatus,
   getOrganizedHistory,
+  getAddressFromDid,
 };

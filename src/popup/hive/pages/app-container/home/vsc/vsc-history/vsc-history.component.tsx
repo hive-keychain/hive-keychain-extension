@@ -1,5 +1,5 @@
-import { Transaction } from '@interfaces/transaction.interface';
 import { VscCall, VscTransfer } from '@interfaces/vsc.interface';
+import { VscHistoryItemComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-history/vsc-history-item/vsc-history-item.component';
 import { VscUtils } from '@popup/hive/utils/vsc.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -11,7 +11,7 @@ import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-bu
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { WalletHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
+import Config from 'src/config';
 
 const VscHistory = ({
   activeAccountName,
@@ -43,12 +43,11 @@ const VscHistory = ({
     setLoading(false);
   };
 
-  const renderListItem = (transaction: Transaction) => {
+  const renderListItem = (transaction: VscTransfer | VscCall) => {
     return (
-      <WalletHistoryItemComponent
-        ariaLabel="wallet-history-item"
-        key={transaction.key}
-        transaction={transaction}></WalletHistoryItemComponent>
+      <VscHistoryItemComponent
+        key={transaction.id}
+        transaction={transaction}></VscHistoryItemComponent>
     );
   };
 
@@ -58,13 +57,24 @@ const VscHistory = ({
 
   return (
     <div
-      className="wallet-history-page"
-      data-testid={`${Screen.WALLET_HISTORY_PAGE}-page`}>
+      className="vsc-history-page"
+      data-testid={`${Screen.VSC_HISTORY_PAGE}-page`}>
       <div
-        data-testid="wallet-item-list"
+        data-testid="vsc-item-list"
         ref={vscItemList}
-        className="wallet-item-list"
+        className="vsc-item-list"
         onScroll={handleScroll}>
+        <p className="vsc-history-intro">
+          {chrome.i18n.getMessage('popup_html_vsc_full_history')}
+          <a
+            href={`${Config.vsc.BLOCK_EXPLORER}/@${activeAccountName}`}
+            target="_blank">
+            {' '}
+            {chrome.i18n.getMessage(
+              'popup_html_vsc_full_history_block_explorer',
+            )}
+          </a>
+        </p>
         <FlatList
           list={transactions}
           renderItem={renderListItem}

@@ -187,4 +187,7 @@ export enum SVGIcons {
   PROBIT = 'probit',
   TRANSAK = 'transak',
   UPBIT = 'upbit',
+
+  //VSC
+  VSC_CALL = 'wallet/vsc/call',
 }

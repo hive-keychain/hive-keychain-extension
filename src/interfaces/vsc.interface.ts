@@ -38,6 +38,7 @@ export type VscTransfer = {
   owner: string;
   t: VscLedgerType;
   tk: VscToken;
+  timestamp: Date;
   status: VscStatus;
 };
 
@@ -46,7 +47,7 @@ export type VscCall = {
   status: VscStatus;
   id: string;
   anchored_height: number;
-  first_seen: string;
+  timestamp: Date;
   data: {
     action: string;
     contract_id: string;

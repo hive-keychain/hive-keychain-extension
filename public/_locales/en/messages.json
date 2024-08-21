@@ -4288,5 +4288,25 @@
   "popup_html_vsc_history": {
     "message": "VSC History",
     "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_call": {
+    "message": "Called '$1' on contract $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_deposit": {
+    "message": "Deposited $1 $2 to VSC on address $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_withdraw": {
+    "message": "Withdrew $1 $2 from VSC on address $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_full_history": {
+    "message": "You can check your full history on",
+    "description": "Upon clicking on VSC History, end of sentence is a link saying 'the block explorer'"
+  },
+  "popup_html_vsc_full_history_block_explorer": {
+    "message": "the VSC block explorer.",
+    "description": "Upon clicking on VSC History, this is the end of the sentence above."
   }
 }
