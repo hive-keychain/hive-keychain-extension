@@ -3929,6 +3929,10 @@
     "message": "You don't have any Hive Engine token. You can buy some through our swap feature.",
     "description": "When no token available"
   },
+  "html_tokens_x_available": {
+    "message": "Click here to show $1 Hive Engine tokens.",
+    "description": "When no token available"
+  },
   "html_tokens_issuer": {
     "message": "Issuer",
     "description": "Token issuer"
