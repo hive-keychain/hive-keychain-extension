@@ -22,6 +22,10 @@ export enum BackgroundCommand {
   REGISTER_FROM_DIALOG = 'registerFromDialog',
   ACCEPT_TRANSACTION = 'acceptTransaction',
 
+  // Keychain EVm Request
+  SEND_EVM_REQUEST = 'sendEvmRequest',
+  SEND_EVM_RESPONSE = 'sendEvmResponse',
+
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',
   UPDATE_AUTOLOCK = 'updateAutoLock',

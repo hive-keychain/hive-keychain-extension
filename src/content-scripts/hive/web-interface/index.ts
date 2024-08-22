@@ -1,6 +1,5 @@
 // Content script interfacing the website and the extension
 /* istanbul ignore file */
-import { EvmProvider } from '@background/evm/provider/evm-provider';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import schemas, {
   commonRequestParams,
@@ -24,12 +23,10 @@ let req: KeychainRequest | null = null;
 
 const setupInjection = () => {
   try {
-    console.log('hello');
-    window.ethereum = new EvmProvider();
-    // var scriptTag = document.createElement('script');
-    // scriptTag.src = chrome.runtime.getURL('./hive_keychain.js');
-    // var container = document.head || document.documentElement;
-    // container.insertBefore(scriptTag, container.children[0]);
+    var scriptTag = document.createElement('script');
+    scriptTag.src = chrome.runtime.getURL('./hive_keychain.js');
+    var container = document.head || document.documentElement;
+    container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
     Logger.error('Hive Keychain injection failed.', e);
   }

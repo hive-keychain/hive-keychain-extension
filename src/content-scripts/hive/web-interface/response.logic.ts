@@ -1,3 +1,4 @@
+import { EvmRequest } from '@background/evm/evm-request.interface';
 import Joi from 'joi';
 import {
   KeychainRequest,
@@ -28,6 +29,18 @@ export const sendRequestToBackground = (
   });
 };
 
+export const sendEvmRequestToBackground = (
+  req: EvmRequest,
+  chrome: typeof globalThis.chrome,
+) => {
+  chrome.runtime.sendMessage({
+    command: 'sendEvmRequest',
+    request: req,
+    domain: window.location.hostname,
+    request_id: req.request_id,
+  });
+};
+
 export const sendIncompleteDataResponse = (
   value: KeychainRequest,
   error: string | Joi.ValidationError,
@@ -51,6 +64,22 @@ export const sendResponse = (response: RequestResponse) => {
     window.postMessage(
       {
         type: 'hive_keychain_response',
+        response,
+      },
+      window.location.origin,
+    );
+  }
+};
+
+export const sendResponseToEvm = (response: any) => {
+  console.log(response);
+  console.log(window);
+  if (response.data?.redirect_uri) {
+    window.location.href = response.data.redirect_uri;
+  } else {
+    window.postMessage(
+      {
+        type: 'evm_keychain_response',
         response,
       },
       window.location.origin,

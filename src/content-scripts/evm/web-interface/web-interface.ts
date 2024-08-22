@@ -1,43 +1,32 @@
-import { EvmProviderModule } from '@background/evm/provider/evm-provider';
-import Logger from 'src/utils/logger.utils';
+import {
+  EvmProvider,
+  EvmProviderModule,
+} from '@background/evm/provider/evm-provider';
 
-const setupInjection = () => {
-  console.log('trying to inject keychain');
-  try {
-    var scriptTag = document.createElement('script');
-    scriptTag.src = chrome.runtime.getURL('./evmWebInterfaceBundle.js');
-    var container = document.head || document.documentElement;
-    container.insertBefore(scriptTag, container.children[0]);
-  } catch (e) {
-    Logger.error('Hive Keychain injection failed.', e);
-  }
-};
-
-function onPageLoad() {
+const onPageLoad = () => {
   let provider = EvmProviderModule.getProvider();
   console.log({ provider, ethereum: window.ethereum });
   window.ethereum = provider;
-  function announceProvider() {
-    window.dispatchEvent(
-      new CustomEvent('eip6963:announceProvider', {
-        detail: Object.freeze({
-          info: EvmProviderModule.ProviderInfo,
-          provider,
-        }),
-      }),
-    );
-  }
 
   window.addEventListener('eip6963:requestProvider', (event) => {
     console.log('ici');
-    announceProvider();
+    announceProvider(provider);
   });
 
-  announceProvider();
-}
+  announceProvider(provider);
+};
+
+const announceProvider = (provider: EvmProvider) => {
+  window.dispatchEvent(
+    new CustomEvent('eip6963:announceProvider', {
+      detail: Object.freeze({
+        info: EvmProviderModule.ProviderInfo,
+        provider,
+      }),
+    }),
+  );
+};
 
 window.addEventListener('load', () => {
   onPageLoad();
 });
-
-setupInjection();

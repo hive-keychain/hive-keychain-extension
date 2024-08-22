@@ -11,16 +11,68 @@ const ProviderInfo: EIP6963ProviderInfo = {
   rdns: 'clear-wallet.flashsoft.eu/',
 };
 
+let current_id = 1;
+let requests = {} as { [id: number]: any };
+let handshake_callback = null;
+
 export class EvmProvider extends EventEmitter {
   constructor() {
     super();
   }
 
-  async request<Type>(args: RequestArguments): Promise<Partial<Type>> {
+  async request(args: RequestArguments): Promise<any> {
     console.log(args);
+    dispatchCustomEvent('requestEvm', args, (result: any) => {
+      console.log({ result });
+    });
+
     return {};
   }
 }
+
+const dispatchCustomEvent = (name: string, data: any, callback: Function) => {
+  requests[current_id] = callback;
+  data = Object.assign(
+    {
+      request_id: current_id,
+    },
+    data,
+  );
+  document.dispatchEvent(
+    new CustomEvent(name, {
+      detail: data,
+    }),
+  );
+  current_id++;
+};
+
+window.addEventListener(
+  'message',
+  function (event) {
+    // We only accept messages from ourselves
+    if (event.source != window) return;
+
+    if (event.data.type && event.data.type == 'evm_keychain_response') {
+      console.log(event.data);
+      const response = event.data.response;
+      if (response && response.request_id) {
+        // if (hive_keychain.requests[response.request_id]) {
+        //   hive_keychain.requests[response.request_id](response);
+        //   delete hive_keychain.requests[response.request_id];
+        // }
+      }
+    }
+    //   else if (
+    //   event.data.type &&
+    //   event.data.type == 'hive_keychain_handshake'
+    // ) {
+    //   if (hive_keychain.handshake_callback) {
+    //     hive_keychain.handshake_callback();
+    //     }
+    //   }
+  },
+  false,
+);
 
 const getProvider = () => {
   return new EvmProvider();

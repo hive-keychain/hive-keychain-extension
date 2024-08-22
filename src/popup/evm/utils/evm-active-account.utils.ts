@@ -5,18 +5,19 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getSavedActiveAccountWallet = async (
-  chain: EvmChain,
+  chain: EvmChain | string,
   localAccounts: EvmAccount[],
 ) => {
+  const chainId = typeof chain === 'string' ? chain : chain.chainId;
   const savedActiveAccount: EvmSavedActiveAccounts =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
     );
 
-  if (savedActiveAccount && savedActiveAccount[chain.chainId]) {
+  if (savedActiveAccount && savedActiveAccount[chainId]) {
     const localAccount = localAccounts.find(
       (localAccount) =>
-        localAccount.wallet.address === savedActiveAccount[chain.chainId],
+        localAccount.wallet.address === savedActiveAccount[chainId],
     );
     return localAccount ? localAccount.wallet : localAccounts[0].wallet;
   } else {

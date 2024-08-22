@@ -18,7 +18,8 @@
         "hive_keychain.js",
         "_locales/*",
         "evm_keychain.js",
-        "evmWebInterfaceBundle.js"
+        "evmWebInterfaceBundle.js",
+        "evmContentScript.js"
       ],
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "extension_ids": []
@@ -30,7 +31,7 @@
       "js": [
         "keychainifyBundle.js",
         "web_interfaceBundle.js",
-        "evmWebInterfaceBundle.js"
+        "evmContentScriptBundle.js"
       ]
     }
   ],
