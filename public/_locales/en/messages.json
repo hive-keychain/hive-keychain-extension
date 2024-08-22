@@ -2191,6 +2191,10 @@
     "message": "Transferring funds",
     "description": "Transfer fund operation"
   },
+  "html_popup_stop_recc_transfer_fund_operation": {
+    "message": "Stopping a recurrent transfer",
+    "description": "Transfer fund operation"
+  },
   "html_popup_transfer_token_operation": {
     "message": "Transferring tokens",
     "description": "Transfer token operation"
@@ -3828,7 +3832,7 @@
     "description": "Form validation error: should be greater than"
   },
   "validation_error_less_or_equal_value": {
-    "message": "Value should be less than or equal to $1",
+    "message": "Value should be smaller than or equal to your balance",
     "description": "Form validation error: should be less than (or equal)"
   },
   "message_container_title_success": {
