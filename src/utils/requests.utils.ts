@@ -27,6 +27,7 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.vote:
       return KeychainKeyTypesLC.posting;
     case KeychainRequestTypes.custom:
+    case KeychainRequestTypes.vscCallContract:
       return !request.method
         ? KeychainKeyTypesLC.posting
         : (request.method.toLowerCase() as KeychainKeyTypesLC);
@@ -50,6 +51,7 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.removeAccountAuthority:
     case KeychainRequestTypes.removeKeyAuthority:
     case KeychainRequestTypes.addKeyAuthority:
+    case KeychainRequestTypes.vscDeposit:
     default:
       return KeychainKeyTypesLC.active;
   }
