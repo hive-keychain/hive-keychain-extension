@@ -43,7 +43,9 @@ const VscHistoryItem = ({ transaction }: Props) => {
   const openTransactionOnVsc = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
     window.open(
-      `${Config.vsc.BLOCK_EXPLORER}/tx/${transaction.id.split('-')[0]}`,
+      `${Config.vsc.BLOCK_EXPLORER}/${
+        transaction.id.startsWith('bafy') ? 'vsc-tx' : 'tx'
+      }/${transaction.id.split('-')[0]}`,
     );
   };
 
