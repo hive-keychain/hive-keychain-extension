@@ -88,6 +88,8 @@ export const vscDeposit = async (
       data,
       vscResult?.vscConfirmed === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
+        : vscResult?.vscConfirmed === VscStatus.CONFIRMED
+        ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,
     );

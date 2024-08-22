@@ -1416,6 +1416,9 @@
   "bgd_ops_vsc_included": {
     "message": "This transaction has been included in VSC already, but has not yet been confirmed. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
   },
+  "bgd_ops_vsc_confirmed": {
+    "message": "This transaction has been confirmed on VSC."
+  },
   "bgd_ops_vsc_not_included": {
     "message": "This transaction has not been included in VSC yet. You can follow its status on the requesting dApp or on Hive Keychain extension's VSC history page."
   },

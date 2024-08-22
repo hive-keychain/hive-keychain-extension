@@ -17,7 +17,8 @@ const waitForStatus = async (
 
   while (iterations < MAX_ITERATIONS) {
     status = await checkStatus(id, type);
-    if (status === VscStatus.INCLUDED) return status;
+    if (status === VscStatus.INCLUDED || status === VscStatus.CONFIRMED)
+      return status;
     iterations++;
     await new Promise((resolve) => setTimeout(resolve, WAIT_TIME));
   }
@@ -32,18 +33,23 @@ const checkStatus = (id: string, type: VscHistoryType): Promise<VscStatus> => {
       filterOptions: {byId:"${id}-0"}
     ) {
       txs {
-        status,id
+        status
       }
     }
   }`;
   } else if (type === VscHistoryType.TRANSFER) {
     query = `{
-    
+    findLedgerTXs(filterOptions: {byTxId: "${id}-0"}) {
+    txs {
+      status
+    }
+  }
   }`;
   }
-
   return fetchQuery(query).then(
-    (res) => res?.data?.findTransaction?.txs?.[0]?.status,
+    (res) =>
+      res?.data?.findTransaction?.txs?.[0]?.status ||
+      res?.data?.findLedgerTXs?.txs?.[0]?.status,
   );
 };
 
