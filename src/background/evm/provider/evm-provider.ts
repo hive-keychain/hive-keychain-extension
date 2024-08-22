@@ -21,14 +21,17 @@ export class EvmProvider extends EventEmitter {
   }
 
   async request(args: RequestArguments): Promise<any> {
-    console.log(args);
-    dispatchCustomEvent('requestEvm', args, (result: any) => {
-      console.log({ result });
-    });
-
-    return {};
+    return processRequest(args);
   }
 }
+
+const processRequest = async (args: RequestArguments) => {
+  return new Promise((resolve, reject) => {
+    dispatchCustomEvent('requestEvm', args, (result: any) => {
+      resolve(result);
+    });
+  });
+};
 
 const dispatchCustomEvent = (name: string, data: any, callback: Function) => {
   requests[current_id] = callback;
@@ -53,13 +56,13 @@ window.addEventListener(
     if (event.source != window) return;
 
     if (event.data.type && event.data.type == 'evm_keychain_response') {
-      console.log(event.data);
-      const response = event.data.response;
-      if (response && response.request_id) {
-        // if (hive_keychain.requests[response.request_id]) {
-        //   hive_keychain.requests[response.request_id](response);
-        //   delete hive_keychain.requests[response.request_id];
-        // }
+      const result = event.data.response.result;
+      const requestId = event.data.response.requestId;
+      if (result && requestId) {
+        if (requests[requestId]) {
+          requests[requestId](result);
+          delete requests[requestId];
+        }
       }
     }
     //   else if (

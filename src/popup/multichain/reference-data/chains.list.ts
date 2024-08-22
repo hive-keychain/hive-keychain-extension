@@ -102,7 +102,7 @@ export const defaultChainList = [
   } as EvmChain,
   {
     name: 'Sepolia',
-    chainId: '11155111',
+    chainId: '0xAA36A7',
     type: ChainType.EVM,
     logo: 'https://moralis.io/wp-content/uploads/web3wiki/1147-sepolia/637aee14aa9d9f521437ec16_hYC2y965v3QD7fEoVvutzGbJzVGLSOk6RZPwEQWcA_E.jpeg',
     mainToken: 'SepoliaEth',

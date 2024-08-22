@@ -7,7 +7,6 @@ import {
 import Logger from 'src/utils/logger.utils';
 
 const setupInjection = () => {
-  console.log('trying to inject keychain');
   try {
     var scriptTag = document.createElement('script');
     scriptTag.src = chrome.runtime.getURL('./evmWebInterfaceBundle.js');
@@ -28,10 +27,8 @@ chrome.runtime.onMessage.addListener(
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE) {
-      console.log('hello');
+    if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE)
       sendResponseToEvm(backgroundMessage.value);
-    }
   },
 );
 

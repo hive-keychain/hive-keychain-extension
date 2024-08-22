@@ -72,8 +72,6 @@ export const sendResponse = (response: RequestResponse) => {
 };
 
 export const sendResponseToEvm = (response: any) => {
-  console.log(response);
-  console.log(window);
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
