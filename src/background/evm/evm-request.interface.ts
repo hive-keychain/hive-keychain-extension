@@ -18,3 +18,9 @@ export interface KeychainEvmRequestWrapper {
   request: EvmRequest;
   request_id: number;
 }
+
+export interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}

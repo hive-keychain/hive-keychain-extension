@@ -1,9 +1,10 @@
+import { BackgroundMessage } from '@background/background-message.interface';
 import {
   EvmRequestMethod,
   KeychainEvmRequestWrapper,
 } from '@background/evm/evm-request.interface';
-import { BackgroundMessage } from '@background/hive/background-message.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -17,7 +18,9 @@ const chromeMessageHandler = async (
   sendResp: (response?: any) => void,
 ) => {
   if (backgroundMessage.command === BackgroundCommand.SEND_EVM_REQUEST) {
-    const request = (backgroundMessage as KeychainEvmRequestWrapper).request;
+    console.log(backgroundMessage);
+    const evmRequestWrapper = backgroundMessage as KeychainEvmRequestWrapper;
+    const request = evmRequestWrapper.request;
     const message: BackgroundMessage = {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: {
@@ -36,9 +39,16 @@ const chromeMessageHandler = async (
         break;
       }
       case EvmRequestMethod.REQUEST_ACCOUNTS: {
-        const chain = await EvmChainUtils.getLastEvmChain();
+        const connectedWallets = await EvmWalletUtils.getConnectedWallets(
+          evmRequestWrapper.domain,
+        );
+        if (connectedWallets.length > 0) {
+          message.value.result = connectedWallets;
+        } else {
+          // TODO open popup
+        }
+
         break;
-        // return EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, []);
       }
       default: {
         Logger.info(`${request.method} is not implemented`);

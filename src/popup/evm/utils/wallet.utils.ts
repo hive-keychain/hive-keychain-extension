@@ -1,3 +1,4 @@
+import { EvmConnectedWallets } from '@background/evm/provider/provider.interface';
 import {
   EvmAccount,
   StoredEvmAccounts,
@@ -121,6 +122,34 @@ const isWalletAddress = async (address: string, chain: EvmChain) => {
   return true;
 };
 
+const getConnectedWallets = async (domain: string): Promise<string[]> => {
+  const allConnectedWallets: EvmConnectedWallets =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    );
+  return allConnectedWallets && allConnectedWallets[domain]
+    ? allConnectedWallets[domain]
+    : [];
+};
+
+const connectWallet = async (walletAddress: string, domain: string) => {
+  let allConnectedWallets: EvmConnectedWallets =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    );
+  if (!allConnectedWallets) {
+    allConnectedWallets = {};
+  }
+  if (!allConnectedWallets[domain]) {
+    allConnectedWallets[domain] = [];
+  }
+  allConnectedWallets[domain].push(walletAddress);
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    allConnectedWallets,
+  );
+};
+
 const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
@@ -129,6 +158,8 @@ const EvmWalletUtils = {
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
   isWalletAddress,
+  getConnectedWallets,
+  connectWallet,
 };
 
 export default EvmWalletUtils;
