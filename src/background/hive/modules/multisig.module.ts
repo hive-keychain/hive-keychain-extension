@@ -1,7 +1,7 @@
 import {
   BackgroundMessage,
   MultisigDialogMessage,
-} from '@background/hive/background-message.interface';
+} from '@background/background-message.interface';
 import MkModule from '@background/hive/modules/mk.module';
 import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';

@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/hive/background-message.interface';
+import { BackgroundMessage } from '@background/background-message.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   ConnectDisconnectMessage,

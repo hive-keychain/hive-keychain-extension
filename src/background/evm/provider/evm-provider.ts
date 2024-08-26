@@ -18,6 +18,14 @@ let handshake_callback = null;
 export class EvmProvider extends EventEmitter {
   constructor() {
     super();
+
+    this.on('connect', () => {});
+
+    this.on('accountsChanged', () => {});
+
+    this.on('chainChanged', (chainId) => window.location.reload());
+
+    this.on('disconnect', () => {});
   }
 
   async request(args: RequestArguments): Promise<any> {

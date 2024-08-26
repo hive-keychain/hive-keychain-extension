@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/hive/background-message.interface';
+import { BackgroundMessage } from '@background/background-message.interface';
 import { MultisigUnlockData } from '@interfaces/multisig.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';

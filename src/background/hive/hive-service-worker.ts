@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/hive/background-message.interface';
+import { BackgroundMessage } from '@background/background-message.interface';
 import { AccountModule } from '@background/hive/modules/account.module';
 import AutolockModule from '@background/hive/modules/autolock.module';
 import ClaimModule from '@background/hive/modules/claim.module';

@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/hive/background-message.interface';
+import { BackgroundMessage } from '@background/background-message.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
