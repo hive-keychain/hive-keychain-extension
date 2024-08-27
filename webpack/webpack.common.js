@@ -19,7 +19,7 @@ const config = {
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
     web_interface: './src/content-scripts/hive/web-interface/index.ts',
     keychainify: './src/content-scripts/hive/keychainify/index.ts',
-    evmWebInterface: './src/content-scripts/evm/web-interface/web-interface.ts',
+    evmKeychain: './src/content-scripts/evm/injected/evm-keychain.ts',
     evmContentScript: './src/content-scripts/evm/evm-content-script.ts',
     portfolio: './src/portfolio/index.tsx',
   },

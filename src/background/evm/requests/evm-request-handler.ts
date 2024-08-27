@@ -3,7 +3,6 @@ import {
   KeychainEvmRequestWrapper,
 } from '@background/evm/provider/evm-provider.interface';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
-import { removeWindow } from '@background/hive/requests/dialog-lifecycle';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -32,7 +31,7 @@ export class EvmRequestHandler {
 
   closeWindow() {
     if (this.data.windowId) {
-      removeWindow(this.data.windowId);
+      // removeWindow(this.data.windowId);
     }
   }
 

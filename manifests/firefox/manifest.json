@@ -14,7 +14,7 @@
   "web_accessible_resources": [
     "/images/logo.png",
     "hive_keychain.js",
-    "evm_keychain.js"
+    "evmKeychainBundle.js"
   ],
   "content_scripts": [
     {
@@ -22,7 +22,7 @@
       "js": [
         "web_interfaceBundle.js",
         "keychainifyBundle.js",
-        "evmWebInterfaceBundle.js"
+        "evmContentScriptBundle.js"
       ]
     }
   ],

@@ -17,7 +17,7 @@
         "/images/logo.png",
         "hive_keychain.js",
         "_locales/*",
-        "evm_keychain.js"
+        "evmKeychainBundle.js"
       ],
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "extension_ids": []
@@ -29,7 +29,7 @@
       "js": [
         "web_interfaceBundle.js",
         "keychainifyBundle.js",
-        "evmWebInterfaceBundle.js"
+        "evmContentScriptBundle.js"
       ]
     }
   ],
