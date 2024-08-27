@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -14,7 +14,7 @@ import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastProxy = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestProxy & RequestId,
 ) => {
   let result, err, err_message;

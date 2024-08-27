@@ -1,10 +1,11 @@
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
   callback: () => void,
-  requestHandler: HiveRequestsHandler,
+  requestHandler: HiveRequestsHandler | EvmRequestHandler,
   popupHtml = 'dialog.html',
 ) => {
   let width = 435;

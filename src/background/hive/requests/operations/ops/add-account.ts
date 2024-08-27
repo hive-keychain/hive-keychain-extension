@@ -1,13 +1,13 @@
 import MkModule from '@background/hive/modules/mk.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
 export const addAccount = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestAddAccount & RequestId,
 ) => {
   const { username, keys } = data;

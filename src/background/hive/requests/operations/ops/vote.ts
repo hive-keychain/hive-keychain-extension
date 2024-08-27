@@ -1,11 +1,11 @@
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 
 export const broadcastVote = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestVote & RequestId,
 ) => {
   const key = requestHandler.data.key;

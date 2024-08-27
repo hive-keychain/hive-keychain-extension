@@ -3,6 +3,7 @@ import {
   EvmRequestMethod,
   KeychainEvmRequestWrapper,
 } from '@background/evm/provider/evm-provider.interface';
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -47,8 +48,15 @@ const chromeMessageHandler = async (
         if (connectedWallets.length > 0) {
           message.value.result = connectedWallets;
         } else {
-          // TODO open popup
-          message.value.result = [''];
+          const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+          if (requestHandler) {
+            requestHandler.closeWindow();
+          }
+          new EvmRequestHandler().sendRequest(
+            sender,
+            backgroundMessage as KeychainEvmRequestWrapper,
+          );
+          break;
         }
 
         break;

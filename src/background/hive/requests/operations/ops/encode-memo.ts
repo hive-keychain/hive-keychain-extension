@@ -1,5 +1,5 @@
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypes,
@@ -8,7 +8,7 @@ import {
 } from '@interfaces/keychain.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 export const encodeMessage = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestEncode & RequestId,
 ) => {
   let encoded = null;

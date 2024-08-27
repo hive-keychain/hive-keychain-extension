@@ -1,12 +1,12 @@
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   RequestEncodeWithKeys,
   RequestId,
 } from '@interfaces/keychain.interface';
 export const encodeWithKeys = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestEncodeWithKeys & RequestId,
 ) => {
   let encoded: { [a: string]: string } = {};

@@ -1,5 +1,5 @@
 import MkModule from '@background/hive/modules/mk.module';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -26,7 +26,7 @@ export default async (
   request: KeychainRequest,
   tab: number | undefined,
   domain: string,
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
 ) => {
   const items: {
     accounts: string;

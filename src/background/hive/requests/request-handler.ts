@@ -34,7 +34,7 @@ type RequestData = {
   publicKey?: Key;
   windowId?: number;
 };
-export class RequestsHandler {
+export class HiveRequestsHandler {
   data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
 
@@ -76,7 +76,7 @@ export class RequestsHandler {
   reset(resetWinId: boolean) {
     if (resetWinId) {
       config.node = this.defaultRpcConfig.node;
-      RequestsHandler.clearLocalStorage();
+      HiveRequestsHandler.clearLocalStorage();
     } else {
       this.data = {
         confirmed: this.data.confirmed,
@@ -130,7 +130,7 @@ export class RequestsHandler {
     const params = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
-    const handler = new RequestsHandler();
+    const handler = new HiveRequestsHandler();
     if (params) {
       await handler.initFromLocalStorage(params);
     }

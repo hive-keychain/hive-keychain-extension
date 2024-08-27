@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   RequestId,
   RequestPowerDown,
@@ -15,7 +15,7 @@ import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastPowerUp = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestPowerUp & RequestId,
 ) => {
   let key = requestHandler.data.key;
@@ -71,7 +71,7 @@ export const broadcastPowerUp = async (
 };
 
 export const broadcastPowerDown = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestPowerDown & RequestId,
 ) => {
   let key = requestHandler.data.key;

@@ -1,5 +1,5 @@
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -13,7 +13,7 @@ const signature = require('@hiveio/hive-js/lib/auth/ecc');
 export type SignedBuffer = string;
 
 export const signBuffer = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestSignBuffer & RequestId,
 ) => {
   let signed = null;

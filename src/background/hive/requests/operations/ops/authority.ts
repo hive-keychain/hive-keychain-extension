@@ -3,7 +3,7 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestAddAccountAuthority,
@@ -20,7 +20,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastAddAccountAuthority = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
 ) => {
   let err, result, err_message;
@@ -114,7 +114,7 @@ export const broadcastAddAccountAuthority = async (
 };
 
 export const broadcastRemoveAccountAuthority = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestRemoveAccountAuthority & RequestId,
 ) => {
   let err, result, err_message;
@@ -199,7 +199,7 @@ export const broadcastRemoveAccountAuthority = async (
 };
 
 export const broadcastAddKeyAuthority = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestAddKeyAuthority & RequestId,
 ) => {
   let result, err, err_message;
@@ -291,7 +291,7 @@ export const broadcastAddKeyAuthority = async (
 };
 
 export const broadcastRemoveKeyAuthority = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestRemoveKeyAuthority & RequestId,
 ) => {
   let err, result, err_message;

@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -15,7 +15,7 @@ import { KeychainError } from 'src/keychain-error';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
 export const broadcastSwap = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestSwap & RequestId & { swapAccount?: string },
 ) => {
   let result,

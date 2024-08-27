@@ -1,10 +1,10 @@
 import { createPopup } from '@background/hive/requests/dialog-lifecycle';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const addAccountToEmptyWallet = (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,

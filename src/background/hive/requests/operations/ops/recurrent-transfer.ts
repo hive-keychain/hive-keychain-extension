@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
@@ -17,7 +17,7 @@ import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const recurrentTransfer = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestRecurrentTransfer & RequestId,
 ) => {
   const { username, to, amount, recurrence, executions } = data;

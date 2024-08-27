@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   RequestCreateProposal,
   RequestId,
@@ -15,7 +15,7 @@ import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastCreateProposal = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestCreateProposal & RequestId,
 ) => {
   let err, result, err_message;
@@ -79,7 +79,7 @@ export const broadcastCreateProposal = async (
 };
 
 export const broadcastUpdateProposalVote = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestUpdateProposalVote & RequestId,
 ) => {
   const key = requestHandler.data.key;
@@ -162,7 +162,7 @@ export const broadcastUpdateProposalVote = async (
 };
 
 export const broadcastRemoveProposal = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestRemoveProposal & RequestId,
 ) => {
   let err, result, ids, err_message;

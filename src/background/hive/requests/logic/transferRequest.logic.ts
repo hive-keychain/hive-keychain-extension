@@ -1,6 +1,6 @@
 import { createPopup } from '@background/hive/requests/dialog-lifecycle';
 import sendErrors from '@background/hive/requests/errors';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainRequest,
   RequestTransfer,
@@ -10,7 +10,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const transferRequest = (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   tab: number,
   request: RequestTransfer,
   domain: string,

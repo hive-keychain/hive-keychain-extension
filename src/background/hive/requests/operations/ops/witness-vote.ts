@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -14,7 +14,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
 export const broadcastWitnessVote = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestWitnessVote & RequestId,
 ) => {
   let result,

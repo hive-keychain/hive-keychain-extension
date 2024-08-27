@@ -1,10 +1,10 @@
 import { createPopup } from '@background/hive/requests/dialog-lifecycle';
 import sendErrors from '@background/hive/requests/errors';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const missingKey = (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
   username: string,

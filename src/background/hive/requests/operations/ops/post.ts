@@ -1,5 +1,5 @@
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
@@ -7,7 +7,7 @@ import Logger from 'src/utils/logger.utils';
 
 // TODO : when compatible
 export const broadcastPost = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: RequestPost & RequestId,
 ) => {
   let err, result, err_message;

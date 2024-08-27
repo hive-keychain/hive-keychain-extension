@@ -19,7 +19,7 @@ import Logger from 'src/utils/logger.utils';
 import MkModule from './modules/mk.module';
 import init from './requests/init';
 import { performOperation } from './requests/operations';
-import { RequestsHandler } from './requests/request-handler';
+import { HiveRequestsHandler } from './requests/request-handler';
 
 const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
@@ -61,11 +61,11 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
-      const requestHandler = await RequestsHandler.getFromLocalStorage();
+      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
       if (requestHandler) {
         requestHandler.closeWindow();
       }
-      new RequestsHandler().sendRequest(
+      new HiveRequestsHandler().sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,
       );
@@ -79,7 +79,7 @@ const chromeMessageHandler = async (
           data.msg.data,
           tab,
           domain,
-          await RequestsHandler.getFromLocalStorage(),
+          await HiveRequestsHandler.getFromLocalStorage(),
         );
       } else {
         chrome.runtime.sendMessage({
@@ -92,13 +92,13 @@ const chromeMessageHandler = async (
     case BackgroundCommand.REGISTER_FROM_DIALOG: {
       const { mk, domain, data, tab } = backgroundMessage.value;
       MkModule.saveMk(mk);
-      init(data, tab, domain, await RequestsHandler.getFromLocalStorage());
+      init(data, tab, domain, await HiveRequestsHandler.getFromLocalStorage());
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
       const { keep, data, tab, domain } = backgroundMessage.value;
       performOperation(
-        await RequestsHandler.getFromLocalStorage(),
+        await HiveRequestsHandler.getFromLocalStorage(),
         data,
         tab,
         domain,
@@ -120,7 +120,7 @@ const chromeMessageHandler = async (
 };
 
 export const performOperationFromIndex = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
 ) => {

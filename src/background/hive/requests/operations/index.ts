@@ -34,7 +34,7 @@ import { broadcastSwap } from '@background/hive/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/hive/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/hive/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/hive/requests/operations/ops/witness-vote';
-import { RequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -43,7 +43,7 @@ import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   data: KeychainRequest,
   tab: number,
   domain: string,
