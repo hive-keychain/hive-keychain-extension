@@ -6,7 +6,6 @@ import {
 const onPageLoad = () => {
   let provider = EvmProviderModule.getProvider();
   window.ethereum = provider;
-
   window.addEventListener('eip6963:requestProvider', (event) => {
     announceProvider(provider);
   });

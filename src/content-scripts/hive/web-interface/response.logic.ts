@@ -1,4 +1,4 @@
-import { EvmRequest } from '@background/evm/evm-request.interface';
+import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import Joi from 'joi';
 import {
   KeychainRequest,
@@ -83,4 +83,14 @@ export const sendResponseToEvm = (response: any) => {
       window.location.origin,
     );
   }
+};
+
+export const sendEventToEvm = (event: any) => {
+  window.postMessage(
+    {
+      type: 'evm_keychain_event',
+      event,
+    },
+    window.location.origin,
+  );
 };

@@ -25,6 +25,8 @@ export enum BackgroundCommand {
   // Keychain EVm Request
   SEND_EVM_REQUEST = 'sendEvmRequest',
   SEND_EVM_RESPONSE = 'sendEvmResponse',
+  SEND_EVM_EVENT = 'sendEvmEvent',
+  SEND_EVM_EVENT_TO_CONTENT_SCRIPT = 'sendEvmEventToContentScript',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',

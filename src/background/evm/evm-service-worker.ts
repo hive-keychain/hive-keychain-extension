@@ -2,7 +2,7 @@ import { BackgroundMessage } from '@background/background-message.interface';
 import {
   EvmRequestMethod,
   KeychainEvmRequestWrapper,
-} from '@background/evm/evm-request.interface';
+} from '@background/evm/provider/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -18,7 +18,6 @@ const chromeMessageHandler = async (
   sendResp: (response?: any) => void,
 ) => {
   if (backgroundMessage.command === BackgroundCommand.SEND_EVM_REQUEST) {
-    console.log(backgroundMessage);
     const evmRequestWrapper = backgroundMessage as KeychainEvmRequestWrapper;
     const request = evmRequestWrapper.request;
     const message: BackgroundMessage = {
@@ -35,9 +34,12 @@ const chromeMessageHandler = async (
         message.value.result = chainId;
         break;
       }
-      case EvmRequestMethod.GET_ACCOUNTS: {
+      case EvmRequestMethod.GET_NETWORK: {
+        const chainId = await EvmChainUtils.getLastEvmChain();
+        message.value.result = Number(chainId);
         break;
       }
+      case EvmRequestMethod.GET_ACCOUNTS:
       case EvmRequestMethod.REQUEST_ACCOUNTS: {
         const connectedWallets = await EvmWalletUtils.getConnectedWallets(
           evmRequestWrapper.domain,
@@ -46,6 +48,7 @@ const chromeMessageHandler = async (
           message.value.result = connectedWallets;
         } else {
           // TODO open popup
+          message.value.result = [''];
         }
 
         break;
@@ -55,6 +58,18 @@ const chromeMessageHandler = async (
       }
     }
     chrome.tabs.sendMessage(sender.tab?.id!, message);
+  }
+
+  if (backgroundMessage.command === BackgroundCommand.SEND_EVM_EVENT) {
+    chrome.tabs.query({}, (tabs) => {
+      for (const tab of tabs) {
+        if (tab.id)
+          chrome.tabs.sendMessage(tab.id, {
+            ...backgroundMessage,
+            command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+          });
+      }
+    });
   }
 };
 

@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
+  sendEventToEvm,
   sendEvmRequestToBackground,
   sendResponseToEvm,
 } from 'src/content-scripts/hive/web-interface/response.logic';
@@ -29,6 +30,13 @@ chrome.runtime.onMessage.addListener(
   ) => {
     if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE)
       sendResponseToEvm(backgroundMessage.value);
+
+    if (
+      backgroundMessage.command ===
+      BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT
+    ) {
+      sendEventToEvm(backgroundMessage.value!);
+    }
   },
 );
 
