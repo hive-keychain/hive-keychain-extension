@@ -1,6 +1,6 @@
 import MkModule from '@background/hive/modules/mk.module';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';

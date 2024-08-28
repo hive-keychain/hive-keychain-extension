@@ -1,5 +1,5 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
@@ -49,27 +49,6 @@ export const createPopup = (
     );
   });
 };
-/* istanbul ignore next */
-chrome.windows.onRemoved.addListener(async (id: number) => {
-  const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
-  const { windowId, request, request_id, tab, confirmed } = requestHandler.data;
-
-  if (id == windowId && !confirmed && tab) {
-    chrome.tabs.sendMessage(tab!, {
-      command: DialogCommand.ANSWER_REQUEST,
-      msg: {
-        success: false,
-        error: 'user_cancel',
-        result: null,
-        data: request,
-        message: await chrome.i18n.getMessage('bgd_lifecycle_request_canceled'),
-        request_id,
-      },
-    });
-
-    requestHandler.reset(true);
-  }
-});
 
 // check if win exists before removing it
 /* istanbul ignore next */

@@ -1,5 +1,6 @@
-import { removeWindow } from '@background/hive/requests/dialog-lifecycle';
-import sendErrors from '@background/hive/requests/errors';
+import { removeWindow } from '@background/dialog-lifecycle';
+import sendErrors from '@background/errors';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { addAccount } from '@background/hive/requests/operations/ops/add-account';
 import {
   broadcastAddAccountAuthority,
@@ -34,7 +35,6 @@ import { broadcastSwap } from '@background/hive/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/hive/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/hive/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/hive/requests/operations/ops/witness-vote';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -42,7 +42,7 @@ import {
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
-export const performOperation = async (
+export const performHiveOperation = async (
   requestHandler: HiveRequestsHandler,
   data: KeychainRequest,
   tab: number,
@@ -51,7 +51,7 @@ export const performOperation = async (
 ) => {
   let message = null;
   try {
-    Logger.info('-- PERFORMING TRANSACTION --');
+    Logger.info('-- PERFORMING HIVE TRANSACTION --');
     Logger.log(data);
     switch (data.type) {
       case KeychainRequestTypes.addAccount:

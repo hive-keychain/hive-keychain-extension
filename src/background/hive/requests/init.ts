@@ -1,5 +1,5 @@
 import MkModule from '@background/hive/modules/mk.module';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,

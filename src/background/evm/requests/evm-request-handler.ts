@@ -1,3 +1,4 @@
+import { removeWindow } from '@background/dialog-lifecycle';
 import {
   EvmRequest,
   KeychainEvmRequestWrapper,
@@ -31,7 +32,7 @@ export class EvmRequestHandler {
 
   closeWindow() {
     if (this.data.windowId) {
-      // removeWindow(this.data.windowId);
+      removeWindow(this.data.windowId);
     }
   }
 

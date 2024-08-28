@@ -1,5 +1,5 @@
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';

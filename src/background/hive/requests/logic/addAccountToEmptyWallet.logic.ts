@@ -1,5 +1,5 @@
-import { createPopup } from '@background/hive/requests/dialog-lifecycle';
-import { HiveRequestsHandler } from '@background/hive/requests/request-handler';
+import { createPopup } from '@background/dialog-lifecycle';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 

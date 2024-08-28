@@ -17,9 +17,9 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import MkModule from './modules/mk.module';
+import { HiveRequestsHandler } from './requests/hive-request-handler';
 import init from './requests/init';
-import { performOperation } from './requests/operations';
-import { HiveRequestsHandler } from './requests/request-handler';
+import { performHiveOperation } from './requests/operations';
 
 const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
@@ -97,7 +97,7 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
       const { keep, data, tab, domain } = backgroundMessage.value;
-      performOperation(
+      performHiveOperation(
         await HiveRequestsHandler.getFromLocalStorage(),
         data,
         tab,
@@ -124,7 +124,7 @@ export const performOperationFromIndex = async (
   tab: number,
   request: KeychainRequest,
 ) => {
-  performOperation(requestHandler, request, tab!, request.domain, false);
+  performHiveOperation(requestHandler, request, tab!, request.domain, false);
 };
 
 export const HiveServiceWorker = {
