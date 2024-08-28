@@ -32,14 +32,16 @@ export const broadcastSwap = async (
       steps,
       amount,
       swapAccount,
+      partnerUsername,
+      partnerFee,
     } = data;
-
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
+
     swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
@@ -47,6 +49,8 @@ export const broadcastSwap = async (
       endToken,
       amount,
       username!,
+      partnerFee,
+      partnerUsername,
     );
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {

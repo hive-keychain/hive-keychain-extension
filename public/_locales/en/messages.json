@@ -575,6 +575,10 @@
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
   },
+  "popup_html_detach_window_tooltip_text": {
+    "message": "Detach window\nShorcut: Ctrl + D",
+    "description": "after clicking on copy username to clipboard button on home page"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"
@@ -1445,7 +1449,7 @@
     "message": "Powered up $1 HIVE on @$2."
   },
   "bgd_ops_pd": {
-    "message": "Started a $1 HP power down on @$2."
+    "message": "Started a $1 power down on @$2."
   },
   "bgd_ops_pd_stop": {
     "message": "Stopped Power Down on @$1."
@@ -1722,6 +1726,18 @@
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
   },
+  "popup_html_automated_hive_section_title": {
+    "message": "Hive",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_engine_section_title": {
+    "message": "Hive Engine",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_engine_list_title": {
+    "message": "Tokens set for automatic staking",
+    "description": "When on automated tasks page"
+  },
   "popup_html_favorite_accounts_intro": {
     "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
     "description": "When on favorite accounts page"
@@ -1730,8 +1746,20 @@
     "message": "Claim Rewards",
     "description": "When on automated tasks page"
   },
+  "popup_html_enable_autostake_tokens": {
+    "message": "Auto Staking",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_automated_hive_section_default_option_message": {
+    "message": "Add a token to auto-staking",
+    "description": "When on automated tasks page > auto staking default option"
+  },
   "popup_html_enable_autoclaim_rewards_info": {
     "message": "Regularly claiming your rewards can increase your gains.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autostake_tokens_info": {
+    "message": "Automatically staking your tokens can increase your gains",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
@@ -2165,6 +2193,10 @@
   },
   "html_popup_transfer_fund_operation": {
     "message": "Transferring funds",
+    "description": "Transfer fund operation"
+  },
+  "html_popup_stop_recc_transfer_fund_operation": {
+    "message": "Stopping a recurrent transfer",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
@@ -3487,6 +3519,10 @@
     "message": "Token",
     "description": "Value of token in USD"
   },
+  "tokens": {
+    "message": "Tokens",
+    "description": "common use in extension referring to HE tokes"
+  },
   "liquid_balance": {
     "message": "Liquid balance",
     "description": "Value of token in USD"
@@ -3687,6 +3723,14 @@
     "message": "Fee",
     "description": "Swap Fee"
   },
+  "swap_partner_username": {
+    "message": "Partner",
+    "description": "Widget Swap partner username"
+  },
+  "swap_partner_fee": {
+    "message": "Partner fee",
+    "description": "Widget Swap partner Fee"
+  },
   "swap_last_update": {
     "message": "Last update: $1",
     "description": "swap last update"
@@ -3792,7 +3836,7 @@
     "description": "Form validation error: should be greater than"
   },
   "validation_error_less_or_equal_value": {
-    "message": "Value should be less than or equal to $1",
+    "message": "Value should be smaller than or equal to your balance",
     "description": "Form validation error: should be less than (or equal)"
   },
   "message_container_title_success": {
@@ -4051,7 +4095,10 @@
     "message": "@$1 reblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
     "description": "Notification reblog"
   },
-
+  "notification_unreblog": {
+    "message": "@$1 unreblogged @$2's post <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "description": "Notification unreblog"
+  },
   "notification_account_update": {
     "message": "@$1's notification settings have been updated",
     "description": "Notification account updated"
@@ -4109,15 +4156,15 @@
     "description": "Notification comment reward"
   },
   "notification_hbd_interest": {
-    "message": "$@1 received $2 as interest",
+    "message": "@$1 received $2 as interest",
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "$@1 received $2 as part of power down",
+    "message": "@$1 received $2 as part of power down",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "$@1 received $2 as part of power down of @$3",
+    "message": "@$1 received $2 as part of power down of @$3",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {

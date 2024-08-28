@@ -69,7 +69,7 @@ const getWrongVestingRoutes = async (localAccounts: LocalAccount[]) => {
   }
 
   let accountsVestingRoutesDifferences: AccountVestingRoutesDifferences[] = [];
-
+  let missingRoutes = [];
   for (const account of localAccounts) {
     const accountVestingRoutesDifferences: AccountVestingRoutesDifferences = {
       account: account.name,
@@ -81,6 +81,11 @@ const getWrongVestingRoutes = async (localAccounts: LocalAccount[]) => {
     const currentRoutes = currentVestingRoutes.find(
       (vestingRoute) => vestingRoute.account === account.name,
     );
+
+    if (!oldRoutes && currentRoutes) {
+      missingRoutes.push(currentRoutes);
+      continue;
+    }
 
     // Compare
     if (!_.isEqual(oldRoutes, currentRoutes)) {
@@ -138,6 +143,7 @@ const getWrongVestingRoutes = async (localAccounts: LocalAccount[]) => {
       });
     }
   }
+  saveLastVestingRoutes([...lastVestingRoutes, ...missingRoutes]);
   return accountsVestingRoutesDifferences.length > 0
     ? accountsVestingRoutesDifferences
     : undefined;
