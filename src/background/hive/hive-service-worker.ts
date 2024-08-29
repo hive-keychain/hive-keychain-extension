@@ -71,22 +71,27 @@ const chromeMessageHandler = async (
       );
       break;
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
+      console.log(backgroundMessage);
       const { mk, domain, data, tab } = backgroundMessage.value;
-      const login = await MkModule.login(mk);
-      if (login) {
-        MkModule.saveMk(mk);
-        init(
-          data.msg.data,
-          tab,
-          domain,
-          await HiveRequestsHandler.getFromLocalStorage(),
-        );
-      } else {
-        chrome.runtime.sendMessage({
-          ...data,
-          command: DialogCommand.WRONG_MK,
-        });
+
+      if (data.command === DialogCommand.UNLOCK) {
+        const login = await MkModule.login(mk);
+        if (login) {
+          MkModule.saveMk(mk);
+          init(
+            data.msg.data,
+            tab,
+            domain,
+            await HiveRequestsHandler.getFromLocalStorage(),
+          );
+        } else {
+          chrome.runtime.sendMessage({
+            ...data,
+            command: DialogCommand.WRONG_MK,
+          });
+        }
       }
+
       break;
     }
     case BackgroundCommand.REGISTER_FROM_DIALOG: {

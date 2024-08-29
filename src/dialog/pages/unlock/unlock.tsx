@@ -1,3 +1,4 @@
+import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -22,7 +23,7 @@ type UnlockMessage = {
     success: false;
     error: 'locked';
     result: null;
-    data: KeychainRequest;
+    data: KeychainRequest | EvmRequest;
     message: string;
     display_msg: string;
   };
