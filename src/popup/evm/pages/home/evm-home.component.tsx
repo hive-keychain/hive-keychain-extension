@@ -3,6 +3,7 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
@@ -212,6 +213,7 @@ const Home = ({
             )} ${chain.mainToken}`,
           }}
         />
+        <EvmDappStatusComponent />
         <EvmWalletInfoSectionComponent evmTokens={tokens} prices={prices} />
       </div>
       <ActionsSectionComponent

@@ -50,7 +50,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   };
 
   useEffect(() => {
-    if (chain)
+    if (chain?.chainId?.length)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
         chain.chainId,

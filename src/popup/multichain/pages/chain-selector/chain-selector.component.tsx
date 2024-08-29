@@ -35,10 +35,7 @@ const ChainSelector = ({
   };
 
   const selectChain = async (chain: Chain) => {
-    if (
-      chain.type === ChainType.EVM &&
-      setupChains?.some((c) => c.type === ChainType.EVM)
-    ) {
+    if (chain.type === ChainType.EVM) {
       await ChainUtils.addChainToSetupChains(chain);
     }
     setChain(chain);

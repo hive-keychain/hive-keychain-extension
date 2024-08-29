@@ -18,7 +18,7 @@ export const resetChain = (): AppThunk => async (dispatch, getState) => {
 export const setChain =
   (chain: Chain): AppThunk =>
   async (dispatch, getState) => {
-    if (chain.type === ChainType.EVM) {
+    if (chain?.type === ChainType.EVM) {
       EvmChainUtils.saveLastUsedChain(chain as EvmChain);
     }
     ChainUtils.setPreviousChain(getState().chain);

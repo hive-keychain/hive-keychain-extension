@@ -47,7 +47,7 @@ const getTotalBalanceInMainToken = (
       token.tokenInfo.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
   );
   if (mainToken) {
-    const valueInUsd = getTotalBalanceInUsd(tokens, prices);
+    const valueInUsd = getTotalBalanceInUsd(tokens, prices) || 0;
     return valueInUsd / (prices[mainToken.tokenInfo.symbol]?.usd ?? 1);
   } else return 0;
 };
