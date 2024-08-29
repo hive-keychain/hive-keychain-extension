@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import './evm-dapp-status.component.scss';
 
 const EvmDappStatus = () => {
   const [dapp, setDapp] = useState<chrome.tabs.Tab>();
