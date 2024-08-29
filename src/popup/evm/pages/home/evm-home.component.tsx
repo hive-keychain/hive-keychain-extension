@@ -196,24 +196,28 @@ const Home = ({
       />
 
       <div className={'home-page-content'} onScroll={handleScroll}>
-        <EstimatedAccountValueSectionComponent
-          accountValues={{
-            [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
-              EvmTokensUtils.getTotalBalanceInUsd(
-                activeAccount.balances,
-                prices,
-              ),
-            )}`,
-            [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
-              EvmTokensUtils.getTotalBalanceInMainToken(
-                activeAccount.balances,
-                chain,
-                prices,
-              ),
-            )} ${chain.mainToken}`,
-          }}
-        />
-        <EvmDappStatusComponent />
+        <div className="evm-account-value-wrapper">
+          <EstimatedAccountValueSectionComponent
+            accountValues={{
+              [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
+                EvmTokensUtils.getTotalBalanceInUsd(
+                  activeAccount.balances,
+                  prices,
+                ),
+              )}`,
+              [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
+                EvmTokensUtils.getTotalBalanceInMainToken(
+                  activeAccount.balances,
+                  chain,
+                  prices,
+                ),
+              )} ${chain.mainToken}`,
+            }}
+          />
+          <div className="dapp-status-wrapper">
+            <EvmDappStatusComponent />
+          </div>
+        </div>
         <EvmWalletInfoSectionComponent evmTokens={tokens} prices={prices} />
       </div>
       <ActionsSectionComponent

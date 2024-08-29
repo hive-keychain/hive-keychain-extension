@@ -7,9 +7,10 @@
   cursor: pointer;
   justify-content: center;
   align-items: center;
+  display: flex;
   img {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
   }
   .indicator {
     position: absolute;

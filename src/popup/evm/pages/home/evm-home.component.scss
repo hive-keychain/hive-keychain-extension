@@ -1,0 +1,15 @@
+.evm-account-value-wrapper {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 100%;
+  .dapp-status-wrapper {
+    position: relative;
+    right: 50px;
+    display: flex;
+    align-items: center;
+  }
+  .estimated-account-value-section {
+    flex: 1;
+  }
+}
