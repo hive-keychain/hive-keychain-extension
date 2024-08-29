@@ -64,6 +64,7 @@ const App = () => {
   const renderDialogContent = (data: any) => {
     switch (data.command) {
       case DialogCommand.UNLOCK:
+      case DialogCommand.UNLOCK_EVM:
         return <Unlock data={data} />;
       case DialogCommand.WRONG_MK:
         return <Unlock data={data} wrongMk index={Math.random()} />;

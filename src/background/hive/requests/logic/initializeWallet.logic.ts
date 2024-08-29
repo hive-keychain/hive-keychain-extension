@@ -1,12 +1,14 @@
 import { createPopup } from '@background/dialog-lifecycle';
 import sendErrors from '@background/errors';
+import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const initializeWallet = (
-  requestHandler: HiveRequestsHandler,
+  requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
-  request: KeychainRequest,
+  request: KeychainRequest | EvmRequest,
 ) => {
   /* istanbul ignore next */
   createPopup(async () => {
