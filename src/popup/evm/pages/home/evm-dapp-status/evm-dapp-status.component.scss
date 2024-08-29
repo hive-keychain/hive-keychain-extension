@@ -1,0 +1,23 @@
+.evm-dapp-status-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: var(--input-background);
+  border-radius: 50%;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 36px;
+    height: 36px;
+  }
+  .indicator {
+    position: absolute;
+    height: 12px;
+    width: 12px;
+    background-color: var(--green-success);
+    border-radius: 50%;
+    bottom: 0;
+    right: 0;
+  }
+}
