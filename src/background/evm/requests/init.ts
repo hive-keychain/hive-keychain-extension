@@ -1,4 +1,3 @@
-import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evmRequestWithConfirmation.logic';
 import MkModule from '@background/hive/modules/mk.module';
@@ -6,6 +5,7 @@ import {
   initializeWallet,
   unlockWallet,
 } from '@background/hive/requests/logic';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';

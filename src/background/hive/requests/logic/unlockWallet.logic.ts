@@ -1,7 +1,7 @@
-import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 

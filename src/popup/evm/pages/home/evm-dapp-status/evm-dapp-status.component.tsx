@@ -1,5 +1,5 @@
-import { EvmEventName } from '@background/evm/provider/evm-provider.interface';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { EvmEventName } from '@interfaces/evm-provider.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';

@@ -1,6 +1,6 @@
-import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const evmRequestWithConfirmation = (

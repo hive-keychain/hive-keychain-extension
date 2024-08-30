@@ -1,7 +1,7 @@
 import {
   EvmProvider,
   EvmProviderModule,
-} from '@background/evm/provider/evm-provider';
+} from 'src/content-scripts/evm/injected/provider/evm-provider';
 
 const onPageLoad = () => {
   let provider = EvmProviderModule.getProvider();

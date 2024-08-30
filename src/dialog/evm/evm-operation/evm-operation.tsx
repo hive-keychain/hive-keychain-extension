@@ -1,4 +1,4 @@
-import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
 import ButtonComponent, {

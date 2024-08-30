@@ -1,4 +1,4 @@
-import { EvmConnectedWallets } from '@background/evm/provider/evm-provider.interface';
+import { EvmConnectedWallets } from '@interfaces/evm-provider.interface';
 import {
   EvmAccount,
   StoredEvmAccounts,

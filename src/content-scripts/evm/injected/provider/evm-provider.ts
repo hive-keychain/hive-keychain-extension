@@ -2,7 +2,7 @@ import {
   EIP6963ProviderInfo,
   EvmEventName,
   RequestArguments,
-} from '@background/evm/provider/evm-provider.interface';
+} from '@interfaces/evm-provider.interface';
 import EventEmitter from 'events';
 
 const ProviderInfo: EIP6963ProviderInfo = {

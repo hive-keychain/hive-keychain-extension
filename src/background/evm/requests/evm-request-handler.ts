@@ -1,9 +1,9 @@
+import { initEvmRequestHandler } from '@background/evm/requests/init';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import {
   EvmRequest,
   KeychainEvmRequestWrapper,
-} from '@background/evm/provider/evm-provider.interface';
-import { initEvmRequestHandler } from '@background/evm/requests/init';
-import { removeWindow } from '@background/multichain/dialog-lifecycle';
+} from '@interfaces/evm-provider.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 

@@ -1,11 +1,11 @@
-import {
-  EvmRequestMethod,
-  KeychainEvmRequestWrapper,
-} from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import {
+  EvmRequestMethod,
+  KeychainEvmRequestWrapper,
+} from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
