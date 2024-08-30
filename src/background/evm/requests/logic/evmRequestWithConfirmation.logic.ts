@@ -19,5 +19,6 @@ export const evmRequestWithConfirmation = (
       accounts: requestHandler.accounts,
     });
   };
+  console.log(request, 'request');
   createPopup(callback, requestHandler);
 };
