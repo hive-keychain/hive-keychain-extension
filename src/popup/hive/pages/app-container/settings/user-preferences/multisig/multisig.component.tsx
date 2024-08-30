@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   ConnectDisconnectMessage,

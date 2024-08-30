@@ -2,6 +2,7 @@ export enum DialogCommand {
   UNLOCK = 'UNLOCK',
   UNLOCK_EVM = 'UNLOCK_EVM',
   SEND_DIALOG_CONFIRM = 'sendDialogConfirm',
+  SEND_DIALOG_CONFIRM_EVM = 'sendDialogConfirmEvm',
   SEND_DIALOG_ERROR = 'sendDialogError',
   REGISTER = 'register',
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',

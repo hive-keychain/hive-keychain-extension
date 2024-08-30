@@ -1,0 +1,80 @@
+.operation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  margin: 0px -16px;
+  row-gap: 16px;
+
+  .multisig-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    padding: 0 30px;
+    margin-bottom: 10px;
+    .message {
+      @include caption;
+      padding: 0px;
+    }
+    .logo {
+      height: 24px;
+      width: auto;
+    }
+  }
+
+  .operation-header {
+    padding: 0 12px 12px 12px;
+  }
+  .operation-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      row-gap: 16px;
+      overflow: auto;
+      padding: 16px 24px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      .field {
+        display: flex;
+        justify-content: space-between;
+        column-gap: 16px;
+        user-select: auto;
+        pre {
+          user-select: all;
+        }
+        .label {
+          @include poppins500(14px);
+        }
+        .value {
+          @include poppins400(14px);
+          overflow-wrap: anywhere;
+          max-width: 70%;
+          text-align: right;
+          user-select: text;
+          ul {
+            margin: 0;
+          }
+          &.xs-font {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+
+  .operation-buttons {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+  }
+}

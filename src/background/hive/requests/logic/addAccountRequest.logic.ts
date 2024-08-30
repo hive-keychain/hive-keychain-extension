@@ -1,6 +1,6 @@
-import { createPopup } from '@background/dialog-lifecycle';
-import sendErrors from '@background/errors';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createPopup } from '@background/multichain/dialog-lifecycle';
+import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';

@@ -1,4 +1,3 @@
-import { BackgroundMessage } from '@background/background-message.interface';
 import { AccountModule } from '@background/hive/modules/account.module';
 import AutolockModule from '@background/hive/modules/autolock.module';
 import ClaimModule from '@background/hive/modules/claim.module';
@@ -6,6 +5,7 @@ import LocalStorageModule from '@background/hive/modules/local-storage.module';
 import { MultisigModule } from '@background/hive/modules/multisig.module';
 import RPCModule from '@background/hive/modules/rpc.module';
 import SettingsModule from '@background/hive/modules/settings.module';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import getMessage from '@background/utils/i18n.utils';
 import {
   KeychainRequest,
@@ -71,7 +71,7 @@ const chromeMessageHandler = async (
       );
       break;
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      console.log(backgroundMessage);
+      console.log('hive background', backgroundMessage);
       const { mk, domain, data, tab } = backgroundMessage.value;
 
       if (data.command === DialogCommand.UNLOCK) {

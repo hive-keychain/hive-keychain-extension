@@ -1,6 +1,6 @@
-import sendErrors from '@background/errors';
 import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import sendErrors from '@background/multichain/errors';
 import Logger from 'src/utils/logger.utils';
 
 export const performEvmOperation = async (

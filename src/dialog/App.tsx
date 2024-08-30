@@ -2,12 +2,12 @@ import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import DialogError from 'src/dialog/pages/error';
-import Register from 'src/dialog/pages/register/register';
-import RequestConfirmation from 'src/dialog/pages/request-confirmation';
-import RequestResponse from 'src/dialog/pages/request-response';
-import SignTransaction from 'src/dialog/pages/sign-transaction/sign-transaction';
-import Unlock from 'src/dialog/pages/unlock/unlock';
+import Register from 'src/dialog/hive/register/register';
+import SignTransaction from 'src/dialog/hive/sign-transaction/sign-transaction';
+import DialogError from 'src/dialog/multichain/error/error';
+import RequestConfirmation from 'src/dialog/multichain/request/request-confirmation';
+import RequestResponse from 'src/dialog/multichain/request/request-response';
+import Unlock from 'src/dialog/multichain/unlock/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 // import './../analytics/analytics/gtag';
@@ -73,6 +73,7 @@ const App = () => {
       case DialogCommand.REGISTER:
         return <Register data={data} />;
       case DialogCommand.SEND_DIALOG_CONFIRM:
+      case DialogCommand.SEND_DIALOG_CONFIRM_EVM:
         return <RequestConfirmation data={data} />;
       case DialogCommand.ANSWER_REQUEST:
         return <RequestResponse data={data} />;

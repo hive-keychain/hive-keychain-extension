@@ -1,7 +1,7 @@
-import { createPopup } from '@background/dialog-lifecycle';
 import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createPopup } from '@background/multichain/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
@@ -10,11 +10,12 @@ export const unlockWallet = (
   tab: number,
   request: KeychainRequest | EvmRequest,
   domain: string,
+  unlockCommand: DialogCommand,
 ) => {
   /* istanbul ignore next */
   createPopup(async () => {
     chrome.runtime.sendMessage({
-      command: DialogCommand.UNLOCK,
+      command: unlockCommand,
       msg: {
         success: false,
         error: 'locked',

@@ -8,6 +8,7 @@ import {
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -56,7 +57,13 @@ export default async (
     Logic.addAccountToEmptyWallet(requestHandler, tab!, request, domain);
   } else if (!mk) {
     // if locked
-    Logic.unlockWallet(requestHandler, tab!, request, domain);
+    Logic.unlockWallet(
+      requestHandler,
+      tab!,
+      request,
+      domain,
+      DialogCommand.UNLOCK,
+    );
   } else {
     const accounts = items.accounts
       ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])

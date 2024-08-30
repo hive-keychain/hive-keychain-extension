@@ -1,9 +1,9 @@
-import { removeWindow } from '@background/dialog-lifecycle';
 import {
   EvmRequest,
   KeychainEvmRequestWrapper,
 } from '@background/evm/provider/evm-provider.interface';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -21,9 +21,10 @@ type RequestData = {
 };
 export class EvmRequestHandler {
   data: RequestData;
-
+  accounts: string[];
   constructor() {
     this.data = { confirmed: false };
+    this.accounts = [];
   }
 
   async initFromLocalStorage(data: RequestData) {

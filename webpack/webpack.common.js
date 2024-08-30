@@ -9,7 +9,7 @@ const config = {
     hiveTx: 'hive-tx',
     popup: { import: './src/popup/index.tsx', dependOn: 'hiveTx' },
     dialog: './src/dialog/index.tsx',
-    background: './src/background/multichain-service-worker.ts',
+    background: './src/background/multichain/multichain-service-worker.ts',
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
     multisigDialog: './src/multisig/multisig-dialog.tsx',

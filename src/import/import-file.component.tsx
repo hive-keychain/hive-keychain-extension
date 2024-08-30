@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useRef, useState } from 'react';

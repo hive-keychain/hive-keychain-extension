@@ -1,5 +1,3 @@
-import { removeWindow } from '@background/dialog-lifecycle';
-import sendErrors from '@background/errors';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { addAccount } from '@background/hive/requests/operations/ops/add-account';
 import {
@@ -35,6 +33,8 @@ import { broadcastSwap } from '@background/hive/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/hive/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/hive/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/hive/requests/operations/ops/witness-vote';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
+import sendErrors from '@background/multichain/errors';
 import {
   KeychainRequest,
   KeychainRequestTypes,

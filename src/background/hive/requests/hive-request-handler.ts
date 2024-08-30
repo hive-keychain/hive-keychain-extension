@@ -1,7 +1,7 @@
-import { removeWindow } from '@background/dialog-lifecycle';
 import { AnalyticsModule } from '@background/hive/modules/analytics.module';
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
 import init from '@background/hive/requests/init';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';

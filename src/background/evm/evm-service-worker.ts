@@ -1,4 +1,3 @@
-import { BackgroundMessage } from '@background/background-message.interface';
 import {
   EvmRequestMethod,
   KeychainEvmRequestWrapper,
@@ -6,6 +5,7 @@ import {
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import MkModule from '@background/hive/modules/mk.module';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -96,6 +96,7 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
       const { mk, domain, data, tab } = backgroundMessage.value;
+      console.log('evm background', backgroundMessage);
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {
@@ -114,6 +115,28 @@ const chromeMessageHandler = async (
         }
       }
       break;
+    }
+    case BackgroundCommand.SEND_BACK_CONNECTED_WALLETS: {
+      const connectedAddresses = [];
+      const connectedAccount = backgroundMessage.value.connectedAccounts;
+      for (const address of Object.keys(connectedAccount)) {
+        if (connectedAccount[address]) {
+          await EvmWalletUtils.connectWallet(
+            address,
+            backgroundMessage.value.data.domain,
+          );
+          connectedAddresses.push(address);
+        }
+      }
+
+      const message: BackgroundMessage = {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: backgroundMessage.value.data.data.request_id,
+          result: connectedAddresses,
+        },
+      };
+      chrome.tabs.sendMessage(sender.tab?.id!, message);
     }
   }
 };

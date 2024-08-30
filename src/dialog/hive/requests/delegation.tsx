@@ -1,0 +1,48 @@
+import { RequestDelegation, RequestId } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import RequestItem from 'src/dialog/components/request-item/request-item';
+import Operation from 'src/dialog/hive/operation/operation';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
+
+type Props = {
+  data: RequestDelegation & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
+};
+
+const Delegation = (props: Props) => {
+  const { data, accounts, rpc } = props;
+  const anonymousProps = useAnonymousRequest(data, accounts);
+  const renderUsername = () => {
+    return !accounts ? (
+      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    ) : (
+      <></>
+    );
+  };
+  return (
+    <Operation
+      title={chrome.i18n.getMessage('dialog_title_delegation')}
+      {...props}
+      {...anonymousProps}>
+      {renderUsername()}
+      <Separator type={'horizontal'} fullSize />
+      <RequestItem title="dialog_delegatee" content={`@${data.delegatee}`} />
+      <Separator type={'horizontal'} fullSize />
+      <RequestItem
+        title="dialog_amount"
+        content={`${FormatUtils.formatCurrencyValue(
+          data.amount,
+        )} ${CurrencyUtils.getCurrencyLabel(data.unit, rpc.testnet)}`}
+      />
+    </Operation>
+  );
+};
+
+export default Delegation;

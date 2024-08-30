@@ -1,8 +1,8 @@
-import { createPopup } from '@background/dialog-lifecycle';
-import sendErrors from '@background/errors';
 import { EvmRequest } from '@background/evm/provider/evm-provider.interface';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createPopup } from '@background/multichain/dialog-lifecycle';
+import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const initializeWallet = (

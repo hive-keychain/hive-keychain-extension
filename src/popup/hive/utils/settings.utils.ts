@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';

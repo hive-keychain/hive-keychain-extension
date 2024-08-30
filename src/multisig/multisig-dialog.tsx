@@ -1,7 +1,7 @@
 import {
   BackgroundMessage,
   MultisigDialogMessage,
-} from '@background/background-message.interface';
+} from '@background/multichain/background-message.interface';
 import {
   MultisigAcceptRejectTxData,
   MultisigData,

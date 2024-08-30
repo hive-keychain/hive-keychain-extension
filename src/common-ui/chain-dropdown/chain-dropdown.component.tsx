@@ -1,5 +1,5 @@
-import { BackgroundMessage } from '@background/background-message.interface';
 import { EvmEventName } from '@background/evm/provider/evm-provider.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';

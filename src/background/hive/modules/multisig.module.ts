@@ -1,9 +1,9 @@
+import MkModule from '@background/hive/modules/mk.module';
+import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import {
   BackgroundMessage,
   MultisigDialogMessage,
-} from '@background/background-message.interface';
-import MkModule from '@background/hive/modules/mk.module';
-import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
+} from '@background/multichain/background-message.interface';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { SignedTransaction } from '@hiveio/dhive';
 import {
