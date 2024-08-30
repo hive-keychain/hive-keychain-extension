@@ -1,3 +1,4 @@
+import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -35,11 +36,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   const onAddressLoaded = async () => {
     if (!dapp || !active.address.length) return;
     const domain = FormatUtils.urlToDomain(dapp.url!);
-    // const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
-    const connectedWallets = [
-      '0xe5C4ff89560aa837E0Fa104116C332C7C3f56d63',
-      '0x1898562227A3c955D64cE483811a13ffd68dd8AA',
-    ];
+    const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
     setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(active.address)) {
       setStatus(DappStatusEnum.CONNECTED);
@@ -65,12 +62,42 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
             <img src={dapp?.favIconUrl} />
             {FormatUtils.urlToDomain(dapp?.url!)}
           </div>
+          <div className="account-section-title">
+            {chrome.i18n.getMessage(
+              'popup_html_evm_dapp_status_connected_accounts',
+            )}
+          </div>
           {accounts
             .filter((account) =>
               connectedWallets.includes(account.wallet.address),
             )
             .map((account) => (
-              <EvmAccountDisplayComponent account={account} active={active} />
+              <EvmAccountDisplayComponent
+                account={account}
+                active={active}
+                status={
+                  account.wallet.address === active.address
+                    ? DappStatusEnum.CONNECTED
+                    : DappStatusEnum.OTHER_ACCOUNT_CONNECTED
+                }
+              />
+            ))}
+          <div className="account-section-title">
+            {' '}
+            {chrome.i18n.getMessage(
+              'popup_html_evm_dapp_status_other_accounts',
+            )}
+          </div>
+          {accounts
+            .filter(
+              (account) => !connectedWallets.includes(account.wallet.address),
+            )
+            .map((account) => (
+              <EvmAccountDisplayComponent
+                account={account}
+                active={active}
+                status={DappStatusEnum.DISCONNECTED}
+              />
             ))}
         </PopupContainer>
       )}

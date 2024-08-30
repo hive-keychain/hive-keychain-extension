@@ -2,6 +2,7 @@
   cursor: default;
   .popup-content {
     height: 80%;
+    width: 90%;
     .popup-title {
       display: flex;
       align-items: center;
@@ -12,6 +13,11 @@
         opacity: 0.5;
         border-radius: 50%;
       }
+    }
+    .account-section-title {
+      @include poppins600(14px);
+      color: var(--main-font-color);
+      width: 100%;
     }
   }
 }

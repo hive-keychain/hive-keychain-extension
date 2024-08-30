@@ -4584,5 +4584,13 @@
   "popup_html_evm_loading_balances": {
     "message": "Loading balances",
     "description": "Loading balances on main screen"
+  },
+  "popup_html_evm_dapp_status_connected_accounts": {
+    "message": "Connected Accounts",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_other_accounts": {
+    "message": "Unconnected Accounts",
+    "description": "Evm dapp status"
   }
 }

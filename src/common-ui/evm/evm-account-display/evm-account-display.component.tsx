@@ -12,17 +12,18 @@ import {
 type Props = {
   active: EvmActiveAccount;
   account: EvmAccount;
+  status: DappStatusEnum;
 };
-export const EvmAccountDisplayComponent = ({ account, active }: Props) => {
+export const EvmAccountDisplayComponent = ({
+  account,
+  active,
+  status,
+}: Props) => {
   return (
     <div className="evm-account-display">
       <DappStatusComponent
         svg={EvmAddressesUtils.getIdenticonFromAddress(account.wallet.address)}
-        status={
-          account.wallet.address === active.address
-            ? DappStatusEnum.CONNECTED
-            : DappStatusEnum.OTHER_ACCOUNT_CONNECTED
-        }
+        status={status}
       />
       <div className="account-info">
         <div className="account-name">
