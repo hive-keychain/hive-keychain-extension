@@ -1,20 +1,21 @@
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   DappStatusComponent,
   DappStatusEnum,
-} from 'src/common-ui/dapp-status/dapp-status.component';
+} from 'src/common-ui/evm/dapp-status/dapp-status.component';
+import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import FormatUtils from 'src/utils/format.utils';
 
-const EvmDappStatus = ({ active }: PropsFromRedux) => {
+const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   const [dapp, setDapp] = useState<chrome.tabs.Tab>();
   const [status, setStatus] = useState<DappStatusEnum>(
     DappStatusEnum.DISCONNECTED,
   );
   const [showDetail, setShowDetail] = useState(false);
+  const [connectedWallets, setConnectedWallets] = useState<string[]>([]);
 
   useEffect(() => {
     init();
@@ -34,8 +35,12 @@ const EvmDappStatus = ({ active }: PropsFromRedux) => {
   const onAddressLoaded = async () => {
     if (!dapp || !active.address.length) return;
     const domain = FormatUtils.urlToDomain(dapp.url!);
-    const connectedWallets: string[] = [];
-    await EvmWalletUtils.getConnectedWallets(domain);
+    // const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+    const connectedWallets = [
+      '0xe5C4ff89560aa837E0Fa104116C332C7C3f56d63',
+      '0x1898562227A3c955D64cE483811a13ffd68dd8AA',
+    ];
+    setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(active.address)) {
       setStatus(DappStatusEnum.CONNECTED);
     } else if (connectedWallets.length) {
@@ -60,13 +65,13 @@ const EvmDappStatus = ({ active }: PropsFromRedux) => {
             <img src={dapp?.favIconUrl} />
             {FormatUtils.urlToDomain(dapp?.url!)}
           </div>
-          <div
-            className="caption"
-            dangerouslySetInnerHTML={{
-              __html: chrome.i18n.getMessage(
-                'html_popup_governance_renewal_introduction',
-              ),
-            }}></div>
+          {accounts
+            .filter((account) =>
+              connectedWallets.includes(account.wallet.address),
+            )
+            .map((account) => (
+              <EvmAccountDisplayComponent account={account} active={active} />
+            ))}
         </PopupContainer>
       )}
     </>
@@ -76,6 +81,7 @@ const EvmDappStatus = ({ active }: PropsFromRedux) => {
 const connector = connect((state: RootState) => {
   return {
     active: state.evm.activeAccount,
+    accounts: state.evm.accounts,
   };
 });
 
