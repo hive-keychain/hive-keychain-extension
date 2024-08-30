@@ -1,5 +1,8 @@
+import { EvmEventName } from '@background/evm/provider/evm-provider.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
@@ -30,6 +33,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   useEffect(() => {
     onAddressLoaded();
   }, [active.address, dapp]);
+
   const init = async () => {
     const [activeTab] = await chrome.tabs.query({
       active: true,
@@ -42,6 +46,18 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
     if (!dapp || !active.address.length) return;
     const domain = FormatUtils.urlToDomain(dapp.url!);
     const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+    const sortedConnectedWallets = [
+      connectedWallets.find((e) => e === active.address),
+      ...connectedWallets.filter((e) => e !== active.address),
+    ];
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.SEND_EVM_EVENT,
+      value: {
+        eventType: EvmEventName.ACCOUNT_CHANGED,
+        args: sortedConnectedWallets,
+      },
+    } as BackgroundMessage);
+
     setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(active.address)) {
       setStatus(DappStatusEnum.CONNECTED);
