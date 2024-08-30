@@ -2,10 +2,10 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
+import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
-import { identicon } from 'minidenticons';
 import React, { useEffect, useState } from 'react';
 import {
   DragDropContext,
@@ -93,7 +93,7 @@ const SelectAccountSection = ({
         <div
           className="user-picture"
           dangerouslySetInnerHTML={{
-            __html: identicon(selectedAddress, 90, 50),
+            __html: EvmAddressesUtils.getIdenticonFromAddress(selectedAddress),
           }}
         />
         <div

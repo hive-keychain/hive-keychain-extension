@@ -3,6 +3,9 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
+  .evm-dapp-status-container {
+    background-color: var(--background-color);
+  }
   .account-info {
     flex-direction: column;
     margin-left: 30px;

@@ -1,5 +1,5 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import { identicon } from 'minidenticons';
+import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -101,7 +101,7 @@ export const EvmSelectAccountSectionItemComponent = ({
         <div
           className="user-picture"
           dangerouslySetInnerHTML={{
-            __html: identicon(item.label, 90, 50),
+            __html: EvmAddressesUtils.getIdenticonFromAddress(item.label),
           }}
         />
         <div className="account-name pipou">

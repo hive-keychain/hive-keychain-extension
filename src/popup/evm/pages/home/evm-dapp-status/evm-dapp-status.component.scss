@@ -1,15 +1,17 @@
 .dapp-status-details {
   cursor: default;
-  height: 80%;
-  .popup-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    img {
-      background-color: var(--background-color);
-      opacity: 0.5;
-      border-radius: 50%;
+  .popup-content {
+    height: 80%;
+    .popup-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      img {
+        background-color: var(--background-color);
+        opacity: 0.5;
+        border-radius: 50%;
+      }
     }
   }
 }
