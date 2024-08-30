@@ -37,7 +37,7 @@ export enum EvmRequestMethod {
 }
 
 export enum EvmEventName {
-  ACCOUNT_CHANGED = 'accountChanged',
+  ACCOUNT_CHANGED = 'accountsChanged',
   CHAIN_CHANGED = 'chainChanged',
 }
 

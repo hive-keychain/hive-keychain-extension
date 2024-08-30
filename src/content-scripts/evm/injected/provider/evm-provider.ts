@@ -12,88 +12,91 @@ const ProviderInfo: EIP6963ProviderInfo = {
   rdns: 'https://hive-keychain.com/',
 };
 
-let current_id = 1;
-let requests = {} as { [id: number]: any };
-let handshake_callback = null;
-
 let evmProvider: EvmProvider;
 
 export class EvmProvider extends EventEmitter {
   chainId: string | undefined;
   isMetaMask: boolean = true;
+  private _accounts: string[] = [];
+  private _current_id = 1;
+  private _requests = {} as { [id: number]: any };
 
   constructor() {
     super();
+    this.initListener();
   }
 
+  initListener = () => {
+    window.addEventListener(
+      'message',
+      (event) => {
+        // We only accept messages from ourselves
+        if (event.source != window) return;
+
+        if (event.data.type && event.data.type == 'evm_keychain_response') {
+          const result = event.data.response.result;
+          const requestId = event.data.response.requestId;
+          if (result && requestId) {
+            if (this._requests[requestId]) {
+              this._requests[requestId](result);
+              delete this._requests[requestId];
+            }
+          }
+        }
+        if (event.data.type && event.data.type == 'evm_keychain_event') {
+          const eventData = event.data;
+          switch (eventData.event.eventType) {
+            case EvmEventName.CHAIN_CHANGED: {
+              evmProvider.chainId = eventData.event.args;
+              break;
+            }
+            case EvmEventName.ACCOUNT_CHANGED: {
+              if (
+                JSON.stringify(eventData.event.args) ===
+                JSON.stringify(this._accounts)
+              )
+                return;
+              else this._accounts === eventData.event.args;
+              break;
+            }
+          }
+          evmProvider.emit(eventData.event.eventType, eventData.event.args);
+        }
+      },
+      false,
+    );
+  };
+
   async request(args: RequestArguments): Promise<any> {
-    const result = await processRequest(args);
+    const result = await this.processRequest(args);
     console.log('result in process', { result, args });
     return result;
   }
-}
 
-const processRequest = async (args: RequestArguments) => {
-  return new Promise((resolve, reject) => {
-    dispatchCustomEvent('requestEvm', args, (result: any) => {
-      resolve(result);
+  processRequest = async (args: RequestArguments) => {
+    return new Promise((resolve, reject) => {
+      this.dispatchCustomEvent('requestEvm', args, (result: any) => {
+        resolve(result);
+      });
     });
-  });
-};
+  };
 
-const dispatchCustomEvent = (name: string, data: any, callback: Function) => {
-  requests[current_id] = callback;
-  data = Object.assign(
-    {
-      request_id: current_id,
-    },
-    data,
-  );
-  document.dispatchEvent(
-    new CustomEvent(name, {
-      detail: data,
-    }),
-  );
-  current_id++;
-};
-
-window.addEventListener(
-  'message',
-  function (event) {
-    // We only accept messages from ourselves
-    if (event.source != window) return;
-
-    if (event.data.type && event.data.type == 'evm_keychain_response') {
-      const result = event.data.response.result;
-      const requestId = event.data.response.requestId;
-      if (result && requestId) {
-        if (requests[requestId]) {
-          requests[requestId](result);
-          delete requests[requestId];
-        }
-      }
-    }
-    if (event.data.type && event.data.type == 'evm_keychain_event') {
-      const eventData = event.data;
-      switch (eventData.event.eventType) {
-        case EvmEventName.CHAIN_CHANGED: {
-          evmProvider.chainId = eventData.event.args;
-          break;
-        }
-      }
-      evmProvider.emit(eventData.event.eventType, eventData.event.args);
-    }
-    //   else if (
-    //   event.data.type &&
-    //   event.data.type == 'hive_keychain_handshake'
-    // ) {
-    //   if (hive_keychain.handshake_callback) {
-    //     hive_keychain.handshake_callback();
-    //     }
-    //   }
-  },
-  false,
-);
+  dispatchCustomEvent = (name: string, data: any, callback: Function) => {
+    this._requests[this._current_id] = callback;
+    data = Object.assign(
+      {
+        request_id: this._current_id,
+      },
+      data,
+    );
+    document.dispatchEvent(
+      new CustomEvent(name, {
+        detail: data,
+      }),
+    );
+    this._current_id++;
+  };
+}
 
 const handler = {};
 
