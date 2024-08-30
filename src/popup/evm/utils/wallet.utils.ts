@@ -150,6 +150,42 @@ const connectWallet = async (walletAddress: string, domain: string) => {
   );
 };
 
+const disconnectWallet = async (walletAddress: string, domain: string) => {
+  let allConnectedWallets: EvmConnectedWallets =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    );
+  if (!allConnectedWallets) {
+    allConnectedWallets = {};
+  }
+  if (!allConnectedWallets[domain]) {
+    allConnectedWallets[domain] = [];
+  }
+  allConnectedWallets[domain] = allConnectedWallets[domain].filter(
+    (e) => e !== walletAddress,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    allConnectedWallets,
+  );
+};
+
+const disconnectAllWallets = async (domain: string) => {
+  let allConnectedWallets: EvmConnectedWallets =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    );
+  if (!allConnectedWallets) {
+    allConnectedWallets = {};
+  }
+  allConnectedWallets[domain] = [];
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
+    allConnectedWallets,
+  );
+};
+
 const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
@@ -160,6 +196,8 @@ const EvmWalletUtils = {
   isWalletAddress,
   getConnectedWallets,
   connectWallet,
+  disconnectWallet,
+  disconnectAllWallets,
 };
 
 export default EvmWalletUtils;

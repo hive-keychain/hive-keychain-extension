@@ -1,24 +1,67 @@
-.evm-dapp-status-container {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  background-color: var(--input-background);
-  border-radius: 50%;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  img {
-    width: 30px;
-    height: 30px;
+.dapp-status-details {
+  cursor: default;
+  padding: 20px;
+  .popup-content {
+    overflow-y: scroll;
+    height: 90%;
+    .dapp-status-wrapper {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      height: 100%;
+      row-gap: 24px;
+      right: 0;
+      line-height: 147%;
+      .caption {
+        padding: 0px;
+      }
+      .popup-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+        p {
+          @include poppins400(18px);
+          color: var(--main-font-color);
+        }
+        img {
+          background-color: var(--background-color);
+          opacity: 0.5;
+          border-radius: 50%;
+        }
+      }
+      .account-section-title {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+        width: 100%;
+      }
+      .account-section-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        .account-section-icon {
+          display: none;
+          svg path {
+            stroke-width: 2;
+          }
+        }
+      }
+
+      .account-section-item:hover {
+        .account-section-icon {
+          display: block;
+          cursor: pointer;
+        }
+      }
+    }
   }
-  .indicator {
-    position: absolute;
-    height: 12px;
-    width: 12px;
-    background-color: $green-success;
-    border-radius: 50%;
-    bottom: 0;
-    right: 0;
+  .overlay {
+    margin: -20px;
+  }
+  .account-section-button-wrapper {
+    width: 100%;
+    padding: 10px 20px;
   }
 }

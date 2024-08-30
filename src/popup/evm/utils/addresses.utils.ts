@@ -2,6 +2,7 @@ import { EvmAddressType } from '@popup/evm/interfaces/wallet.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { identicon } from 'minidenticons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getAddressType = async (address: string, chain: EvmChain) => {
@@ -28,6 +29,11 @@ const getAddressType = async (address: string, chain: EvmChain) => {
   return savedAddresses[chain.chainId][address];
 };
 
+const getIdenticonFromAddress = (address: string) => {
+  return identicon(address, 90, 50);
+};
+
 export const EvmAddressesUtils = {
   getAddressType,
+  getIdenticonFromAddress,
 };
