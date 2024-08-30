@@ -1,0 +1,33 @@
+.evm-dapp-status-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: var(--input-background);
+  border-radius: 50%;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  img {
+    width: 30px;
+    height: 30px;
+  }
+  .indicator {
+    position: absolute;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    bottom: -2px;
+    right: -2px;
+    &.connected {
+      background-color: $green-success;
+    }
+    &.disconnected {
+      background-color: lightgrey;
+    }
+    &.other_account_connected {
+      background-color: var(--input-background);
+      border: solid 2px $green-success;
+    }
+  }
+}

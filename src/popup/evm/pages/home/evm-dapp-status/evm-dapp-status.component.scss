@@ -1,24 +1,15 @@
-.evm-dapp-status-container {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  background-color: var(--input-background);
-  border-radius: 50%;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  img {
-    width: 30px;
-    height: 30px;
-  }
-  .indicator {
-    position: absolute;
-    height: 12px;
-    width: 12px;
-    background-color: $green-success;
-    border-radius: 50%;
-    bottom: 0;
-    right: 0;
+.dapp-status-details {
+  cursor: default;
+  height: 80%;
+  .popup-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    img {
+      background-color: var(--background-color);
+      opacity: 0.5;
+      border-radius: 50%;
+    }
   }
 }

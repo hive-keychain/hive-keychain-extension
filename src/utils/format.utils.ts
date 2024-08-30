@@ -142,6 +142,10 @@ const trimUselessZero = (number: number, precision: number) => {
   else return FormatUtils.withCommas(parseFloat(n).toFixed(3));
 };
 
+const urlToDomain = (url: string) => {
+  return new URL(url).hostname;
+};
+
 const getUSDFromVests = (
   vestAmount: Number,
   globalProperties: GlobalProperties,
@@ -191,6 +195,7 @@ const FormatUtils = {
   getUSDFromVests,
   getOrdinalLabelTranslation,
   shortenString,
+  urlToDomain,
 };
 
 export default FormatUtils;
