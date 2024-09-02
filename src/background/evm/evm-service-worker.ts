@@ -2,11 +2,7 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import {
-  EvmRequestMethod,
-  KeychainEvmRequestWrapper,
-} from '@interfaces/evm-provider.interface';
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { KeychainEvmRequestWrapper } from '@interfaces/evm-provider.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -21,6 +17,8 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  Logger.log('Background message evm service worker', backgroundMessage);
+
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
@@ -32,54 +30,6 @@ const chromeMessageHandler = async (
         backgroundMessage as KeychainEvmRequestWrapper,
       );
 
-      const evmRequestWrapper = backgroundMessage as KeychainEvmRequestWrapper;
-      const request = evmRequestWrapper.request;
-      const message: BackgroundMessage = {
-        command: BackgroundCommand.SEND_EVM_RESPONSE,
-        value: {
-          requestId: request.request_id,
-          result: {},
-        },
-      };
-
-      switch (request.method) {
-        case EvmRequestMethod.GET_CHAIN: {
-          const chainId = await EvmChainUtils.getLastEvmChain();
-          message.value.result = chainId;
-          break;
-        }
-        case EvmRequestMethod.GET_NETWORK: {
-          const chainId = await EvmChainUtils.getLastEvmChain();
-          message.value.result = Number(chainId);
-          break;
-        }
-        case EvmRequestMethod.GET_ACCOUNTS:
-        case EvmRequestMethod.REQUEST_ACCOUNTS: {
-          const connectedWallets = await EvmWalletUtils.getConnectedWallets(
-            evmRequestWrapper.domain,
-          );
-          if (connectedWallets.length > 0) {
-            message.value.result = connectedWallets;
-          } else {
-            const requestHandler =
-              await EvmRequestHandler.getFromLocalStorage();
-            if (requestHandler) {
-              requestHandler.closeWindow();
-            }
-            new EvmRequestHandler().sendRequest(
-              sender,
-              backgroundMessage as KeychainEvmRequestWrapper,
-            );
-            break;
-          }
-
-          break;
-        }
-        default: {
-          Logger.info(`${request.method} is not implemented`);
-        }
-      }
-      chrome.tabs.sendMessage(sender.tab?.id!, message);
       break;
     }
     case BackgroundCommand.SEND_EVM_EVENT: {
@@ -96,7 +46,6 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
       const { mk, domain, data, tab } = backgroundMessage.value;
-      console.log('evm background', backgroundMessage);
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {
@@ -114,6 +63,7 @@ const chromeMessageHandler = async (
           });
         }
       }
+
       break;
     }
     case BackgroundCommand.SEND_BACK_CONNECTED_WALLETS: {

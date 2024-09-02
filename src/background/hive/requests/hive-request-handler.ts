@@ -1,6 +1,6 @@
 import { AnalyticsModule } from '@background/hive/modules/analytics.module';
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
-import init from '@background/hive/requests/init';
+import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
@@ -108,7 +108,7 @@ export class HiveRequestsHandler {
     this.data.request_id = msg.request_id;
     if (msg.request.rpc)
       this.data.rpc = { uri: msg.request.rpc, testnet: false };
-    init(msg.request, this.data.tab, msg.domain, this);
+    initHiveRequestHandler(msg.request, this.data.tab, msg.domain, this);
 
     AnalyticsModule.sendData(msg.request.type, msg.domain);
   }

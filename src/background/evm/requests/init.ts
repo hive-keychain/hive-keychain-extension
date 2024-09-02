@@ -6,7 +6,10 @@ import {
   initializeWallet,
   unlockWallet,
 } from '@background/hive/requests/logic';
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmRequest,
+  EvmRequestMethod,
+} from '@interfaces/evm-provider.interface';
 import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -25,7 +28,13 @@ export const initEvmRequestHandler = async (
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
 
-  console.log({ request, tab, domain, requestHandler });
+  if (mk) {
+    const rebuiltAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    requestHandler.accounts = rebuiltAccounts.map(
+      (account) => account.wallet.address,
+    );
+  }
 
   if (!accounts) {
     initializeWallet(requestHandler, tab!, request);
@@ -37,32 +46,27 @@ export const initEvmRequestHandler = async (
       domain,
       DialogCommand.UNLOCK_EVM,
     );
-  } else if (Object.values(UnrestrictedMethodsEnum).includes(request.method)) {
+  } else if (EvmUnrestrictedMethods.includes(request.method)) {
     //TODO: implement features that do not need confirmation
-    evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+
+    if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+      const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+      if (connectedWallets.length === 0) {
+        evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+      } else {
+        evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+      }
+    } else {
+      evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+    }
   } else {
-    const rebuiltAccounts =
-      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    console.log('in init', { requestHandler });
-    requestHandler.accounts = rebuiltAccounts.map(
-      (account) => account.wallet.address,
-    );
-    console.log('evnRequestWithConfirmatio');
     evmRequestWithConfirmation(requestHandler, tab!, request, domain);
   }
-
-  // Logic.requestWithConfirmation(
-  //   requestHandler,
-  //   tab!,
-  //   req,
-  //   domain,
-  //   rpc,
-  // );
 
   requestHandler.saveInLocalStorage();
 };
 
-export enum UnrestrictedMethodsEnum {
+export const EvmUnrestrictedMethods = [
   'eth_blockNumber',
   'eth_call',
   'eth_chainId',
@@ -131,4 +135,4 @@ export enum UnrestrictedMethodsEnum {
   'wallet_invokeKeyring',
   'web3_clientVersion',
   'web3_sha3',
-}
+];

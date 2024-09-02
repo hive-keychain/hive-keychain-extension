@@ -23,7 +23,7 @@ import {
 } from 'src/utils/requests.utils';
 import * as Logic from './logic';
 
-export default async (
+export const initHiveRequestHandler = async (
   request: KeychainRequest,
   tab: number | undefined,
   domain: string,

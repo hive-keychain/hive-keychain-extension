@@ -34,6 +34,7 @@ export enum EvmRequestMethod {
   GET_CHAIN = 'eth_chainId',
   GET_NETWORK = 'net_version',
   REQUEST_ACCOUNTS = 'eth_requestAccounts',
+  WALLET_REVOKE_PERMISSION = 'wallet_revokePermissions',
 }
 
 export enum EvmEventName {

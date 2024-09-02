@@ -8,11 +8,25 @@ function getMk() {
 }
 
 const login = async (mk: string) => {
-  const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
+  const hiveEncryptedAccounts =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+    );
+  const hiveAccounts = await EncryptUtils.decryptToJson(
+    hiveEncryptedAccounts,
+    mk,
+  );
+  if (!!hiveAccounts) return true;
+
+  const evmEncryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
-  const accounts = await EncryptUtils.decryptToJson(encryptedAccounts, mk);
-  return !!accounts;
+  const evmAccounts = await EncryptUtils.decryptToJson(
+    evmEncryptedAccounts,
+    mk,
+  );
+
+  return !!evmAccounts;
 };
 
 async function sendBackMk() {

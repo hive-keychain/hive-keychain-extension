@@ -10,7 +10,7 @@ import {
 } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 
 type Props = {
-  active: EvmActiveAccount;
+  active?: EvmActiveAccount;
   account: EvmAccount;
   status: DappStatusEnum;
 };

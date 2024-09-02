@@ -57,8 +57,6 @@ export type RequestMessage = {
 };
 
 const RequestConfirmation = ({ data }: Props) => {
-  console.log('hello', data);
-
   if (data.command === DialogCommand.SEND_DIALOG_CONFIRM) {
     const request = data.data as KeychainRequest;
     switch (request.type) {

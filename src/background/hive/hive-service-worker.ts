@@ -5,6 +5,7 @@ import LocalStorageModule from '@background/hive/modules/local-storage.module';
 import { MultisigModule } from '@background/hive/modules/multisig.module';
 import RPCModule from '@background/hive/modules/rpc.module';
 import SettingsModule from '@background/hive/modules/settings.module';
+import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import getMessage from '@background/utils/i18n.utils';
 import {
@@ -18,7 +19,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import MkModule from './modules/mk.module';
 import { HiveRequestsHandler } from './requests/hive-request-handler';
-import init from './requests/init';
 import { performHiveOperation } from './requests/operations';
 
 const initializeServiceWorker = async () => {
@@ -46,7 +46,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  Logger.log('Background message', backgroundMessage);
+  Logger.log('Background message hive service worker', backgroundMessage);
   switch (backgroundMessage.command) {
     case BackgroundCommand.GET_MK:
       MkModule.sendBackMk();
@@ -71,14 +71,13 @@ const chromeMessageHandler = async (
       );
       break;
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      console.log('hive background', backgroundMessage);
       const { mk, domain, data, tab } = backgroundMessage.value;
 
       if (data.command === DialogCommand.UNLOCK) {
         const login = await MkModule.login(mk);
         if (login) {
           MkModule.saveMk(mk);
-          init(
+          initHiveRequestHandler(
             data.msg.data,
             tab,
             domain,
@@ -97,7 +96,12 @@ const chromeMessageHandler = async (
     case BackgroundCommand.REGISTER_FROM_DIALOG: {
       const { mk, domain, data, tab } = backgroundMessage.value;
       MkModule.saveMk(mk);
-      init(data, tab, domain, await HiveRequestsHandler.getFromLocalStorage());
+      initHiveRequestHandler(
+        data,
+        tab,
+        domain,
+        await HiveRequestsHandler.getFromLocalStorage(),
+      );
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:

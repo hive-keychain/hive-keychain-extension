@@ -47,6 +47,8 @@ type KeychainRequestWrapper = {
   detail: KeychainRequest;
 };
 document.addEventListener('swRequest_hive', (request: object) => {
+  console.log('sending request to background from hive', request);
+
   const prevReq = req;
   req = (request as KeychainRequestWrapper).detail;
   const validation = validateRequest(req);
