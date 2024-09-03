@@ -5,7 +5,7 @@ import {
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';

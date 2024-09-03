@@ -5,7 +5,7 @@ import {
   EvmRequestMethod,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 

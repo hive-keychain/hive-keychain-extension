@@ -2,7 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';

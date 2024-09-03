@@ -1,5 +1,5 @@
 import { EvmAddressType } from '@popup/evm/interfaces/wallet.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { identicon } from 'minidenticons';

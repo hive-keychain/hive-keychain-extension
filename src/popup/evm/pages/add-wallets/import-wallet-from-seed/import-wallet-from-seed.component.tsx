@@ -1,5 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { removeFromLoadingList } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';

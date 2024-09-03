@@ -4,6 +4,7 @@ import {
   EvmRequest,
   KeychainEvmRequestWrapper,
 } from '@interfaces/evm-provider.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -21,7 +22,7 @@ type RequestData = {
 };
 export class EvmRequestHandler {
   data: RequestData;
-  accounts: string[];
+  accounts: EvmAccount[];
   constructor() {
     this.data = { confirmed: false };
     this.accounts = [];

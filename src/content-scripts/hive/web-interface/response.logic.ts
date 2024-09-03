@@ -1,4 +1,5 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Joi from 'joi';
 import {
   KeychainRequest,
@@ -38,6 +39,19 @@ export const sendEvmRequestToBackground = (
     request: req,
     domain: window.location.hostname,
     request_id: req.request_id,
+  });
+};
+export const sendEvmResponseToServiceWorker = (
+  request: EvmRequest,
+  response: any,
+  chrome: typeof globalThis.chrome,
+) => {
+  chrome.runtime.sendMessage({
+    command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+    value: {
+      requestId: request.request_id,
+      result: response,
+    },
   });
 };
 

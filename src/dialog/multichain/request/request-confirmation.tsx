@@ -8,6 +8,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
@@ -41,14 +42,12 @@ import Vote from 'src/dialog/hive/requests/vote';
 import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 
 type Props = {
-  data: RequestMessage;
+  data: HiveRequestMessage | EvmRequestMessage;
 };
 
-export type RequestMessage = {
-  command:
-    | DialogCommand.SEND_DIALOG_CONFIRM
-    | DialogCommand.SEND_DIALOG_CONFIRM_EVM;
-  data: KeychainRequest | EvmRequest;
+export type HiveRequestMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM;
+  data: KeychainRequest;
   rpc: Rpc;
   tab: number;
   domain: string;
@@ -56,8 +55,17 @@ export type RequestMessage = {
   hiveEngineConfig: HiveEngineConfig;
 };
 
+export type EvmRequestMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
+  data: EvmRequest;
+  tab: number;
+  domain: string;
+  accounts?: EvmAccount[];
+};
+
 const RequestConfirmation = ({ data }: Props) => {
   if (data.command === DialogCommand.SEND_DIALOG_CONFIRM) {
+    data = data as HiveRequestMessage;
     const request = data.data as KeychainRequest;
     switch (request.type) {
       case KeychainRequestTypes.addAccount:
@@ -120,13 +128,14 @@ const RequestConfirmation = ({ data }: Props) => {
         return null;
     }
   } else if (data.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM) {
+    data = data as EvmRequestMessage;
     const request = data.data as EvmRequest;
     switch (request.method) {
       case EvmRequestMethod.REQUEST_ACCOUNTS: {
         return (
           <ConnectAccounts
             request={request}
-            addresses={data.accounts ?? []}
+            accounts={data.accounts!}
             data={data}
           />
         );

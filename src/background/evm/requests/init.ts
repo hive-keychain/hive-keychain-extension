@@ -10,7 +10,7 @@ import {
   EvmRequest,
   EvmRequestMethod,
 } from '@interfaces/evm-provider.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -31,9 +31,7 @@ export const initEvmRequestHandler = async (
   if (mk) {
     const rebuiltAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    requestHandler.accounts = rebuiltAccounts.map(
-      (account) => account.wallet.address,
-    );
+    requestHandler.accounts = rebuiltAccounts;
   }
 
   if (!accounts) {

@@ -1,6 +1,6 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';

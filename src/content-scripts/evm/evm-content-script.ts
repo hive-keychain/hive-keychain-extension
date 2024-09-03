@@ -28,8 +28,9 @@ chrome.runtime.onMessage.addListener(
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE)
+    if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE) {
       sendResponseToEvm(backgroundMessage.value);
+    }
 
     if (
       backgroundMessage.command ===

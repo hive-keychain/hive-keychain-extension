@@ -3,7 +3,6 @@ import { initEvmRequestHandler } from '@background/evm/requests/init';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { KeychainEvmRequestWrapper } from '@interfaces/evm-provider.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Logger from 'src/utils/logger.utils';
@@ -66,27 +65,13 @@ const chromeMessageHandler = async (
 
       break;
     }
-    case BackgroundCommand.SEND_BACK_CONNECTED_WALLETS: {
-      const connectedAddresses = [];
-      const connectedAccount = backgroundMessage.value.connectedAccounts;
-      for (const address of Object.keys(connectedAccount)) {
-        if (connectedAccount[address]) {
-          await EvmWalletUtils.connectWallet(
-            address,
-            backgroundMessage.value.data.domain,
-          );
-          connectedAddresses.push(address);
-        }
-      }
-
-      const message: BackgroundMessage = {
+    case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      chrome.tabs.sendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
-        value: {
-          requestId: backgroundMessage.value.data.data.request_id,
-          result: connectedAddresses,
-        },
-      };
-      chrome.tabs.sendMessage(sender.tab?.id!, message);
+        value: backgroundMessage.value,
+      });
+      requestHandler.closeWindow();
     }
   }
 };

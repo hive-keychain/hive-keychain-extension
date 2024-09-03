@@ -1,5 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
-import EvmWalletUtils from '@popup/evm/utils/wallet.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   setErrorMessage,
   setInfoMessage,
