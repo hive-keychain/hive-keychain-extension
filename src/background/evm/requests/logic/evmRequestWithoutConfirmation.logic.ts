@@ -57,5 +57,6 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
+  requestHandler.closeWindow();
   chrome.tabs.sendMessage(tab, message);
 };
