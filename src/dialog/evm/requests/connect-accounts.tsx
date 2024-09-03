@@ -56,7 +56,11 @@ export const ConnectAccounts = (props: Props) => {
       tab={0}
       title={chrome.i18n.getMessage('evm_connect_wallet')}
       onConfirm={saveInStorage}>
-      <div>{data.domain}</div>
+      <div>
+        {chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
+          data.domain,
+        ])}
+      </div>
       {accounts &&
         accountsToConnect &&
         accounts.map((account) => (
