@@ -16,7 +16,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  Logger.log('Background message evm service worker', backgroundMessage);
+  // Logger.log('Background message evm service worker', backgroundMessage);
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {

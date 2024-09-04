@@ -72,7 +72,8 @@ export const sendIncompleteDataResponse = (
 };
 /* istanbul ignore next */
 export const sendResponse = (response: RequestResponse) => {
-  if (response.data.redirect_uri) {
+  console.log(response);
+  if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
     window.postMessage(

@@ -3,11 +3,16 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const getLastEvmChain = async () => {
+const getLastEvmChainId = async () => {
   const lastEvmChain: string = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_LAST_CHAIN_USED,
   );
   return lastEvmChain ?? getEthChainId();
+};
+
+const getLastEvmChain = async () => {
+  const lastChainId = await getLastEvmChainId();
+  return ChainUtils.getChain(lastChainId);
 };
 
 const getEthChainId = () => {
@@ -24,7 +29,8 @@ const saveLastUsedChain = (chain: EvmChain) => {
 };
 
 export const EvmChainUtils = {
-  getLastEvmChain,
+  getLastEvmChainId,
   getEthChainId,
+  getLastEvmChain,
   saveLastUsedChain,
 };

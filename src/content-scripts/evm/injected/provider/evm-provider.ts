@@ -69,6 +69,7 @@ export class EvmProvider extends EventEmitter {
 
   async request(args: RequestArguments): Promise<any> {
     const result = await this.processRequest(args);
+    console.log(args.method, args.params, result);
     return result;
   }
 

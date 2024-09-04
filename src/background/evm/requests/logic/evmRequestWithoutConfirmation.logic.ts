@@ -5,6 +5,7 @@ import {
   EvmRequestMethod,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmUtils } from '@popup/evm/utils/evm.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
@@ -43,6 +44,14 @@ export const evmRequestWithoutConfirmation = async (
         message.value.result = connectedWallets;
       }
 
+      break;
+    }
+    case EvmRequestMethod.GET_BLOCK_BY_NUMBER: {
+      const block = await EvmUtils.getByBlockNumber(
+        request.params[0],
+        request.params[1],
+      );
+      message.value.result = block;
       break;
     }
 
