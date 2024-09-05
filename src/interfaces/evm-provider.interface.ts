@@ -29,7 +29,10 @@ export interface EvmRequest {
 }
 
 export enum EvmRequestMethod {
+  ESTIMATE_GAS_FEE = 'eth_estimateGas',
   GET_ACCOUNTS = 'eth_accounts',
+  GET_BALANCE = 'eth_getBalance',
+  GET_BLOCK_NUMBER = 'eth_blockNumber',
   GET_BLOCK_BY_NUMBER = 'eth_getBlockByNumber',
   GET_CHAIN = 'eth_chainId',
   GET_NETWORK = 'net_version',

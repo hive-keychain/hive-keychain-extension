@@ -5,7 +5,7 @@ import {
   EvmRequestMethod,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmUtils } from '@popup/evm/utils/evm.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
@@ -17,7 +17,7 @@ export const evmRequestWithoutConfirmation = async (
   domain: string,
 ) => {
   // const evmRequestWrapper = backgroundMessage as KeychainEvmRequestWrapper;
-  //     const request = evmRequestWrapper.request;
+  // const request = evmRequestWrapper.request;
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_RESPONSE,
     value: {
@@ -25,16 +25,25 @@ export const evmRequestWithoutConfirmation = async (
       result: {},
     },
   };
-  //TODO:Implement all unrestricted methods
+  //TODO: Implement all unrestricted methods
   switch (request.method) {
+    case EvmRequestMethod.ESTIMATE_GAS_FEE: {
+      message.value.result = EvmRequestsUtils.estimateGasFee();
+      break;
+    }
+    case EvmRequestMethod.GET_BALANCE: {
+      message.value.result = await EvmRequestsUtils.getBalance(
+        request.params[0],
+        request.params[1],
+      );
+      break;
+    }
     case EvmRequestMethod.GET_CHAIN: {
-      const chainId = await EvmChainUtils.getLastEvmChain();
-      message.value.result = chainId;
+      message.value.result = await EvmChainUtils.getLastEvmChainId();
       break;
     }
     case EvmRequestMethod.GET_NETWORK: {
-      const chainId = await EvmChainUtils.getLastEvmChain();
-      message.value.result = Number(chainId);
+      message.value.result = Number(await EvmChainUtils.getLastEvmChainId());
       break;
     }
     case EvmRequestMethod.GET_ACCOUNTS:
@@ -43,15 +52,17 @@ export const evmRequestWithoutConfirmation = async (
       if (connectedWallets.length > 0) {
         message.value.result = connectedWallets;
       }
-
+      break;
+    }
+    case EvmRequestMethod.GET_BLOCK_NUMBER: {
+      message.value.result = await EvmRequestsUtils.getBlockNumber();
       break;
     }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER: {
-      const block = await EvmUtils.getByBlockNumber(
+      message.value.result = await EvmRequestsUtils.getByBlockNumber(
         request.params[0],
         request.params[1],
       );
-      message.value.result = block;
       break;
     }
 
