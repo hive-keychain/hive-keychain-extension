@@ -9,9 +9,9 @@ const instanciateProvider = async () => {
   return provider;
 };
 
-const getByBlockNumber = async (blockNumber: number, hydrated: boolean) => {
+const getBlock = async (blockTag: BlockTag, hydrated: boolean) => {
   const provider = await instanciateProvider();
-  return provider.getBlock(blockNumber, hydrated);
+  return provider.getBlock(blockTag, hydrated);
 };
 
 const getBlockNumber = async () => {
@@ -25,15 +25,15 @@ const estimateGasFee = async () => {
   //   return await GasFeeUtils.estimate(activeChain);
 };
 
-const getBalance = async (walletAddress: string, blockNumber: BlockTag) => {
+const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
   const provider = await instanciateProvider();
-  const balance = await provider.getBalance(walletAddress, blockNumber);
+  const balance = await provider.getBalance(walletAddress, blockTag);
   return Number(balance).toString(16);
 };
 
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
-  getByBlockNumber,
+  getBlock,
   estimateGasFee,
 };
