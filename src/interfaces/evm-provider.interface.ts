@@ -36,6 +36,7 @@ export enum EvmRequestMethod {
   GET_BLOCK_BY_HASH = 'eth_getBlockByHash',
   GET_BLOCK_BY_NUMBER = 'eth_getBlockByNumber',
   GET_CHAIN = 'eth_chainId',
+  GET_CODE = 'eth_getCode',
   GET_NETWORK = 'net_version',
   GET_TRANSACTION_COUNT_BY_HASH = 'eth_getBlockTransactionCountByHash',
   GET_TRANSACTION_COUNT_BY_NUMBER = 'eth_getBlockTransactionCountByNumber',

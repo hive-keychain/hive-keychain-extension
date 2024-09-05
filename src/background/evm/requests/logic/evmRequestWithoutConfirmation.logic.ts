@@ -66,6 +66,14 @@ export const evmRequestWithoutConfirmation = async (
       );
       break;
     }
+
+    case EvmRequestMethod.GET_CODE: {
+      message.value.result = await EvmRequestsUtils.getCode(
+        request.params[0],
+        request.params[1],
+      );
+      break;
+    }
     case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_NUMBER:
     case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_HASH: {
       message.value.result = await EvmRequestsUtils.getTransactionCountByBlock(

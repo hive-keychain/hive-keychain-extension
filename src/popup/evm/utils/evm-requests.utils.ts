@@ -39,10 +39,17 @@ const getTransactionCountByBlock = async (
   return `0x${Number(block?.transactions.length).toString(16)}`;
 };
 
+const getCode = async (address: string, blockTag: BlockTag) => {
+  const provider = await instanciateProvider();
+  return provider.getCode(address);
+  // return provider.getCode(address, blockTag);
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
   getBlock,
   estimateGasFee,
   getTransactionCountByBlock,
+  getCode,
 };
