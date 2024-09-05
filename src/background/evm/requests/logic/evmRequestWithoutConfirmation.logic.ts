@@ -66,6 +66,14 @@ export const evmRequestWithoutConfirmation = async (
       );
       break;
     }
+    case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_NUMBER:
+    case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_HASH: {
+      message.value.result = await EvmRequestsUtils.getTransactionCountByBlock(
+        request.params[0],
+        request.params[1],
+      );
+      break;
+    }
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);

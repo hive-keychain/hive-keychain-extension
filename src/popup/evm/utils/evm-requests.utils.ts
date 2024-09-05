@@ -28,7 +28,15 @@ const estimateGasFee = async () => {
 const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
   const provider = await instanciateProvider();
   const balance = await provider.getBalance(walletAddress, blockTag);
-  return Number(balance).toString(16);
+  return `0x${Number(balance).toString(16)}`;
+};
+
+const getTransactionCountByBlock = async (
+  blockTag: BlockTag,
+  hydrated: boolean,
+) => {
+  const block = await getBlock(blockTag, hydrated);
+  return `0x${Number(block?.transactions.length).toString(16)}`;
 };
 
 export const EvmRequestsUtils = {
@@ -36,4 +44,5 @@ export const EvmRequestsUtils = {
   getBlockNumber,
   getBlock,
   estimateGasFee,
+  getTransactionCountByBlock,
 };

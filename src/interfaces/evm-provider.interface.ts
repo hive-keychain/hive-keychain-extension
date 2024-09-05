@@ -37,6 +37,8 @@ export enum EvmRequestMethod {
   GET_BLOCK_BY_NUMBER = 'eth_getBlockByNumber',
   GET_CHAIN = 'eth_chainId',
   GET_NETWORK = 'net_version',
+  GET_TRANSACTION_COUNT_BY_HASH = 'eth_getBlockTransactionCountByHash',
+  GET_TRANSACTION_COUNT_BY_NUMBER = 'eth_getBlockTransactionCountByNumber',
   REQUEST_ACCOUNTS = 'eth_requestAccounts',
   WALLET_REVOKE_PERMISSION = 'wallet_revokePermissions',
 }
