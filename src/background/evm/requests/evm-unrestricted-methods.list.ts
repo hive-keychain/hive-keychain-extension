@@ -8,22 +8,22 @@ export const EvmUnrestrictedMethods = [
   'eth_feeHistory', // TODO see where to get data
   'eth_gasPrice', // TODO see where to get data
   'eth_getBalance', // OK
-  'eth_getBlockByHash',
+  'eth_getBlockByHash', // OK
   'eth_getBlockByNumber', // OK
-  'eth_getBlockTransactionCountByHash',
-  'eth_getBlockTransactionCountByNumber',
-  'eth_getCode',
-  'eth_getEncryptionPublicKey',
-  'eth_getFilterChanges',
-  'eth_getFilterLogs',
-  'eth_getLogs',
-  'eth_getProof',
-  'eth_getStorageAt',
-  'eth_getTransactionByBlockHashAndIndex',
-  'eth_getTransactionByBlockNumberAndIndex',
-  'eth_getTransactionByHash',
-  'eth_getTransactionCount',
-  'eth_getTransactionReceipt',
+  'eth_getBlockTransactionCountByHash', // OK
+  'eth_getBlockTransactionCountByNumber', // OK
+  'eth_getCode', // TODO confirm
+  'eth_getEncryptionPublicKey', // TODO MM uses confirmation popup
+  'eth_getFilterChanges', // TODO later
+  'eth_getFilterLogs', // TODO later
+  'eth_getLogs', // TODO later
+  'eth_getProof', // TODO later
+  'eth_getStorageAt', // TODO later
+  'eth_getTransactionByBlockHashAndIndex', // OK
+  'eth_getTransactionByBlockNumberAndIndex', // OK
+  'eth_getTransactionByHash', // OK
+  'eth_getTransactionCount', // OK
+  'eth_getTransactionReceipt', // OK
   'eth_getUncleByBlockHashAndIndex',
   'eth_getUncleByBlockNumberAndIndex',
   'eth_getUncleCountByBlockHash',

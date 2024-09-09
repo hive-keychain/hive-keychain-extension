@@ -26,6 +26,9 @@ export const evmRequestWithoutConfirmation = async (
     },
   };
   //TODO: Implement all unrestricted methods
+
+  console.log({ request });
+
   switch (request.method) {
     case EvmRequestMethod.ESTIMATE_GAS_FEE: {
       message.value.result = EvmRequestsUtils.estimateGasFee();
@@ -54,10 +57,10 @@ export const evmRequestWithoutConfirmation = async (
       }
       break;
     }
-    case EvmRequestMethod.GET_BLOCK_NUMBER: {
-      message.value.result = await EvmRequestsUtils.getBlockNumber();
-      break;
-    }
+    // case EvmRequestMethod.GET_BLOCK_NUMBER: {
+    //   message.value.result = await EvmRequestsUtils.getBlockNumber();
+    //   break;
+    // }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
     case EvmRequestMethod.GET_BLOCK_BY_HASH: {
       message.value.result = await EvmRequestsUtils.getBlock(
@@ -82,15 +85,57 @@ export const evmRequestWithoutConfirmation = async (
       );
       break;
     }
+    case EvmRequestMethod.GET_TRANSACTION_BY_HASH_AND_INDEX:
+    case EvmRequestMethod.GET_TRANSACTION_BY_BLOCK_NUMBER_AND_INDEX: {
+      message.value.result =
+        await EvmRequestsUtils.getTransactionByBlockAndIndex(
+          request.params[0],
+          request.params[1],
+        );
+      break;
+    }
+
+    case EvmRequestMethod.GET_TRANSACTION_BY_HASH: {
+      message.value.result = await EvmRequestsUtils.getTransactionByHash(
+        request.params[0],
+      );
+      break;
+    }
+    case EvmRequestMethod.GET_TRANSACTION_COUNT_FOR_ADDRESS: {
+      message.value.result =
+        await EvmRequestsUtils.getTransactionCountForAddress(
+          request.params[0],
+          request.params[1],
+        );
+      break;
+    }
+
+    case EvmRequestMethod.GET_TRANSACTION_RECEIPT: {
+      message.value.result = await EvmRequestsUtils.getTransactionReceipt(
+        request.params[0],
+      );
+      break;
+    }
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);
       message.value = null;
-
+      break;
       //TODO: Notify all tabs that the permissions have been revoked
     }
+
     default: {
-      Logger.info(`${request.method} is not implemented`);
+      try {
+        Logger.info('Default functions');
+        message.value.result = await EvmRequestsUtils.call(
+          request.method,
+          request.params,
+        );
+      } catch (err) {
+        console.log(err);
+
+        Logger.info(`${request.method} is not implemented`);
+      }
       break;
     }
   }

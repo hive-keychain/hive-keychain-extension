@@ -1,5 +1,6 @@
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BlockTag } from 'ethers';
 
@@ -31,6 +32,14 @@ const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
   return `0x${Number(balance).toString(16)}`;
 };
 
+const getTransactionByBlockAndIndex = async (
+  blockTag: BlockTag,
+  index: number,
+) => {
+  const block = await getBlock(blockTag, true);
+  const transaction = await block?.getTransaction(Number(index));
+  return transaction;
+};
 const getTransactionCountByBlock = async (
   blockTag: BlockTag,
   hydrated: boolean,
@@ -45,11 +54,41 @@ const getCode = async (address: string, blockTag: BlockTag) => {
   // return provider.getCode(address, blockTag);
 };
 
+const getTransactionByHash = async (transactionHash: string) => {
+  const provider = await instanciateProvider();
+  return provider.getTransactionResult(transactionHash);
+};
+
+const getTransactionCountForAddress = async (
+  walletAddress: string,
+  blockTag?: BlockTag,
+) => {
+  const provider = await instanciateProvider();
+  const count = await provider.getTransactionCount(walletAddress, blockTag);
+
+  return Number(count).toString(16);
+};
+
+const getTransactionReceipt = async (transactionHash: string) => {
+  const provider = await instanciateProvider();
+  return provider.getTransactionReceipt(transactionHash);
+};
+
+const call = async (method: string, params: any[]) => {
+  const activeChain = await EvmChainUtils.getLastEvmChain();
+  return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
   getBlock,
   estimateGasFee,
+  getTransactionByBlockAndIndex,
   getTransactionCountByBlock,
   getCode,
+  getTransactionByHash,
+  getTransactionCountForAddress,
+  getTransactionReceipt,
+  call,
 };
