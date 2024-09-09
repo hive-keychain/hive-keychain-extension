@@ -119,9 +119,17 @@ export const evmRequestWithoutConfirmation = async (
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);
-      message.value = null;
+      message.value.result = null;
       break;
       //TODO: Notify all tabs that the permissions have been revoked
+    }
+
+    case EvmRequestMethod.WEB3_CLIENT_VERSION: {
+      message.value.result =
+        chrome.runtime.getManifest().name +
+        '/' +
+        chrome.runtime.getManifest().version;
+      break;
     }
 
     default: {
@@ -139,6 +147,7 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
+  console.log({ message });
   requestHandler.closeWindow();
   chrome.tabs.sendMessage(tab, message);
 };

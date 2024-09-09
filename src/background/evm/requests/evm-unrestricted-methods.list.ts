@@ -24,20 +24,20 @@ export const EvmUnrestrictedMethods = [
   'eth_getTransactionByHash', // OK
   'eth_getTransactionCount', // OK
   'eth_getTransactionReceipt', // OK
-  'eth_getUncleByBlockHashAndIndex',
-  'eth_getUncleByBlockNumberAndIndex',
-  'eth_getUncleCountByBlockHash',
-  'eth_getUncleCountByBlockNumber',
-  'eth_getWork',
-  'eth_hashrate',
-  'eth_mining',
-  'eth_newBlockFilter',
-  'eth_newFilter',
-  'eth_newPendingTransactionFilter',
-  'eth_protocolVersion',
-  'eth_requestAccounts',
-  'eth_sendRawTransaction',
-  'eth_sendTransaction',
+  'eth_getUncleByBlockHashAndIndex', // OK
+  'eth_getUncleByBlockNumberAndIndex', // OK
+  'eth_getUncleCountByBlockHash', // OK
+  'eth_getUncleCountByBlockNumber', // OK
+  'eth_getWork', // OK
+  'eth_hashrate', // OK
+  'eth_mining', // OK
+  'eth_newBlockFilter', // OK
+  'eth_newFilter', // OK
+  'eth_newPendingTransactionFilter', // OK
+  'eth_protocolVersion', // OK
+  'eth_requestAccounts', // OK
+  'eth_sendRawTransaction', // OK
+  'eth_sendTransaction', // TODO doesn't seem to be unrestricted
   'eth_signTypedData',
   'eth_signTypedData_v1',
   'eth_signTypedData_v3',
@@ -46,7 +46,7 @@ export const EvmUnrestrictedMethods = [
   'eth_submitWork',
   'eth_subscribe',
   'eth_syncing',
-  'eth_uninstallFilter',
+  'eth_uninstallFilter', // OK
   'eth_unsubscribe',
   'metamask_getProviderState',
   'metamask_logWeb3ShimUsage',
@@ -65,6 +65,6 @@ export const EvmUnrestrictedMethods = [
   'wallet_switchEthereumChain',
   'wallet_watchAsset',
   'wallet_invokeKeyring',
-  'web3_clientVersion',
-  'web3_sha3',
+  'web3_clientVersion', // OK
+  'web3_sha3', // TODO to test
 ];

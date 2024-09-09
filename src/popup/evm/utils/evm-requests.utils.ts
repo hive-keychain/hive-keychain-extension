@@ -75,6 +75,7 @@ const getTransactionReceipt = async (transactionHash: string) => {
 };
 
 const call = async (method: string, params: any[]) => {
+  console.log({ method, params }, 'call');
   const activeChain = await EvmChainUtils.getLastEvmChain();
   return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
 };

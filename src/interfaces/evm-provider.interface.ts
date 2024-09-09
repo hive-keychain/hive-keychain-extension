@@ -37,6 +37,8 @@ export enum EvmRequestMethod {
   GET_BLOCK_BY_NUMBER = 'eth_getBlockByNumber',
   GET_CHAIN = 'eth_chainId',
   GET_CODE = 'eth_getCode',
+  GET_HASH_RATE = 'eth_hashrate',
+  GET_MINING = 'eth_mining',
   GET_NETWORK = 'net_version',
   GET_TRANSACTION_BY_HASH = 'eth_getTransactionByHash',
   GET_TRANSACTION_BY_HASH_AND_INDEX = 'eth_getTransactionByBlockHashAndIndex',
@@ -47,7 +49,9 @@ export enum EvmRequestMethod {
   GET_TRANSACTION_RECEIPT = 'eth_getTransactionReceipt',
   GET_UNCLE_BY_BLOCK_HASH_AND_INDEX = 'eth_getUncleByBlockHashAndIndex',
   GET_UNCLE_BY_BLOCK_NUMBER_AND_INDEX = 'eth_getUncleByBlockNumberAndIndex',
+  GET_WORK = 'eth_getWork',
   REQUEST_ACCOUNTS = 'eth_requestAccounts',
+  SEND_RAW_TRANSACTION = 'eth_sendRawTransaction',
   WALLET_REVOKE_PERMISSION = 'wallet_revokePermissions',
   WALLET_ADD_ETH_CHAIN = 'wallet_addEthereumChain',
   WALLET_GET_PERMISSIONS = 'wallet_getPermissions',
@@ -56,6 +60,8 @@ export enum EvmRequestMethod {
   WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
   WALLET_WATCH_ASSETS = 'wallet_watchAsset',
   WALLET_INVOKE_KEYRING = 'wallet_invokeKeyring',
+  WEB3_CLIENT_VERSION = 'web3_clientVersion',
+  WEB3_SHA3 = 'web3_sha3',
 }
 
 export enum EvmEventName {
