@@ -1,10 +1,9 @@
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BlockTag } from 'ethers';
 
-const instanciateProvider = async () => {
+const instanciateProvider = async (rpcUrl?: string) => {
   const activeChain = await EvmChainUtils.getLastEvmChain();
   const provider = await EthersUtils.getProvider(activeChain as EvmChain);
   return provider;
@@ -76,8 +75,11 @@ const getTransactionReceipt = async (transactionHash: string) => {
 
 const call = async (method: string, params: any[]) => {
   console.log({ method, params }, 'call');
-  const activeChain = await EvmChainUtils.getLastEvmChain();
-  return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
+
+  const provider = await instanciateProvider();
+  return provider.send(method, params);
+
+  // return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
 };
 
 export const EvmRequestsUtils = {

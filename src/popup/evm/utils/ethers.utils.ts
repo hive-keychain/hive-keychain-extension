@@ -8,8 +8,8 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet, Wallet, ethers } from 'ethers';
 
-const getProvider = (chain: EvmChain) => {
-  return new ethers.JsonRpcProvider(chain.rpc[0].url);
+const getProvider = (chain: EvmChain, rpcUrl?: string) => {
+  return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpc[0].url);
 };
 
 const getGasLimit = async (
