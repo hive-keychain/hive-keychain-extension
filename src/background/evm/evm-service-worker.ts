@@ -1,5 +1,6 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
+import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { KeychainEvmRequestWrapper } from '@interfaces/evm-provider.interface';
@@ -16,7 +17,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  // Logger.log('Background message evm service worker', backgroundMessage);
+  Logger.log('Background message evm service worker', backgroundMessage);
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
@@ -72,7 +73,17 @@ const chromeMessageHandler = async (
         value: backgroundMessage.value,
       });
       requestHandler.closeWindow();
+      break;
     }
+    case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
+      const { data, tab, domain } = backgroundMessage.value;
+      performEvmOperation(
+        await EvmRequestHandler.getFromLocalStorage(),
+        data,
+        tab,
+        domain,
+      );
+      break;
   }
 };
 

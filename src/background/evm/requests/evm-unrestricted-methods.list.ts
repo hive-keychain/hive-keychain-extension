@@ -38,12 +38,12 @@ export const EvmUnrestrictedMethods = [
   'eth_requestAccounts', // OK
   'eth_sendRawTransaction', // OK
   'eth_sendTransaction', // TODO doesn't seem to be unrestricted
-  'eth_signTypedData',
-  'eth_signTypedData_v1',
-  'eth_signTypedData_v3',
-  'eth_signTypedData_v4',
-  'eth_submitHashrate',
-  'eth_submitWork',
+  //   'eth_signTypedData',
+  //   'eth_signTypedData_v1',
+  //   'eth_signTypedData_v3',
+  //   'eth_signTypedData_v4',
+  'eth_submitHashrate', // TODO to test
+  'eth_submitWork', // TODO to test
   'eth_subscribe',
   'eth_syncing',
   'eth_uninstallFilter', // OK

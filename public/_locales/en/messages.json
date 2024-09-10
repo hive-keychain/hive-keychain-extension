@@ -4608,5 +4608,29 @@
   "dialog_evm_dapp_status_caption": {
     "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
     "description": "Evm dapp status"
+  },
+  "dialog_evm_sign_request": {
+    "message": "Signature request",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_message": {
+    "message": "Message",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_interacting_with": {
+    "message": "Interacting with",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_sign_request_primary_type": {
+    "message": "Primary type",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_domain": {
+    "message": "Domain",
+    "description": "Evm domain"
+  },
+  "dialog_from": {
+    "message": "From",
+    "description": "General message"
   }
 }

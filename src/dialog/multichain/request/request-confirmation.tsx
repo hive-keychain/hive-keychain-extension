@@ -12,6 +12,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
+import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
 import AddKeyAuthority from 'src/dialog/hive/requests/authority/add-key-authority';
@@ -131,6 +132,7 @@ const RequestConfirmation = ({ data }: Props) => {
     data = data as EvmRequestMessage;
     const request = data.data as EvmRequest;
     switch (request.method) {
+      case EvmRequestMethod.GET_ACCOUNTS:
       case EvmRequestMethod.REQUEST_ACCOUNTS: {
         return (
           <ConnectAccounts
@@ -139,6 +141,26 @@ const RequestConfirmation = ({ data }: Props) => {
             data={data}
           />
         );
+      }
+      case EvmRequestMethod.ETH_SIGN_DATA:
+      case EvmRequestMethod.ETH_SIGN_DATA_1:
+      case EvmRequestMethod.ETH_SIGN_DATA_3: {
+        // TODO deprecated
+        break;
+      }
+
+      case EvmRequestMethod.ETH_SIGN_DATA_4: {
+        return (
+          <SignTypedData
+            request={request}
+            accounts={data.accounts!}
+            data={data}
+          />
+        );
+      }
+
+      default: {
+        return <div>{JSON.stringify(data)}</div>;
       }
     }
   }

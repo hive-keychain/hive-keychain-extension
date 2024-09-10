@@ -1,7 +1,7 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { EvmUnrestrictedMethods } from '@background/evm/requests/evm-unrestricted-methods.list';
-import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evmRequestWithConfirmation.logic';
-import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evmRequestWithoutConfirmation.logic';
+import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
+import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,

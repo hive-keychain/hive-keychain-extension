@@ -29,6 +29,7 @@ export enum BackgroundCommand {
   SEND_EVM_EVENT = 'sendEvmEvent',
   SEND_EVM_EVENT_TO_CONTENT_SCRIPT = 'sendEvmEventToContentScript',
   SEND_BACK_CONNECTED_WALLETS = 'sendBackConnectedWallets',
+  ACCEPT_EVM_TRANSACTION = 'acceptEvmTransaction',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',

@@ -62,6 +62,11 @@ export enum EvmRequestMethod {
   WALLET_INVOKE_KEYRING = 'wallet_invokeKeyring',
   WEB3_CLIENT_VERSION = 'web3_clientVersion',
   WEB3_SHA3 = 'web3_sha3',
+
+  ETH_SIGN_DATA = 'eth_signTypedData',
+  ETH_SIGN_DATA_1 = 'eth_signTypedData_v1',
+  ETH_SIGN_DATA_3 = 'eth_signTypedData_v3',
+  ETH_SIGN_DATA_4 = 'eth_signTypedData_v4',
 }
 
 export enum EvmEventName {

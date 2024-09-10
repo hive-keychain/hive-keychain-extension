@@ -34,7 +34,7 @@ export const EvmOperation = ({
   const genericOnConfirm = () => {
     setLoading(true);
     chrome.runtime.sendMessage({
-      command: BackgroundCommand.ACCEPT_TRANSACTION,
+      command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
       value: {
         data: data,
         tab: tab,
@@ -42,6 +42,7 @@ export const EvmOperation = ({
         keep,
       },
     });
+    console.log('sending accept');
   };
 
   return (

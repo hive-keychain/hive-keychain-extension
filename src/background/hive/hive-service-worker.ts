@@ -19,7 +19,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import MkModule from './modules/mk.module';
 import { HiveRequestsHandler } from './requests/hive-request-handler';
-import { performHiveOperation } from './requests/operations';
+import { performHiveOperation } from './requests/operations/perform-operation';
 
 const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
