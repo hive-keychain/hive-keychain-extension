@@ -46,13 +46,17 @@ export const sendEvmResponseToServiceWorker = (
   response: any,
   chrome: typeof globalThis.chrome,
 ) => {
-  chrome.runtime.sendMessage({
-    command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
-    value: {
-      requestId: request.request_id,
-      result: response,
-    },
-  });
+  try {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+      value: {
+        requestId: request.request_id,
+        result: response,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const sendIncompleteDataResponse = (
@@ -87,6 +91,7 @@ export const sendResponse = (response: RequestResponse) => {
 };
 
 export const sendResponseToEvm = (response: any) => {
+  console.log({ response }, 'sendResponseToEvm');
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {

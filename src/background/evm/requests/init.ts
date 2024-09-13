@@ -33,6 +33,7 @@ export const initEvmRequestHandler = async (
     const rebuiltAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     requestHandler.accounts = rebuiltAccounts;
+    requestHandler.saveInLocalStorage();
   }
 
   if (!accounts) {

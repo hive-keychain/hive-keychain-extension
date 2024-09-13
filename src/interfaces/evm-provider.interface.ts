@@ -67,6 +67,9 @@ export enum EvmRequestMethod {
   ETH_SIGN_DATA_1 = 'eth_signTypedData_v1',
   ETH_SIGN_DATA_3 = 'eth_signTypedData_v3',
   ETH_SIGN_DATA_4 = 'eth_signTypedData_v4',
+  PERSONAL_SIGN = 'personal_sign',
+  ETH_SIGN = 'eth_sign',
+  ETH_DECRYPT = 'eth_decrypt',
 }
 
 export enum EvmEventName {

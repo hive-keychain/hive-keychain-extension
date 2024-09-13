@@ -76,6 +76,7 @@ const App = () => {
       case DialogCommand.SEND_DIALOG_CONFIRM_EVM:
         return <RequestConfirmation data={data} />;
       case DialogCommand.ANSWER_REQUEST:
+      case DialogCommand.ANSWER_EVM_REQUEST:
         return <RequestResponse data={data} />;
       case DialogCommand.SIGN_WITH_LEDGER:
         return <SignTransaction data={data} />;

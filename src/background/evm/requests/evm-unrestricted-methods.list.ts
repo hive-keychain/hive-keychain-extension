@@ -44,19 +44,19 @@ export const EvmUnrestrictedMethods = [
   //   'eth_signTypedData_v4',
   'eth_submitHashrate', // TODO to test
   'eth_submitWork', // TODO to test
-  'eth_subscribe',
-  'eth_syncing',
+  'eth_subscribe', // TODO to test
+  'eth_syncing', // TODO to test
   'eth_uninstallFilter', // OK
-  'eth_unsubscribe',
+  'eth_unsubscribe', // TODO to test
   'metamask_getProviderState',
   'metamask_logWeb3ShimUsage',
   'metamask_sendDomainMetadata',
   'metamask_watchAsset',
   'net_listening',
   'net_peerCount',
-  'net_version',
+  'net_version', // OK
   'personal_ecRecover',
-  'personal_sign',
+  //   'personal_sign', // Restricted method
   'wallet_addEthereumChain',
   'wallet_getPermissions',
   'wallet_requestPermissions',

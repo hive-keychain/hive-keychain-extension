@@ -1,3 +1,8 @@
+import {
+  personalSign,
+  signTypedData,
+  SignTypedDataVersion,
+} from '@metamask/eth-sig-util';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -82,6 +87,21 @@ const call = async (method: string, params: any[]) => {
   // return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
 };
 
+const signMessage = async (privateKey: string, message: string) => {
+  return personalSign({
+    privateKey: Buffer.from(privateKey.substring(2), 'hex'),
+    data: message,
+  });
+};
+const signV4 = async (privateKey: string, message: any) => {
+  console.log(message);
+  return signTypedData({
+    privateKey: Buffer.from(privateKey.substring(2), 'hex'),
+    data: JSON.parse(message),
+    version: SignTypedDataVersion.V4,
+  });
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -94,4 +114,6 @@ export const EvmRequestsUtils = {
   getTransactionCountForAddress,
   getTransactionReceipt,
   call,
+  signMessage,
+  signV4,
 };

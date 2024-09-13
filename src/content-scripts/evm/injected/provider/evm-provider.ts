@@ -77,6 +77,7 @@ export class EvmProvider extends EventEmitter {
   processRequest = async (args: RequestArguments) => {
     return new Promise((resolve, reject) => {
       this.dispatchCustomEvent('requestEvm', args, (result: any) => {
+        console.log(result);
         resolve(result);
       });
     });

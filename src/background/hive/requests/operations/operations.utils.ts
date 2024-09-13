@@ -33,6 +33,32 @@ export const createMessage = async (
   };
 };
 
+export const createEvmMessage = async (
+  err: any,
+  result: any,
+  datas: any, // TODO change type
+  success_message: string | null,
+  fail_message?: string | null,
+  publicKey?: Key,
+) => {
+  let message;
+
+  message = !err ? success_message : fail_message;
+  const { request_id, ...data } = datas;
+  return {
+    command: DialogCommand.ANSWER_EVM_REQUEST,
+    msg: {
+      success: !err,
+      error: err,
+      result: result,
+      data: data,
+      message: message,
+      request_id,
+      publicKey,
+    },
+  };
+};
+
 export const beautifyErrorMessage = async (err: any) => {
   if (!err) return null;
   let error = '';

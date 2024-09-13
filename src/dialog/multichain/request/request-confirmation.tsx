@@ -12,6 +12,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
+import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
@@ -41,6 +42,7 @@ import Swap from 'src/dialog/hive/requests/swap';
 import Transfer from 'src/dialog/hive/requests/transfer';
 import Vote from 'src/dialog/hive/requests/vote';
 import WitnessVote from 'src/dialog/hive/requests/witness-vote';
+import Logger from 'src/utils/logger.utils';
 
 type Props = {
   data: HiveRequestMessage | EvmRequestMessage;
@@ -142,16 +144,32 @@ const RequestConfirmation = ({ data }: Props) => {
           />
         );
       }
+
+      case EvmRequestMethod.ETH_DECRYPT:
+      case EvmRequestMethod.ETH_SIGN:
       case EvmRequestMethod.ETH_SIGN_DATA:
       case EvmRequestMethod.ETH_SIGN_DATA_1:
       case EvmRequestMethod.ETH_SIGN_DATA_3: {
         // TODO deprecated
+        Logger.warn(
+          `${request.method} is deprecated and not supported by Keychain`,
+        );
         break;
       }
 
       case EvmRequestMethod.ETH_SIGN_DATA_4: {
         return (
           <SignTypedData
+            request={request}
+            accounts={data.accounts!}
+            data={data}
+          />
+        );
+      }
+
+      case EvmRequestMethod.PERSONAL_SIGN: {
+        return (
+          <PersonalSign
             request={request}
             accounts={data.accounts!}
             data={data}

@@ -5,6 +5,8 @@ import {
   KeychainEvmRequestWrapper,
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import MkUtils from '@popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -28,8 +30,9 @@ export class EvmRequestHandler {
     this.accounts = [];
   }
 
-  async initFromLocalStorage(data: RequestData) {
+  async initFromLocalStorage(data: RequestData, accounts: EvmAccount[]) {
     this.data = data;
+    this.accounts = accounts;
   }
 
   closeWindow() {
@@ -78,8 +81,13 @@ export class EvmRequestHandler {
     );
     const handler = new EvmRequestHandler();
     if (params) {
-      await handler.initFromLocalStorage(params);
+      await handler.initFromLocalStorage(params, []);
     }
+    const mk = await MkUtils.getMkFromLocalStorage();
+    if (mk)
+      handler.accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
+        mk,
+      );
     return handler;
   }
 

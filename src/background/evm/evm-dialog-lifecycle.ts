@@ -8,7 +8,7 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
 
   if (id == windowId && !confirmed && tab) {
     chrome.tabs.sendMessage(tab!, {
-      command: DialogCommand.ANSWER_REQUEST,
+      command: DialogCommand.ANSWER_EVM_REQUEST,
       msg: {
         success: false,
         error: 'user_cancel',

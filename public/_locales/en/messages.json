@@ -4632,5 +4632,13 @@
   "dialog_from": {
     "message": "From",
     "description": "General message"
+  },
+  "dialog_signature_request_caption": {
+    "message": "<b>$1</b> is asking you to sign the following message",
+    "description": "Signature request caption message"
+  },
+  "dialog_evm_sign_request_success": {
+    "message": "Your message was successfully signed",
+    "description": "Signature request success message"
   }
 }
