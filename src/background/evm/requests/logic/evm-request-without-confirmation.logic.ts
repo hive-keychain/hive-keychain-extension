@@ -16,8 +16,6 @@ export const evmRequestWithoutConfirmation = async (
   request: EvmRequest,
   domain: string,
 ) => {
-  // const evmRequestWrapper = backgroundMessage as KeychainEvmRequestWrapper;
-  // const request = evmRequestWrapper.request;
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_RESPONSE,
     value: {
@@ -26,8 +24,6 @@ export const evmRequestWithoutConfirmation = async (
     },
   };
   //TODO: Implement all unrestricted methods
-
-  console.log({ request });
 
   switch (request.method) {
     case EvmRequestMethod.ESTIMATE_GAS_FEE: {
@@ -147,7 +143,6 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
-  console.log({ message });
   requestHandler.closeWindow();
   chrome.tabs.sendMessage(tab, message);
 };

@@ -37,8 +37,10 @@ export const initEvmRequestHandler = async (
   }
 
   if (!accounts) {
+    console.log('initialize wallet');
     initializeWallet(requestHandler, tab!, request);
   } else if (!mk) {
+    console.log('no mk', request);
     unlockWallet(
       requestHandler,
       tab!,
@@ -47,19 +49,24 @@ export const initEvmRequestHandler = async (
       DialogCommand.UNLOCK_EVM,
     );
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
-    //TODO: implement features that do not need confirmation
-
-    if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+    console.log('unrestricted method', request);
+    if (
+      request.method === EvmRequestMethod.REQUEST_ACCOUNTS ||
+      request.method === EvmRequestMethod.GET_ACCOUNTS
+    ) {
       const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+      console.log(connectedWallets);
       if (connectedWallets.length === 0) {
         evmRequestWithConfirmation(requestHandler, tab!, request, domain);
       } else {
         evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
       }
     } else {
+      console.log('not request/get accounts', request);
       evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
     }
   } else {
+    console.log('restricted function', request);
     evmRequestWithConfirmation(requestHandler, tab!, request, domain);
   }
 

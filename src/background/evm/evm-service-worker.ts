@@ -49,7 +49,7 @@ const chromeMessageHandler = async (
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {
-          MkModule.saveMk(mk);
+          await MkModule.saveMk(mk);
           initEvmRequestHandler(
             data.msg.data,
             tab,

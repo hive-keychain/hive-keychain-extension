@@ -38,14 +38,11 @@ interface SignatureRequestMessage {
 export const SignTypedData = (props: Props) => {
   const { accounts, data, request } = props;
 
-  console.log(request);
-
   const [message, setMessage] = useState<SignatureRequestMessage>(
     typeof request.params[1] === 'string'
       ? JSON.parse(request.params[1])
       : request.params[1],
   );
-  console.log({ message });
   const [target, setTarget] = useState<string>(request.params[0]);
 
   return (

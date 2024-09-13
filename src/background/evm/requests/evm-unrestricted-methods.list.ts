@@ -1,4 +1,6 @@
 export const EvmUnrestrictedMethods = [
+  'eth_accounts',
+  'eth_requestAccounts',
   'eth_blockNumber', // OK
   'eth_call', // TODO
   'eth_chainId', // OK

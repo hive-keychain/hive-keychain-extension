@@ -30,7 +30,7 @@ export const performEvmOperation = async (
         break;
       }
     }
-    console.log({ message, chrome, tab }, 'in perform operation');
+    // console.log({ message, chrome, tab }, 'in perform operation');
     sendEvmResponseToServiceWorker(request, message, chrome);
     chrome.tabs.sendMessage(tab, message);
   } catch (error) {
