@@ -49,7 +49,7 @@ export const SignTypedData = (props: Props) => {
     <EvmOperation
       data={request}
       domain={data.domain}
-      tab={0}
+      tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_request')}>
       <RequestItem title="dialog_evm_domain" content={`${data.domain}`} />
       <RequestItem

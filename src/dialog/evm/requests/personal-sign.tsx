@@ -25,7 +25,7 @@ export const PersonalSign = (props: Props) => {
     <EvmOperation
       data={request}
       domain={data.domain}
-      tab={0}
+      tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_request')}>
       <DialogCaption
         text={chrome.i18n.getMessage('dialog_signature_request_caption', [

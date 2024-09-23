@@ -6,7 +6,6 @@ import {
   EvmRequest,
   EvmRequestMethod,
 } from '@interfaces/evm-provider.interface';
-import { sendEvmResponseToServiceWorker } from 'src/content-scripts/hive/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 
 export const performEvmOperation = async (
@@ -26,12 +25,12 @@ export const performEvmOperation = async (
         break;
       }
       case EvmRequestMethod.PERSONAL_SIGN: {
+        console.log('personal sign', request);
         message = await personalSign(requestHandler, request);
         break;
       }
     }
-    // console.log({ message, chrome, tab }, 'in perform operation');
-    sendEvmResponseToServiceWorker(request, message, chrome);
+    console.log({ message, chrome, tab }, 'in perform operation');
     chrome.tabs.sendMessage(tab, message);
   } catch (error) {
     Logger.error(error);
@@ -43,5 +42,6 @@ export const performEvmOperation = async (
       await chrome.i18n.getMessage('unknown_error'),
       request,
     );
+  } finally {
   }
 };
