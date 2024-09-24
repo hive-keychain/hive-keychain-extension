@@ -281,7 +281,7 @@ const TransferFunds = ({
                 return;
               } else {
                 memoParam = HiveUtils.encodeMemo(
-                  form.memo,
+                  `${!form.memo.startsWith('#') ? '#' : ''}${form.memo}`,
                   activeAccount.keys.memo.toString(),
                   await AccountUtils.getPublicMemo(form.receiverUsername),
                 );
