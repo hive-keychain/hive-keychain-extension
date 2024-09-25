@@ -47,6 +47,10 @@
     "message": "Mainnet",
     "description": "EVM blockchain mainnet"
   },
+  "common_seed": {
+    "message": "Seed",
+    "description": "EVM blockchain seed"
+  },
   "common_experimental": {
     "message": "Experimental",
     "description": "experimental"
@@ -4323,6 +4327,14 @@
   "html_popup_evm_create_wallet_hide_mnemonic": {
     "message": "Hide seed phrase",
     "description": "display seed phrase"
+  },
+  "html_popup_evm_hide_account": {
+    "message": "Hide this account",
+    "description": "hide account in acct settings"
+  },
+  "html_popup_evm_show_account": {
+    "message": "Show this account",
+    "description": "show account in acct settings"
   },
   "html_popup_evm_create_wallet_copy_mnemonic": {
     "message": "Copy seed phrase",

@@ -9,13 +9,45 @@
   .account-info {
     flex-direction: column;
     margin-left: 30px;
-    .account-name {
-      @include poppins600(14px);
-      color: var(--main-font-color);
+    width: 100%;
+
+    .top-line {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .account-name {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+        .edit-account-name {
+          cursor: pointer;
+          margin-left: 6px;
+        }
+      }
+      .hide-token {
+        justify-content: flex-end;
+        cursor: pointer;
+        color: var(--main-font-color);
+      }
     }
-    .account-address {
-      @include poppins400(14px);
-      color: var(--main-font-color);
+    .bottom-line {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .account-address {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        flex-direction: row;
+        display: flex;
+        column-gap: 6px;
+      }
+      .copy-icon {
+        justify-content: flex-end;
+        cursor: pointer;
+        color: var(--main-font-color);
+        svg path {
+          stroke: var(--main-font-color);
+        }
+      }
     }
   }
 }

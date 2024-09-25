@@ -7,6 +7,8 @@ export type WalletWithBalance = {
 };
 export type StoredEvmAccounts = {
   seed: string;
+  id: number;
+  nickname?: string;
   accounts: StoredEvmAccount[];
 };
 export type StoredEvmAccount = {
@@ -18,6 +20,8 @@ export type StoredEvmAccount = {
 
 export type EvmAccount = StoredEvmAccount & {
   wallet: HDNodeWallet;
+  seedId: number;
+  seedNickname?: string;
 };
 
 export enum EvmAddressType {

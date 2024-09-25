@@ -53,6 +53,7 @@ const ImportWalletConfirmation = ({
         id: derivedWallet.wallet.index,
         path: derivedWallet.wallet.path!,
         wallet: derivedWallet.wallet,
+        seedId: 0,
       }));
       await EvmWalletUtils.saveAccounts(wallet, evmAccounts, mk);
       setEvmAccounts(evmAccounts);

@@ -1,0 +1,14 @@
+.account-panel {
+  display: flex;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  margin: 6px 24px;
+
+  .seeds {
+    display: flex;
+    column-gap: 8px;
+    justify-content: center;
+  }
+}

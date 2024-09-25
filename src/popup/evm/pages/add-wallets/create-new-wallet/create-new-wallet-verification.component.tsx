@@ -70,6 +70,7 @@ const CreateNewWalletVerification = ({
       id: derivedWallet.index,
       path: derivedWallet.path!,
       wallet: derivedWallet,
+      seedId: 0,
     };
     await EvmWalletUtils.saveAccounts(wallet, [account], mk);
     setEvmAccounts([account]);

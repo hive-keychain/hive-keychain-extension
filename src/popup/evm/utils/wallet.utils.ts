@@ -77,8 +77,11 @@ const addSeedAndAccounts = async (
   mk: string,
 ) => {
   const previousAccounts = await getAccountsFromLocalStorage(mk);
+  const id =
+    previousAccounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
   const evmAccountObject: StoredEvmAccounts = {
     seed: wallet.mnemonic!.phrase,
+    id,
     accounts: accounts.map((derivedWallet) => ({
       id: derivedWallet.id,
       path: derivedWallet.path!,
@@ -118,6 +121,8 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
         const account: EvmAccount = {
           ...e,
           wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, e.path),
+          seedId: seed.id,
+          seedNickname: seed.nickname,
         };
         return account;
       }),

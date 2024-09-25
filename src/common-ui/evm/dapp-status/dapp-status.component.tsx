@@ -9,7 +9,7 @@ export enum DappStatusEnum {
 type Props = {
   imageUrl?: string;
   svg?: string;
-  status: DappStatusEnum;
+  status?: DappStatusEnum;
   onClick?: () => void;
 };
 export const DappStatusComponent = ({
@@ -30,7 +30,7 @@ export const DappStatusComponent = ({
           onClick={handleOnClick}></div>
       )}
       {imageUrl && <img src={imageUrl} onClick={handleOnClick} />}
-      <div className={`indicator ${status}`}></div>
+      {status && <div className={`indicator ${status}`}></div>}
     </div>
   );
 };
