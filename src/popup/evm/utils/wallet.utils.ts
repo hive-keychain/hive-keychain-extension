@@ -109,8 +109,10 @@ const getAccountsFromLocalStorage = async (mk: string) => {
   const wallets = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
-  return (EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk).list ||
-    []) as StoredEvmAccounts[];
+  if (!wallets) return [];
+  else
+    return (EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk).list ||
+      []) as StoredEvmAccounts[];
 };
 
 const rebuildAccountsFromLocalStorage = async (mk: string) => {
