@@ -71,11 +71,12 @@ const createWallet = () => {
   return ethers.Wallet.createRandom();
 };
 
-const saveAccounts = (
+const addSeedAndAccounts = async (
   wallet: HDNodeWallet,
   accounts: EvmAccount[],
   mk: string,
 ) => {
+  const previousAccounts = await getAccountsFromLocalStorage(mk);
   const evmAccountObject: StoredEvmAccounts = {
     seed: wallet.mnemonic!.phrase,
     accounts: accounts.map((derivedWallet) => ({
@@ -83,6 +84,13 @@ const saveAccounts = (
       path: derivedWallet.path!,
     })),
   };
+  encryptAccountsInLocalStorage(mk, [...previousAccounts, evmAccountObject]);
+};
+
+const encryptAccountsInLocalStorage = (
+  mk: string,
+  evmAccountObject: StoredEvmAccounts[],
+) => {
   const encryptedAccounts = EncryptUtils.encryptJson(
     { list: evmAccountObject },
     mk,
@@ -98,19 +106,23 @@ const getAccountsFromLocalStorage = async (mk: string) => {
   const wallets = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
-  return EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk)
-    .list as StoredEvmAccounts;
+  return (EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk).list ||
+    []) as StoredEvmAccounts[];
 };
 
 const rebuildAccountsFromLocalStorage = async (mk: string) => {
-  const accounts = await getAccountsFromLocalStorage(mk);
-  return accounts.accounts.map((e) => {
-    const account: EvmAccount = {
-      ...e,
-      wallet: HDNodeWallet.fromPhrase(accounts.seed, undefined, e.path),
-    };
-    return account;
-  });
+  const seeds = await getAccountsFromLocalStorage(mk);
+  return seeds
+    .map((seed) =>
+      seed.accounts.map((e) => {
+        const account: EvmAccount = {
+          ...e,
+          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, e.path),
+        };
+        return account;
+      }),
+    )
+    .flat();
 };
 
 const isWalletAddress = async (address: string, chain: EvmChain) => {
@@ -201,7 +213,7 @@ export const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
   createWallet,
-  saveAccounts,
+  saveAccounts: addSeedAndAccounts,
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
   isWalletAddress,

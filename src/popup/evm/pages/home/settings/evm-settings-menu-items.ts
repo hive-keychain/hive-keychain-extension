@@ -5,6 +5,11 @@ import { MenuItem } from 'src/interfaces/menu-item.interface';
 export const EvmSettingsMenuItems = (logout: () => void): MenuItem[] => {
   return [
     {
+      label: 'popup_html_accounts',
+      icon: SVGIcons.MENU_ACCOUNTS,
+      nextScreen: Screen.EVM_ACCOUNTS_SETTINGS,
+    },
+    {
       label: 'popup_html_help',
       icon: SVGIcons.MENU_HELP,
       nextScreen: Screen.SETTINGS_HELP,
