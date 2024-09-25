@@ -5,6 +5,7 @@ import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-ne
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
+import EvmAccountsComponent from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
@@ -58,6 +59,8 @@ const EvmAppRouter = ({
       case EvmScreen.EVM_SETTINGS: {
         return <EvmSettingPage />;
       }
+      case EvmScreen.EVM_ACCOUNTS_SETTINGS:
+        return <EvmAccountsComponent />;
       default:
         return globalRouter(page);
     }

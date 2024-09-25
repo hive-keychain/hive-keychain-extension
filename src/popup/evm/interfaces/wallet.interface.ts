@@ -13,6 +13,7 @@ export type StoredEvmAccount = {
   id: number;
   path: string;
   hide?: boolean;
+  nickname?: string;
 };
 
 export type EvmAccount = StoredEvmAccount & {
