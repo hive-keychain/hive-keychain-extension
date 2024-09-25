@@ -19,7 +19,7 @@ const login = async (mk: string) => {
   if (!!hiveAccounts) return true;
 
   const evmEncryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.ACCOUNTS,
+    LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
   const evmAccounts = await EncryptUtils.decryptToJson(
     evmEncryptedAccounts,
