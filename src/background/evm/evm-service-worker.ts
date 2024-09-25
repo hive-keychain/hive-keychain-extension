@@ -67,7 +67,6 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
-      console.log('ici');
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
       chrome.tabs.sendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
