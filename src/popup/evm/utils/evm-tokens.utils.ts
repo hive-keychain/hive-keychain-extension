@@ -12,7 +12,7 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { SigningKey, Wallet, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -52,17 +52,10 @@ const getTotalBalanceInMainToken = (
   } else return 0;
 };
 
-const getTokenBalances = async (
-  walletAddress: string,
-  walletSigningKey: SigningKey,
-  chain: EvmChain,
-) => {
+const getTokenBalances = async (walletAddress: string, chain: EvmChain) => {
   let tokensMetadata = await getTokenListForWalletAddress(walletAddress, chain);
-
-  const balances: EVMToken[] = [];
-
+  //TODO : provider should be the same everywhere
   const provider = EthersUtils.getProvider(chain);
-  const connectedWallet = new Wallet(walletSigningKey, provider);
   if (
     !tokensMetadata.some(
       (tokenMetadata) => tokenMetadata.type === EVMTokenType.NATIVE,
@@ -79,42 +72,44 @@ const getTokenBalances = async (
     } as EvmTokenInfoShort;
     tokensMetadata.push(mainTokenMetadata);
   }
-  for (const token of tokensMetadata) {
-    try {
-      let formattedBalance;
-      let balance;
-      let balanceInteger;
-      if (token.type === EVMTokenType.NATIVE) {
-        balance = await provider.getBalance(walletAddress);
-        formattedBalance = FormatUtils.formatCurrencyValue(
-          Number(parseFloat(ethers.formatEther(balance))),
-        );
-        balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
-      } else {
-        const contract = new ethers.Contract(
-          token.address!,
-          Erc20Abi,
-          connectedWallet,
-        );
-        balance = await contract.balanceOf(walletAddress);
-        formattedBalance = FormatUtils.formatCurrencyValue(
-          Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-        );
-        balanceInteger = Number(
-          parseFloat(ethers.formatUnits(balance, token.decimals)),
-        );
-      }
+  const balances: Promise<EVMToken | undefined>[] = tokensMetadata
+    .filter((e) => e.type === EVMTokenType.NATIVE || !e.possibleSpam)
+    .map(async (token) => {
+      try {
+        let formattedBalance;
+        let balance;
+        let balanceInteger;
+        if (token.type === EVMTokenType.NATIVE) {
+          balance = await provider.getBalance(walletAddress);
+          formattedBalance = FormatUtils.formatCurrencyValue(
+            Number(parseFloat(ethers.formatEther(balance))),
+          );
+          balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+        } else {
+          const contract = new ethers.Contract(
+            token.address!,
+            Erc20Abi,
+            provider,
+          );
+          balance = await contract.balanceOf(walletAddress);
+          formattedBalance = FormatUtils.formatCurrencyValue(
+            Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
+          );
+          balanceInteger = Number(
+            parseFloat(ethers.formatUnits(balance, token.decimals)),
+          );
+        }
 
-      balances.push({
-        tokenInfo: token,
-        formattedBalance: formattedBalance,
-        balance: balance,
-        balanceInteger: balanceInteger,
-      });
-    } catch (err) {
-      Logger.error('Error while formatting evm balances', err);
-    }
-  }
+        return {
+          tokenInfo: token,
+          formattedBalance: formattedBalance,
+          balance: balance,
+          balanceInteger: balanceInteger,
+        };
+      } catch (err) {
+        Logger.error('Error while formatting evm balances', err);
+      }
+    });
 
   let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -125,7 +120,8 @@ const getTokenBalances = async (
     { ...localTokens, [chain.chainId]: [...tokensMetadata] },
   );
 
-  return [...balances];
+  const result = (await Promise.all(balances)).filter((balance) => !!balance);
+  return result;
 };
 
 const getTokenListForWalletAddress = async (
