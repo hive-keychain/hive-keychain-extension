@@ -3,7 +3,11 @@ import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { KeychainEvmRequestWrapper } from '@interfaces/evm-provider.interface';
+import {
+  KeychainEvmRequestWrapper,
+  ProviderRpcError,
+  ProviderRpcErrorList,
+} from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Logger from 'src/utils/logger.utils';
@@ -84,6 +88,20 @@ const chromeMessageHandler = async (
         domain,
       );
       break;
+
+    case BackgroundCommand.REJECT_EVM_TRANSACTION: {
+      const { data, tab, domain } = backgroundMessage.value;
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      chrome.tabs.sendMessage(requestHandler.data.tab!, {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: requestHandler.data.request_id,
+          error: ProviderRpcErrorList.userReject as ProviderRpcError,
+        },
+      });
+      requestHandler.closeWindow();
+      break;
+    }
   }
 };
 

@@ -73,13 +73,26 @@ export const sendResponse = (response: RequestResponse) => {
 };
 
 export const sendResponseToEvm = (response: any) => {
-  console.log({ response }, 'sendResponseToEvm');
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
     window.postMessage(
       {
         type: 'evm_keychain_response',
+        response,
+      },
+      window.location.origin,
+    );
+  }
+};
+
+export const sendErrorToEvm = (response: any) => {
+  if (response.data?.redirect_uri) {
+    window.location.href = response.data.redirect_uri;
+  } else {
+    window.postMessage(
+      {
+        type: 'evm_keychain_error',
         response,
       },
       window.location.origin,

@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
+  sendErrorToEvm,
   sendEventToEvm,
   sendEvmRequestToBackground,
   sendResponseToEvm,
@@ -28,12 +29,11 @@ chrome.runtime.onMessage.addListener(
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    console.log(backgroundMessage, 'bgdm');
     if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE) {
       sendResponseToEvm(backgroundMessage.value);
-    }
-
-    if (
+    } else if (backgroundMessage.command === BackgroundCommand.SEND_EVM_ERROR) {
+      sendErrorToEvm(backgroundMessage.value);
+    } else if (
       backgroundMessage.command ===
       BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT
     ) {

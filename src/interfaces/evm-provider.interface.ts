@@ -13,11 +13,6 @@ export interface EIP6963ProviderInfo {
   rdns: string;
 }
 
-export interface ProviderRpcError extends Error {
-  code: number;
-  data?: unknown;
-}
-
 export interface EvmConnectedWallets {
   [domain: string]: string[];
 }
@@ -89,3 +84,27 @@ export interface ProviderRpcError extends Error {
   code: number;
   data?: unknown;
 }
+
+export const ProviderRpcErrorList = {
+  userReject: {
+    code: 4001,
+    message: 'The user rejected the request',
+  },
+  unauthorized: {
+    code: 4100,
+    message:
+      'The requested method and/or account has not been authorized by the user',
+  },
+  unsupportedMethod: {
+    code: 4200,
+    message: 'The Provider does not support the requested method',
+  },
+  disconnected: {
+    code: 4900,
+    message: 'The Provider is disconnected from all chains',
+  },
+  chainDisconnected: {
+    code: 4901,
+    message: 'The Provider is not connected to the requested chain',
+  },
+};

@@ -38,12 +38,20 @@ export class EvmProvider extends EventEmitter {
           const requestId = event.data.response.requestId;
           if (result && requestId) {
             if (this._requests[requestId]) {
-              this._requests[requestId](result);
+              this._requests[requestId]({ result });
               delete this._requests[requestId];
             }
           }
-        }
-        if (event.data.type && event.data.type == 'evm_keychain_event') {
+        } else if (event.data.type && event.data.type == 'evm_keychain_error') {
+          const error = event.data.response.error;
+          const requestId = event.data.response.requestId;
+          if (error && requestId) {
+            if (this._requests[requestId]) {
+              this._requests[requestId]({ error });
+              delete this._requests[requestId];
+            }
+          }
+        } else if (event.data.type && event.data.type == 'evm_keychain_event') {
           const eventData = event.data;
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
@@ -68,17 +76,20 @@ export class EvmProvider extends EventEmitter {
   };
 
   async request(args: RequestArguments): Promise<any> {
-    console.log(args);
     const result = await this.processRequest(args);
-    console.log(args.method, args.params, result);
     return result;
   }
 
   processRequest = async (args: RequestArguments) => {
     return new Promise((resolve, reject) => {
-      this.dispatchCustomEvent('requestEvm', args, (result: any) => {
-        console.log(result);
-        resolve(result);
+      this.dispatchCustomEvent('requestEvm', args, (response: any) => {
+        if (response.result) {
+          console.log(response.result);
+          resolve(response.result);
+        } else {
+          console.log(response.error);
+          reject(response.error);
+        }
       });
     });
   };

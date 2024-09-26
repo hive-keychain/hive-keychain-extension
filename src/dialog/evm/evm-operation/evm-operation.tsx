@@ -30,7 +30,7 @@ export const EvmOperation = ({
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log('tab', tab);
+
   const genericOnConfirm = () => {
     setLoading(true);
     chrome.runtime.sendMessage({
@@ -42,13 +42,15 @@ export const EvmOperation = ({
         keep,
       },
     });
-    console.log('sending accept', {
-      command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+  };
+
+  const onClose = () => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.REJECT_EVM_TRANSACTION,
       value: {
-        data: data,
-        tab: tab,
-        domain: domain,
-        keep,
+        data,
+        tab,
+        domain,
       },
     });
   };
@@ -92,9 +94,7 @@ export const EvmOperation = ({
           <ButtonComponent
             label="dialog_cancel"
             type={ButtonType.ALTERNATIVE}
-            onClick={() => {
-              window.close();
-            }}
+            onClick={onClose}
             height="small"
           />
           <ButtonComponent

@@ -26,10 +26,12 @@ export enum BackgroundCommand {
   SEND_EVM_REQUEST = 'sendEvmRequest',
   SEND_EVM_RESPONSE_TO_SW = 'sendEvmResponseToSw',
   SEND_EVM_RESPONSE = 'sendEvmResponse',
+  SEND_EVM_ERROR = 'sendEvmError',
   SEND_EVM_EVENT = 'sendEvmEvent',
   SEND_EVM_EVENT_TO_CONTENT_SCRIPT = 'sendEvmEventToContentScript',
   SEND_BACK_CONNECTED_WALLETS = 'sendBackConnectedWallets',
   ACCEPT_EVM_TRANSACTION = 'acceptEvmTransaction',
+  REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',
