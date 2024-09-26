@@ -86,7 +86,6 @@ const ConfirmationPage = ({
             method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
-
           if (useMultisig) {
             const accounts = await MultisigUtils.get2FAAccounts(
               activeAccount.account,

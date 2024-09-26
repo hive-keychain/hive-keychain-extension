@@ -396,13 +396,7 @@ const get2FAAccounts = async (
   for (const extendedAccount of extendedAccounts) {
     const metadata = JSON.parse(extendedAccount.json_metadata);
     if (metadata.isMultisigBot) {
-      const config: any = await getTwoFaBotUserConfig(
-        metadata.configPath,
-        account.name,
-      );
-      if (config && config.use2FAByDefault) {
-        botNames.push(extendedAccount.name);
-      }
+      botNames.push(extendedAccount.name);
     }
   }
   return botNames;

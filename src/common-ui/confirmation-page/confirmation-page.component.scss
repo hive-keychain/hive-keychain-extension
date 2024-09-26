@@ -6,6 +6,7 @@
     row-gap: 16px;
     padding: 0px 24px;
     flex: 1;
+    max-height: 400px;
     .introduction {
       padding: 0px 32px;
       @include caption;
@@ -70,6 +71,5 @@
     width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;
-    padding: 16px;
   }
 }
