@@ -3,9 +3,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import {
   DappStatusComponent,
   DappStatusEnum,
@@ -19,7 +17,8 @@ type Props = {
   status?: DappStatusEnum;
   editable?: boolean;
   copiable?: boolean;
-} & PropsType;
+  onCopy?: (account: EvmAccount) => void;
+};
 
 const EvmAccountDisplay = ({
   account,
@@ -27,7 +26,7 @@ const EvmAccountDisplay = ({
   status,
   editable,
   copiable,
-  setInfoMessage,
+  onCopy,
 }: Props) => {
   return (
     <div className="evm-account-display">
@@ -57,12 +56,7 @@ const EvmAccountDisplay = ({
             {copiable && (
               <div
                 onClick={() => {
-                  navigator.clipboard.writeText(account.wallet.address);
-                  if (setInfoMessage) {
-                    setInfoMessage('popup_html_text_copied', [
-                      account.wallet.address,
-                    ]);
-                  }
+                  if (onCopy) onCopy(account);
                 }}>
                 <SVGIcon className={'copy-icon'} icon={SVGIcons.SELECT_COPY} />
               </div>
@@ -74,10 +68,4 @@ const EvmAccountDisplay = ({
   );
 };
 
-const connector = connect(undefined, {
-  setInfoMessage,
-});
-
-type PropsType = ConnectedProps<typeof connector>;
-
-export const EvmAccountDisplayComponent = connector(EvmAccountDisplay);
+export const EvmAccountDisplayComponent = EvmAccountDisplay;

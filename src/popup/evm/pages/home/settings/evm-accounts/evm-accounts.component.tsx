@@ -1,4 +1,5 @@
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 const EvmAccountsComponent = ({
   accounts,
   setTitleContainerProperties,
+  setInfoMessage,
 }: PropsType) => {
   const options = Array.from(
     new Set(
@@ -32,6 +34,11 @@ const EvmAccountsComponent = ({
       isCloseButtonDisabled: false,
     });
   }, []);
+  const onCopyAddress = (account: EvmAccount) => {
+    navigator.clipboard.writeText(account.wallet.address);
+    setInfoMessage('popup_html_text_copied', [account.wallet.address]);
+  };
+
   return (
     <>
       <div className="seeds">
@@ -53,6 +60,7 @@ const EvmAccountsComponent = ({
             }
             editable
             copiable
+            onCopy={onCopyAddress}
           />
         </div>
       ))}
@@ -67,6 +75,7 @@ const mapStateToProps = (state: RootState) => {
 };
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  setInfoMessage,
 });
 
 type PropsType = ConnectedProps<typeof connector>;
