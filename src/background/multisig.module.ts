@@ -279,7 +279,10 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
   socket.on(
     SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
     async (signatureRequest: SignatureRequest, txId: string) => {
-      Logger.log(`signature request ${signatureRequest.id} was broadcasted`);
+      Logger.log(
+        `signature request ${signatureRequest.id} was broadcasted`,
+        txId,
+      );
       const transaction = await HiveTxUtils.getTransaction(txId);
       delete transaction.signatures;
       openWindow({

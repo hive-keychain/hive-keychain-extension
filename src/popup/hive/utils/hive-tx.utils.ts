@@ -3,6 +3,7 @@ import { BackgroundMessage } from '@background/background-message.interface';
 import { MultisigModule } from '@background/multisig.module';
 import Hive from '@engrave/ledger-app-hive';
 import { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
+import { sleep } from '@hiveio/dhive/lib/utils';
 import {
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastResult,
@@ -123,7 +124,6 @@ const createSignAndBroadcastTransaction = async (
     }
     let response: any;
     try {
-      console.log(options);
       if (document) {
         response = await useMultisig(
           transaction,
@@ -327,11 +327,11 @@ const getData = async (
   params: any[] | object,
   key?: string,
 ) => {
-  const response = await call(method, params);
+  const response = await call(method, params, 3000);
   if (response?.result) {
     return key ? response.result[key] : response.result;
   } else {
-    if (window) {
+    if (window && window.document) {
       import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
         useWorkingRPC();
       });
@@ -392,8 +392,6 @@ const useMultisig = async (
     };
     chrome.runtime.onMessage.addListener(handleResponseFromBackground);
 
-    console.log(options);
-
     chrome.runtime.sendMessage({
       command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
       value: {
@@ -409,7 +407,8 @@ const useMultisig = async (
   });
 };
 
-const getTransaction = (txId: string) => {
+const getTransaction = async (txId: string) => {
+  await sleep(3000);
   return HiveTxUtils.getData('condenser_api.get_transaction', [txId]);
 };
 
