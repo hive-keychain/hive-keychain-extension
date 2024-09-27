@@ -4652,5 +4652,9 @@
   "dialog_evm_sign_request_success": {
     "message": "Your message was successfully signed",
     "description": "Signature request success message"
+  },
+  "dialog_evm_unsupported_method": {
+    "message": "The method `$1` is not supported by Keychain",
+    "description": "Evm deprecated/unsupported error message"
   }
 }

@@ -42,7 +42,6 @@ import Swap from 'src/dialog/hive/requests/swap';
 import Transfer from 'src/dialog/hive/requests/transfer';
 import Vote from 'src/dialog/hive/requests/vote';
 import WitnessVote from 'src/dialog/hive/requests/witness-vote';
-import Logger from 'src/utils/logger.utils';
 
 type Props = {
   data: HiveRequestMessage | EvmRequestMessage;
@@ -143,18 +142,6 @@ const RequestConfirmation = ({ data }: Props) => {
             data={data}
           />
         );
-      }
-
-      case EvmRequestMethod.ETH_DECRYPT:
-      case EvmRequestMethod.ETH_SIGN:
-      case EvmRequestMethod.ETH_SIGN_DATA:
-      case EvmRequestMethod.ETH_SIGN_DATA_1:
-      case EvmRequestMethod.ETH_SIGN_DATA_3: {
-        // TODO deprecated
-        Logger.warn(
-          `${request.method} is deprecated and not supported by Keychain`,
-        );
-        break;
       }
 
       case EvmRequestMethod.ETH_SIGN_DATA_4: {

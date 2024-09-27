@@ -84,10 +84,8 @@ export class EvmProvider extends EventEmitter {
     return new Promise((resolve, reject) => {
       this.dispatchCustomEvent('requestEvm', args, (response: any) => {
         if (response.result) {
-          console.log(response.result);
           resolve(response.result);
         } else {
-          console.log(response.error);
           reject(response.error);
         }
       });

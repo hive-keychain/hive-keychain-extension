@@ -53,7 +53,6 @@ const App = () => {
       sender,
       sendResp,
     ) {
-      console.log('data in dialog', { data });
       if (data.command === DialogCommand.READY) {
         return BrowserUtils.sendResponse(true, sendResp);
       } else if (Object.values(DialogCommand).includes(data.command)) {
@@ -63,7 +62,6 @@ const App = () => {
   }, []);
 
   const renderDialogContent = (data: any) => {
-    console.log('ici', { data });
     switch (data.command) {
       case DialogCommand.UNLOCK:
       case DialogCommand.UNLOCK_EVM:

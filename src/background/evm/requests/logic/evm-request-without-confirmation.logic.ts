@@ -53,10 +53,6 @@ export const evmRequestWithoutConfirmation = async (
       }
       break;
     }
-    // case EvmRequestMethod.GET_BLOCK_NUMBER: {
-    //   message.value.result = await EvmRequestsUtils.getBlockNumber();
-    //   break;
-    // }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
     case EvmRequestMethod.GET_BLOCK_BY_HASH: {
       message.value.result = await EvmRequestsUtils.getBlock(
