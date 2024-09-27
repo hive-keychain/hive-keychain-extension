@@ -209,28 +209,27 @@ const Operation = ({
             <div className="fields">{...children}</div>
           </div>
         </div>
-        {twoFABots && Object.keys(twoFABots).length > 0 && (
-          <div className="two-fa-codes-panel">
-            {Object.entries(twoFABots).map(([botName, code]) => (
-              <InputComponent
-                key={`${botName}-2fa-code`}
-                type={InputType.TEXT}
-                value={code}
-                onChange={(value) => {
-                  setTwoFABots((old) => {
-                    return { ...old, [botName]: value };
-                  });
-                }}
-                label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
-                  botName,
-                ])}
-                skipLabelTranslation
-              />
-            ))}
-          </div>
-        )}
       </div>
-
+      {twoFABots && Object.keys(twoFABots).length > 0 && (
+        <div className="two-fa-codes-panel">
+          {Object.entries(twoFABots).map(([botName, code]) => (
+            <InputComponent
+              key={`${botName}-2fa-code`}
+              type={InputType.TEXT}
+              value={code}
+              onChange={(value) => {
+                setTwoFABots((old) => {
+                  return { ...old, [botName]: value };
+                });
+              }}
+              label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+                botName,
+              ])}
+              skipLabelTranslation
+            />
+          ))}
+        </div>
+      )}
       {canWhitelist && (
         <CheckboxPanelComponent
           onChange={setKeep}

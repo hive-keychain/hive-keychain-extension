@@ -151,7 +151,10 @@ const ConfirmationPage = ({
     <div
       className="confirmation-page"
       data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
-      <div className="confirmation-top">
+      <div
+        className={`confirmation-top ${
+          twoFABots && Object.keys(twoFABots).length > 0 ? 'twofa' : ''
+        }`}>
         <div
           className="introduction"
           dangerouslySetInnerHTML={{
