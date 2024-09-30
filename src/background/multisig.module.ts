@@ -194,6 +194,8 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
   socket.on('connect', () => {
+    Logger.info('Connected to socket');
+
     keepAlive();
     initAccountsConnections(multisigConfig);
   });
@@ -202,6 +204,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
   });
   socket.on('disconnect', (ev: any) => {
     Logger.info('Disconnected from socket');
+    socket.connect();
   });
 
   socket.on(
@@ -296,6 +299,16 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
       });
     },
   );
+  socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, async (e) => {
+    console.log('transaction error notification', e);
+    openWindow({
+      multisigStep: MultisigStep.NOTIFY_ERROR,
+      data: {
+        message: e.error.message,
+        success: false,
+      } as MultisigDisplayMessageData,
+    });
+  });
 
   if (socket) {
     socket.connect();
@@ -371,7 +384,7 @@ const keepAlive = () => {
     } else {
       clearInterval(keepAliveIntervalId);
     }
-  }, 20 * 1000);
+  }, 10 * 1000);
 };
 
 const getRequestSignatureMessage = async (
