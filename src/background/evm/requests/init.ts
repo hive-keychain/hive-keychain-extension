@@ -1,9 +1,11 @@
-import { EvmDeprecatedMethods } from '@background/evm/requests/evm-deprecated-methods.list';
+import { EvmDeprecatedMethods } from '@background/evm/evm-methods/evm-deprecated-methods.list';
+import { doesMethodExist } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmUnrestrictedMethods } from '@background/evm/evm-methods/evm-unrestricted-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
-import { EvmUnrestrictedMethods } from '@background/evm/requests/evm-unrestricted-methods.list';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
 import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-deprecated-methods.logic';
+import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -48,6 +50,8 @@ export const initEvmRequestHandler = async (
       domain,
       DialogCommand.UNLOCK_EVM,
     );
+  } else if (!doesMethodExist(request.method)) {
+    handleNonExistingMethod(requestHandler, tab!, request, domain);
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, domain);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {

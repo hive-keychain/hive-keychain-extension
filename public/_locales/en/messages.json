@@ -4656,5 +4656,13 @@
   "dialog_evm_unsupported_method": {
     "message": "The method `$1` is not supported by Keychain",
     "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_non_existing_method": {
+    "message": "The method `$1` doesn't exist",
+    "description": "Evm non existing error message"
+  },
+  "dialog_evm_user_rejected_method": {
+    "message": "User ",
+    "description": "Evm deprecated/unsupported error message"
   }
 }
