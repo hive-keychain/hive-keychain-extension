@@ -10,7 +10,9 @@ export const personalSign = async (
 ) => {
   try {
     const account = requestHandler.accounts.find((account: EvmAccount) => {
-      return account.wallet.address === request.params[1];
+      return (
+        account.wallet.address.toLowerCase() === request.params[1].toLowerCase()
+      );
     });
     if (account) {
       const res = await EvmRequestsUtils.signMessage(

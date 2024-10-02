@@ -23,6 +23,7 @@ export const performEvmOperation = async (
     switch (request.method) {
       case EvmRequestMethod.ETH_SIGN_DATA_4: {
         message = await signV4(requestHandler, request);
+        result = message?.msg.result;
         break;
       }
       case EvmRequestMethod.PERSONAL_SIGN: {

@@ -16,7 +16,11 @@ export const handleNonExistingMethod = async (
   domain: string,
 ) => {
   Logger.warn(
-    `${request.method} doesn't exist, rawError: dialog_evm_non_existing_method`,
+    `${
+      request.method
+    } doesn't exist, rawError: dialog_evm_non_existing_method, params: ${JSON.stringify(
+      request.params,
+    )}`,
   );
 
   const message: BackgroundMessage = {

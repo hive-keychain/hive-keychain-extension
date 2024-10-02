@@ -20,6 +20,9 @@ export enum EvmRequestMethod {
   GET_UNCLE_BY_BLOCK_HASH_AND_INDEX = 'eth_getUncleByBlockHashAndIndex',
   GET_UNCLE_BY_BLOCK_NUMBER_AND_INDEX = 'eth_getUncleByBlockNumberAndIndex',
   GET_WORK = 'eth_getWork',
+
+  PERSONAL_RECOVER = 'personal_ecRecover',
+
   REQUEST_ACCOUNTS = 'eth_requestAccounts',
   SEND_RAW_TRANSACTION = 'eth_sendRawTransaction',
   WALLET_REVOKE_PERMISSION = 'wallet_revokePermissions',

@@ -147,7 +147,7 @@ const getConnectedWallets = async (domain: string): Promise<string[]> => {
       LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
     );
   return allConnectedWallets && allConnectedWallets[domain]
-    ? allConnectedWallets[domain]
+    ? allConnectedWallets[domain].map((wallet) => wallet.toLowerCase())
     : [];
 };
 

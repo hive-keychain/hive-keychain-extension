@@ -10,14 +10,16 @@ export const signV4 = async (
 ) => {
   try {
     const account = requestHandler.accounts.find((account: EvmAccount) => {
-      return account.wallet.address === request.params[0];
+      return (
+        account.wallet.address.toLowerCase() === request.params[0].toLowerCase()
+      );
     });
-    console.log(request.params);
     if (account) {
       const res = await EvmRequestsUtils.signV4(
         account.wallet.privateKey,
         request.params[1],
       );
+      console.log(res);
       return await createEvmMessage(
         null,
         res,

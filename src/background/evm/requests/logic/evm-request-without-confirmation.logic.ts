@@ -109,6 +109,14 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
 
+    case EvmRequestMethod.PERSONAL_RECOVER: {
+      message.value.result = await EvmRequestsUtils.personalRecover(
+        request.params[0],
+        request.params[1],
+      );
+      break;
+    }
+
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);
       message.value.result = null;

@@ -58,7 +58,6 @@ export const EvmUnrestrictedMethods = [
   'net_peerCount',
   'net_version', // OK
   'personal_ecRecover',
-  //   'personal_sign', // Restricted method
   'wallet_addEthereumChain',
   'wallet_getPermissions',
   'wallet_requestPermissions',

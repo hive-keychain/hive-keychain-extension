@@ -1,5 +1,6 @@
 import {
   personalSign,
+  recoverPersonalSignature,
   signTypedData,
   SignTypedDataVersion,
 } from '@metamask/eth-sig-util';
@@ -93,12 +94,19 @@ const signMessage = async (privateKey: string, message: string) => {
     data: message,
   });
 };
+
 const signV4 = async (privateKey: string, message: any) => {
-  console.log(message);
   return signTypedData({
     privateKey: Buffer.from(privateKey.substring(2), 'hex'),
     data: JSON.parse(message),
     version: SignTypedDataVersion.V4,
+  });
+};
+
+const personalRecover = async (digest: string, signature: string) => {
+  return recoverPersonalSignature({
+    data: digest,
+    signature: signature,
   });
 };
 
@@ -116,4 +124,5 @@ export const EvmRequestsUtils = {
   call,
   signMessage,
   signV4,
+  personalRecover,
 };
