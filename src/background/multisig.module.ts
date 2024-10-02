@@ -6,6 +6,7 @@ import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { SignedTransaction } from '@hiveio/dhive';
+import { sleep } from '@hiveio/dhive/lib/utils';
 import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import {
   ConnectDisconnectMessage,
@@ -46,6 +47,8 @@ import Logger from 'src/utils/logger.utils';
 let socket: Socket;
 let shouldReconnectSocket: boolean = false;
 let connectedPublicKeys: SignerConnectMessage[] = [];
+const lockedRequests: number[] = [];
+
 const start = async () => {
   Logger.info(`Starting multisig`);
 
@@ -162,8 +165,14 @@ const requestSignatures = async (
               // resolve('multisig_transaction_sent_to_signers');
               // in this case try to wait for broadcast notification
               try {
-                const txId = await waitForBroadcastToBeDone();
-                resolve(txId);
+                const { txId, id } = (await waitForBroadcastToBeDone()) as {
+                  txId: string;
+                  id: number;
+                };
+                if (!lockedRequests.includes(id)) {
+                  lockedRequests.push(id);
+                  resolve(txId);
+                }
               } catch (err: any) {
                 chrome.runtime.sendMessage({
                   command: DialogCommand.SEND_DIALOG_ERROR,
@@ -288,26 +297,32 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
       );
       const transaction = await HiveTxUtils.getTransaction(txId);
       delete transaction.signatures;
-      openWindow({
-        multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
-        data: {
-          message: 'multisig_dialog_transaction_broadcasted',
-          success: true,
-          txId: txId,
-          transaction: transaction,
-        } as MultisigDisplayMessageData,
-      });
+      if (!lockedRequests.includes(signatureRequest.id)) {
+        lockedRequests.push(signatureRequest.id);
+        openWindow({
+          multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
+          data: {
+            message: 'multisig_dialog_transaction_broadcasted',
+            success: true,
+            txId: txId,
+            transaction: transaction,
+          } as MultisigDisplayMessageData,
+        });
+      }
     },
   );
   socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, async (e) => {
-    console.log('transaction error notification', e);
-    openWindow({
-      multisigStep: MultisigStep.NOTIFY_ERROR,
-      data: {
-        message: e.error.message,
-        success: false,
-      } as MultisigDisplayMessageData,
-    });
+    await sleep(200);
+    if (!lockedRequests.includes(e.signatureRequest.id)) {
+      lockedRequests.push(e.signatureRequest.id);
+      openWindow({
+        multisigStep: MultisigStep.NOTIFY_ERROR,
+        data: {
+          message: e.error.message,
+          success: false,
+        } as MultisigDisplayMessageData,
+      });
+    }
   });
 
   if (socket) {
@@ -699,7 +714,7 @@ const waitForBroadcastToBeDone = async () => {
         SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
         broadcastedListener,
       );
-      resolve(txId);
+      resolve({ txId, id: signatureRequest.id });
     };
 
     const notifyError = async (res: any) => {
@@ -711,7 +726,10 @@ const waitForBroadcastToBeDone = async () => {
         SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
         broadcastedListener,
       );
-      reject(res.error.message);
+      if (!lockedRequests.includes(res.signatureRequest.id)) {
+        lockedRequests.push(res.signatureRequest.id);
+        reject(res.error.message);
+      }
     };
     socket.on(
       SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
