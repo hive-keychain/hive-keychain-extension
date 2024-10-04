@@ -4278,5 +4278,9 @@
   "error_otp_not_verified": {
     "message": "Your One Time Password is incorrect. Please try again",
     "description": "Error message if otp isn't verified"
+  },
+  "error_otp_already_used": {
+    "message": "Your One Time Password has already been used. Please use the next one.",
+    "description": "Error message if otp has been used already"
   }
 }
