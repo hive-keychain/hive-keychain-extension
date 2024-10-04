@@ -1,9 +1,13 @@
 import {
+  decrypt,
+  EthEncryptedData,
+  getEncryptionPublicKey,
   personalSign,
   recoverPersonalSignature,
   signTypedData,
   SignTypedDataVersion,
 } from '@metamask/eth-sig-util';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -110,6 +114,21 @@ const personalRecover = async (digest: string, signature: string) => {
   });
 };
 
+const getEncryptionKey = async (account: EvmAccount) => {
+  return getEncryptionPublicKey(account.wallet.privateKey.substring(2)!);
+};
+
+const decryptMessage = (account: EvmAccount, message: string) => {
+  const stripped = message.substring(2);
+  const buff = Buffer.from(stripped, 'hex');
+  const encryptedData: EthEncryptedData = JSON.parse(buff.toString('utf8'));
+  console.log({ encryptedData, account });
+  return decrypt({
+    encryptedData: encryptedData,
+    privateKey: account.wallet.signingKey.privateKey.substring(2),
+  });
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -125,4 +144,6 @@ export const EvmRequestsUtils = {
   signMessage,
   signV4,
   personalRecover,
+  getEncryptionKey,
+  decryptMessage,
 };

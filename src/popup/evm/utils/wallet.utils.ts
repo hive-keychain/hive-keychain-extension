@@ -119,10 +119,10 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
   const seeds = await getAccountsFromLocalStorage(mk);
   return seeds
     .map((seed) =>
-      seed.accounts.map((e) => {
+      seed.accounts.map((acc) => {
         const account: EvmAccount = {
-          ...e,
-          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, e.path),
+          ...acc,
+          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, acc.path),
           seedId: seed.id,
           seedNickname: seed.nickname,
         };

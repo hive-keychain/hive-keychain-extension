@@ -12,6 +12,8 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
+import { DecryptMessage } from 'src/dialog/evm/requests/decrypt-message/decrypt-message';
+import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
 import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
 import AddAccount from 'src/dialog/hive/requests/add-account';
@@ -160,6 +162,26 @@ const RequestConfirmation = ({ data }: Props) => {
             request={request}
             accounts={data.accounts!}
             data={data}
+          />
+        );
+      }
+
+      case EvmRequestMethod.GET_ENCRYPTION_KEY: {
+        return (
+          <GetEncryptionKey
+            request={request}
+            data={data}
+            accounts={data.accounts!}
+          />
+        );
+      }
+
+      case EvmRequestMethod.ETH_DECRYPT: {
+        return (
+          <DecryptMessage
+            request={request}
+            data={data}
+            accounts={data.accounts!}
           />
         );
       }

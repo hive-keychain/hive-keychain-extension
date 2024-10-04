@@ -1,4 +1,6 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import { decryptMessage } from '@background/evm/requests/operations/ops/decrypt-message';
+import { getEncryptionKey } from '@background/evm/requests/operations/ops/get-encryption-key';
 import { personalSign } from '@background/evm/requests/operations/ops/personal-sign';
 import { signV4 } from '@background/evm/requests/operations/ops/sign-v4';
 import {
@@ -28,6 +30,16 @@ export const performEvmOperation = async (
       }
       case EvmRequestMethod.PERSONAL_SIGN: {
         message = await personalSign(requestHandler, request);
+        result = message?.msg.result;
+        break;
+      }
+      case EvmRequestMethod.GET_ENCRYPTION_KEY: {
+        message = await getEncryptionKey(requestHandler, request);
+        result = message?.msg.result;
+        break;
+      }
+      case EvmRequestMethod.ETH_DECRYPT: {
+        message = await decryptMessage(requestHandler, request);
         result = message?.msg.result;
         break;
       }

@@ -4664,5 +4664,29 @@
   "dialog_evm_user_rejected_method": {
     "message": "User ",
     "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_get_encryption_key": {
+    "message": "$1 is trying to access your encryption key. Do you accept to share it ?",
+    "description": "Evm get encryption key message"
+  },
+  "dialog_evm_get_encryption_key_success": {
+    "message": "Successfully shared encryption key",
+    "description": "Evm get encryption key success"
+  },
+  "dialog_evm_decrypt_message_success": {
+    "message": "Successfully decrypted message",
+    "description": "Evm decrypt message success"
+  },
+  "dialog_evm_decrypt_message_caption": {
+    "message": "$1 is trying to decrypt a message.",
+    "description": "Evm decrypt message caption"
+  },
+  "dialog_evm_decrypt_message_title": {
+    "message": "Decrypt message",
+    "description": "Evm decrypt message title"
+  },
+  "dialog_evm_decrypt_show_message": {
+    "message": "Show message",
+    "description": "Evm decrypt message show button"
   }
 }

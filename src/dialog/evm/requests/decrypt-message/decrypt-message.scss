@@ -1,0 +1,36 @@
+.encrypted-message-container {
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  @include small-card;
+
+  &.hidden {
+    filter: blur(2px);
+    .message {
+      word-break: break-all;
+      max-height: 250px;
+      overflow: hidden;
+    }
+  }
+}
+.display-message-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 10px;
+  background: $red;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4px;
+
+  .svg-icon {
+    @include icon-size(20px);
+  }
+}

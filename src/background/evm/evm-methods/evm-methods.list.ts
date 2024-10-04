@@ -7,6 +7,7 @@ export enum EvmRequestMethod {
   GET_BLOCK_BY_NUMBER = 'eth_getBlockByNumber',
   GET_CHAIN = 'eth_chainId',
   GET_CODE = 'eth_getCode',
+  GET_ENCRYPTION_KEY = 'eth_getEncryptionPublicKey',
   GET_HASH_RATE = 'eth_hashrate',
   GET_MINING = 'eth_mining',
   GET_NETWORK = 'net_version',

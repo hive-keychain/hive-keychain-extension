@@ -5,7 +5,6 @@ export const EvmUnrestrictedMethods = [
   'eth_call', // TODO
   'eth_chainId', // OK
   'eth_coinbase', // TODO Check to confirm
-  'eth_decrypt', // TODO deprecated
   'eth_estimateGas', // TODO check params
   'eth_feeHistory', // TODO see where to get data
   'eth_gasPrice', // TODO see where to get data
@@ -15,7 +14,6 @@ export const EvmUnrestrictedMethods = [
   'eth_getBlockTransactionCountByHash', // OK
   'eth_getBlockTransactionCountByNumber', // OK
   'eth_getCode', // TODO confirm
-  'eth_getEncryptionPublicKey', // TODO MM uses confirmation popup
   'eth_getFilterChanges', // TODO later
   'eth_getFilterLogs', // TODO later
   'eth_getLogs', // TODO later
@@ -57,7 +55,7 @@ export const EvmUnrestrictedMethods = [
   'net_listening',
   'net_peerCount',
   'net_version', // OK
-  'personal_ecRecover',
+  'personal_ecRecover', // OK
   'wallet_addEthereumChain',
   'wallet_getPermissions',
   'wallet_requestPermissions',
