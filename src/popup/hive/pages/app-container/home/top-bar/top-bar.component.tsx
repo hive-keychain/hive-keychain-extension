@@ -146,7 +146,7 @@ const TopBar = ({
             <MetadataPopup
               initialMetadata={initialMetadata}
               onSubmit={(metadata: TransactionOptionsMetadata) => {
-                addCaptionToLoading('multisig_transmitting_to_multisig');
+                addCaptionToLoading('multisig_transmitting_to_2fa');
                 claim({ metaData: metadata });
                 closeModal();
               }}

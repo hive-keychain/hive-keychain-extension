@@ -134,7 +134,11 @@ const ConfirmationPage = ({
     let metadata;
     // AnalyticsUtils.sendRequestEvent(title);
     if (willUseMultisig) {
-      addCaptionToLoading('multisig_transmitting_to_multisig');
+      addCaptionToLoading(
+        twoFABots && Object.keys(twoFABots).length > 0
+          ? 'multisig_transmitting_to_2fa'
+          : 'multisig_transmitting_to_multisig',
+      );
       metadata = { twoFACodes: twoFABots };
     }
     afterConfirmAction({ metaData: metadata });

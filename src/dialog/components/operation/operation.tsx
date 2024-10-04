@@ -267,7 +267,13 @@ const Operation = ({
 
       <LoadingComponent
         hide={!loading}
-        caption={useMultisig ? 'multisig_transmitting_to_multisig' : undefined}
+        caption={
+          useMultisig
+            ? twoFABots && Object.keys(twoFABots).length > 0
+              ? 'multisig_transmitting_to_2fa'
+              : 'multisig_transmitting_to_multisig'
+            : undefined
+        }
       />
     </div>
   );

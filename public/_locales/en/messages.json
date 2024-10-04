@@ -3988,7 +3988,7 @@
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_signed_successfully": {
-    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "message": "Your transaction was signed. You will be notified when it is broadcasted",
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_broadcasted": {
@@ -4024,7 +4024,7 @@
     "description": "Using multisig to process transaction"
   },
   "multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted",
     "description": "Tx sent to multisig backend success message"
   },
   "multisig_disclaimer_message": {
@@ -4035,8 +4035,12 @@
     "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
+  "multisig_transmitting_to_2fa": {
+    "message": "Sending encoded transaction to Multisig server and 2FA bot",
+    "description": "Message to inform user transmiting to multisig backend"
+  },
   "swap_multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted. Once broadcasted, your swap will be processed.",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted. Once broadcasted, your swap will be processed.",
     "description": "Tx sent to multisig backend success message"
   },
   "html_popup_ecosystem_retrieving_error": {
