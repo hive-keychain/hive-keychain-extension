@@ -1,6 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
   EvmConnectedWallets,
+  EvmEventName,
   EvmWalletPermissions,
 } from '@interfaces/evm-provider.interface';
 import {
@@ -13,6 +14,7 @@ import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
+import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getWalletFromSeedPhrase = (seed: string) => {
@@ -160,11 +162,17 @@ const connectMultipleWallet = async (
   domain: string,
 ) => {
   for (const walletAddress of walletAddresses) {
-    await connectWallet(walletAddress, domain);
+    await connectWallet(walletAddress, domain, false);
   }
+  const connectedWallets = await getConnectedWallets(domain);
+  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, connectedWallets);
 };
 
-const connectWallet = async (walletAddress: string, domain: string) => {
+const connectWallet = async (
+  walletAddress: string,
+  domain: string,
+  sendEvent = true,
+) => {
   let allConnectedWallets: EvmConnectedWallets =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
@@ -182,6 +190,9 @@ const connectWallet = async (walletAddress: string, domain: string) => {
     LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
     allConnectedWallets,
   );
+
+  if (sendEvent)
+    sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, allConnectedWallets[domain]);
 
   await addWalletPermission(domain, EvmRequestMethod.GET_ACCOUNTS);
 };

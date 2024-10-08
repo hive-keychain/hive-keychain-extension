@@ -21,15 +21,28 @@ export class EvmProvider extends EventEmitter {
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
 
+  _isConnected = true;
+  _initialized = true;
+  _isUnlocked = true;
+
   constructor() {
     super();
     this.initListener();
+    this._initialized = true;
+    // this._state.initialized = true;
+    this.emit('_initialized');
   }
+
+  isConnected = () => {
+    return true;
+  };
 
   initListener = () => {
     window.addEventListener(
       'message',
       (event) => {
+        console.log({ eventInProvider: event });
+
         // We only accept messages from ourselves
         if (event.source != window) return;
 
@@ -59,16 +72,22 @@ export class EvmProvider extends EventEmitter {
               break;
             }
             case EvmEventName.ACCOUNT_CHANGED: {
+              console.log(
+                JSON.stringify(eventData.event.args) ===
+                  JSON.stringify(this._accounts),
+                JSON.stringify(eventData.event.args),
+                JSON.stringify(this._accounts),
+              );
               if (
                 JSON.stringify(eventData.event.args) ===
                 JSON.stringify(this._accounts)
               )
                 return;
-              else this._accounts === eventData.event.args;
+              else this._accounts = eventData.event.args;
               break;
             }
           }
-          evmProvider.emit(eventData.event.eventType, eventData.event.args);
+          this.emit(eventData.event.eventType, eventData.event.args);
         }
       },
       false,

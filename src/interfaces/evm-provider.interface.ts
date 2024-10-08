@@ -25,6 +25,7 @@ export interface EvmRequest {
 }
 
 export enum EvmEventName {
+  INITIALIZED = '_initialized',
   ACCOUNT_CHANGED = 'accountsChanged',
   CHAIN_CHANGED = 'chainChanged',
 }

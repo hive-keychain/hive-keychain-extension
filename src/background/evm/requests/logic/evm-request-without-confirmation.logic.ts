@@ -6,7 +6,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
+import { sendEvmEventFromSW } from 'src/content-scripts/hive/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 
 export const evmRequestWithoutConfirmation = async (
@@ -118,8 +118,9 @@ export const evmRequestWithoutConfirmation = async (
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);
+      await EvmWalletUtils.revokeAllPermissions(domain);
       message.value.result = null;
-      sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, []);
+      sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, []);
       break;
     }
 
