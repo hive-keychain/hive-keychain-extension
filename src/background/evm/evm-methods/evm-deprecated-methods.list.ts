@@ -1,4 +1,4 @@
-import { EvmRequestMethod } from '@interfaces/evm-provider.interface';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 
 export const EvmDeprecatedMethods = [
   EvmRequestMethod.ETH_SIGN,

@@ -1,4 +1,8 @@
-import { EvmConnectedWallets } from '@interfaces/evm-provider.interface';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import {
+  EvmConnectedWallets,
+  EvmWalletPermissions,
+} from '@interfaces/evm-provider.interface';
 import {
   EvmAccount,
   StoredEvmAccounts,
@@ -178,6 +182,8 @@ const connectWallet = async (walletAddress: string, domain: string) => {
     LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
     allConnectedWallets,
   );
+
+  await addWalletPermission(domain, EvmRequestMethod.GET_ACCOUNTS);
 };
 
 const disconnectWallet = async (walletAddress: string, domain: string) => {
@@ -216,6 +222,75 @@ const disconnectAllWallets = async (domain: string) => {
   );
 };
 
+const getWalletPermission = async (domain: string) => {
+  let walletPermissions: EvmWalletPermissions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
+  if (!walletPermissions || !walletPermissions[domain]) return [];
+
+  return walletPermissions[domain];
+};
+
+const hasPermission = async (domain: string, method: EvmRequestMethod) => {
+  const walletPermissions = await getWalletPermission(domain);
+  return walletPermissions.includes(method);
+};
+
+const addWalletPermission = async (
+  domain: string,
+  method: EvmRequestMethod,
+) => {
+  let walletPermissions: EvmWalletPermissions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
+  if (!walletPermissions) walletPermissions = {};
+  if (!walletPermissions[domain]) walletPermissions[domain] = [];
+  if (!walletPermissions[domain].includes(method))
+    walletPermissions[domain].push(method);
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    walletPermissions,
+  );
+};
+
+const removeWalletPermission = async (
+  domain: string,
+  method: EvmRequestMethod,
+) => {
+  let walletPermissions: EvmWalletPermissions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
+  if (walletPermissions && walletPermissions[domain]) {
+    walletPermissions[domain] = walletPermissions[domain].filter(
+      (perm) => perm !== method,
+    );
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+      walletPermissions,
+    );
+  }
+  await disconnectAllWallets(domain);
+};
+
+const revokeAllPermissions = async (domain: string) => {
+  let walletPermissions: EvmWalletPermissions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
+
+  if (walletPermissions && walletPermissions[domain]) {
+    walletPermissions[domain] = [];
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+      walletPermissions,
+    );
+  }
+};
+
 export const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
@@ -229,4 +304,9 @@ export const EvmWalletUtils = {
   connectMultipleWallet,
   disconnectWallet,
   disconnectAllWallets,
+  hasPermission,
+  addWalletPermission,
+  removeWalletPermission,
+  revokeAllPermissions,
+  getWalletPermission,
 };

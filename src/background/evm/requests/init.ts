@@ -1,5 +1,8 @@
 import { EvmDeprecatedMethods } from '@background/evm/evm-methods/evm-deprecated-methods.list';
-import { doesMethodExist } from '@background/evm/evm-methods/evm-methods.list';
+import {
+  doesMethodExist,
+  EvmRequestMethod,
+} from '@background/evm/evm-methods/evm-methods.list';
 import { EvmUnrestrictedMethods } from '@background/evm/evm-methods/evm-unrestricted-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
@@ -11,10 +14,7 @@ import {
   initializeWallet,
   unlockWallet,
 } from '@background/hive/requests/logic';
-import {
-  EvmRequest,
-  EvmRequestMethod,
-} from '@interfaces/evm-provider.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';

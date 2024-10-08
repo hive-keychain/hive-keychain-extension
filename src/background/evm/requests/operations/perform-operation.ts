@@ -1,12 +1,10 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { decryptMessage } from '@background/evm/requests/operations/ops/decrypt-message';
 import { getEncryptionKey } from '@background/evm/requests/operations/ops/get-encryption-key';
 import { personalSign } from '@background/evm/requests/operations/ops/personal-sign';
 import { signV4 } from '@background/evm/requests/operations/ops/sign-v4';
-import {
-  EvmRequest,
-  EvmRequestMethod,
-} from '@interfaces/evm-provider.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 

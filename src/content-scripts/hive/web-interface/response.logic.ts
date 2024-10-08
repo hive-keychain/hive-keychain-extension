@@ -1,4 +1,6 @@
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { EvmEventName, EvmRequest } from '@interfaces/evm-provider.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Joi from 'joi';
 import {
   KeychainRequest,
@@ -108,4 +110,11 @@ export const sendEventToEvm = (event: any) => {
     },
     window.location.origin,
   );
+};
+
+export const sendEvmEvent = (event: EvmEventName, args?: any) => {
+  chrome.runtime.sendMessage({
+    command: BackgroundCommand.SEND_EVM_EVENT,
+    value: { eventType: event, args: args },
+  } as BackgroundMessage);
 };

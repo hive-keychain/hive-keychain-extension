@@ -1,13 +1,12 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import {
-  EvmRequest,
-  EvmRequestMethod,
-} from '@interfaces/evm-provider.interface';
+import { EvmEventName, EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 
 export const evmRequestWithoutConfirmation = async (
@@ -120,8 +119,8 @@ export const evmRequestWithoutConfirmation = async (
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       await EvmWalletUtils.disconnectAllWallets(domain);
       message.value.result = null;
+      sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, []);
       break;
-      //TODO: Notify all tabs that the permissions have been revoked
     }
 
     case EvmRequestMethod.WEB3_CLIENT_VERSION: {
@@ -129,6 +128,14 @@ export const evmRequestWithoutConfirmation = async (
         chrome.runtime.getManifest().name +
         '/' +
         chrome.runtime.getManifest().version;
+      break;
+    }
+
+    case EvmRequestMethod.WALLET_GET_PERMISSIONS: {
+      const permissions = await EvmWalletUtils.getWalletPermission(domain);
+      message.value.result = permissions.map((perm) => {
+        return { parentCapability: perm };
+      });
       break;
     }
 
@@ -141,7 +148,6 @@ export const evmRequestWithoutConfirmation = async (
         );
       } catch (err) {
         console.log(err);
-
         Logger.info(`${request.method} is not implemented`);
       }
       break;

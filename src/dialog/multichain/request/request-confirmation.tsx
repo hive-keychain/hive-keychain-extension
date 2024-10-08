@@ -1,7 +1,5 @@
-import {
-  EvmRequest,
-  EvmRequestMethod,
-} from '@interfaces/evm-provider.interface';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainRequest,

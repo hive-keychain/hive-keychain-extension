@@ -111,4 +111,7 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     message: 'Request limit exceeded.',
   },
 };
-export { EvmRequestMethod };
+
+export interface EvmWalletPermissions {
+  [domain: string]: EvmRequestMethod[];
+}
