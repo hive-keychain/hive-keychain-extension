@@ -2,11 +2,13 @@ import { CustomJsonOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendOperation = async (
   operations: CustomJsonOperation[],
@@ -170,10 +172,19 @@ const getHistory = async (
   });
 };
 
+const loadHiddenTokensList = async () => {
+  return (
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    )) || []
+  );
+};
+
 export const HiveEngineUtils = {
   get,
   getDelayedTransactionInfo,
   getHistory,
   sendOperation,
   tryConfirmTransaction,
+  loadHiddenTokensList,
 };

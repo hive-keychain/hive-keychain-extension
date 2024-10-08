@@ -1,15 +1,11 @@
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-
-export enum AccountValueType {
-  DOLLARS = 'DOLLARS',
-  TOKEN = 'TOKEN',
-  HIDDEN = 'HIDDEN',
-}
 
 export interface DisplayedAccountValues {
   [AccountValueType.DOLLARS]: string;
@@ -28,9 +24,23 @@ const EstimatedAccountValueSection = ({
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
     AccountValueType.DOLLARS,
   );
+  const [hiddenTokensList, setHiddenTokensList] = useState<string[]>();
+  const [
+    hiveMarketLockedOpenOrdersValues,
+    setHiveMarketLockedOpenOrdersValues,
+  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
+
   useEffect(() => {
     init();
+    loadHiddenTokensList();
   }, []);
+
+  const loadHiddenTokensList = async () => {
+    const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    );
+    setHiddenTokensList(hiddenTokensList ?? []);
+  };
 
   const init = async () => {
     setAccountValueType(

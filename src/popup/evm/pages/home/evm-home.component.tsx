@@ -17,15 +17,13 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
-import {
-  AccountValueType,
-  EstimatedAccountValueSectionComponent,
-} from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
+import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
 import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';

@@ -17,6 +17,7 @@ interface MenuProps {
     callback: () => void;
     className: string;
   };
+  showDetachWindowOption?: boolean;
 }
 
 const Menu = ({
@@ -27,6 +28,7 @@ const Menu = ({
   rightAction,
   navigateTo,
   setTitleContainerProperties,
+  showDetachWindowOption,
 }: PropsType) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -34,6 +36,7 @@ const Menu = ({
       isBackButtonEnabled: isBackButtonEnable,
       isCloseButtonDisabled: isCloseButtonDisabled,
       rightAction: rightAction,
+      showDetachWindowOption: showDetachWindowOption,
     });
   }, [rightAction]);
 

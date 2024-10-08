@@ -4,38 +4,46 @@
   left: 0px;
   height: 60px;
   width: 100%;
-  background: $message-container-info;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   row-gap: 8px;
-  border-top: 1px solid white;
   padding: 16px 0px;
   cursor: pointer;
-
+  @include small-card;
+  margin: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-color: var(--wallet-card-border);
+  border-bottom: 0;
+  padding: 0;
   .close {
     position: absolute;
-    top: 2px;
-    right: 4px;
+    top: 5px;
+    right: 10px;
     cursor: pointer;
+    svg {
+      width: 10px;
+      height: 10px;
+    }
   }
 
   &.closed {
     height: 30px;
-    padding: 0;
     justify-content: center;
   }
 
   .submit-button {
     width: 100px;
     font-size: 14px;
-    height: 30px;
-    border: 1px solid white;
+    height: 24px;
+    min-height: unset;
   }
 
   .text {
     font-size: 14px;
+    color: $lighter-grey;
   }
 
   .button-panel {

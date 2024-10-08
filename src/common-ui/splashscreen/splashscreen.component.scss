@@ -6,7 +6,7 @@
   justify-content: center;
   flex-direction: column;
   row-gap: 32px;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   background: var(--background-color);
@@ -19,13 +19,13 @@
   .overlay {
     height: 100%;
     width: 100%;
-    position: fixed;
+    position: absolute;
     background-color: var(--background-color);
 
     & > div {
       width: 100%;
       height: 100%;
-      position: fixed;
+      position: absolute;
       background-image: var(--background);
       background-repeat: no-repeat;
       // opacity: 0.4;

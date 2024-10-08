@@ -64,6 +64,10 @@
   }
 
   .bottom-panel {
+    position: absolute;
+    left: 0px;
+    bottom: 32px;
+    width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;
     padding: 0px 24px;

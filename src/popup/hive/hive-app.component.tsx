@@ -234,7 +234,7 @@ const HiveApp = ({
 
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {isAppReady && renderMainLayoutNav()}
+      {displaySplashscreen && <SplashscreenComponent />}
 
       {renderPopup(
         loading,
@@ -243,7 +243,8 @@ const HiveApp = ({
         displayChangeRpcPopup,
         switchToRpc,
       )}
-      {displaySplashscreen && <SplashscreenComponent />}
+
+      {isAppReady && renderMainLayoutNav()}
     </div>
   );
 };

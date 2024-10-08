@@ -30,6 +30,8 @@ export interface CustomSelectProps<T> {
   footer?: JSX.Element;
   formatSelectedItem?: (...params: any) => string;
   renderOnlyIcon?: boolean;
+  rightActionIcon?: boolean;
+  rightActionClicked?: () => void;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -116,6 +118,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             type={InputType.TEXT}
             ref={ref}
             classname="filter-input"
+            rightActionIcon={
+              itemProps.rightActionIcon ? SVGIcons.WALLET_SEARCH : undefined
+            }
+            rightActionClicked={itemProps.rightActionClicked ?? undefined}
           />
         )}
         {filteredOptions.map((option, index) => (

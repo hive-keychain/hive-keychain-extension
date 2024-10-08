@@ -891,7 +891,7 @@ var hive_keychain = {
    *   alert('You do not have hive keychain installed');
    * }
    * @param {String} username username of the account to be added
-   * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
+   * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified. Alternatively, authorized accounts can be specified with @${username}.
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
   requestAddAccount: function (username, keys, callback) {
@@ -1003,6 +1003,9 @@ var hive_keychain = {
    * @param {Object} steps Steps returned by KeychainSDK.swaps.getEstimation(), of type IStep[]
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
+   * @param {string} [partnerUsername=null] Partner Hive account hosting the widget
+   * @param {number} [partnerFee=null] Fee received when executing & hosting a Keychain Swap. 0 - 1%
+  
    */
   requestSwap: function (
     username,
@@ -1013,6 +1016,8 @@ var hive_keychain = {
     steps,
     callback,
     rpc,
+    partnerUsername,
+    partnerFee,
   ) {
     const request = {
       type: 'swap',
@@ -1022,6 +1027,8 @@ var hive_keychain = {
       amount,
       slippage,
       steps,
+      partnerUsername,
+      partnerFee,
       rpc,
     };
 

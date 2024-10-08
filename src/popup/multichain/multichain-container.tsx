@@ -23,6 +23,9 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
         return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
       });
     }
+    if (event.key === 'd' && event.ctrlKey) {
+      handleDetachWindow();
+    }
   }, []);
 
   useEffect(() => {
@@ -31,6 +34,12 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleKeyPress]);
+
+  const handleDetachWindow = () => {
+    chrome.tabs.create({
+      url: `detached_window.html`,
+    });
+  };
 
   const init = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([

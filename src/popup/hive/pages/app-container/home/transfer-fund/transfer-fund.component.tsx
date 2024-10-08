@@ -60,15 +60,27 @@ interface TransferForm {
 
 const transferFormRules = FormUtils.createRules<TransferForm>({
   receiverUsername: Joi.string().required(),
-  amount: Joi.number().required().positive().max(Joi.ref('$balance')),
+  amount: Joi.alternatives().conditional('isRecurrent', {
+    is: true,
+    then: Joi.number().required().min(0).max(Joi.ref('$balance')),
+    otherwise: Joi.number().required().positive().max(Joi.ref('$balance')),
+  }),
   frequency: Joi.alternatives().conditional('isRecurrent', {
     is: true,
-    then: Joi.number().min(24).required(),
+    then: Joi.alternatives().conditional('amount', {
+      is: 0,
+      then: Joi.optional(),
+      otherwise: Joi.number().min(24).required(),
+    }),
     otherwise: Joi.optional(),
   }),
   iteration: Joi.alternatives().conditional('isRecurrent', {
     is: true,
-    then: Joi.number().min(2).required(),
+    then: Joi.alternatives().conditional('amount', {
+      is: 0,
+      then: Joi.optional(),
+      otherwise: Joi.number().min(2).required(),
+    }),
     otherwise: Joi.optional(),
   }),
 });
@@ -234,7 +246,6 @@ const TransferFunds = ({
       phishing,
       form.isRecurrent,
     );
-
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
@@ -251,7 +262,9 @@ const TransferFunds = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList(
-          'html_popup_transfer_fund_operation',
+          form.isRecurrent && form.amount === 0
+            ? 'html_popup_stop_recc_transfer_fund_operation'
+            : 'html_popup_transfer_fund_operation',
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
@@ -267,7 +280,7 @@ const TransferFunds = ({
                 return;
               } else {
                 memoParam = HiveUtils.encodeMemo(
-                  form.memo,
+                  `${!form.memo.startsWith('#') ? '#' : ''}${form.memo}`,
                   activeAccount.keys.memo.toString(),
                   await AccountUtils.getPublicMemo(form.receiverUsername),
                 );
@@ -286,7 +299,11 @@ const TransferFunds = ({
             activeAccount.keys.active!,
           );
 
-          removeFromLoadingList('html_popup_transfer_fund_operation');
+          removeFromLoadingList(
+            form.isRecurrent && form.amount === 0
+              ? 'html_popup_stop_recc_transfer_fund_operation'
+              : 'html_popup_transfer_fund_operation',
+          );
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -412,12 +429,12 @@ const TransferFunds = ({
               control={control}
               dataTestId="checkbox-transfer-recurrent"
               title={
-                watch('amount') === 0
+                watch('amount') + '' === '0'
                   ? 'popup_html_cancel_recurrent_transfer'
                   : 'popup_html_recurrent_transfer'
               }
             />
-            {watch('isRecurrent') && watch('amount') !== 0 && (
+            {watch('isRecurrent') && watch('amount') + '' !== '0' && (
               <div className="recurrent-panel">
                 <FormInputComponent
                   name="frequency"

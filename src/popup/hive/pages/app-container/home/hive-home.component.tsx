@@ -1,4 +1,5 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
@@ -8,6 +9,8 @@ import { NotificationsComponent } from '@popup/hive/pages/app-container/home/not
 import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
+import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { RewardsUtils } from '@popup/hive/utils/rewards.utils';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import {
@@ -23,15 +26,13 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
-import {
-  AccountValueType,
-  EstimatedAccountValueSectionComponent,
-} from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
+import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -95,6 +96,11 @@ const Home = ({
   >();
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
+  const [hiddenTokensList, setHiddenTokensList] = useState<string[]>([]);
+  const [
+    hiveMarketLockedOpenOrdersValues,
+    setHiveMarketLockedOpenOrdersValues,
+  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -105,9 +111,19 @@ const Home = ({
     initSurvey();
     initCheckKeysOnAccounts(accounts);
     initCheckVestingRoutes();
+    loadHiddenTokensList();
     ChainUtils.addChainToSetupChains(chain);
   }, []);
 
+  const loadHiddenTokensList = async () => {
+    setHiddenTokensList(await HiveEngineUtils.loadHiddenTokensList());
+  };
+
+  const loadHiveInternalMarketOrders = async (username: string) => {
+    setHiveMarketLockedOpenOrdersValues(
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username),
+    );
+  };
   useEffect(() => {
     if (activeRpc && activeRpc.uri !== 'NULL')
       initGovernanceExpirationReminder(
@@ -131,6 +147,7 @@ const Home = ({
           activeAccount.account.reward_hive_balance as string,
         ),
       );
+      loadHiveInternalMarketOrders(activeAccount.name!);
     }
   }, [activeAccount]);
 
@@ -380,6 +397,8 @@ const Home = ({
                     tokensMarket,
                     AccountValueType.DOLLARS,
                     tokens,
+                    hiveMarketLockedOpenOrdersValues,
+                    hiddenTokensList,
                   )}`,
                   [AccountValueType.TOKEN]: `${AccountUtils.getAccountValue(
                     activeAccount.account,
@@ -389,6 +408,8 @@ const Home = ({
                     tokensMarket,
                     AccountValueType.TOKEN,
                     tokens,
+                    hiveMarketLockedOpenOrdersValues,
+                    hiddenTokensList,
                   )} ${chain.mainTokens.hive}`,
                 }}
                 hasPortofolio

@@ -1,3 +1,4 @@
+import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import { AccountModule } from '@background/hive/modules/account.module';
 import AutolockModule from '@background/hive/modules/autolock.module';
 import ClaimModule from '@background/hive/modules/claim.module';
@@ -28,6 +29,7 @@ const initializeServiceWorker = async () => {
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();
+  AutoStakeTokensModule.start();
   AutolockModule.start();
   AutolockModule.set(
     await LocalStorageUtils.getValueFromLocalStorage(

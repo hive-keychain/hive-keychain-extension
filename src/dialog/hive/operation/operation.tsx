@@ -81,7 +81,9 @@ const Operation = ({
           useMultisig = KeysUtils.isUsingMultisig(
             localAccount?.keys.active!,
             initiatorAccount,
-            initiatorAccount,
+            localAccount?.keys.activePubkey?.startsWith('@')
+              ? localAccount?.keys.activePubkey.replace('@', '')
+              : localAccount?.name!,
             method,
           );
           setUseMultisig(useMultisig);
@@ -93,7 +95,9 @@ const Operation = ({
           useMultisig = KeysUtils.isUsingMultisig(
             localAccount?.keys.posting!,
             initiatorAccount,
-            initiatorAccount,
+            localAccount?.keys.postingPubkey?.startsWith('@')
+              ? localAccount?.keys.postingPubkey.replace('@', '')
+              : localAccount?.name!,
             method,
           );
           setUseMultisig(useMultisig);
