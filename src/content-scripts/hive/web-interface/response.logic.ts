@@ -103,6 +103,7 @@ export const sendErrorToEvm = (response: any) => {
 };
 
 export const sendEventToEvm = (event: any) => {
+  console.log('ici', { event });
   window.postMessage(
     {
       type: 'evm_keychain_event',
@@ -117,4 +118,17 @@ export const sendEvmEvent = (event: EvmEventName, args?: any) => {
     command: BackgroundCommand.SEND_EVM_EVENT,
     value: { eventType: event, args: args },
   } as BackgroundMessage);
+};
+
+export const sendEvmEventFromSW = (event: EvmEventName, args?: any) => {
+  chrome.tabs.query({}, (tabs) => {
+    console.log({ tabs });
+    for (const tab of tabs) {
+      if (tab.id)
+        chrome.tabs.sendMessage(tab.id, {
+          command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+          value: { eventType: event, args: args },
+        } as BackgroundMessage);
+    }
+  });
 };

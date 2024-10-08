@@ -57,7 +57,7 @@ export const EvmUnrestrictedMethods = [
   'net_version', // OK
   'personal_ecRecover', // OK
   'wallet_addEthereumChain',
-  'wallet_getPermissions',
+  'wallet_getPermissions', // OK
   'wallet_requestPermissions',
   'wallet_revokePermissions',
   'wallet_registerOnboarding',
