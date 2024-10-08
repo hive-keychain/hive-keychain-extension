@@ -1337,6 +1337,10 @@
     "message": "Request was canceled by the user.",
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
+  "bgd_lifecycle_request_pending_multisig": {
+    "message": "The request is currently pending multisig approval from other signers. You will be notified by Keychain if/when it is successfully broadcasted.",
+    "description": "Generic answer to websites when the window is closed during multisig (in the background so it wont show on screen)"
+  },
   "bgd_context_transfer_user": {
     "message": "Transfer HIVE/HBD to @%s",
     "description": "Context menu (when right click on a username on steemit)"

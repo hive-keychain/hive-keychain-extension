@@ -9,6 +9,7 @@ import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
@@ -19,6 +20,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
@@ -61,6 +63,20 @@ const Operation = ({
     if (data && (username || data.username)) checkForMultsig();
   }, [data, username]);
 
+  const saveIsMultisig = async () => {
+    if (useMultisig) {
+      LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__REQUEST_HANDLER,
+      ).then((data) => {
+        data.isMultisig = true;
+
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.__REQUEST_HANDLER,
+          data,
+        );
+      });
+    }
+  };
   const checkForMultsig = async () => {
     let useMultisig = false;
     const name = (username || data.username)!;
@@ -144,7 +160,7 @@ const Operation = ({
   const genericOnConfirm = () => {
     setLoading(true);
     const metadata = { twoFACodes: twoFABots };
-
+    saveIsMultisig();
     chrome.runtime.sendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
