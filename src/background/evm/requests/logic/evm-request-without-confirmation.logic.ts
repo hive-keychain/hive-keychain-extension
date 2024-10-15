@@ -44,14 +44,22 @@ export const evmRequestWithoutConfirmation = async (
       message.value.result = Number(await EvmChainUtils.getLastEvmChainId());
       break;
     }
-    case EvmRequestMethod.GET_ACCOUNTS:
-    case EvmRequestMethod.REQUEST_ACCOUNTS: {
-      const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
-      if (connectedWallets.length > 0) {
-        message.value.result = connectedWallets;
-      }
-      break;
-    }
+    // case EvmRequestMethod.GET_ACCOUNTS: {
+    //   message.value.result = [];
+    //   const hasPermission = await EvmWalletUtils.hasPermission(
+    //     domain,
+    //     EvmMethodPermissionMap[request.method]!,
+    //   );
+
+    //   if (hasPermission) {
+    //     const connectedWallets = await EvmWalletUtils.getConnectedWallets(
+    //       domain,
+    //     );
+    //     message.value.result = connectedWallets;
+    //   }
+
+    //   break;
+    // }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
     case EvmRequestMethod.GET_BLOCK_BY_HASH: {
       message.value.result = await EvmRequestsUtils.getBlock(

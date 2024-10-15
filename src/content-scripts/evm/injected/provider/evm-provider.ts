@@ -1,3 +1,4 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
   EIP6963ProviderInfo,
   EvmEventName,
@@ -41,8 +42,6 @@ export class EvmProvider extends EventEmitter {
     window.addEventListener(
       'message',
       (event) => {
-        console.log({ eventInProvider: event });
-
         // We only accept messages from ourselves
         if (event.source != window) return;
 
@@ -78,12 +77,16 @@ export class EvmProvider extends EventEmitter {
                 JSON.stringify(eventData.event.args),
                 JSON.stringify(this._accounts),
               );
+
               if (
                 JSON.stringify(eventData.event.args) ===
                 JSON.stringify(this._accounts)
               )
                 return;
-              else this._accounts = eventData.event.args;
+              else
+                this._accounts = eventData.event.args.map((acc: string) =>
+                  acc.toLowerCase(),
+                );
               break;
             }
           }
@@ -95,8 +98,13 @@ export class EvmProvider extends EventEmitter {
   };
 
   async request(args: RequestArguments): Promise<any> {
+    switch (args.method) {
+      case EvmRequestMethod.GET_ACCOUNTS: {
+        return this._accounts;
+      }
+    }
+
     const result = await this.processRequest(args);
-    console.log({ result, args });
     return result;
   }
 

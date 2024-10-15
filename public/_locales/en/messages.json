@@ -4708,6 +4708,10 @@
     "message": "The method `$1` doesn't exist",
     "description": "Evm non existing error message"
   },
+  "dialog_evm_not_authorized_method": {
+    "message": "The method `$1` doesn't have authorization",
+    "description": "Evm non existing error message"
+  },
   "dialog_evm_user_rejected_method": {
     "message": "User ",
     "description": "Evm deprecated/unsupported error message"

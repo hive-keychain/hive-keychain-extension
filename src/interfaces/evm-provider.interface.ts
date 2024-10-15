@@ -1,4 +1,5 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 export interface RequestArguments {
@@ -114,5 +115,5 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
 };
 
 export interface EvmWalletPermissions {
-  [domain: string]: EvmRequestMethod[];
+  [domain: string]: EvmRequestPermission[];
 }

@@ -1,4 +1,4 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
   EvmConnectedWallets,
   EvmEventName,
@@ -194,7 +194,7 @@ const connectWallet = async (
   if (sendEvent)
     sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, allConnectedWallets[domain]);
 
-  await addWalletPermission(domain, EvmRequestMethod.GET_ACCOUNTS);
+  await addWalletPermission(domain, EvmRequestPermission.ETH_ACCOUNTS);
 };
 
 const disconnectWallet = async (walletAddress: string, domain: string) => {
@@ -243,14 +243,17 @@ const getWalletPermission = async (domain: string) => {
   return walletPermissions[domain];
 };
 
-const hasPermission = async (domain: string, method: EvmRequestMethod) => {
+const hasPermission = async (
+  domain: string,
+  permission: EvmRequestPermission,
+) => {
   const walletPermissions = await getWalletPermission(domain);
-  return walletPermissions.includes(method);
+  return walletPermissions.includes(permission);
 };
 
 const addWalletPermission = async (
   domain: string,
-  method: EvmRequestMethod,
+  permission: EvmRequestPermission,
 ) => {
   let walletPermissions: EvmWalletPermissions =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -258,8 +261,8 @@ const addWalletPermission = async (
     );
   if (!walletPermissions) walletPermissions = {};
   if (!walletPermissions[domain]) walletPermissions[domain] = [];
-  if (!walletPermissions[domain].includes(method))
-    walletPermissions[domain].push(method);
+  if (!walletPermissions[domain].includes(permission))
+    walletPermissions[domain].push(permission);
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
@@ -269,7 +272,7 @@ const addWalletPermission = async (
 
 const removeWalletPermission = async (
   domain: string,
-  method: EvmRequestMethod,
+  permission: EvmRequestPermission,
 ) => {
   let walletPermissions: EvmWalletPermissions =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -277,7 +280,7 @@ const removeWalletPermission = async (
     );
   if (walletPermissions && walletPermissions[domain]) {
     walletPermissions[domain] = walletPermissions[domain].filter(
-      (perm) => perm !== method,
+      (perm) => perm !== permission,
     );
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,

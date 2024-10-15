@@ -44,7 +44,7 @@ export const ConnectAccounts = (props: Props) => {
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
         requestId: request.request_id,
-        result: addresses,
+        result: addresses.map((add) => add.toLowerCase()),
       },
     });
   };
