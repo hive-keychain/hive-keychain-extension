@@ -43,6 +43,7 @@ import { Socket, io } from 'socket.io-client';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 let socket: Socket;
 let shouldReconnectSocket: boolean = false;
@@ -102,6 +103,8 @@ const setupRefreshConnections = () => {
         const accountMultisigConfig = multisigConfig[value.account];
         if (value.connect) {
           if (!socket.connected) socket.connect();
+          await sleep(1000);
+          connectSocket(multisigConfig);
           shouldReconnectSocket = true;
           connectToBackend(value.account, accountMultisigConfig);
         } else {
@@ -135,6 +138,55 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
+
+        if (!socket.connected) {
+          shouldReconnectSocket = true;
+          socket.connect();
+          connectSocket({});
+          await sleep(1000);
+        }
+        const config: MultisigConfig =
+          (await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.MULTISIG_CONFIG,
+          )) || {};
+        if (
+          !config[data.initiatorAccount.name]?.[
+            data.method?.toLowerCase() as 'posting' | 'active'
+          ].isEnabled
+        ) {
+          const config = {
+            isEnabled: true,
+            posting:
+              data.method.toLowerCase() === 'posting'
+                ? {
+                    isEnabled: true,
+                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
+                      data.key!,
+                    )!,
+                    message: signMessage(
+                      data.initiatorAccount.name!,
+                      data.key?.toString()!,
+                    ),
+                  }
+                : { isEnabled: false, message: '', publicKey: '' },
+            active:
+              data.method.toLowerCase() === 'active'
+                ? {
+                    isEnabled: true,
+                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
+                      data.key!,
+                    )!,
+                    message: signMessage(
+                      data.initiatorAccount.name!,
+                      data.key?.toString()!,
+                    ),
+                  }
+                : { isEnabled: false, message: '', publicKey: '' },
+          };
+          await connectToBackend(data.initiatorAccount.name, config);
+
+          await sleep(1000);
+        }
         requestSignatures(data, true);
       }
     },
@@ -377,7 +429,6 @@ const connectToBackend = async (
     SocketMessageCommand.SIGNER_CONNECT,
     signerConnectMessages,
     (signerConnectResponse: SignerConnectResponse) => {
-      //TODO: Add signing after the fact
       for (const signer of signerConnectMessages) {
         if (
           !(
@@ -745,6 +796,33 @@ setInterval(() => {
     start();
   }
 }, 60 * 1000);
+
+const signMessage = (message: string, privateKey: string) => {
+  let buf;
+  try {
+    const o = JSON.parse(message, (k, v) => {
+      if (
+        v !== null &&
+        typeof v === 'object' &&
+        'type' in v &&
+        v.type === 'Buffer' &&
+        'data' in v &&
+        Array.isArray(v.data)
+      ) {
+        return Buffer.from(v.data);
+      }
+      return v;
+    });
+    if (Buffer.isBuffer(o)) {
+      buf = o;
+    } else {
+      buf = message;
+    }
+  } catch (e) {
+    buf = message;
+  }
+  return signature.Signature.signBuffer(buf, privateKey).toHex();
+};
 
 export const MultisigModule = {
   start,
