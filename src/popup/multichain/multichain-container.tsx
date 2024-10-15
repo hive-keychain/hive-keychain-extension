@@ -24,6 +24,9 @@ export const MultichainContainer = () => {
         return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
       });
     }
+    if (event.key === 'd' && event.ctrlKey) {
+      handleDetachWindow();
+    }
   }, []);
 
   useEffect(() => {
@@ -33,6 +36,12 @@ export const MultichainContainer = () => {
     };
   }, [handleKeyPress]);
 
+  const handleDetachWindow = () => {
+    chrome.tabs.create({
+      url: `detached_window.html`,
+    });
+  };
+
   const init = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
       LocalStorageKeyEnum.ACTIVE_THEME,
@@ -40,7 +49,7 @@ export const MultichainContainer = () => {
     ]);
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-    setChain(res.ACTIVE_CHAIN);
+    setChain(res.ACTIVE_CHAIN ?? Chain.HIVE);
 
     setReady(true);
 

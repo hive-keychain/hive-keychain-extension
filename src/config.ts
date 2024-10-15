@@ -17,10 +17,13 @@ const Config = {
       delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
   },
+  autoStakeTokens: {
+    FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
+  },
   analytics: {
     frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
   },
-  KEYCHAIN_PROPOSAL: 262,
+  KEYCHAIN_PROPOSAL: 306,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {
@@ -63,6 +66,9 @@ const Config = {
     baseURL:
       process.env.MULTISIG_BACKEND_SERVER ||
       'https://api-multisig.hive-keychain.com',
+  },
+  tutorial: {
+    baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
   },
 };
 

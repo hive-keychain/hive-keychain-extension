@@ -17,7 +17,7 @@ import {
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-if (!process.env.IS_FIREFOX) {
+if (!process.env.IS_FIREFOX && !global.window) {
   //@ts-ignore
   global.window = { crypto };
 }
@@ -33,6 +33,7 @@ type RequestData = {
   key?: Key;
   publicKey?: Key;
   windowId?: number;
+  isMultisig?: boolean;
 };
 export class RequestsHandler {
   data: RequestData;
@@ -52,6 +53,10 @@ export class RequestsHandler {
 
   async setupHiveEngine() {
     this.hiveEngineConfig = await BgdHiveEngineConfigModule.getActiveConfig();
+  }
+
+  async setIsMultisig(isMultisig: boolean) {
+    this.data.isMultisig = isMultisig;
   }
 
   async initializeParameters(

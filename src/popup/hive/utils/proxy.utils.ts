@@ -1,5 +1,5 @@
 import { AccountWitnessProxyOperation, ExtendedAccount } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -22,11 +22,14 @@ const setAsProxy = async (
   proxyName: string,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   GovernanceUtils.removeFromIgnoreRenewal(username);
   return await HiveTxUtils.sendOperation(
     [getSetProxyOperation(proxyName, username)],
     activeKey,
+    false,
+    options,
   );
 };
 
@@ -43,8 +46,12 @@ const getSetProxyTransaction = (proxyName: string, username: string) => {
   ]);
 };
 
-const removeProxy = async (username: string, activeKey: Key) => {
-  return setAsProxy('', username, activeKey);
+const removeProxy = async (
+  username: string,
+  activeKey: Key,
+  options?: TransactionOptions,
+) => {
+  return setAsProxy('', username, activeKey, options);
 };
 
 const ProxyUtils = {

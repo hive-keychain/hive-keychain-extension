@@ -35,6 +35,7 @@ export enum LocalStorageKeyEnum {
   LAST_VESTING_ROUTES = 'LAST_VESTING_ROUTES',
 
   PORTFOLIO_FILTER = 'PORTFOLIO_FILTER',
+  PROPOSAL_SKIPPED = 'PROPOSAL_SKIPPED',
 
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
@@ -45,4 +46,11 @@ export enum LocalStorageKeyEnum {
 
   // To check if some account (regardless of chain) has been setup
   HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
+
+  // Onboard Tutorial
+  SKIP_TUTORIAL = 'SKIP_TUTORIAL',
+
+  //Auto Stake Engine Tokens
+  LAYER_TWO_AUTO_STAKE = 'LAYER_TWO_AUTO_STAKE',
+  LAYER_TWO_AUTO_STAKE_TOKENS = 'LAYER_TWO_AUTO_STAKE_TOKENS',
 }

@@ -77,7 +77,7 @@
       .advanced-parameters {
         margin-top: 5px;
         color: var(--main-font-color);
-        font-size: 18px;
+        @include poppins500(18);
         .title-panel {
           display: flex;
           align-items: center;

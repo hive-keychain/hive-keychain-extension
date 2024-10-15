@@ -4,7 +4,7 @@
   .filter-panel {
     $filter-max-height: 400px;
 
-    position: fixed;
+    position: absolute;
     width: 320px;
     top: 60px;
     left: 40px;
@@ -126,6 +126,7 @@
     @include form-panel;
     row-gap: 8px;
     max-height: 476px;
+    position: relative;
 
     .rotating-logo-container {
       min-height: 100%;

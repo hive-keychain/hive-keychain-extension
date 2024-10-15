@@ -1,6 +1,7 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
@@ -70,6 +71,8 @@ const saveEstimate = async (
   endToken: string,
   amount: number,
   username: string,
+  partnerFee?: number,
+  partnerUsername?: string,
 ): Promise<string> => {
   const response = await KeychainSwapApi.post(`token-swap/estimate/save`, {
     slipperage,
@@ -78,6 +81,8 @@ const saveEstimate = async (
     endToken,
     amount,
     username,
+    partnerFee,
+    partnerUsername,
   });
   if (response.error) {
     throw response.error;
@@ -92,6 +97,7 @@ const processSwap = async (
   amount: number,
   activeAccount: ActiveAccount,
   swapAccount: string,
+  options?: TransactionOptions,
 ) => {
   if (
     startToken === BaseCurrencies.HBD.toUpperCase() ||
@@ -106,6 +112,7 @@ const processSwap = async (
       0,
       0,
       activeAccount.keys.active!,
+      options,
     );
     return status;
   } else {
@@ -117,6 +124,7 @@ const processSwap = async (
       estimateId,
       activeAccount.keys.active!,
       activeAccount.name!,
+      options,
     );
     return status;
   }

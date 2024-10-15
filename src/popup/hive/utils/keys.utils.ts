@@ -100,7 +100,6 @@ const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
   const localAccount = await AccountUtils.getAccountFromLocalStorage(
     account.name,
   );
-
   if (localAccount?.keys.active === key) {
     return KeychainKeyTypes.active;
   } else {
@@ -111,7 +110,7 @@ const isKeyActiveOrPosting = async (key: Key, account: ExtendedAccount) => {
 const isUsingMultisig = (
   key: Key,
   transactionAccount: ExtendedAccount,
-  initiatorAccount: ExtendedAccount,
+  initiatorAccountName: string,
   method: KeychainKeyTypesLC,
 ): boolean => {
   const publicKey = KeysUtils.getPublicKeyFromPrivateKeyString(
@@ -120,7 +119,7 @@ const isUsingMultisig = (
   switch (method) {
     case KeychainKeyTypesLC.active: {
       const accAuth = transactionAccount.active.account_auths.find(
-        ([auth, w]) => auth === initiatorAccount.name,
+        ([auth, w]) => auth === initiatorAccountName,
       );
       const keyAuth = transactionAccount.active.key_auths.find(
         ([keyAuth, w]) => keyAuth === publicKey,
@@ -136,7 +135,7 @@ const isUsingMultisig = (
     case KeychainKeyTypesLC.posting:
       {
         const accAuth = transactionAccount.posting.account_auths.find(
-          ([auth, w]) => auth === initiatorAccount.name,
+          ([auth, w]) => auth === initiatorAccountName,
         );
         const keyAuth = transactionAccount.posting.key_auths.find(
           ([keyAuth, w]) => keyAuth === publicKey,
@@ -173,7 +172,7 @@ const getKeyType = (
     KeysUtils.isUsingMultisig(
       privateKey,
       transactionAccount,
-      initiatorAccount,
+      initiatorAccount.name,
       method,
     )
   ) {

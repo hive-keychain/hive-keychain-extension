@@ -2,7 +2,7 @@
   "name": "Hive Keychain Beta",
   "description": "Hive Keychain Beta (don't forget to switch back to production version)",
   "default_locale": "en",
-  "version": "3.3.2",
+  "version": "3.7.1",
   "permissions": ["storage", "idle", "alarms"],
   "host_permissions": ["https://*/*"],
   "action": {
@@ -21,7 +21,8 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["web_interfaceBundle.js", "keychainifyBundle.js"]
+      "js": ["web_interfaceBundle.js", "keychainifyBundle.js"],
+      "all_frames": true
     }
   ],
   "manifest_version": 3

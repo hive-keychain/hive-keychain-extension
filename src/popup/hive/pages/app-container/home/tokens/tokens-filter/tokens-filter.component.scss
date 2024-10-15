@@ -10,7 +10,7 @@
   overflow: hidden;
 
   .input-filter {
-    margin: 0px 16px;
+    padding: 0 30px;
     width: unset;
   }
 
@@ -23,10 +23,10 @@
     .token {
       display: flex;
       column-gap: 16px;
-      padding: 0px 24px;
+      padding: 0px 30px;
 
       .checkbox-panel {
-        width: calc(100% - 48px);
+        width: 100%;
       }
 
       .switch-container {

@@ -6,7 +6,7 @@ import {
   RequestId,
   RequestSwap,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -17,10 +17,12 @@ import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 export const broadcastSwap = async (
   requestHandler: RequestsHandler,
   data: RequestSwap & RequestId & { swapAccount?: string },
+  options?: TransactionOptions,
 ) => {
   let result,
     err: any,
     err_message = null;
+  let swapId: string = '';
   try {
     const {
       username,
@@ -30,21 +32,25 @@ export const broadcastSwap = async (
       steps,
       amount,
       swapAccount,
+      partnerUsername,
+      partnerFee,
     } = data;
-
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,
     );
     if (!swapAccount)
       throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
-    const swapId = await SwapTokenUtils.saveEstimate(
+
+    swapId = await SwapTokenUtils.saveEstimate(
       steps,
       slippage,
       startToken,
       endToken,
       amount,
       username!,
+      partnerFee,
+      partnerUsername,
     );
     const keyType = KeysUtils.getKeyType(key!);
     switch (keyType) {
@@ -91,6 +97,7 @@ export const broadcastSwap = async (
             0,
             0,
             key!,
+            options,
           );
         } else {
           result = await TokensUtils.sendToken(
@@ -100,6 +107,7 @@ export const broadcastSwap = async (
             swapId,
             key!,
             data.username!,
+            options,
           );
         }
         break;
@@ -125,7 +133,7 @@ export const broadcastSwap = async (
   } finally {
     const message = createMessage(
       err,
-      result,
+      { ...result, swap_id: swapId },
       data,
       await chrome.i18n.getMessage('bgd_ops_swap_start_success', [
         data.amount + '',

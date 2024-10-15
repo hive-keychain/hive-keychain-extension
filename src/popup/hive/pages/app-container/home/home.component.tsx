@@ -1,4 +1,5 @@
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -202,6 +203,8 @@ const Home = ({
           closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
+    } else {
+      return <ProposalVotingSectionComponent />;
     }
   };
 
@@ -224,20 +227,23 @@ const Home = ({
 
   return (
     <div className={'home-page'} data-testid={`${Screen.HOME_PAGE}-page`}>
-      {activeRpc && activeRpc.uri !== 'NULL' && (
-        <>
-          <TopBarComponent />
-          <div className={'home-page-content'} onScroll={handleScroll}>
-            <ResourcesSectionComponent />
-            <EstimatedAccountValueSectionComponent />
-            <WalletInfoSectionComponent />
-          </div>
-          <ActionsSectionComponent
-            additionalClass={showBottomBar ? undefined : 'down'}
-          />
-          <ProposalVotingSectionComponent />
-        </>
-      )}
+      {activeAccount &&
+        activeAccount.name &&
+        activeRpc &&
+        activeRpc.uri !== 'NULL' && (
+          <>
+            <TopBarComponent />
+            <div className={'home-page-content'} onScroll={handleScroll}>
+              <ResourcesSectionComponent />
+              <EstimatedAccountValueSectionComponent />
+              <WalletInfoSectionComponent />
+            </div>
+            <ActionsSectionComponent
+              additionalClass={showBottomBar ? undefined : 'down'}
+            />
+            <ProposalVotingSectionComponent />
+          </>
+        )}
 
       {renderPopup(
         displayWhatsNew,
@@ -246,6 +252,7 @@ const Home = ({
         displayWrongKeyPopup,
         vestingRoutesDifferences,
       )}
+      <TutorialPopupComponent />
     </div>
   );
 };
