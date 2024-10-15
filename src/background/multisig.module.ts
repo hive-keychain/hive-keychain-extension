@@ -704,7 +704,7 @@ const encodeMetadata = async (
 };
 
 const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
-
+let multisigWindowId: number | undefined;
 const openWindow = (data: MultisigData): void => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -719,7 +719,9 @@ const openWindow = (data: MultisigData): void => {
     // Except on Firefox
     //@ts-ignore
     if (typeof InstallTrigger === undefined) win.focused = true;
+    if (multisigWindowId) chrome.windows.remove(multisigWindowId);
     chrome.windows.create(win, (window) => {
+      multisigWindowId = window?.id;
       waitUntilDialogIsReady(100, MultisigDialogCommand.READY_MULTISIG, () => {
         chrome.runtime.sendMessage({
           command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
