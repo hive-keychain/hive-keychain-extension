@@ -59,7 +59,9 @@ const Config = {
       baseUrl: process.env.RAMP_DEV_API_KEY
         ? 'https://api.demo.ramp.network'
         : 'https://api.ramp.network',
-      apiKey: process.env.RAMP_DEV_API_KEY || '',
+      apiKey:
+        process.env.RAMP_DEV_API_KEY ||
+        '8wr6k8t4tp4yg5rxgkdkp42qhgvjwfrvqm5zwtm8',
     } as RampConfig,
   },
   multisig: {
