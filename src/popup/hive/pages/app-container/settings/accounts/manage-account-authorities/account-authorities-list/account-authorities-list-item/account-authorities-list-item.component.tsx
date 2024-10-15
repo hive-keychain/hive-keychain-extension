@@ -1,4 +1,5 @@
 import { AuthorityType } from '@hiveio/dhive';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
@@ -58,7 +59,7 @@ const AccountAuthoritiesListItem = ({
         },
       ],
       title: 'popup_html_remove_account_authority',
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_remove_authorized_account_operation');
         try {
           const updatedActiveAccountAuth =
@@ -74,6 +75,7 @@ const AccountAuthoritiesListItem = ({
             updatedActiveAccountAuth.account.memo_key,
             updatedActiveAccountAuth.account.json_metadata,
             updatedActiveAccountAuth.keys.active!,
+            options,
           );
           if (success) {
             goBack();

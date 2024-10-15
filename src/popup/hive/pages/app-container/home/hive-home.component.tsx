@@ -1,5 +1,9 @@
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
+import {
+  TransactionOptions,
+  TransactionOptionsMetadata,
+} from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
@@ -11,9 +15,11 @@ import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
 import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { RewardsUtils } from '@popup/hive/utils/rewards.utils';
 import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
@@ -21,6 +27,7 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
+import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
@@ -28,12 +35,14 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -79,6 +88,9 @@ const Home = ({
   loadUserTokens,
   removeFromLoadingList,
   setErrorMessage,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
 
@@ -274,6 +286,8 @@ const Home = ({
           closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
+    } else {
+      return <ProposalVotingSectionComponent />;
     }
   };
 
@@ -300,24 +314,21 @@ const Home = ({
     loadUserTokens(activeAccount.name!);
   };
 
-  const claim = async (): Promise<void> => {
-    if (!activeAccount.keys.posting) {
-      setErrorMessage('popup_accounts_err_claim');
-      return;
-    }
-    addToLoadingList('popup_html_claiming_rewards');
+  const claim = async (options?: TransactionOptions) => {
     try {
-      const claimSuccessful = await RewardsUtils.claimRewards(
+      addToLoadingList('popup_html_claiming_rewards');
+      const claimResult = await RewardsUtils.claimRewards(
         activeAccount.name!,
         activeAccount.account.reward_hive_balance,
         activeAccount.account.reward_hbd_balance,
         activeAccount.account.reward_vesting_balance,
         activeAccount.keys.posting!,
+        options,
       );
       await sleep(3000);
       refreshActiveAccount();
-      if (claimSuccessful) {
-        if (claimSuccessful.isUsingMultisig) {
+      if (claimResult) {
+        if (claimResult.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
           const rewardHp =
@@ -351,6 +362,43 @@ const Home = ({
     }
   };
 
+  const handleClickOnClaim = async (): Promise<void> => {
+    if (!activeAccount.keys.posting) {
+      setErrorMessage('popup_accounts_err_claim');
+      return;
+    } else {
+      const twoFaAccounts = await MultisigUtils.get2FAAccounts(
+        activeAccount.account,
+        KeychainKeyTypes.active,
+      );
+
+      let initialMetadata = {} as TransactionOptionsMetadata;
+      for (const account of twoFaAccounts) {
+        if (!initialMetadata.twoFACodes) initialMetadata.twoFACodes = {};
+        initialMetadata.twoFACodes[account] = '';
+      }
+
+      if (twoFaAccounts.length > 0) {
+        openModal({
+          title: 'popup_html_transaction_metadata',
+          children: (
+            <MetadataPopup
+              initialMetadata={initialMetadata}
+              onSubmit={(metadata: TransactionOptionsMetadata) => {
+                addCaptionToLoading('multisig_transmitting_to_2fa');
+                claim({ metaData: metadata });
+                closeModal();
+              }}
+              onCancel={() => closeModal()}
+            />
+          ),
+        });
+      } else {
+        claim();
+      }
+    }
+  };
+
   return (
     <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       {activeAccount &&
@@ -371,7 +419,7 @@ const Home = ({
                       icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
                       dataTestId="reward-claim-icon"
                       className="claim-button"
-                      onClick={() => claim()}
+                      onClick={() => handleClickOnClaim()}
                       hoverable
                     />
                   )}
@@ -460,6 +508,9 @@ const connector = connect(mapStateToProps, {
   loadUserTokens,
   setErrorMessage,
   removeFromLoadingList,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

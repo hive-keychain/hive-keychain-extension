@@ -124,7 +124,6 @@ const isUsingMultisig = (
       const keyAuth = transactionAccount.active.key_auths.find(
         ([keyAuth, w]) => keyAuth === publicKey,
       );
-
       if (
         (accAuth && accAuth[1] < transactionAccount.active.weight_threshold) ||
         (keyAuth && keyAuth[1] < transactionAccount.active.weight_threshold)

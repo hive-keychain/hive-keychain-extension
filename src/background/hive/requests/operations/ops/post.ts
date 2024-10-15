@@ -1,6 +1,7 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 import Logger from 'src/utils/logger.utils';
@@ -9,6 +10,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastPost = async (
   requestHandler: HiveRequestsHandler,
   data: RequestPost & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   const key = requestHandler.data.key;
@@ -35,6 +37,7 @@ export const broadcastPost = async (
         data.json_metadata,
         data.comment_options,
         key!,
+        options,
       );
     }
   } catch (e: any) {
