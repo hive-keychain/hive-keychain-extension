@@ -24,6 +24,7 @@ interface WalletSectionInfoItemProps {
   tokenBalance?: TokenBalance;
   tokenMarket?: TokenMarket[];
   icon: SVGIcons;
+  defaultIcon?: SVGIcons;
   addBackground?: boolean;
   mainValue: string | Asset | number;
   mainValueLabel: string;
@@ -37,6 +38,7 @@ const WalletInfoSectionItem = ({
   tokenBalance,
   tokenMarket,
   icon,
+  defaultIcon,
   addBackground,
   mainValue,
   mainValueLabel,
@@ -150,13 +152,13 @@ const WalletInfoSectionItem = ({
             inline: 'center',
           });
       }}>
-      <div className="information-panel">
+      <div className="information-panel-hive">
         {typeof icon === 'string' && (
           <PreloadedImage
             src={icon}
             className="currency-icon"
-            addBackground
-            useDefaultSVG={icon}
+            addBackground={addBackground}
+            useDefaultSVG={icon || defaultIcon}
           />
         )}
         {typeof icon !== 'string' && !tokenInfo && (
@@ -169,9 +171,9 @@ const WalletInfoSectionItem = ({
           <PreloadedImage
             src={tokenInfo?.metadata.icon}
             className="currency-icon"
-            addBackground
+            addBackground={addBackground}
             symbol={tokenInfo.symbol}
-            useDefaultSVG={icon}
+            useDefaultSVG={icon || defaultIcon}
           />
         )}
         <div className="main-value-label">{mainValueLabel}</div>

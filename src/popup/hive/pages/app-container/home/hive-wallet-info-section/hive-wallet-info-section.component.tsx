@@ -231,7 +231,7 @@ const WalletInfoSection = ({
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
                     tokenMarket={market}
-                    icon={SVGIcons.HIVE_ENGINE}
+                    defaultIcon={SVGIcons.HIVE_ENGINE}
                     addBackground
                     mainValue={token.balance}
                     mainValueLabel={token.symbol}
