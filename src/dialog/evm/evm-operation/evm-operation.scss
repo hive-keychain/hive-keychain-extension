@@ -51,6 +51,7 @@
       background: var(--card-background);
       border-radius: 20px;
       border: 1px solid var(--card-border);
+      min-height: 200px;
       .field {
         display: flex;
         justify-content: space-between;
