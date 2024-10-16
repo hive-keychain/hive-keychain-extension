@@ -43,7 +43,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   };
 
   const onAddressLoaded = async () => {
-    if (!dapp || !active.address.length) return;
+    if (!dapp || !dapp.url || !active.address.length) return;
     const domain = FormatUtils.urlToDomain(dapp.url!);
     const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
     const sortedConnectedWallets = [
@@ -73,106 +73,108 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   const unconnectedAccounts = accounts.filter(
     (account) => !connectedWallets.includes(account.wallet.address),
   );
-  return (
-    <>
-      <DappStatusComponent
-        imageUrl={dapp?.favIconUrl}
-        onClick={() => setShowDetail(true)}
-        status={status}
-      />
-      {showDetail && (
-        <PopupContainer
-          className="dapp-status-details"
-          onClickOutside={() => setShowDetail(false)}>
-          <div className="dapp-status-wrapper">
-            <div className="popup-title">
-              <img src={dapp?.favIconUrl} />
-              <p>{FormatUtils.urlToDomain(dapp?.url!)}</p>
-              <SVGIcon
-                icon={SVGIcons.TOP_BAR_CLOSE_BTN}
-                onClick={() => setShowDetail(false)}
-              />
-            </div>
-            <div className="caption">
-              {chrome.i18n.getMessage('popup_html_evm_dapp_status_caption')}
+  if (!dapp?.url) return null;
+  else
+    return (
+      <>
+        <DappStatusComponent
+          imageUrl={dapp?.favIconUrl}
+          onClick={() => setShowDetail(true)}
+          status={status}
+        />
+        {showDetail && (
+          <PopupContainer
+            className="dapp-status-details"
+            onClickOutside={() => setShowDetail(false)}>
+            <div className="dapp-status-details-wrapper">
+              <div className="popup-title">
+                <img src={dapp?.favIconUrl} />
+                <p>{FormatUtils.urlToDomain(dapp?.url!)}</p>
+                <SVGIcon
+                  icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+                  onClick={() => setShowDetail(false)}
+                />
+              </div>
+              <div className="caption">
+                {chrome.i18n.getMessage('popup_html_evm_dapp_status_caption')}
+              </div>
+              {connectedAccounts.length ? (
+                <div className="account-section-title">
+                  {chrome.i18n.getMessage(
+                    'popup_html_evm_dapp_status_connected_accounts',
+                  )}
+                </div>
+              ) : null}
+              {connectedAccounts.map((account) => (
+                <div className="account-section-item">
+                  <EvmAccountDisplayComponent
+                    account={account}
+                    active={active}
+                    status={
+                      account.wallet.address === active.address
+                        ? DappStatusEnum.CONNECTED
+                        : DappStatusEnum.OTHER_ACCOUNT_CONNECTED
+                    }
+                  />
+                  <SVGIcon
+                    icon={SVGIcons.GLOBAL_ERROR}
+                    className="account-section-icon"
+                    onClick={async () => {
+                      await EvmWalletUtils.disconnectWallet(
+                        account.wallet.address,
+                        FormatUtils.urlToDomain(dapp?.url!),
+                      );
+                      onAddressLoaded();
+                    }}
+                  />
+                </div>
+              ))}
+              {unconnectedAccounts.length ? (
+                <div className="account-section-title">
+                  {chrome.i18n.getMessage(
+                    'popup_html_evm_dapp_status_other_accounts',
+                  )}
+                </div>
+              ) : null}
+              {unconnectedAccounts.map((account) => (
+                <div className="account-section-item">
+                  <EvmAccountDisplayComponent
+                    account={account}
+                    active={active}
+                    status={DappStatusEnum.DISCONNECTED}
+                  />
+                  <SVGIcon
+                    icon={SVGIcons.GLOBAL_ADD_CIRCLE}
+                    className="account-section-icon"
+                    onClick={async () => {
+                      await EvmWalletUtils.connectWallet(
+                        account.wallet.address,
+                        FormatUtils.urlToDomain(dapp?.url!),
+                      );
+                      onAddressLoaded();
+                    }}
+                  />
+                </div>
+              ))}
             </div>
             {connectedAccounts.length ? (
-              <div className="account-section-title">
-                {chrome.i18n.getMessage(
-                  'popup_html_evm_dapp_status_connected_accounts',
-                )}
-              </div>
-            ) : null}
-            {connectedAccounts.map((account) => (
-              <div className="account-section-item">
-                <EvmAccountDisplayComponent
-                  account={account}
-                  active={active}
-                  status={
-                    account.wallet.address === active.address
-                      ? DappStatusEnum.CONNECTED
-                      : DappStatusEnum.OTHER_ACCOUNT_CONNECTED
-                  }
-                />
-                <SVGIcon
-                  icon={SVGIcons.GLOBAL_ERROR}
-                  className="account-section-icon"
+              <div className="account-section-button-wrapper">
+                <ButtonComponent
+                  type={ButtonType.IMPORTANT}
+                  label="popup_html_evm_dapp_status_disconnect_all"
                   onClick={async () => {
-                    await EvmWalletUtils.disconnectWallet(
-                      account.wallet.address,
+                    await EvmWalletUtils.disconnectAllWallets(
                       FormatUtils.urlToDomain(dapp?.url!),
                     );
                     onAddressLoaded();
                   }}
                 />
               </div>
-            ))}
-            {unconnectedAccounts.length ? (
-              <div className="account-section-title">
-                {chrome.i18n.getMessage(
-                  'popup_html_evm_dapp_status_other_accounts',
-                )}
-              </div>
             ) : null}
-            {unconnectedAccounts.map((account) => (
-              <div className="account-section-item">
-                <EvmAccountDisplayComponent
-                  account={account}
-                  active={active}
-                  status={DappStatusEnum.DISCONNECTED}
-                />
-                <SVGIcon
-                  icon={SVGIcons.GLOBAL_ADD_CIRCLE}
-                  className="account-section-icon"
-                  onClick={async () => {
-                    await EvmWalletUtils.connectWallet(
-                      account.wallet.address,
-                      FormatUtils.urlToDomain(dapp?.url!),
-                    );
-                    onAddressLoaded();
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-          {connectedAccounts.length ? (
-            <div className="account-section-button-wrapper">
-              <ButtonComponent
-                type={ButtonType.IMPORTANT}
-                label="popup_html_evm_dapp_status_disconnect_all"
-                onClick={async () => {
-                  await EvmWalletUtils.disconnectAllWallets(
-                    FormatUtils.urlToDomain(dapp?.url!),
-                  );
-                  onAddressLoaded();
-                }}
-              />
-            </div>
-          ) : null}
-        </PopupContainer>
-      )}
-    </>
-  );
+          </PopupContainer>
+        )}
+      </>
+    );
 };
 
 const connector = connect((state: RootState) => {
