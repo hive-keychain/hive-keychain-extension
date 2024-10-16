@@ -18,7 +18,6 @@ export const PersonalSign = (props: Props) => {
     'hex',
   ).toString('utf8');
   const [message, setMessage] = useState<string>(msg);
-  console.log(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
 
   return (

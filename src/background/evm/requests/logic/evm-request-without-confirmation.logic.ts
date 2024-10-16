@@ -1,4 +1,7 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import {
+  EvmMethodPermissionMap,
+  EvmRequestMethod,
+} from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName, EvmRequest } from '@interfaces/evm-provider.interface';
@@ -44,22 +47,22 @@ export const evmRequestWithoutConfirmation = async (
       message.value.result = Number(await EvmChainUtils.getLastEvmChainId());
       break;
     }
-    // case EvmRequestMethod.GET_ACCOUNTS: {
-    //   message.value.result = [];
-    //   const hasPermission = await EvmWalletUtils.hasPermission(
-    //     domain,
-    //     EvmMethodPermissionMap[request.method]!,
-    //   );
+    case EvmRequestMethod.REQUEST_ACCOUNTS: {
+      message.value.result = [];
+      const hasPermission = await EvmWalletUtils.hasPermission(
+        domain,
+        EvmMethodPermissionMap[request.method]!,
+      );
 
-    //   if (hasPermission) {
-    //     const connectedWallets = await EvmWalletUtils.getConnectedWallets(
-    //       domain,
-    //     );
-    //     message.value.result = connectedWallets;
-    //   }
+      if (hasPermission) {
+        const connectedWallets = await EvmWalletUtils.getConnectedWallets(
+          domain,
+        );
+        message.value.result = connectedWallets;
+      }
 
-    //   break;
-    // }
+      break;
+    }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
     case EvmRequestMethod.GET_BLOCK_BY_HASH: {
       message.value.result = await EvmRequestsUtils.getBlock(

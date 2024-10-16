@@ -3,6 +3,7 @@ import {
   doesMethodExist,
   EvmMethodPermissionMap,
   EvmNeedPermissionMethods,
+  EvmRequestMethod,
   EvmRestrictedMethods,
   EvmUnrestrictedMethods,
 } from '@background/evm/evm-methods/evm-methods.list';
@@ -73,7 +74,11 @@ export const initEvmRequestHandler = async (
         // return error ?
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
-      evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+      if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+        evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+      } else {
+        evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+      }
     }
   }
 
