@@ -23,6 +23,13 @@
     }
   }
 
+  .dialog-caption {
+    @include small-card;
+    display: unset;
+    margin: unset;
+    margin-bottom: 16px;
+  }
+
   .operation-header {
     padding: 0 12px 12px 12px;
   }
@@ -69,6 +76,13 @@
           }
         }
       }
+    }
+  }
+
+  &.has-caption {
+    .operation-body {
+      max-height: 275px;
+      overflow: hidden;
     }
   }
 

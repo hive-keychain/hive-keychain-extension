@@ -5,7 +5,7 @@ import { HDNodeWallet } from 'ethers';
 import React, { useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
+import { FieldsCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -42,7 +42,7 @@ export const DecryptMessage = (props: Props) => {
       domain={data.domain}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}>
-      <DialogCaption
+      <FieldsCaption
         text={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
           data.domain,
         ])}

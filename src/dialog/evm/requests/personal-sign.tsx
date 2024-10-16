@@ -1,8 +1,7 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import React, { useState } from 'react';
-import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
-import RequestItem from 'src/dialog/components/request-item/request-item';
+import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -19,6 +18,7 @@ export const PersonalSign = (props: Props) => {
     'hex',
   ).toString('utf8');
   const [message, setMessage] = useState<string>(msg);
+  console.log(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
 
   return (
@@ -26,16 +26,12 @@ export const PersonalSign = (props: Props) => {
       data={request}
       domain={data.domain}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_request')}>
-      <DialogCaption
-        text={chrome.i18n.getMessage('dialog_signature_request_caption', [
-          data.domain,
-        ])}
-      />
-      <RequestItem
-        title="dialog_evm_sign_request_message"
-        content={`${message}`}
-      />
+      title={chrome.i18n.getMessage('dialog_evm_sign_request')}
+      caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
+        data.domain,
+      ])}>
+      <></>
+      <DisplayText title="dialog_evm_sign_request_message" content={message} />
     </EvmOperation>
   );
 };

@@ -16,6 +16,7 @@ type Props = {
   tab: number;
   header?: string;
   redHeader?: boolean;
+  caption?: string;
 };
 
 export const EvmOperation = ({
@@ -27,6 +28,7 @@ export const EvmOperation = ({
   data,
   header,
   redHeader,
+  caption,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,7 +58,7 @@ export const EvmOperation = ({
   };
 
   return (
-    <div className="operation">
+    <div className={`operation ${caption ? 'has-caption' : ''}`}>
       <div
         className="scrollable"
         style={{
@@ -76,6 +78,13 @@ export const EvmOperation = ({
             </div>
           )}
         </div>
+        {caption && (
+          <div
+            className="dialog-caption"
+            dangerouslySetInnerHTML={{
+              __html: caption,
+            }}></div>
+        )}
         <div
           style={{
             display: 'flex',
