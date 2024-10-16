@@ -12,6 +12,7 @@ import {
   Chain,
   ChainType,
 } from '@popup/multichain/interfaces/chains.interface';
+import { ModalProperties } from '@popup/multichain/interfaces/modal.interface';
 import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
 import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
@@ -24,6 +25,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
+import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -42,6 +44,8 @@ const ChainRouter = ({
   nav,
   resetMessage,
   chain,
+  modal,
+  currentPage,
 }: Props & PropsFromRedux) => {
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -124,7 +128,10 @@ const ChainRouter = ({
           onResetMessage={resetMessage}
         />
       )}
-      {hasFinishedSignup === null && !nav && <SplashscreenComponent />}
+      {modal && <ModalComponent {...modal} />}
+      {hasFinishedSignup === null && !currentPage && !nav && (
+        <SplashscreenComponent />
+      )}
     </>
   );
 };
@@ -136,6 +143,8 @@ const mapStateToProps = (state: RootState) => {
     hasFinishedSignup: state.hasFinishedSignup,
     nav: state.navigation.stack[0],
     chain: state.chain as Chain,
+    currentPage: state.navigation.stack[0],
+    modal: state.modal as ModalProperties,
   };
 };
 

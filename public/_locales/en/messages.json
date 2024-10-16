@@ -1349,6 +1349,10 @@
     "message": "Request was canceled by the user.",
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
+  "bgd_lifecycle_request_pending_multisig": {
+    "message": "The request is currently pending multisig approval from other signers. You will be notified by Keychain if/when it is successfully broadcasted.",
+    "description": "Generic answer to websites when the window is closed during multisig (in the background so it wont show on screen)"
+  },
   "bgd_context_transfer_user": {
     "message": "Transfer HIVE/HBD to @%s",
     "description": "Context menu (when right click on a username on steemit)"
@@ -1845,6 +1849,10 @@
   },
   "popup_html_confirm_cancel_power_down_message": {
     "message": "Please confirm that you want to cancel your power down.",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_confirm_cancel_power_down_title": {
+    "message": "Confirm cancel power down",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
@@ -3996,7 +4004,7 @@
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_signed_successfully": {
-    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "message": "Your transaction was signed. You will be notified when it is broadcasted",
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_broadcasted": {
@@ -4032,7 +4040,7 @@
     "description": "Using multisig to process transaction"
   },
   "multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted",
     "description": "Tx sent to multisig backend success message"
   },
   "multisig_disclaimer_message": {
@@ -4043,8 +4051,12 @@
     "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
+  "multisig_transmitting_to_2fa": {
+    "message": "Sending encoded transaction to Multisig server and 2FA bot",
+    "description": "Message to inform user transmiting to multisig backend"
+  },
   "swap_multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted. Once broadcasted, your swap will be processed.",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted. Once broadcasted, your swap will be processed.",
     "description": "Tx sent to multisig backend success message"
   },
   "html_popup_ecosystem_retrieving_error": {
@@ -4411,6 +4423,14 @@
     "message": "You need to accept the conditions before creating an account.",
     "description": "checkbox content on create account page"
   },
+  "multisig_bot_two_fa_code": {
+    "message": "@$1 One Time Password:",
+    "description": "Two fa code label"
+  },
+  "multisig_bot_two_fa_codes": {
+    "message": "2FA Codes",
+    "description": "Two fa code label"
+  },
   "notification_confirm_save": {
     "message": "Are you sure you want to save your changes ?",
     "description": "Notification save changes message"
@@ -4739,5 +4759,21 @@
   "dialog_evm_decrypt_show_message": {
     "message": "Show message",
     "description": "Evm decrypt message show button"
+  },
+  "popup_html_transaction_metadata": {
+    "message": "Transaction metadata",
+    "description": "Transaction metadata"
+  },
+  "popup_html_proposal_vote": {
+    "message": "Keychain Proposal",
+    "description": "Proposal vote"
+  },
+  "error_otp_not_verified": {
+    "message": "Your One Time Password is incorrect. Please try again",
+    "description": "Error message if otp isn't verified"
+  },
+  "error_otp_already_used": {
+    "message": "Your One Time Password has already been used. Please use the next one.",
+    "description": "Error message if otp has been used already"
   }
 }

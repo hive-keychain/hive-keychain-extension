@@ -1,5 +1,6 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
@@ -236,7 +237,7 @@ const Delegations = ({
       ],
       title: 'popup_html_delegation',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_delegation_operation');
         try {
           let success = await DelegationUtils.delegateVestingShares(
@@ -247,6 +248,7 @@ const Delegations = ({
               globalProperties!,
             ).toFixed(6) + ' VESTS',
             activeAccount.keys.active!,
+            options,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -283,7 +285,7 @@ const Delegations = ({
       ],
       title: 'popup_html_cancel_delegation',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_cancel_delegation_operation');
 
         try {
@@ -292,6 +294,7 @@ const Delegations = ({
             form.username,
             '0.000000 VESTS',
             activeAccount.keys.active!,
+            options,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
