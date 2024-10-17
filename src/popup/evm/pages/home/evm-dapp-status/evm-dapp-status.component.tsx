@@ -47,9 +47,10 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
     const domain = FormatUtils.urlToDomain(dapp.url!);
     const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
     const sortedConnectedWallets = [
-      connectedWallets.find((e) => e === active.address),
-      ...connectedWallets.filter((e) => e !== active.address),
-    ];
+      connectedWallets.find((e) => e === active.address.toLowerCase()),
+      ...connectedWallets.filter((e) => e !== active.address.toLowerCase()),
+    ].filter((e) => !!e);
+
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_EVM_EVENT,
       value: {
