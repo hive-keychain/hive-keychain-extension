@@ -232,6 +232,7 @@ const requestSignatures = async (
                   command: DialogCommand.SEND_DIALOG_ERROR,
                   msg: { display_msg: await chrome.i18n.getMessage(err) },
                 });
+                resolve({ error: { message: err } });
               }
             }
           },
@@ -705,7 +706,6 @@ const encodeMetadata = async (
   return await MultisigUtils.encodeMetadata(metaData, key, receiverPublicKey);
 };
 
-const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
 let multisigWindowId: number | undefined;
 const openWindow = (data: MultisigData): void => {
   chrome.windows.getCurrent(async (currentWindow) => {
