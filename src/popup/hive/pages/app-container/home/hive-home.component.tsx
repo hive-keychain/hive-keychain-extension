@@ -125,6 +125,7 @@ const Home = ({
     initCheckVestingRoutes();
     loadHiddenTokensList();
     ChainUtils.addChainToSetupChains(chain);
+    ChainUtils.setPreviousChain(chain);
   }, []);
 
   const loadHiddenTokensList = async () => {

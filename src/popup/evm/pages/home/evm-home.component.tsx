@@ -17,6 +17,7 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -71,6 +72,7 @@ const Home = ({
     if (activeAccount.wallet.address) {
       refreshAccountBalances();
       setTokens(undefined);
+      ChainUtils.setPreviousChain(chain);
     }
   }, [activeAccount.address]);
 

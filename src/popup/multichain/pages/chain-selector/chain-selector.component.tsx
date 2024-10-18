@@ -43,6 +43,7 @@ const ChainSelector = ({
 
   const onCloseClicked = async () => {
     let previousChain = ChainUtils.getPreviousChain();
+    console.log('previousChain', previousChain);
     if (previousChain) setChain(previousChain);
     else if (setupChains) setChain(setupChains[0]);
   };
