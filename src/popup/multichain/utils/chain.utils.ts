@@ -66,6 +66,7 @@ const addChainToSetupChains = async (chain: Chain) => {
   let chainIds = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.SETUP_CHAINS,
   );
+  if (chainIds.includes(chain.chainId)) return;
   if (!chainIds) chainIds = [];
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.SETUP_CHAINS,

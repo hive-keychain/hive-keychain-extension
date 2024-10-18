@@ -73,6 +73,7 @@ const Home = ({
       refreshAccountBalances();
       setTokens(undefined);
       ChainUtils.setPreviousChain(chain);
+      ChainUtils.addChainToSetupChains(chain);
     }
   }, [activeAccount.address]);
 

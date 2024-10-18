@@ -1,10 +1,7 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import {
-  Chain,
-  ChainType,
-} from '@popup/multichain/interfaces/chains.interface';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
@@ -35,15 +32,11 @@ const ChainSelector = ({
   };
 
   const selectChain = async (chain: Chain) => {
-    if (chain.type === ChainType.EVM) {
-      await ChainUtils.addChainToSetupChains(chain);
-    }
     setChain(chain);
   };
 
   const onCloseClicked = async () => {
     let previousChain = ChainUtils.getPreviousChain();
-    console.log('previousChain', previousChain);
     if (previousChain) setChain(previousChain);
     else if (setupChains) setChain(setupChains[0]);
   };

@@ -23,6 +23,9 @@ const ChainDropdown = ({ chain, setChain, resetChain }: PropsFromRedux) => {
 
   const init = async () => {
     const chains = await ChainUtils.getSetupChains(true);
+    if (!chains.find((e) => e.chainId === chain.chainId)) {
+      chains.push(chain);
+    }
     let optionItems: OptionItem[] = chains.map((c) => {
       return { label: c.name, value: c, img: c.logo };
     });
