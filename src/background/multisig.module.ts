@@ -138,59 +138,60 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
-
-        if (!socket.connected) {
-          shouldReconnectSocket = true;
-          socket.connect();
-          connectSocket({});
-          await sleep(1000);
-        }
-        const config: MultisigConfig =
-          (await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.MULTISIG_CONFIG,
-          )) || {};
-        if (
-          !config[data.initiatorAccount.name]?.[
-            data.method?.toLowerCase() as 'posting' | 'active'
-          ].isEnabled
-        ) {
-          const config = {
-            isEnabled: true,
-            posting:
-              data.method.toLowerCase() === 'posting'
-                ? {
-                    isEnabled: true,
-                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
-                      data.key!,
-                    )!,
-                    message: signMessage(
-                      data.initiatorAccount.name!,
-                      data.key?.toString()!,
-                    ),
-                  }
-                : { isEnabled: false, message: '', publicKey: '' },
-            active:
-              data.method.toLowerCase() === 'active'
-                ? {
-                    isEnabled: true,
-                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
-                      data.key!,
-                    )!,
-                    message: signMessage(
-                      data.initiatorAccount.name!,
-                      data.key?.toString()!,
-                    ),
-                  }
-                : { isEnabled: false, message: '', publicKey: '' },
-          };
-          await connectToBackend(data.initiatorAccount.name, config);
-
-          await sleep(1000);
-        }
+        await createConnectionIfNeeded(data);
         requestSignatures(data, true);
       }
     },
   );
+};
+
+// When the socket has not been initialized because multisig is not enabled for any account
+// this allows to create a connection on the go to wait for a multisig response
+const createConnectionIfNeeded = async (data: MultisigRequestSignatures) => {
+  if (!socket.connected) {
+    shouldReconnectSocket = true;
+    socket.connect();
+    connectSocket({});
+    await sleep(1000);
+  }
+  const config: MultisigConfig =
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.MULTISIG_CONFIG,
+    )) || {};
+  if (
+    !config[data.initiatorAccount.name]?.[
+      data.method?.toLowerCase() as 'posting' | 'active'
+    ].isEnabled
+  ) {
+    const config = {
+      isEnabled: true,
+      posting:
+        data.method.toLowerCase() === 'posting'
+          ? {
+              isEnabled: true,
+              publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(data.key!)!,
+              message: signMessage(
+                data.initiatorAccount.name!,
+                data.key?.toString()!,
+              ),
+            }
+          : { isEnabled: false, message: '', publicKey: '' },
+      active:
+        data.method.toLowerCase() === 'active'
+          ? {
+              isEnabled: true,
+              publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(data.key!)!,
+              message: signMessage(
+                data.initiatorAccount.name!,
+                data.key?.toString()!,
+              ),
+            }
+          : { isEnabled: false, message: '', publicKey: '' },
+    };
+    await connectToBackend(data.initiatorAccount.name, config);
+
+    await sleep(1000);
+  }
 };
 
 const requestSignatures = async (
@@ -198,6 +199,7 @@ const requestSignatures = async (
   useRuntimeMessages?: boolean,
 ) => {
   return new Promise(async (resolve, reject) => {
+    await createConnectionIfNeeded(data);
     const message = await getRequestSignatureMessage(data);
     try {
       socket.volatile.emit(
