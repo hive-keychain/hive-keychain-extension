@@ -39,6 +39,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
@@ -48,6 +49,7 @@ export const performOperation = async (
   tab: number,
   domain: string,
   no_confirm: boolean,
+  options?: TransactionOptions,
 ) => {
   let message = null;
   try {
@@ -58,61 +60,81 @@ export const performOperation = async (
         message = await addAccount(requestHandler, data);
         break;
       case KeychainRequestTypes.custom:
-        message = await broadcastCustomJson(requestHandler, data);
+        message = await broadcastCustomJson(requestHandler, data, options);
         break;
       case KeychainRequestTypes.vote:
-        message = await broadcastVote(requestHandler, data);
+        message = await broadcastVote(requestHandler, data, options);
         break;
       case KeychainRequestTypes.transfer:
-        message = await broadcastTransfer(requestHandler, data);
+        message = await broadcastTransfer(requestHandler, data, options);
         break;
       case KeychainRequestTypes.post:
-        message = await broadcastPost(requestHandler, data);
+        message = await broadcastPost(requestHandler, data, options);
         break;
       case KeychainRequestTypes.addAccountAuthority:
-        message = await broadcastAddAccountAuthority(requestHandler, data);
+        message = await broadcastAddAccountAuthority(
+          requestHandler,
+          data,
+          options,
+        );
         break;
       case KeychainRequestTypes.removeAccountAuthority:
-        message = await broadcastRemoveAccountAuthority(requestHandler, data);
+        message = await broadcastRemoveAccountAuthority(
+          requestHandler,
+          data,
+          options,
+        );
         break;
       case KeychainRequestTypes.addKeyAuthority:
-        message = await broadcastAddKeyAuthority(requestHandler, data);
+        message = await broadcastAddKeyAuthority(requestHandler, data, options);
         break;
       case KeychainRequestTypes.removeKeyAuthority:
-        message = await broadcastRemoveKeyAuthority(requestHandler, data);
+        message = await broadcastRemoveKeyAuthority(
+          requestHandler,
+          data,
+          options,
+        );
         break;
       case KeychainRequestTypes.broadcast:
-        message = await broadcastOperations(requestHandler, data);
+        message = await broadcastOperations(requestHandler, data, options);
         break;
       case KeychainRequestTypes.createClaimedAccount:
-        message = await broadcastCreateClaimedAccount(requestHandler, data);
+        message = await broadcastCreateClaimedAccount(
+          requestHandler,
+          data,
+          options,
+        );
         break;
       case KeychainRequestTypes.delegation:
-        message = await broadcastDelegation(requestHandler, data);
+        message = await broadcastDelegation(requestHandler, data, options);
         break;
       case KeychainRequestTypes.witnessVote:
-        message = await broadcastWitnessVote(requestHandler, data);
+        message = await broadcastWitnessVote(requestHandler, data, options);
         break;
       case KeychainRequestTypes.proxy:
-        message = await broadcastProxy(requestHandler, data);
+        message = await broadcastProxy(requestHandler, data, options);
         break;
       case KeychainRequestTypes.powerUp:
-        message = await broadcastPowerUp(requestHandler, data);
+        message = await broadcastPowerUp(requestHandler, data, options);
         break;
       case KeychainRequestTypes.powerDown:
-        message = await broadcastPowerDown(requestHandler, data);
+        message = await broadcastPowerDown(requestHandler, data, options);
         break;
       case KeychainRequestTypes.sendToken:
-        message = await broadcastSendToken(requestHandler, data);
+        message = await broadcastSendToken(requestHandler, data, options);
         break;
       case KeychainRequestTypes.createProposal:
-        message = await broadcastCreateProposal(requestHandler, data);
+        message = await broadcastCreateProposal(requestHandler, data, options);
         break;
       case KeychainRequestTypes.updateProposalVote:
-        message = await broadcastUpdateProposalVote(requestHandler, data);
+        message = await broadcastUpdateProposalVote(
+          requestHandler,
+          data,
+          options,
+        );
         break;
       case KeychainRequestTypes.removeProposal:
-        message = await broadcastRemoveProposal(requestHandler, data);
+        message = await broadcastRemoveProposal(requestHandler, data, options);
         break;
       case KeychainRequestTypes.decode:
         message = await decodeMessage(requestHandler, data);
@@ -130,13 +152,13 @@ export const performOperation = async (
         message = await signTx(requestHandler, data);
         break;
       case KeychainRequestTypes.convert:
-        message = await convert(requestHandler, data);
+        message = await convert(requestHandler, data, options);
         break;
       case KeychainRequestTypes.recurrentTransfer:
-        message = await recurrentTransfer(requestHandler, data);
+        message = await recurrentTransfer(requestHandler, data, options);
         break;
       case KeychainRequestTypes.swap:
-        message = await broadcastSwap(requestHandler, data);
+        message = await broadcastSwap(requestHandler, data, options);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

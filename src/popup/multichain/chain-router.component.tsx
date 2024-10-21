@@ -8,6 +8,7 @@ import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
+import { ModalProperties } from '@popup/multichain/interfaces/modal.interface';
 import { Chain } from '@popup/multichain/multichain.context';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
@@ -18,6 +19,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
+import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -36,6 +38,7 @@ const ChainRouter = ({
   setHasFinishedSignup,
   currentPage,
   resetMessage,
+  modal,
 }: Props & PropsFromRedux) => {
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -114,6 +117,7 @@ const ChainRouter = ({
           onResetMessage={resetMessage}
         />
       )}
+      {modal && <ModalComponent {...modal} />}
       {hasFinishedSignup === null && !currentPage && <SplashscreenComponent />}
     </>
   );
@@ -125,6 +129,7 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
     currentPage: state.navigation.stack[0],
+    modal: state.modal as ModalProperties,
   };
 };
 

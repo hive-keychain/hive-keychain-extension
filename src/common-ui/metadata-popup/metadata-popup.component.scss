@@ -1,0 +1,21 @@
+.metadata-popup {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  .metadata-content {
+    .two-fa-codes {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+    }
+    .section-title {
+      @include poppins400(14px);
+    }
+  }
+  .metadata-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 16px;
+  }
+}

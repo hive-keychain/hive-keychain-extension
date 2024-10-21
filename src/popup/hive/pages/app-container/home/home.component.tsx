@@ -203,6 +203,8 @@ const Home = ({
           closePopup={() => setVestingRoutesDifferences(undefined)}
         />
       );
+    } else {
+      return <ProposalVotingSectionComponent />;
     }
   };
 
