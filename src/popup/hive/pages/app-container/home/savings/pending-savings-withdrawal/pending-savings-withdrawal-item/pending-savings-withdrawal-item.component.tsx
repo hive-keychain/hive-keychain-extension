@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
   addToLoadingList,
@@ -54,7 +55,7 @@ const PendingSavingsWithdrawalItem = ({
           value: `${item.amount} ${moment(item.complete).format('L')}`,
         },
       ],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_cancel_withdraw_savings_operation');
 
         try {
@@ -62,6 +63,7 @@ const PendingSavingsWithdrawalItem = ({
             activeAccount.name!,
             item.request_id,
             activeAccount.keys.active!,
+            options,
           );
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {

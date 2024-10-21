@@ -6,7 +6,7 @@ import {
   RequestId,
   RequestSwap,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -17,6 +17,7 @@ import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 export const broadcastSwap = async (
   requestHandler: RequestsHandler,
   data: RequestSwap & RequestId & { swapAccount?: string },
+  options?: TransactionOptions,
 ) => {
   let result,
     err: any,
@@ -96,6 +97,7 @@ export const broadcastSwap = async (
             0,
             0,
             key!,
+            options,
           );
         } else {
           result = await TokensUtils.sendToken(
@@ -105,6 +107,7 @@ export const broadcastSwap = async (
             swapId,
             key!,
             data.username!,
+            options,
           );
         }
         break;
