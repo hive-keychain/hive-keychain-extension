@@ -95,6 +95,7 @@ export const EvmRestrictedMethods = [
   EvmRequestMethod.WALLET_INVOKE_KEYRING,
   EvmRequestMethod.REQUEST_ACCOUNTS,
   EvmRequestMethod.GET_ENCRYPTION_KEY,
+  EvmRequestMethod.SEND_TRANSACTION,
 ];
 
 export const EvmNeedPermissionMethods = [

@@ -39,6 +39,7 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_EVM_EVENT: {
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
+          console.log('sending event to tab', tab);
           if (tab.id)
             chrome.tabs.sendMessage(tab.id, {
               ...backgroundMessage,

@@ -1,7 +1,7 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
-  EvmConnectedWallets,
   EvmEventName,
+  EvmWalletDomainPermissions,
   EvmWalletPermissions,
 } from '@interfaces/evm-provider.interface';
 import {
@@ -148,13 +148,11 @@ const isWalletAddress = async (address: string, chain: EvmChain) => {
 };
 
 const getConnectedWallets = async (domain: string): Promise<string[]> => {
-  const allConnectedWallets: EvmConnectedWallets =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    );
-  return allConnectedWallets && allConnectedWallets[domain]
-    ? allConnectedWallets[domain].map((wallet) => wallet.toLowerCase())
-    : [];
+  const permissions = await getWalletPermissionFull(domain);
+  const connectedWallet = permissions[EvmRequestPermission.ETH_ACCOUNTS];
+  console.log({ permissions });
+  if (permissions && connectedWallet) return connectedWallet;
+  else return [];
 };
 
 const connectMultipleWallet = async (
@@ -173,64 +171,41 @@ const connectWallet = async (
   domain: string,
   sendEvent = true,
 ) => {
-  let allConnectedWallets: EvmConnectedWallets =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    );
-  if (!allConnectedWallets) {
-    allConnectedWallets = {};
-  }
-  if (!allConnectedWallets[domain]) {
-    allConnectedWallets[domain] = [];
-  }
-  if (!allConnectedWallets[domain].includes(walletAddress))
-    allConnectedWallets[domain].push(walletAddress);
-
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    allConnectedWallets,
+  await addWalletPermission(
+    domain,
+    EvmRequestPermission.ETH_ACCOUNTS,
+    walletAddress,
   );
 
   if (sendEvent)
-    sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, allConnectedWallets[domain]);
-
-  await addWalletPermission(domain, EvmRequestPermission.ETH_ACCOUNTS);
+    sendEvmEvent(
+      EvmEventName.ACCOUNT_CHANGED,
+      await getConnectedWallets(domain),
+    );
 };
 
 const disconnectWallet = async (walletAddress: string, domain: string) => {
-  let allConnectedWallets: EvmConnectedWallets =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    );
-  if (!allConnectedWallets) {
-    allConnectedWallets = {};
-  }
-  if (!allConnectedWallets[domain]) {
-    allConnectedWallets[domain] = [];
-  }
-  allConnectedWallets[domain] = allConnectedWallets[domain].filter(
-    (e) => e !== walletAddress,
+  await removeWalletPermission(
+    domain,
+    EvmRequestPermission.ETH_ACCOUNTS,
+    walletAddress,
   );
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    allConnectedWallets,
-  );
+  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, await getConnectedWallets(domain));
 };
 
 const disconnectAllWallets = async (domain: string) => {
-  let allConnectedWallets: EvmConnectedWallets =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    );
-  if (!allConnectedWallets) {
-    allConnectedWallets = {};
-  }
-  allConnectedWallets[domain] = [];
+  await removeWalletPermission(domain, EvmRequestPermission.ETH_ACCOUNTS);
+  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, await getConnectedWallets(domain));
+};
 
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_CONNECTED_WALLETS,
-    allConnectedWallets,
-  );
+const getWalletPermissionFull = async (domain: string) => {
+  let walletPermissions: EvmWalletPermissions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
+  if (!walletPermissions || !walletPermissions[domain]) return {};
+
+  return walletPermissions[domain];
 };
 
 const getWalletPermission = async (domain: string) => {
@@ -240,7 +215,7 @@ const getWalletPermission = async (domain: string) => {
     );
   if (!walletPermissions || !walletPermissions[domain]) return [];
 
-  return walletPermissions[domain];
+  return Object.keys(walletPermissions[domain]);
 };
 
 const hasPermission = async (
@@ -248,21 +223,33 @@ const hasPermission = async (
   permission: EvmRequestPermission,
 ) => {
   const walletPermissions = await getWalletPermission(domain);
-  return walletPermissions.includes(permission);
+
+  return !!walletPermissions.includes(permission);
 };
 
 const addWalletPermission = async (
   domain: string,
   permission: EvmRequestPermission,
+  address?: string,
 ) => {
   let walletPermissions: EvmWalletPermissions =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
     );
-  if (!walletPermissions) walletPermissions = {};
-  if (!walletPermissions[domain]) walletPermissions[domain] = [];
-  if (!walletPermissions[domain].includes(permission))
-    walletPermissions[domain].push(permission);
+  if (!walletPermissions) walletPermissions = {} as EvmWalletPermissions;
+  if (!walletPermissions[domain])
+    walletPermissions[domain] = {} as EvmWalletDomainPermissions;
+  if (!walletPermissions[domain][permission])
+    walletPermissions[domain][permission] = [];
+
+  if (address && !walletPermissions[domain][permission]!.includes(address)) {
+    console.log({ walletPermissions }, 'adding permission');
+    walletPermissions[domain][permission]!.push(address);
+    sendEvmEvent(
+      EvmEventName.ACCOUNT_CHANGED,
+      walletPermissions[domain][permission],
+    );
+  }
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
@@ -273,21 +260,32 @@ const addWalletPermission = async (
 const removeWalletPermission = async (
   domain: string,
   permission: EvmRequestPermission,
+  address?: string,
 ) => {
   let walletPermissions: EvmWalletPermissions =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
     );
-  if (walletPermissions && walletPermissions[domain]) {
-    walletPermissions[domain] = walletPermissions[domain].filter(
-      (perm) => perm !== permission,
-    );
+  if (
+    !!walletPermissions &&
+    !!walletPermissions[domain] &&
+    !!walletPermissions[domain][permission]
+  ) {
+    if (address) {
+      const oldPermissions = walletPermissions[domain][permission];
+
+      const newPermission = oldPermissions!.filter((add) => add !== address);
+
+      walletPermissions[domain][permission] = newPermission;
+    } else {
+      delete walletPermissions[domain][permission];
+    }
+
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
       walletPermissions,
     );
   }
-  await disconnectAllWallets(domain);
 };
 
 const revokeAllPermissions = async (domain: string) => {
@@ -297,11 +295,12 @@ const revokeAllPermissions = async (domain: string) => {
     );
 
   if (walletPermissions && walletPermissions[domain]) {
-    walletPermissions[domain] = [];
+    delete walletPermissions[domain];
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
       walletPermissions,
     );
+    sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, []);
   }
 };
 
@@ -323,4 +322,5 @@ export const EvmWalletUtils = {
   removeWalletPermission,
   revokeAllPermissions,
   getWalletPermission,
+  getWalletPermissionFull,
 };

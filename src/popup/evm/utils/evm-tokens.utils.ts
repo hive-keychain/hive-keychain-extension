@@ -24,15 +24,13 @@ const getTotalBalanceInUsd = (tokens: EVMToken[], prices: EvmPrices) => {
     const price = prices[b.tokenInfo.symbol] ?? 0;
     return (
       a +
-        price.usd *
-          Number(
-            ethers.formatUnits(
-              b.balance,
-              b.tokenInfo.type === EVMTokenType.ERC20
-                ? b.tokenInfo.decimals
-                : 18,
-            ),
-          ) ?? 1
+      price.usd *
+        Number(
+          ethers.formatUnits(
+            b.balance,
+            b.tokenInfo.type === EVMTokenType.ERC20 ? b.tokenInfo.decimals : 18,
+          ),
+        )
     );
   }, 0);
 };
@@ -176,6 +174,23 @@ const getTokenListForWalletAddress = async (
   }
 };
 
+const getTokenInfo = async (chainId: EvmChain['chainId'], address?: string) => {
+  const tokensMetadataPerChain =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+    );
+
+  console.log(tokensMetadataPerChain);
+
+  // let tokenMetaData = tokensMetadataPerChain[chainId];
+  // if(tokenMetaData){
+  //   if(tokenMetaData[symbol]) return tokenMetaData[symbol];
+  // }
+  // tokenMetaData = await KeychainApi.get(
+  //   `evm/tokensInfoShort/${chainId}/${[address].join(',')}`,
+  // );
+};
+
 const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
   return tokens.sort((tokenA, tokenB) => {
     const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
@@ -185,14 +200,10 @@ const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {
     else {
       const tokenAPrice =
         priceA.usd *
-          Number(
-            ethers.formatUnits(tokenA.balance, tokenA.tokenInfo.decimals ?? 18),
-          ) ?? 1;
+        Number(ethers.formatUnits(tokenA.balance, tokenA.tokenInfo.decimals));
       const tokenBPrice =
         priceB.usd *
-          Number(
-            ethers.formatUnits(tokenB.balance, tokenB.tokenInfo.decimals ?? 18),
-          ) ?? 1;
+        Number(ethers.formatUnits(tokenB.balance, tokenB.tokenInfo.decimals));
       return tokenBPrice - tokenAPrice;
     }
   });
@@ -236,4 +247,5 @@ export const EvmTokensUtils = {
   formatEtherValue,
   getMainTokenInfo,
   displayValue,
+  getTokenInfo,
 };

@@ -1,4 +1,5 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
@@ -13,6 +14,7 @@ import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
 import { DecryptMessage } from 'src/dialog/evm/requests/decrypt-message/decrypt-message';
 import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
 import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
+import { SendTransaction } from 'src/dialog/evm/requests/send-transaction';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
@@ -132,6 +134,7 @@ const RequestConfirmation = ({ data }: Props) => {
   } else if (data.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM) {
     data = data as EvmRequestMessage;
     const request = data.data as EvmRequest;
+    console.log({ request });
     switch (request.method) {
       case EvmRequestMethod.GET_ACCOUNTS:
       case EvmRequestMethod.REQUEST_ACCOUNTS: {
@@ -182,6 +185,31 @@ const RequestConfirmation = ({ data }: Props) => {
             accounts={data.accounts!}
           />
         );
+      }
+
+      case EvmRequestMethod.SEND_TRANSACTION: {
+        return (
+          <SendTransaction
+            request={request}
+            data={data}
+            accounts={data.accounts!}
+          />
+        );
+      }
+
+      case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
+        const requestedPermission = Object.keys(request.params[0])[0];
+        switch (requestedPermission) {
+          case EvmRequestPermission.ETH_ACCOUNTS: {
+            return (
+              <ConnectAccounts
+                request={request}
+                accounts={data.accounts!}
+                data={data}
+              />
+            );
+          }
+        }
       }
 
       default: {

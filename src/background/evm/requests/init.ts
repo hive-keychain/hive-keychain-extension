@@ -7,6 +7,7 @@ import {
   EvmRestrictedMethods,
   EvmUnrestrictedMethods,
 } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
@@ -74,8 +75,18 @@ export const initEvmRequestHandler = async (
         // return error ?
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
+      console.log('here');
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+        if (
+          await EvmWalletUtils.hasPermission(
+            domain,
+            EvmRequestPermission.ETH_ACCOUNTS,
+          )
+        ) {
+          evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+        } else {
+          evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+        }
       } else {
         evmRequestWithConfirmation(requestHandler, tab!, request, domain);
       }

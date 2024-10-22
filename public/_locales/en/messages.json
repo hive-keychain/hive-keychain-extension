@@ -4760,6 +4760,10 @@
     "message": "Show message",
     "description": "Evm decrypt message show button"
   },
+  "dialog_evm_decrypt_send_transaction_title": {
+    "message": "Send transaction",
+    "description": "Evm send transaction title"
+  },
   "popup_html_transaction_metadata": {
     "message": "Transaction metadata",
     "description": "Transaction metadata"
@@ -4775,5 +4779,9 @@
   "error_otp_already_used": {
     "message": "Your One Time Password has already been used. Please use the next one.",
     "description": "Error message if otp has been used already"
+  },
+  "dialog_evm_decrypt_request_permission_title": {
+    "message": "Request permission",
+    "description": "Request permission dialog title"
   }
 }

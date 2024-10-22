@@ -28,11 +28,33 @@ export class EvmProvider extends EventEmitter {
 
   constructor() {
     super();
-    this.initListener();
-    this._initialized = true;
+    this.init();
     // this._state.initialized = true;
-    this.emit('_initialized');
   }
+
+  init = async () => {
+    await this.initListener();
+    await this.initiateProviderInformation();
+    this._initialized = true;
+    this.emit('_initialized');
+  };
+
+  initiateProviderInformation = async () => {
+    // const chainId = await this.processRequest({
+    //   method: EvmRequestMethod.GET_CHAIN,
+    //   params: [],
+    // });
+    // console.log(chainId);
+    // const accounts = await this.processRequest({
+    //   method: EvmRequestMethod.GET_ACCOUNTS,
+    //   params: [],
+    // });
+    // console.log(accounts);
+    // this._accounts = accounts;
+    // this.chainId = chainId;
+    // console.log('accountsChanged', this._accounts);
+    // this.emit('accountsChanged', []);
+  };
 
   isConnected = () => {
     return true;
@@ -44,6 +66,8 @@ export class EvmProvider extends EventEmitter {
       (event) => {
         // We only accept messages from ourselves
         if (event.source != window) return;
+
+        console.log({ event });
 
         if (event.data.type && event.data.type == 'evm_keychain_response') {
           const result = event.data.response.result;
@@ -71,6 +95,7 @@ export class EvmProvider extends EventEmitter {
               break;
             }
             case EvmEventName.ACCOUNT_CHANGED: {
+              console.log('received event');
               console.log(
                 JSON.stringify(eventData.event.args) ===
                   JSON.stringify(this._accounts),

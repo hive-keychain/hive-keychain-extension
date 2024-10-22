@@ -115,5 +115,9 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
 };
 
 export interface EvmWalletPermissions {
-  [domain: string]: EvmRequestPermission[];
+  [domain: string]: EvmWalletDomainPermissions;
 }
+
+export type EvmWalletDomainPermissions = {
+  [key in EvmRequestPermission]?: string[];
+};

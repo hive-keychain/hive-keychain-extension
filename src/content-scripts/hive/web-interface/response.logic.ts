@@ -114,6 +114,7 @@ export const sendEventToEvm = (event: any) => {
 };
 
 export const sendEvmEvent = (event: EvmEventName, args?: any) => {
+  console.log('sendEvmEvent', { event, args });
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SEND_EVM_EVENT,
     value: { eventType: event, args: args },
@@ -124,11 +125,13 @@ export const sendEvmEventFromSW = (event: EvmEventName, args?: any) => {
   chrome.tabs.query({}, (tabs) => {
     console.log({ tabs });
     for (const tab of tabs) {
-      if (tab.id)
+      if (tab.id) {
+        console.log('sending to tab', tab.id);
         chrome.tabs.sendMessage(tab.id, {
           command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
           value: { eventType: event, args: args },
         } as BackgroundMessage);
+      }
     }
   });
 };
