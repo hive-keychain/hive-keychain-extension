@@ -49,19 +49,22 @@ export const ConnectAccounts = (props: Props) => {
     });
   };
 
+  <div className="caption">
+    {chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [data.domain])}
+  </div>;
+
   return (
     <EvmOperation
       data={request}
       domain={data.domain}
       tab={0}
       title={chrome.i18n.getMessage('evm_connect_wallet')}
-      onConfirm={saveInStorage}>
-      <div>
-        {chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
-          data.domain,
-        ])}
-      </div>
-      {accounts &&
+      onConfirm={saveInStorage}
+      caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
+        data.domain,
+      ])}
+      bottomPanel={
+        accounts &&
         accountsToConnect &&
         accounts.map((account) => (
           <CheckboxPanelComponent
@@ -78,7 +81,7 @@ export const ConnectAccounts = (props: Props) => {
               status={DappStatusEnum.DISCONNECTED}
             />
           </CheckboxPanelComponent>
-        ))}
-    </EvmOperation>
+        ))
+      }></EvmOperation>
   );
 };

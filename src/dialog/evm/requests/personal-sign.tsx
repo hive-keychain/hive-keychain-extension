@@ -1,6 +1,7 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import React, { useState } from 'react';
+import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
@@ -28,9 +29,14 @@ export const PersonalSign = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_evm_sign_request')}
       caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
         data.domain,
-      ])}>
-      <></>
-      <DisplayText title="dialog_evm_sign_request_message" content={message} />
-    </EvmOperation>
+      ])}
+      bottomPanel={
+        <Card>
+          <DisplayText
+            title="dialog_evm_sign_request_message"
+            content={message}
+          />
+        </Card>
+      }></EvmOperation>
   );
 };

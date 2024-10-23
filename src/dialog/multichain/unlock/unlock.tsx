@@ -9,7 +9,8 @@ import ButtonComponent, {
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
+import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
 type Props = {
   data: UnlockMessage;
@@ -55,9 +56,7 @@ export default ({ data, wrongMk, index }: Props) => {
   return (
     <div className="unlock-page">
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
-      <div className="caption">
-        {chrome.i18n.getMessage('bgd_auth_locked_desc')}
-      </div>
+      <DialogCaption text={chrome.i18n.getMessage('bgd_auth_locked_desc')} />
       <InputComponent
         value={password}
         onChange={setPassword}

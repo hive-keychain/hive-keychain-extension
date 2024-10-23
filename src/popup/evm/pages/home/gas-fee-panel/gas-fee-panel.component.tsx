@@ -95,6 +95,7 @@ export const GasFeePanel = ({
       onSelectFee(estimate.suggested);
     }
     setFeeEstimation(estimate);
+    console.log(estimate.suggested, estimate);
   };
 
   const openCustomFeePanel = () => {

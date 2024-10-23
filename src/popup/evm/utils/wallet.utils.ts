@@ -138,6 +138,17 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
     .flat();
 };
 
+const rebuildAccount = (account: EvmAccount) => {
+  return {
+    ...account,
+    wallet: HDNodeWallet.fromPhrase(
+      account.wallet.mnemonic?.phrase!,
+      undefined,
+      account.path,
+    ),
+  };
+};
+
 const isWalletAddress = async (address: string, chain: EvmChain) => {
   try {
     const code = await EthersUtils.getProvider(chain).getCode(address);
@@ -323,4 +334,5 @@ export const EvmWalletUtils = {
   revokeAllPermissions,
   getWalletPermission,
   getWalletPermissionFull,
+  rebuildAccount,
 };

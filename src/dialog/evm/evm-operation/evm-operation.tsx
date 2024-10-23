@@ -5,11 +5,11 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
+import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
 type Props = {
   title: string;
-  children: JSX.Element[];
   onConfirm?: () => void;
   data: EvmRequest;
   domain: string;
@@ -17,11 +17,12 @@ type Props = {
   header?: string;
   redHeader?: boolean;
   caption?: string;
+  fields?: any;
+  bottomPanel?: any;
 };
 
 export const EvmOperation = ({
   title,
-  children,
   onConfirm,
   domain,
   tab,
@@ -29,6 +30,8 @@ export const EvmOperation = ({
   header,
   redHeader,
   caption,
+  fields,
+  bottomPanel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,43 +62,23 @@ export const EvmOperation = ({
 
   return (
     <div className={`operation ${caption ? 'has-caption' : ''}`}>
-      <div
-        className="scrollable"
-        style={{
-          height: '85%',
-          overflow: 'scroll',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-        <div>
-          <DialogHeader title={title} />
-          {header && (
-            <div
-              className={`operation-header ${
-                redHeader ? 'operation-red' : ''
-              }`}>
-              {header}
-            </div>
-          )}
-        </div>
-        {caption && (
+      <DialogHeader title={title} />
+      <div className="scrollable">
+        {header && (
           <div
-            className="dialog-caption"
-            dangerouslySetInnerHTML={{
-              __html: caption,
-            }}></div>
-        )}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            flex: 1,
-            flexDirection: 'column',
-          }}>
-          <div className="operation-body">
-            <div className="fields">{...children}</div>
+            className={`operation-header ${redHeader ? 'operation-red' : ''}`}>
+            {header}
           </div>
-        </div>
+        )}
+        {caption && <DialogCaption text={caption} />}
+
+        {fields && (
+          <div className="operation-body">
+            <div className="fields">{fields}</div>
+          </div>
+        )}
+
+        {bottomPanel && <>{bottomPanel}</>}
       </div>
 
       {!loading && (

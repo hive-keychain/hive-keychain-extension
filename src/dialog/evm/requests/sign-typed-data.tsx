@@ -50,50 +50,53 @@ export const SignTypedData = (props: Props) => {
       data={request}
       domain={data.domain}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_request')}>
-      <RequestItem title="dialog_evm_domain" content={`${data.domain}`} />
-      <RequestItem
-        title="dialog_evm_sign_request_interacting_with"
-        content={`${EvmFormatUtils.formatAddress(
-          message.domain.verifyingContract,
-        )}`}
-      />
-      <Separator type="horizontal" fullSize />
-      <RequestItem
-        title="dialog_evm_sign_request_primary_type"
-        content={`${message.primaryType}`}
-      />
-      <RequestItem
-        title="dialog_evm_sign_request_message"
-        content={`${message.message.contents}`}
-      />
-      <RequestItem
-        title="dialog_from"
-        content={`${message.message.from.name}`}
-      />
-      <>
-        {message.message.from.wallets.map((walletAddress: string) => (
+      title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
+      fields={
+        <>
+          <RequestItem title="dialog_evm_domain" content={`${data.domain}`} />
           <RequestItem
-            key={walletAddress}
-            title=""
-            content={`${EvmFormatUtils.formatAddress(walletAddress)}`}
+            title="dialog_evm_sign_request_interacting_with"
+            content={`${EvmFormatUtils.formatAddress(
+              message.domain.verifyingContract,
+            )}`}
           />
-        ))}
-      </>
-      <>
-        {message.message.to.map((to, index) => (
-          <React.Fragment key={`to-${index}`}>
-            <RequestItem title="dialog_to" content={`${to.name}`} />
-            {to.wallets.map((walletAddress: string) => (
+          <Separator type="horizontal" fullSize />
+          <RequestItem
+            title="dialog_evm_sign_request_primary_type"
+            content={`${message.primaryType}`}
+          />
+          <RequestItem
+            title="dialog_evm_sign_request_message"
+            content={`${message.message.contents}`}
+          />
+          <RequestItem
+            title="dialog_from"
+            content={`${message.message.from.name}`}
+          />
+          <>
+            {message.message.from.wallets.map((walletAddress: string) => (
               <RequestItem
                 key={walletAddress}
                 title=""
                 content={`${EvmFormatUtils.formatAddress(walletAddress)}`}
               />
             ))}
-          </React.Fragment>
-        ))}
-      </>
-    </EvmOperation>
+          </>
+          <>
+            {message.message.to.map((to, index) => (
+              <React.Fragment key={`to-${index}`}>
+                <RequestItem title="dialog_to" content={`${to.name}`} />
+                {to.wallets.map((walletAddress: string) => (
+                  <RequestItem
+                    key={walletAddress}
+                    title=""
+                    content={`${EvmFormatUtils.formatAddress(walletAddress)}`}
+                  />
+                ))}
+              </React.Fragment>
+            ))}
+          </>
+        </>
+      }></EvmOperation>
   );
 };

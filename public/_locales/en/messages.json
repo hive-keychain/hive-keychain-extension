@@ -4783,5 +4783,13 @@
   "dialog_evm_decrypt_request_permission_title": {
     "message": "Request permission",
     "description": "Request permission dialog title"
+  },
+  "dialog_evm_get_encryption_key_title": {
+    "message": "Request encryption key",
+    "description": "Request encryption key dialog title"
+  },
+  "dialog_evm_sign_data_title": {
+    "message": "Request sign data",
+    "description": "Request sign typed data dialog title"
   }
 }

@@ -5,12 +5,20 @@
   justify-content: center;
   position: relative;
   @include small-card;
+  margin: unset;
+  cursor: pointer;
+
+  .encrypted-message {
+    max-height: 250px;
+  }
 
   &.hidden {
-    filter: blur(2px);
+    .encrypted-message {
+      filter: blur(2px);
+    }
     .message {
       word-break: break-all;
-      max-height: 250px;
+
       overflow: hidden;
     }
   }

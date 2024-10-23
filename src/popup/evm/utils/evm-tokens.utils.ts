@@ -174,21 +174,32 @@ const getTokenListForWalletAddress = async (
   }
 };
 
-const getTokenInfo = async (chainId: EvmChain['chainId'], address?: string) => {
+const getTokenInfo = async (
+  chainId: EvmChain['chainId'],
+  address?: string,
+): Promise<EvmTokenInfoShort> => {
   const tokensMetadataPerChain =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_TOKENS_METADATA,
     );
 
-  console.log(tokensMetadataPerChain);
-
-  // let tokenMetaData = tokensMetadataPerChain[chainId];
-  // if(tokenMetaData){
-  //   if(tokenMetaData[symbol]) return tokenMetaData[symbol];
-  // }
-  // tokenMetaData = await KeychainApi.get(
-  //   `evm/tokensInfoShort/${chainId}/${[address].join(',')}`,
-  // );
+  let tokenMetaData = tokensMetadataPerChain[chainId];
+  let token;
+  if (!tokenMetaData) {
+    tokenMetaData = await KeychainApi.get(
+      `evm/tokensInfoShort/${chainId}/${[address].join(',')}`,
+    );
+  }
+  if (tokenMetaData) {
+    if (address) {
+      token = tokenMetaData.find(
+        (t: EvmTokenInfoShort) => t.address === address,
+      );
+    } else {
+      token = tokenMetaData.find((t: EvmTokenInfoShort) => !t.address);
+    }
+  }
+  return token;
 };
 
 const sortTokens = (tokens: EVMToken[], prices: EvmPrices) => {

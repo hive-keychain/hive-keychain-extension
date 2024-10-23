@@ -2,7 +2,7 @@ import React from 'react';
 
 type Props = { text: string };
 
-export const FieldsCaption = ({ text }: Props) => {
+export const DialogCaption = ({ text }: Props) => {
   return (
     <div
       className="dialog-caption"

@@ -1,7 +1,7 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import React from 'react';
-import { FieldsCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
+import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -19,13 +19,13 @@ export const GetEncryptionKey = (props: Props) => {
       data={request}
       domain={data.domain}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_request')}>
-      <FieldsCaption
-        text={chrome.i18n.getMessage('dialog_evm_get_encryption_key', [
-          data.domain,
-        ])}
-      />
-      <></>
-    </EvmOperation>
+      title={chrome.i18n.getMessage('dialog_evm_get_encryption_key_title')}
+      bottomPanel={
+        <DialogCaption
+          text={chrome.i18n.getMessage('dialog_evm_get_encryption_key', [
+            data.domain,
+          ])}
+        />
+      }></EvmOperation>
   );
 };

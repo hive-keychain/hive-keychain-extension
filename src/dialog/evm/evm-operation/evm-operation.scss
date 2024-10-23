@@ -5,85 +5,80 @@
   height: 100%;
   margin: 0px -16px;
   row-gap: 16px;
+  overflow: hidden;
 
-  .multisig-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    column-gap: 8px;
-    padding: 0 30px;
-    margin-bottom: 10px;
-    .message {
-      @include caption;
-      padding: 0px;
-    }
-    .logo {
-      height: 24px;
-      width: auto;
-    }
-  }
-
-  .dialog-caption {
-    @include small-card;
-    display: unset;
-    margin: unset;
-    margin-bottom: 16px;
-  }
-
-  .operation-header {
-    padding: 0 12px 12px 12px;
-  }
-  .operation-body {
+  .scrollable {
+    height: 85%;
+    overflow: auto;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
+    row-gap: 16px;
 
-    .fields {
+    // .dialog-caption {
+    //   @include small-card;
+    //   display: unset;
+    //   margin: unset;
+    //   margin-bottom: 8px;
+    // }
+
+    .operation-header {
+      padding: 0 12px 12px 12px;
+    }
+    .operation-body {
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
       width: 100%;
-      box-sizing: border-box;
+      flex: 1 1 0%;
+      margin: 16px 0px;
       row-gap: 16px;
-      overflow: auto;
-      padding: 16px 24px;
-      color: var(--main-font-color);
-      background: var(--card-background);
-      border-radius: 20px;
-      border: 1px solid var(--card-border);
-      min-height: 200px;
-      .field {
+
+      .fields {
         display: flex;
-        justify-content: space-between;
-        column-gap: 16px;
-        user-select: auto;
-        pre {
-          user-select: all;
-        }
-        .label {
-          @include poppins500(14px);
-        }
-        .value {
-          @include poppins400(14px);
-          overflow-wrap: anywhere;
-          max-width: 70%;
-          text-align: right;
-          user-select: text;
-          ul {
-            margin: 0;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        row-gap: 16px;
+        overflow: auto;
+        padding: 16px 24px;
+        color: var(--main-font-color);
+        background: var(--card-background);
+        border-radius: 20px;
+        border: 1px solid var(--card-border);
+        min-height: 200px;
+        .field {
+          display: flex;
+          justify-content: space-between;
+          column-gap: 16px;
+          user-select: auto;
+          pre {
+            user-select: all;
           }
-          &.xs-font {
-            font-size: 11px;
+          .label {
+            @include poppins500(14px);
+          }
+          .value {
+            @include poppins400(14px);
+            overflow-wrap: anywhere;
+            max-width: 70%;
+            text-align: right;
+            user-select: text;
+            ul {
+              margin: 0;
+            }
+            &.xs-font {
+              font-size: 11px;
+            }
           }
         }
       }
     }
-  }
 
-  &.has-caption {
-    .operation-body {
-      max-height: 275px;
-      overflow: hidden;
+    &.has-caption {
+      .operation-body {
+        max-height: 275px;
+        overflow: hidden;
+      }
     }
   }
 

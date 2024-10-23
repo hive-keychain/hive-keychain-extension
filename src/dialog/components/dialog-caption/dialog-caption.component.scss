@@ -1,4 +1,8 @@
 .dialog-caption {
   @include poppins400(14px);
   color: var(--main-font-color);
+  @include small-card;
+  display: unset;
+  margin: unset;
+  margin-bottom: 8px;
 }
