@@ -2,7 +2,8 @@ import {
   EvmTokenInfoShort,
   EvmTokenInfoShortErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -43,7 +44,7 @@ const EvmTransactionResult = ({
     useState<boolean>(false);
   const [isGasPanelOpened, setGasPanelOpened] = useState<boolean>(false);
   const [increasedGasFee, setIncreasedGasFee] =
-    useState<GasFeeEstimation>(gasFee);
+    useState<GasFeeEstimationBase>(gasFee);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -85,6 +86,7 @@ const EvmTransactionResult = ({
       amount,
       tokenInfo,
       receiverAddress,
+      EvmTransactionType.EIP_1559,
     );
     try {
       await cancelTransactionResponse.wait();
@@ -285,6 +287,7 @@ const EvmTransactionResult = ({
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
             multiplier={1.5}
+            transactionType={chain.defaultTransactionType}
           />
           <ButtonComponent
             label="popup_html_confirm"

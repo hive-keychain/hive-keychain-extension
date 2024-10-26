@@ -1,3 +1,4 @@
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export enum ChainType {
@@ -44,6 +45,7 @@ export interface EvmChain extends Chain {
   mainToken: EvmMainToken;
   providers?: EvmProviders;
   isEth?: boolean;
+  defaultTransactionType: EvmTransactionType;
 }
 
 export interface EvmProviders {}

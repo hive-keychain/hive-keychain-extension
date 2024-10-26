@@ -2,7 +2,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -160,7 +160,7 @@ const EvmTransfer = ({
       receiverAddress: form.receiverAddress,
       amount: form.amount,
       wallet: localAccounts[0].wallet,
-      afterConfirmAction: async (gasFee: GasFeeEstimation) => {
+      afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
           const transactionResult = await EvmTransactionsUtils.transfer(

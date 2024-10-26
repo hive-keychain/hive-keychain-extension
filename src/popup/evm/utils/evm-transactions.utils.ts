@@ -6,14 +6,17 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CanceledTransactionData,
+  EvmTransactionType,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  GasFeeData,
+  GasFeeEstimationBase,
+} from '@popup/evm/interfaces/gas-fee.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import Decimal from 'decimal.js';
 import {
   ethers,
   HDNodeWallet,
@@ -29,12 +32,37 @@ const transfer = async (
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
-  gasFee: GasFeeEstimation,
+  gasFee: GasFeeEstimationBase,
   nonce?: number,
+  transactionType?: EvmTransactionType,
 ) => {
   const provider = EthersUtils.getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
   let transactionRequest: TransactionRequest;
+
+  let feeData;
+  switch (transactionType) {
+    case EvmTransactionType.EIP_1559: {
+      feeData = {
+        maxPriorityFeePerGas: ethers.parseUnits(
+          gasFee.priorityFee!.toString(),
+          'gwei',
+        ),
+        maxFeePerGas: ethers.parseUnits(
+          gasFee.maxFeePerGas!.toString(),
+          'gwei',
+        ),
+      };
+      break;
+    }
+    case EvmTransactionType.LEGACY: {
+      feeData = {
+        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+      };
+      break;
+    }
+  }
+
   if (tokenInfo.type === EVMTokenType.ERC20) {
     const contract = new ethers.Contract(
       tokenInfo.address!,
@@ -47,21 +75,15 @@ const transfer = async (
       amount * 1000000,
     ]);
 
-    console.log(data);
-
     transactionRequest = {
       to: tokenInfo.address!,
       value: 0,
       data: data,
       from: connectedWallet.address,
       nonce: nonce ?? (await connectedWallet.getNonce()),
-      maxPriorityFeePerGas: ethers.parseUnits(
-        gasFee.priorityFee.toString(),
-        'gwei',
-      ),
-      maxFeePerGas: ethers.parseUnits(gasFee.maxFeePerGas.toString(), 'gwei'),
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
       chainId: chain.chainId,
+      ...feeData,
     };
   } else {
     transactionRequest = {
@@ -69,13 +91,9 @@ const transfer = async (
       value: amount * 1000000000000000000,
       from: connectedWallet.address,
       nonce: nonce ?? (await connectedWallet.getNonce()),
-      maxPriorityFeePerGas: ethers.parseUnits(
-        gasFee.priorityFee.toString(),
-        'gwei',
-      ),
-      maxFeePerGas: ethers.parseUnits(gasFee.maxFeePerGas.toString(), 'gwei'),
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
       chainId: chain.chainId,
+      ...feeData,
     };
   }
   const transactionResponse = await connectedWallet.sendTransaction(
@@ -97,17 +115,37 @@ const transfer = async (
 const cancel = async (
   transactionResponse: TransactionResponse,
   chain: EvmChain,
-  gasFee: GasFeeEstimation,
+  gasFee: GasFeeEstimationBase,
   wallet: HDNodeWallet,
   amount: number,
   tokenInfo: EvmTokenInfoShort,
   receiverAddress: string,
+  transactionType: EvmTransactionType,
 ) => {
-  const newGasFee: GasFeeEstimation = {
+  let feeData: GasFeeData;
+  switch (transactionType) {
+    case EvmTransactionType.EIP_1559: {
+      feeData = {
+        priorityFee: ethers.parseUnits(gasFee.priorityFee!.toString(), 'gwei'),
+        maxFeePerGas: ethers.parseUnits(
+          gasFee.maxFeePerGas!.toString(),
+          'gwei',
+        ),
+      };
+      break;
+    }
+    case EvmTransactionType.LEGACY: {
+      feeData = {
+        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+      };
+      break;
+    }
+  }
+
+  const newGasFee = {
     ...gasFee,
-    maxFeePerGas: new Decimal(gasFee.maxFeePerGas).mul(1.5).toNumber(),
-    priorityFee: new Decimal(gasFee.priorityFee).mul(1.5).toNumber(),
-  };
+    ...feeData,
+  } as GasFeeEstimationBase;
 
   addCanceledTransaction(
     transactionResponse,
@@ -134,7 +172,7 @@ const addPendingTransaction = async (
   address: string,
   tokenInfo: EvmTokenInfoShort,
   amount: number,
-  gasFee: GasFeeEstimation,
+  gasFee: GasFeeEstimationBase,
   receiverAddress: string,
 ) => {
   let transactions: UserPendingTransactions =
@@ -155,7 +193,7 @@ const addPendingTransaction = async (
     receiverAddress,
   });
 
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
     transactions,
   );

@@ -5,6 +5,7 @@ import {
   RequestArguments,
 } from '@interfaces/evm-provider.interface';
 import EventEmitter from 'events';
+import { validateRequest } from 'src/content-scripts/evm/evm-request-validation';
 
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
@@ -67,8 +68,6 @@ export class EvmProvider extends EventEmitter {
         // We only accept messages from ourselves
         if (event.source != window) return;
 
-        console.log({ event });
-
         if (event.data.type && event.data.type == 'evm_keychain_response') {
           const result = event.data.response.result;
           const requestId = event.data.response.requestId;
@@ -123,14 +122,21 @@ export class EvmProvider extends EventEmitter {
   };
 
   async request(args: RequestArguments): Promise<any> {
-    switch (args.method) {
-      case EvmRequestMethod.GET_ACCOUNTS: {
-        return this._accounts;
+    try {
+      validateRequest(args.method, args.params);
+      switch (args.method) {
+        case EvmRequestMethod.GET_ACCOUNTS: {
+          return this._accounts;
+        }
       }
-    }
 
-    const result = await this.processRequest(args);
-    return result;
+      const result = await this.processRequest(args);
+      return result;
+    } catch (err) {
+      console.log(err);
+      throw err;
+      // return err;
+    }
   }
 
   processRequest = async (args: RequestArguments) => {

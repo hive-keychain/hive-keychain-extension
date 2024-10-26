@@ -1,8 +1,12 @@
 import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
+  EvmTransactionType,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import {
   CustomGasFeeForm,
   FullGasFeeEstimation,
-  GasFeeEstimation,
+  GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
@@ -28,9 +32,11 @@ interface GasFeePanelProps {
   receiverAddress: string;
   amount: number;
   wallet: HDNodeWallet;
-  selectedFee?: GasFeeEstimation;
-  onSelectFee: (fee: GasFeeEstimation) => void;
+  selectedFee?: GasFeeEstimationBase;
+  onSelectFee: (fee: GasFeeEstimationBase) => void;
   multiplier?: number;
+  transactionType: EvmTransactionType;
+  transactionData?: ProviderTransactionData;
 }
 
 export const GasFeePanel = ({
@@ -42,6 +48,8 @@ export const GasFeePanel = ({
   selectedFee,
   onSelectFee,
   multiplier,
+  transactionType,
+  transactionData,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -65,24 +73,43 @@ export const GasFeePanel = ({
       receiverAddress,
       amount,
       wallet,
+      transactionType,
+      undefined,
+      transactionData,
     );
     if (!!multiplier && selectedFee) {
-      const increasedFee: GasFeeEstimation = {
+      const increasedFee: GasFeeEstimationBase = {
         ...selectedFee,
-        maxFeePerGas: Number(
-          new Decimal(selectedFee.maxFeePerGas)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
-        ),
-        priorityFee: Number(
-          new Decimal(selectedFee.priorityFee)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.priorityFee)),
-        ),
+        maxFeePerGas: selectedFee.maxFeePerGas
+          ? Number(
+              new Decimal(selectedFee.maxFeePerGas)
+                .mul(multiplier)
+                .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
+            )
+          : undefined,
+        priorityFee: selectedFee.priorityFee
+          ? Number(
+              new Decimal(selectedFee.priorityFee)
+                .mul(multiplier)
+                .toFixed(MathUtils.countDecimals(selectedFee.priorityFee)),
+            )
+          : undefined,
       };
-      increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-        increasedFee.gasLimit * increasedFee.maxFeePerGas,
-      );
+
+      switch (transactionType) {
+        case EvmTransactionType.EIP_1559: {
+          increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
+            increasedFee.gasLimit * increasedFee.maxFeePerGas!,
+          );
+          break;
+        }
+        case EvmTransactionType.LEGACY: {
+          increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
+            increasedFee.gasLimit * increasedFee.gasPrice!,
+          );
+          break;
+        }
+      }
 
       if (estimate.aggressive.estimatedFee < increasedFee.estimatedFee)
         estimate.aggressive.deactivated = true;
@@ -92,17 +119,20 @@ export const GasFeePanel = ({
       onSelectFee(increasedFee);
       estimate.increased = increasedFee;
     } else {
-      onSelectFee(estimate.suggested);
+      if (estimate.suggestedByDApp) {
+        onSelectFee(estimate.suggestedByDApp);
+      } else {
+        onSelectFee(estimate.suggested);
+      }
     }
     setFeeEstimation(estimate);
-    console.log(estimate.suggested, estimate);
   };
 
   const openCustomFeePanel = () => {
     setCustomFeePanelOpened(true);
   };
 
-  const selectGasFee = (gasFee: GasFeeEstimation) => {
+  const selectGasFee = (gasFee: GasFeeEstimationBase) => {
     onSelectFee(gasFee);
     setIsAdvancedPanelOpen(false);
   };
@@ -134,10 +164,10 @@ export const GasFeePanel = ({
       customDuration = feeEstimation.low.estimatedMaxDuration;
     }
 
-    const custom: GasFeeEstimation = {
+    const custom: GasFeeEstimationBase = {
       estimatedFee: customEstimatedFee,
       estimatedMaxDuration: customDuration,
-    } as GasFeeEstimation;
+    } as GasFeeEstimationBase;
     onSelectFee(custom);
 
     const fullGasFeeEstimation = {
@@ -353,6 +383,41 @@ export const GasFeePanel = ({
                         : '-'}
                     </div>
                   </div>
+
+                  {feeEstimation.suggestedByDApp && (
+                    <>
+                      <Separator type={'horizontal'} fullSize />
+                      <div
+                        className="custom-fee-row suggested-by-dapp"
+                        onClick={() => openCustomFeePanel()}>
+                        <div className="label type">
+                          {chrome.i18n.getMessage(
+                            'popup_html_evm_suggested_by_dapp_gas_fee_custom',
+                          )}
+                        </div>
+                        <div className="label duration">
+                          {feeEstimation.suggestedByDApp &&
+                          feeEstimation.suggestedByDApp.estimatedFee !== -1
+                            ? chrome.i18n.getMessage(
+                                'popup_html_evm_gas_fee_estimate_duration',
+                                [
+                                  feeEstimation.suggestedByDApp.estimatedMaxDuration.toString(),
+                                ],
+                              )
+                            : '-'}
+                        </div>
+                        <div className="label gas-fee">
+                          {feeEstimation.suggestedByDApp &&
+                          feeEstimation.suggestedByDApp.estimatedFee !== -1
+                            ? FormatUtils.formatCurrencyValue(
+                                feeEstimation.suggestedByDApp.estimatedFee,
+                                8,
+                              )
+                            : '-'}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
               {isCustomFeePanelOpened && customGasFeeForm && (

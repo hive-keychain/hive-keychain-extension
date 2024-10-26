@@ -29,7 +29,6 @@
       flex-direction: column;
       align-items: flex-start;
       width: 100%;
-      flex: 1 1 0%;
       margin: 16px 0px;
       row-gap: 16px;
 
@@ -45,7 +44,6 @@
         background: var(--card-background);
         border-radius: 20px;
         border: 1px solid var(--card-border);
-        min-height: 200px;
         .field {
           display: flex;
           justify-content: space-between;

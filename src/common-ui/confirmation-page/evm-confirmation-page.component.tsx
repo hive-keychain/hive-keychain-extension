@@ -1,9 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -37,7 +38,7 @@ const ConfirmationPage = ({
   setErrorMessage,
 }: PropsType) => {
   const [hasField] = useState(fields && fields.length !== 0);
-  const [selectedFee, setSelectedFee] = useState<GasFeeEstimation>();
+  const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -121,6 +122,7 @@ const ConfirmationPage = ({
             wallet={wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
+            transactionType={(chain as EvmChain).defaultTransactionType}
           />
         )}
       </div>

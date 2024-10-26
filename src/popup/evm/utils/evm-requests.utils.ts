@@ -35,6 +35,10 @@ const estimateGasFee = async () => {
   //   return await GasFeeUtils.estimate(activeChain);
 };
 
+const getGasPrice = async () => {
+  return call('eth_gasPrice', []);
+};
+
 const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
   const provider = await instanciateProvider();
   const balance = await provider.getBalance(walletAddress, blockTag);
@@ -146,4 +150,5 @@ export const EvmRequestsUtils = {
   personalRecover,
   getEncryptionKey,
   decryptMessage,
+  getGasPrice,
 };

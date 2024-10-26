@@ -4,7 +4,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 export interface RequestArguments {
   id?: string;
-  method: string;
+  method: EvmRequestMethod;
   params?: unknown[] | object;
 }
 

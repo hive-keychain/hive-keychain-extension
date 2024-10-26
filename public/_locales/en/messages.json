@@ -4518,23 +4518,27 @@
   },
   "popup_html_evm_custom_gas_fee_increased": {
     "message": "Increased",
-    "description": "Evm edit Gas fee label"
+    "description": "Increased"
   },
   "popup_html_evm_custom_gas_fee_low": {
     "message": "Low",
-    "description": "Evm edit Gas fee label"
+    "description": "Low"
   },
   "popup_html_evm_custom_gas_fee_medium": {
     "message": "Medium",
-    "description": "Evm edit Gas fee label"
+    "description": "Medium"
   },
   "popup_html_evm_custom_gas_fee_aggresive": {
     "message": "Aggressive",
-    "description": "Evm edit Gas fee label"
+    "description": "Aggressive"
   },
   "popup_html_evm_custom_gas_fee_custom": {
     "message": "Custom",
-    "description": "Evm edit Gas fee label"
+    "description": "Custom"
+  },
+  "popup_html_evm_suggested_by_dapp_gas_fee_custom": {
+    "message": "Suggested by dApp",
+    "description": "Suggest by dapp"
   },
   "popup_html_add_custom_blockchain": {
     "message": "Add custom blockchain",

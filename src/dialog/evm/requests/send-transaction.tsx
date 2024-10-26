@@ -1,6 +1,10 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  EvmTransactionType,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -24,12 +28,15 @@ export const SendTransaction = (props: Props) => {
 
   const [chain, setChain] = useState<EvmChain>();
   const [tokenInfo, setTokenInfo] = useState<EvmTokenInfoShort>();
-  const [selectedFee, setSelectedFee] = useState<GasFeeEstimation>();
-
+  const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
+  const [suggestedFee, setSuggestedFee] = useState<GasFeeEstimationBase>();
   const [amount, setAmount] = useState<number>();
   const [receiverAddress, setReceiverAddress] = useState<string>();
 
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
+
+  const [transactionData, setTransactionData] =
+    useState<ProviderTransactionData>();
 
   useEffect(() => {
     init();
@@ -38,10 +45,11 @@ export const SendTransaction = (props: Props) => {
   const init = async () => {
     const lastChain = await EvmChainUtils.getLastEvmChain();
     setChain(lastChain as EvmChain);
-    const transferData = request.params[0];
+
+    const params = request.params[0];
 
     const usedAccount = accounts.find(
-      (account) => account.wallet.address === transferData.from,
+      (account) => account.wallet.address === params.from,
     );
 
     setSelectedAccount({
@@ -51,22 +59,57 @@ export const SendTransaction = (props: Props) => {
 
     let tokenAddress;
 
-    if (transferData.data && usedAccount) {
-      const contract = new ethers.Contract(transferData.to, Erc20Abi);
-      const transferDecodedData = contract.interface.decodeFunctionData(
-        'transfer',
-        transferData.data,
-      );
-      console.log({ transferDecodedData });
-      setReceiverAddress(transferDecodedData[0]);
-      setAmount(transferDecodedData[1]);
-      tokenAddress = transferData.to;
-    } else {
-      setAmount(transferData.amount);
-      setReceiverAddress(transferData.to);
-    }
+    let tData = {} as ProviderTransactionData;
+    if (usedAccount) {
+      if (params.data) {
+        const contract = new ethers.Contract(params.to, Erc20Abi);
+        const transferDecodedData = contract.interface.decodeFunctionData(
+          'transfer',
+          params.data,
+        );
+        console.log({ transferDecodedData });
+        setReceiverAddress(transferDecodedData[0]);
+        setAmount(transferDecodedData[1]);
+        tokenAddress = params.to;
 
-    setTokenInfo(await EvmTokensUtils.getTokenInfo(lastChain.chainId));
+        tData.from = params.from;
+        tData.value = params.value;
+        tData.toContract = tokenAddress;
+        tData.data = {
+          receiverAddress: transferDecodedData[0],
+          amount: transferDecodedData[1] / 1000000,
+        };
+      } else {
+        setAmount(params.amount);
+        setReceiverAddress(params.to);
+
+        tData.from = params.from;
+        tData.value = params.value;
+        tData.to = params.to;
+      }
+      tData.type = params.type ?? chain?.defaultTransactionType;
+
+      switch (tData.type) {
+        case EvmTransactionType.EIP_1559: {
+          if (!tData.maxFeePerGas) tData.maxFeePerGas = tData.gasPrice;
+          if (!tData.maxPriorityFeePerGas)
+            tData.maxPriorityFeePerGas = tData.gasPrice;
+          break;
+        }
+        case EvmTransactionType.LEGACY: {
+          if (!tData.gasPrice) {
+            tData.gasPrice = tData.maxFeePerGas;
+          }
+          break;
+        }
+      }
+      setTransactionData(tData);
+      setTokenInfo(
+        await EvmTokensUtils.getTokenInfo(lastChain.chainId, tokenAddress),
+      );
+    } else {
+      console.log('No corresponding account found');
+    }
   };
 
   return (
@@ -103,7 +146,8 @@ export const SendTransaction = (props: Props) => {
         chain &&
         tokenInfo &&
         receiverAddress &&
-        selectedAccount && (
+        selectedAccount &&
+        transactionData && (
           <GasFeePanel
             chain={chain}
             tokenInfo={tokenInfo}
@@ -112,6 +156,8 @@ export const SendTransaction = (props: Props) => {
             wallet={selectedAccount.wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
+            transactionType={transactionData.type}
+            transactionData={transactionData}
           />
         )
       }

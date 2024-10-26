@@ -1,20 +1,25 @@
-export interface GasFeeEstimation {
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+
+export interface GasFeeEstimationBase {
+  type: EvmTransactionType;
   estimatedFee: number;
   estimatedMaxDuration: number;
-  priorityFee: number;
-  maxFeePerGas: number;
   gasLimit: number;
   deactivated?: boolean;
+  priorityFee?: number;
+  maxFeePerGas?: number;
+  gasPrice?: number;
 }
 
 export interface FullGasFeeEstimation {
-  low: GasFeeEstimation;
-  medium: GasFeeEstimation;
-  aggressive: GasFeeEstimation;
-  max: GasFeeEstimation;
-  suggested: GasFeeEstimation;
-  custom: GasFeeEstimation;
-  increased?: GasFeeEstimation;
+  low: GasFeeEstimationBase;
+  medium: GasFeeEstimationBase;
+  aggressive: GasFeeEstimationBase;
+  max: GasFeeEstimationBase;
+  suggested: GasFeeEstimationBase;
+  custom: GasFeeEstimationBase;
+  suggestedByDApp?: GasFeeEstimationBase;
+  increased?: GasFeeEstimationBase;
   extraInfo: GasFeeEstimationExtraInfo;
 }
 
@@ -53,4 +58,34 @@ export interface CustomGasFeeForm {
   priorityFeeInGwei: number;
   priorityFeeValue?: number;
   gasLimit: number;
+}
+
+interface test {
+  maxPriorityFeePerGas: bigint;
+  maxFeePerGas: bigint;
+  type: EvmTransactionType;
+  estimatedFee: number;
+  estimatedMaxDuration: number;
+  gasLimit: number;
+  deactivated?: boolean;
+  priorityFee?: number;
+  gasPrice?: number;
+}
+
+interface test2 {
+  maxPriorityFeePerGas: bigint;
+  maxFeePerGas: bigint;
+  type: EvmTransactionType;
+  estimatedFee: number;
+  estimatedMaxDuration: number;
+  gasLimit: number;
+  deactivated?: boolean | undefined;
+  priorityFee?: number | undefined;
+  gasPrice?: number | undefined;
+}
+
+export interface GasFeeData {
+  priorityFee?: bigint;
+  maxFeePerGas?: bigint;
+  gasPrice?: bigint;
 }

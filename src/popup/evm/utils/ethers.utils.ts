@@ -36,7 +36,7 @@ const getGasLimit = async (
 
     // let multiplier = chain.isEth ? 1 : 1.5;
     let multiplier = 1.5;
-    return Decimal.mul(Number(estimation), multiplier);
+    return Decimal.mul(Number(estimation), multiplier).toNumber();
   } else {
     return 21000;
   }

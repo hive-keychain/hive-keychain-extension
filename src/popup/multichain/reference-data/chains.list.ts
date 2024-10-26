@@ -1,3 +1,4 @@
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import {
   BlockExporerType,
   ChainType,
@@ -24,6 +25,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_ETHEREUM,
     chainId: '0x1',
     mainToken: 'ETH',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
       url: 'https://etherscan.io',
@@ -45,6 +47,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_AVALANCHE,
     chainId: '0xa86a',
     mainToken: 'AVAX',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
     network: 'avalanche-mainnet',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
@@ -65,6 +68,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_BNB,
     chainId: '0x38',
     mainToken: 'BNB',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
     network: 'bnb',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
@@ -85,6 +89,7 @@ export const defaultChainList = [
     logo: SVGIcons.BLOCKCHAIN_POLYGON,
     chainId: '0x89',
     mainToken: 'MATIC',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
     network: 'matic',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,
@@ -106,6 +111,7 @@ export const defaultChainList = [
     type: ChainType.EVM,
     logo: 'https://moralis.io/wp-content/uploads/web3wiki/1147-sepolia/637aee14aa9d9f521437ec16_hYC2y965v3QD7fEoVvutzGbJzVGLSOk6RZPwEQWcA_E.jpeg',
     mainToken: 'SepoliaEth',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
     network: 'sepolia',
     blockExplorer: {
       type: BlockExporerType.ETHERSCAN,

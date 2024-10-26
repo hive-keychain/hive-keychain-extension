@@ -1,5 +1,5 @@
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
-import { GasFeeEstimation } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -32,5 +32,5 @@ export interface ConfirmationPageFields {
 
 export interface EvmConfirmationPageGasFee {
   gasLimit: number;
-  gasFee: GasFeeEstimation;
+  gasFee: GasFeeEstimationBase;
 }
