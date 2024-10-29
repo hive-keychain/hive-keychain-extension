@@ -1,3 +1,5 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -40,11 +42,19 @@ export const ConnectAccounts = (props: Props) => {
     }
     await EvmWalletUtils.connectMultipleWallet(addresses, data.domain);
 
+    let result;
+
+    if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+      result = addresses.map((add) => add.toLowerCase());
+    } else if (request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS) {
+      result = [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }];
+    }
+
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
         requestId: request.request_id,
-        result: addresses.map((add) => add.toLowerCase()),
+        result: result,
       },
     });
   };

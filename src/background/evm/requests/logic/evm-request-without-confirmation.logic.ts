@@ -61,7 +61,7 @@ export const evmRequestWithoutConfirmation = async (
         console.log({ connectedWallets });
         message.value.result = connectedWallets;
       }
-      // sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
+      sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
       break;
     }
     case EvmRequestMethod.GET_BLOCK_BY_NUMBER:

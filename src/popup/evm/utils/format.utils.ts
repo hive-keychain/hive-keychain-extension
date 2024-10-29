@@ -17,4 +17,5 @@ const etherToGwei = (value: number | bigint) => {
 export const EvmFormatUtils = {
   formatAddress,
   etherToGwei,
+  GWEI,
 };

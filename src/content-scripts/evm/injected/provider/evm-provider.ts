@@ -131,6 +131,7 @@ export class EvmProvider extends EventEmitter {
       }
 
       const result = await this.processRequest(args);
+      console.log({ providerResult: result, request: args.method });
       return result;
     } catch (err) {
       console.log(err);

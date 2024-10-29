@@ -68,6 +68,7 @@ export const initEvmRequestHandler = async (
         domain,
         EvmMethodPermissionMap[request.method]!,
       );
+      console.log({ hasPermission, request });
       if (hasPermission) {
         evmRequestWithConfirmation(requestHandler, tab!, request, domain);
       } else {

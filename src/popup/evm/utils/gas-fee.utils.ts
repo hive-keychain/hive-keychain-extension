@@ -135,7 +135,12 @@ const estimate = async (
     },
   };
 
-  if (transactionData) {
+  if (
+    transactionData &&
+    (transactionData.maxFeePerGas ||
+      transactionData.maxPriorityFeePerGas ||
+      transactionData.gasPrice)
+  ) {
     fullEstimation.suggestedByDApp =
       await createDAppSuggestionFromTransactionData(transactionData, gasLimit);
   }
@@ -151,39 +156,35 @@ const createDAppSuggestionFromTransactionData = async (
     transactionData.gasLimit = gasLimit;
   }
 
-  let fee = 0;
+  let fee;
   let estimatedMaxDuration = 0;
-
-  let test;
 
   console.log('Before calculation', { transactionData, gasLimit });
 
   switch (transactionData.type) {
     case EvmTransactionType.EIP_1559: {
-      fee = EvmFormatUtils.etherToGwei(
-        transactionData.gasLimit * Number(transactionData.maxFeePerGas!),
+      fee = new Decimal(Number(transactionData.maxFeePerGas!)).div(
+        EvmFormatUtils.GWEI,
       );
-      test = Number(transactionData.maxFeePerGas!);
       break;
     }
     case EvmTransactionType.LEGACY: {
       if (!transactionData.gasPrice) {
         transactionData.gasPrice = await EvmRequestsUtils.getGasPrice();
       }
-      fee = EvmFormatUtils.etherToGwei(
-        transactionData.gasLimit * Number(transactionData.gasPrice!),
+      fee = new Decimal(Number(transactionData.gasPrice!)).div(
+        EvmFormatUtils.GWEI,
       );
-      test = Number(transactionData.gasPrice!);
       break;
     }
   }
 
-  const estimatedFee = new Decimal(Number(test))
+  const estimatedFee = new Decimal(Number(fee))
     .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
     .div(1000)
     .toNumber();
 
-  console.log({ test, estimatedFee });
+  console.log({ fee, estimatedFee });
 
   return {
     type: transactionData.type,
