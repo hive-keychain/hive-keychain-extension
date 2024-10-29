@@ -1,6 +1,6 @@
 .evm-account-display {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 40px 1fr;
   align-items: center;
   width: 100%;
   .evm-dapp-status-container {

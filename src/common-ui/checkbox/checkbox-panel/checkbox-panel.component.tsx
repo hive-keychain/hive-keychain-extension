@@ -22,7 +22,8 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
     <div
       className={`checkbox-panel ${
         props.backgroundType ?? BackgroundType.FILLED
-      } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}>
+      } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}
+      onClick={() => props.onChange(!props.checked)}>
       <CheckboxComponent {...props} />
       {props.children && props.children}
       {!props.children && (

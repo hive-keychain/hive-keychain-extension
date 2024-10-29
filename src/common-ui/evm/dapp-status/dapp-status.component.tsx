@@ -1,9 +1,9 @@
 import React from 'react';
 
 export enum DappStatusEnum {
-  CONNECTED = 'connected',
+  SELECTED = 'selected',
   DISCONNECTED = 'disconnected',
-  OTHER_ACCOUNT_CONNECTED = 'other_account_connected',
+  CONNECTED = 'connected',
 }
 
 type Props = {

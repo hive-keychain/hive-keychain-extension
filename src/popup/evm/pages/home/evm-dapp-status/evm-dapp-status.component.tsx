@@ -61,9 +61,9 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
 
     setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(active.address)) {
-      setStatus(DappStatusEnum.CONNECTED);
+      setStatus(DappStatusEnum.SELECTED);
     } else if (connectedWallets.length) {
-      setStatus(DappStatusEnum.OTHER_ACCOUNT_CONNECTED);
+      setStatus(DappStatusEnum.CONNECTED);
     } else {
       setStatus(DappStatusEnum.DISCONNECTED);
     }
@@ -115,8 +115,8 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
                     active={active}
                     status={
                       account.wallet.address === active.address
-                        ? DappStatusEnum.CONNECTED
-                        : DappStatusEnum.OTHER_ACCOUNT_CONNECTED
+                        ? DappStatusEnum.SELECTED
+                        : DappStatusEnum.CONNECTED
                     }
                   />
                   <SVGIcon

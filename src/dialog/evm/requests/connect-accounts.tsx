@@ -20,14 +20,24 @@ interface Props {
 export const ConnectAccounts = (props: Props) => {
   const { accounts, data, request } = props;
   const [accountsToConnect, setAccountsToConnect] = useState<any>({});
+  const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    const connected = await EvmWalletUtils.getConnectedWallets(data.domain);
+    setConnectedAccounts(connected);
+
     const accs: any = {};
     for (const account of accounts) {
-      accs[account.wallet.address] = false;
+      accs[account.wallet.address] = connected.includes(account.wallet.address);
     }
     setAccountsToConnect(accs);
-  }, []);
+
+    console.log({ accounts, connected });
+  };
 
   const toggleAccount = (address: string) => {
     const oldState = { ...accountsToConnect };
@@ -59,9 +69,13 @@ export const ConnectAccounts = (props: Props) => {
     });
   };
 
-  <div className="caption">
-    {chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [data.domain])}
-  </div>;
+  const getStatus = (account: EvmAccount): DappStatusEnum => {
+    if (connectedAccounts[0] === account.wallet.address)
+      return DappStatusEnum.SELECTED;
+    else if (connectedAccounts.includes(account.wallet.address))
+      return DappStatusEnum.CONNECTED;
+    else return DappStatusEnum.DISCONNECTED;
+  };
 
   return (
     <EvmOperation
@@ -74,6 +88,7 @@ export const ConnectAccounts = (props: Props) => {
         data.domain,
       ])}
       bottomPanel={
+        connectedAccounts &&
         accounts &&
         accountsToConnect &&
         accounts.map((account) => (
@@ -88,7 +103,7 @@ export const ConnectAccounts = (props: Props) => {
                   wallet: { address: account.wallet.address },
                 } as EvmAccount
               }
-              status={DappStatusEnum.DISCONNECTED}
+              status={getStatus(account)}
             />
           </CheckboxPanelComponent>
         ))

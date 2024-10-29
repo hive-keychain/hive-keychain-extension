@@ -22,13 +22,13 @@
     border-radius: 50%;
     bottom: -2px;
     right: -2px;
-    &.connected {
+    &.selected {
       background-color: $green-success;
     }
     &.disconnected {
       background-color: lightgrey;
     }
-    &.other_account_connected {
+    &.connected {
       background-color: var(--input-background);
       border: solid 2px $green-success;
       height: 10px;
