@@ -35,8 +35,6 @@ export const ConnectAccounts = (props: Props) => {
       accs[account.wallet.address] = connected.includes(account.wallet.address);
     }
     setAccountsToConnect(accs);
-
-    console.log({ accounts, connected });
   };
 
   const toggleAccount = (address: string) => {

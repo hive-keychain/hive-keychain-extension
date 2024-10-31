@@ -21,6 +21,11 @@ export enum SVGIcons {
   CHECKBOX_CHECKED = 'checkbox/checked',
 
   EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
+  EVM_GAS_FEE_LOW = 'evm-gas-fee/gas-fee-low',
+  EVM_GAS_FEE_MEDIUM = 'evm-gas-fee/gas-fee-medium',
+  EVM_GAS_FEE_HIGH = 'evm-gas-fee/gas-fee-high',
+  EVM_GAS_FEE_CUSTOM = 'evm-gas-fee/gas-fee-custom',
+  EVM_GAS_FEE_SUGGESTED = 'evm-gas-fee/gas-fee-suggested',
 
   EVM_TRANSACTION_STATUS_PROCESSING = 'evm-tx-status/processing',
   EVM_TRANSACTION_STATUS_FINISHED = 'evm-tx-status/finished',

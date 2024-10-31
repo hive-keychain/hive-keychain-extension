@@ -4560,9 +4560,17 @@
     "message": "Max base fee (Gwei)",
     "description": "Max base fee evm transfer"
   },
+  "popup_html_evm_gas_fee_form_gas_price": {
+    "message": "Gas price (Gwei)",
+    "description": "Gas price evm transfer"
+  },
   "popup_html_evm_gas_fee_form_priority_fee": {
     "message": "Priority fee (Gwei)",
     "description": "Evm priority fee"
+  },
+  "popup_html_evm_gas_fee_form_gas_limit": {
+    "message": "Gas limit",
+    "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
     "message": "Transfer successful (to change)",
@@ -4647,6 +4655,10 @@
   "popup_html_evm_transaction_select_fee": {
     "message": "Select fee",
     "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_fee": {
+    "message": "Fee",
+    "description": "Evm fee"
   },
   "popup_html_evm_history_transaction_canceled": {
     "message": "Transaction canceled",

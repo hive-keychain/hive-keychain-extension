@@ -1,21 +1,24 @@
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface GasFeeEstimationBase {
   type: EvmTransactionType;
   estimatedFee: number;
+  maxFee: number;
   estimatedMaxDuration: number;
   gasLimit: number;
   deactivated?: boolean;
   priorityFee?: number;
   maxFeePerGas?: number;
   gasPrice?: number;
+  icon: SVGIcons;
+  name: string;
 }
 
 export interface FullGasFeeEstimation {
   low: GasFeeEstimationBase;
   medium: GasFeeEstimationBase;
   aggressive: GasFeeEstimationBase;
-  max: GasFeeEstimationBase;
   suggested: GasFeeEstimationBase;
   custom: GasFeeEstimationBase;
   suggestedByDApp?: GasFeeEstimationBase;
@@ -57,7 +60,10 @@ export interface CustomGasFeeForm {
   maxBaseFeeValue?: number;
   priorityFeeInGwei: number;
   priorityFeeValue?: number;
+  gasPriceInGwei: number;
+  gasPriceValue?: number;
   gasLimit: number;
+  type?: EvmTransactionType;
 }
 
 interface test {

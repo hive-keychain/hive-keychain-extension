@@ -59,7 +59,13 @@ export const SendTransaction = (props: Props) => {
 
     let tokenAddress;
 
-    let tData = {} as ProviderTransactionData;
+    let tData = {
+      gasLimit: params.gasLimit,
+      gasPrice: params.gasPrice,
+      maxFeePerGas: params.maxFeePerGas,
+      maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+    } as ProviderTransactionData;
+
     if (usedAccount) {
       if (params.data) {
         const contract = new ethers.Contract(params.to, Erc20Abi);
@@ -97,6 +103,7 @@ export const SendTransaction = (props: Props) => {
           break;
         }
         case EvmTransactionType.LEGACY: {
+          console.log(!tData.gasPrice, tData.gasPrice);
           if (!tData.gasPrice) {
             tData.gasPrice = tData.maxFeePerGas;
           }

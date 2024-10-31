@@ -15,6 +15,7 @@ import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 const getGasFeeEstimations = async (chain: Chain) => {
   return await KeychainApi.get(`evm/gasPriceEstimate/${chain.chainId}`);
@@ -42,15 +43,38 @@ const estimate = async (
       wallet,
     );
 
-  const low = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
+  const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
-  const medium = new Decimal(Number(estimates.medium.suggestedMaxFeePerGas))
+  const maxMedium = new Decimal(Number(estimates.medium.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
-  const aggressive = new Decimal(Number(estimates.high.suggestedMaxFeePerGas))
+  const maxAggressive = new Decimal(
+    Number(estimates.high.suggestedMaxFeePerGas),
+  )
+    .mul(Decimal.div(Number(gasLimit), 1000000))
+    .div(1000)
+    .toNumber();
+  const low = new Decimal(
+    Number(estimates.low.suggestedMaxPriorityFeePerGas) +
+      Number(estimates.estimatedBaseFee),
+  )
+    .mul(Decimal.div(Number(gasLimit), 1000000))
+    .div(1000)
+    .toNumber();
+  const medium = new Decimal(
+    Number(estimates.medium.suggestedMaxPriorityFeePerGas) +
+      Number(estimates.estimatedBaseFee),
+  )
+    .mul(Decimal.div(Number(gasLimit), 1000000))
+    .div(1000)
+    .toNumber();
+  const aggressive = new Decimal(
+    Number(estimates.high.suggestedMaxPriorityFeePerGas) +
+      Number(estimates.estimatedBaseFee),
+  )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
@@ -59,56 +83,62 @@ const estimate = async (
     suggested: {
       type: type,
       estimatedFee: low,
+      maxFee: maxLow,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.low.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
     },
     low: {
       type: type,
       estimatedFee: low,
+      maxFee: maxLow,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.low.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
     },
     medium: {
       type: type,
       estimatedFee: medium,
+      maxFee: maxMedium,
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.medium.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.medium.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.medium.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
-    },
-    max: {
-      type: type,
-      estimatedFee: aggressive,
-      estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
-      priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
-      maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
-      gasPrice: Number(estimates.high.suggestedMaxFeePerGas),
-      gasLimit: Number(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_MEDIUM,
+      name: 'popup_html_evm_custom_gas_fee_medium',
     },
     aggressive: {
       type: type,
       estimatedFee: aggressive,
+      maxFee: maxAggressive,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.high.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_HIGH,
+      name: 'popup_html_evm_custom_gas_fee_aggresive',
     },
     custom: {
       type: type,
       estimatedFee: -1,
+      maxFee: -1,
       estimatedMaxDuration: -1,
       priorityFee: -1,
       maxFeePerGas: -1,
       gasPrice: -1,
       gasLimit: Number(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
     },
     extraInfo: {
       baseFee: {
@@ -142,7 +172,12 @@ const estimate = async (
       transactionData.gasPrice)
   ) {
     fullEstimation.suggestedByDApp =
-      await createDAppSuggestionFromTransactionData(transactionData, gasLimit);
+      await createDAppSuggestionFromTransactionData(
+        transactionData,
+        gasLimit,
+        fullEstimation,
+      );
+    console.log({ fullEstimation });
   }
 
   return fullEstimation;
@@ -151,20 +186,28 @@ const estimate = async (
 const createDAppSuggestionFromTransactionData = async (
   transactionData: ProviderTransactionData,
   gasLimit: number,
+  estimates: FullGasFeeEstimation,
 ) => {
   if (!transactionData.gasLimit) {
     transactionData.gasLimit = gasLimit;
   }
 
-  let fee;
-  let estimatedMaxDuration = 0;
+  let maxFee;
+  let estimatedFee;
 
-  console.log('Before calculation', { transactionData, gasLimit });
+  console.log('Before calculation', { transactionData, gasLimit, estimates });
 
   switch (transactionData.type) {
     case EvmTransactionType.EIP_1559: {
-      fee = new Decimal(Number(transactionData.maxFeePerGas!)).div(
+      maxFee = new Decimal(Number(transactionData.maxFeePerGas!)).div(
         EvmFormatUtils.GWEI,
+      );
+      estimatedFee = new Decimal(
+        Number(estimates.extraInfo.baseFee.estimated),
+      ).add(
+        new Decimal(Number(transactionData.maxPriorityFeePerGas!)).div(
+          EvmFormatUtils.GWEI,
+        ),
       );
       break;
     }
@@ -172,28 +215,46 @@ const createDAppSuggestionFromTransactionData = async (
       if (!transactionData.gasPrice) {
         transactionData.gasPrice = await EvmRequestsUtils.getGasPrice();
       }
-      fee = new Decimal(Number(transactionData.gasPrice!)).div(
+      maxFee = new Decimal(Number(transactionData.gasPrice!)).div(
         EvmFormatUtils.GWEI,
       );
+      estimatedFee = 0;
       break;
     }
   }
 
-  const estimatedFee = new Decimal(Number(fee))
+  maxFee = maxFee
     .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
     .div(1000)
     .toNumber();
 
-  console.log({ fee, estimatedFee });
+  estimatedFee = new Decimal(Number(estimatedFee))
+    .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
+    .div(1000)
+    .toNumber();
+
+  let estimatedMaxDuration = 0;
+  if (estimatedFee >= estimates!.aggressive!.estimatedFee) {
+    estimatedMaxDuration = estimates.aggressive.estimatedMaxDuration;
+  } else if (estimatedFee >= estimates!.medium!.estimatedFee) {
+    estimatedMaxDuration = estimates.medium.estimatedMaxDuration;
+  } else {
+    estimatedMaxDuration = estimates.low.estimatedMaxDuration;
+  }
+
+  console.log({ fee: maxFee, estimatedFee });
 
   return {
     type: transactionData.type,
-    gasLimit: transactionData.gasLimit,
-    gasPrice: transactionData.gasPrice,
-    maxFeePerGas: transactionData.maxFeePerGas,
-    priorityFee: transactionData.maxPriorityFeePerGas,
+    gasLimit: Number(transactionData.gasLimit),
+    gasPrice: Number(transactionData.gasPrice) / EvmFormatUtils.GWEI,
+    maxFeePerGas: Number(transactionData.maxFeePerGas),
+    priorityFee: Number(transactionData.maxPriorityFeePerGas),
     estimatedFee: estimatedFee,
+    maxFee: maxFee,
     estimatedMaxDuration: estimatedMaxDuration,
+    icon: SVGIcons.EVM_GAS_FEE_SUGGESTED,
+    name: 'popup_html_evm_suggested_by_dapp_gas_fee_custom',
   } as GasFeeEstimationBase;
 };
 

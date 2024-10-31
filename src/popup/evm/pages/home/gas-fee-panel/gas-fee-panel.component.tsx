@@ -60,11 +60,39 @@ export const GasFeePanel = ({
     gasLimit: 0,
     maxBaseFeeInGwei: 0,
     priorityFeeInGwei: 0,
+    gasPriceInGwei: 0,
+    type: transactionType,
   });
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (selectedFee) {
+      const gasLimit = selectedFee.gasLimit ?? 0;
+      const gasPriceInGwei = selectedFee?.gasPrice ?? 0;
+      const maxBaseFeeInGwei =
+        (selectedFee?.maxFeePerGas ?? 0) - (selectedFee?.priorityFee ?? 0);
+      const priorityFeeInGwei = selectedFee.priorityFee ?? 0;
+      setCustomGasFeeForm({
+        gasLimit: selectedFee.gasLimit ?? 0,
+        type: transactionType,
+        gasPriceInGwei: gasPriceInGwei,
+        maxBaseFeeInGwei: maxBaseFeeInGwei,
+        priorityFeeInGwei: priorityFeeInGwei,
+        gasPriceValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * gasPriceInGwei,
+        ),
+        priorityFeeValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * priorityFeeInGwei,
+        ),
+        maxBaseFeeValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * maxBaseFeeInGwei,
+        ),
+      });
+    }
+  }, [selectedFee]);
 
   const init = async () => {
     const estimate = await GasFeeUtils.estimate(
@@ -138,22 +166,67 @@ export const GasFeePanel = ({
   };
 
   const updateCustomFee = (
-    key: 'maxBaseFee' | 'priorityFee',
+    key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
     value: number,
   ) => {
     const newState = { ...customGasFeeForm };
+    switch (key) {
+      case 'maxBaseFee': {
+        newState.maxBaseFeeInGwei = value;
+        newState.maxBaseFeeValue = EvmFormatUtils.etherToGwei(
+          value * feeEstimation?.custom?.gasLimit!,
+        );
+        break;
+      }
+      case 'priorityFee': {
+        newState.priorityFeeInGwei = value;
+        newState.priorityFeeInGwei = EvmFormatUtils.etherToGwei(
+          value * feeEstimation?.custom?.gasLimit!,
+        );
+        break;
+      }
+      case 'gasPrice': {
+        newState.gasPriceInGwei = value;
+        newState.gasPriceValue = EvmFormatUtils.etherToGwei(
+          value * feeEstimation?.custom.gasPrice!,
+        );
+        break;
+      }
+      case 'gasLimit': {
+        newState.gasLimit = Number(value);
+        newState.gasPriceValue = EvmFormatUtils.etherToGwei(
+          Number(value) * customGasFeeForm?.gasPriceInGwei!,
+        );
+        newState.priorityFeeValue = EvmFormatUtils.etherToGwei(
+          Number(value) * customGasFeeForm?.priorityFeeInGwei!,
+        );
+        newState.maxBaseFeeValue = EvmFormatUtils.etherToGwei(
+          Number(value) * customGasFeeForm.maxBaseFeeInGwei!,
+        );
+        break;
+      }
+    }
 
-    newState[`${key}InGwei` as keyof CustomGasFeeForm] = value;
-    newState[`${key}Value` as keyof CustomGasFeeForm] =
-      EvmFormatUtils.etherToGwei(value * feeEstimation?.custom?.gasLimit!);
     setCustomGasFeeForm(newState);
   };
 
   const saveCustomFee = () => {
-    const customEstimatedFee = Decimal.add(
-      customGasFeeForm.maxBaseFeeValue!,
-      customGasFeeForm.priorityFeeValue!,
-    ).toNumber();
+    let customEstimatedFee = 0;
+    console.log(transactionType);
+    switch (transactionType) {
+      case EvmTransactionType.EIP_1559: {
+        customEstimatedFee = Decimal.add(
+          customGasFeeForm.maxBaseFeeValue!,
+          customGasFeeForm.priorityFeeValue!,
+        ).toNumber();
+        break;
+      }
+      case EvmTransactionType.LEGACY: {
+        customEstimatedFee = customGasFeeForm.gasPriceValue!;
+        break;
+      }
+    }
+
     let customDuration = 0;
     if (!feeEstimation) return;
     if (customEstimatedFee >= feeEstimation!.aggressive!.estimatedFee) {
@@ -167,6 +240,11 @@ export const GasFeePanel = ({
     const custom: GasFeeEstimationBase = {
       estimatedFee: customEstimatedFee,
       estimatedMaxDuration: customDuration,
+      gasLimit: customGasFeeForm.gasLimit,
+      type: customGasFeeForm.type,
+      gasPrice: customGasFeeForm.gasPriceInGwei,
+      maxFeePerGas: customGasFeeForm.maxBaseFeeInGwei,
+      priorityFee: customGasFeeForm.priorityFeeInGwei,
     } as GasFeeEstimationBase;
     onSelectFee(custom);
 
@@ -174,9 +252,21 @@ export const GasFeePanel = ({
       ...feeEstimation,
       custom: custom,
     };
+    console.log({ fullGasFeeEstimation });
 
     setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
     setCustomFeePanelOpened(false);
+  };
+
+  const getFeeLabel = () => {
+    switch (selectedFee?.type) {
+      case EvmTransactionType.EIP_1559:
+        return 'popup_html_evm_gas_max_fee_label';
+      case EvmTransactionType.LEGACY:
+        return 'popup_html_evm_transaction_fee';
+      default:
+        return 'popup_html_evm_gas_max_fee_label';
+    }
   };
 
   return (
@@ -186,8 +276,10 @@ export const GasFeePanel = ({
           className="gas-fee-panel"
           onClick={() => setIsAdvancedPanelOpen(true)}>
           <div className="title-row">
+            <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
             <div className="title">
-              {chrome.i18n.getMessage('popup_html_evm_gas_fee')}
+              {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
+              {chrome.i18n.getMessage(selectedFee.name)}
             </div>
             <SVGIcon
               className="gas-fee-settings"
@@ -195,27 +287,26 @@ export const GasFeePanel = ({
             />
           </div>
           <div className="details">
-            <div className="gas-fee-top-row">
-              <div className="label gas-fee-label">
-                {chrome.i18n.getMessage(
-                  'popup_html_evm_gas_fee_estimate_label',
-                )}
+            {selectedFee.type !== EvmTransactionType.LEGACY && (
+              <div className="gas-fee-top-row">
+                <div className="label gas-fee-label">
+                  {chrome.i18n.getMessage(
+                    'popup_html_evm_gas_fee_estimate_label',
+                  )}
+                </div>
+                <div className="label gas-fee">
+                  {FormatUtils.formatCurrencyValue(selectedFee.estimatedFee, 8)}{' '}
+                  {chain.mainToken}
+                </div>
               </div>
-              <div className="label gas-fee">
-                {FormatUtils.formatCurrencyValue(selectedFee.estimatedFee, 8)}{' '}
-                {chain.mainToken}
-              </div>
-            </div>
+            )}
 
             <div className="gas-fee-top-row">
               <div className="label gas-fee-label">
-                {chrome.i18n.getMessage('popup_html_evm_gas_max_fee_label')}
+                {chrome.i18n.getMessage(getFeeLabel())}
               </div>
               <div className="label gas-fee">
-                {FormatUtils.formatCurrencyValue(
-                  feeEstimation.max.estimatedFee,
-                  8,
-                )}{' '}
+                {FormatUtils.formatCurrencyValue(selectedFee.maxFee, 8)}{' '}
                 {chain.mainToken}
               </div>
             </div>
@@ -259,6 +350,7 @@ export const GasFeePanel = ({
                     <div
                       className="custom-fee-row low"
                       onClick={() => selectGasFee(feeEstimation.low)}>
+                      <SVGIcon icon={SVGIcons.EVM_GAS_FEE_LOW} />
                       <div className="label type">
                         {chrome.i18n.getMessage(
                           'popup_html_evm_custom_gas_fee_low',
@@ -272,7 +364,7 @@ export const GasFeePanel = ({
                       </div>
                       <div className="label gas-fee">
                         {FormatUtils.formatCurrencyValue(
-                          feeEstimation.low.estimatedFee,
+                          feeEstimation.low.maxFee,
                           8,
                         )}
                       </div>
@@ -283,6 +375,7 @@ export const GasFeePanel = ({
                     <div
                       className="custom-fee-row increased"
                       onClick={() => selectGasFee(feeEstimation.increased!)}>
+                      <SVGIcon icon={SVGIcons.EVM_GAS_FEE_LOW} />
                       <div className="label type">
                         {chrome.i18n.getMessage(
                           'popup_html_evm_custom_gas_fee_increased',
@@ -298,7 +391,7 @@ export const GasFeePanel = ({
                       </div>
                       <div className="label gas-fee">
                         {FormatUtils.formatCurrencyValue(
-                          feeEstimation.increased.estimatedFee,
+                          feeEstimation.increased.maxFee,
                           8,
                         )}
                       </div>
@@ -310,6 +403,7 @@ export const GasFeePanel = ({
                       feeEstimation.medium.deactivated ? 'deactivated' : ''
                     }`}
                     onClick={() => selectGasFee(feeEstimation.medium)}>
+                    <SVGIcon icon={SVGIcons.EVM_GAS_FEE_MEDIUM} />
                     <div className="label type">
                       {chrome.i18n.getMessage(
                         'popup_html_evm_custom_gas_fee_medium',
@@ -333,6 +427,7 @@ export const GasFeePanel = ({
                       feeEstimation.aggressive.deactivated ? 'deactivated' : ''
                     }`}
                     onClick={() => selectGasFee(feeEstimation.aggressive)}>
+                    <SVGIcon icon={SVGIcons.EVM_GAS_FEE_HIGH} />
                     <div className="label type">
                       {chrome.i18n.getMessage(
                         'popup_html_evm_custom_gas_fee_aggresive',
@@ -357,6 +452,7 @@ export const GasFeePanel = ({
                   <div
                     className="custom-fee-row custom"
                     onClick={() => openCustomFeePanel()}>
+                    <SVGIcon icon={SVGIcons.EVM_GAS_FEE_CUSTOM} />
                     <div className="label type">
                       {chrome.i18n.getMessage(
                         'popup_html_evm_custom_gas_fee_custom',
@@ -364,7 +460,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom &&
-                      feeEstimation.custom.estimatedFee !== -1
+                      feeEstimation.custom.maxFee !== -1
                         ? chrome.i18n.getMessage(
                             'popup_html_evm_gas_fee_estimate_duration',
                             [
@@ -375,9 +471,9 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {feeEstimation.custom &&
-                      feeEstimation.custom.estimatedFee !== -1
+                      feeEstimation.custom.maxFee !== -1
                         ? FormatUtils.formatCurrencyValue(
-                            feeEstimation.custom.estimatedFee,
+                            feeEstimation.custom.maxFee,
                             8,
                           )
                         : '-'}
@@ -390,6 +486,7 @@ export const GasFeePanel = ({
                       <div
                         className="custom-fee-row suggested-by-dapp"
                         onClick={() => openCustomFeePanel()}>
+                        <SVGIcon icon={SVGIcons.EVM_GAS_FEE_SUGGESTED} />
                         <div className="label type">
                           {chrome.i18n.getMessage(
                             'popup_html_evm_suggested_by_dapp_gas_fee_custom',
@@ -397,7 +494,7 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label duration">
                           {feeEstimation.suggestedByDApp &&
-                          feeEstimation.suggestedByDApp.estimatedFee !== -1
+                          feeEstimation.suggestedByDApp.maxFee !== -1
                             ? chrome.i18n.getMessage(
                                 'popup_html_evm_gas_fee_estimate_duration',
                                 [
@@ -408,9 +505,9 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label gas-fee">
                           {feeEstimation.suggestedByDApp &&
-                          feeEstimation.suggestedByDApp.estimatedFee !== -1
+                          feeEstimation.suggestedByDApp.maxFee !== -1
                             ? FormatUtils.formatCurrencyValue(
-                                feeEstimation.suggestedByDApp.estimatedFee,
+                                feeEstimation.suggestedByDApp.maxFee,
                                 8,
                               )
                             : '-'}
@@ -422,91 +519,125 @@ export const GasFeePanel = ({
               )}
               {isCustomFeePanelOpened && customGasFeeForm && (
                 <div className="custom-gas-fee-panel">
-                  <div className="base-fee-panel">
-                    <InputComponent
-                      label="popup_html_evm_gas_fee_form_base_fee"
-                      placeholder="popup_html_evm_gas_fee_form_base_fee"
-                      type={InputType.NUMBER}
-                      value={customGasFeeForm.maxBaseFeeInGwei}
-                      onChange={(value) => updateCustomFee('maxBaseFee', value)}
-                      hint={`≈${
-                        customGasFeeForm.maxBaseFeeValue
-                          ? customGasFeeForm.maxBaseFeeValue?.toString()
-                          : 0
-                      } ${chain.mainToken}`}
-                      skipHintTranslation
-                    />
-                    <div className="data-panel">
-                      <div className="data-block">
-                        <span className="label">
-                          {chrome.i18n.getMessage(
-                            'popup_html_evm_custom_fee_current',
-                          )}
-                          {': '}
-                        </span>
-                        <span
-                          className={`value ${feeEstimation.extraInfo.trends.baseFee}`}>
-                          {feeEstimation.extraInfo.baseFee.estimated}
-                        </span>
+                  {customGasFeeForm.type === EvmTransactionType.EIP_1559 && (
+                    <>
+                      <div className="base-fee-panel">
+                        <InputComponent
+                          label="popup_html_evm_gas_fee_form_base_fee"
+                          placeholder="popup_html_evm_gas_fee_form_base_fee"
+                          type={InputType.NUMBER}
+                          value={customGasFeeForm.maxBaseFeeInGwei}
+                          onChange={(value) =>
+                            updateCustomFee('maxBaseFee', value)
+                          }
+                          hint={`≈${
+                            customGasFeeForm.maxBaseFeeValue
+                              ? customGasFeeForm.maxBaseFeeValue?.toString()
+                              : 0
+                          } ${chain.mainToken}`}
+                          skipHintTranslation
+                        />
+                        <div className="data-panel">
+                          <div className="data-block">
+                            <span className="label">
+                              {chrome.i18n.getMessage(
+                                'popup_html_evm_custom_fee_current',
+                              )}
+                              {': '}
+                            </span>
+                            <span
+                              className={`value ${feeEstimation.extraInfo.trends.baseFee}`}>
+                              {feeEstimation.extraInfo.baseFee.estimated}
+                            </span>
+                          </div>
+                          <div className="data-block">
+                            <span className="label">
+                              {chrome.i18n.getMessage(
+                                'popup_html_evm_custom_fee_latest',
+                              )}
+                              {': '}
+                            </span>
+                            <span className={`value`}>
+                              {feeEstimation.extraInfo.baseFee.baseFeeRange.min}
+                              -
+                              {feeEstimation.extraInfo.baseFee.baseFeeRange.max}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="data-block">
-                        <span className="label">
-                          {chrome.i18n.getMessage(
-                            'popup_html_evm_custom_fee_latest',
-                          )}
-                          {': '}
-                        </span>
-                        <span className={`value`}>
-                          {feeEstimation.extraInfo.baseFee.baseFeeRange.min}-
-                          {feeEstimation.extraInfo.baseFee.baseFeeRange.max}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
 
+                      <div className="priority-fee-panel">
+                        <InputComponent
+                          label="popup_html_evm_gas_fee_form_priority_fee"
+                          placeholder="popup_html_evm_gas_fee_form_priority_fee"
+                          type={InputType.NUMBER}
+                          value={customGasFeeForm.priorityFeeInGwei}
+                          onChange={(value) =>
+                            updateCustomFee('priorityFee', value)
+                          }
+                          hint={`≈${
+                            customGasFeeForm.priorityFeeValue
+                              ? customGasFeeForm.priorityFeeValue?.toString()
+                              : 0
+                          } ${chain.mainToken}`}
+                          skipHintTranslation
+                        />
+                        <div className="data-panel">
+                          <div className="data-block">
+                            <span className="label">
+                              {chrome.i18n.getMessage(
+                                'popup_html_evm_custom_fee_current',
+                              )}
+                              {': '}
+                            </span>
+                            <span
+                              className={`value ${feeEstimation.extraInfo.trends.priorityFee}`}>
+                              {feeEstimation.extraInfo.priorityFee.latest.min}-
+                              {feeEstimation.extraInfo.priorityFee.latest.max}
+                            </span>
+                          </div>
+                          <div className="data-block">
+                            <span className="label">
+                              {chrome.i18n.getMessage(
+                                'popup_html_evm_custom_fee_latest',
+                              )}
+                              {': '}
+                            </span>
+                            <span className={`value`}>
+                              {feeEstimation.extraInfo.priorityFee.history.min}-
+                              {feeEstimation.extraInfo.priorityFee.history.max}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {customGasFeeForm.type === EvmTransactionType.LEGACY && (
+                    <div className="gas-price-panel">
+                      <InputComponent
+                        label="popup_html_evm_gas_fee_form_gas_price"
+                        placeholder="popup_html_evm_gas_fee_form_gas_price"
+                        type={InputType.NUMBER}
+                        value={customGasFeeForm.gasPriceInGwei}
+                        onChange={(value) => updateCustomFee('gasPrice', value)}
+                        hint={`≈${
+                          customGasFeeForm.gasPriceInGwei
+                            ? customGasFeeForm.gasPriceInGwei?.toString()
+                            : 0
+                        } ${chain.mainToken}`}
+                        skipHintTranslation
+                      />
+                    </div>
+                  )}
                   <div className="priority-fee-panel">
                     <InputComponent
-                      label="popup_html_evm_gas_fee_form_priority_fee"
-                      placeholder="popup_html_evm_gas_fee_form_priority_fee"
+                      label="popup_html_evm_gas_fee_form_gas_limit"
+                      placeholder="popup_html_evm_gas_fee_form_gas_limit"
                       type={InputType.NUMBER}
-                      value={customGasFeeForm.priorityFeeInGwei}
-                      onChange={(value) =>
-                        updateCustomFee('priorityFee', value)
-                      }
-                      hint={`≈${
-                        customGasFeeForm.priorityFeeValue
-                          ? customGasFeeForm.priorityFeeValue?.toString()
-                          : 0
-                      } ${chain.mainToken}`}
+                      value={customGasFeeForm.gasLimit}
+                      onChange={(value) => updateCustomFee('gasLimit', value)}
                       skipHintTranslation
                     />
-                    <div className="data-panel">
-                      <div className="data-block">
-                        <span className="label">
-                          {chrome.i18n.getMessage(
-                            'popup_html_evm_custom_fee_current',
-                          )}
-                          {': '}
-                        </span>
-                        <span
-                          className={`value ${feeEstimation.extraInfo.trends.priorityFee}`}>
-                          {feeEstimation.extraInfo.priorityFee.latest.min}-
-                          {feeEstimation.extraInfo.priorityFee.latest.max}
-                        </span>
-                      </div>
-                      <div className="data-block">
-                        <span className="label">
-                          {chrome.i18n.getMessage(
-                            'popup_html_evm_custom_fee_latest',
-                          )}
-                          {': '}
-                        </span>
-                        <span className={`value`}>
-                          {feeEstimation.extraInfo.priorityFee.history.min}-
-                          {feeEstimation.extraInfo.priorityFee.history.max}
-                        </span>
-                      </div>
-                    </div>
                   </div>
                   <div className="button-panel">
                     <ButtonComponent

@@ -7,9 +7,16 @@
   row-gap: 8px;
 
   .title-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    column-gap: 8px;
     align-items: center;
     justify-content: space-between;
+
+    .svg-icon {
+      height: 24px;
+      width: 24px;
+    }
 
     .title {
       @include poppins500(14px);
@@ -38,6 +45,12 @@
 .edit-gas-fee-popup {
   width: 100%;
   margin: unset !important;
+  padding: 24px;
+
+  .overlay {
+    margin: -24px;
+  }
+
   .edit-gas-fee-content {
     display: flex;
     flex-direction: column;
@@ -55,8 +68,14 @@
       margin: 0;
       padding: 4px 12px;
       display: grid;
-      grid-template-columns: 2fr 3fr 2fr;
+      grid-template-columns: 1fr 2fr 3fr 2fr;
       cursor: pointer;
+
+      .svg-icon {
+        width: 20px;
+        height: 20px;
+      }
+
       .label {
         @include poppins400(13px);
         color: var(--main-font-color);
