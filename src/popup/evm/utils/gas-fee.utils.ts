@@ -233,10 +233,17 @@ const createDAppSuggestionFromTransactionData = async (
     .div(1000)
     .toNumber();
 
+  console.log(
+    maxFee,
+    estimates.aggressive.maxFee,
+    estimates.medium.maxFee,
+    estimates.low.maxFee,
+  );
+
   let estimatedMaxDuration = 0;
-  if (estimatedFee >= estimates!.aggressive!.estimatedFee) {
+  if (maxFee >= estimates!.aggressive!.maxFee) {
     estimatedMaxDuration = estimates.aggressive.estimatedMaxDuration;
-  } else if (estimatedFee >= estimates!.medium!.estimatedFee) {
+  } else if (maxFee >= estimates!.medium!.maxFee) {
     estimatedMaxDuration = estimates.medium.estimatedMaxDuration;
   } else {
     estimatedMaxDuration = estimates.low.estimatedMaxDuration;
@@ -248,8 +255,9 @@ const createDAppSuggestionFromTransactionData = async (
     type: transactionData.type,
     gasLimit: Number(transactionData.gasLimit),
     gasPrice: Number(transactionData.gasPrice) / EvmFormatUtils.GWEI,
-    maxFeePerGas: Number(transactionData.maxFeePerGas),
-    priorityFee: Number(transactionData.maxPriorityFeePerGas),
+    maxFeePerGas: Number(transactionData.maxFeePerGas) / EvmFormatUtils.GWEI,
+    priorityFee:
+      Number(transactionData.maxPriorityFeePerGas) / EvmFormatUtils.GWEI,
     estimatedFee: estimatedFee,
     maxFee: maxFee,
     estimatedMaxDuration: estimatedMaxDuration,

@@ -69,12 +69,34 @@ export const GasFeePanel = ({
   }, []);
 
   useEffect(() => {
-    if (selectedFee) {
+    console.log(selectedFee, transactionData);
+    if (
+      selectedFee &&
+      selectedFee.name !== 'popup_html_evm_custom_gas_fee_custom'
+    ) {
       const gasLimit = selectedFee.gasLimit ?? 0;
       const gasPriceInGwei = selectedFee?.gasPrice ?? 0;
       const maxBaseFeeInGwei =
         (selectedFee?.maxFeePerGas ?? 0) - (selectedFee?.priorityFee ?? 0);
       const priorityFeeInGwei = selectedFee.priorityFee ?? 0;
+
+      console.log({
+        gasLimit: selectedFee.gasLimit ?? 0,
+        type: transactionType,
+        gasPriceInGwei: gasPriceInGwei,
+        maxBaseFeeInGwei: maxBaseFeeInGwei,
+        priorityFeeInGwei: priorityFeeInGwei,
+        gasPriceValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * gasPriceInGwei,
+        ),
+        priorityFeeValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * priorityFeeInGwei,
+        ),
+        maxBaseFeeValue: EvmFormatUtils.etherToGwei(
+          Number(gasLimit) * maxBaseFeeInGwei,
+        ),
+      });
+
       setCustomGasFeeForm({
         gasLimit: selectedFee.gasLimit ?? 0,
         type: transactionType,
@@ -172,21 +194,21 @@ export const GasFeePanel = ({
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
-        newState.maxBaseFeeInGwei = value;
+        newState.maxBaseFeeInGwei = Number(value);
         newState.maxBaseFeeValue = EvmFormatUtils.etherToGwei(
           value * feeEstimation?.custom?.gasLimit!,
         );
         break;
       }
       case 'priorityFee': {
-        newState.priorityFeeInGwei = value;
-        newState.priorityFeeInGwei = EvmFormatUtils.etherToGwei(
+        newState.priorityFeeInGwei = Number(value);
+        newState.priorityFeeValue = EvmFormatUtils.etherToGwei(
           value * feeEstimation?.custom?.gasLimit!,
         );
         break;
       }
       case 'gasPrice': {
-        newState.gasPriceInGwei = value;
+        newState.gasPriceInGwei = Number(value);
         newState.gasPriceValue = EvmFormatUtils.etherToGwei(
           value * feeEstimation?.custom.gasPrice!,
         );
@@ -211,27 +233,39 @@ export const GasFeePanel = ({
   };
 
   const saveCustomFee = () => {
+    let customMaxFee = 0;
     let customEstimatedFee = 0;
-    console.log(transactionType);
+
+    console.log(customGasFeeForm);
+
     switch (transactionType) {
       case EvmTransactionType.EIP_1559: {
-        customEstimatedFee = Decimal.add(
+        customMaxFee = Decimal.add(
           customGasFeeForm.maxBaseFeeValue!,
+          customGasFeeForm.priorityFeeValue!,
+        ).toNumber();
+        customEstimatedFee = Decimal.add(
+          Decimal.div(
+            Number(feeEstimation?.extraInfo.baseFee.estimated!),
+            EvmFormatUtils.GWEI,
+          ),
           customGasFeeForm.priorityFeeValue!,
         ).toNumber();
         break;
       }
       case EvmTransactionType.LEGACY: {
-        customEstimatedFee = customGasFeeForm.gasPriceValue!;
+        customMaxFee = customGasFeeForm.gasPriceValue!;
         break;
       }
     }
 
+    console.log({ customEstimatedFee, customMaxFee });
+
     let customDuration = 0;
     if (!feeEstimation) return;
-    if (customEstimatedFee >= feeEstimation!.aggressive!.estimatedFee) {
+    if (customMaxFee >= feeEstimation!.aggressive!.maxFee) {
       customDuration = feeEstimation.aggressive.estimatedMaxDuration;
-    } else if (customEstimatedFee >= feeEstimation!.medium!.estimatedFee) {
+    } else if (customMaxFee >= feeEstimation!.medium!.maxFee) {
       customDuration = feeEstimation.medium.estimatedMaxDuration;
     } else {
       customDuration = feeEstimation.low.estimatedMaxDuration;
@@ -239,12 +273,15 @@ export const GasFeePanel = ({
 
     const custom: GasFeeEstimationBase = {
       estimatedFee: customEstimatedFee,
+      maxFee: customMaxFee,
       estimatedMaxDuration: customDuration,
       gasLimit: customGasFeeForm.gasLimit,
       type: customGasFeeForm.type,
       gasPrice: customGasFeeForm.gasPriceInGwei,
       maxFeePerGas: customGasFeeForm.maxBaseFeeInGwei,
       priorityFee: customGasFeeForm.priorityFeeInGwei,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
     } as GasFeeEstimationBase;
     onSelectFee(custom);
 
@@ -417,7 +454,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {FormatUtils.formatCurrencyValue(
-                        feeEstimation.medium.estimatedFee,
+                        feeEstimation.medium.maxFee,
                         8,
                       )}
                     </div>
@@ -443,7 +480,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {FormatUtils.formatCurrencyValue(
-                        feeEstimation.aggressive.estimatedFee,
+                        feeEstimation.aggressive.maxFee,
                         8,
                       )}
                     </div>
