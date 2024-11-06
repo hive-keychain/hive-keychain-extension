@@ -4807,5 +4807,13 @@
   "dialog_evm_sign_data_title": {
     "message": "Request sign data",
     "description": "Request sign typed data dialog title"
+  },
+  "evm_operation_transfer": {
+    "message": "Transfer",
+    "description": "Evm transaction operation : transfer"
+  },
+  "evm_operation_smart_contract_address": {
+    "message": "Smart contract address",
+    "description": "Evm smart contract address"
   }
 }

@@ -126,7 +126,6 @@ const decryptMessage = (account: EvmAccount, message: string) => {
   const stripped = message.substring(2);
   const buff = Buffer.from(stripped, 'hex');
   const encryptedData: EthEncryptedData = JSON.parse(buff.toString('utf8'));
-  console.log({ encryptedData, account });
   return decrypt({
     encryptedData: encryptedData,
     privateKey: account.wallet.signingKey.privateKey.substring(2),

@@ -44,6 +44,27 @@
         background: var(--card-background);
         border-radius: 20px;
         border: 1px solid var(--card-border);
+
+        .transaction-operation-name {
+          text-align: center;
+          font-size: 20px;
+        }
+
+        .account-chain-panel {
+          display: flex;
+          .chain-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            column-gap: 8px;
+            .chain-logo {
+              height: 24px;
+              width: 24px;
+              border-radius: 50%;
+            }
+          }
+        }
+
         .field {
           display: flex;
           justify-content: space-between;
@@ -54,6 +75,7 @@
           }
           .label {
             @include poppins500(14px);
+            text-transform: capitalize;
           }
           .value {
             @include poppins400(14px);
@@ -66,6 +88,12 @@
             }
             &.xs-font {
               font-size: 11px;
+            }
+
+            .value-content {
+              display: flex;
+              align-items: center;
+              column-gap: 8px;
             }
           }
         }

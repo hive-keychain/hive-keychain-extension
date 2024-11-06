@@ -33,7 +33,6 @@ const estimate = async (
 ): Promise<FullGasFeeEstimation> => {
   const estimates = await getGasFeeEstimations(chain);
 
-  console.log({ estimates });
   if (!gasLimit)
     gasLimit = await EthersUtils.getGasLimit(
       chain,
@@ -177,7 +176,6 @@ const estimate = async (
         gasLimit,
         fullEstimation,
       );
-    console.log({ fullEstimation });
   }
 
   return fullEstimation;
@@ -194,8 +192,6 @@ const createDAppSuggestionFromTransactionData = async (
 
   let maxFee;
   let estimatedFee;
-
-  console.log('Before calculation', { transactionData, gasLimit, estimates });
 
   switch (transactionData.type) {
     case EvmTransactionType.EIP_1559: {
@@ -233,13 +229,6 @@ const createDAppSuggestionFromTransactionData = async (
     .div(1000)
     .toNumber();
 
-  console.log(
-    maxFee,
-    estimates.aggressive.maxFee,
-    estimates.medium.maxFee,
-    estimates.low.maxFee,
-  );
-
   let estimatedMaxDuration = 0;
   if (maxFee >= estimates!.aggressive!.maxFee) {
     estimatedMaxDuration = estimates.aggressive.estimatedMaxDuration;
@@ -248,8 +237,6 @@ const createDAppSuggestionFromTransactionData = async (
   } else {
     estimatedMaxDuration = estimates.low.estimatedMaxDuration;
   }
-
-  console.log({ fee: maxFee, estimatedFee });
 
   return {
     type: transactionData.type,

@@ -161,7 +161,6 @@ const isWalletAddress = async (address: string, chain: EvmChain) => {
 const getConnectedWallets = async (domain: string): Promise<string[]> => {
   const permissions = await getWalletPermissionFull(domain);
   const connectedWallet = permissions[EvmRequestPermission.ETH_ACCOUNTS];
-  console.log({ permissions });
   if (permissions && connectedWallet) return connectedWallet;
   else return [];
 };

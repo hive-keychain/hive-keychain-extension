@@ -28,10 +28,6 @@ export const evmRequestWithoutConfirmation = async (
   //TODO: Implement all unrestricted methods
 
   switch (request.method) {
-    case EvmRequestMethod.ESTIMATE_GAS_FEE: {
-      message.value.result = EvmRequestsUtils.estimateGasFee();
-      break;
-    }
     case EvmRequestMethod.GET_BALANCE: {
       message.value.result = await EvmRequestsUtils.getBalance(
         request.params[0],
@@ -53,12 +49,10 @@ export const evmRequestWithoutConfirmation = async (
         domain,
         EvmMethodPermissionMap[request.method]!,
       );
-      console.log({ hasPermission });
       if (hasPermission) {
         const connectedWallets = await EvmWalletUtils.getConnectedWallets(
           domain,
         );
-        console.log({ connectedWallets });
         message.value.result = connectedWallets;
       }
       sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);

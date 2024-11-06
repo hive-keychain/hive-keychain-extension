@@ -1,4 +1,5 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
@@ -7,7 +8,6 @@ import {
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
@@ -31,6 +31,7 @@ export const SendTransaction = (props: Props) => {
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [suggestedFee, setSuggestedFee] = useState<GasFeeEstimationBase>();
   const [amount, setAmount] = useState<number>();
+  const [tokenAmount, setTokenAmount] = useState<number>();
   const [receiverAddress, setReceiverAddress] = useState<string>();
 
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
@@ -45,7 +46,7 @@ export const SendTransaction = (props: Props) => {
   const init = async () => {
     const lastChain = await EvmChainUtils.getLastEvmChain();
     setChain(lastChain as EvmChain);
-
+    console.log(lastChain);
     const params = request.params[0];
 
     const usedAccount = accounts.find(
@@ -68,7 +69,21 @@ export const SendTransaction = (props: Props) => {
 
     if (usedAccount) {
       if (params.data) {
-        const contract = new ethers.Contract(params.to, Erc20Abi);
+        const abi = await EtherscanApi.getAbi(
+          lastChain! as EvmChain,
+          params.to,
+        );
+
+        console.log(abi);
+
+        const contract = new ethers.Contract(params.to, abi);
+
+        const test = contract.interface.parseTransaction({
+          data: params.data,
+          value: params.value,
+        });
+        console.log({ test });
+
         const transferDecodedData = contract.interface.decodeFunctionData(
           'transfer',
           params.data,
@@ -86,7 +101,8 @@ export const SendTransaction = (props: Props) => {
           amount: transferDecodedData[1] / 1000000,
         };
       } else {
-        setAmount(params.amount);
+        console.log({ params });
+        setAmount(Number(params.value));
         setReceiverAddress(params.to);
 
         tData.from = params.from;
@@ -141,10 +157,10 @@ export const SendTransaction = (props: Props) => {
               content={EvmFormatUtils.formatAddress(receiverAddress)}
             />
           )}
-          {amount && (
+          {amount !== undefined && amount !== null && tokenInfo && (
             <RequestItem
               title="popup_html_transfer_amount"
-              content={amount.toString()}
+              content={`${amount.toString()} ${tokenInfo?.symbol}`}
             />
           )}
         </>

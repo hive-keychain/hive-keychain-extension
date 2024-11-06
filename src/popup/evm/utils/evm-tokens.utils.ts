@@ -187,16 +187,19 @@ const getTokenInfo = async (
   let token;
   if (!tokenMetaData) {
     tokenMetaData = await KeychainApi.get(
-      `evm/tokensInfoShort/${chainId}/${[address].join(',')}`,
+      `evm/tokensInfoShort/${chainId}/${[address?.toLowerCase()].join(',')}`,
     );
   }
   if (tokenMetaData) {
     if (address) {
       token = tokenMetaData.find(
-        (t: EvmTokenInfoShort) => t.address === address,
+        (t: EvmTokenInfoShort) =>
+          t.address.toLowerCase() === address.toLowerCase(),
       );
     } else {
-      token = tokenMetaData.find((t: EvmTokenInfoShort) => !t.address);
+      token = tokenMetaData.find(
+        (t: EvmTokenInfoShort) => !t.address.toLowerCase(),
+      );
     }
   }
   return token;
@@ -249,6 +252,11 @@ const displayValue = (value: number, tokenInfo: EvmTokenInfoShort) => {
   return FormatUtils.withCommas(value, decimals, true);
 };
 
+const getTokenType = (abi: any) => {
+  // TODO implement
+  return EVMTokenType.ERC20;
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -259,4 +267,5 @@ export const EvmTokensUtils = {
   getMainTokenInfo,
   displayValue,
   getTokenInfo,
+  getTokenType,
 };

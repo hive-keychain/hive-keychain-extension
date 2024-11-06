@@ -69,7 +69,6 @@ export const GasFeePanel = ({
   }, []);
 
   useEffect(() => {
-    console.log(selectedFee, transactionData);
     if (
       selectedFee &&
       selectedFee.name !== 'popup_html_evm_custom_gas_fee_custom'
@@ -79,23 +78,6 @@ export const GasFeePanel = ({
       const maxBaseFeeInGwei =
         (selectedFee?.maxFeePerGas ?? 0) - (selectedFee?.priorityFee ?? 0);
       const priorityFeeInGwei = selectedFee.priorityFee ?? 0;
-
-      console.log({
-        gasLimit: selectedFee.gasLimit ?? 0,
-        type: transactionType,
-        gasPriceInGwei: gasPriceInGwei,
-        maxBaseFeeInGwei: maxBaseFeeInGwei,
-        priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * gasPriceInGwei,
-        ),
-        priorityFeeValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * priorityFeeInGwei,
-        ),
-        maxBaseFeeValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * maxBaseFeeInGwei,
-        ),
-      });
 
       setCustomGasFeeForm({
         gasLimit: selectedFee.gasLimit ?? 0,
@@ -259,8 +241,6 @@ export const GasFeePanel = ({
       }
     }
 
-    console.log({ customEstimatedFee, customMaxFee });
-
     let customDuration = 0;
     if (!feeEstimation) return;
     if (customMaxFee >= feeEstimation!.aggressive!.maxFee) {
@@ -289,7 +269,6 @@ export const GasFeePanel = ({
       ...feeEstimation,
       custom: custom,
     };
-    console.log({ fullGasFeeEstimation });
 
     setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
     setCustomFeePanelOpened(false);

@@ -68,15 +68,12 @@ export const initEvmRequestHandler = async (
         domain,
         EvmMethodPermissionMap[request.method]!,
       );
-      console.log({ hasPermission, request });
       if (hasPermission) {
         evmRequestWithConfirmation(requestHandler, tab!, request, domain);
       } else {
-        console.log('ici');
         // return error ?
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
-      console.log('here');
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
         if (
           await EvmWalletUtils.hasPermission(
