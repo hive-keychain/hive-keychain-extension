@@ -71,43 +71,10 @@ const getTokenBalances = async (walletAddress: string, chain: EvmChain) => {
     tokensMetadata.push(mainTokenMetadata);
   }
   const balances: Promise<EVMToken | undefined>[] = tokensMetadata
-    .filter((e) => e.type === EVMTokenType.NATIVE || !e.possibleSpam)
-    .map(async (token) => {
-      try {
-        let formattedBalance;
-        let balance;
-        let balanceInteger;
-        if (token.type === EVMTokenType.NATIVE) {
-          balance = await provider.getBalance(walletAddress);
-          formattedBalance = FormatUtils.formatCurrencyValue(
-            Number(parseFloat(ethers.formatEther(balance))),
-          );
-          balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
-        } else {
-          const contract = new ethers.Contract(
-            token.address!,
-            Erc20Abi,
-            provider,
-          );
-          balance = await contract.balanceOf(walletAddress);
-          formattedBalance = FormatUtils.formatCurrencyValue(
-            Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-          );
-          balanceInteger = Number(
-            parseFloat(ethers.formatUnits(balance, token.decimals)),
-          );
-        }
-
-        return {
-          tokenInfo: token,
-          formattedBalance: formattedBalance,
-          balance: balance,
-          balanceInteger: balanceInteger,
-        };
-      } catch (err) {
-        Logger.error('Error while formatting evm balances', err);
-      }
-    });
+    .filter(
+      (token) => token.type === EVMTokenType.NATIVE || !token.possibleSpam,
+    )
+    .map(async (token) => getTokenBalance(walletAddress, chain, token));
 
   let localTokens = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -120,6 +87,48 @@ const getTokenBalances = async (walletAddress: string, chain: EvmChain) => {
 
   const result = (await Promise.all(balances)).filter((balance) => !!balance);
   return result;
+};
+
+const getTokenBalance = async (
+  walletAddress: string,
+  chain: EvmChain,
+  token: EvmTokenInfoShort,
+) => {
+  const provider = EthersUtils.getProvider(chain);
+  try {
+    let formattedBalance;
+    let balance;
+    let balanceInteger;
+    if (token.type === EVMTokenType.NATIVE) {
+      balance = await provider.getBalance(walletAddress);
+      formattedBalance = FormatUtils.withCommas(
+        Number(parseFloat(ethers.formatEther(balance))),
+        8,
+        true,
+      );
+      balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+    } else {
+      const contract = new ethers.Contract(token.address!, Erc20Abi, provider);
+      balance = await contract.balanceOf(walletAddress);
+      formattedBalance = FormatUtils.withCommas(
+        Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
+        token.decimals,
+        true,
+      );
+      balanceInteger = Number(
+        parseFloat(ethers.formatUnits(balance, token.decimals)),
+      );
+    }
+
+    return {
+      tokenInfo: token,
+      formattedBalance: formattedBalance,
+      balance: balance,
+      balanceInteger: balanceInteger,
+    };
+  } catch (err) {
+    Logger.error('Error while formatting evm balances', err);
+  }
 };
 
 const getTokenListForWalletAddress = async (
@@ -261,6 +270,7 @@ export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
   getTokenBalances,
+  getTokenBalance,
   sortTokens,
   formatTokenValue,
   formatEtherValue,

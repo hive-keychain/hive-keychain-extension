@@ -37,4 +37,28 @@ const getDisplayInputType = (
   return EvmInputDisplayType.STRING;
 };
 
-export const AbiParserUtils = { getDisplayInputType };
+const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
+  const tokenType = EvmTokensUtils.getTokenType(abi);
+  switch (tokenType) {
+    case EVMTokenType.ERC20: {
+      switch (methodName) {
+        case 'transfer': {
+          return true;
+        }
+      }
+      break;
+    }
+    case EVMTokenType.ERC_721: {
+      return false;
+    }
+    default: {
+      return false;
+    }
+  }
+  return false;
+};
+
+export const AbiParserUtils = {
+  getDisplayInputType,
+  shouldDisplayBalanceChange,
+};

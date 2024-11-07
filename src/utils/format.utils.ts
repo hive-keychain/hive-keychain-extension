@@ -7,6 +7,8 @@ const withCommas = (
   decimals = 3,
   removeTrailingZeros = false,
 ) => {
+  console.log('------------------');
+  console.log({ nb });
   let currency;
 
   if (typeof nb === 'string') {
@@ -18,17 +20,22 @@ const withCommas = (
   }
 
   value = parseFloat(nb).toFixed(decimals);
+  console.log({ value });
   let parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
+  console.log({ finalNumber });
   if (removeTrailingZeros) {
-    const validNumber = finalNumber.match(/^0*(\d+(?:\.(?:(?!0+$)\d)+)?)/);
+    const validNumber = finalNumber.match(
+      /^0*([\d | ,]+(?:\.(?:(?!0+$)\d)+)?)/,
+    );
     if (validNumber) finalNumber = validNumber[0];
   }
-
+  console.log({ finalNumber });
   if (currency) {
     finalNumber = finalNumber + ' ' + currency;
   }
+  console.log({ finalNumber });
   return finalNumber;
 };
 

@@ -4815,5 +4815,17 @@
   "evm_operation_smart_contract_address": {
     "message": "Smart contract address",
     "description": "Evm smart contract address"
+  },
+  "evm_balance_change_title": {
+    "message": "Balance change panel",
+    "description": "Confirmation page balance change panel"
+  },
+  "evm_balance_before": {
+    "message": "Before : ",
+    "description": "Balance before transaction"
+  },
+  "evm_balance_after": {
+    "message": "After : ",
+    "description": "Balance after transaction"
   }
 }

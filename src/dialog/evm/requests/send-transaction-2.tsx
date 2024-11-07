@@ -23,6 +23,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
+import { Card } from 'src/common-ui/card/card.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
@@ -48,6 +49,11 @@ interface TransactionConfirmationFields {
   otherFields: TransactionConfirmationField[];
 }
 
+interface BalanceInfo {
+  before: string;
+  estimatedAfter: string;
+}
+
 export const SendTransaction2 = (props: Props) => {
   const { accounts, data, request } = props;
 
@@ -56,6 +62,12 @@ export const SendTransaction2 = (props: Props) => {
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
   const [receiver, setReceiver] = useState<string>();
+  const [transferAmount, setTransferAmount] = useState<number>();
+
+  const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
+
+  const [shouldDisplayBalanceChange, setShouldDisplayBalanceChange] =
+    useState(false);
 
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
@@ -65,6 +77,12 @@ export const SendTransaction2 = (props: Props) => {
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (tokenInfo && selectedAccount && !!transferAmount) {
+      initBalance(tokenInfo);
+    }
+  }, [tokenInfo, selectedAccount, transferAmount]);
 
   const init = async () => {
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
@@ -115,6 +133,13 @@ export const SendTransaction2 = (props: Props) => {
           data: params.data,
           value: params.value,
         });
+
+        setShouldDisplayBalanceChange(
+          AbiParserUtils.shouldDisplayBalanceChange(
+            abi,
+            decodedTransactionData?.name!,
+          ),
+        );
         console.log({ decodedTransactionData });
 
         transactionConfirmationFields.operationName =
@@ -149,6 +174,14 @@ export const SendTransaction2 = (props: Props) => {
             const input = decodedTransactionData?.fragment.inputs[index];
             if (input.name === 'recipient') {
               setReceiver(decodedTransactionData.args[index]);
+            }
+            if (input.name === 'amount') {
+              console.log(decodedTransactionData.args[index]);
+              setTransferAmount(
+                new Decimal(Number(decodedTransactionData.args[index]))
+                  .div(new Decimal(EvmFormatUtils.GWEI))
+                  .toNumber(),
+              );
             }
 
             let value;
@@ -203,6 +236,8 @@ export const SendTransaction2 = (props: Props) => {
       } else {
         console.log({ params });
 
+        setShouldDisplayBalanceChange(true);
+
         transactionConfirmationFields.mainTokenAmount = {
           name: 'mainTokenAmount',
           type: 'number',
@@ -237,6 +272,31 @@ export const SendTransaction2 = (props: Props) => {
     } else {
       console.log('No corresponding account found');
     }
+  };
+
+  const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
+    const balance = await EvmTokensUtils.getTokenBalance(
+      selectedAccount?.wallet.address!,
+      chain!,
+      tokenInfo,
+    );
+
+    console.log({
+      balance,
+      amount: transferAmount,
+      after: new Decimal(balance?.balanceInteger!)
+        .sub(transferAmount!)
+        .toNumber(),
+    });
+
+    setBalanceInfo({
+      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
+      estimatedAfter: `${FormatUtils.withCommas(
+        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toString(),
+        (tokenInfo as EvmTokenInfoShortErc20).decimals,
+        true,
+      )}  ${tokenInfo?.symbol}`,
+    });
   };
 
   return (
@@ -286,24 +346,41 @@ export const SendTransaction2 = (props: Props) => {
         </>
       }
       bottomPanel={
-        fields &&
-        chain &&
-        tokenInfo &&
-        receiver &&
-        selectedAccount &&
-        transactionData && (
-          <GasFeePanel
-            chain={chain}
-            tokenInfo={tokenInfo}
-            receiverAddress={receiver}
-            amount={0} // TODO change
-            wallet={selectedAccount.wallet}
-            selectedFee={selectedFee}
-            onSelectFee={setSelectedFee}
-            transactionType={transactionData.type}
-            transactionData={transactionData}
-          />
-        )
+        <>
+          {shouldDisplayBalanceChange && (
+            <Card className="balance-change-panel">
+              <div className="balance-change-title">
+                {chrome.i18n.getMessage('evm_balance_change_title')}
+              </div>
+              <div className="balance-before">
+                {chrome.i18n.getMessage('evm_balance_before')}
+                {balanceInfo?.before}
+              </div>
+              <div className="balance-after">
+                {chrome.i18n.getMessage('evm_balance_after')}
+                {balanceInfo?.estimatedAfter}
+              </div>
+            </Card>
+          )}
+          {fields &&
+            chain &&
+            tokenInfo &&
+            receiver &&
+            selectedAccount &&
+            transactionData && (
+              <GasFeePanel
+                chain={chain}
+                tokenInfo={tokenInfo}
+                receiverAddress={receiver}
+                amount={0} // TODO change
+                wallet={selectedAccount.wallet}
+                selectedFee={selectedFee}
+                onSelectFee={setSelectedFee}
+                transactionType={transactionData.type}
+                transactionData={transactionData}
+              />
+            )}
+        </>
       }
     />
   );
