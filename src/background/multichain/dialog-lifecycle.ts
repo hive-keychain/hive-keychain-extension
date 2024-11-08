@@ -7,9 +7,10 @@ export const createPopup = (
   callback: () => void,
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   popupHtml = 'dialog.html',
+  height = 600,
 ) => {
   let width = 435;
-  let height = 600;
+
   requestHandler.setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
   if (requestHandler.data.windowId) {
