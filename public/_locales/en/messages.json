@@ -4827,5 +4827,21 @@
   "evm_balance_after": {
     "message": "After : ",
     "description": "Balance after transaction"
+  },
+  "evm_transaction_transaction_has_warning": {
+    "message": "This transaction still has warnings you didn't resolve. Please ignore them all before proceeding",
+    "description": "Potential scam warning message"
+  },
+  "evm_transaction_warning_possible_scam": {
+    "message": "This address is listed as a potential scam",
+    "description": "Potential scam warning message"
+  },
+  "evm_send_transaction_ignore_all_warnings": {
+    "message": "Resolve all",
+    "description": "Ignore all warnings"
+  },
+  "evm_send_transaction_ignore_warning": {
+    "message": "Resolve",
+    "description": "Ignore warnings"
   }
 }

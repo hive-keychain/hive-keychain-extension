@@ -64,36 +64,74 @@
             }
           }
         }
-
-        .field {
+        .field-container {
           display: flex;
-          justify-content: space-between;
-          column-gap: 16px;
-          user-select: auto;
-          pre {
-            user-select: all;
-          }
-          .label {
-            @include poppins500(14px);
-            text-transform: capitalize;
-          }
-          .value {
-            @include poppins400(14px);
-            overflow-wrap: anywhere;
-            max-width: 70%;
-            text-align: right;
-            user-select: text;
-            ul {
-              margin: 0;
+          flex-direction: column;
+          row-gap: 4px;
+          .field {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            column-gap: 16px;
+            user-select: auto;
+            pre {
+              user-select: all;
             }
-            &.xs-font {
-              font-size: 11px;
+            .label {
+              @include poppins500(14px);
+              text-transform: capitalize;
             }
+            .value {
+              @include poppins400(14px);
+              overflow-wrap: anywhere;
+              max-width: 70%;
+              text-align: right;
+              user-select: text;
+              ul {
+                margin: 0;
+              }
+              &.xs-font {
+                font-size: 11px;
+              }
 
-            .value-content {
+              .value-content {
+                display: flex;
+                align-items: center;
+                column-gap: 8px;
+              }
+            }
+          }
+
+          .warning-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            row-gap: 4px;
+
+            .warning {
+              font-size: 13px;
               display: flex;
               align-items: center;
               column-gap: 8px;
+              font-style: italic;
+              .warning-icon {
+                height: 16px;
+                width: 16px;
+                svg {
+                  height: 16px;
+                  width: 16px;
+                }
+                &.high {
+                  --warning-color: #{$red};
+                }
+                &.medium {
+                  --warning-color: #{$orange};
+                }
+                &.low {
+                  --warning-color: #{$yellow};
+                }
+              }
             }
           }
         }

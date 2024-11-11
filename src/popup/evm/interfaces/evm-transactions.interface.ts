@@ -33,3 +33,28 @@ export interface ProviderTransactionData {
   gasPrice?: string;
   gasLimit?: number;
 }
+
+export enum EvmTransactionWarningLevel {
+  HIGH = 'high',
+  MEDIUM = 'medium',
+  LOW = 'low',
+}
+
+export interface EvmTransactionWarning {
+  level: EvmTransactionWarningLevel;
+  message: string;
+  ignored: boolean;
+}
+
+export interface TransactionConfirmationField {
+  name: string;
+  value: any;
+  type: string;
+  warnings?: EvmTransactionWarning[];
+}
+
+export interface TransactionConfirmationFields {
+  operationName?: string;
+  mainTokenAmount?: TransactionConfirmationField;
+  otherFields: TransactionConfirmationField[];
+}

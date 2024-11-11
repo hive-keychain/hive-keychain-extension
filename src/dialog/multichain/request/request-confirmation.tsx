@@ -14,7 +14,7 @@ import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
 import { DecryptMessage } from 'src/dialog/evm/requests/decrypt-message/decrypt-message';
 import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
 import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
-import { SendTransaction2 } from 'src/dialog/evm/requests/send-transaction-2';
+import { SendTransaction } from 'src/dialog/evm/requests/send-transaction/send-transaction';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
@@ -188,7 +188,7 @@ const RequestConfirmation = ({ data }: Props) => {
 
       case EvmRequestMethod.SEND_TRANSACTION: {
         return (
-          <SendTransaction2
+          <SendTransaction
             request={request}
             data={data}
             accounts={data.accounts!}

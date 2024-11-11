@@ -1,6 +1,6 @@
+import { TransactionConfirmationField } from '@popup/evm/interfaces/evm-transactions.interface';
 import React from 'react';
 import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
-import { TransactionConfirmationField } from 'src/dialog/evm/requests/send-transaction-2';
 import FormatUtils from 'src/utils/format.utils';
 
 export const EvmRequestItemNumber = ({
