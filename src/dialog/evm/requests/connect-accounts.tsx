@@ -27,7 +27,9 @@ export const ConnectAccounts = (props: Props) => {
   }, []);
 
   const init = async () => {
-    const connected = await EvmWalletUtils.getConnectedWallets(data.domain);
+    const connected = await EvmWalletUtils.getConnectedWallets(
+      data.dappInfo.domain,
+    );
     setConnectedAccounts(connected);
 
     const accs: any = {};
@@ -48,7 +50,7 @@ export const ConnectAccounts = (props: Props) => {
     for (const address of Object.keys(accountsToConnect)) {
       if (accountsToConnect[address]) addresses.push(address);
     }
-    await EvmWalletUtils.connectMultipleWallet(addresses, data.domain);
+    await EvmWalletUtils.connectMultipleWallet(addresses, data.dappInfo.domain);
 
     let result;
 
@@ -78,12 +80,12 @@ export const ConnectAccounts = (props: Props) => {
   return (
     <EvmOperation
       data={request}
-      domain={data.domain}
+      domain={data.dappInfo.domain}
       tab={0}
       title={chrome.i18n.getMessage('evm_connect_wallet')}
       onConfirm={saveInStorage}
       caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
-        data.domain,
+        data.dappInfo.domain,
       ])}
       bottomPanel={
         connectedAccounts &&

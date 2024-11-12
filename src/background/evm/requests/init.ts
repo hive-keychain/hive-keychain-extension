@@ -18,7 +18,7 @@ import {
   initializeWallet,
   unlockWallet,
 } from '@background/hive/requests/logic';
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -28,18 +28,17 @@ import Logger from 'src/utils/logger.utils';
 export const initEvmRequestHandler = async (
   request: EvmRequest,
   tab: number | undefined,
-  domain: string,
-  protocol: string,
+  dappInfo: EvmDappInfo,
   requestHandler: EvmRequestHandler,
 ) => {
   Logger.info('Initializing EVM request logic');
 
   if (EvmDeprecatedMethods.includes(request.method)) {
-    handleDeprecatedMethods(requestHandler, tab!, request, domain);
+    handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
-    handleNonExistingMethod(requestHandler, tab!, request, domain);
+    handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
-    evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+    evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   } else if (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
@@ -61,22 +60,16 @@ export const initEvmRequestHandler = async (
         requestHandler,
         tab!,
         request,
-        domain,
+        dappInfo.domain,
         DialogCommand.UNLOCK_EVM,
       );
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
       const hasPermission = await EvmWalletUtils.hasPermission(
-        domain,
+        dappInfo.domain,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
-        evmRequestWithConfirmation(
-          requestHandler,
-          tab!,
-          request,
-          domain,
-          protocol,
-        );
+        evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
       } else {
         // return error ?
       }
@@ -84,28 +77,21 @@ export const initEvmRequestHandler = async (
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
         if (
           await EvmWalletUtils.hasPermission(
-            domain,
+            dappInfo.domain,
             EvmRequestPermission.ETH_ACCOUNTS,
           )
         ) {
-          evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
-        } else {
-          evmRequestWithConfirmation(
+          evmRequestWithoutConfirmation(
             requestHandler,
             tab!,
             request,
-            domain,
-            protocol,
+            dappInfo,
           );
+        } else {
+          evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
         }
       } else {
-        evmRequestWithConfirmation(
-          requestHandler,
-          tab!,
-          request,
-          domain,
-          protocol,
-        );
+        evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
       }
     }
   }
@@ -114,36 +100,36 @@ export const initEvmRequestHandler = async (
   //   initializeWallet(requestHandler, tab!, request);
   // } else if (!mk) {
   //   if (EvmUnrestrictedMethods.includes(request.method)) {
-  //     evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+  //     evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   //   } else {
   //     unlockWallet(
   //       requestHandler,
   //       tab!,
   //       request,
-  //       domain,
+  //       dappInfo,
   //       DialogCommand.UNLOCK_EVM,
   //     );
   //   }
   // } else if (!doesMethodExist(request.method)) {
-  //   handleNonExistingMethod(requestHandler, tab!, request, domain);
+  //   handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   // } else if (EvmDeprecatedMethods.includes(request.method)) {
-  //   handleDeprecatedMethods(requestHandler, tab!, request, domain);
+  //   handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   // } else if (EvmUnrestrictedMethods.includes(request.method)) {
   //   if (
   //     request.method === EvmRequestMethod.REQUEST_ACCOUNTS ||
   //     request.method === EvmRequestMethod.GET_ACCOUNTS
   //   ) {
-  //     const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+  //     const connectedWallets = await EvmWalletUtils.getConnectedWallets(dappInfo);
   //     if (connectedWallets.length === 0) {
-  //       evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+  //       evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
   //     } else {
-  //       evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+  //       evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   //     }
   //   } else {
-  //     evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
+  //     evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   //   }
   // } else {
-  //   evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+  //   evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
   // }
 
   requestHandler.saveInLocalStorage();

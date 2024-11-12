@@ -2,6 +2,7 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { createPopup } from '@background/multichain/dialog-lifecycle';
 import {
+  EvmDappInfo,
   EvmRequest,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
@@ -13,7 +14,7 @@ export const handleNonExistingMethod = async (
   requestHandler: EvmRequestHandler,
   tab: number,
   request: EvmRequest,
-  domain: string,
+  dappInfo: EvmDappInfo,
 ) => {
   Logger.warn(
     `${

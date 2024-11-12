@@ -39,11 +39,11 @@ export const DecryptMessage = (props: Props) => {
   return (
     <EvmOperation
       data={request}
-      domain={data.domain}
+      domain={data.dappInfo.domain}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}
       caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
-        data.domain,
+        data.dappInfo.domain,
       ])}
       bottomPanel={
         <>

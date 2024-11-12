@@ -4,7 +4,11 @@ import {
 } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { EvmEventName, EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmDappInfo,
+  EvmEventName,
+  EvmRequest,
+} from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -16,7 +20,7 @@ export const evmRequestWithoutConfirmation = async (
   requestHandler: EvmRequestHandler,
   tab: number,
   request: EvmRequest,
-  domain: string,
+  dappInfo: EvmDappInfo,
 ) => {
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_RESPONSE,
@@ -46,12 +50,12 @@ export const evmRequestWithoutConfirmation = async (
     case EvmRequestMethod.REQUEST_ACCOUNTS: {
       message.value.result = [];
       const hasPermission = await EvmWalletUtils.hasPermission(
-        domain,
+        dappInfo.domain,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
         const connectedWallets = await EvmWalletUtils.getConnectedWallets(
-          domain,
+          dappInfo.domain,
         );
         message.value.result = connectedWallets;
       }
@@ -123,8 +127,8 @@ export const evmRequestWithoutConfirmation = async (
     }
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
-      await EvmWalletUtils.disconnectAllWallets(domain);
-      await EvmWalletUtils.revokeAllPermissions(domain);
+      await EvmWalletUtils.disconnectAllWallets(dappInfo.domain);
+      await EvmWalletUtils.revokeAllPermissions(dappInfo.domain);
       message.value.result = null;
       sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, []);
       break;
@@ -139,7 +143,9 @@ export const evmRequestWithoutConfirmation = async (
     }
 
     case EvmRequestMethod.WALLET_GET_PERMISSIONS: {
-      const permissions = await EvmWalletUtils.getWalletPermission(domain);
+      const permissions = await EvmWalletUtils.getWalletPermission(
+        dappInfo.domain,
+      );
       message.value.result = permissions.map((perm) => {
         return { parentCapability: perm };
       });

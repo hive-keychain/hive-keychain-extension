@@ -70,13 +70,7 @@ export class EvmRequestHandler {
     this.data.tab = sender.tab!.id;
     this.data.request = msg.request;
     this.data.request_id = msg.request_id;
-    initEvmRequestHandler(
-      msg.request,
-      this.data.tab,
-      msg.domain,
-      msg.protocol,
-      this,
-    );
+    initEvmRequestHandler(msg.request, this.data.tab, msg.dappInfo, this);
 
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }

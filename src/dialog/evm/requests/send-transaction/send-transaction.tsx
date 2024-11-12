@@ -34,6 +34,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
@@ -122,10 +123,15 @@ export const SendTransaction = (props: Props) => {
     transactionConfirmationFields.otherFields.push({
       name: 'dialog_evm_domain',
       type: 'string',
-      value: data.domain,
+      value: (
+        <div className="value-content">
+          <div>{data.dappInfo.domain}</div>
+          <PreloadedImage src={data.dappInfo.logo} />
+        </div>
+      ),
       warnings: EvmTransactionParser.getDomainWarnings(
-        data.domain,
-        data.protocol,
+        data.dappInfo.domain,
+        data.dappInfo.protocol,
       ),
     });
 
@@ -375,7 +381,7 @@ export const SendTransaction = (props: Props) => {
         value: {
           data: data,
           tab: data.tab,
-          domain: data.domain,
+          domain: data.dappInfo.domain,
         },
       });
     }
@@ -405,7 +411,7 @@ export const SendTransaction = (props: Props) => {
     <>
       <EvmOperation
         data={request}
-        domain={data.domain}
+        domain={data.dappInfo.domain}
         tab={data.tab}
         title={chrome.i18n.getMessage(
           'dialog_evm_decrypt_send_transaction_title',

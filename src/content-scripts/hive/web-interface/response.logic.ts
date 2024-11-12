@@ -35,16 +35,20 @@ export const sendRequestToBackground = (
   });
 };
 
-export const sendEvmRequestToBackground = (
+export const sendEvmRequestToBackground = async (
   req: EvmRequest,
   chrome: typeof globalThis.chrome,
 ) => {
-  console.log(window);
+  const link = document.querySelector("link[rel='icon']");
+
   chrome.runtime.sendMessage({
     command: 'sendEvmRequest',
     request: req,
-    domain: window.location.hostname,
-    protocol: window.location.protocol,
+    dappInfo: {
+      domain: window.location.hostname,
+      protocol: window.location.protocol,
+      logo: (link as any).href,
+    },
     request_id: req.request_id,
   } as KeychainEvmRequestWrapper);
 };

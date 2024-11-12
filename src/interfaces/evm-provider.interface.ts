@@ -31,10 +31,14 @@ export enum EvmEventName {
   CHAIN_CHANGED = 'chainChanged',
 }
 
-export interface KeychainEvmRequestWrapper {
-  command: BackgroundCommand;
+export interface EvmDappInfo {
   domain: string;
   protocol: string;
+  logo: string;
+}
+export interface KeychainEvmRequestWrapper {
+  command: BackgroundCommand;
+  dappInfo: EvmDappInfo;
   request: EvmRequest;
   request_id: number;
 }

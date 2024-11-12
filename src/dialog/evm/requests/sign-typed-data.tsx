@@ -48,12 +48,15 @@ export const SignTypedData = (props: Props) => {
   return (
     <EvmOperation
       data={request}
-      domain={data.domain}
+      domain={data.dappInfo.domain}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
       fields={
         <>
-          <RequestItem title="dialog_evm_domain" content={`${data.domain}`} />
+          <RequestItem
+            title="dialog_evm_domain"
+            content={`${data.dappInfo.domain}`}
+          />
           <RequestItem
             title="dialog_evm_sign_request_interacting_with"
             content={`${EvmFormatUtils.formatAddress(

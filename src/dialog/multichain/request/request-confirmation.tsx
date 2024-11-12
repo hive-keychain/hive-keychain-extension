@@ -1,6 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainRequest,
@@ -63,8 +63,7 @@ export type EvmRequestMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
   data: EvmRequest;
   tab: number;
-  domain: string;
-  protocol: string;
+  dappInfo: EvmDappInfo;
   accounts?: EvmAccount[];
 };
 
