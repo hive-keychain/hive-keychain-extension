@@ -12,6 +12,7 @@ export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
 ): boolean => {
+  console.log(method, params);
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {
       const transactionParams = params[0] as ProviderTransactionData;

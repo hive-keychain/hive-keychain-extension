@@ -20,10 +20,13 @@ export const evmRequestWithConfirmation = (
       accounts: requestHandler.accounts,
     });
   };
+  let height = 600;
   if (
     request.method === EvmRequestMethod.SEND_TRANSACTION ||
     request.method === EvmRequestMethod.SEND_RAW_TRANSACTION
   )
-    createPopup(callback, requestHandler, undefined, 800);
+    height = 800;
+
   //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
+  createPopup(callback, requestHandler, undefined, 800);
 };
