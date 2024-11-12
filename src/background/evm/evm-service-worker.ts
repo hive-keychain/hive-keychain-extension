@@ -50,7 +50,9 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      const { mk, dappInfo, data, tab } = backgroundMessage.value;
+      const { mk, data, tab } = backgroundMessage.value;
+
+      console.log(backgroundMessage.value);
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {
@@ -58,13 +60,14 @@ const chromeMessageHandler = async (
           initEvmRequestHandler(
             data.msg.data,
             tab,
-            dappInfo,
+            data.dappInfo,
             await EvmRequestHandler.getFromLocalStorage(),
           );
         } else {
           chrome.runtime.sendMessage({
             ...data,
-            command: DialogCommand.WRONG_MK,
+            msg: { ...data.msg, wrongMk: true },
+            command: DialogCommand.UNLOCK_EVM,
           });
         }
       }

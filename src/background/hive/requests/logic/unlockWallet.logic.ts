@@ -1,7 +1,7 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createPopup } from '@background/multichain/dialog-lifecycle';
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
@@ -9,7 +9,7 @@ export const unlockWallet = (
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
   request: KeychainRequest | EvmRequest,
-  domain: string,
+  dappInfo: string | EvmDappInfo,
   unlockCommand: DialogCommand,
 ) => {
   /* istanbul ignore next */
@@ -25,7 +25,7 @@ export const unlockWallet = (
         display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
       },
       tab,
-      domain,
+      dappInfo,
     });
   }, requestHandler);
 };

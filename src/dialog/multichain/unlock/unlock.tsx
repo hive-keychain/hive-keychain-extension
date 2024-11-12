@@ -27,17 +27,24 @@ type UnlockMessage = {
     data: KeychainRequest | EvmRequest;
     message: string;
     display_msg: string;
+    wrongMk?: boolean;
   };
   tab: number;
   domain: string;
 };
-export default ({ data, wrongMk, index }: Props) => {
+export default ({ data, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [wrongMk, setWrongMk] = useState(false);
 
   useEffect(() => {
-    setLoading(false);
-  }, [index]);
+    setWrongMk(data.msg.wrongMk!);
+    if (data.msg.wrongMk && password.length > 0) {
+      setLoading(false);
+    } else if (password.length === 0) {
+      setLoading(false);
+    }
+  }, [data]);
 
   const login = () => {
     setLoading(true);

@@ -34,67 +34,54 @@ export const initEvmRequestHandler = async (
   Logger.info('Initializing EVM request logic');
 
   if (EvmDeprecatedMethods.includes(request.method)) {
-    console.log('case 1');
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
-    console.log('case 2');
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
-    console.log('case 3');
     evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   } else if (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
   ) {
-    console.log('case 4');
     const mk = await MkModule.getMk();
     const accounts = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_ACCOUNTS,
     );
     if (mk) {
-      console.log('case 4-1');
       const rebuiltAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       requestHandler.accounts = rebuiltAccounts;
       requestHandler.saveInLocalStorage();
     }
     if (!accounts) {
-      console.log('case 4-2');
       initializeWallet(requestHandler, tab!, request);
     } else if (!mk) {
-      console.log('case 4-3');
       unlockWallet(
         requestHandler,
         tab!,
         request,
-        dappInfo.domain,
+        dappInfo,
         DialogCommand.UNLOCK_EVM,
       );
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
-      console.log('case 4-4');
       const hasPermission = await EvmWalletUtils.hasPermission(
         dappInfo.domain,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
-        console.log('case 4-4-1');
         evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
       } else {
-        console.log('case 4-4-2');
         // return error ?
+        console.log('return error ? (Init L82)');
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
-      console.log('case 4-5');
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        console.log('case 4-5-1');
-
         if (
           await EvmWalletUtils.hasPermission(
             dappInfo.domain,
             EvmRequestPermission.ETH_ACCOUNTS,
           )
         ) {
-          console.log('case 4-5-1-1');
           evmRequestWithoutConfirmation(
             requestHandler,
             tab!,
@@ -102,11 +89,9 @@ export const initEvmRequestHandler = async (
             dappInfo,
           );
         } else {
-          console.log('case 4-5-1-2');
           evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
         }
       } else {
-        console.log('case 4-5-2');
         evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
       }
     }
