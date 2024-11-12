@@ -52,7 +52,6 @@ const chromeMessageHandler = async (
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
       const { mk, data, tab } = backgroundMessage.value;
 
-      console.log(backgroundMessage.value);
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {

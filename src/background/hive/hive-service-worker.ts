@@ -87,8 +87,8 @@ const chromeMessageHandler = async (
           );
         } else {
           chrome.runtime.sendMessage({
-            ...data,
-            command: DialogCommand.WRONG_MK,
+            msg: { ...data.msg, wrongMk: true },
+            command: DialogCommand.UNLOCK,
           });
         }
       }
