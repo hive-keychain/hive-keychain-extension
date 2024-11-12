@@ -29,6 +29,7 @@ export const initEvmRequestHandler = async (
   request: EvmRequest,
   tab: number | undefined,
   domain: string,
+  protocol: string,
   requestHandler: EvmRequestHandler,
 ) => {
   Logger.info('Initializing EVM request logic');
@@ -69,7 +70,13 @@ export const initEvmRequestHandler = async (
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
-        evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+        evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          domain,
+          protocol,
+        );
       } else {
         // return error ?
       }
@@ -83,10 +90,22 @@ export const initEvmRequestHandler = async (
         ) {
           evmRequestWithoutConfirmation(requestHandler, tab!, request, domain);
         } else {
-          evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+          evmRequestWithConfirmation(
+            requestHandler,
+            tab!,
+            request,
+            domain,
+            protocol,
+          );
         }
       } else {
-        evmRequestWithConfirmation(requestHandler, tab!, request, domain);
+        evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          domain,
+          protocol,
+        );
       }
     }
   }

@@ -160,10 +160,23 @@ const getHighestWarning = (warnings: EvmTransactionWarning[]) => {
   }
 };
 
+const getDomainWarnings = (domain: string, protocol: string) => {
+  const warnings: EvmTransactionWarning[] = [];
+  if (protocol.replace(':', '') === 'http') {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.MEDIUM,
+      message: 'evm_protocol_not_secured',
+    });
+  }
+  return warnings;
+};
+
 export const EvmTransactionParser = {
   getDisplayInputType,
   shouldDisplayBalanceChange,
   getFieldWarnings,
   getAllWarnings,
   getHighestWarning,
+  getDomainWarnings,
 };

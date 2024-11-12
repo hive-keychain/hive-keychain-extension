@@ -99,8 +99,6 @@ export const SendTransaction = (props: Props) => {
     setChain(lastChain as EvmChain);
     const params = request.params[0];
 
-    console.log(lastChain);
-
     const usedAccount = accounts.find(
       (account) => account.wallet.address === params.from,
     );
@@ -119,9 +117,20 @@ export const SendTransaction = (props: Props) => {
       maxPriorityFeePerGas: params.maxPriorityFeePerGas,
     } as ProviderTransactionData;
 
+    transactionConfirmationFields.otherFields = [];
+
+    transactionConfirmationFields.otherFields.push({
+      name: 'dialog_evm_domain',
+      type: 'string',
+      value: data.domain,
+      warnings: EvmTransactionParser.getDomainWarnings(
+        data.domain,
+        data.protocol,
+      ),
+    });
+
     if (usedAccount) {
       if (params.data) {
-        transactionConfirmationFields.otherFields = [];
         const abi = await EtherscanApi.getAbi(
           lastChain! as EvmChain,
           params.to,
@@ -148,7 +157,6 @@ export const SendTransaction = (props: Props) => {
             decodedTransactionData?.name!,
           ),
         );
-        console.log({ decodedTransactionData });
 
         transactionConfirmationFields.operationName =
           decodedTransactionData?.name;

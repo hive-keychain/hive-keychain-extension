@@ -1,5 +1,9 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { EvmEventName, EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmEventName,
+  EvmRequest,
+  KeychainEvmRequestWrapper,
+} from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Joi from 'joi';
 import {
@@ -35,12 +39,14 @@ export const sendEvmRequestToBackground = (
   req: EvmRequest,
   chrome: typeof globalThis.chrome,
 ) => {
+  console.log(window);
   chrome.runtime.sendMessage({
     command: 'sendEvmRequest',
     request: req,
     domain: window.location.hostname,
+    protocol: window.location.protocol,
     request_id: req.request_id,
-  });
+  } as KeychainEvmRequestWrapper);
 };
 
 export const sendIncompleteDataResponse = (

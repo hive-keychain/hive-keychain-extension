@@ -29,113 +29,117 @@
       flex-direction: column;
       align-items: flex-start;
       width: 100%;
-      margin: 16px 0px;
       row-gap: 16px;
+    }
 
-      .fields {
+    .fields {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      row-gap: 16px;
+      overflow: auto;
+      padding: 16px 24px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+
+      .field-container {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        box-sizing: border-box;
-        row-gap: 16px;
-        overflow: auto;
-        padding: 16px 24px;
-        color: var(--main-font-color);
-        background: var(--card-background);
-        border-radius: 20px;
-        border: 1px solid var(--card-border);
-
-        .transaction-operation-name {
-          text-align: center;
-          font-size: 20px;
-        }
-
-        .account-chain-panel {
+        row-gap: 4px;
+        .field {
+          position: relative;
           display: flex;
-          .chain-info {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            column-gap: 8px;
-            .chain-logo {
-              height: 24px;
-              width: 24px;
-              border-radius: 50%;
-            }
+          justify-content: space-between;
+          column-gap: 16px;
+          user-select: auto;
+          pre {
+            user-select: all;
           }
-        }
-        .field-container {
-          display: flex;
-          flex-direction: column;
-          row-gap: 4px;
-          .field {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            column-gap: 16px;
-            user-select: auto;
-            pre {
-              user-select: all;
-            }
-            .label {
-              @include poppins500(14px);
-              text-transform: capitalize;
-            }
-            .value {
-              @include poppins400(14px);
-              overflow-wrap: anywhere;
-              max-width: 70%;
-              text-align: right;
-              user-select: text;
-              ul {
-                margin: 0;
-              }
-              &.xs-font {
-                font-size: 11px;
-              }
-
-              .value-content {
-                display: flex;
-                align-items: center;
-                column-gap: 8px;
-              }
-            }
+          .label {
+            @include poppins500(14px);
+            text-transform: capitalize;
           }
+          .value {
+            @include poppins400(14px);
+            overflow-wrap: anywhere;
+            max-width: 70%;
+            text-align: right;
+            user-select: text;
+            ul {
+              margin: 0;
+            }
+            &.xs-font {
+              font-size: 11px;
+            }
 
-          .warning-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            row-gap: 4px;
-
-            .warning {
-              font-size: 13px;
+            .value-content {
               display: flex;
               align-items: center;
               column-gap: 8px;
-              font-style: italic;
-              .warning-icon {
+            }
+          }
+        }
+
+        .warning-container {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: flex-start;
+          row-gap: 4px;
+
+          .warning {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            column-gap: 8px;
+            font-style: italic;
+            .warning-icon {
+              height: 16px;
+              width: 16px;
+              svg {
                 height: 16px;
                 width: 16px;
-                svg {
-                  height: 16px;
-                  width: 16px;
-                }
-                &.high {
-                  --warning-color: #{$red};
-                }
-                &.medium {
-                  --warning-color: #{$orange};
-                }
-                &.low {
-                  --warning-color: #{$yellow};
-                }
+              }
+              &.high {
+                --warning-color: #{$red};
+              }
+              &.medium {
+                --warning-color: #{$orange};
+              }
+              &.low {
+                --warning-color: #{$yellow};
               }
             }
           }
         }
       }
+
+      .transaction-operation-name {
+        text-align: center;
+        font-size: 20px;
+      }
+
+      .account-chain-panel {
+        display: flex;
+        .chain-info {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          column-gap: 8px;
+          .chain-logo {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+
+    .domain-panel {
+      min-height: 92px;
     }
 
     .balance-change-panel {

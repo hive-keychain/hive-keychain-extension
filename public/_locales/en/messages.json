@@ -4843,5 +4843,9 @@
   "evm_send_transaction_ignore_warning": {
     "message": "Resolve",
     "description": "Ignore warnings"
+  },
+  "evm_protocol_not_secured": {
+    "message": "This website is not using a safe connection",
+    "description": "Connection not secured"
   }
 }

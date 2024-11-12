@@ -34,6 +34,7 @@ export enum EvmEventName {
 export interface KeychainEvmRequestWrapper {
   command: BackgroundCommand;
   domain: string;
+  protocol: string;
   request: EvmRequest;
   request_id: number;
 }

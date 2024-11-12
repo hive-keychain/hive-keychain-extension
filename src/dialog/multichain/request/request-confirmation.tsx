@@ -64,6 +64,7 @@ export type EvmRequestMessage = {
   data: EvmRequest;
   tab: number;
   domain: string;
+  protocol: string;
   accounts?: EvmAccount[];
 };
 

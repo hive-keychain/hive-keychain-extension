@@ -9,6 +9,7 @@ export const evmRequestWithConfirmation = (
   tab: number,
   request: EvmRequest,
   domain: string,
+  protocol: string,
 ) => {
   /* istanbul ignore next */
   const callback = () => {
@@ -16,6 +17,7 @@ export const evmRequestWithConfirmation = (
       command: DialogCommand.SEND_DIALOG_CONFIRM_EVM,
       data: request,
       domain,
+      protocol,
       tab,
       accounts: requestHandler.accounts,
     });

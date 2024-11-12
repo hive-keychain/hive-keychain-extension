@@ -50,7 +50,7 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      const { mk, domain, data, tab } = backgroundMessage.value;
+      const { mk, domain, protocol, data, tab } = backgroundMessage.value;
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
         if (login) {
@@ -59,6 +59,7 @@ const chromeMessageHandler = async (
             data.msg.data,
             tab,
             domain,
+            protocol,
             await EvmRequestHandler.getFromLocalStorage(),
           );
         } else {
