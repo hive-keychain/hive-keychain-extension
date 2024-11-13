@@ -4847,5 +4847,17 @@
   "evm_protocol_not_secured": {
     "message": "This website is not using a safe connection",
     "description": "Connection not secured"
+  },
+  "evm_contract_deployment_transaction": {
+    "message": "Smart contract deployment",
+    "description": "Smart contract deployment transcation title"
+  },
+  "evm_contract_deployment_transaction_caption": {
+    "message": "You are deploying a smart contract",
+    "description": "Smart contract deployment transcation caption"
+  },
+  "evm_smart_contract_data": {
+    "message": "Data",
+    "description": "Smart contract data field"
   }
 }

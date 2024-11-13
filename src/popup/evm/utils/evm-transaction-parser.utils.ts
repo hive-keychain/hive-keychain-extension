@@ -11,6 +11,7 @@ export enum EvmInputDisplayType {
   BALANCE = 'balance',
   NUMBER = 'number',
   STRING = 'string',
+  LONG_TEXT = 'longText',
 }
 
 const getDisplayInputType = (
@@ -25,10 +26,23 @@ const getDisplayInputType = (
     case EVMTokenType.ERC20: {
       switch (methodName) {
         case 'transfer': {
-          if (name === 'amount') {
-            return EvmInputDisplayType.BALANCE;
+          switch (name) {
+            case 'amount':
+              return EvmInputDisplayType.BALANCE;
           }
-          return inputType as EvmInputDisplayType;
+        }
+        case 'approve': {
+          switch (name) {
+            case 'value':
+              return EvmInputDisplayType.BALANCE;
+          }
+        }
+        case 'transferFrom': {
+          switch (name) {
+            case 'value': {
+              return EvmInputDisplayType.BALANCE;
+            }
+          }
         }
       }
       break;
@@ -39,7 +53,7 @@ const getDisplayInputType = (
     default: {
     }
   }
-  return EvmInputDisplayType.STRING;
+  return inputType as EvmInputDisplayType;
 };
 
 const shouldDisplayBalanceChange = (abi: any, methodName: string) => {

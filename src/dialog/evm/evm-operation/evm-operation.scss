@@ -87,6 +87,16 @@
               }
             }
           }
+
+          .long-text-container {
+            @include expandable-panel();
+
+            .expandable-panel-content {
+              word-wrap: break-word;
+              word-break: break-word;
+              font-size: 13px;
+            }
+          }
         }
 
         .warning-container {

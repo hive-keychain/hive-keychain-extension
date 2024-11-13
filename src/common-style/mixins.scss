@@ -346,6 +346,43 @@
   }
 }
 
+@mixin expandable-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  row-gap: 4px;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    flex: 1;
+
+    .expand-collapse-icon {
+      @include open-close-rotate();
+      @include icon-size(18px);
+    }
+  }
+
+  .expandable-panel {
+    display: flex;
+    flex-direction: column;
+    .expandable-panel-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 20px;
+    }
+  }
+}
+
 @mixin delegation-row {
   @include small-card();
   display: flex;
