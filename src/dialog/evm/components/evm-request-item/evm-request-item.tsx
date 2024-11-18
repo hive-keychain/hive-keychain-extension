@@ -40,11 +40,11 @@ export const EvmRequestItem = ({
 
   return (
     <div className="field-container">
-      <div className="field">{renderField()}</div>
+      <div className={`field ${field.type}`}>{renderField()}</div>
       {field.warnings && field.warnings.length > 0 && (
         <div className="warning-container">
           {field.warnings.map((warning, index) => (
-            <div className="warning">
+            <div className="warning" key={`warning-${index}`}>
               {!warning.ignored && (
                 <SVGIcon
                   className={`warning-icon ${warning.level}`}

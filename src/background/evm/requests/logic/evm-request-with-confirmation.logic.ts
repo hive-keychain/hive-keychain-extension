@@ -24,9 +24,10 @@ export const evmRequestWithConfirmation = (
   if (
     request.method === EvmRequestMethod.SEND_TRANSACTION ||
     request.method === EvmRequestMethod.SEND_RAW_TRANSACTION
-  )
+  ) {
     height = 800;
+  }
 
   //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
-  createPopup(callback, requestHandler, undefined, 800);
+  createPopup(callback, requestHandler, undefined, height);
 };

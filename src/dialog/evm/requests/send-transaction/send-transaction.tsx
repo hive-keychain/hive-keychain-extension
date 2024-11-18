@@ -56,7 +56,8 @@ interface BalanceInfo {
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
 
-  const [loading, setLoading] = useState(false);
+  const [caption, setCaption] = useState<string>();
+  const [loading, setLoading] = useState(true);
   const [warningsPopupOpened, setWarningsPopupOpened] = useState(false);
   const [singleWarningPopupOpened, setSingleWarningPopupOpened] =
     useState(false);
@@ -88,7 +89,7 @@ export const SendTransaction = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (tokenInfo && selectedAccount && !!transferAmount) {
+    if (tokenInfo && selectedAccount && transferAmount !== undefined) {
       initBalance(tokenInfo);
     }
   }, [tokenInfo, selectedAccount, transferAmount]);
@@ -172,7 +173,9 @@ export const SendTransaction = (props: Props) => {
           );
 
           transactionConfirmationFields.operationName =
-            decodedTransactionData?.name;
+            chrome.i18n.getMessage(
+              `evm_operation_${decodedTransactionData?.name}`,
+            ) ?? decodedTransactionData?.name;
 
           transactionConfirmationFields.otherFields.push({
             name: 'evm_operation_smart_contract_address',
@@ -278,9 +281,16 @@ export const SendTransaction = (props: Props) => {
           // Case of smart contract deployment
           // Unknown ABI
           console.log({ data });
+          setCaption(
+            chrome.i18n.getMessage(
+              'evm_contract_deployment_transaction_caption',
+            ),
+          );
 
-          transactionConfirmationFields.operationName =
-            'evm_contract_deployment_transaction';
+          transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+            `evm_operation_contract_deployment_transaction`,
+          );
+
           transactionConfirmationFields.otherFields.push({
             name: 'evm_smart_contract_data',
             type: EvmInputDisplayType.LONG_TEXT,
@@ -289,21 +299,53 @@ export const SendTransaction = (props: Props) => {
         }
       } else {
         // Classic transfer
-        console.log({ params });
+
+        setTokenInfo(
+          await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
+        );
+
+        console.log({ params, chain });
 
         setShouldDisplayBalanceChange(true);
 
+        transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+          'evm_operation_transfer',
+        );
+
         transactionConfirmationFields.mainTokenAmount = {
           name: 'mainTokenAmount',
-          type: 'number',
-          value: Number(params?.value),
+          type: EvmInputDisplayType.BALANCE,
+          value: `${FormatUtils.withCommas(
+            new Decimal(Number(params.value))
+              .div(new Decimal(EvmFormatUtils.GWEI))
+              .toNumber(),
+            8,
+            true,
+          )}  ${(lastChain as EvmChain)?.mainToken}`,
         };
+        transactionConfirmationFields.otherFields.push({
+          name: 'evm_operation_to',
+          type: EvmInputDisplayType.ADDRESS,
+          value: EvmFormatUtils.formatAddress(params.to),
+        });
+
+        setReceiver(params.to);
+        setTransferAmount(
+          new Decimal(Number(params?.value))
+            .div(new Decimal(EvmFormatUtils.GWEI))
+            .toNumber(),
+        );
+
+        setTokenInfo(
+          await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
+        );
 
         tData.from = params.from;
         tData.value = params.value;
         tData.to = params.to;
       }
-      tData.type = params.type ?? chain?.defaultTransactionType;
+      tData.type =
+        params.type ?? (lastChain as EvmChain)?.defaultTransactionType;
 
       switch (tData.type) {
         case EvmTransactionType.EIP_1559: {
@@ -327,6 +369,7 @@ export const SendTransaction = (props: Props) => {
     } else {
       console.log('No corresponding account found');
     }
+    setLoading(false);
   };
 
   const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
@@ -336,19 +379,11 @@ export const SendTransaction = (props: Props) => {
       tokenInfo,
     );
 
-    console.log({
-      balance,
-      amount: transferAmount,
-      after: new Decimal(balance?.balanceInteger!)
-        .sub(transferAmount!)
-        .toNumber(),
-    });
-
     setBalanceInfo({
       before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
       estimatedAfter: `${FormatUtils.withCommas(
         new Decimal(balance?.balanceInteger!).sub(transferAmount!).toString(),
-        (tokenInfo as EvmTokenInfoShortErc20).decimals,
+        (tokenInfo as EvmTokenInfoShortErc20).decimals || 8,
         true,
       )}  ${tokenInfo?.symbol}`,
     });
@@ -433,104 +468,112 @@ export const SendTransaction = (props: Props) => {
     setSingleWarningPopupOpened(true);
   };
 
+  useEffect(() => {
+    console.log({
+      fields,
+      chain,
+      tokenInfo,
+      receiver,
+      selectedAccount,
+      transactionData,
+    });
+  });
+
   return (
     <>
-      <EvmOperation
-        data={request}
-        domain={data.dappInfo.domain}
-        tab={data.tab}
-        title={chrome.i18n.getMessage(
-          'dialog_evm_decrypt_send_transaction_title',
-        )}
-        fields={
-          <>
-            {fields?.operationName && (
-              <div className="transaction-operation-name">
-                {chrome.i18n.getMessage(
-                  `evm_operation_${fields.operationName}`,
+      {fields && (
+        <EvmOperation
+          data={request}
+          domain={data.dappInfo.domain}
+          tab={data.tab}
+          title={fields.operationName!}
+          caption={caption}
+          fields={
+            <>
+              {fields?.operationName && (
+                <div className="transaction-operation-name">
+                  {chrome.i18n.getMessage(
+                    `evm_operation_${fields.operationName}`,
+                  )}
+                </div>
+              )}
+
+              {selectedAccount && chain && (
+                <div className="account-chain-panel">
+                  <EvmAccountDisplayComponent account={selectedAccount} />
+
+                  <div className="chain-info">
+                    <div className="chain-name">{chain.name}</div>
+                    <img className="chain-logo" src={chain.logo} />
+                  </div>
+                </div>
+              )}
+
+              {fields?.mainTokenAmount !== undefined &&
+                fields?.mainTokenAmount !== null &&
+                tokenInfo && (
+                  <RequestItem
+                    title="popup_html_transfer_amount"
+                    content={fields.mainTokenAmount.value}
+                  />
                 )}
-              </div>
-            )}
 
-            {selectedAccount && chain && (
-              <div className="account-chain-panel">
-                <EvmAccountDisplayComponent account={selectedAccount} />
-
-                <div className="chain-info">
-                  <div className="chain-name">{chain.name}</div>
-                  <img className="chain-logo" src={chain.logo} />
-                </div>
-              </div>
-            )}
-
-            {fields?.mainTokenAmount !== undefined &&
-              fields?.mainTokenAmount !== null &&
-              tokenInfo && (
-                <RequestItem
-                  title="popup_html_transfer_amount"
-                  content={`${FormatUtils.withCommas(
-                    fields?.mainTokenAmount.toString(),
-                    8,
-                    true,
-                  )}  ${tokenInfo?.symbol}`}
-                />
+              {fields &&
+                fields.otherFields?.map((f, index) => (
+                  <EvmRequestItem
+                    key={`${f.name}-${index}`}
+                    field={f}
+                    onWarningClicked={(warningIndex: number) =>
+                      openSingleWarningPopup(
+                        index,
+                        warningIndex,
+                        f.warnings![warningIndex],
+                      )
+                    }
+                  />
+                ))}
+            </>
+          }
+          bottomPanel={
+            <>
+              {shouldDisplayBalanceChange && (
+                <Card className="balance-change-panel">
+                  <div className="balance-change-title">
+                    {chrome.i18n.getMessage('evm_balance_change_title')}
+                  </div>
+                  <div className="balance-before">
+                    {chrome.i18n.getMessage('evm_balance_before')}
+                    {balanceInfo?.before}
+                  </div>
+                  <div className="balance-after">
+                    {chrome.i18n.getMessage('evm_balance_after')}
+                    {balanceInfo?.estimatedAfter}
+                  </div>
+                </Card>
               )}
-
-            {fields &&
-              fields.otherFields?.map((f, index) => (
-                <EvmRequestItem
-                  key={`${f.name}-${index}`}
-                  field={f}
-                  onWarningClicked={(warningIndex: number) =>
-                    openSingleWarningPopup(
-                      index,
-                      warningIndex,
-                      f.warnings![warningIndex],
-                    )
-                  }
-                />
-              ))}
-          </>
-        }
-        bottomPanel={
-          <>
-            {shouldDisplayBalanceChange && (
-              <Card className="balance-change-panel">
-                <div className="balance-change-title">
-                  {chrome.i18n.getMessage('evm_balance_change_title')}
-                </div>
-                <div className="balance-before">
-                  {chrome.i18n.getMessage('evm_balance_before')}
-                  {balanceInfo?.before}
-                </div>
-                <div className="balance-after">
-                  {chrome.i18n.getMessage('evm_balance_after')}
-                  {balanceInfo?.estimatedAfter}
-                </div>
-              </Card>
-            )}
-            {fields &&
-              chain &&
-              tokenInfo &&
-              receiver &&
-              selectedAccount &&
-              transactionData && (
-                <GasFeePanel
-                  chain={chain}
-                  tokenInfo={tokenInfo}
-                  receiverAddress={receiver}
-                  amount={0} // TODO change
-                  wallet={selectedAccount.wallet}
-                  selectedFee={selectedFee}
-                  onSelectFee={setSelectedFee}
-                  transactionType={transactionData.type}
-                  transactionData={transactionData}
-                />
-              )}
-          </>
-        }
-        onConfirm={handleOnConfirmClick}
-      />
+              {fields &&
+                chain &&
+                tokenInfo &&
+                receiver &&
+                selectedAccount &&
+                transactionData && (
+                  <GasFeePanel
+                    chain={chain}
+                    tokenInfo={tokenInfo}
+                    receiverAddress={receiver}
+                    amount={0} // TODO change
+                    wallet={selectedAccount.wallet}
+                    selectedFee={selectedFee}
+                    onSelectFee={setSelectedFee}
+                    transactionType={transactionData.type}
+                    transactionData={transactionData}
+                  />
+                )}
+            </>
+          }
+          onConfirm={handleOnConfirmClick}
+        />
+      )}
       <LoadingComponent hide={!loading} />
       {warningsPopupOpened && hasWarning() && (
         <PopupContainer
