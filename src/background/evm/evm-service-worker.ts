@@ -83,12 +83,13 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
-      const { data, tab, domain } = backgroundMessage.value;
+      const { request, tab, domain, extraData } = backgroundMessage.value;
       performEvmOperation(
         await EvmRequestHandler.getFromLocalStorage(),
-        data,
+        request,
         tab,
         domain,
+        extraData,
       );
       break;
 

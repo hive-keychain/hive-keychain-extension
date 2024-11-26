@@ -4863,5 +4863,9 @@
   "evm_smart_contract_data": {
     "message": "Data",
     "description": "Smart contract data field"
+  },
+  "evm_send_transaction_success": {
+    "message": "Succesfully sent transaction",
+    "description": "SuccesFully sent evm transaction"
   }
 }

@@ -11,7 +11,7 @@ import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.
 type Props = {
   title: string;
   onConfirm?: () => void;
-  data: EvmRequest;
+  request: EvmRequest;
   domain: string;
   tab: number;
   header?: string;
@@ -26,7 +26,7 @@ export const EvmOperation = ({
   onConfirm,
   domain,
   tab,
-  data,
+  request,
   header,
   redHeader,
   caption,
@@ -41,7 +41,7 @@ export const EvmOperation = ({
     chrome.runtime.sendMessage({
       command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
       value: {
-        data: data,
+        request: request,
         tab: tab,
         domain: domain,
         keep,
@@ -53,7 +53,7 @@ export const EvmOperation = ({
     chrome.runtime.sendMessage({
       command: BackgroundCommand.REJECT_EVM_TRANSACTION,
       value: {
-        data,
+        request,
         tab,
         domain,
       },

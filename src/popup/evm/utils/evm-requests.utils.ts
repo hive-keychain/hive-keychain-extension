@@ -132,6 +132,11 @@ const decryptMessage = (account: EvmAccount, message: string) => {
   });
 };
 
+const getNonce = async (account: EvmAccount) => {
+  const provider = await instanciateProvider();
+  return await provider.getTransactionCount(account.wallet.address);
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -150,4 +155,5 @@ export const EvmRequestsUtils = {
   getEncryptionKey,
   decryptMessage,
   getGasPrice,
+  getNonce,
 };

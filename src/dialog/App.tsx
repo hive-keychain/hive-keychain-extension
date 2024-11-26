@@ -53,6 +53,7 @@ const App = () => {
       sender,
       sendResp,
     ) {
+      console.log(data);
       if (data.command === DialogCommand.READY) {
         return BrowserUtils.sendResponse(true, sendResp);
       } else if (Object.values(DialogCommand).includes(data.command)) {

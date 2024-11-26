@@ -32,6 +32,7 @@ export interface ProviderTransactionData {
   maxPriorityFeePerGas?: string;
   gasPrice?: string;
   gasLimit?: number;
+  smartContract?: string;
 }
 
 export enum EvmTransactionWarningLevel {

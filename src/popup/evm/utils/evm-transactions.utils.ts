@@ -13,8 +13,11 @@ import {
   GasFeeData,
   GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import {
@@ -98,6 +101,9 @@ const transfer = async (
       ...feeData,
     };
   }
+
+  console.log(transactionRequest);
+
   const transactionResponse = await connectedWallet.sendTransaction(
     transactionRequest,
   );
@@ -302,6 +308,56 @@ const addCanceledTransaction = async (
   );
 };
 
+const send = async (account: EvmAccount, request: any, gasFee: any) => {
+  const lastChain = await EvmChainUtils.getLastEvmChain();
+  console.log({ account, request, gasFee });
+
+  let feeData;
+  switch (gasFee.type) {
+    case EvmTransactionType.EIP_1559: {
+      feeData = {
+        maxPriorityFeePerGas: ethers.parseUnits(
+          gasFee.priorityFee!.toString(),
+          'gwei',
+        ),
+        maxFeePerGas: ethers.parseUnits(
+          gasFee.maxFeePerGas!.toString(),
+          'gwei',
+        ),
+      };
+      break;
+    }
+    case EvmTransactionType.LEGACY: {
+      feeData = {
+        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+      };
+      break;
+    }
+  }
+
+  let transactionRequest: TransactionRequest;
+  transactionRequest = {
+    value: 0,
+    data: request.params[0].data,
+    from: account.wallet.address,
+    nonce: await EvmRequestsUtils.getNonce(account),
+    gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
+    chainId: lastChain.chainId,
+    ...feeData,
+  };
+
+  console.log(transactionRequest, account.wallet.signingKey.privateKey);
+
+  const provider = EthersUtils.getProvider(lastChain as EvmChain);
+  const connectedWallet = new Wallet(account.wallet.signingKey, provider);
+
+  const transactionResponse = await connectedWallet.sendTransaction(
+    transactionRequest,
+  );
+  console.log(transactionResponse);
+  return transactionResponse.hash;
+};
+
 export const EvmTransactionsUtils = {
   transfer,
   cancel,
@@ -311,4 +367,5 @@ export const EvmTransactionsUtils = {
   getCanceledTransactions,
   addCanceledTransaction,
   getAllCanceledTransactions,
+  send,
 };

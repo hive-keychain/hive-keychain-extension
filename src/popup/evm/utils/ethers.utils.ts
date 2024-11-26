@@ -6,7 +6,7 @@ import {
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet, Wallet, ethers } from 'ethers';
+import { HDNodeWallet, TransactionRequest, Wallet, ethers } from 'ethers';
 
 const getProvider = (chain: EvmChain, rpcUrl?: string) => {
   return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpc[0].url);
@@ -14,15 +14,37 @@ const getProvider = (chain: EvmChain, rpcUrl?: string) => {
 
 const getGasLimit = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort,
-  receiverAddress: string,
+  tokenInfo: EvmTokenInfoShort | undefined,
+  receiverAddress: string | null,
   amount: number,
   wallet: HDNodeWallet,
+  smartContract?: string,
 ) => {
+  console.log('in get gas limit');
+  console.log({
+    chain,
+    tokenInfo,
+    receiverAddress,
+    amount,
+    wallet,
+    smartContract,
+  });
+
   const provider = getProvider(chain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 
-  if (tokenInfo.type === EVMTokenType.ERC20) {
+  console.log(receiverAddress, smartContract);
+
+  if (!receiverAddress && smartContract) {
+    console.log('here');
+    const tx: TransactionRequest = {
+      from: wallet.address,
+      data: smartContract,
+    };
+    return await provider.estimateGas(tx);
+  }
+
+  if (tokenInfo && tokenInfo.type === EVMTokenType.ERC20) {
     const erc20 = new ethers.Contract(
       (tokenInfo as EvmTokenInfoShortErc20).address!,
       Erc20Abi,

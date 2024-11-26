@@ -79,7 +79,7 @@ export const ConnectAccounts = (props: Props) => {
 
   return (
     <EvmOperation
-      data={request}
+      request={request}
       domain={data.dappInfo.domain}
       tab={0}
       title={chrome.i18n.getMessage('evm_connect_wallet')}

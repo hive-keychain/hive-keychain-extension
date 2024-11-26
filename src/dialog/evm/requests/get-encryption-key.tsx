@@ -16,7 +16,7 @@ export const GetEncryptionKey = (props: Props) => {
 
   return (
     <EvmOperation
-      data={request}
+      request={request}
       domain={data.dappInfo.domain}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_get_encryption_key_title')}

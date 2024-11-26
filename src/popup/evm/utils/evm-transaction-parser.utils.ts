@@ -12,6 +12,7 @@ export enum EvmInputDisplayType {
   NUMBER = 'number',
   STRING = 'string',
   LONG_TEXT = 'longText',
+  ARRAY_STRING = 'arrayString',
 }
 
 const getDisplayInputType = (
@@ -47,8 +48,93 @@ const getDisplayInputType = (
       }
       break;
     }
-    case EVMTokenType.ERC_721: {
+    case EVMTokenType.ERC721: {
+      switch (methodName) {
+        case 'approve': {
+          switch (name) {
+            case 'tokenId':
+              return EvmInputDisplayType.STRING;
+          }
+        }
+        case 'transferFrom': {
+          switch (name) {
+            case 'tokenId': {
+              return EvmInputDisplayType.STRING;
+            }
+          }
+        }
+        case 'setApprovalForAll': {
+          switch (name) {
+            case '_approved': {
+              return EvmInputDisplayType.STRING;
+            }
+          }
+        }
+        case 'safeTransferFrom': {
+          switch (name) {
+            case 'tokenId': {
+              return EvmInputDisplayType.STRING;
+            }
+            case 'data': {
+              return EvmInputDisplayType.STRING;
+            }
+          }
+        }
+        case 'transfer': {
+          switch (name) {
+            case 'tokenId': {
+              return EvmInputDisplayType.STRING;
+            }
+          }
+        }
+      }
       break;
+    }
+    case EVMTokenType.ERC1155: {
+      switch (methodName) {
+        case 'transferBatch': {
+          switch (name) {
+            case 'ids':
+              return EvmInputDisplayType.ARRAY_STRING;
+            case 'values':
+              return EvmInputDisplayType.ARRAY_STRING;
+          }
+        }
+        case 'transferSingle': {
+          switch (name) {
+            case 'id':
+              return EvmInputDisplayType.STRING;
+            case 'value':
+              return EvmInputDisplayType.STRING;
+          }
+        }
+        case 'safeBatchTransferFrom': {
+          switch (name) {
+            case 'ids':
+              return EvmInputDisplayType.ARRAY_STRING;
+            case 'amounts':
+              return EvmInputDisplayType.ARRAY_STRING;
+            case 'data':
+              return EvmInputDisplayType.STRING;
+          }
+        }
+        case 'safeTransferFrom': {
+          switch (name) {
+            case 'id':
+              return EvmInputDisplayType.STRING;
+            case 'amount':
+              return EvmInputDisplayType.STRING;
+            case 'data':
+              return EvmInputDisplayType.STRING;
+          }
+        }
+        case 'setApprovalForAll': {
+          switch (name) {
+            case 'approved':
+              return EvmInputDisplayType.STRING;
+          }
+        }
+      }
     }
     default: {
     }
@@ -67,7 +153,7 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
       }
       break;
     }
-    case EVMTokenType.ERC_721: {
+    case EVMTokenType.ERC721: {
       return false;
     }
     default: {
@@ -118,7 +204,7 @@ const getFieldWarnings = async (
       }
       break;
     }
-    case EVMTokenType.ERC_721: {
+    case EVMTokenType.ERC721: {
       break;
     }
     default: {

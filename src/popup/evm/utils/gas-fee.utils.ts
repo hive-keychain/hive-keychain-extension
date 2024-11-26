@@ -23,8 +23,8 @@ const getGasFeeEstimations = async (chain: Chain) => {
 
 const estimate = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort,
-  receiverAddress: string,
+  tokenInfo: EvmTokenInfoShort | undefined,
+  receiverAddress: string | null,
   amount: number,
   wallet: HDNodeWallet,
   type: EvmTransactionType,
@@ -33,14 +33,21 @@ const estimate = async (
 ): Promise<FullGasFeeEstimation> => {
   const estimates = await getGasFeeEstimations(chain);
 
-  if (!gasLimit)
-    gasLimit = await EthersUtils.getGasLimit(
-      chain,
-      tokenInfo,
-      receiverAddress,
-      amount,
-      wallet,
+  console.log(gasLimit);
+
+  if (!gasLimit) {
+    console.log('no gas limit getting gas limit');
+    gasLimit = Number(
+      await EthersUtils.getGasLimit(
+        chain,
+        tokenInfo,
+        receiverAddress,
+        amount,
+        wallet,
+        transactionData?.smartContract,
+      ),
     );
+  }
 
   const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
@@ -173,7 +180,7 @@ const estimate = async (
     fullEstimation.suggestedByDApp =
       await createDAppSuggestionFromTransactionData(
         transactionData,
-        gasLimit,
+        gasLimit!,
         fullEstimation,
       );
   }

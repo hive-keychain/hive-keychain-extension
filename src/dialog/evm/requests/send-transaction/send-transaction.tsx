@@ -65,7 +65,7 @@ export const SendTransaction = (props: Props) => {
   const [tokenInfo, setTokenInfo] = useState<EvmTokenInfoShort>();
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
-  const [receiver, setReceiver] = useState<string>();
+  const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
 
   const [selectedSingleWarning, setSelectedSingleWarning] = useState<{
@@ -148,7 +148,7 @@ export const SendTransaction = (props: Props) => {
         console.log({ abi });
         tokenAddress = params.to;
 
-        // Case of the executation of a smart contract
+        // Case of the execution of a smart contract
         if (params.to) {
           const usedToken = await EvmTokensUtils.getTokenInfo(
             lastChain.chainId,
@@ -287,6 +287,10 @@ export const SendTransaction = (props: Props) => {
             ),
           );
 
+          setReceiver(null);
+
+          tData.smartContract = params.data;
+
           transactionConfirmationFields.operationName = chrome.i18n.getMessage(
             `evm_operation_contract_deployment_transaction`,
           );
@@ -418,13 +422,6 @@ export const SendTransaction = (props: Props) => {
   };
 
   const getAllFieldsWithNotIgnoredWarnings = () => {
-    console.log(
-      fields?.otherFields.filter(
-        (field) =>
-          field.warnings &&
-          field.warnings.some((warning) => warning.ignored === false),
-      ),
-    );
     return fields?.otherFields.filter(
       (field) =>
         field.warnings &&
@@ -440,9 +437,12 @@ export const SendTransaction = (props: Props) => {
       chrome.runtime.sendMessage({
         command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
         value: {
-          data: data,
+          request: request,
           tab: data.tab,
           domain: data.dappInfo.domain,
+          extraData: {
+            gasFee: selectedFee,
+          },
         },
       });
     }
@@ -470,12 +470,20 @@ export const SendTransaction = (props: Props) => {
 
   useEffect(() => {
     console.log({
-      fields,
+      valid:
+        chain &&
+        tokenInfo &&
+        receiver &&
+        selectedAccount &&
+        transactionData &&
+        transferAmount !== undefined,
       chain,
       tokenInfo,
       receiver,
       selectedAccount,
       transactionData,
+      transferAmount,
+      request,
     });
   });
 
@@ -483,7 +491,7 @@ export const SendTransaction = (props: Props) => {
     <>
       {fields && (
         <EvmOperation
-          data={request}
+          request={request}
           domain={data.dappInfo.domain}
           tab={data.tab}
           title={fields.operationName!}
@@ -551,24 +559,19 @@ export const SendTransaction = (props: Props) => {
                   </div>
                 </Card>
               )}
-              {fields &&
-                chain &&
-                tokenInfo &&
-                receiver &&
-                selectedAccount &&
-                transactionData && (
-                  <GasFeePanel
-                    chain={chain}
-                    tokenInfo={tokenInfo}
-                    receiverAddress={receiver}
-                    amount={0} // TODO change
-                    wallet={selectedAccount.wallet}
-                    selectedFee={selectedFee}
-                    onSelectFee={setSelectedFee}
-                    transactionType={transactionData.type}
-                    transactionData={transactionData}
-                  />
-                )}
+              {fields && chain && selectedAccount && transactionData && (
+                <GasFeePanel
+                  chain={chain}
+                  tokenInfo={tokenInfo}
+                  receiverAddress={receiver}
+                  amount={transferAmount}
+                  wallet={selectedAccount.wallet}
+                  selectedFee={selectedFee}
+                  onSelectFee={setSelectedFee}
+                  transactionType={transactionData.type}
+                  transactionData={transactionData}
+                />
+              )}
             </>
           }
           onConfirm={handleOnConfirmClick}
