@@ -1,10 +1,14 @@
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
+  EvmTransactionVerificationInformation,
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { KeychainApi } from 'src/api/keychain';
 
 export enum EvmInputDisplayType {
   ADDRESS = 'address',
@@ -182,22 +186,26 @@ const getFieldWarnings = async (
               level: EvmTransactionWarningLevel.MEDIUM,
               message: 'evm_transaction_warning_possible_scam',
               ignored: false,
+              type: EvmTransactionWarningType.BASE,
             });
             warnings.push({
               level: EvmTransactionWarningLevel.HIGH,
               message: 'evm_transaction_warning_possible_scam',
               ignored: false,
+              type: EvmTransactionWarningType.BASE,
             });
             warnings.push({
               level: EvmTransactionWarningLevel.LOW,
               message: 'evm_transaction_warning_possible_scam',
               ignored: false,
+              type: EvmTransactionWarningType.BASE,
             });
           } else if (name === 'amount') {
             warnings.push({
               level: EvmTransactionWarningLevel.LOW,
               message: 'evm_transaction_warning_possible_scam',
               ignored: false,
+              type: EvmTransactionWarningType.BASE,
             });
           }
         }
@@ -219,6 +227,7 @@ const getAllWarnings = async (
   inputType: string,
   name: string,
   fields: TransactionConfirmationFields,
+  domain: string,
 ) => {
   for (const field of fields.otherFields) {
     field.warnings = await getFieldWarnings(
@@ -260,23 +269,81 @@ const getHighestWarning = (warnings: EvmTransactionWarning[]) => {
   }
 };
 
-const getDomainWarnings = (domain: string, protocol: string) => {
+const getDomainWarnings = (
+  domain: string,
+  protocol: string,
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
+) => {
   const warnings: EvmTransactionWarning[] = [];
   if (protocol.replace(':', '') === 'http') {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.MEDIUM,
       message: 'evm_protocol_not_secured',
+      type: EvmTransactionWarningType.BASE,
     });
   }
+  if (verifyTransactionInformation.domain.isBlacklisted) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: 'evm_transaction_domain_blacklisted',
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
+
   return warnings;
 };
 
-export const EvmTransactionParser = {
+const getAddressWarning = async (
+  address: string,
+  chainId: string,
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
+) => {
+  const warnings: EvmTransactionWarning[] = [];
+  if (verifyTransactionInformation.to.isBlacklisted) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: 'evm_transaction_receiver_blacklisted',
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
+  if (!(await EvmAddressesUtils.isWhitelisted(address, chainId))) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.LOW,
+      message: 'evm_transaction_receiver_not_whitelisted',
+      type: EvmTransactionWarningType.WHITELIST_ADDRESS,
+      extraData: {
+        placeholder: 'evm_transaction_receiver_favorite_label',
+      },
+      onConfirm: (label: string, walletAddress: string, chainId: string) => {
+        EvmAddressesUtils.saveWalletAddress(walletAddress, chainId, label);
+      },
+    });
+  }
+  // Check for spoofing
+  return warnings;
+};
+
+const verifyTransactionInformation = async (
+  domain: string,
+  to: string,
+  contract?: string,
+): Promise<EvmTransactionVerificationInformation> => {
+  return await KeychainApi.get(
+    `evm/verify-transaction?domain=${domain}&to=${to}&contract=${contract}`,
+  );
+};
+
+export const EvmTransactionParserUtils = {
   getDisplayInputType,
   shouldDisplayBalanceChange,
   getFieldWarnings,
   getAllWarnings,
   getHighestWarning,
   getDomainWarnings,
+  verifyTransactionInformation,
+  getAddressWarning,
 };

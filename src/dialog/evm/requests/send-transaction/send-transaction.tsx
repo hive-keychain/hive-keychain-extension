@@ -6,7 +6,10 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
+  EvmTransactionVerificationInformation,
   EvmTransactionWarning,
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -14,11 +17,12 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   EvmInputDisplayType,
-  EvmTransactionParser,
+  EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -30,8 +34,14 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { Card } from 'src/common-ui/card/card.component';
+import {
+  BackgroundType,
+  CheckboxPanelComponent,
+} from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
@@ -53,6 +63,12 @@ interface BalanceInfo {
   estimatedAfter: string;
 }
 
+interface SelectedWarning {
+  warning: EvmTransactionWarning;
+  fieldIndex: number;
+  warningIndex: number;
+}
+
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
 
@@ -68,11 +84,8 @@ export const SendTransaction = (props: Props) => {
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
 
-  const [selectedSingleWarning, setSelectedSingleWarning] = useState<{
-    warning: EvmTransactionWarning;
-    fieldIndex: number;
-    warningIndex: number;
-  }>();
+  const [selectedSingleWarning, setSelectedSingleWarning] =
+    useState<SelectedWarning>();
 
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
 
@@ -83,6 +96,8 @@ export const SendTransaction = (props: Props) => {
     useState<ProviderTransactionData>();
 
   const [fields, setFields] = useState<TransactionConfirmationFields>();
+  const [bypassWarning, setBypassWarning] = useState(false);
+  const [whitelistLabel, setWhitelistLabel] = useState('');
 
   useEffect(() => {
     init();
@@ -93,6 +108,48 @@ export const SendTransaction = (props: Props) => {
       initBalance(tokenInfo);
     }
   }, [tokenInfo, selectedAccount, transferAmount]);
+
+  const getDomainWarnings = (
+    transactionInfo: EvmTransactionVerificationInformation,
+  ) => {
+    return {
+      name: 'dialog_evm_domain',
+      type: EvmInputDisplayType.STRING,
+      value: (
+        <div className="value-content">
+          <div>{data.dappInfo.domain}</div>
+          <PreloadedImage src={data.dappInfo.logo} />
+        </div>
+      ),
+      warnings: EvmTransactionParserUtils.getDomainWarnings(
+        data.dappInfo.domain,
+        data.dappInfo.protocol,
+        transactionInfo,
+      ),
+    };
+  };
+  const getAddressInput = async (
+    address: string,
+    chainId: string,
+    transactionInfo: EvmTransactionVerificationInformation,
+  ) => {
+    const label = await EvmAddressesUtils.getAddressLabel(address, chainId);
+    return {
+      name: 'evm_operation_to',
+      type: EvmInputDisplayType.ADDRESS,
+      value: (
+        <div className="value-content-vertical">
+          <div>{EvmFormatUtils.formatAddress(address)}</div>
+          {label && <div className="label">{label}</div>}
+        </div>
+      ),
+      warnings: await EvmTransactionParserUtils.getAddressWarning(
+        address,
+        chainId,
+        transactionInfo,
+      ),
+    };
+  };
 
   const init = async () => {
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
@@ -122,21 +179,6 @@ export const SendTransaction = (props: Props) => {
 
     transactionConfirmationFields.otherFields = [];
 
-    transactionConfirmationFields.otherFields.push({
-      name: 'dialog_evm_domain',
-      type: EvmInputDisplayType.STRING,
-      value: (
-        <div className="value-content">
-          <div>{data.dappInfo.domain}</div>
-          <PreloadedImage src={data.dappInfo.logo} />
-        </div>
-      ),
-      warnings: EvmTransactionParser.getDomainWarnings(
-        data.dappInfo.domain,
-        data.dappInfo.protocol,
-      ),
-    });
-
     if (usedAccount) {
       // Case with data
       if (params.data) {
@@ -145,7 +187,6 @@ export const SendTransaction = (props: Props) => {
           params.to,
         );
 
-        console.log({ abi });
         tokenAddress = params.to;
 
         // Case of the execution of a smart contract
@@ -155,7 +196,6 @@ export const SendTransaction = (props: Props) => {
             tokenAddress,
           );
 
-          console.log({ usedToken });
           setTokenInfo(usedToken);
 
           const contract = new ethers.Contract(params.to, abi);
@@ -166,7 +206,7 @@ export const SendTransaction = (props: Props) => {
           });
 
           setShouldDisplayBalanceChange(
-            EvmTransactionParser.shouldDisplayBalanceChange(
+            EvmTransactionParserUtils.shouldDisplayBalanceChange(
               abi,
               decodedTransactionData?.name!,
             ),
@@ -176,6 +216,18 @@ export const SendTransaction = (props: Props) => {
             chrome.i18n.getMessage(
               `evm_operation_${decodedTransactionData?.name}`,
             ) ?? decodedTransactionData?.name;
+
+          const transactionInfo =
+            await EvmTransactionParserUtils.verifyTransactionInformation(
+              data.dappInfo.domain,
+              params.to,
+              usedAccount.wallet.address,
+            );
+          console.log(transactionInfo);
+
+          transactionConfirmationFields.otherFields.push(
+            getDomainWarnings(transactionInfo),
+          );
 
           transactionConfirmationFields.otherFields.push({
             name: 'evm_operation_smart_contract_address',
@@ -217,12 +269,13 @@ export const SendTransaction = (props: Props) => {
               }
 
               let value;
-              const inputDisplayType = EvmTransactionParser.getDisplayInputType(
-                abi,
-                decodedTransactionData.name,
-                input.type,
-                input.name,
-              );
+              const inputDisplayType =
+                EvmTransactionParserUtils.getDisplayInputType(
+                  abi,
+                  decodedTransactionData.name,
+                  input.type,
+                  input.name,
+                );
 
               console.log({
                 test: decodedTransactionData.args[index],
@@ -257,14 +310,14 @@ export const SendTransaction = (props: Props) => {
               }
               transactionConfirmationFields.otherFields.push({
                 name: input.name,
-                type: EvmTransactionParser.getDisplayInputType(
+                type: EvmTransactionParserUtils.getDisplayInputType(
                   abi,
                   decodedTransactionData.name,
                   input.type,
                   input.name,
                 ),
                 value: value,
-                warnings: await EvmTransactionParser.getFieldWarnings(
+                warnings: await EvmTransactionParserUtils.getFieldWarnings(
                   abi,
                   decodedTransactionData.name,
                   input.type,
@@ -295,6 +348,18 @@ export const SendTransaction = (props: Props) => {
             `evm_operation_contract_deployment_transaction`,
           );
 
+          const transactionInfo =
+            await EvmTransactionParserUtils.verifyTransactionInformation(
+              data.dappInfo.domain,
+              params.to,
+              usedAccount.wallet.address,
+            );
+          console.log(transactionInfo);
+
+          transactionConfirmationFields.otherFields.push(
+            getDomainWarnings(transactionInfo),
+          );
+
           transactionConfirmationFields.otherFields.push({
             name: 'evm_smart_contract_data',
             type: EvmInputDisplayType.LONG_TEXT,
@@ -303,6 +368,17 @@ export const SendTransaction = (props: Props) => {
         }
       } else {
         // Classic transfer
+        const transactionInfo =
+          await EvmTransactionParserUtils.verifyTransactionInformation(
+            data.dappInfo.domain,
+            params.to,
+            usedAccount.wallet.address,
+          );
+        console.log(transactionInfo);
+
+        transactionConfirmationFields.otherFields.push(
+          getDomainWarnings(transactionInfo),
+        );
 
         setTokenInfo(
           await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
@@ -325,13 +401,12 @@ export const SendTransaction = (props: Props) => {
               .toNumber(),
             8,
             true,
-          )}  ${(lastChain as EvmChain)?.mainToken}`,
+          )} ${(lastChain as EvmChain)?.mainToken}`,
         };
-        transactionConfirmationFields.otherFields.push({
-          name: 'evm_operation_to',
-          type: EvmInputDisplayType.ADDRESS,
-          value: EvmFormatUtils.formatAddress(params.to),
-        });
+
+        transactionConfirmationFields.otherFields.push(
+          await getAddressInput(params.to, lastChain.chainId, transactionInfo),
+        );
 
         setReceiver(params.to);
         setTransferAmount(
@@ -406,7 +481,9 @@ export const SendTransaction = (props: Props) => {
     const newFields: TransactionConfirmationFields = { ...fields! };
     for (const fields of newFields.otherFields) {
       if (fields.warnings)
-        fields.warnings.forEach((warning) => (warning.ignored = true));
+        fields.warnings.forEach((warning) => {
+          warning.ignored = true;
+        });
     }
     setFields(newFields);
     closePopup();
@@ -421,7 +498,10 @@ export const SendTransaction = (props: Props) => {
     );
   };
 
-  const getAllFieldsWithNotIgnoredWarnings = () => {
+  const getAllFieldsWithNotIgnoredWarnings = (
+    fields: TransactionConfirmationFields,
+  ) => {
+    if (!fields) return [];
     return fields?.otherFields.filter(
       (field) =>
         field.warnings &&
@@ -469,23 +549,49 @@ export const SendTransaction = (props: Props) => {
   };
 
   useEffect(() => {
-    console.log({
-      valid:
-        chain &&
-        tokenInfo &&
-        receiver &&
-        selectedAccount &&
-        transactionData &&
-        transferAmount !== undefined,
-      chain,
-      tokenInfo,
-      receiver,
-      selectedAccount,
-      transactionData,
-      transferAmount,
-      request,
-    });
+    console.log({ fields: fields });
   });
+
+  const handleSingleWarningIgnore = (
+    selectedSingleWarning: SelectedWarning,
+  ) => {
+    if (
+      selectedSingleWarning?.warning.level ===
+        EvmTransactionWarningLevel.HIGH &&
+      !bypassWarning
+    ) {
+      // display error message
+    } else {
+      if (selectedSingleWarning.warning.onConfirm) {
+        switch (selectedSingleWarning.warning.type) {
+          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
+            selectedSingleWarning.warning.onConfirm(
+              whitelistLabel,
+              receiver,
+              chain?.chainId,
+            );
+            break;
+          }
+        }
+      }
+      setBypassWarning(false);
+      ignoreWarning(
+        selectedSingleWarning.fieldIndex!,
+        selectedSingleWarning.warningIndex,
+      );
+    }
+  };
+
+  const getAllNotIgnoredWarnings = (): EvmTransactionWarning[] => {
+    if (!fields) return [];
+    const warnings: EvmTransactionWarning[] = [];
+    fields.otherFields.forEach((field) =>
+      warnings.push(
+        ...(field.warnings?.filter((warning) => !warning.ignored) ?? []),
+      ),
+    );
+    return warnings;
+  };
 
   return (
     <>
@@ -591,24 +697,43 @@ export const SendTransaction = (props: Props) => {
             </div>
           </div>
           <div className="warnings">
-            {getAllFieldsWithNotIgnoredWarnings()?.map((field) => (
-              <>
-                {field.warnings?.map((warning, warningIndex) => (
-                  <div
-                    className="warning"
-                    key={`warning-${field.name}-warning-${warningIndex}`}>
-                    <SVGIcon
-                      className={`warning-icon ${warning?.level}`}
-                      icon={SVGIcons.GLOBAL_WARNING}
-                    />
-                    <div className="warning-message">
-                      {chrome.i18n.getMessage(warning?.message!)}
-                    </div>
+            {fields &&
+              getAllFieldsWithNotIgnoredWarnings(fields).map((field) => (
+                <>
+                  <div className="field-name">
+                    {chrome.i18n.getMessage(field.name)}
                   </div>
-                ))}
-              </>
-            ))}
+                  {field.warnings?.map((warning, warningIndex) => {
+                    if (warning.ignored === false) {
+                      return (
+                        <div
+                          className="warning"
+                          key={`warning-${field.name}-warning-${warningIndex}`}>
+                          <SVGIcon
+                            className={`warning-icon ${warning?.level}`}
+                            icon={SVGIcons.GLOBAL_WARNING}
+                          />
+                          <div className="warning-message">
+                            {chrome.i18n.getMessage(warning?.message!)}
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
+                </>
+              ))}
           </div>
+
+          {EvmTransactionParserUtils.getHighestWarning(
+            getAllNotIgnoredWarnings(),
+          ) === EvmTransactionWarningLevel.HIGH && (
+            <CheckboxPanelComponent
+              onChange={(value) => setBypassWarning(value)}
+              checked={bypassWarning}
+              title="evm_transaction_warning_high_level_bypass_message"
+              backgroundType={BackgroundType.FILLED}
+            />
+          )}
 
           <div className="buttons-container">
             <ButtonComponent
@@ -622,6 +747,11 @@ export const SendTransaction = (props: Props) => {
               label="evm_send_transaction_ignore_all_warnings"
               onClick={ignoreAllWarnings}
               height="small"
+              disabled={
+                EvmTransactionParserUtils.getHighestWarning(
+                  getAllNotIgnoredWarnings(),
+                ) === EvmTransactionWarningLevel.HIGH && !bypassWarning
+              }
             />
           </div>
         </PopupContainer>
@@ -644,6 +774,24 @@ export const SendTransaction = (props: Props) => {
               </div>
             </div>
           </div>
+          {selectedSingleWarning.warning.level ===
+            EvmTransactionWarningLevel.HIGH && (
+            <CheckboxPanelComponent
+              onChange={(value) => setBypassWarning(value)}
+              checked={bypassWarning}
+              title="evm_transaction_warning_high_level_bypass_message"
+              backgroundType={BackgroundType.FILLED}
+            />
+          )}
+
+          {selectedSingleWarning.warning.type ===
+            EvmTransactionWarningType.WHITELIST_ADDRESS && (
+            <InputComponent
+              value={whitelistLabel}
+              type={InputType.TEXT}
+              onChange={setWhitelistLabel}
+            />
+          )}
 
           <div className="buttons-container">
             <ButtonComponent
@@ -655,13 +803,12 @@ export const SendTransaction = (props: Props) => {
             <ButtonComponent
               type={ButtonType.IMPORTANT}
               label="evm_send_transaction_ignore_warning"
-              onClick={() =>
-                ignoreWarning(
-                  selectedSingleWarning.fieldIndex!,
-                  selectedSingleWarning.warningIndex,
-                )
-              }
+              onClick={() => handleSingleWarningIgnore(selectedSingleWarning)}
               height="small"
+              disabled={
+                selectedSingleWarning.warning.level ===
+                  EvmTransactionWarningLevel.HIGH && !bypassWarning
+              }
             />
           </div>
         </PopupContainer>

@@ -27,7 +27,9 @@ const ButtonComponent = (props: ButtonProps) => {
       data-testid={props.dataTestId}
       className={`submit-button ${
         props.type ? props.type : ButtonType.IMPORTANT
-      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'}`}
+      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'} ${
+        props.disabled ? 'disabled' : ''
+      }`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation

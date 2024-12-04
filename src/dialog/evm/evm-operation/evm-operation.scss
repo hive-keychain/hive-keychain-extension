@@ -86,6 +86,14 @@
                 border-radius: 50%;
               }
             }
+            .value-content-vertical {
+              display: flex;
+              flex-direction: column;
+              .label {
+                font-style: italic;
+                color: $light-grey;
+              }
+            }
           }
 
           .long-text-container {

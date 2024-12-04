@@ -4813,7 +4813,7 @@
     "description": "Evm transaction operation : transfer"
   },
   "evm_operation_to": {
-    "message": "to",
+    "message": "To",
     "description": "Evm transaction operation field to"
   },
   "evm_operation_smart_contract_address": {
@@ -4833,7 +4833,7 @@
     "description": "Balance after transaction"
   },
   "evm_transaction_transaction_has_warning": {
-    "message": "This transaction still has warnings you didn't resolve. Please ignore them all before proceeding",
+    "message": "This transaction still has untreated warnings. Please resolve them all before proceeding",
     "description": "Potential scam warning message"
   },
   "evm_transaction_warning_possible_scam": {
@@ -4867,5 +4867,25 @@
   "evm_send_transaction_success": {
     "message": "Succesfully sent transaction",
     "description": "SuccesFully sent evm transaction"
+  },
+  "evm_transaction_domain_blacklisted": {
+    "message": "This domain has been flagged for suspicious behavior",
+    "description": "Domain is blacklisted"
+  },
+  "evm_transaction_receiver_blacklisted": {
+    "message": "This address has been flagged for suspicious behavior",
+    "description": "Receiver is blacklisted"
+  },
+  "evm_transaction_warning_high_level_bypass_message": {
+    "message": "I know what I'm doing",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_not_whitelisted": {
+    "message": "This address hasn't been whitelisted in Keychain",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_favorite_label": {
+    "message": "Nickname",
+    "description": "Nickname for address"
   }
 }

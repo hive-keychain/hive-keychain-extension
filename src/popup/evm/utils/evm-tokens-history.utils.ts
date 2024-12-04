@@ -1,5 +1,6 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
 import {
   EvmLocalHistory,
   EvmTokenHistory,
@@ -12,7 +13,6 @@ import {
   EvmTokenInfoShort,
   EVMTokenType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmAddressType } from '@popup/evm/interfaces/wallet.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';

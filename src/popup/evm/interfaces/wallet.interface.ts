@@ -1,3 +1,4 @@
+import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
 import { HDNodeWallet } from 'ethers';
 
 export type WalletWithBalance = {
@@ -23,11 +24,6 @@ export type EvmAccount = StoredEvmAccount & {
   seedId: number;
   seedNickname?: string;
 };
-
-export enum EvmAddressType {
-  SMART_CONTRACT = 'SMART_CONTRACT',
-  WALLET = 'WALLET',
-}
 
 export interface SavedAddresses {
   [address: string]: EvmAddressType;

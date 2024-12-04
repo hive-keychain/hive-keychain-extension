@@ -62,4 +62,8 @@
       bottom: 104px;
     }
   }
+  &.disabled {
+    background: $lighter-grey;
+    cursor: not-allowed;
+  }
 }

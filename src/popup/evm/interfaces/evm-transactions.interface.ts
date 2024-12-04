@@ -41,10 +41,18 @@ export enum EvmTransactionWarningLevel {
   LOW = 'low',
 }
 
+export enum EvmTransactionWarningType {
+  BASE = 'BASE',
+  WHITELIST_ADDRESS = 'WHITELIST_ADDRESS',
+}
+
 export interface EvmTransactionWarning {
   level: EvmTransactionWarningLevel;
   message: string;
   ignored: boolean;
+  type: EvmTransactionWarningType;
+  onConfirm?: (...args: any[]) => void;
+  extraData?: any;
 }
 
 export interface TransactionConfirmationField {
@@ -58,4 +66,28 @@ export interface TransactionConfirmationFields {
   operationName?: string;
   mainTokenAmount?: TransactionConfirmationField;
   otherFields: TransactionConfirmationField[];
+}
+
+export interface EvmTransactionVerificationInformation {
+  contract: {
+    hasBeenUsedBefore: boolean;
+    isBlacklisted: boolean;
+    proxy: {
+      target: string;
+    };
+    verifiedBy: {
+      icon: string;
+      name: string;
+    }[];
+  };
+  domain: {
+    isBlacklisted: true;
+    isTrusted: true;
+    popularity: string;
+  };
+  to: {
+    isBlacklisted: boolean;
+    isSpoofing: boolean;
+    isWhitelisted: boolean;
+  };
 }
