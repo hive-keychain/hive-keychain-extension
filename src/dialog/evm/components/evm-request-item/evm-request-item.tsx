@@ -60,7 +60,10 @@ export const EvmRequestItem = ({
                 />
               )}
               <div className="warning-message">
-                {chrome.i18n.getMessage(warning?.message!)}
+                {chrome.i18n.getMessage(
+                  warning?.message!,
+                  warning.messageParams ?? [],
+                )}
               </div>
             </div>
           ))}

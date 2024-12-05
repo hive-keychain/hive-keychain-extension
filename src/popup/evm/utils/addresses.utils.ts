@@ -1,5 +1,6 @@
 import {
   EvmAddressType,
+  EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -34,6 +35,28 @@ const getAddressType = async (address: string, chain: EvmChain) => {
 
 const getIdenticonFromAddress = (address: string) => {
   return identicon(address, 90, 50);
+};
+
+const getAllWhitelistedAddresses = async (): Promise<string[]> => {
+  let addresses: string[] = [];
+
+  const whitelistedAddresses: EvmWhitelistedAddresses =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WHITELISTED_ADDRESSES,
+    );
+
+  if (!whitelistedAddresses) return [];
+
+  for (const allAddresses of Object.values(whitelistedAddresses)) {
+    addresses = [
+      ...addresses,
+      ...allAddresses[EvmAddressType.WALLET_ADDRESS].map(
+        (address: EvmFavoriteAddress) => address.address.toLowerCase(),
+      ),
+    ];
+  }
+
+  return addresses;
 };
 
 const getWhitelistedAddresses = async (
@@ -150,6 +173,42 @@ const getAddressLabel = async (address: string, chainId: string) => {
   return whitelistedItem?.label;
 };
 
+const isPotentialSpoofing = async (address: string) => {
+  const whitelistedAddresses = await getAllWhitelistedAddresses();
+  const myAddressStart = address.substring(0, 4);
+  const myAddressEnd = address.substring(4);
+
+  for (const whitelistedAddress of whitelistedAddresses) {
+    const addressStart = whitelistedAddress.substring(0, 4);
+    const addressEnd = whitelistedAddress.substring(4);
+
+    if (
+      whitelistedAddress !== address &&
+      (myAddressStart === addressStart || myAddressEnd === addressEnd)
+    )
+      return {
+        errorMessage: 'evm_transaction_receiver_potential_spoofing_whitelisted',
+        address: whitelistedAddress,
+      };
+  }
+
+  const localAddresses = await EvmWalletUtils.getAllLocalAddresses();
+
+  for (const localAddress of localAddresses) {
+    const addressStart = localAddress.substring(0, 4);
+    const addressEnd = localAddress.substring(4);
+    if (
+      localAddress !== address &&
+      (myAddressStart === addressStart || myAddressEnd === addressEnd)
+    )
+      return {
+        errorMessage:
+          'evm_transaction_receiver_potential_spoofing_local_accounts',
+        address: localAddress,
+      };
+  }
+};
+
 export const EvmAddressesUtils = {
   getAddressType,
   getIdenticonFromAddress,
@@ -161,4 +220,5 @@ export const EvmAddressesUtils = {
   saveDomainAddress,
   isWhitelisted,
   getAddressLabel,
+  isPotentialSpoofing,
 };

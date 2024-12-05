@@ -11,6 +11,7 @@ import {
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import MkUtils from '@popup/hive/utils/mk.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
@@ -314,6 +315,13 @@ const revokeAllPermissions = async (domain: string) => {
   }
 };
 
+const getAllLocalAddresses = async () => {
+  const accounts = await rebuildAccountsFromLocalStorage(
+    await MkUtils.getMkFromLocalStorage(),
+  );
+  return accounts.map((account) => account.wallet.address.toLowerCase());
+};
+
 export const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
@@ -334,4 +342,5 @@ export const EvmWalletUtils = {
   getWalletPermission,
   getWalletPermissionFull,
   rebuildAccount,
+  getAllLocalAddresses,
 };

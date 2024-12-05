@@ -260,7 +260,6 @@ export const SendTransaction = (props: Props) => {
                 setReceiver(decodedTransactionData.args[index]);
               }
               if (input.name === 'amount') {
-                console.log(decodedTransactionData.args[index]);
                 setTransferAmount(
                   new Decimal(Number(decodedTransactionData.args[index]))
                     .div(new Decimal(EvmFormatUtils.GWEI))
@@ -276,12 +275,6 @@ export const SendTransaction = (props: Props) => {
                   input.type,
                   input.name,
                 );
-
-              console.log({
-                test: decodedTransactionData.args[index],
-                inputDisplayType,
-                usedToken,
-              });
 
               switch (inputDisplayType) {
                 case EvmInputDisplayType.ADDRESS:

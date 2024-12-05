@@ -323,6 +323,19 @@ const getAddressWarning = async (
       },
     });
   }
+
+  const address2 = '0xa22c2fsdkfjsdlfjsldkfjsldfjsldi60148';
+  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(address2);
+
+  if (!!spoofingAddress) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.MEDIUM,
+      message: spoofingAddress.errorMessage,
+      messageParams: [spoofingAddress.address],
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
   // Check for spoofing
   return warnings;
 };

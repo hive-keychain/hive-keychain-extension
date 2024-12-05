@@ -49,6 +49,7 @@ export enum EvmTransactionWarningType {
 export interface EvmTransactionWarning {
   level: EvmTransactionWarningLevel;
   message: string;
+  messageParams?: string[];
   ignored: boolean;
   type: EvmTransactionWarningType;
   onConfirm?: (...args: any[]) => void;

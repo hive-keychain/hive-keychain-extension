@@ -4887,5 +4887,13 @@
   "evm_transaction_receiver_favorite_label": {
     "message": "Nickname",
     "description": "Nickname for address"
+  },
+  "evm_transaction_receiver_potential_spoofing_whitelisted": {
+    "message": "This address looks similar to your whitelisted address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "description": "potential spoofing warning"
+  },
+  "evm_transaction_receiver_potential_spoofing_local_accounts": {
+    "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "description": "potential spoofing warning"
   }
 }
