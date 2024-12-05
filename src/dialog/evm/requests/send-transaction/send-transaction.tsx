@@ -188,6 +188,7 @@ export const SendTransaction = (props: Props) => {
         );
 
         tokenAddress = params.to;
+        console.log({ tokenAddress });
 
         // Case of the execution of a smart contract
         if (params.to) {
@@ -238,6 +239,11 @@ export const SendTransaction = (props: Props) => {
                 <EvmTokenLogo tokenInfo={usedToken} />
               </div>
             ),
+            ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+              tokenAddress,
+              lastChain.chainId,
+              transactionInfo,
+            )),
           });
 
           if (Number(decodedTransactionData?.value) > 0)

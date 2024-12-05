@@ -69,6 +69,24 @@ export const EvmRequestItem = ({
           ))}
         </div>
       )}
+      {field.information && field.information.length > 0 && (
+        <div className="information-container">
+          {field.information.map((information, index) => (
+            <div className="information" key={`information-${index}`}>
+              <SVGIcon
+                className={`information-icon`}
+                icon={SVGIcons.GLOBAL_INFO}
+              />
+              <div className="information-message">
+                {chrome.i18n.getMessage(
+                  information?.message!,
+                  information.messageParams ?? [],
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

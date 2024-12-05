@@ -4,6 +4,7 @@ import {
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
   EvmTransactionWarningType,
+  TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
@@ -324,8 +325,7 @@ const getAddressWarning = async (
     });
   }
 
-  const address2 = '0xa22c2fsdkfjsdlfjsldkfjsldfjsldi60148';
-  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(address2);
+  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(address);
 
   if (!!spoofingAddress) {
     warnings.push({
@@ -336,8 +336,28 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
+
   // Check for spoofing
   return warnings;
+};
+
+const getSmartContractWarningAndInfo = async (
+  address: string,
+  chainId: string,
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
+) => {
+  const warningAndInfo: Partial<TransactionConfirmationField> = {};
+
+  if (verifyTransactionInformation.contract.proxy.target) {
+    warningAndInfo.information = [
+      {
+        message: 'evm_transaction_contract_use_proxy',
+        messageParams: [verifyTransactionInformation.contract.proxy.target],
+      },
+    ];
+  }
+  console.log(warningAndInfo);
+  return warningAndInfo;
 };
 
 const verifyTransactionInformation = async (
@@ -346,7 +366,7 @@ const verifyTransactionInformation = async (
   contract?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
   return await KeychainApi.get(
-    `evm/verify-transaction?domain=${domain}&to=${to}&contract=${contract}`,
+    `evm/verifyTransaction?domain=${domain}&to=${to}&contract=${contract}`,
   );
 };
 
@@ -359,4 +379,5 @@ export const EvmTransactionParserUtils = {
   getDomainWarnings,
   verifyTransactionInformation,
   getAddressWarning,
+  getSmartContractWarningAndInfo,
 };

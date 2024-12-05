@@ -4895,5 +4895,9 @@
   "evm_transaction_receiver_potential_spoofing_local_accounts": {
     "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
     "description": "potential spoofing warning"
+  },
+  "evm_transaction_contract_use_proxy": {
+    "message": "This contract uses a $1 has a proxy",
+    "description": "Smart contract uses a proxy"
   }
 }

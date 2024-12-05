@@ -47,6 +47,7 @@ export enum SVGIcons {
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
   GLOBAL_EXPAND_COLLAPSE = 'global/expand-collapse',
   GLOBAL_WARNING = 'global/warning',
+  GLOBAL_INFO = 'global/info',
   GLOBAL_CHECK = 'global/check',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',

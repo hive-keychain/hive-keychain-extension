@@ -78,8 +78,6 @@ const transfer = async (
       amount * 1000000,
     ]);
 
-    console.log(data);
-
     transactionRequest = {
       to: tokenInfo.address!,
       value: 0,

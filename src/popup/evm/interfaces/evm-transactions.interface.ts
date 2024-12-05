@@ -56,11 +56,17 @@ export interface EvmTransactionWarning {
   extraData?: any;
 }
 
+export interface EvmTransactionInfo {
+  message: string;
+  messageParams?: string[];
+}
+
 export interface TransactionConfirmationField {
   name: string;
   value: any;
   type: string;
   warnings?: EvmTransactionWarning[];
+  information?: EvmTransactionInfo[];
 }
 
 export interface TransactionConfirmationFields {
@@ -88,7 +94,6 @@ export interface EvmTransactionVerificationInformation {
   };
   to: {
     isBlacklisted: boolean;
-    isSpoofing: boolean;
     isWhitelisted: boolean;
   };
 }
