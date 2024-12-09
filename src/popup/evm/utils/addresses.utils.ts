@@ -93,8 +93,8 @@ const saveWhitelistedAddresses = async (
 };
 
 const saveContractAddress = async (
-  chainId: string,
   contractAddress: string,
+  chainId: string,
   label?: string,
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
@@ -151,11 +151,11 @@ const isWhitelisted = async (address: string, chainId: string) => {
 
   return (
     whitelisted[EvmAddressType.SMART_CONTRACT]
-      .map((item) => item.address)
-      .includes(address) ||
+      .map((item) => item.address.toLowerCase())
+      .includes(address.toLowerCase()) ||
     whitelisted[EvmAddressType.WALLET_ADDRESS]
-      .map((item) => item.address)
-      .includes(address)
+      .map((item) => item.address.toLowerCase())
+      .includes(address.toLowerCase())
   );
 };
 
@@ -175,12 +175,12 @@ const getAddressLabel = async (address: string, chainId: string) => {
 
 const isPotentialSpoofing = async (address: string) => {
   const whitelistedAddresses = await getAllWhitelistedAddresses();
-  const myAddressStart = address.substring(0, 4);
-  const myAddressEnd = address.substring(4);
+  const myAddressStart = address.substring(0, 4).toLowerCase();
+  const myAddressEnd = address.substring(4).toLowerCase();
 
   for (const whitelistedAddress of whitelistedAddresses) {
-    const addressStart = whitelistedAddress.substring(0, 4);
-    const addressEnd = whitelistedAddress.substring(4);
+    const addressStart = whitelistedAddress.substring(0, 4).toLowerCase();
+    const addressEnd = whitelistedAddress.substring(4).toLowerCase();
 
     if (
       whitelistedAddress !== address &&

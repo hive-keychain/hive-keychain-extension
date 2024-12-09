@@ -240,7 +240,7 @@ export const SendTransaction = (props: Props) => {
               </div>
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
-              tokenAddress,
+              params.to,
               lastChain.chainId,
               transactionInfo,
             )),
@@ -322,6 +322,8 @@ export const SendTransaction = (props: Props) => {
                   input.type,
                   input.name,
                   value,
+                  lastChain.chainId,
+                  transactionInfo,
                 ),
               });
             }
@@ -564,11 +566,7 @@ export const SendTransaction = (props: Props) => {
       if (selectedSingleWarning.warning.onConfirm) {
         switch (selectedSingleWarning.warning.type) {
           case EvmTransactionWarningType.WHITELIST_ADDRESS: {
-            selectedSingleWarning.warning.onConfirm(
-              whitelistLabel,
-              receiver,
-              chain?.chainId,
-            );
+            selectedSingleWarning.warning.onConfirm(whitelistLabel);
             break;
           }
         }

@@ -4899,5 +4899,13 @@
   "evm_transaction_contract_use_proxy": {
     "message": "This contract uses a $1 has a proxy",
     "description": "Smart contract uses a proxy"
+  },
+  "evm_transaction_contract_already_used": {
+    "message": "You whitelisted this smart contract",
+    "description": "Already used"
+  },
+  "evm_transaction_contract_not_used": {
+    "message": "You haven't whitelisted this smart contract yet",
+    "description": "Not used yet"
   }
 }

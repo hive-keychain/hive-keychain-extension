@@ -174,6 +174,8 @@ const getFieldWarnings = async (
   inputType: string,
   name: string,
   value: string,
+  chainId: string,
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
 ): Promise<EvmTransactionWarning[]> => {
   const tokenType = EvmTokensUtils.getTokenType(abi);
   const warnings: EvmTransactionWarning[] = [];
@@ -183,31 +185,12 @@ const getFieldWarnings = async (
         case 'transfer': {
           if (name === 'recipient') {
             // Check error here
-            warnings.push({
-              level: EvmTransactionWarningLevel.MEDIUM,
-              message: 'evm_transaction_warning_possible_scam',
-              ignored: false,
-              type: EvmTransactionWarningType.BASE,
-            });
-            warnings.push({
-              level: EvmTransactionWarningLevel.HIGH,
-              message: 'evm_transaction_warning_possible_scam',
-              ignored: false,
-              type: EvmTransactionWarningType.BASE,
-            });
-            warnings.push({
-              level: EvmTransactionWarningLevel.LOW,
-              message: 'evm_transaction_warning_possible_scam',
-              ignored: false,
-              type: EvmTransactionWarningType.BASE,
-            });
+            return getAddressWarning(
+              value,
+              chainId,
+              verifyTransactionInformation,
+            );
           } else if (name === 'amount') {
-            warnings.push({
-              level: EvmTransactionWarningLevel.LOW,
-              message: 'evm_transaction_warning_possible_scam',
-              ignored: false,
-              type: EvmTransactionWarningType.BASE,
-            });
           }
         }
       }
@@ -229,6 +212,8 @@ const getAllWarnings = async (
   name: string,
   fields: TransactionConfirmationFields,
   domain: string,
+  chainId: string,
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
   for (const field of fields.otherFields) {
     field.warnings = await getFieldWarnings(
@@ -237,6 +222,8 @@ const getAllWarnings = async (
       inputType,
       name,
       field.value,
+      chainId,
+      verifyTransactionInformation,
     );
   }
   return fields;
@@ -319,8 +306,8 @@ const getAddressWarning = async (
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
       },
-      onConfirm: (label: string, walletAddress: string, chainId: string) => {
-        EvmAddressesUtils.saveWalletAddress(walletAddress, chainId, label);
+      onConfirm: (label: string) => {
+        EvmAddressesUtils.saveWalletAddress(address, chainId, label);
       },
     });
   }
@@ -346,16 +333,35 @@ const getSmartContractWarningAndInfo = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
-  const warningAndInfo: Partial<TransactionConfirmationField> = {};
+  const warningAndInfo: Partial<TransactionConfirmationField> = {
+    warnings: [],
+    information: [],
+  };
 
   if (verifyTransactionInformation.contract.proxy.target) {
-    warningAndInfo.information = [
-      {
-        message: 'evm_transaction_contract_use_proxy',
-        messageParams: [verifyTransactionInformation.contract.proxy.target],
-      },
-    ];
+    warningAndInfo.information!.push({
+      message: 'evm_transaction_contract_use_proxy',
+      messageParams: [verifyTransactionInformation.contract.proxy.target],
+    });
   }
+
+  console.log('isSmartContractwhitelisted', address);
+  if (await EvmAddressesUtils.isWhitelisted(address, chainId)) {
+    warningAndInfo.information?.push({
+      message: 'evm_transaction_contract_already_used',
+    });
+  } else {
+    warningAndInfo.warnings?.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.LOW,
+      type: EvmTransactionWarningType.WHITELIST_ADDRESS,
+      message: 'evm_transaction_contract_not_used',
+      onConfirm: (label: string) => {
+        EvmAddressesUtils.saveContractAddress(address, chainId, label);
+      },
+    });
+  }
+
   console.log(warningAndInfo);
   return warningAndInfo;
 };
