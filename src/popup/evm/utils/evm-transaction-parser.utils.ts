@@ -345,12 +345,7 @@ const getSmartContractWarningAndInfo = async (
     });
   }
 
-  console.log('isSmartContractwhitelisted', address);
-  if (await EvmAddressesUtils.isWhitelisted(address, chainId)) {
-    warningAndInfo.information?.push({
-      message: 'evm_transaction_contract_already_used',
-    });
-  } else {
+  if (!(await EvmAddressesUtils.isWhitelisted(address, chainId))) {
     warningAndInfo.warnings?.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
@@ -362,7 +357,6 @@ const getSmartContractWarningAndInfo = async (
     });
   }
 
-  console.log(warningAndInfo);
   return warningAndInfo;
 };
 
