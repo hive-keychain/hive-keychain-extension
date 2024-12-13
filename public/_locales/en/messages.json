@@ -4907,5 +4907,9 @@
   "evm_transaction_contract_not_used": {
     "message": "You haven't whitelisted this smart contract yet",
     "description": "Not used yet"
+  },
+  "evm_domain_never_visited": {
+    "message": "We detected that this is the first time you visit this domain",
+    "description": "Domain never visited warning message"
   }
 }
