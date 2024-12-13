@@ -2,7 +2,6 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect } from 'react';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -37,22 +36,6 @@ export const GetEncryptionKey = (props: Props) => {
     warningHook.setFields(transactionConfirmationFields);
   };
 
-  const handleOnConfirm = async () => {
-    if (warningHook.hasWarning()) {
-      warningHook.setWarningsPopupOpened(true);
-    } else {
-      warningHook.setLoading(true);
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
-        value: {
-          request: request,
-          tab: data.tab,
-          domain: data.dappInfo.domain,
-        },
-      });
-    }
-  };
-
   return (
     <EvmOperation
       request={request}
@@ -63,7 +46,6 @@ export const GetEncryptionKey = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_evm_get_encryption_key', [
         data.dappInfo.domain,
       ])}
-      onConfirm={handleOnConfirm}
       warningHook={warningHook}></EvmOperation>
   );
 };
