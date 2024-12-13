@@ -1,11 +1,14 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { HDNodeWallet } from 'ethers';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -22,6 +25,24 @@ export const DecryptMessage = (props: Props) => {
   const [decryptedMessage, setDecryptedMessage] = useState<
     string | undefined
   >();
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    let transactionConfirmationFields = {
+      otherFields: [],
+    } as TransactionConfirmationFields;
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation(
+        data.dappInfo.domain,
+      );
+    transactionConfirmationFields.otherFields.push(
+      await warningHook.getDomainWarnings(transactionInfo),
+    );
+    warningHook.setFields(transactionConfirmationFields);
+  };
 
   const decryptMessage = () => {
     const account = accounts.find(
@@ -47,6 +68,7 @@ export const DecryptMessage = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
         data.dappInfo.domain,
       ])}
+      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
       bottomPanel={
         <>
           <div
