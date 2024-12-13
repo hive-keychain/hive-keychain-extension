@@ -22,7 +22,7 @@ type Props = {
   caption?: string;
   fields?: any;
   bottomPanel?: any;
-  warningHook: useTransactionWarningType;
+  warningHook?: useTransactionWarningType;
 };
 
 export const EvmOperation = ({
@@ -42,16 +42,21 @@ export const EvmOperation = ({
   const [loading, setLoading] = useState(false);
 
   const genericOnConfirm = () => {
-    setLoading(true);
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
-      value: {
-        request: request,
-        tab: tab,
-        domain: domain,
-        keep,
-      },
-    });
+    if (warningHook && warningHook.hasWarning()) {
+      warningHook.setWarningsPopupOpened(true);
+      return;
+    } else {
+      setLoading(true);
+      chrome.runtime.sendMessage({
+        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+        value: {
+          request: request,
+          tab: tab,
+          domain: domain,
+          keep,
+        },
+      });
+    }
   };
 
   const onClose = () => {
@@ -108,11 +113,14 @@ export const EvmOperation = ({
 
         <LoadingComponent hide={!loading} />
       </div>
-      {warningHook.warningsPopupOpened && warningHook.hasWarning() && (
-        <EvmWarningSinglePopupComponent warningHook={warningHook} />
-      )}
+      {warningHook &&
+        warningHook.warningsPopupOpened &&
+        warningHook.hasWarning() && (
+          <EvmWarningSinglePopupComponent warningHook={warningHook} />
+        )}
 
-      {warningHook.singleWarningPopupOpened &&
+      {warningHook &&
+        warningHook.singleWarningPopupOpened &&
         warningHook.selectedSingleWarning && (
           <EvmWarningMultiplePopupComponent warningHook={warningHook} />
         )}
