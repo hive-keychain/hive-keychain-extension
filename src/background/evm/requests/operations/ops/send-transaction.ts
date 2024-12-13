@@ -25,7 +25,7 @@ export const sendEvmTransaction = async (
         null,
         res,
         requestHandler.data,
-        'evm_send_transaction_success',
+        await chrome.i18n.getMessage('evm_send_transaction_success'),
       );
     }
   } catch (err) {

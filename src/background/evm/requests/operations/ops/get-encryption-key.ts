@@ -20,7 +20,7 @@ export const getEncryptionKey = async (
         null,
         res,
         requestHandler.data,
-        'dialog_evm_get_encryption_key_success',
+        await chrome.i18n.getMessage('dialog_evm_get_encryption_key_success'),
       );
     }
   } catch (err) {

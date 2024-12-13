@@ -23,7 +23,7 @@ export const decryptMessage = async (
         null,
         res,
         requestHandler.data,
-        'dialog_evm_decrypt_message_success',
+        await chrome.i18n.getMessage('dialog_evm_decrypt_message_success'),
       );
     }
   } catch (err) {

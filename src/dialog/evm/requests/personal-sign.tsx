@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -52,6 +53,7 @@ export const PersonalSign = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
         data.dappInfo.domain,
       ])}
+      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
       bottomPanel={
         <Card>
           <DisplayText

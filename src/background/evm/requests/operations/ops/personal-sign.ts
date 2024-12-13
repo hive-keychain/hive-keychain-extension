@@ -23,7 +23,7 @@ export const personalSign = async (
         null,
         res,
         requestHandler.data,
-        'dialog_evm_sign_request_success',
+        await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
       );
     }
   } catch (err) {
