@@ -29,8 +29,6 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
-import { EvmWarningMultiplePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-multiple-popup.component';
-import { EvmWarningSinglePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-single-popup.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -449,18 +447,10 @@ export const SendTransaction = (props: Props) => {
             </>
           }
           onConfirm={warningHook.handleOnConfirmClick}
+          warningHook={warningHook}
         />
       )}
       <LoadingComponent hide={!warningHook.loading} />
-      {warningHook.warningsPopupOpened && warningHook.hasWarning() && (
-        <EvmWarningSinglePopupComponent warningHook={warningHook} />
-      )}
-
-      {warningHook.singleWarningPopupOpened &&
-        warningHook.selectedSingleWarning && (
-          <EvmWarningMultiplePopupComponent warningHook={warningHook} />
-        )}
     </>
-    // <div>toto</div>
   );
 };

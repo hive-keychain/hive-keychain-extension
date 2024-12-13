@@ -7,6 +7,9 @@ import ButtonComponent, {
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
+import { useTransactionWarningType } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { EvmWarningMultiplePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-multiple-popup.component';
+import { EvmWarningSinglePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-single-popup.component';
 
 type Props = {
   title: string;
@@ -19,6 +22,7 @@ type Props = {
   caption?: string;
   fields?: any;
   bottomPanel?: any;
+  warningHook: useTransactionWarningType;
 };
 
 export const EvmOperation = ({
@@ -32,6 +36,7 @@ export const EvmOperation = ({
   caption,
   fields,
   bottomPanel,
+  warningHook,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -61,44 +66,56 @@ export const EvmOperation = ({
   };
 
   return (
-    <div className={`operation ${caption ? 'has-caption' : ''}`}>
-      <DialogHeader title={title} />
-      <div className="scrollable">
-        {header && (
-          <div
-            className={`operation-header ${redHeader ? 'operation-red' : ''}`}>
-            {header}
-          </div>
-        )}
-        {caption && <DialogCaption text={caption} />}
+    <>
+      <div className={`operation ${caption ? 'has-caption' : ''}`}>
+        <DialogHeader title={title} />
+        <div className="scrollable">
+          {header && (
+            <div
+              className={`operation-header ${
+                redHeader ? 'operation-red' : ''
+              }`}>
+              {header}
+            </div>
+          )}
+          {caption && <DialogCaption text={caption} />}
 
-        {fields && (
-          <div className="operation-body">
-            <div className="fields">{fields}</div>
-          </div>
-        )}
+          {fields && (
+            <div className="operation-body">
+              <div className="fields">{fields}</div>
+            </div>
+          )}
 
-        {bottomPanel && <>{bottomPanel}</>}
-      </div>
-
-      {!loading && (
-        <div className={`operation-buttons `}>
-          <ButtonComponent
-            label="dialog_cancel"
-            type={ButtonType.ALTERNATIVE}
-            onClick={onClose}
-            height="small"
-          />
-          <ButtonComponent
-            type={ButtonType.IMPORTANT}
-            label="dialog_confirm"
-            onClick={onConfirm || genericOnConfirm}
-            height="small"
-          />
+          {bottomPanel && <>{bottomPanel}</>}
         </div>
+
+        {!loading && (
+          <div className={`operation-buttons `}>
+            <ButtonComponent
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={onClose}
+              height="small"
+            />
+            <ButtonComponent
+              type={ButtonType.IMPORTANT}
+              label="dialog_confirm"
+              onClick={onConfirm || genericOnConfirm}
+              height="small"
+            />
+          </div>
+        )}
+
+        <LoadingComponent hide={!loading} />
+      </div>
+      {warningHook.warningsPopupOpened && warningHook.hasWarning() && (
+        <EvmWarningSinglePopupComponent warningHook={warningHook} />
       )}
 
-      <LoadingComponent hide={!loading} />
-    </div>
+      {warningHook.singleWarningPopupOpened &&
+        warningHook.selectedSingleWarning && (
+          <EvmWarningMultiplePopupComponent warningHook={warningHook} />
+        )}
+    </>
   );
 };

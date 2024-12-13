@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
@@ -44,6 +45,8 @@ export const SignTypedData = (props: Props) => {
       : request.params[1],
   );
   const [target, setTarget] = useState<string>(request.params[0]);
+
+  const warningHook = useTransactionWarnings(data);
 
   return (
     <EvmOperation
@@ -100,6 +103,7 @@ export const SignTypedData = (props: Props) => {
             ))}
           </>
         </>
-      }></EvmOperation>
+      }
+      warningHook={warningHook}></EvmOperation>
   );
 };

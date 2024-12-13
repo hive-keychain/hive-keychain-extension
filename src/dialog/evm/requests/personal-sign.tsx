@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
@@ -20,6 +21,7 @@ export const PersonalSign = (props: Props) => {
   ).toString('utf8');
   const [message, setMessage] = useState<string>(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
+  const warningHook = useTransactionWarnings(data);
 
   return (
     <EvmOperation
@@ -37,6 +39,7 @@ export const PersonalSign = (props: Props) => {
             content={message}
           />
         </Card>
-      }></EvmOperation>
+      }
+      warningHook={warningHook}></EvmOperation>
   );
 };
