@@ -1,7 +1,9 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
@@ -47,6 +49,24 @@ export const SignTypedData = (props: Props) => {
   const [target, setTarget] = useState<string>(request.params[0]);
 
   const warningHook = useTransactionWarnings(data);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    let transactionConfirmationFields = {
+      otherFields: [],
+    } as TransactionConfirmationFields;
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation(
+        data.dappInfo.domain,
+      );
+    transactionConfirmationFields.otherFields.push(
+      await warningHook.getDomainWarnings(transactionInfo),
+    );
+    warningHook.setFields(transactionConfirmationFields);
+  };
 
   return (
     <EvmOperation

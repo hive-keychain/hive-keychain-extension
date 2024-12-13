@@ -1,6 +1,8 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import React, { useState } from 'react';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
@@ -22,6 +24,24 @@ export const PersonalSign = (props: Props) => {
   const [message, setMessage] = useState<string>(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
   const warningHook = useTransactionWarnings(data);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    let transactionConfirmationFields = {
+      otherFields: [],
+    } as TransactionConfirmationFields;
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation(
+        data.dappInfo.domain,
+      );
+    transactionConfirmationFields.otherFields.push(
+      await warningHook.getDomainWarnings(transactionInfo),
+    );
+    warningHook.setFields(transactionConfirmationFields);
+  };
 
   return (
     <EvmOperation
