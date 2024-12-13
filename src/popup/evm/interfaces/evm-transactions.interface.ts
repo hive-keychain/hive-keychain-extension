@@ -88,9 +88,9 @@ export interface EvmTransactionVerificationInformation {
     }[];
   };
   domain: {
-    isBlacklisted: true;
-    isTrusted: true;
-    popularity: string;
+    isBlacklisted: boolean;
+    isTrusted?: boolean;
+    isWhitelisted: boolean;
   };
   to: {
     isBlacklisted: boolean;

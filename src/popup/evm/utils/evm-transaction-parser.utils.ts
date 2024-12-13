@@ -257,12 +257,23 @@ const getHighestWarning = (warnings: EvmTransactionWarning[]) => {
   }
 };
 
-const getDomainWarnings = (
+const getDomainWarnings = async (
   domain: string,
   protocol: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
   const warnings: EvmTransactionWarning[] = [];
+
+  const knownDomains = await EvmAddressesUtils.getDomainAddresses();
+
+  if (!knownDomains.includes(domain)) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.LOW,
+      message: 'evm_domain_never_visited',
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
   if (protocol.replace(':', '') === 'http') {
     warnings.push({
       ignored: false,
@@ -362,12 +373,17 @@ const getSmartContractWarningAndInfo = async (
 
 const verifyTransactionInformation = async (
   domain: string,
-  to: string,
+  to?: string,
   contract?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
-  return await KeychainApi.get(
-    `evm/verifyTransaction?domain=${domain}&to=${to}&contract=${contract}`,
-  );
+  let url = `evm/verifyTransaction?domain=${domain}`;
+  if (to) {
+    url += `&to=${to}`;
+  }
+  if (contract) {
+    url += `&contract=${contract}`;
+  }
+  return await KeychainApi.get(url);
 };
 
 export const EvmTransactionParserUtils = {

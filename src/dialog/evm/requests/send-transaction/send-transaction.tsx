@@ -6,10 +6,6 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
-  EvmTransactionVerificationInformation,
-  EvmTransactionWarning,
-  EvmTransactionWarningLevel,
-  EvmTransactionWarningType,
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -17,7 +13,6 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
@@ -26,29 +21,16 @@ import {
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
 import { Card } from 'src/common-ui/card/card.component';
-import {
-  BackgroundType,
-  CheckboxPanelComponent,
-} from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import RequestItem from 'src/dialog/components/request-item/request-item';
-import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
+import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { EvmWarningMultiplePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-multiple-popup.component';
+import { EvmWarningSinglePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-single-popup.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -63,29 +45,19 @@ interface BalanceInfo {
   estimatedAfter: string;
 }
 
-interface SelectedWarning {
-  warning: EvmTransactionWarning;
-  fieldIndex: number;
-  warningIndex: number;
-}
-
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
 
+  const warningHook = useTransactionWarnings(data);
+  console.log(warningHook);
+
   const [caption, setCaption] = useState<string>();
-  const [loading, setLoading] = useState(true);
-  const [warningsPopupOpened, setWarningsPopupOpened] = useState(false);
-  const [singleWarningPopupOpened, setSingleWarningPopupOpened] =
-    useState(false);
   const [chain, setChain] = useState<EvmChain>();
   const [tokenInfo, setTokenInfo] = useState<EvmTokenInfoShort>();
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
-
-  const [selectedSingleWarning, setSelectedSingleWarning] =
-    useState<SelectedWarning>();
 
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
 
@@ -94,10 +66,6 @@ export const SendTransaction = (props: Props) => {
 
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
-
-  const [fields, setFields] = useState<TransactionConfirmationFields>();
-  const [bypassWarning, setBypassWarning] = useState(false);
-  const [whitelistLabel, setWhitelistLabel] = useState('');
 
   useEffect(() => {
     init();
@@ -108,48 +76,6 @@ export const SendTransaction = (props: Props) => {
       initBalance(tokenInfo);
     }
   }, [tokenInfo, selectedAccount, transferAmount]);
-
-  const getDomainWarnings = (
-    transactionInfo: EvmTransactionVerificationInformation,
-  ) => {
-    return {
-      name: 'dialog_evm_domain',
-      type: EvmInputDisplayType.STRING,
-      value: (
-        <div className="value-content">
-          <div>{data.dappInfo.domain}</div>
-          <PreloadedImage src={data.dappInfo.logo} />
-        </div>
-      ),
-      warnings: EvmTransactionParserUtils.getDomainWarnings(
-        data.dappInfo.domain,
-        data.dappInfo.protocol,
-        transactionInfo,
-      ),
-    };
-  };
-  const getAddressInput = async (
-    address: string,
-    chainId: string,
-    transactionInfo: EvmTransactionVerificationInformation,
-  ) => {
-    const label = await EvmAddressesUtils.getAddressLabel(address, chainId);
-    return {
-      name: 'evm_operation_to',
-      type: EvmInputDisplayType.ADDRESS,
-      value: (
-        <div className="value-content-vertical">
-          <div>{EvmFormatUtils.formatAddress(address)}</div>
-          {label && <div className="label">{label}</div>}
-        </div>
-      ),
-      warnings: await EvmTransactionParserUtils.getAddressWarning(
-        address,
-        chainId,
-        transactionInfo,
-      ),
-    };
-  };
 
   const init = async () => {
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
@@ -227,7 +153,7 @@ export const SendTransaction = (props: Props) => {
           console.log(transactionInfo);
 
           transactionConfirmationFields.otherFields.push(
-            getDomainWarnings(transactionInfo),
+            await warningHook.getDomainWarnings(transactionInfo),
           );
 
           transactionConfirmationFields.otherFields.push({
@@ -358,7 +284,7 @@ export const SendTransaction = (props: Props) => {
           console.log(transactionInfo);
 
           transactionConfirmationFields.otherFields.push(
-            getDomainWarnings(transactionInfo),
+            await warningHook.getDomainWarnings(transactionInfo),
           );
 
           transactionConfirmationFields.otherFields.push({
@@ -378,7 +304,7 @@ export const SendTransaction = (props: Props) => {
         console.log(transactionInfo);
 
         transactionConfirmationFields.otherFields.push(
-          getDomainWarnings(transactionInfo),
+          await warningHook.getDomainWarnings(transactionInfo),
         );
 
         setTokenInfo(
@@ -406,7 +332,11 @@ export const SendTransaction = (props: Props) => {
         };
 
         transactionConfirmationFields.otherFields.push(
-          await getAddressInput(params.to, lastChain.chainId, transactionInfo),
+          await warningHook.getAddressInput(
+            params.to,
+            lastChain.chainId,
+            transactionInfo,
+          ),
         );
 
         setReceiver(params.to);
@@ -443,14 +373,18 @@ export const SendTransaction = (props: Props) => {
         }
       }
       setTransactionData(tData);
-      setFields(transactionConfirmationFields);
+      warningHook.setFields(transactionConfirmationFields);
 
       console.log({ transactionConfirmationFields });
     } else {
       console.log('No corresponding account found');
     }
-    setLoading(false);
+    warningHook.setLoading(false);
   };
+
+  useEffect(() => {
+    console.log({ fields: warningHook.fields });
+  });
 
   const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
     const balance = await EvmTokensUtils.getTokenBalance(
@@ -469,182 +403,16 @@ export const SendTransaction = (props: Props) => {
     });
   };
 
-  const ignoreWarning = (fieldIndex: number, warningIndex: number) => {
-    const newFields: TransactionConfirmationFields = { ...fields! };
-    if (newFields.otherFields && !!newFields.otherFields[fieldIndex].warnings) {
-      newFields.otherFields[fieldIndex].warnings![warningIndex].ignored = true;
-    }
-    setFields(newFields);
-    closePopup();
-  };
-
-  const ignoreAllWarnings = () => {
-    const newFields: TransactionConfirmationFields = { ...fields! };
-    for (const fields of newFields.otherFields) {
-      if (fields.warnings)
-        fields.warnings.forEach((warning) => {
-          warning.ignored = true;
-        });
-    }
-    setFields(newFields);
-    closePopup();
-  };
-
-  const hasWarning = () => {
-    return fields?.otherFields.some(
-      (field) =>
-        field.warnings &&
-        field.warnings.length > 0 &&
-        field.warnings.some((warning) => warning.ignored === false),
-    );
-  };
-
-  const getAllFieldsWithNotIgnoredWarnings = (
-    fields: TransactionConfirmationFields,
-  ) => {
-    if (!fields) return [];
-    return fields?.otherFields.filter(
-      (field) =>
-        field.warnings &&
-        field.warnings.some((warning) => warning.ignored === false),
-    );
-  };
-
-  const handleOnConfirmClick = () => {
-    if (hasWarning()) {
-      setWarningsPopupOpened(true);
-    } else {
-      setLoading(true);
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
-        value: {
-          request: request,
-          tab: data.tab,
-          domain: data.dappInfo.domain,
-          extraData: {
-            gasFee: selectedFee,
-          },
-        },
-      });
-    }
-  };
-
-  const closePopup = () => {
-    setWarningsPopupOpened(false);
-    setSingleWarningPopupOpened(false);
-    setSelectedSingleWarning(undefined);
-  };
-
-  const openSingleWarningPopup = (
-    fieldIndex: number,
-    warningIndex: number,
-    warning: EvmTransactionWarning,
-  ) => {
-    setSelectedSingleWarning({
-      warning,
-      fieldIndex,
-      warningIndex,
-    });
-
-    setSingleWarningPopupOpened(true);
-  };
-
-  useEffect(() => {
-    console.log({ fields: fields });
-  });
-
-  const handleSingleWarningIgnore = (
-    selectedSingleWarning: SelectedWarning,
-  ) => {
-    if (
-      selectedSingleWarning?.warning.level ===
-        EvmTransactionWarningLevel.HIGH &&
-      !bypassWarning
-    ) {
-      // display error message
-    } else {
-      if (selectedSingleWarning.warning.onConfirm) {
-        switch (selectedSingleWarning.warning.type) {
-          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
-            selectedSingleWarning.warning.onConfirm(whitelistLabel);
-            break;
-          }
-        }
-      }
-      setBypassWarning(false);
-      ignoreWarning(
-        selectedSingleWarning.fieldIndex!,
-        selectedSingleWarning.warningIndex,
-      );
-    }
-  };
-
-  const getAllNotIgnoredWarnings = (): EvmTransactionWarning[] => {
-    if (!fields) return [];
-    const warnings: EvmTransactionWarning[] = [];
-    fields.otherFields.forEach((field) =>
-      warnings.push(
-        ...(field.warnings?.filter((warning) => !warning.ignored) ?? []),
-      ),
-    );
-    return warnings;
-  };
-
   return (
     <>
-      {fields && (
+      {warningHook.fields && (
         <EvmOperation
           request={request}
           domain={data.dappInfo.domain}
           tab={data.tab}
-          title={fields.operationName!}
+          title={warningHook.fields.operationName!}
           caption={caption}
-          fields={
-            <>
-              {fields?.operationName && (
-                <div className="transaction-operation-name">
-                  {chrome.i18n.getMessage(
-                    `evm_operation_${fields.operationName}`,
-                  )}
-                </div>
-              )}
-
-              {selectedAccount && chain && (
-                <div className="account-chain-panel">
-                  <EvmAccountDisplayComponent account={selectedAccount} />
-
-                  <div className="chain-info">
-                    <div className="chain-name">{chain.name}</div>
-                    <img className="chain-logo" src={chain.logo} />
-                  </div>
-                </div>
-              )}
-
-              {fields?.mainTokenAmount !== undefined &&
-                fields?.mainTokenAmount !== null &&
-                tokenInfo && (
-                  <RequestItem
-                    title="popup_html_transfer_amount"
-                    content={fields.mainTokenAmount.value}
-                  />
-                )}
-
-              {fields &&
-                fields.otherFields?.map((f, index) => (
-                  <EvmRequestItem
-                    key={`${f.name}-${index}`}
-                    field={f}
-                    onWarningClicked={(warningIndex: number) =>
-                      openSingleWarningPopup(
-                        index,
-                        warningIndex,
-                        f.warnings![warningIndex],
-                      )
-                    }
-                  />
-                ))}
-            </>
-          }
+          fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
           bottomPanel={
             <>
               {shouldDisplayBalanceChange && (
@@ -662,154 +430,37 @@ export const SendTransaction = (props: Props) => {
                   </div>
                 </Card>
               )}
-              {fields && chain && selectedAccount && transactionData && (
-                <GasFeePanel
-                  chain={chain}
-                  tokenInfo={tokenInfo}
-                  receiverAddress={receiver}
-                  amount={transferAmount}
-                  wallet={selectedAccount.wallet}
-                  selectedFee={selectedFee}
-                  onSelectFee={setSelectedFee}
-                  transactionType={transactionData.type}
-                  transactionData={transactionData}
-                />
-              )}
+              {warningHook.fields &&
+                chain &&
+                selectedAccount &&
+                transactionData && (
+                  <GasFeePanel
+                    chain={chain}
+                    tokenInfo={tokenInfo}
+                    receiverAddress={receiver}
+                    amount={transferAmount}
+                    wallet={selectedAccount.wallet}
+                    selectedFee={selectedFee}
+                    onSelectFee={setSelectedFee}
+                    transactionType={transactionData.type}
+                    transactionData={transactionData}
+                  />
+                )}
             </>
           }
-          onConfirm={handleOnConfirmClick}
+          onConfirm={warningHook.handleOnConfirmClick}
         />
       )}
-      <LoadingComponent hide={!loading} />
-      {warningsPopupOpened && hasWarning() && (
-        <PopupContainer
-          className="transaction-warning-content"
-          onClickOutside={closePopup}>
-          <div className="warning-top-panel">
-            <SVGIcon className="icon" icon={SVGIcons.MESSAGE_ERROR} />
-            <div className={`title`}>
-              {chrome.i18n.getMessage(
-                'evm_transaction_transaction_has_warning',
-              )}
-            </div>
-          </div>
-          <div className="warnings">
-            {fields &&
-              getAllFieldsWithNotIgnoredWarnings(fields).map((field) => (
-                <>
-                  <div className="field-name">
-                    {chrome.i18n.getMessage(field.name)}
-                  </div>
-                  {field.warnings?.map((warning, warningIndex) => {
-                    if (warning.ignored === false) {
-                      return (
-                        <div
-                          className="warning"
-                          key={`warning-${field.name}-warning-${warningIndex}`}>
-                          <SVGIcon
-                            className={`warning-icon ${warning?.level}`}
-                            icon={SVGIcons.GLOBAL_WARNING}
-                          />
-                          <div className="warning-message">
-                            {chrome.i18n.getMessage(warning?.message!)}
-                          </div>
-                        </div>
-                      );
-                    }
-                  })}
-                </>
-              ))}
-          </div>
-
-          {EvmTransactionParserUtils.getHighestWarning(
-            getAllNotIgnoredWarnings(),
-          ) === EvmTransactionWarningLevel.HIGH && (
-            <CheckboxPanelComponent
-              onChange={(value) => setBypassWarning(value)}
-              checked={bypassWarning}
-              title="evm_transaction_warning_high_level_bypass_message"
-              backgroundType={BackgroundType.FILLED}
-            />
-          )}
-
-          <div className="buttons-container">
-            <ButtonComponent
-              label="dialog_cancel"
-              type={ButtonType.ALTERNATIVE}
-              onClick={closePopup}
-              height="small"
-            />
-            <ButtonComponent
-              type={ButtonType.IMPORTANT}
-              label="evm_send_transaction_ignore_all_warnings"
-              onClick={ignoreAllWarnings}
-              height="small"
-              disabled={
-                EvmTransactionParserUtils.getHighestWarning(
-                  getAllNotIgnoredWarnings(),
-                ) === EvmTransactionWarningLevel.HIGH && !bypassWarning
-              }
-            />
-          </div>
-        </PopupContainer>
+      <LoadingComponent hide={!warningHook.loading} />
+      {warningHook.warningsPopupOpened && warningHook.hasWarning() && (
+        <EvmWarningSinglePopupComponent warningHook={warningHook} />
       )}
-      {singleWarningPopupOpened && selectedSingleWarning && (
-        <PopupContainer
-          className="transaction-warning-content"
-          onClickOutside={closePopup}>
-          <div className="warning-top-panel">
-            <SVGIcon className="icon" icon={SVGIcons.MESSAGE_ERROR} />
-          </div>
-          <div className="warnings">
-            <div className="warning">
-              <SVGIcon
-                className={`warning-icon ${selectedSingleWarning.warning.level}`}
-                icon={SVGIcons.GLOBAL_WARNING}
-              />
-              <div className="warning-message">
-                {chrome.i18n.getMessage(selectedSingleWarning.warning.message!)}
-              </div>
-            </div>
-          </div>
-          {selectedSingleWarning.warning.level ===
-            EvmTransactionWarningLevel.HIGH && (
-            <CheckboxPanelComponent
-              onChange={(value) => setBypassWarning(value)}
-              checked={bypassWarning}
-              title="evm_transaction_warning_high_level_bypass_message"
-              backgroundType={BackgroundType.FILLED}
-            />
-          )}
 
-          {selectedSingleWarning.warning.type ===
-            EvmTransactionWarningType.WHITELIST_ADDRESS && (
-            <InputComponent
-              value={whitelistLabel}
-              type={InputType.TEXT}
-              onChange={setWhitelistLabel}
-            />
-          )}
-
-          <div className="buttons-container">
-            <ButtonComponent
-              label="dialog_cancel"
-              type={ButtonType.ALTERNATIVE}
-              onClick={closePopup}
-              height="small"
-            />
-            <ButtonComponent
-              type={ButtonType.IMPORTANT}
-              label="evm_send_transaction_ignore_warning"
-              onClick={() => handleSingleWarningIgnore(selectedSingleWarning)}
-              height="small"
-              disabled={
-                selectedSingleWarning.warning.level ===
-                  EvmTransactionWarningLevel.HIGH && !bypassWarning
-              }
-            />
-          </div>
-        </PopupContainer>
-      )}
+      {warningHook.singleWarningPopupOpened &&
+        warningHook.selectedSingleWarning && (
+          <EvmWarningMultiplePopupComponent warningHook={warningHook} />
+        )}
     </>
+    // <div>toto</div>
   );
 };
