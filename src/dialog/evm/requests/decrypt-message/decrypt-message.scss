@@ -15,6 +15,7 @@
   &.hidden {
     .encrypted-message {
       filter: blur(2px);
+      overflow: hidden;
     }
     .message {
       word-break: break-all;
