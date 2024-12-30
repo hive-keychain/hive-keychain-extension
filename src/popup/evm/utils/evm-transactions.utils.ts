@@ -100,8 +100,6 @@ const transfer = async (
     };
   }
 
-  console.log(transactionRequest);
-
   const transactionResponse = await connectedWallet.sendTransaction(
     transactionRequest,
   );
@@ -308,7 +306,6 @@ const addCanceledTransaction = async (
 
 const send = async (account: EvmAccount, request: any, gasFee: any) => {
   const lastChain = await EvmChainUtils.getLastEvmChain();
-  console.log({ account, request, gasFee });
 
   let feeData;
   switch (gasFee.type) {
@@ -333,6 +330,8 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     }
   }
 
+  console.log(request.params[0].data);
+
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: 0,
@@ -344,15 +343,14 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     ...feeData,
   };
 
-  console.log(transactionRequest, account.wallet.signingKey.privateKey);
-
   const provider = EthersUtils.getProvider(lastChain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
+
+  console.log(transactionRequest);
 
   const transactionResponse = await connectedWallet.sendTransaction(
     transactionRequest,
   );
-  console.log(transactionResponse);
   return transactionResponse.hash;
 };
 

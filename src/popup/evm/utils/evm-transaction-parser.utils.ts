@@ -27,7 +27,6 @@ const getDisplayInputType = (
   name: string,
 ): EvmInputDisplayType => {
   const tokenType = EvmTokensUtils.getTokenType(abi);
-  console.log({ methodName, inputType });
   switch (tokenType) {
     case EVMTokenType.ERC20: {
       switch (methodName) {
@@ -39,7 +38,7 @@ const getDisplayInputType = (
         }
         case 'approve': {
           switch (name) {
-            case 'value':
+            case 'amount':
               return EvmInputDisplayType.BALANCE;
           }
         }
@@ -152,6 +151,7 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
   switch (tokenType) {
     case EVMTokenType.ERC20: {
       switch (methodName) {
+        case 'approve':
         case 'transfer': {
           return true;
         }
@@ -386,6 +386,9 @@ const verifyTransactionInformation = async (
   return await KeychainApi.get(url);
 };
 
+const recipientInputNameList = ['recipient', 'spender'];
+const amountInputNameList = ['amount'];
+
 export const EvmTransactionParserUtils = {
   getDisplayInputType,
   shouldDisplayBalanceChange,
@@ -396,4 +399,6 @@ export const EvmTransactionParserUtils = {
   verifyTransactionInformation,
   getAddressWarning,
   getSmartContractWarningAndInfo,
+  recipientInputNameList,
+  amountInputNameList,
 };

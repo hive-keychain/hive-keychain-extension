@@ -9,7 +9,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
-import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 
 export const DecryptMessage = (props: Props) => {
   const { accounts, data, request } = props;
-  const warningHook = useTransactionWarnings(data);
+  const warningHook = useTransactionHook(data, request);
 
   const [decryptedMessage, setDecryptedMessage] = useState<
     string | undefined

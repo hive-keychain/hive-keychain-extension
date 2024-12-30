@@ -15,10 +15,10 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { useTransactionWarningType } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
 interface Props {
-  warningHook: useTransactionWarningType;
+  warningHook: useTransactionHook;
 }
 
 export const EvmWarningMultiplePopupComponent = ({ warningHook }: Props) => {

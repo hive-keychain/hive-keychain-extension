@@ -3,12 +3,11 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React from 'react';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import RequestItem from 'src/dialog/components/request-item/request-item';
 import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
-import { useTransactionWarningType } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
 interface Props {
-  warningHook: useTransactionWarningType;
+  warningHook: useTransactionHook;
   selectedAccount?: EvmAccount;
   chain?: EvmChain;
   tokenInfo?: EvmTokenInfoShort;
@@ -23,9 +22,7 @@ export const EvmTransactionWarningsComponent = ({
     <>
       {warningHook.fields?.operationName && (
         <div className="transaction-operation-name">
-          {chrome.i18n.getMessage(
-            `evm_operation_${warningHook.fields.operationName}`,
-          )}
+          {warningHook.fields.operationName}
         </div>
       )}
 
@@ -41,12 +38,8 @@ export const EvmTransactionWarningsComponent = ({
       )}
 
       {warningHook.fields?.mainTokenAmount !== undefined &&
-        warningHook.fields?.mainTokenAmount !== null &&
-        tokenInfo && (
-          <RequestItem
-            title="popup_html_transfer_amount"
-            content={warningHook.fields.mainTokenAmount.value}
-          />
+        warningHook.fields?.mainTokenAmount !== null && (
+          <EvmRequestItem field={warningHook.fields.mainTokenAmount} />
         )}
 
       {warningHook.fields &&

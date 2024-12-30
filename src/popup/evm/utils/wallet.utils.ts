@@ -254,7 +254,6 @@ const addWalletPermission = async (
     walletPermissions[domain][permission] = [];
 
   if (address && !walletPermissions[domain][permission]!.includes(address)) {
-    console.log({ walletPermissions }, 'adding permission');
     walletPermissions[domain][permission]!.push(address);
     sendEvmEvent(
       EvmEventName.ACCOUNT_CHANGED,

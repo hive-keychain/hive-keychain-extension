@@ -9,7 +9,6 @@ import {
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -28,7 +27,7 @@ import { Card } from 'src/common-ui/card/card.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
-import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -46,13 +45,11 @@ interface BalanceInfo {
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
 
-  const warningHook = useTransactionWarnings(data);
-  console.log(warningHook);
+  const transactionHook = useTransactionHook(data, request);
 
   const [caption, setCaption] = useState<string>();
   const [chain, setChain] = useState<EvmChain>();
   const [tokenInfo, setTokenInfo] = useState<EvmTokenInfoShort>();
-  const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
@@ -66,6 +63,11 @@ export const SendTransaction = (props: Props) => {
     useState<ProviderTransactionData>();
 
   useEffect(() => {
+    // console.log({ transactionData, fields: transactionHook.fields });
+  });
+
+  useEffect(() => {
+    // console.log({ data, request });
     init();
   }, []);
 
@@ -112,7 +114,6 @@ export const SendTransaction = (props: Props) => {
         );
 
         tokenAddress = params.to;
-        console.log({ tokenAddress });
 
         // Case of the execution of a smart contract
         if (params.to) {
@@ -130,6 +131,8 @@ export const SendTransaction = (props: Props) => {
             value: params.value,
           });
 
+          // console.log(decodedTransactionData);
+
           setShouldDisplayBalanceChange(
             EvmTransactionParserUtils.shouldDisplayBalanceChange(
               abi,
@@ -137,10 +140,13 @@ export const SendTransaction = (props: Props) => {
             ),
           );
 
+          const translatedOperationName = chrome.i18n.getMessage(
+            `evm_operation_${decodedTransactionData?.name}`,
+          );
           transactionConfirmationFields.operationName =
-            chrome.i18n.getMessage(
-              `evm_operation_${decodedTransactionData?.name}`,
-            ) ?? decodedTransactionData?.name;
+            translatedOperationName && translatedOperationName.length > 0
+              ? translatedOperationName
+              : decodedTransactionData?.name;
 
           const transactionInfo =
             await EvmTransactionParserUtils.verifyTransactionInformation(
@@ -148,10 +154,9 @@ export const SendTransaction = (props: Props) => {
               params.to,
               usedAccount.wallet.address,
             );
-          console.log(transactionInfo);
 
           transactionConfirmationFields.otherFields.push(
-            await warningHook.getDomainWarnings(transactionInfo),
+            await transactionHook.getDomainWarnings(transactionInfo),
           );
 
           transactionConfirmationFields.otherFields.push({
@@ -170,7 +175,7 @@ export const SendTransaction = (props: Props) => {
             )),
           });
 
-          if (Number(decodedTransactionData?.value) > 0)
+          if (Number(decodedTransactionData?.value) > 0) {
             transactionConfirmationFields.mainTokenAmount = {
               name: 'mainTokenAmount',
               type: EvmInputDisplayType.BALANCE,
@@ -178,21 +183,32 @@ export const SendTransaction = (props: Props) => {
                 Number(decodedTransactionData?.value),
               )}  ${chain?.mainToken}`,
             };
+          }
 
-          if (decodedTransactionData?.fragment.inputs)
+          if (decodedTransactionData?.fragment.inputs) {
             for (
               let index = 0;
               index < decodedTransactionData.fragment.inputs.length;
               index++
             ) {
               const input = decodedTransactionData?.fragment.inputs[index];
-              if (input.name === 'recipient') {
+              console.log(input);
+              if (
+                EvmTransactionParserUtils.recipientInputNameList.includes(
+                  input.name,
+                )
+              ) {
                 setReceiver(decodedTransactionData.args[index]);
+                tData.to = decodedTransactionData.args[index];
               }
-              if (input.name === 'amount') {
+              if (
+                EvmTransactionParserUtils.amountInputNameList.includes(
+                  input.name,
+                )
+              ) {
                 setTransferAmount(
                   new Decimal(Number(decodedTransactionData.args[index]))
-                    .div(new Decimal(EvmFormatUtils.GWEI))
+                    .div(new Decimal(EvmFormatUtils.WEI))
                     .toNumber(),
                 );
               }
@@ -216,7 +232,7 @@ export const SendTransaction = (props: Props) => {
                 case EvmInputDisplayType.BALANCE:
                   value = `${FormatUtils.withCommas(
                     new Decimal(Number(decodedTransactionData.args[index]))
-                      .div(new Decimal(EvmFormatUtils.GWEI))
+                      .div(new Decimal(EvmFormatUtils.WEI))
                       .toNumber(),
                     (usedToken as EvmTokenInfoShortErc20).decimals,
                     true,
@@ -251,23 +267,24 @@ export const SendTransaction = (props: Props) => {
                 ),
               });
             }
+          }
 
           tData.from = params.from;
           tData.value = params.value;
           tData.toContract = tokenAddress;
+          tData.data = params.data;
         } else {
           // Case of smart contract deployment
           // Unknown ABI
-          console.log({ data });
           setCaption(
             chrome.i18n.getMessage(
               'evm_contract_deployment_transaction_caption',
             ),
           );
 
-          setReceiver(null);
+          setReceiver('');
 
-          tData.smartContract = params.data;
+          tData.data = params.data;
 
           transactionConfirmationFields.operationName = chrome.i18n.getMessage(
             `evm_operation_contract_deployment_transaction`,
@@ -279,10 +296,9 @@ export const SendTransaction = (props: Props) => {
               params.to,
               usedAccount.wallet.address,
             );
-          console.log(transactionInfo);
 
           transactionConfirmationFields.otherFields.push(
-            await warningHook.getDomainWarnings(transactionInfo),
+            await transactionHook.getDomainWarnings(transactionInfo),
           );
 
           transactionConfirmationFields.otherFields.push({
@@ -299,17 +315,14 @@ export const SendTransaction = (props: Props) => {
             params.to,
             usedAccount.wallet.address,
           );
-        console.log(transactionInfo);
 
         transactionConfirmationFields.otherFields.push(
-          await warningHook.getDomainWarnings(transactionInfo),
+          await transactionHook.getDomainWarnings(transactionInfo),
         );
 
         setTokenInfo(
           await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
         );
-
-        console.log({ params, chain });
 
         setShouldDisplayBalanceChange(true);
 
@@ -330,7 +343,7 @@ export const SendTransaction = (props: Props) => {
         };
 
         transactionConfirmationFields.otherFields.push(
-          await warningHook.getAddressInput(
+          await transactionHook.getAddressInput(
             params.to,
             lastChain.chainId,
             transactionInfo,
@@ -363,26 +376,23 @@ export const SendTransaction = (props: Props) => {
           break;
         }
         case EvmTransactionType.LEGACY: {
-          console.log(!tData.gasPrice, tData.gasPrice);
           if (!tData.gasPrice) {
             tData.gasPrice = tData.maxFeePerGas;
           }
           break;
         }
       }
+      // console.log(tData);
       setTransactionData(tData);
-      warningHook.setFields(transactionConfirmationFields);
+      transactionHook.setFields(transactionConfirmationFields);
 
-      console.log({ transactionConfirmationFields });
+      // console.log({ transactionConfirmationFields });
     } else {
       console.log('No corresponding account found');
     }
-    warningHook.setLoading(false);
+    transactionHook.setReady(true);
+    transactionHook.setLoading(false);
   };
-
-  useEffect(() => {
-    console.log({ fields: warningHook.fields });
-  });
 
   const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
     const balance = await EvmTokensUtils.getTokenBalance(
@@ -403,14 +413,16 @@ export const SendTransaction = (props: Props) => {
 
   return (
     <>
-      {warningHook.fields && (
+      {transactionHook.fields && (
         <EvmOperation
           request={request}
           domain={data.dappInfo.domain}
           tab={data.tab}
-          title={warningHook.fields.operationName!}
+          title={transactionHook.fields.operationName!}
           caption={caption}
-          fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
+          fields={
+            <EvmTransactionWarningsComponent warningHook={transactionHook} />
+          }
           bottomPanel={
             <>
               {shouldDisplayBalanceChange && (
@@ -428,29 +440,31 @@ export const SendTransaction = (props: Props) => {
                   </div>
                 </Card>
               )}
-              {warningHook.fields &&
+              {transactionHook.ready &&
+                transactionHook.fields &&
                 chain &&
                 selectedAccount &&
-                transactionData && (
+                transactionData &&
+                receiver && (
                   <GasFeePanel
                     chain={chain}
                     tokenInfo={tokenInfo}
                     receiverAddress={receiver}
                     amount={transferAmount}
                     wallet={selectedAccount.wallet}
-                    selectedFee={selectedFee}
-                    onSelectFee={setSelectedFee}
+                    selectedFee={transactionHook.selectedFee}
+                    onSelectFee={transactionHook.setSelectedFee}
                     transactionType={transactionData.type}
                     transactionData={transactionData}
                   />
                 )}
             </>
           }
-          onConfirm={warningHook.handleOnConfirmClick}
-          warningHook={warningHook}
+          onConfirm={transactionHook.handleOnConfirmClick}
+          warningHook={transactionHook}
         />
       )}
-      <LoadingComponent hide={!warningHook.loading} />
+      <LoadingComponent hide={!transactionHook.loading} />
     </>
   );
 };

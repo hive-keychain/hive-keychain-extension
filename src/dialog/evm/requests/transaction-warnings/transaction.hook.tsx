@@ -1,3 +1,4 @@
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
@@ -13,7 +14,6 @@ import {
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { request } from 'http';
 import React, { useState } from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
@@ -24,9 +24,9 @@ interface SelectedWarning {
   warningIndex: number;
 }
 
-export const useTransactionWarnings = (
+export const useTransactionHook = (
   data: EvmRequestMessage,
-  selectedFee?: GasFeeEstimationBase,
+  request: EvmRequest,
 ) => {
   const [selectedSingleWarning, setSelectedSingleWarning] =
     useState<SelectedWarning>();
@@ -38,7 +38,10 @@ export const useTransactionWarnings = (
   const [singleWarningPopupOpened, setSingleWarningPopupOpened] =
     useState(false);
 
+  const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
+
   const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
 
   const closePopup = () => {
     setWarningsPopupOpened(false);
@@ -225,9 +228,11 @@ export const useTransactionWarnings = (
     getAddressInput,
     getAllNotIgnoredWarnings,
     openSingleWarningPopup,
+    selectedFee,
+    setSelectedFee,
+    ready,
+    setReady,
   };
 };
 
-export type useTransactionWarningType = ReturnType<
-  typeof useTransactionWarnings
->;
+export type useTransactionHook = ReturnType<typeof useTransactionHook>;

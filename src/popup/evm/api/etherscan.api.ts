@@ -23,11 +23,9 @@ const getHistory = (
 };
 
 const getAbi = async (chain: EvmChain, address: string) => {
-  console.log(`getabi for ${address} and ${chain.chainId}`);
   const res = await get(
     `${chain.blockExplorerApi?.url}/api?module=contract&action=getabi&address=${address}`,
   );
-  console.log(res);
   if (res.status === '1') {
     return res.result;
   }

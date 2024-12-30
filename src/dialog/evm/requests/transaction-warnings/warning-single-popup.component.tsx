@@ -11,10 +11,10 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { useTransactionWarningType } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
 interface Props {
-  warningHook: useTransactionWarningType;
+  warningHook: useTransactionHook;
 }
 
 export const EvmWarningSinglePopupComponent = ({ warningHook }: Props) => {

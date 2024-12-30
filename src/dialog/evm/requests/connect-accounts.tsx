@@ -13,7 +13,7 @@ import { DappStatusEnum } from 'src/common-ui/evm/dapp-status/dapp-status.compon
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
-import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
@@ -27,7 +27,7 @@ export const ConnectAccounts = (props: Props) => {
   const [accountsToConnect, setAccountsToConnect] = useState<any>({});
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
-  const warningHook = useTransactionWarnings(data);
+  const warningHook = useTransactionHook(data, request);
 
   useEffect(() => {
     init();

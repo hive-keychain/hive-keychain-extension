@@ -208,7 +208,6 @@ const generateUserLayerTwoPortolio = (
   tokens: Token[],
   hiddenTokensList: string[],
 ) => {
-  console.log(userTokens);
   const userLayerTwoPortfolio: PortfolioBalance[] = [];
   const userTokensList = userTokens.tokensBalance.filter(
     (token) => !hiddenTokensList.includes(token.symbol),

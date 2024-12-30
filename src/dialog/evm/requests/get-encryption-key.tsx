@@ -5,7 +5,7 @@ import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-pars
 import React, { useEffect } from 'react';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
-import { useTransactionWarnings } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 
 export const GetEncryptionKey = (props: Props) => {
   const { accounts, data, request } = props;
-  const warningHook = useTransactionWarnings(data);
+  const warningHook = useTransactionHook(data, request);
 
   useEffect(() => {
     init();

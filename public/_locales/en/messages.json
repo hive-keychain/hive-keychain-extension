@@ -4812,6 +4812,14 @@
     "message": "Transfer",
     "description": "Evm transaction operation : transfer"
   },
+  "evm_operation_approve": {
+    "message": "Approve",
+    "description": "Evm transaction operation : approve"
+  },
+  "evm_operation_transferFrom": {
+    "message": "Transfer from",
+    "description": "Evm transaction operation : transfer from"
+  },
   "evm_operation_to": {
     "message": "To",
     "description": "Evm transaction operation field to"

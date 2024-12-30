@@ -1,4 +1,5 @@
 const GWEI = 1000000000;
+const WEI = 1000000;
 
 const formatAddress = (address: string) => {
   return (
@@ -18,4 +19,5 @@ export const EvmFormatUtils = {
   formatAddress,
   etherToGwei,
   GWEI,
+  WEI,
 };

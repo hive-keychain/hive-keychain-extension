@@ -7,7 +7,7 @@ import ButtonComponent, {
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
-import { useTransactionWarningType } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.hook';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmWarningMultiplePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-multiple-popup.component';
 import { EvmWarningSinglePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-single-popup.component';
 
@@ -22,7 +22,7 @@ type Props = {
   caption?: string;
   fields?: any;
   bottomPanel?: any;
-  warningHook?: useTransactionWarningType;
+  warningHook?: useTransactionHook;
 };
 
 export const EvmOperation = ({

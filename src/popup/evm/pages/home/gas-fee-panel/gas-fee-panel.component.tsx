@@ -29,7 +29,7 @@ import { MathUtils } from 'src/utils/math.utils';
 interface GasFeePanelProps {
   chain: EvmChain;
   tokenInfo?: EvmTokenInfoShort;
-  receiverAddress: string | null;
+  receiverAddress: string;
   amount?: number;
   wallet: HDNodeWallet;
   selectedFee?: GasFeeEstimationBase;
@@ -65,8 +65,9 @@ export const GasFeePanel = ({
   });
 
   useEffect(() => {
-    init();
-  }, []);
+    console.log(transactionData);
+    if (transactionData) init();
+  }, [transactionData]);
 
   useEffect(() => {
     if (
@@ -103,8 +104,6 @@ export const GasFeePanel = ({
     const estimate = await GasFeeUtils.estimate(
       chain,
       tokenInfo,
-      receiverAddress,
-      amount ?? 0,
       wallet,
       transactionType,
       undefined,
@@ -218,8 +217,6 @@ export const GasFeePanel = ({
   const saveCustomFee = () => {
     let customMaxFee = 0;
     let customEstimatedFee = 0;
-
-    console.log(customGasFeeForm);
 
     switch (transactionType) {
       case EvmTransactionType.EIP_1559: {

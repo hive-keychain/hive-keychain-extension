@@ -88,8 +88,6 @@ const getTransactionReceipt = async (transactionHash: string) => {
 };
 
 const call = async (method: string, params: any[]) => {
-  console.log({ method, params }, 'call');
-
   const provider = await instanciateProvider();
   return provider.send(method, params);
 

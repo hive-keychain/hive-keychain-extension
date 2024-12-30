@@ -22,17 +22,18 @@ export interface ProviderTransactionData {
   to?: string;
   toContract?: string;
   from: string;
-  data: {
+  decodedData: {
     receiverAddress: string;
     amount: number;
   };
+  data: string;
   type: EvmTransactionType;
   value: string;
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
   gasPrice?: string;
   gasLimit?: number;
-  smartContract?: string;
+  // smartContract?: string;
 }
 
 export enum EvmTransactionWarningLevel {
