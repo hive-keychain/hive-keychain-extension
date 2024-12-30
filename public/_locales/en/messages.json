@@ -4168,11 +4168,11 @@
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "@$1 received $2 as part of power down",
+    "message": "@$1 received $2 as part of a power down",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "@$1 received $2 as part of power down of @$3",
+    "message": "@$1 received $2 as part of a power down of @$3",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {
