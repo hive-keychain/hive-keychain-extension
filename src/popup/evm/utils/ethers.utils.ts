@@ -1,7 +1,6 @@
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet, TransactionRequest, ethers } from 'ethers';
+import { ethers, HDNodeWallet, TransactionRequest } from 'ethers';
 
 const getProvider = (chain: EvmChain, rpcUrl?: string) => {
   return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpc[0].url);
@@ -9,45 +8,57 @@ const getProvider = (chain: EvmChain, rpcUrl?: string) => {
 
 const getGasLimit = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort | undefined,
   wallet: HDNodeWallet,
+  abi?: any,
+  method?: string,
+  args?: any[],
   data?: string,
+  to?: string,
 ) => {
-  console.log('in get gas limit');
+  console.log('in get gas limit', { method, args, data, to });
 
   const provider = getProvider(chain);
 
-  if (data) {
-    console.log(data, tokenInfo?.address);
+  if (abi && to && method && args) {
+    try {
+      console.log('ici');
+      const contract = new ethers.Contract(to, abi, wallet);
+
+      const estimation = await contract[method].estimateGas(...args);
+
+      // let multiplier = chain.isEth ? 1 : 1.5;
+      let multiplier = 1.5;
+      return Decimal.mul(Number(estimation), multiplier).toNumber();
+    } catch (e) {
+      console.log(e);
+      const tx: TransactionRequest = {
+        from: wallet.address,
+        data: data,
+        to: to,
+      };
+      return getGasLimitFromRawTx(tx, provider);
+    }
+  } else if (data) {
+    console.log('la');
     const tx: TransactionRequest = {
       from: wallet.address,
       data: data,
-      to: tokenInfo?.address,
+      to: to,
     };
-    const estimation = await provider.estimateGas(tx);
-
-    let multiplier = 1.5;
-    return Decimal.mul(Number(estimation), multiplier).toNumber();
-  }
-
-  // if (tokenInfo && tokenInfo.type === EVMTokenType.ERC20) {
-  //   const erc20 = new ethers.Contract(
-  //     (tokenInfo as EvmTokenInfoShortErc20).address!,
-  //     Erc20Abi,
-  //     connectedWallet,
-  //   );
-  //   const estimation = await erc20.transfer.estimateGas(
-  //     receiverAddress,
-  //     amount * 1000000,
-  //   );
-
-  //   // let multiplier = chain.isEth ? 1 : 1.5;
-  //   let multiplier = 1.5;
-  //   return Decimal.mul(Number(estimation), multiplier).toNumber();
-  // }
-  else {
+    return getGasLimitFromRawTx(tx, provider);
+  } else {
     return 21000;
   }
+};
+
+const getGasLimitFromRawTx = async (
+  tx: TransactionRequest,
+  provider: ethers.Provider,
+) => {
+  const estimation = await provider.estimateGas(tx);
+
+  let multiplier = 1.5;
+  return Decimal.mul(Number(estimation), multiplier).toNumber();
 };
 
 export const EthersUtils = { getProvider, getGasLimit };

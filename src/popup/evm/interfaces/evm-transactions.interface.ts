@@ -19,8 +19,10 @@ export enum EvmTransactionType {
 }
 
 export interface ProviderTransactionData {
+  abi?: any;
+  method?: string;
+  args?: any[];
   to?: string;
-  toContract?: string;
   from: string;
   decodedData: {
     receiverAddress: string;

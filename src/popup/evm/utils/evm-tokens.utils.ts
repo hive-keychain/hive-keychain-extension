@@ -200,10 +200,11 @@ const getTokenInfo = async (
     );
   }
   if (tokenMetaData) {
+    console.log(tokenMetaData, address);
     if (address) {
       token = tokenMetaData.find(
         (t: EvmTokenInfoShort) =>
-          t.address.toLowerCase() === address.toLowerCase(),
+          t.address?.toLowerCase() === address.toLowerCase(),
       );
     } else {
       token = tokenMetaData.find(

@@ -330,12 +330,13 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     }
   }
 
-  console.log(request.params[0].data);
+  console.log(request);
 
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: 0,
     data: request.params[0].data,
+    to: request.params[0].to,
     from: account.wallet.address,
     nonce: await EvmRequestsUtils.getNonce(account),
     gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),

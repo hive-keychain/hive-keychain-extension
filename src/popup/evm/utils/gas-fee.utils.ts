@@ -1,4 +1,3 @@
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -23,21 +22,23 @@ const getGasFeeEstimations = async (chain: Chain) => {
 
 const estimate = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort | undefined,
   wallet: HDNodeWallet,
   type: EvmTransactionType,
   gasLimit?: number,
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
   const estimates = await getGasFeeEstimations(chain);
-
+  console.log('in estimate', transactionData);
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(
         chain,
-        tokenInfo,
         wallet,
+        transactionData?.abi,
+        transactionData?.method,
+        transactionData?.args,
         transactionData?.data,
+        transactionData?.to,
       ),
     );
   }

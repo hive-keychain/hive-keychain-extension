@@ -12,6 +12,7 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
@@ -21,7 +22,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet } from 'ethers';
+import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -63,7 +64,14 @@ export const SendTransaction = (props: Props) => {
     useState<ProviderTransactionData>();
 
   useEffect(() => {
-    // console.log({ transactionData, fields: transactionHook.fields });
+    console.log(
+      transactionHook.ready,
+      transactionHook.fields,
+      chain,
+      selectedAccount,
+      transactionData,
+      receiver,
+    );
   });
 
   useEffect(() => {
@@ -94,6 +102,11 @@ export const SendTransaction = (props: Props) => {
       wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
     });
 
+    const provider = EthersUtils.getProvider(lastChain as EvmChain);
+    const connectedWallet = new Wallet(
+      HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
+      provider,
+    );
     let tokenAddress;
 
     let tData = {
@@ -112,6 +125,9 @@ export const SendTransaction = (props: Props) => {
           lastChain! as EvmChain,
           params.to,
         );
+        tData.abi = abi;
+
+        console.log(abi);
 
         tokenAddress = params.to;
 
@@ -130,6 +146,9 @@ export const SendTransaction = (props: Props) => {
             data: params.data,
             value: params.value,
           });
+
+          tData.method = decodedTransactionData?.name;
+          tData.args = decodedTransactionData?.args;
 
           // console.log(decodedTransactionData);
 
@@ -165,7 +184,7 @@ export const SendTransaction = (props: Props) => {
             value: (
               <div className="value-content">
                 <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
-                <EvmTokenLogo tokenInfo={usedToken} />
+                {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
               </div>
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
@@ -192,7 +211,6 @@ export const SendTransaction = (props: Props) => {
               index++
             ) {
               const input = decodedTransactionData?.fragment.inputs[index];
-              console.log(input);
               if (
                 EvmTransactionParserUtils.recipientInputNameList.includes(
                   input.name,
@@ -271,7 +289,7 @@ export const SendTransaction = (props: Props) => {
 
           tData.from = params.from;
           tData.value = params.value;
-          tData.toContract = tokenAddress;
+          tData.to = tokenAddress;
           tData.data = params.data;
         } else {
           // Case of smart contract deployment
@@ -444,13 +462,10 @@ export const SendTransaction = (props: Props) => {
                 transactionHook.fields &&
                 chain &&
                 selectedAccount &&
-                transactionData &&
-                receiver && (
+                transactionData && (
                   <GasFeePanel
                     chain={chain}
                     tokenInfo={tokenInfo}
-                    receiverAddress={receiver}
-                    amount={transferAmount}
                     wallet={selectedAccount.wallet}
                     selectedFee={transactionHook.selectedFee}
                     onSelectFee={transactionHook.setSelectedFee}

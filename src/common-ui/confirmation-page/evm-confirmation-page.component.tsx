@@ -117,8 +117,8 @@ const ConfirmationPage = ({
           <GasFeePanel
             chain={chain}
             tokenInfo={tokenInfo}
-            receiverAddress={receiverAddress}
-            amount={amount}
+            // receiverAddress={receiverAddress}
+            // amount={amount}
             wallet={wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}

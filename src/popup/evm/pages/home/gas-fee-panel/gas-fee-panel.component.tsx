@@ -29,8 +29,6 @@ import { MathUtils } from 'src/utils/math.utils';
 interface GasFeePanelProps {
   chain: EvmChain;
   tokenInfo?: EvmTokenInfoShort;
-  receiverAddress: string;
-  amount?: number;
   wallet: HDNodeWallet;
   selectedFee?: GasFeeEstimationBase;
   onSelectFee: (fee: GasFeeEstimationBase) => void;
@@ -42,8 +40,6 @@ interface GasFeePanelProps {
 export const GasFeePanel = ({
   chain,
   tokenInfo,
-  receiverAddress,
-  amount,
   wallet,
   selectedFee,
   onSelectFee,
@@ -103,7 +99,6 @@ export const GasFeePanel = ({
     console.log('init gas fee panel');
     const estimate = await GasFeeUtils.estimate(
       chain,
-      tokenInfo,
       wallet,
       transactionType,
       undefined,
