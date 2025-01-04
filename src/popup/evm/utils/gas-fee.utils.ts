@@ -28,7 +28,6 @@ const estimate = async (
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
   const estimates = await getGasFeeEstimations(chain);
-  console.log('in estimate', transactionData);
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(

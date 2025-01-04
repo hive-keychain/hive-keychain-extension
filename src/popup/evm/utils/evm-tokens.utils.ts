@@ -5,7 +5,7 @@ import {
   EvmTokenInfoShort,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
-import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { AbiList, Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
   BlockExporerType,
@@ -200,7 +200,6 @@ const getTokenInfo = async (
     );
   }
   if (tokenMetaData) {
-    console.log(tokenMetaData, address);
     if (address) {
       token = tokenMetaData.find(
         (t: EvmTokenInfoShort) =>
@@ -263,8 +262,19 @@ const displayValue = (value: number, tokenInfo: EvmTokenInfoShort) => {
 };
 
 const getTokenType = (abi: any) => {
-  // TODO implement
-  return EVMTokenType.ERC20;
+  const parsedAbi = JSON.parse(abi);
+  const abiMethods = parsedAbi.map((abiFunctions: any) => abiFunctions.name);
+
+  for (const referenceAbi of AbiList) {
+    if (
+      referenceAbi.methods.every((method: string) =>
+        abiMethods.includes(method),
+      )
+    )
+      return referenceAbi.type;
+  }
+
+  return null;
 };
 
 export const EvmTokensUtils = {

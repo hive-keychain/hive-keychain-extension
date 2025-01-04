@@ -34,9 +34,11 @@ export const EvmWarningSinglePopupComponent = ({ warningHook }: Props) => {
             .getAllFieldsWithNotIgnoredWarnings(warningHook.fields)
             .map((field) => (
               <>
-                <div className="field-name">
-                  {chrome.i18n.getMessage(field.name)}
-                </div>
+                {field.name && (
+                  <div className="field-name">
+                    {chrome.i18n.getMessage(field.name)}
+                  </div>
+                )}
                 {field.warnings?.map((warning, warningIndex) => {
                   if (warning.ignored === false) {
                     return (

@@ -330,8 +330,6 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     }
   }
 
-  console.log(request);
-
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: 0,
@@ -346,8 +344,6 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
 
   const provider = EthersUtils.getProvider(lastChain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
-
-  console.log(transactionRequest);
 
   const transactionResponse = await connectedWallet.sendTransaction(
     transactionRequest,

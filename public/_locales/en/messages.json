@@ -4820,6 +4820,10 @@
     "message": "Transfer from",
     "description": "Evm transaction operation : transfer from"
   },
+  "evm_operation_safeTransferFrom": {
+    "message": "Safe transfer from",
+    "description": "Evm transaction operation : safe transfer from"
+  },
   "evm_operation_to": {
     "message": "To",
     "description": "Evm transaction operation field to"
@@ -4871,6 +4875,10 @@
   "evm_smart_contract_data": {
     "message": "Data",
     "description": "Smart contract data field"
+  },
+  "evm_transaction_data": {
+    "message": "Data",
+    "description": "Data field"
   },
   "evm_send_transaction_success": {
     "message": "Succesfully sent transaction",

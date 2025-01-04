@@ -26,7 +26,7 @@ export const EvmRequestItem = ({
       default: {
         return (
           <>
-            <div className="label">{fieldTitle}</div>
+            {fieldTitle && <div className="label">{fieldTitle}</div>}
             <div className="value">{field.value}</div>
           </>
         );

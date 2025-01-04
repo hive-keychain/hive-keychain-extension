@@ -15,13 +15,10 @@ const getGasLimit = async (
   data?: string,
   to?: string,
 ) => {
-  console.log('in get gas limit', { method, args, data, to });
-
   const provider = getProvider(chain);
 
   if (abi && to && method && args) {
     try {
-      console.log('ici');
       const contract = new ethers.Contract(to, abi, wallet);
 
       const estimation = await contract[method].estimateGas(...args);
@@ -39,7 +36,6 @@ const getGasLimit = async (
       return getGasLimitFromRawTx(tx, provider);
     }
   } else if (data) {
-    console.log('la');
     const tx: TransactionRequest = {
       from: wallet.address,
       data: data,

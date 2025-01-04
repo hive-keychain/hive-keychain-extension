@@ -18,6 +18,7 @@ export enum EvmInputDisplayType {
   STRING = 'string',
   LONG_TEXT = 'longText',
   ARRAY_STRING = 'arrayString',
+  IMAGE = 'image',
 }
 
 const getDisplayInputType = (

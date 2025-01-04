@@ -7,7 +7,7 @@ export const EvmRequestItemLongText = ({
   title,
   value,
 }: {
-  title: string;
+  title?: string;
   value: string;
 }) => {
   const fieldTitle = useFieldTitle(title);
@@ -15,15 +15,17 @@ export const EvmRequestItemLongText = ({
 
   return (
     <div className="long-text-container">
-      <div
-        className={`header ${isOpened ? 'open' : 'closed'}`}
-        onClick={() => setIsOpened(!isOpened)}>
-        <div className="title">{fieldTitle}</div>
-        <SVGIcon
-          icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
-          className="expand-collapse-icon"
-        />
-      </div>
+      {title && (
+        <div
+          className={`header ${isOpened ? 'open' : 'closed'}`}
+          onClick={() => setIsOpened(!isOpened)}>
+          <div className="title">{fieldTitle}</div>
+          <SVGIcon
+            icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
+            className="expand-collapse-icon"
+          />
+        </div>
+      )}
       {isOpened && (
         <div className="expandable-panel">
           <div className="expandable-panel-content">{value}</div>

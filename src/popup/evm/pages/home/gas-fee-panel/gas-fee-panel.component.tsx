@@ -61,7 +61,6 @@ export const GasFeePanel = ({
   });
 
   useEffect(() => {
-    console.log(transactionData);
     if (transactionData) init();
   }, [transactionData]);
 
@@ -96,7 +95,6 @@ export const GasFeePanel = ({
   }, [selectedFee]);
 
   const init = async () => {
-    console.log('init gas fee panel');
     const estimate = await GasFeeUtils.estimate(
       chain,
       wallet,
