@@ -49,7 +49,12 @@ const MultisigDialog = () => {
   ) => {
     if (
       backgroundMessage.command ===
-      MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP
+        MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP &&
+      (!multisigData ||
+        (multisigData.data.signer?.encryptedTransaction ===
+          backgroundMessage.value.data.signer?.encryptedTransaction &&
+          backgroundMessage.value.multisigStep ===
+            MultisigStep.SIGN_TRANSACTION_FEEDBACK))
     ) {
       const multisigData: MultisigData = backgroundMessage.value;
       setMultisigData(multisigData);
@@ -61,9 +66,14 @@ const MultisigDialog = () => {
       return BrowserUtils.sendResponse(true, sendResp);
     }
   };
-
   useEffect(() => {
     chrome.runtime.onMessage.addListener(onReceivedDataFromBackground);
+    return () => {
+      chrome.runtime.onMessage.removeListener(onReceivedDataFromBackground);
+    };
+  }, [isReady, multisigData]);
+
+  useEffect(() => {
     initTheme();
   }, []);
 
