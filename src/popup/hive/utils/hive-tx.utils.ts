@@ -118,6 +118,10 @@ const createSignAndBroadcastTransaction = async (
     method.toLowerCase() as KeychainKeyTypesLC,
   );
   if (isUsingMultisig) {
+    transaction = await hiveTransaction.create(
+      operations,
+      Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
+    );
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {
       throw new Error('html_popup_error_while_signing_transaction');
