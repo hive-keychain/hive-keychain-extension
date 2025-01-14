@@ -7,8 +7,14 @@ import {
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { MethodRegistry } from 'eth-method-registry';
+import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 
 export enum EvmInputDisplayType {
@@ -16,6 +22,7 @@ export enum EvmInputDisplayType {
   BALANCE = 'balance',
   NUMBER = 'number',
   STRING = 'string',
+  STRING_CENTERED = 'string-centered',
   LONG_TEXT = 'longText',
   ARRAY_STRING = 'arrayString',
   IMAGE = 'image',
@@ -387,6 +394,172 @@ const verifyTransactionInformation = async (
   return await KeychainApi.get(url);
 };
 
+const getSmartContractProxy = async (
+  smartContractAddress: string,
+  chain: EvmChain,
+): Promise<string | null> => {
+  const EIP1193RequestFunc = ({
+    method,
+    params,
+  }: {
+    method: string;
+    params: any[];
+  }): Promise<unknown> => EthersUtils.getProvider(chain).send(method, params);
+
+  const res = await detectProxyTarget(
+    smartContractAddress as unknown as any,
+    EIP1193RequestFunc,
+  );
+  return res?.target as string;
+};
+
+const findAbiFromData = async (data: string, chain: EvmChain) => {
+  data = data.substring(2);
+
+  const functionNameInHex = data.substring(0, 8);
+
+  const foundSignature = await EvmDataParser.getMethodFromSignature(
+    functionNameInHex,
+  );
+
+  if (foundSignature) {
+    const name = foundSignature.split('(')[0];
+    const inputs = parseSignature(foundSignature);
+
+    if (name && inputs)
+      for (const abi of AbiList) {
+        const foundFunction = abi.abi.find(
+          (f) => f.name === name && inputs.length === f.inputs.length,
+        );
+        if (foundFunction) {
+          let allMatch = true;
+
+          for (let i = 0; i < inputs.length; i++) {
+            console.log(
+              name,
+              foundFunction.name,
+              inputs[i].type,
+              foundFunction.inputs[i].type,
+            );
+            if (foundFunction.inputs[i].type !== inputs[i].type) {
+              allMatch = false;
+              break;
+            }
+          }
+          if (allMatch) return JSON.stringify(abi.abi);
+        }
+      }
+  }
+};
+
+const parseData = async (data: string, chain: EvmChain) => {
+  data = data.substring(2);
+
+  const functionNameInHex = data.substring(0, 8);
+
+  const foundSignature = await EvmDataParser.getMethodFromSignature(
+    functionNameInHex,
+  );
+  console.log({ foundSignature });
+  // let registry = new MethodRegistry({
+  //   provider: new Eth.HttpProvider(
+  //     'https://sepolia.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
+  //   ),
+  //   // provider: new Eth.HttpProvider(chain.rpc[1].url),
+  //   network: chain.chainId,
+  // });
+
+  if (!foundSignature) {
+    return null;
+  } else {
+    let registry;
+    try {
+      registry = new MethodRegistry({
+        provider: {
+          host: 'https://sepolia.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
+          timeout: 10000,
+        },
+        network: chain.chainId,
+      });
+      console.log({ registry });
+      if (registry) {
+        const parsedRegistry = registry.parse(foundSignature);
+        return registry.parse(foundSignature);
+      } else {
+        const name = foundSignature.split('(')[0];
+        const inputs = parseSignature(foundSignature);
+
+        console.log({ name, inputs });
+      }
+    } catch (e) {
+      console.log(e);
+      const name = foundSignature.split('(')[0];
+      const inputs = parseSignature(foundSignature);
+      console.log({ name, inputs });
+    }
+  }
+};
+
+function parseSignature(signature: string): any[] {
+  let typeString = signature.slice(signature.indexOf('(') + 1, -1);
+  const nested = [];
+
+  while (typeString.includes('(')) {
+    const nestedBrackets = findFirstNestedBrackets(typeString);
+
+    if (!nestedBrackets) {
+      break;
+    }
+
+    nested.push(nestedBrackets.value);
+
+    typeString = `${typeString.slice(0, nestedBrackets.start)}${
+      nested.length - 1
+    }#${typeString.slice(nestedBrackets.end + 1)}`;
+  }
+
+  return createInput(typeString, nested);
+}
+
+function createInput(typeString: string, nested: string[]): any[] {
+  return typeString.split(',').map((value) => {
+    const parts = value.split('#');
+
+    const nestedIndex = parts.length > 1 ? parseInt(parts[0], 10) : undefined;
+    const type = nestedIndex === undefined ? value : `tuple${parts[1] ?? ''}`;
+
+    const components =
+      nestedIndex === undefined
+        ? undefined
+        : createInput(nested[nestedIndex], nested);
+
+    return {
+      type,
+      components,
+    };
+  });
+}
+
+function findFirstNestedBrackets(
+  value: string,
+): { start: number; end: number; value: string } | undefined {
+  let start = -1;
+
+  for (let i = 0; i < value.length; i++) {
+    if (value[i] === '(') {
+      start = i;
+    } else if (value[i] === ')' && start !== -1) {
+      return {
+        start,
+        end: i,
+        value: value.slice(start + 1, i),
+      };
+    }
+  }
+
+  return undefined;
+}
+
 const recipientInputNameList = ['recipient', 'spender'];
 const amountInputNameList = ['amount'];
 
@@ -400,6 +573,9 @@ export const EvmTransactionParserUtils = {
   verifyTransactionInformation,
   getAddressWarning,
   getSmartContractWarningAndInfo,
+  getSmartContractProxy,
+  parseData,
+  findAbiFromData,
   recipientInputNameList,
   amountInputNameList,
 };

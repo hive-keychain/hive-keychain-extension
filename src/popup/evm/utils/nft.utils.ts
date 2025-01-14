@@ -1,6 +1,11 @@
 import { IPFSApi } from '@popup/evm/api/ipfs.api';
+import { EvmNFTMetadata } from '@popup/evm/interfaces/evm-ntf.interface';
 
-const getImgFromURI = async (uri: string): Promise<string> => {
+const getImgFromURI = async (metadata: EvmNFTMetadata): Promise<string> => {
+  return metadata.image;
+};
+
+const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
   let metadata;
   if (uri.startsWith('ipfs://')) {
     uri = uri.replace('ipfs://', '');
@@ -9,8 +14,10 @@ const getImgFromURI = async (uri: string): Promise<string> => {
     const json = atob(uri.substring(29));
     metadata = JSON.parse(json);
   }
-
-  return metadata.image;
+  return metadata;
 };
 
-export const EvmNFTUtils = { getImgFromURI };
+export const EvmNFTUtils = {
+  getMetadataFromURI,
+  getImgFromURI,
+};

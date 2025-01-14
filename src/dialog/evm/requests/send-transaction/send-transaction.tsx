@@ -123,10 +123,17 @@ export const SendTransaction = (props: Props) => {
     if (usedAccount) {
       // Case with data
       if (params.data) {
-        const abi = await EtherscanApi.getAbi(
-          lastChain! as EvmChain,
+        const proxy = await EvmTransactionParserUtils.getSmartContractProxy(
           params.to,
+          lastChain as EvmChain,
         );
+
+        let abi = await EtherscanApi.getAbi(
+          lastChain! as EvmChain,
+          proxy ?? params.to,
+        );
+
+        console.log(abi);
         tData.abi = abi;
 
         tokenAddress = params.to;
@@ -140,6 +147,18 @@ export const SendTransaction = (props: Props) => {
 
           setTokenInfo(usedToken);
 
+          if (!abi) {
+            EvmTransactionParserUtils.parseData(
+              params.data,
+              lastChain as EvmChain,
+            );
+            abi = await EvmTransactionParserUtils.findAbiFromData(
+              params.data,
+              lastChain as EvmChain,
+            );
+            console.log({ foundAbi: abi });
+          }
+
           if (abi) {
             const contractType = EvmTokensUtils.getTokenType(abi);
             const contract = new ethers.Contract(
@@ -152,6 +171,8 @@ export const SendTransaction = (props: Props) => {
               data: params.data,
               value: params.value,
             });
+
+            console.log(decodedTransactionData);
 
             tData.method = decodedTransactionData?.name;
             tData.args = decodedTransactionData?.args;
@@ -297,8 +318,13 @@ export const SendTransaction = (props: Props) => {
                 });
               }
               if (contractType === EVMTokenType.ERC721 && tokenId) {
-                const uri = await contract.tokenURI(tokenId);
-                const src = await EvmNFTUtils.getImgFromURI(uri);
+                const uri: string = await contract.tokenURI(tokenId);
+                const metadata = await EvmNFTUtils.getMetadataFromURI(uri);
+                const src = metadata.image;
+                transactionConfirmationFields.otherFields.push({
+                  type: EvmInputDisplayType.STRING_CENTERED,
+                  value: <div className="nft-name">{metadata.name}</div>,
+                });
                 transactionConfirmationFields.otherFields.push({
                   type: EvmInputDisplayType.IMAGE,
                   value: <img src={src} />,

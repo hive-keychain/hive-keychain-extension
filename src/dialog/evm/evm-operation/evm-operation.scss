@@ -96,6 +96,13 @@
             }
           }
 
+          &.string-centered {
+            justify-content: center;
+            .value {
+              font-weight: 600;
+            }
+          }
+
           .long-text-container {
             @include expandable-panel();
 
