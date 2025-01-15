@@ -133,7 +133,6 @@ export const SendTransaction = (props: Props) => {
           proxy ?? params.to,
         );
 
-        console.log(abi);
         tData.abi = abi;
 
         tokenAddress = params.to;
@@ -148,15 +147,10 @@ export const SendTransaction = (props: Props) => {
           setTokenInfo(usedToken);
 
           if (!abi) {
-            EvmTransactionParserUtils.parseData(
-              params.data,
-              lastChain as EvmChain,
-            );
             abi = await EvmTransactionParserUtils.findAbiFromData(
               params.data,
               lastChain as EvmChain,
             );
-            console.log({ foundAbi: abi });
           }
 
           if (abi) {
@@ -171,8 +165,6 @@ export const SendTransaction = (props: Props) => {
               data: params.data,
               value: params.value,
             });
-
-            console.log(decodedTransactionData);
 
             tData.method = decodedTransactionData?.name;
             tData.args = decodedTransactionData?.args;
@@ -332,11 +324,6 @@ export const SendTransaction = (props: Props) => {
               }
             }
           } else {
-            transactionConfirmationFields.operationName =
-              chrome.i18n.getMessage(
-                'dialog_evm_decrypt_send_transaction_title',
-              );
-
             const transactionInfo =
               await EvmTransactionParserUtils.verifyTransactionInformation(
                 data.dappInfo.domain,
@@ -364,11 +351,62 @@ export const SendTransaction = (props: Props) => {
               )),
             });
 
-            transactionConfirmationFields.otherFields.push({
-              name: 'evm_transaction_data',
-              type: EvmInputDisplayType.LONG_TEXT,
-              value: params.data,
-            });
+            const parsedData = await EvmTransactionParserUtils.parseData(
+              params.data,
+              lastChain as EvmChain,
+            );
+            if (parsedData?.inputs && parsedData?.operationName) {
+              transactionConfirmationFields.operationName =
+                parsedData.operationName;
+
+              for (let index = 0; index < parsedData.inputs.length; index++) {
+                const input = parsedData.inputs[index];
+
+                let value;
+                const inputDisplayType = input.type;
+
+                switch (inputDisplayType) {
+                  case EvmInputDisplayType.ADDRESS:
+                    value = EvmFormatUtils.formatAddress(input.value);
+                    break;
+
+                  case EvmInputDisplayType.BALANCE:
+                    value = `${FormatUtils.withCommas(
+                      new Decimal(Number(input.value))
+                        .div(new Decimal(EvmFormatUtils.WEI))
+                        .toNumber(),
+                      (usedToken as EvmTokenInfoShortErc20).decimals,
+                      true,
+                    )} ${usedToken?.symbol}`;
+                    break;
+                  case EvmInputDisplayType.UINT256:
+                  case EvmInputDisplayType.NUMBER:
+                    value = FormatUtils.withCommas(input.value);
+                    break;
+                  case EvmInputDisplayType.STRING:
+                    value = String(input.value);
+                    break;
+                  default:
+                    value = '';
+                }
+                transactionConfirmationFields.otherFields.push({
+                  name: `param ${index + 1}`,
+                  type: inputDisplayType,
+                  value: value,
+                });
+              }
+            } else {
+              transactionConfirmationFields.operationName =
+                chrome.i18n.getMessage(
+                  'dialog_evm_decrypt_send_transaction_title',
+                );
+
+              transactionConfirmationFields.otherFields.push({
+                name: 'evm_transaction_data',
+                type: EvmInputDisplayType.LONG_TEXT,
+                value: params.data,
+              });
+            }
           }
 
           tData.from = params.from;

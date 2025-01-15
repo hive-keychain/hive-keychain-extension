@@ -1,3 +1,5 @@
+import { Interface } from '@ethersproject/abi';
+import * as Eth from '@metamask/ethjs';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionVerificationInformation,
@@ -12,6 +14,7 @@ import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MethodRegistry } from 'eth-method-registry';
 import detectProxyTarget from 'evm-proxy-detection';
@@ -26,6 +29,7 @@ export enum EvmInputDisplayType {
   LONG_TEXT = 'longText',
   ARRAY_STRING = 'arrayString',
   IMAGE = 'image',
+  UINT256 = 'uint256',
 }
 
 const getDisplayInputType = (
@@ -185,6 +189,7 @@ const getFieldWarnings = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ): Promise<EvmTransactionWarning[]> => {
+  if (!abi) return []; // TODO check
   const tokenType = EvmTokensUtils.getTokenType(abi);
   const warnings: EvmTransactionWarning[] = [];
   switch (tokenType) {
@@ -433,14 +438,7 @@ const findAbiFromData = async (data: string, chain: EvmChain) => {
         );
         if (foundFunction) {
           let allMatch = true;
-
           for (let i = 0; i < inputs.length; i++) {
-            console.log(
-              name,
-              foundFunction.name,
-              inputs[i].type,
-              foundFunction.inputs[i].type,
-            );
             if (foundFunction.inputs[i].type !== inputs[i].type) {
               allMatch = false;
               break;
@@ -452,43 +450,38 @@ const findAbiFromData = async (data: string, chain: EvmChain) => {
   }
 };
 
-const parseData = async (data: string, chain: EvmChain) => {
-  data = data.substring(2);
-
-  const functionNameInHex = data.substring(0, 8);
+const parseData = async (
+  data: string,
+  chain: EvmChain,
+): Promise<{ operationName: string; inputs: any[] } | undefined> => {
+  const functionNameInHex = data.slice(0, 10);
 
   const foundSignature = await EvmDataParser.getMethodFromSignature(
     functionNameInHex,
   );
   console.log({ foundSignature });
-  // let registry = new MethodRegistry({
-  //   provider: new Eth.HttpProvider(
-  //     'https://sepolia.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
-  //   ),
-  //   // provider: new Eth.HttpProvider(chain.rpc[1].url),
-  //   network: chain.chainId,
-  // });
 
-  if (!foundSignature) {
-    return null;
-  } else {
+  if (foundSignature) {
     let registry;
     try {
       registry = new MethodRegistry({
-        provider: {
-          host: 'https://sepolia.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
-          timeout: 10000,
-        },
+        provider: new Eth.HttpProvider(
+          'https://mainnet.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
+        ),
         network: chain.chainId,
       });
       console.log({ registry });
       if (registry) {
         const parsedRegistry = registry.parse(foundSignature);
-        return registry.parse(foundSignature);
+        console.log(parsedRegistry);
+        if (parsedRegistry.name && parsedRegistry.args)
+          return {
+            operationName: parsedRegistry.name,
+            inputs: parsedRegistry.args,
+          };
       } else {
         const name = foundSignature.split('(')[0];
         const inputs = parseSignature(foundSignature);
-
         console.log({ name, inputs });
       }
     } catch (e) {
@@ -496,9 +489,46 @@ const parseData = async (data: string, chain: EvmChain) => {
       const name = foundSignature.split('(')[0];
       const inputs = parseSignature(foundSignature);
       console.log({ name, inputs });
+
+      const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
+      const values = Interface.getAbiCoder().decode(inputs, valueData) as any[];
+      const params = inputs.map((input, index) =>
+        decodeParam(input, index, values),
+      );
+      return { operationName: name, inputs: params };
     }
   }
 };
+
+function decodeParam(input: any, index: number, values: any[]): any {
+  const value = values[index] as any[];
+  const { type, name } = input;
+
+  let children = input.components?.map((child: any, childIndex: number) =>
+    decodeParam(child, childIndex, value),
+  );
+
+  if (type.endsWith('[]')) {
+    const childType = type.slice(0, -2);
+
+    children = value.map((_arrayItem, arrayIndex) => {
+      const childName = `Item ${arrayIndex + 1}`;
+
+      return decodeParam(
+        { ...input, name: childName, type: childType } as any,
+        arrayIndex,
+        value,
+      );
+    });
+  }
+
+  return {
+    name,
+    type,
+    value,
+    children,
+  };
+}
 
 function parseSignature(signature: string): any[] {
   let typeString = signature.slice(signature.indexOf('(') + 1, -1);
