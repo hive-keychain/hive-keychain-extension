@@ -53,6 +53,8 @@ const MultisigDialog = () => {
       (!multisigData ||
         (multisigData.data.signer?.encryptedTransaction ===
           backgroundMessage.value.data.signer?.encryptedTransaction &&
+          multisigData.data.signer?.publicKey ===
+            backgroundMessage.value.data.signer?.publicKey &&
           backgroundMessage.value.multisigStep ===
             MultisigStep.SIGN_TRANSACTION_FEEDBACK))
     ) {

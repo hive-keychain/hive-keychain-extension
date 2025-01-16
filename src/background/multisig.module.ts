@@ -270,17 +270,20 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     Logger.info('Disconnected from socket');
     socket.connect();
   });
-
   socket.on(
     SocketMessageCommand.REQUEST_SIGN_TRANSACTION,
     async (signatureRequest: SignatureRequest) => {
-      const signer = signatureRequest.signers.find((signer: Signer) => {
-        return signer.publicKey === signatureRequest.targetedPublicKey;
-      });
+      const signerIndex = signatureRequest.signers.findIndex(
+        (signer: Signer) => {
+          return signer.publicKey === signatureRequest.targetedPublicKey;
+        },
+      );
 
-      if (!signer) {
+      if (signerIndex === -1) {
         return;
       }
+      const signer = signatureRequest.signers[signerIndex];
+      await sleep(800 * (signerIndex + 2));
 
       const signedTransaction = await MultisigModule.processSignatureRequest(
         signatureRequest,
