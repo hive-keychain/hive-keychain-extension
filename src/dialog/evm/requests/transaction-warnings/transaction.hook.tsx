@@ -169,8 +169,8 @@ export const useTransactionHook = (
       type: EvmInputDisplayType.STRING,
       value: (
         <div className="value-content">
-          <div>{data.dappInfo.domain}</div>
           <PreloadedImage src={data.dappInfo.logo} />
+          <div>{data.dappInfo.domain}</div>
         </div>
       ),
       warnings: await EvmTransactionParserUtils.getDomainWarnings(
@@ -187,24 +187,22 @@ export const useTransactionHook = (
   ) => {
     const label = await EvmAddressesUtils.getAddressLabel(address, chainId);
     const formattedAddress = EvmFormatUtils.formatAddress(address);
-    console.log(address, chainId, transactionInfo);
     return {
       name: 'evm_operation_to',
       type: EvmInputDisplayType.WALLET_ADDRESS,
       value: (
         <div className="value-content-horizontal">
-          {label && (
-            <CustomTooltip message={address} skipTranslation>
-              <span>{label ?? formattedAddress}</span>
-            </CustomTooltip>
-          )}
-
           <div
             className="user-picture"
             dangerouslySetInnerHTML={{
               __html: EvmAddressesUtils.getIdenticonFromAddress(address),
             }}
           />
+          {label && (
+            <CustomTooltip message={address} skipTranslation>
+              <span>{label ?? formattedAddress}</span>
+            </CustomTooltip>
+          )}
         </div>
       ),
       warnings: await EvmTransactionParserUtils.getAddressWarning(

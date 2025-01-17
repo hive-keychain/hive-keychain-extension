@@ -27,7 +27,9 @@ import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -201,8 +203,8 @@ export const SendTransaction = (props: Props) => {
               type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: (
                 <div className="value-content">
-                  <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
                   {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
+                  <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
                 </div>
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
@@ -356,8 +358,8 @@ export const SendTransaction = (props: Props) => {
               type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: (
                 <div className="value-content">
-                  <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
                   {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
+                  <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
                 </div>
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
@@ -582,18 +584,21 @@ export const SendTransaction = (props: Props) => {
           }
           bottomPanel={
             <>
-              {shouldDisplayBalanceChange && (
+              {shouldDisplayBalanceChange && balanceInfo && (
                 <Card className="balance-change-panel">
                   <div className="balance-change-title">
                     {chrome.i18n.getMessage('evm_balance_change_title')}
                   </div>
-                  <div className="balance-before">
-                    {chrome.i18n.getMessage('evm_balance_before')}
-                    {balanceInfo?.before}
-                  </div>
-                  <div className="balance-after">
-                    {chrome.i18n.getMessage('evm_balance_after')}
-                    {balanceInfo?.estimatedAfter}
+
+                  <div className="balance-panel">
+                    <div className="balance-before">{balanceInfo?.before}</div>
+                    <SVGIcon
+                      icon={SVGIcons.GLOBAL_TRIANGLE_ARROW}
+                      className="icon"
+                    />
+                    <div className="balance-after">
+                      {balanceInfo?.estimatedAfter}
+                    </div>
                   </div>
                 </Card>
               )}

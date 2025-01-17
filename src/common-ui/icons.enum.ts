@@ -49,6 +49,7 @@ export enum SVGIcons {
   GLOBAL_WARNING = 'global/warning',
   GLOBAL_INFO = 'global/info',
   GLOBAL_CHECK = 'global/check',
+  GLOBAL_TRIANGLE_ARROW = 'global/triangle-arrow',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',

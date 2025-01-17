@@ -4829,11 +4829,11 @@
     "description": "Evm transaction operation field to"
   },
   "evm_operation_smart_contract_address": {
-    "message": "Smart contract address",
+    "message": "Smart contract",
     "description": "Evm smart contract address"
   },
   "evm_balance_change_title": {
-    "message": "Balance change panel",
+    "message": "Balance",
     "description": "Confirmation page balance change panel"
   },
   "evm_balance_before": {
