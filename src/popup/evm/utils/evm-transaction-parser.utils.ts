@@ -21,7 +21,8 @@ import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 
 export enum EvmInputDisplayType {
-  ADDRESS = 'address',
+  CONTRACT_ADDRESS = 'contract-address',
+  WALLET_ADDRESS = 'wallet-address',
   BALANCE = 'balance',
   NUMBER = 'number',
   STRING = 'string',
@@ -38,6 +39,7 @@ const getDisplayInputType = (
   inputType: string,
   name: string,
 ): EvmInputDisplayType => {
+  console.log(methodName, inputType, name);
   const tokenType = EvmTokensUtils.getTokenType(abi);
   switch (tokenType) {
     case EVMTokenType.ERC20: {
@@ -46,10 +48,15 @@ const getDisplayInputType = (
           switch (name) {
             case 'amount':
               return EvmInputDisplayType.BALANCE;
+            case 'recipient':
+              return EvmInputDisplayType.WALLET_ADDRESS;
           }
         }
         case 'approve': {
           switch (name) {
+            case 'spender': {
+              return EvmInputDisplayType.WALLET_ADDRESS;
+            }
             case 'amount':
               return EvmInputDisplayType.BALANCE;
           }
@@ -58,6 +65,10 @@ const getDisplayInputType = (
           switch (name) {
             case 'value': {
               return EvmInputDisplayType.BALANCE;
+            }
+            case 'sender':
+            case 'recipient': {
+              return EvmInputDisplayType.WALLET_ADDRESS;
             }
           }
         }
@@ -189,6 +200,7 @@ const getFieldWarnings = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ): Promise<EvmTransactionWarning[]> => {
+  console.log({ value });
   if (!abi) return []; // TODO check
   const tokenType = EvmTokensUtils.getTokenType(abi);
   const warnings: EvmTransactionWarning[] = [];
@@ -312,6 +324,7 @@ const getAddressWarning = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
+  console.log(address, 'in getwanring');
   const warnings: EvmTransactionWarning[] = [];
   if (verifyTransactionInformation.to.isBlacklisted) {
     warnings.push({
@@ -459,14 +472,13 @@ const parseData = async (
   const foundSignature = await EvmDataParser.getMethodFromSignature(
     functionNameInHex,
   );
-  console.log({ foundSignature });
 
   if (foundSignature) {
     let registry;
     try {
       registry = new MethodRegistry({
         provider: new Eth.HttpProvider(
-          'https://mainnet.infura.io/v3/bcb1e24995d747168a13d73bf20a018f',
+          `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
         ),
         network: chain.chainId,
       });
@@ -482,13 +494,20 @@ const parseData = async (
       } else {
         const name = foundSignature.split('(')[0];
         const inputs = parseSignature(foundSignature);
-        console.log({ name, inputs });
+
+        const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
+        const values = Interface.getAbiCoder().decode(
+          inputs,
+          valueData,
+        ) as any[];
+        const params = inputs.map((input, index) =>
+          decodeParam(input, index, values),
+        );
+        return { operationName: name, inputs: params };
       }
     } catch (e) {
-      console.log(e);
       const name = foundSignature.split('(')[0];
       const inputs = parseSignature(foundSignature);
-      console.log({ name, inputs });
 
       const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
       const values = Interface.getAbiCoder().decode(inputs, valueData) as any[];

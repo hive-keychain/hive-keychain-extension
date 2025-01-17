@@ -15,6 +15,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -179,19 +180,31 @@ export const useTransactionHook = (
       ),
     };
   };
-  const getAddressInput = async (
+  const getWalletAddressInput = async (
     address: string,
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
   ) => {
     const label = await EvmAddressesUtils.getAddressLabel(address, chainId);
+    const formattedAddress = EvmFormatUtils.formatAddress(address);
+    console.log(address, chainId, transactionInfo);
     return {
       name: 'evm_operation_to',
-      type: EvmInputDisplayType.ADDRESS,
+      type: EvmInputDisplayType.WALLET_ADDRESS,
       value: (
-        <div className="value-content-vertical">
-          <div>{EvmFormatUtils.formatAddress(address)}</div>
-          {label && <div className="label">{label}</div>}
+        <div className="value-content-horizontal">
+          {label && (
+            <CustomTooltip message={address} skipTranslation>
+              <span>{label ?? formattedAddress}</span>
+            </CustomTooltip>
+          )}
+
+          <div
+            className="user-picture"
+            dangerouslySetInnerHTML={{
+              __html: EvmAddressesUtils.getIdenticonFromAddress(address),
+            }}
+          />
         </div>
       ),
       warnings: await EvmTransactionParserUtils.getAddressWarning(
@@ -225,7 +238,7 @@ export const useTransactionHook = (
     hasWarning,
     ignoreWarning,
     getDomainWarnings,
-    getAddressInput,
+    getWalletAddressInput,
     getAllNotIgnoredWarnings,
     openSingleWarningPopup,
     selectedFee,

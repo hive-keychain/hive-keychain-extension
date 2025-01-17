@@ -16,7 +16,6 @@ export const EvmRequestItem = ({
   onWarningClicked,
 }: EvmRequestItemProps) => {
   const fieldTitle = useFieldTitle(field.name);
-
   const renderField = () => {
     switch (field.type) {
       case EvmInputDisplayType.LONG_TEXT:

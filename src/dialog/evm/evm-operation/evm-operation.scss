@@ -86,12 +86,29 @@
                 border-radius: 50%;
               }
             }
-            .value-content-vertical {
+            // .value-content-vertical {
+            //   display: flex;
+            //   flex-direction: column;
+            //   padding: 4px;
+            //   border: 1px solid var(--card-border);
+            //   border-radius: 4px;
+            //   .label {
+            //     font-style: italic;
+            //     color: $light-grey;
+            //   }
+
+            // }
+            .value-content-horizontal {
               display: flex;
-              flex-direction: column;
-              .label {
-                font-style: italic;
-                color: $light-grey;
+              align-items: center;
+              column-gap: 4px;
+
+              .user-picture {
+                width: 20px;
+                height: 20px;
+                padding: 2px;
+                border: 1px solid var(--card-border);
+                border-radius: 50%;
               }
             }
           }

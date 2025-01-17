@@ -197,7 +197,7 @@ export const SendTransaction = (props: Props) => {
 
             transactionConfirmationFields.otherFields.push({
               name: 'evm_operation_smart_contract_address',
-              type: EvmInputDisplayType.ADDRESS,
+              type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: (
                 <div className="value-content">
                   <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
@@ -263,13 +263,24 @@ export const SendTransaction = (props: Props) => {
                   );
 
                 switch (inputDisplayType) {
-                  case EvmInputDisplayType.ADDRESS:
+                  case EvmInputDisplayType.WALLET_ADDRESS: {
+                    const inputDisplay =
+                      await transactionHook.getWalletAddressInput(
+                        decodedTransactionData.args[index],
+                        lastChain.chainId,
+                        transactionInfo,
+                      );
+                    value = inputDisplay.value;
+                    break;
+                  }
+                  case EvmInputDisplayType.CONTRACT_ADDRESS: {
                     value = EvmFormatUtils.formatAddress(
                       decodedTransactionData.args[index],
                     );
                     break;
+                  }
 
-                  case EvmInputDisplayType.BALANCE:
+                  case EvmInputDisplayType.BALANCE: {
                     value = `${FormatUtils.withCommas(
                       new Decimal(Number(decodedTransactionData.args[index]))
                         .div(new Decimal(EvmFormatUtils.WEI))
@@ -278,16 +289,19 @@ export const SendTransaction = (props: Props) => {
                       true,
                     )}  ${usedToken?.symbol}`;
                     break;
-                  case EvmInputDisplayType.NUMBER:
+                  }
+                  case EvmInputDisplayType.NUMBER: {
                     value = FormatUtils.withCommas(
                       decodedTransactionData.args[index],
                     );
                     break;
-                  case EvmInputDisplayType.STRING:
+                  }
+                  case EvmInputDisplayType.STRING: {
                     value = String(decodedTransactionData.args[index]);
                     break;
+                  }
                   default:
-                    value = '';
+                    value = 'default';
                 }
                 transactionConfirmationFields.otherFields.push({
                   name: input.name,
@@ -303,7 +317,7 @@ export const SendTransaction = (props: Props) => {
                     decodedTransactionData.name,
                     input.type,
                     input.name,
-                    value,
+                    decodedTransactionData.args[index],
                     lastChain.chainId,
                     transactionInfo,
                   ),
@@ -337,7 +351,7 @@ export const SendTransaction = (props: Props) => {
 
             transactionConfirmationFields.otherFields.push({
               name: 'evm_operation_smart_contract_address',
-              type: EvmInputDisplayType.ADDRESS,
+              type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: (
                 <div className="value-content">
                   <div>{EvmFormatUtils.formatAddress(tokenAddress)}</div>
@@ -366,7 +380,8 @@ export const SendTransaction = (props: Props) => {
                 const inputDisplayType = input.type;
 
                 switch (inputDisplayType) {
-                  case EvmInputDisplayType.ADDRESS:
+                  case EvmInputDisplayType.WALLET_ADDRESS:
+                  case EvmInputDisplayType.CONTRACT_ADDRESS:
                     value = EvmFormatUtils.formatAddress(input.value);
                     break;
 
@@ -483,7 +498,7 @@ export const SendTransaction = (props: Props) => {
         };
 
         transactionConfirmationFields.otherFields.push(
-          await transactionHook.getAddressInput(
+          await transactionHook.getWalletAddressInput(
             params.to,
             lastChain.chainId,
             transactionInfo,

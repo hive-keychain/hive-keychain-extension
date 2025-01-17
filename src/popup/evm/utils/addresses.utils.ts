@@ -161,7 +161,7 @@ const isWhitelisted = async (address: string, chainId: string) => {
 
 const getAddressLabel = async (address: string, chainId: string) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
-
+  console.log(whitelistedAddresses, address, chainId);
   let whitelistedItem = whitelistedAddresses[
     EvmAddressType.SMART_CONTRACT
   ].find((whitelistedAddress) => whitelistedAddress.address === address);
@@ -175,15 +175,26 @@ const getAddressLabel = async (address: string, chainId: string) => {
 
 const isPotentialSpoofing = async (address: string) => {
   const whitelistedAddresses = await getAllWhitelistedAddresses();
-  const myAddressStart = address.substring(0, 4).toLowerCase();
-  const myAddressEnd = address.substring(4).toLowerCase();
+  const myAddressStart = address.substring(0, 6).toLowerCase();
+  const myAddressEnd = address.substring(address.length - 4).toLowerCase();
 
   for (const whitelistedAddress of whitelistedAddresses) {
-    const addressStart = whitelistedAddress.substring(0, 4).toLowerCase();
-    const addressEnd = whitelistedAddress.substring(4).toLowerCase();
+    const addressStart = whitelistedAddress.substring(0, 6).toLowerCase();
+    const addressEnd = whitelistedAddress
+      .substring(whitelistedAddress.length - 4)
+      .toLowerCase();
+    console.log({ addressStart, addressEnd, myAddressStart, myAddressEnd });
+    console.log(whitelistedAddress !== address.toLowerCase());
+    console.log(myAddressStart === addressStart);
+    console.log(myAddressEnd === addressEnd);
+    console.log(myAddressStart === addressStart || myAddressEnd === addressEnd);
+    console.log(
+      whitelistedAddress.toLowerCase() !== address.toLowerCase() &&
+        (myAddressStart === addressStart || myAddressEnd === addressEnd),
+    );
 
     if (
-      whitelistedAddress !== address &&
+      whitelistedAddress.toLowerCase() !== address.toLowerCase() &&
       (myAddressStart === addressStart || myAddressEnd === addressEnd)
     )
       return {
@@ -195,10 +206,12 @@ const isPotentialSpoofing = async (address: string) => {
   const localAddresses = await EvmWalletUtils.getAllLocalAddresses();
 
   for (const localAddress of localAddresses) {
-    const addressStart = localAddress.substring(0, 4);
-    const addressEnd = localAddress.substring(4);
+    const addressStart = localAddress.substring(0, 4).toLowerCase();
+    const addressEnd = localAddress
+      .substring(localAddress.length - 4)
+      .toLowerCase();
     if (
-      localAddress !== address &&
+      localAddress.toLowerCase() !== address.toLowerCase() &&
       (myAddressStart === addressStart || myAddressEnd === addressEnd)
     )
       return {
