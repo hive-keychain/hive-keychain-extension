@@ -324,9 +324,8 @@ const getAddressWarning = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
-  console.log(address, 'in getwanring');
   const warnings: EvmTransactionWarning[] = [];
-  if (verifyTransactionInformation.to.isBlacklisted) {
+  if (verifyTransactionInformation?.to?.isBlacklisted) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.HIGH,
@@ -360,8 +359,6 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
-
-  // Check for spoofing
   return warnings;
 };
 
@@ -375,7 +372,7 @@ const getSmartContractWarningAndInfo = async (
     information: [],
   };
 
-  if (verifyTransactionInformation.contract.proxy.target) {
+  if (verifyTransactionInformation?.contract?.proxy?.target) {
     warningAndInfo.information!.push({
       message: 'evm_transaction_contract_use_proxy',
       messageParams: [verifyTransactionInformation.contract.proxy.target],
@@ -401,7 +398,10 @@ const verifyTransactionInformation = async (
   domain: string,
   to?: string,
   contract?: string,
+  proxy?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
+  console.log(domain, to, contract, proxy);
+
   let url = `evm/verifyTransaction?domain=${domain}`;
   if (to) {
     url += `&to=${to}`;
@@ -409,13 +409,26 @@ const verifyTransactionInformation = async (
   if (contract) {
     url += `&contract=${contract}`;
   }
-  return await KeychainApi.get(url);
+
+  console.log(url);
+
+  const result = await KeychainApi.get(url);
+  if (proxy) {
+    if (!result.contract) {
+      result.contract = { proxy: '' };
+    }
+    result.contract.proxy = proxy;
+  }
+
+  console.log(result);
+
+  return result;
 };
 
 const getSmartContractProxy = async (
   smartContractAddress: string,
   chain: EvmChain,
-): Promise<string | null> => {
+): Promise<string | undefined> => {
   const EIP1193RequestFunc = ({
     method,
     params,
@@ -428,7 +441,7 @@ const getSmartContractProxy = async (
     smartContractAddress as unknown as any,
     EIP1193RequestFunc,
   );
-  return res?.target as string;
+  if (res?.target) return res.target as string;
 };
 
 const findAbiFromData = async (data: string, chain: EvmChain) => {

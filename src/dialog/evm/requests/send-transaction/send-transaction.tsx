@@ -189,6 +189,7 @@ export const SendTransaction = (props: Props) => {
                 data.dappInfo.domain,
                 params.to,
                 usedAccount.wallet.address,
+                proxy,
               );
 
             transactionConfirmationFields.otherFields.push(
@@ -343,6 +344,7 @@ export const SendTransaction = (props: Props) => {
                 data.dappInfo.domain,
                 params.to,
                 usedAccount.wallet.address,
+                proxy,
               );
 
             transactionConfirmationFields.otherFields.push(
@@ -450,6 +452,7 @@ export const SendTransaction = (props: Props) => {
               data.dappInfo.domain,
               params.to,
               usedAccount.wallet.address,
+              proxy,
             );
 
           transactionConfirmationFields.otherFields.push(
