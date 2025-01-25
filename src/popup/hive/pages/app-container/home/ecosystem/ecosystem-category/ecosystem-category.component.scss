@@ -29,6 +29,7 @@
     .label {
       @include poppins400(14px);
       color: var(--main-font-color);
+      text-align: center;
     }
     .description {
       @include poppins400(12px);
