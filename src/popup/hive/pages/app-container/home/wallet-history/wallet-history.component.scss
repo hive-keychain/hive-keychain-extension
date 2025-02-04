@@ -154,6 +154,9 @@
       row-gap: 4px;
       font-size: 16px;
       cursor: pointer;
+      .label {
+        color: var(--main-font-color);
+      }
       .icon-component {
         height: 20px;
         width: 20px;

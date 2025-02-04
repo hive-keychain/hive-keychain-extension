@@ -5,7 +5,7 @@ import {
   RequestCreateClaimedAccount,
   RequestId,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import {
   AccountCreationType,
   AccountCreationUtils,
@@ -18,6 +18,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastCreateClaimedAccount = async (
   requestHandler: RequestsHandler,
   data: RequestCreateClaimedAccount & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   let key = requestHandler.data.key;
@@ -55,6 +56,9 @@ export const broadcastCreateClaimedAccount = async (
           data.username,
           key!,
           accountAuthorities,
+          undefined,
+          undefined,
+          options,
         );
         break;
       }

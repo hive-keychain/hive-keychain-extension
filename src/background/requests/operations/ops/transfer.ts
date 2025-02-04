@@ -7,7 +7,7 @@ import {
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -17,6 +17,7 @@ import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 export const broadcastTransfer = async (
   requestHandler: RequestsHandler,
   data: RequestTransfer & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result,
     err: any,
@@ -81,6 +82,7 @@ export const broadcastTransfer = async (
           0,
           0,
           key!,
+          options,
         );
         break;
       }

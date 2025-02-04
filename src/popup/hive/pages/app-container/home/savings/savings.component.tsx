@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
@@ -261,7 +262,7 @@ const SavingsPage = ({
         { label: 'popup_html_username', value: `@${form.username}` },
       ],
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         try {
           let success;
           switch (watch('type')) {
@@ -272,6 +273,7 @@ const SavingsPage = ({
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
+                options,
               );
               break;
             case SavingOperationType.WITHDRAW:
@@ -281,6 +283,7 @@ const SavingsPage = ({
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
+                options,
               );
               break;
           }

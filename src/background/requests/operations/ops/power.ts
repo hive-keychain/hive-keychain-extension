@@ -6,7 +6,7 @@ import {
   RequestPowerDown,
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -17,6 +17,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastPowerUp = async (
   requestHandler: RequestsHandler,
   data: RequestPowerUp & RequestId,
+  options?: TransactionOptions,
 ) => {
   let key = requestHandler.data.key;
 
@@ -47,6 +48,7 @@ export const broadcastPowerUp = async (
           data.recipient,
           `${data.hive} HIVE`,
           key!,
+          options,
         );
         break;
       }
@@ -73,6 +75,7 @@ export const broadcastPowerUp = async (
 export const broadcastPowerDown = async (
   requestHandler: RequestsHandler,
   data: RequestPowerDown & RequestId,
+  options?: TransactionOptions,
 ) => {
   let key = requestHandler.data.key;
 
@@ -109,7 +112,12 @@ export const broadcastPowerDown = async (
         break;
       }
       default: {
-        result = await PowerUtils.powerDown(data.username, vestingShares, key!);
+        result = await PowerUtils.powerDown(
+          data.username,
+          vestingShares,
+          key!,
+          options,
+        );
         break;
       }
     }

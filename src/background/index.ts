@@ -97,13 +97,14 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
-      const { keep, data, tab, domain } = backgroundMessage.value;
+      const { keep, data, tab, domain, options } = backgroundMessage.value;
       performOperation(
         await RequestsHandler.getFromLocalStorage(),
         data,
         tab,
         domain,
         keep,
+        options,
       );
       break;
     case BackgroundCommand.UPDATE_AUTOLOCK:

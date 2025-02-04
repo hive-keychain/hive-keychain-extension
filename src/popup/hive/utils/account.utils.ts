@@ -13,7 +13,12 @@ import { AccountValueType } from '@reference-data/account-value-type.enum';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
+import {
+  Key,
+  Keys,
+  KeyType,
+  TransactionOptions,
+} from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -509,7 +514,11 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
+const claimAccounts = async (
+  rc: RC,
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
     activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
@@ -529,6 +538,8 @@ const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
         ] as ClaimAccountOperation,
       ],
       activeAccount.keys.active!,
+      false,
+      options,
     );
   } else Logger.info('Not enough RC% to claim account');
 };
@@ -540,6 +551,7 @@ const updateAccount = (
   memo: string,
   stringifiedMetadata: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -552,6 +564,8 @@ const updateAccount = (
       ),
     ],
     key!,
+    false,
+    options,
   );
 };
 
