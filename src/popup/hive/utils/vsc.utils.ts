@@ -2,7 +2,7 @@ import {
   VscHistoryResponse,
   VscHistoryType,
   VscStatus,
-} from '@interfaces/vsc.interface';
+} from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 
@@ -131,7 +131,6 @@ const blockHeightToTimestamp = (height: number) => {
 const getAddressFromDid = (did: string) => {
   const regex = new RegExp(':([a-zA-Z0-9]*)$');
   const matches = did.match(regex);
-  console.log(matches);
   return matches?.[matches.length - 1];
 };
 
