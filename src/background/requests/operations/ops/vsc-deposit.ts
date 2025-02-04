@@ -7,9 +7,8 @@ import {
   RequestVscCDeposit,
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
-import { VscHistoryType, VscStatus } from '@interfaces/vsc.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
-import { VscUtils } from '@popup/hive/utils/vsc.utils';
+import { VscHistoryType, VscStatus, VscUtils } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';

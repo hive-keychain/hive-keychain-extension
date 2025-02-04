@@ -1,10 +1,9 @@
-import { VscCall, VscTransfer } from '@interfaces/vsc.interface';
 import { VscHistoryItemComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-history/vsc-history-item/vsc-history-item.component';
-import { VscUtils } from '@popup/hive/utils/vsc.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
+import { VscCall, VscTransfer, VscUtils } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';

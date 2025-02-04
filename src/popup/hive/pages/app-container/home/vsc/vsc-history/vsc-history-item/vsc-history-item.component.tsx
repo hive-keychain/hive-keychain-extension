@@ -4,8 +4,8 @@ import {
   VscLedgerType,
   VscStatus,
   VscTransfer,
-} from '@interfaces/vsc.interface';
-import { VscUtils } from '@popup/hive/utils/vsc.utils';
+  VscUtils,
+} from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import 'react-tabs/style/react-tabs.scss';

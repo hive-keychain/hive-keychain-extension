@@ -7,9 +7,8 @@ import {
   RequestVscCallContract,
 } from '@interfaces/keychain.interface';
 import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
-import { VscHistoryType, VscStatus } from '@interfaces/vsc.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
-import { VscUtils } from '@popup/hive/utils/vsc.utils';
+import { VscHistoryType, VscStatus, VscUtils } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
