@@ -1,14 +1,15 @@
 import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import {
-  KeychainKeyTypesLC,
-  RequestId,
-  RequestVscCDeposit,
-} from '@interfaces/keychain.interface';
+import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
-import { VscHistoryType, VscStatus, VscUtils } from 'hive-keychain-commons';
+import {
+  RequestDeposit,
+  VscHistoryType,
+  VscStatus,
+  VscUtils,
+} from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -17,7 +18,7 @@ import Logger from 'src/utils/logger.utils';
 
 export const vscDeposit = async (
   requestHandler: RequestsHandler,
-  data: RequestVscCDeposit & RequestId,
+  data: RequestDeposit & RequestId,
 ) => {
   let key = requestHandler.data.key;
   if (!key) {

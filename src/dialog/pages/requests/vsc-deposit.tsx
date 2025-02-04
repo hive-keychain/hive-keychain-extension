@@ -1,4 +1,4 @@
-import { RequestId, RequestVscCDeposit } from '@interfaces/keychain.interface';
+import { RequestDeposit, RequestId } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -10,7 +10,7 @@ import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
-  data: RequestVscCDeposit & RequestId;
+  data: RequestDeposit & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
