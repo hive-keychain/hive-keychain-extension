@@ -257,6 +257,17 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 };
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
+  socket.removeAllListeners(SocketMessageCommand.REQUEST_SIGN_TRANSACTION);
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+  );
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+  );
+  socket.removeAllListeners('connect');
+  socket.removeAllListeners('error');
+  socket.removeAllListeners('disconnect');
+
   socket.on('connect', () => {
     Logger.info('Connected to socket');
 
@@ -471,7 +482,7 @@ const getRequestSignatureMessage = async (
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
-      const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
+      const metaData: TransactionOptionsMetadata = data.options?.metaData ?? {};
       const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
       let twoFACodes = {};
       if (data.options?.metaData?.twoFACodes) {
