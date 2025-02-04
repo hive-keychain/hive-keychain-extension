@@ -9,6 +9,7 @@ const method = Joi.string()
 const authority = Joi.string()
   .valid('Posting', 'Active', 'posting', 'active')
   .required();
+const strictAuthority = Joi.string().valid('Posting', 'Active').required();
 const message = Joi.string().required().min(2).regex(/^#/);
 const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
 const amount = Joi.string()
@@ -332,6 +333,23 @@ const encodeMultisig = Joi.object({
   username,
 });
 
+const vscCallContract = Joi.object({
+  username,
+  contractId: Joi.string().required(),
+  action: Joi.string().required(),
+  payload: Joi.object().required(),
+  method: strictAuthority,
+  rpc,
+});
+
+const vscDeposit = Joi.object({
+  username,
+  address: Joi.string().required(),
+  amount: Joi.string().required(),
+  currency: Joi.string().required(),
+  rpc,
+});
+
 const schemas = {
   encodeMultisig,
   decode,
@@ -363,6 +381,8 @@ const schemas = {
   convert,
   recurrentTransfer,
   swap,
+  vscCallContract,
+  vscDeposit,
 };
 
 export const commonRequestParams = {

@@ -1,6 +1,7 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
+import moment from 'moment';
 
 const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {
   const currency = nb.split(' ')[1];
@@ -161,6 +162,17 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
   }
 };
 
+const dateToFormattedString = (date: Date) => {
+  return moment(date).format('MM/DD/YY');
+};
+
+const shortenString = (string: string, length: number = 3) => {
+  //TODO : remove during merge EVM (duplicate)
+  return string.length > length * 2
+    ? `${string.substring(length, 0)}...${string?.toString().slice(-length)}`
+    : string;
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -178,6 +190,8 @@ const FormatUtils = {
   trimUselessZero,
   getUSDFromVests,
   getOrdinalLabelTranslation,
+  dateToFormattedString,
+  shortenString,
 };
 
 export default FormatUtils;

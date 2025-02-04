@@ -15,7 +15,8 @@
     grid-area: only;
   }
 
-  .no-token {
+  .no-token,
+  .hidden-tokens {
     @include caption();
     font-size: 13px;
     z-index: 1;
@@ -25,6 +26,9 @@
       width: 50px;
       height: 50px;
     }
+  }
+  .hidden-tokens {
+    cursor: pointer;
   }
 
   .wallet-background {
@@ -41,7 +45,7 @@
   .hide {
     width: 0;
   }
-  .hive-engine-separator {
+  .l2-separator {
     flex: 1;
     min-height: 53px;
     width: calc(100% - 60px);
@@ -52,6 +56,10 @@
     z-index: 0;
     margin: 0px 30px 0px 30px;
     padding-bottom: 2px;
+    img {
+      width: 20px;
+      height: 20px;
+    }
     input {
       width: 100px !important;
     }
@@ -83,11 +91,21 @@
     .token-search {
       margin-right: 12px;
     }
-    .line {
-      height: 1px;
-      background-color: var(--wallet-card-border);
+    .line-wrapper {
+      display: flex;
       flex: 1;
-      margin: 0 10px 0 10px;
+      &.pointer {
+        cursor: pointer;
+      }
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      .line {
+        height: 1px;
+        background-color: var(--wallet-card-border);
+        flex: 1;
+        margin: 0 10px;
+      }
     }
   }
 }

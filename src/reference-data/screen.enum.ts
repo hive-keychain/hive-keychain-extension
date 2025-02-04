@@ -71,4 +71,7 @@ export enum Screen {
   CHAINS = 'CHAINS',
 
   UNDEFINED = 'UNDEFINED',
+
+  // VSC
+  VSC_HISTORY_PAGE = 'VSC_HISTORY_PAGE',
 }

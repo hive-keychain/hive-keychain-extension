@@ -49,6 +49,7 @@ const WalletInfoSection = ({
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
   const [tokenFilter, setTokenFilter] = useState('');
   const [showSearchHE, setShowSearchHE] = useState(false);
+  const [showHeTokens, setShowHeTokens] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const loadHiddenTokens = async () => {
@@ -179,11 +180,18 @@ const WalletInfoSection = ({
                 '.'
           }
         />
-        <div className="hive-engine-separator">
+
+        <div className="l2-separator">
           <span>
             <SVGIcon icon={SVGIcons.HIVE_ENGINE} className="no-pointer" />
           </span>
-          <div className="line" />
+          <div
+            className="line-wrapper pointer"
+            onClick={() => {
+              setShowHeTokens(!showHeTokens);
+            }}>
+            <div className="line" />
+          </div>
 
           <InputComponent
             classname={`token-searchbar ${showSearchHE ? '' : 'hide'}`}
@@ -220,7 +228,8 @@ const WalletInfoSection = ({
         </div>
         {allTokens?.length > 0 &&
           filteredTokenList &&
-          filteredTokenList.length > 0 && (
+          filteredTokenList.length > 0 &&
+          showHeTokens && (
             <>
               <FlatList
                 list={filteredTokenList}
@@ -244,14 +253,43 @@ const WalletInfoSection = ({
               />
             </>
           )}
-        {filteredTokenList && filteredTokenList.length === 0 && (
-          <div className="no-token">
-            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+        {filteredTokenList &&
+          filteredTokenList.length === 0 &&
+          showHeTokens && (
+            <div className="no-token">
+              <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+              <span className="text">
+                {chrome.i18n.getMessage('html_tokens_none_available')}
+              </span>
+            </div>
+          )}
+        {filteredTokenList && !showHeTokens && (
+          <div
+            className="hidden-tokens"
+            onClick={() => {
+              setShowHeTokens(true);
+            }}>
             <span className="text">
-              {chrome.i18n.getMessage('html_tokens_none_available')}
+              {chrome.i18n.getMessage('html_tokens_x_available', [
+                filteredTokenList.length + '',
+              ])}
             </span>
           </div>
         )}
+        <div className="l2-separator">
+          <span>
+            <img src="assets/images/wallet/vsc.png" className="no-pointer" />
+          </span>
+          <div className="line-wrapper">
+            <div className="line" />
+          </div>
+          <SVGIcon
+            icon={SVGIcons.WALLET_HISTORY_NO_BORDER}
+            onClick={() => {
+              navigateTo(Screen.VSC_HISTORY_PAGE);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
