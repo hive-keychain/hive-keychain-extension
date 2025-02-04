@@ -120,6 +120,19 @@
             }
           }
 
+          &.html-element {
+            display: flex;
+            flex-direction: column;
+            .label {
+              text-align: center;
+            }
+            .value {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+            }
+          }
+
           .long-text-container {
             @include expandable-panel();
 
@@ -128,6 +141,12 @@
               word-break: break-word;
               font-size: 13px;
             }
+          }
+
+          .list {
+            display: flex;
+            flex-direction: column;
+            row-gap: 4px;
           }
         }
 

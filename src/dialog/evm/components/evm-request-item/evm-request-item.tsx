@@ -15,6 +15,7 @@ export const EvmRequestItem = ({
   field,
   onWarningClicked,
 }: EvmRequestItemProps) => {
+  console.log(field);
   const fieldTitle = useFieldTitle(field.name);
   const renderField = () => {
     switch (field.type) {
@@ -38,7 +39,7 @@ export const EvmRequestItem = ({
   };
 
   return (
-    <div className="field-container">
+    <div className="field-container" style={field.style}>
       <div className={`field ${field.type}`}>{renderField()}</div>
       {field.warnings && field.warnings.length > 0 && (
         <div className="warning-container">

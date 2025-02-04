@@ -70,6 +70,7 @@ export interface TransactionConfirmationField {
   type: string;
   warnings?: EvmTransactionWarning[];
   information?: EvmTransactionInfo[];
+  style?: any;
 }
 
 export interface TransactionConfirmationFields {

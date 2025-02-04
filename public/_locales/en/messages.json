@@ -4927,5 +4927,13 @@
   "evm_domain_never_visited": {
     "message": "We detected that this is the first time you visit this domain",
     "description": "Domain never visited warning message"
+  },
+  "evm_sign_typed_data_message": {
+    "message": "Message",
+    "description": "Sign typed data message"
+  },
+  "evm_sign_typed_data_message_primary_type": {
+    "message": "Primary type",
+    "description": "Sign typed data message primary type"
   }
 }

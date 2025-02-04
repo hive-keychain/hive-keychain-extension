@@ -21,6 +21,8 @@ import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 
 export enum EvmInputDisplayType {
+  BYTES = 'bytes',
+  ADDRESS = 'address',
   CONTRACT_ADDRESS = 'contract-address',
   WALLET_ADDRESS = 'wallet-address',
   BALANCE = 'balance',
@@ -31,6 +33,7 @@ export enum EvmInputDisplayType {
   ARRAY_STRING = 'arrayString',
   IMAGE = 'image',
   UINT256 = 'uint256',
+  HTML_ELEMENT = 'html-element',
 }
 
 const getDisplayInputType = (
