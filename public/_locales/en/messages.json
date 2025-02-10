@@ -4935,5 +4935,9 @@
   "evm_sign_typed_data_message_primary_type": {
     "message": "Primary type",
     "description": "Sign typed data message primary type"
+  },
+  "evm_account": {
+    "message": "Account",
+    "description": "Account"
   }
 }

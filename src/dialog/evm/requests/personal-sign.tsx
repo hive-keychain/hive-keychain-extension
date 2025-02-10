@@ -1,7 +1,14 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
-import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  TransactionConfirmationField,
+  TransactionConfirmationFields,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import {
+  EvmInputDisplayType,
+  EvmTransactionParserUtils,
+} from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
@@ -24,7 +31,7 @@ export const PersonalSign = (props: Props) => {
   ).toString('utf8');
   const [message, setMessage] = useState<string>(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
-  const warningHook = useTransactionHook(data, request);
+  const transactionHook = useTransactionHook(data, request);
 
   useEffect(() => {
     init();
@@ -38,10 +45,24 @@ export const PersonalSign = (props: Props) => {
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
-    transactionConfirmationFields.otherFields.push(
-      await warningHook.getDomainWarnings(transactionInfo),
+
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
+    const accountDisplay = await transactionHook.getWalletAddressInput(
+      target,
+      lastChain.chainId,
+      transactionInfo,
     );
-    warningHook.setFields(transactionConfirmationFields);
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.WALLET_ADDRESS,
+      name: 'evm_account',
+      value: accountDisplay.value,
+    } as TransactionConfirmationField);
+    transactionConfirmationFields.otherFields.push(
+      await transactionHook.getDomainWarnings(transactionInfo),
+    );
+    transactionHook.setFields(transactionConfirmationFields);
   };
 
   return (
@@ -53,7 +74,7 @@ export const PersonalSign = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
         data.dappInfo.domain,
       ])}
-      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
+      fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={
         <Card>
           <DisplayText
@@ -62,6 +83,6 @@ export const PersonalSign = (props: Props) => {
           />
         </Card>
       }
-      warningHook={warningHook}></EvmOperation>
+      warningHook={transactionHook}></EvmOperation>
   );
 };

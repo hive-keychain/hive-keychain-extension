@@ -171,7 +171,10 @@ export const SignTypedData = (props: Props) => {
         formatedValue = EvmFormatUtils.formatAddress(value);
         break;
       }
-
+      case EvmInputDisplayType.UINT256: {
+        formatedValue = FormatUtils.withCommas(value, 0);
+        break;
+      }
       case EvmInputDisplayType.NUMBER: {
         formatedValue = FormatUtils.withCommas(value);
         break;
