@@ -5,12 +5,14 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import React, { useEffect, useState } from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -46,7 +48,7 @@ export const SignTypedData = (props: Props) => {
   );
   const [target, setTarget] = useState<string>(request.params[0]);
 
-  const warningHook = useTransactionHook(data, request);
+  const transactionHook = useTransactionHook(data, request);
 
   useEffect(() => {
     init();
@@ -63,8 +65,49 @@ export const SignTypedData = (props: Props) => {
         data.dappInfo.domain,
       );
     transactionConfirmationFields.otherFields.push(
-      await warningHook.getDomainWarnings(transactionInfo),
+      await transactionHook.getDomainWarnings(transactionInfo),
     );
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.STRING,
+      name: 'evm_chain_id',
+      value: formatValue(message.domain.chainId, EvmInputDisplayType.STRING),
+    });
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.CONTRACT_ADDRESS,
+      name: 'dialog_evm_sign_request_interacting_with',
+      value: formatValue(
+        message.domain.verifyingContract,
+        EvmInputDisplayType.CONTRACT_ADDRESS,
+      ),
+    });
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.STRING,
+      name: 'evm_domain_name',
+      value: formatValue(message.domain.name, EvmInputDisplayType.STRING),
+    });
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.STRING,
+      name: 'evm_domain_version',
+      value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
+    });
+
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
+    const accountDisplay = await transactionHook.getWalletAddressInput(
+      target,
+      lastChain.chainId,
+      transactionInfo,
+    );
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.WALLET_ADDRESS,
+      name: 'evm_target_account',
+      value: accountDisplay.value,
+    } as TransactionConfirmationField);
 
     transactionConfirmationFields.otherFields.push({
       type: EvmInputDisplayType.STRING_CENTERED,
@@ -86,7 +129,7 @@ export const SignTypedData = (props: Props) => {
       0,
     );
 
-    warningHook.setFields(transactionConfirmationFields);
+    transactionHook.setFields(transactionConfirmationFields);
   };
 
   const parseTypes = (
@@ -151,6 +194,7 @@ export const SignTypedData = (props: Props) => {
     let formatedValue;
     switch (inputDisplayType) {
       case EvmInputDisplayType.ADDRESS:
+      case EvmInputDisplayType.CONTRACT_ADDRESS:
       case EvmInputDisplayType.WALLET_ADDRESS: {
         const formattedAddress = EvmFormatUtils.formatAddress(value);
 
@@ -162,13 +206,11 @@ export const SignTypedData = (props: Props) => {
                 __html: EvmAddressesUtils.getIdenticonFromAddress(value),
               }}
             />
-            <span>{formattedAddress}</span>
+            <CustomTooltip message={value} skipTranslation>
+              <span>{formattedAddress}</span>
+            </CustomTooltip>
           </div>
         );
-        break;
-      }
-      case EvmInputDisplayType.CONTRACT_ADDRESS: {
-        formatedValue = EvmFormatUtils.formatAddress(value);
         break;
       }
       case EvmInputDisplayType.UINT256: {
@@ -196,7 +238,7 @@ export const SignTypedData = (props: Props) => {
       domain={data.dappInfo.domain}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
-      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
-      warningHook={warningHook}></EvmOperation>
+      fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
+      warningHook={transactionHook}></EvmOperation>
   );
 };

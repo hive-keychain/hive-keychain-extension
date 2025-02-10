@@ -198,12 +198,9 @@ export const useTransactionHook = (
               __html: EvmAddressesUtils.getIdenticonFromAddress(address),
             }}
           />
-          {label && (
-            <CustomTooltip message={address} skipTranslation>
-              <span>{label ?? formattedAddress}</span>
-            </CustomTooltip>
-          )}
-          {!label && <span>{formattedAddress}</span>}
+          <CustomTooltip message={address} skipTranslation>
+            <span>{label ?? formattedAddress}</span>
+          </CustomTooltip>
         </div>
       ),
       warnings: await EvmTransactionParserUtils.getAddressWarning(

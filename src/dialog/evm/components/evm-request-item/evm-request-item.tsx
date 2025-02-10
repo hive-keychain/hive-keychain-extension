@@ -15,7 +15,6 @@ export const EvmRequestItem = ({
   field,
   onWarningClicked,
 }: EvmRequestItemProps) => {
-  console.log(field);
   const fieldTitle = useFieldTitle(field.name);
   const renderField = () => {
     switch (field.type) {

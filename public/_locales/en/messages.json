@@ -4936,8 +4936,20 @@
     "message": "Primary type",
     "description": "Sign typed data message primary type"
   },
-  "evm_account": {
+  "evm_chain_id": {
+    "message": "Chain Id",
+    "description": "evm chain id"
+  },
+  "evm_domain_name": {
+    "message": "Name",
+    "description": "evm domain name"
+  },
+  "evm_domain_version": {
+    "message": "Version",
+    "description": "evm domain version"
+  },
+  "evm_target_account": {
     "message": "Account",
-    "description": "Account"
+    "description": "evm targeted account "
   }
 }
