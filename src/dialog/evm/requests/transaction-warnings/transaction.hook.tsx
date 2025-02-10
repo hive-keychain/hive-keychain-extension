@@ -203,6 +203,7 @@ export const useTransactionHook = (
               <span>{label ?? formattedAddress}</span>
             </CustomTooltip>
           )}
+          {!label && <span>{formattedAddress}</span>}
         </div>
       ),
       warnings: await EvmTransactionParserUtils.getAddressWarning(
