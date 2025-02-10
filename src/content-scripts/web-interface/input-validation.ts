@@ -15,6 +15,11 @@ const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
   .required()
   .error(new Error('Amount requires a string with 3 decimals'));
+
+const amountToken = Joi.string()
+  .regex(/^\d+(\.\d{1,8})?$/)
+  .required();
+
 const amountVests = Joi.string()
   .regex(/^\d+(\.\d{6})$/)
   .required()
@@ -222,7 +227,7 @@ const transfer = Joi.object({
 const sendToken = Joi.object({
   username,
   to: username,
-  amount,
+  amount: amountToken,
   currency: Joi.string().required(),
   memo: Joi.string().allow(''),
   rpc,
