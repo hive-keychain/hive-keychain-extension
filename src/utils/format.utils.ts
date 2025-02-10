@@ -11,7 +11,10 @@ const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {
   let finalNumber = parts.join('.');
 
   if (removeTrailingZeros) {
-    finalNumber = finalNumber.replace(/\.0+$/, '');
+    finalNumber = finalNumber.replace(
+      /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
+      '$1$2$3',
+    );
   }
 
   if (currency) {
@@ -35,13 +38,18 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
   parseFloat(props.total_vesting_shares + '');
 
-const formatCurrencyValue = (value: string | Asset | number, digits = 3) => {
+const formatCurrencyValue = (
+  value: string | Asset | number,
+  digits = 3,
+  removeTrailingZeros = false,
+) => {
   if (value === undefined || value === null) {
     return '...';
   }
   return withCommas(
     value.toString().replace('HBD', '').replace('HIVE', '').trim(),
     digits,
+    removeTrailingZeros,
   );
 };
 

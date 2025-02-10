@@ -257,6 +257,17 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 };
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
+  socket.removeAllListeners(SocketMessageCommand.REQUEST_SIGN_TRANSACTION);
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+  );
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+  );
+  socket.removeAllListeners('connect');
+  socket.removeAllListeners('error');
+  socket.removeAllListeners('disconnect');
+
   socket.on('connect', () => {
     Logger.info('Connected to socket');
 
@@ -270,17 +281,20 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     Logger.info('Disconnected from socket');
     socket.connect();
   });
-
   socket.on(
     SocketMessageCommand.REQUEST_SIGN_TRANSACTION,
     async (signatureRequest: SignatureRequest) => {
-      const signer = signatureRequest.signers.find((signer: Signer) => {
-        return signer.publicKey === signatureRequest.targetedPublicKey;
-      });
+      const signerIndex = signatureRequest.signers.findIndex(
+        (signer: Signer) => {
+          return signer.publicKey === signatureRequest.targetedPublicKey;
+        },
+      );
 
-      if (!signer) {
+      if (signerIndex === -1) {
         return;
       }
+      const signer = signatureRequest.signers[signerIndex];
+      await sleep(800 * (signerIndex + 2));
 
       const signedTransaction = await MultisigModule.processSignatureRequest(
         signatureRequest,
@@ -468,7 +482,7 @@ const getRequestSignatureMessage = async (
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
-      const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
+      const metaData: TransactionOptionsMetadata = data.options?.metaData ?? {};
       const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
       let twoFACodes = {};
       if (data.options?.metaData?.twoFACodes) {
@@ -706,7 +720,6 @@ const encodeMetadata = async (
   return await MultisigUtils.encodeMetadata(metaData, key, receiverPublicKey);
 };
 
-let multisigWindowId: number | undefined;
 const openWindow = (data: MultisigData): void => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -721,9 +734,7 @@ const openWindow = (data: MultisigData): void => {
     // Except on Firefox
     //@ts-ignore
     if (typeof InstallTrigger === undefined) win.focused = true;
-    if (multisigWindowId) chrome.windows.remove(multisigWindowId);
     chrome.windows.create(win, (window) => {
-      multisigWindowId = window?.id;
       waitUntilDialogIsReady(100, MultisigDialogCommand.READY_MULTISIG, () => {
         chrome.runtime.sendMessage({
           command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
