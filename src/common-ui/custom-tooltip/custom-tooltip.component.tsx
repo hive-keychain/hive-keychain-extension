@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import sanitizeHTML from 'sanitize-html';
 
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export interface TooltipProps {
@@ -133,9 +134,12 @@ export const CustomTooltip = ({
             left: coordinates.x,
           }}
           dangerouslySetInnerHTML={{
-            __html: skipTranslation
-              ? message
-              : chrome.i18n.getMessage(message, messageParams),
+            __html: sanitizeHTML(
+              skipTranslation
+                ? message
+                : chrome.i18n.getMessage(message, messageParams),
+              { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
+            ),
           }}></div>
       )}
     </div>
