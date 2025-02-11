@@ -4951,5 +4951,9 @@
   "evm_target_account": {
     "message": "Account",
     "description": "evm targeted account "
+  },
+  "evm_raw_data": {
+    "message": "Raw data",
+    "description": "evm raw data "
   }
 }

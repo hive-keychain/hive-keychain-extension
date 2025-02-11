@@ -18,6 +18,7 @@ import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transac
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 interface Props {
   request: EvmRequest;
@@ -52,6 +53,7 @@ export const SignTypedData = (props: Props) => {
 
   useEffect(() => {
     init();
+    console.log(message);
   }, []);
 
   const init = async () => {
@@ -68,32 +70,36 @@ export const SignTypedData = (props: Props) => {
       await transactionHook.getDomainWarnings(transactionInfo),
     );
 
-    transactionConfirmationFields.otherFields.push({
-      type: EvmInputDisplayType.STRING,
-      name: 'evm_chain_id',
-      value: formatValue(message.domain.chainId, EvmInputDisplayType.STRING),
-    });
+    if (message.domain.chainId)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_chain_id',
+        value: formatValue(message.domain.chainId, EvmInputDisplayType.STRING),
+      });
 
-    transactionConfirmationFields.otherFields.push({
-      type: EvmInputDisplayType.CONTRACT_ADDRESS,
-      name: 'dialog_evm_sign_request_interacting_with',
-      value: formatValue(
-        message.domain.verifyingContract,
-        EvmInputDisplayType.CONTRACT_ADDRESS,
-      ),
-    });
+    if (message.domain.verifyingContract)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.CONTRACT_ADDRESS,
+        name: 'dialog_evm_sign_request_interacting_with',
+        value: formatValue(
+          message.domain.verifyingContract,
+          EvmInputDisplayType.CONTRACT_ADDRESS,
+        ),
+      });
 
-    transactionConfirmationFields.otherFields.push({
-      type: EvmInputDisplayType.STRING,
-      name: 'evm_domain_name',
-      value: formatValue(message.domain.name, EvmInputDisplayType.STRING),
-    });
+    if (message.domain.name)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_domain_name',
+        value: formatValue(message.domain.name, EvmInputDisplayType.STRING),
+      });
 
-    transactionConfirmationFields.otherFields.push({
-      type: EvmInputDisplayType.STRING,
-      name: 'evm_domain_version',
-      value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
-    });
+    if (message.domain.version)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_domain_version',
+        value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
+      });
 
     const lastChain = await EvmChainUtils.getLastEvmChain();
 
@@ -114,7 +120,9 @@ export const SignTypedData = (props: Props) => {
       value: chrome.i18n.getMessage('evm_sign_typed_data_message'),
     });
 
-    transactionConfirmationFields.otherFields.push({
+    let otherFields = [];
+
+    otherFields.push({
       type: EvmInputDisplayType.STRING,
       name: chrome.i18n.getMessage('evm_sign_typed_data_message_primary_type'),
       value: message.primaryType,
@@ -122,12 +130,19 @@ export const SignTypedData = (props: Props) => {
 
     const baseType = message.types[message.primaryType];
 
-    transactionConfirmationFields = parseTypes(
-      baseType,
-      message.message,
-      transactionConfirmationFields,
-      0,
-    );
+    try {
+      parseTypes(baseType, message.message, otherFields, 0);
+      transactionConfirmationFields.otherFields = [
+        ...transactionConfirmationFields.otherFields,
+        ...otherFields,
+      ];
+    } catch (e) {
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.LONG_TEXT,
+        name: 'evm_raw_data',
+        value: JSON.stringify(message),
+      });
+    }
 
     transactionHook.setFields(transactionConfirmationFields);
   };
@@ -135,7 +150,7 @@ export const SignTypedData = (props: Props) => {
   const parseTypes = (
     baseType: any,
     data: any,
-    transactionConfirmationFields: TransactionConfirmationFields,
+    otherFields: TransactionConfirmationField[],
     level: number,
   ) => {
     for (const field of baseType) {
@@ -147,7 +162,7 @@ export const SignTypedData = (props: Props) => {
       }
 
       if (Object.keys(message.types).includes(type)) {
-        transactionConfirmationFields.otherFields.push({
+        otherFields.push({
           type: EvmInputDisplayType.STRING,
           value: '',
           name: field.name,
@@ -155,23 +170,18 @@ export const SignTypedData = (props: Props) => {
         });
         if (isArray) {
           for (const d of data[field.name]) {
-            transactionConfirmationFields = parseTypes(
-              message.types[type],
-              d,
-              transactionConfirmationFields,
-              level + 1,
-            );
+            parseTypes(message.types[type], d, otherFields, level + 1);
           }
         } else {
-          transactionConfirmationFields = parseTypes(
+          parseTypes(
             message.types[type],
             data[field.name],
-            transactionConfirmationFields,
+            otherFields,
             level + 1,
           );
         }
       } else {
-        transactionConfirmationFields.otherFields.push({
+        otherFields.push({
           type: type,
           name: field.name,
           value: isArray ? (
@@ -187,15 +197,24 @@ export const SignTypedData = (props: Props) => {
         });
       }
     }
-    return transactionConfirmationFields;
   };
 
   const formatValue = (value: any, inputDisplayType: EvmInputDisplayType) => {
+    console.log(value, inputDisplayType);
+
     let formatedValue;
     switch (inputDisplayType) {
       case EvmInputDisplayType.ADDRESS:
       case EvmInputDisplayType.CONTRACT_ADDRESS:
       case EvmInputDisplayType.WALLET_ADDRESS: {
+        if (typeof value !== 'string') {
+          value = value.toString();
+          let newValue = value;
+          for (let i = 0; i < 42 - value.length; i++) {
+            newValue = 0 + newValue;
+          }
+          value = '0x' + newValue;
+        }
         const formattedAddress = EvmFormatUtils.formatAddress(value);
 
         formatedValue = (
@@ -222,7 +241,8 @@ export const SignTypedData = (props: Props) => {
         break;
       }
       default:
-        formatedValue = 'default';
+        Logger.error('Type is not correct');
+        throw new Error();
     }
     return formatedValue;
   };

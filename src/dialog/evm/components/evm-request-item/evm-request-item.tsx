@@ -6,6 +6,8 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmRequestItemLongText } from 'src/dialog/evm/components/evm-request-item/evm-request-item-long-text/evm-request-item-long-text';
 import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 
+import sanitize from 'sanitize-html';
+
 export interface EvmRequestItemProps {
   field: TransactionConfirmationField;
   onWarningClicked?: (warningIndex: number) => void;
@@ -39,7 +41,7 @@ export const EvmRequestItem = ({
 
   return (
     <div className="field-container" style={field.style}>
-      <div className={`field ${field.type}`}>{renderField()}</div>
+      <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
       {field.warnings && field.warnings.length > 0 && (
         <div className="warning-container">
           {field.warnings.map((warning, index) => (
