@@ -19,7 +19,6 @@ export const signV4 = async (
         account.wallet.privateKey,
         request.params[1],
       );
-      console.log(res);
       return await createEvmMessage(
         null,
         res,

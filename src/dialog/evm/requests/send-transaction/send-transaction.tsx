@@ -35,6 +35,7 @@ import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transac
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 interface Props {
   request: EvmRequest;
@@ -68,18 +69,6 @@ export const SendTransaction = (props: Props) => {
     useState<ProviderTransactionData>();
 
   useEffect(() => {
-    // console.log(
-    //   transactionHook.ready,
-    //   transactionHook.fields,
-    //   chain,
-    //   selectedAccount,
-    //   transactionData,
-    //   receiver,
-    // );
-  });
-
-  useEffect(() => {
-    // console.log({ data, request });
     init();
   }, []);
 
@@ -544,10 +533,8 @@ export const SendTransaction = (props: Props) => {
       }
       setTransactionData(tData);
       transactionHook.setFields(transactionConfirmationFields);
-
-      console.log({ transactionConfirmationFields });
     } else {
-      console.log('No corresponding account found');
+      Logger.error('No corresponding account found');
     }
     transactionHook.setReady(true);
     transactionHook.setLoading(false);

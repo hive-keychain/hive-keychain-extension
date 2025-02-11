@@ -10,22 +10,18 @@ export const sendEvmTransaction = async (
   extraData: any,
 ) => {
   try {
-    console.log({ requestHandler, request, extraData });
-
     const account = requestHandler.accounts.find((account: EvmAccount) => {
       return (
         account.wallet.address.toLowerCase() ===
         request.params[0].from.toLowerCase()
       );
     });
-    console.log({ account });
     if (account) {
       const res = await EvmTransactionsUtils.send(
         account,
         request,
         extraData.gasFee,
       );
-      console.log(res);
       return await createEvmMessage(
         null,
         res,

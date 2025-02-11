@@ -42,7 +42,6 @@ const getDisplayInputType = (
   inputType: string,
   name: string,
 ): EvmInputDisplayType => {
-  console.log(methodName, inputType, name);
   const tokenType = EvmTokensUtils.getTokenType(abi);
   switch (tokenType) {
     case EVMTokenType.ERC20: {
@@ -203,8 +202,7 @@ const getFieldWarnings = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ): Promise<EvmTransactionWarning[]> => {
-  console.log({ value });
-  if (!abi) return []; // TODO check
+  if (!abi) return [];
   const tokenType = EvmTokensUtils.getTokenType(abi);
   const warnings: EvmTransactionWarning[] = [];
   switch (tokenType) {
@@ -403,8 +401,6 @@ const verifyTransactionInformation = async (
   contract?: string,
   proxy?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
-  console.log(domain, to, contract, proxy);
-
   let url = `evm/verifyTransaction?domain=${domain}`;
   if (to) {
     url += `&to=${to}`;
@@ -413,8 +409,6 @@ const verifyTransactionInformation = async (
     url += `&contract=${contract}`;
   }
 
-  console.log(url);
-
   const result = await KeychainApi.get(url);
   if (proxy) {
     if (!result.contract) {
@@ -422,8 +416,6 @@ const verifyTransactionInformation = async (
     }
     result.contract.proxy = proxy;
   }
-
-  console.log(result);
 
   return result;
 };

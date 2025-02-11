@@ -13,17 +13,12 @@ const call = async (method: string, params: any[], rpcUrl: string) => {
         body: JSON.stringify(body),
       })
         .then((res: any) => {
-          console.log(res);
-          // if (res && res.status === 200) {
           return res.json();
-          // }
         })
         .then((res: any) => {
-          console.log({ res });
           resolve(res);
         })
         .catch((err) => {
-          console.log({ err });
           reject(err);
         });
     } catch (err) {

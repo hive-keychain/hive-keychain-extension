@@ -95,12 +95,6 @@ export class EvmProvider extends EventEmitter {
             }
             case EvmEventName.ACCOUNT_CHANGED: {
               console.log('received event');
-              console.log(
-                JSON.stringify(eventData.event.args) ===
-                  JSON.stringify(this._accounts),
-                JSON.stringify(eventData.event.args),
-                JSON.stringify(this._accounts),
-              );
 
               if (
                 JSON.stringify(eventData.event.args) ===
@@ -131,7 +125,6 @@ export class EvmProvider extends EventEmitter {
       }
 
       const result = await this.processRequest(args);
-      console.log({ providerResult: result, request: args.method });
       return result;
     } catch (err) {
       console.log(err);

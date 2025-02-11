@@ -70,7 +70,6 @@ export const sendIncompleteDataResponse = (
 };
 /* istanbul ignore next */
 export const sendResponse = (response: RequestResponse) => {
-  console.log(response);
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
@@ -113,7 +112,6 @@ export const sendErrorToEvm = (response: any) => {
 };
 
 export const sendEventToEvm = (event: any) => {
-  console.log('ici', { event });
   window.postMessage(
     {
       type: 'evm_keychain_event',
@@ -124,7 +122,6 @@ export const sendEventToEvm = (event: any) => {
 };
 
 export const sendEvmEvent = (event: EvmEventName, args?: any) => {
-  console.log('sendEvmEvent', { event, args });
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SEND_EVM_EVENT,
     value: { eventType: event, args: args },
@@ -133,10 +130,8 @@ export const sendEvmEvent = (event: EvmEventName, args?: any) => {
 
 export const sendEvmEventFromSW = (event: EvmEventName, args?: any) => {
   chrome.tabs.query({}, (tabs) => {
-    console.log({ tabs });
     for (const tab of tabs) {
       if (tab.id) {
-        console.log('sending to tab', tab.id);
         chrome.tabs.sendMessage(tab.id, {
           command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
           value: { eventType: event, args: args },

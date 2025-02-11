@@ -161,7 +161,6 @@ const isWhitelisted = async (address: string, chainId: string) => {
 
 const getAddressLabel = async (address: string, chainId: string) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
-  console.log(whitelistedAddresses, address, chainId);
   let whitelistedItem = whitelistedAddresses[
     EvmAddressType.SMART_CONTRACT
   ].find((whitelistedAddress) => whitelistedAddress.address === address);
@@ -183,15 +182,6 @@ const isPotentialSpoofing = async (address: string) => {
     const addressEnd = whitelistedAddress
       .substring(whitelistedAddress.length - 4)
       .toLowerCase();
-    console.log({ addressStart, addressEnd, myAddressStart, myAddressEnd });
-    console.log(whitelistedAddress !== address.toLowerCase());
-    console.log(myAddressStart === addressStart);
-    console.log(myAddressEnd === addressEnd);
-    console.log(myAddressStart === addressStart || myAddressEnd === addressEnd);
-    console.log(
-      whitelistedAddress.toLowerCase() !== address.toLowerCase() &&
-        (myAddressStart === addressStart || myAddressEnd === addressEnd),
-    );
 
     if (
       whitelistedAddress.toLowerCase() !== address.toLowerCase() &&

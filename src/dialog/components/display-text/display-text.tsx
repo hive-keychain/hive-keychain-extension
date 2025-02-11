@@ -7,16 +7,6 @@ type Props = {
 };
 
 export const DisplayText = ({ title, content }: Props) => {
-  console.log(
-    content,
-    sanitizeHtml(content, {
-      allowedTags: ['p', 'br'],
-      allowedAttributes: {},
-      parser: {
-        lowerCaseAttributeNames: false,
-      },
-    }),
-  );
   return (
     <div className="display-text">
       <div className="display-text-title">{chrome.i18n.getMessage(title)}</div>
