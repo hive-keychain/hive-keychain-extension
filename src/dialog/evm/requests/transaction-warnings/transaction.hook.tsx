@@ -16,6 +16,7 @@ import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -192,12 +193,7 @@ export const useTransactionHook = (
       type: EvmInputDisplayType.WALLET_ADDRESS,
       value: (
         <div className="value-content-horizontal">
-          <div
-            className="user-picture"
-            dangerouslySetInnerHTML={{
-              __html: EvmAddressesUtils.getIdenticonFromAddress(address),
-            }}
-          />
+          <EvmAccountImage address={address} />
           <CustomTooltip message={address} skipTranslation>
             <span>{label ?? formattedAddress}</span>
           </CustomTooltip>

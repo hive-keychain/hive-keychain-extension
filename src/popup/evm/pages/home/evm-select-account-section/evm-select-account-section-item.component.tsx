@@ -1,7 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -98,12 +98,7 @@ export const EvmSelectAccountSectionItemComponent = ({
           handleItemClicked(item.value);
           closeDropdown();
         }}>
-        <div
-          className="user-picture"
-          dangerouslySetInnerHTML={{
-            __html: EvmAddressesUtils.getIdenticonFromAddress(item.label),
-          }}
-        />
+        <EvmAccountImage address={item.label} />
         <div className="account-name pipou">
           {FormatUtils.shortenString(item.label, 4)}
           {renderCheckedAccount()}

@@ -2,7 +2,6 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
@@ -15,6 +14,7 @@ import {
 } from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
@@ -90,12 +90,7 @@ const SelectAccountSection = ({
         onClick={() => {
           handleClickOnSelector();
         }}>
-        <div
-          className="user-picture"
-          dangerouslySetInnerHTML={{
-            __html: EvmAddressesUtils.getIdenticonFromAddress(selectedAddress),
-          }}
-        />
+        <EvmAccountImage address={selectedAddress} />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">

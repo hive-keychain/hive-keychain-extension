@@ -4,7 +4,6 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import {
   EvmInputDisplayType,
@@ -13,6 +12,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -200,12 +200,7 @@ export const SignTypedData = (props: Props) => {
 
         formatedValue = (
           <div className="value-content-horizontal">
-            <div
-              className="user-picture"
-              dangerouslySetInnerHTML={{
-                __html: EvmAddressesUtils.getIdenticonFromAddress(value),
-              }}
-            />
+            <EvmAccountImage address={value} />
             <CustomTooltip message={value} skipTranslation>
               <span>{formattedAddress}</span>
             </CustomTooltip>
