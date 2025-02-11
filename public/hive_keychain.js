@@ -1035,6 +1035,88 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
+  /**
+   * Request a VSC contract call
+   * @example
+   * // Let's make a test call to a VSC contract
+   *
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestVscCallContract('keychain',
+   *    'vs41q9c3ygynfp6kl86qnlaswuwvam748s5lvugns5schg4hte5vhusnx7sg5u8falrt',
+   *    'testJSON', {
+   *      hello: "World",
+   *    },'Posting', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} contractId Smart contract ID
+   * @param {String} action Contract action
+   * @param {Object} payload Contract payload
+   * @param {String} method Type of key. Can be 'Posting' or 'Active'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+  
+   */
+  requestVscCallContract: function (
+    username,
+    contractId,
+    action,
+    payload,
+    method,
+    callback,
+    rpc,
+  ) {
+    const request = {
+      type: 'vscCallContract',
+      username,
+      contractId,
+      action,
+      payload,
+      method,
+      rpc,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
+  /**
+   * Requests a VSC Deposit
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscDeposit(username, '0x0000000000000000000000000000000000000000', amount.toFixed(3),'HIVE',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} account Hive account to perform the request
+   * @param {String} address EVM Address
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscDeposit: function (
+    account,
+    address,
+    amount,
+    currency,
+    callback,
+    rpc,
+  ) {
+    var request = {
+      type: 'vscDeposit',
+      username: account,
+      address,
+      amount,
+      currency,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
   // Send the customEvent
   dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;

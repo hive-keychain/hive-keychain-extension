@@ -1028,6 +1028,18 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
+  "dialog_contract_id": {
+    "message": "Contract ID",
+    "description": "When website request a vsc call"
+  },
+  "dialog_action": {
+    "message": "Action",
+    "description": "When website request a vsc call"
+  },
+  "dialog_payload": {
+    "message": "Payload",
+    "description": "When website request a vsc call"
+  },
 
   "dialog_slippage": {
     "message": "Slippage",
@@ -1080,6 +1092,10 @@
   "dialog_to": {
     "message": "To",
     "description": "When website request a transfer"
+  },
+  "dialog_evm_address": {
+    "message": "EVM Address",
+    "description": "When website request a vsc deposit"
   },
   "dialog_tx": {
     "message": "Transaction",
@@ -1195,6 +1211,18 @@
   },
   "dialog_title_custom": {
     "message": "Custom Transaction",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_call_contract": {
+    "message": "VSC Contract Call",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit": {
+    "message": "VSC Deposit",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit_header": {
+    "message": "Send $1 tokens to your EVM address on VSC",
     "description": "Website request title"
   },
   "dialog_title_decode": {
@@ -1388,6 +1416,15 @@
   },
   "bgd_ops_witness_voted": {
     "message": "Successfully voted @$1 for witness."
+  },
+  "bgd_ops_vsc_included": {
+    "message": "This transaction has been included in VSC already, but has not yet been confirmed. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
+  },
+  "bgd_ops_vsc_confirmed": {
+    "message": "This transaction has been confirmed on VSC."
+  },
+  "bgd_ops_vsc_not_included": {
+    "message": "This transaction has not been included in VSC yet. You can follow its status on the requesting dApp or on Hive Keychain extension's VSC history page."
   },
   "bgd_ops_witness_unvoted": {
     "message": "Successfully unvoted @$1 for witness."
@@ -3907,6 +3944,10 @@
     "message": "You don't have any Hive Engine token. You can buy some through our swap feature.",
     "description": "When no token available"
   },
+  "html_tokens_x_available": {
+    "message": "Click here to show $1 Hive Engine tokens.",
+    "description": "When no token available"
+  },
   "html_tokens_issuer": {
     "message": "Issuer",
     "description": "Token issuer"
@@ -4274,6 +4315,30 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_vsc_history": {
+    "message": "VSC History",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_call": {
+    "message": "Called '$1' on contract $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_deposit": {
+    "message": "Deposited $1 $2 to VSC on address $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_withdraw": {
+    "message": "Withdrew $1 $2 from VSC on address $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_full_history": {
+    "message": "You can check your full history on",
+    "description": "Upon clicking on VSC History, end of sentence is a link saying 'the block explorer'"
+  },
+  "popup_html_vsc_full_history_block_explorer": {
+    "message": "the VSC block explorer.",
+    "description": "Upon clicking on VSC History, this is the end of the sentence above."
   },
   "popup_html_transaction_metadata": {
     "message": "Transaction metadata",

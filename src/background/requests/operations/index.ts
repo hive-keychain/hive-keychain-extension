@@ -33,6 +33,8 @@ import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastSwap } from '@background/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { vscCallContract } from '@background/requests/operations/ops/vsc-call-contract';
+import { vscDeposit } from '@background/requests/operations/ops/vsc-deposit';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
@@ -159,6 +161,12 @@ export const performOperation = async (
         break;
       case KeychainRequestTypes.swap:
         message = await broadcastSwap(requestHandler, data, options);
+        break;
+      case KeychainRequestTypes.vscCallContract:
+        message = await vscCallContract(requestHandler, data);
+        break;
+      case KeychainRequestTypes.vscDeposit:
+        message = await vscDeposit(requestHandler, data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

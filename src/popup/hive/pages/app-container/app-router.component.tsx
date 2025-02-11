@@ -2,6 +2,7 @@ import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosyst
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
+import { VscHistoryComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-history/vsc-history.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
@@ -178,6 +179,9 @@ const AppRouter = ({
         return <AnalyticsComponent />;
       case Screen.CHAINS:
         return <EcosystemComponent />;
+      // VSC
+      case Screen.VSC_HISTORY_PAGE:
+        return <VscHistoryComponent />;
       default:
         return null;
     }
