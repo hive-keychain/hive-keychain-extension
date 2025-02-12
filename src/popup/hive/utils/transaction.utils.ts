@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties, utils as dHiveUtils } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
@@ -20,6 +20,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { HistoryFiltersUtils } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
@@ -48,8 +49,8 @@ const getAccountTransactions = async (
   memoKey?: string,
 ): Promise<[Transaction[], number]> => {
   try {
-    const op = dHiveUtils.operationOrders;
-    const operationsBitmask = dHiveUtils.makeBitMaskFilter([
+    const op = HistoryFiltersUtils.operationOrders;
+    const operationsBitmask = HistoryFiltersUtils.makeBitMaskFilter([
       op.transfer,
       op.recurrent_transfer,
       op.fill_recurrent_transfer,
@@ -262,9 +263,9 @@ const getAccountTransactions = async (
 };
 
 const getLastTransaction = async (accountName: string) => {
-  const op = dHiveUtils.operationOrders;
+  const op = HistoryFiltersUtils.operationOrders;
   const allOp = Object.values(op);
-  const allOperationsBitmask = dHiveUtils.makeBitMaskFilter(allOp) as [
+  const allOperationsBitmask = HistoryFiltersUtils.makeBitMaskFilter(allOp) as [
     number,
     number,
   ];

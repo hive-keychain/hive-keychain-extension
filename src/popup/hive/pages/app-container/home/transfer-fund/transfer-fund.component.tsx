@@ -135,8 +135,8 @@ const TransferFunds = ({
     });
 
   let balances = {
-    hive: FormatUtils.toNumber(activeAccount.account.balance),
-    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance),
+    hive: FormatUtils.toNumber(activeAccount.account.balance as string),
+    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance as string),
     hp: 0,
   };
 

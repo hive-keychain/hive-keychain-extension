@@ -11,7 +11,7 @@ if (process.env.IS_FIREFOX) {
   }
 }
 
-import {
+import type {
   AccountCreateOperation,
   AccountCreateWithDelegationOperation,
   AccountUpdate2Operation,

@@ -1,5 +1,5 @@
 import { PeakDNotificationsApi } from '@api/peakd-notifications';
-import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -13,6 +13,7 @@ import {
   NotificationType,
 } from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 

@@ -1,4 +1,4 @@
-import { Asset } from '@hiveio/dhive';
+import type { Asset } from '@hiveio/dhive';
 
 export enum FundedOption {
   TOTALLY_FUNDED = 'totally_funded',
