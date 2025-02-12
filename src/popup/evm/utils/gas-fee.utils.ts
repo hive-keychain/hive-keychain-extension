@@ -217,6 +217,14 @@ const createDAppSuggestionFromTransactionData = async (
       estimatedFee = 0;
       break;
     }
+    case EvmTransactionType.EIP_155: {
+      maxFee = new Decimal(1); // TODO fix
+      break;
+    }
+    case EvmTransactionType.EIP_4844: {
+      maxFee = new Decimal(1); // TODO fix
+      break;
+    }
   }
 
   maxFee = maxFee

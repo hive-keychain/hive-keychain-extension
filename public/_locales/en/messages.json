@@ -4955,5 +4955,9 @@
   "evm_raw_data": {
     "message": "Raw data",
     "description": "evm raw data "
+  },
+  "evm_main_token_amount": {
+    "message": "Main token amount",
+    "description": "Main token amount evm"
   }
 }

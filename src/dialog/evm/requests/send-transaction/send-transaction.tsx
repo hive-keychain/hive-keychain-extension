@@ -205,7 +205,7 @@ export const SendTransaction = (props: Props) => {
 
             if (Number(decodedTransactionData?.value) > 0) {
               transactionConfirmationFields.mainTokenAmount = {
-                name: 'mainTokenAmount',
+                name: 'evm_main_token_amount',
                 type: EvmInputDisplayType.BALANCE,
                 value: `${FormatUtils.withCommas(
                   Number(decodedTransactionData?.value),
@@ -480,7 +480,7 @@ export const SendTransaction = (props: Props) => {
         );
 
         transactionConfirmationFields.mainTokenAmount = {
-          name: 'mainTokenAmount',
+          name: 'evm_main_token_amount',
           type: EvmInputDisplayType.BALANCE,
           value: `${FormatUtils.withCommas(
             new Decimal(Number(params.value))

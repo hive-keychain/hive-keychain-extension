@@ -144,6 +144,14 @@ const cancel = async (
       };
       break;
     }
+    case EvmTransactionType.EIP_155: {
+      feeData = {}; // TODO check
+      break;
+    }
+    case EvmTransactionType.EIP_4844: {
+      feeData = {}; // TODO Check
+      break;
+    }
   }
 
   const newGasFee = {
@@ -342,13 +350,16 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     ...feeData,
   };
 
+  console.log(transactionRequest);
+
   const provider = EthersUtils.getProvider(lastChain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
 
-  const transactionResponse = await connectedWallet.sendTransaction(
-    transactionRequest,
-  );
-  return transactionResponse.hash;
+  // const transactionResponse = await connectedWallet.sendTransaction(
+  //   transactionRequest,
+  // );
+  return 'fsdfdsf';
+  // return transactionResponse.hash;
 };
 
 export const EvmTransactionsUtils = {

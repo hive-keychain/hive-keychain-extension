@@ -15,8 +15,14 @@ export interface UserCanceledTransactions {
 
 export enum EvmTransactionType {
   LEGACY = '0x0',
+  EIP_155 = '0x1',
   EIP_1559 = '0x2',
+  EIP_4844 = '0x3',
 }
+
+export const getAllTransactionTypes = () => {
+  return Object.values(EvmTransactionType);
+};
 
 export interface ProviderTransactionData {
   abi?: any;
