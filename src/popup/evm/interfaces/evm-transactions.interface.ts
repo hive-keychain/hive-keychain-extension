@@ -41,6 +41,7 @@ export interface ProviderTransactionData {
   maxPriorityFeePerGas?: string;
   gasPrice?: string;
   gasLimit?: number;
+  accessList?: any[];
   // smartContract?: string;
 }
 

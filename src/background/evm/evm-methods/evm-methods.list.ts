@@ -30,6 +30,8 @@ export enum EvmRequestMethod {
   GET_UNCLE_COUNT_BY_HASH = 'eth_getUncleCountByBlockHash',
   GET_UNCLE_COUNT_BY_BLOCK_NUMBER = 'eth_getUncleCountByBlockNumber',
 
+  CREATE_ACCESS_LIST = 'eth_createAccessList',
+
   GET_WORK = 'eth_getWork',
   GET_PROOF = 'eth_getProof',
   GET_STORAGE_AT = 'eth_getStorageAt',
@@ -167,4 +169,5 @@ export const EvmUnrestrictedMethods = [
   EvmRequestMethod.WALLET_GET_PERMISSIONS,
   EvmRequestMethod.WEB3_CLIENT_VERSION,
   EvmRequestMethod.WEB3_SHA3,
+  EvmRequestMethod.CREATE_ACCESS_LIST,
 ];

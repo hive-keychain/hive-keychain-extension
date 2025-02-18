@@ -315,28 +315,30 @@ const addCanceledTransaction = async (
 const send = async (account: EvmAccount, request: any, gasFee: any) => {
   const lastChain = await EvmChainUtils.getLastEvmChain();
 
-  let feeData;
-  switch (gasFee.type) {
-    case EvmTransactionType.EIP_1559: {
-      feeData = {
-        maxPriorityFeePerGas: ethers.parseUnits(
-          gasFee.priorityFee!.toString(),
-          'gwei',
-        ),
-        maxFeePerGas: ethers.parseUnits(
-          gasFee.maxFeePerGas!.toString(),
-          'gwei',
-        ),
-      };
-      break;
+  let feeData = {};
+  if (gasFee)
+    switch (gasFee.type) {
+      case EvmTransactionType.EIP_1559: {
+        feeData = {
+          maxPriorityFeePerGas: ethers.parseUnits(
+            gasFee.priorityFee!.toString(),
+            'gwei',
+          ),
+          maxFeePerGas: ethers.parseUnits(
+            gasFee.maxFeePerGas!.toString(),
+            'gwei',
+          ),
+        };
+        break;
+      }
+      case EvmTransactionType.EIP_155:
+      case EvmTransactionType.LEGACY: {
+        feeData = {
+          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+        };
+        break;
+      }
     }
-    case EvmTransactionType.LEGACY: {
-      feeData = {
-        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
-      };
-      break;
-    }
-  }
 
   let transactionRequest: TransactionRequest;
   transactionRequest = {
@@ -345,21 +347,28 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     to: request.params[0].to,
     from: account.wallet.address,
     nonce: await EvmRequestsUtils.getNonce(account),
-    gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
+    gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: lastChain.chainId,
+    type: request.params[0].type,
     ...feeData,
   };
 
-  console.log(transactionRequest);
+  if (
+    request.params[0].type &&
+    request.params[0].type === EvmTransactionType.EIP_155
+  ) {
+    if (request.params[0].accessList) {
+      transactionRequest.accessList = request.params[0].accessList;
+    }
+  }
 
   const provider = EthersUtils.getProvider(lastChain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
 
-  // const transactionResponse = await connectedWallet.sendTransaction(
-  //   transactionRequest,
-  // );
-  return 'fsdfdsf';
-  // return transactionResponse.hash;
+  const transactionResponse = await connectedWallet.sendTransaction(
+    transactionRequest,
+  );
+  return transactionResponse.hash;
 };
 
 export const EvmTransactionsUtils = {

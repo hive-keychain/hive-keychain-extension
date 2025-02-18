@@ -107,6 +107,7 @@ export const SendTransaction = (props: Props) => {
       gasPrice: params.gasPrice,
       maxFeePerGas: params.maxFeePerGas,
       maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+      accessList: params.accessList,
     } as ProviderTransactionData;
 
     transactionConfirmationFields.otherFields = [];
@@ -514,6 +515,7 @@ export const SendTransaction = (props: Props) => {
         tData.value = params.value;
         tData.to = params.to;
       }
+
       tData.type =
         params.type ?? (lastChain as EvmChain)?.defaultTransactionType;
 
@@ -593,7 +595,8 @@ export const SendTransaction = (props: Props) => {
                 transactionHook.fields &&
                 chain &&
                 selectedAccount &&
-                transactionData && (
+                transactionData &&
+                transactionData.type !== EvmTransactionType.EIP_155 && (
                   <GasFeePanel
                     chain={chain}
                     tokenInfo={tokenInfo}

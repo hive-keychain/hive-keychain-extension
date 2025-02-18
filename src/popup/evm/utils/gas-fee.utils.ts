@@ -207,6 +207,7 @@ const createDAppSuggestionFromTransactionData = async (
       );
       break;
     }
+    case EvmTransactionType.EIP_155:
     case EvmTransactionType.LEGACY: {
       if (!transactionData.gasPrice) {
         transactionData.gasPrice = await EvmRequestsUtils.getGasPrice();
@@ -215,10 +216,6 @@ const createDAppSuggestionFromTransactionData = async (
         EvmFormatUtils.GWEI,
       );
       estimatedFee = 0;
-      break;
-    }
-    case EvmTransactionType.EIP_155: {
-      maxFee = new Decimal(1); // TODO fix
       break;
     }
     case EvmTransactionType.EIP_4844: {
