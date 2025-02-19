@@ -170,4 +170,5 @@ export const EvmUnrestrictedMethods = [
   EvmRequestMethod.WEB3_CLIENT_VERSION,
   EvmRequestMethod.WEB3_SHA3,
   EvmRequestMethod.CREATE_ACCESS_LIST,
+  EvmRequestMethod.SEND_RAW_TRANSACTION,
 ];

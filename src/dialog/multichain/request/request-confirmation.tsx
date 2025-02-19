@@ -67,7 +67,7 @@ export type EvmRequestMessage = {
   accounts?: EvmAccount[];
 };
 
-const RequestConfirmation = ({ data }: Props) => {
+export const RequestConfirmation = ({ data }: Props) => {
   if (data.command === DialogCommand.SEND_DIALOG_CONFIRM) {
     data = data as HiveRequestMessage;
     const request = data.data as KeychainRequest;
@@ -218,5 +218,3 @@ const RequestConfirmation = ({ data }: Props) => {
   }
   return null;
 };
-
-export default RequestConfirmation;

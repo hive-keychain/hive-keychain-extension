@@ -22,14 +22,13 @@ export const evmRequestWithoutConfirmation = async (
   request: EvmRequest,
   dappInfo: EvmDappInfo,
 ) => {
-  const message: BackgroundMessage = {
+  let message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_RESPONSE,
     value: {
       requestId: request.request_id,
       result: {},
     },
   };
-  //TODO: Implement all unrestricted methods
 
   switch (request.method) {
     case EvmRequestMethod.GET_BALANCE: {
@@ -160,8 +159,15 @@ export const evmRequestWithoutConfirmation = async (
           request.params,
         );
       } catch (err) {
-        console.log(err);
-        Logger.info(`${request.method} is not implemented`);
+        const error = err as any;
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: error.info?.info.error,
+          },
+        };
+        // Logger.info(`${request.method} is not implemented`);
       }
       break;
     }

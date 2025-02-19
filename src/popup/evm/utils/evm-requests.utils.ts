@@ -89,7 +89,10 @@ const getTransactionReceipt = async (transactionHash: string) => {
 
 const call = async (method: string, params: any[]) => {
   const provider = await instanciateProvider();
-  return provider.send(method, params);
+
+  const response = await provider.send(method, params);
+  return response;
+  // return provider.send(method, params);
 
   // return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
 };

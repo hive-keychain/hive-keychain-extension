@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import Register from 'src/dialog/hive/register/register';
 import SignTransaction from 'src/dialog/hive/sign-transaction/sign-transaction';
 import DialogError from 'src/dialog/multichain/error/error';
-import RequestConfirmation from 'src/dialog/multichain/request/request-confirmation';
+import { RequestConfirmation } from 'src/dialog/multichain/request/request-confirmation';
 import RequestResponse from 'src/dialog/multichain/request/request-response';
 import Unlock from 'src/dialog/multichain/unlock/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
