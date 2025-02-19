@@ -4959,5 +4959,13 @@
   "evm_main_token_amount": {
     "message": "Main token amount",
     "description": "Main token amount evm"
+  },
+  "evm_access_list": {
+    "message": "Access list",
+    "description": "Evm access list"
+  },
+  "evm_access_list_caption_message": {
+    "message": "This transaction is using an access list. You won't be able to chose your gas fee because the access list will try to optimise the cost of the transaction",
+    "description": "Evm access list caption message"
   }
 }

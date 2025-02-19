@@ -532,6 +532,16 @@ export const SendTransaction = (props: Props) => {
           }
           break;
         }
+        case EvmTransactionType.EIP_155: {
+          transactionConfirmationFields.otherFields.push({
+            name: 'evm_access_list',
+            type: EvmInputDisplayType.LONG_TEXT,
+            value: JSON.stringify(params.accessList),
+            style: { fontWeight: 500 },
+          });
+          setCaption(chrome.i18n.getMessage('evm_access_list_caption_message'));
+          break;
+        }
       }
       setTransactionData(tData);
       transactionHook.setFields(transactionConfirmationFields);
