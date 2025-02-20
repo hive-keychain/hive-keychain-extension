@@ -138,6 +138,18 @@ const getNonce = async (account: EvmAccount) => {
   return await provider.getTransactionCount(account.wallet.address);
 };
 
+const resolveEns = async (ensAddress: string) => {
+  const provider = await instanciateProvider();
+  const ensResolver = await provider.getResolver(ensAddress);
+  console.log(ensResolver);
+  return ensResolver?.getAddress();
+};
+
+const lookupEns = async (address: string) => {
+  const provider = await instanciateProvider();
+  return await provider.lookupAddress(address);
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -157,4 +169,6 @@ export const EvmRequestsUtils = {
   decryptMessage,
   getGasPrice,
   getNonce,
+  resolveEns,
+  lookupEns,
 };

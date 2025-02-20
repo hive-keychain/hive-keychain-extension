@@ -82,6 +82,10 @@ export enum EvmRequestMethod {
   PERSONAL_SIGN = 'personal_sign',
   ETH_SIGN = 'eth_sign',
   ETH_DECRYPT = 'eth_decrypt',
+
+  // Custom Keychain
+  KC_RESOLVE_ENS = 'kc_resolveEns',
+  KC_LOOKUP_ENS = 'kc_lookupEns',
 }
 
 export const doesMethodExist = (method: string) => {
@@ -171,4 +175,6 @@ export const EvmUnrestrictedMethods = [
   EvmRequestMethod.WEB3_SHA3,
   EvmRequestMethod.CREATE_ACCESS_LIST,
   EvmRequestMethod.SEND_RAW_TRANSACTION,
+  EvmRequestMethod.KC_RESOLVE_ENS,
+  EvmRequestMethod.KC_LOOKUP_ENS,
 ];

@@ -31,13 +31,13 @@ export const evmRequestWithoutConfirmation = async (
   };
 
   switch (request.method) {
-    case EvmRequestMethod.GET_BALANCE: {
-      message.value.result = await EvmRequestsUtils.getBalance(
-        request.params[0],
-        request.params[1],
-      );
-      break;
-    }
+    // case EvmRequestMethod.GET_BALANCE: {
+    //   message.value.result = await EvmRequestsUtils.getBalance(
+    //     request.params[0],
+    //     request.params[1],
+    //   );
+    //   break;
+    // }
     case EvmRequestMethod.GET_CHAIN: {
       message.value.result = await EvmChainUtils.getLastEvmChainId();
       break;
@@ -61,61 +61,61 @@ export const evmRequestWithoutConfirmation = async (
       sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
       break;
     }
-    case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
-    case EvmRequestMethod.GET_BLOCK_BY_HASH: {
-      message.value.result = await EvmRequestsUtils.getBlock(
-        request.params[0],
-        request.params[1],
-      );
-      break;
-    }
+    // case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
+    // case EvmRequestMethod.GET_BLOCK_BY_HASH: {
+    //   message.value.result = await EvmRequestsUtils.getBlock(
+    //     request.params[0],
+    //     request.params[1],
+    //   );
+    //   break;
+    // }
 
-    case EvmRequestMethod.GET_CODE: {
-      message.value.result = await EvmRequestsUtils.getCode(
-        request.params[0],
-        request.params[1],
-      );
-      break;
-    }
-    case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_NUMBER:
-    case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_HASH: {
-      message.value.result = await EvmRequestsUtils.getTransactionCountByBlock(
-        request.params[0],
-        request.params[1],
-      );
-      break;
-    }
-    case EvmRequestMethod.GET_TRANSACTION_BY_HASH_AND_INDEX:
-    case EvmRequestMethod.GET_TRANSACTION_BY_BLOCK_NUMBER_AND_INDEX: {
-      message.value.result =
-        await EvmRequestsUtils.getTransactionByBlockAndIndex(
-          request.params[0],
-          request.params[1],
-        );
-      break;
-    }
+    // case EvmRequestMethod.GET_CODE: {
+    //   message.value.result = await EvmRequestsUtils.getCode(
+    //     request.params[0],
+    //     request.params[1],
+    //   );
+    //   break;
+    // }
+    // case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_NUMBER:
+    // case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_HASH: {
+    //   message.value.result = await EvmRequestsUtils.getTransactionCountByBlock(
+    //     request.params[0],
+    //     request.params[1],
+    //   );
+    //   break;
+    // }
+    // case EvmRequestMethod.GET_TRANSACTION_BY_HASH_AND_INDEX:
+    // case EvmRequestMethod.GET_TRANSACTION_BY_BLOCK_NUMBER_AND_INDEX: {
+    //   message.value.result =
+    //     await EvmRequestsUtils.getTransactionByBlockAndIndex(
+    //       request.params[0],
+    //       request.params[1],
+    //     );
+    //   break;
+    // }
 
-    case EvmRequestMethod.GET_TRANSACTION_BY_HASH: {
-      message.value.result = await EvmRequestsUtils.getTransactionByHash(
-        request.params[0],
-      );
-      break;
-    }
-    case EvmRequestMethod.GET_TRANSACTION_COUNT_FOR_ADDRESS: {
-      message.value.result =
-        await EvmRequestsUtils.getTransactionCountForAddress(
-          request.params[0],
-          request.params[1],
-        );
-      break;
-    }
+    // case EvmRequestMethod.GET_TRANSACTION_BY_HASH: {
+    //   message.value.result = await EvmRequestsUtils.getTransactionByHash(
+    //     request.params[0],
+    //   );
+    //   break;
+    // }
+    // case EvmRequestMethod.GET_TRANSACTION_COUNT_FOR_ADDRESS: {
+    //   message.value.result =
+    //     await EvmRequestsUtils.getTransactionCountForAddress(
+    //       request.params[0],
+    //       request.params[1],
+    //     );
+    //   break;
+    // }
 
-    case EvmRequestMethod.GET_TRANSACTION_RECEIPT: {
-      message.value.result = await EvmRequestsUtils.getTransactionReceipt(
-        request.params[0],
-      );
-      break;
-    }
+    // case EvmRequestMethod.GET_TRANSACTION_RECEIPT: {
+    //   message.value.result = await EvmRequestsUtils.getTransactionReceipt(
+    //     request.params[0],
+    //   );
+    //   break;
+    // }
 
     case EvmRequestMethod.PERSONAL_RECOVER: {
       message.value.result = await EvmRequestsUtils.personalRecover(
@@ -148,6 +148,42 @@ export const evmRequestWithoutConfirmation = async (
       message.value.result = permissions.map((perm) => {
         return { parentCapability: perm };
       });
+      break;
+    }
+
+    case EvmRequestMethod.KC_RESOLVE_ENS: {
+      try {
+        message.value.result = await EvmRequestsUtils.resolveEns(
+          request.params[0],
+        );
+      } catch (err) {
+        const error = err as any;
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: error.info?.info.error,
+          },
+        };
+      }
+      break;
+    }
+    case EvmRequestMethod.KC_LOOKUP_ENS: {
+      try {
+        message.value.result = await EvmRequestsUtils.lookupEns(
+          request.params[0],
+        );
+      } catch (err) {
+        console.log(err);
+        const error = err as any;
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: error.info?.info.error,
+          },
+        };
+      }
       break;
     }
 
