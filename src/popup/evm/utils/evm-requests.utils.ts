@@ -91,6 +91,7 @@ const call = async (method: string, params: any[]) => {
   const provider = await instanciateProvider();
 
   const response = await provider.send(method, params);
+  console.log(response);
   return response;
   // return provider.send(method, params);
 

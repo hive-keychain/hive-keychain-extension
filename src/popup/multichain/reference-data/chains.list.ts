@@ -125,8 +125,8 @@ export const defaultChainList = [
     testnet: true,
     isEth: true,
     rpc: [
-      { url: 'https://ethereum-sepolia-rpc.publicnode.com' },
       { url: 'https://sepolia.drpc.org' },
+      { url: 'https://ethereum-sepolia-rpc.publicnode.com' },
     ],
   } as EvmChain,
 ];

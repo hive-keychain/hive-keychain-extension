@@ -158,6 +158,7 @@ export const evmRequestWithoutConfirmation = async (
         );
       } catch (err) {
         const error = err as any;
+        console.log({ error });
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
@@ -195,12 +196,21 @@ export const evmRequestWithoutConfirmation = async (
           request.params,
         );
       } catch (err) {
+        console.log(err);
         const error = err as any;
+        console.log({ error });
+        let value;
+        if (!!error.error && !!error.error.code) {
+          value = error.error;
+        } else if (!!error.info && error.info?.info.error) {
+          value = error.info?.info.error;
+        }
+
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
             requestId: request.request_id,
-            error: error.info?.info.error,
+            error: value,
           },
         };
         // Logger.info(`${request.method} is not implemented`);
