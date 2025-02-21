@@ -109,6 +109,9 @@
                 padding: 2px;
                 border: 1px solid var(--card-border);
                 border-radius: 50%;
+                &.no-padding {
+                  padding: unset;
+                }
               }
             }
           }

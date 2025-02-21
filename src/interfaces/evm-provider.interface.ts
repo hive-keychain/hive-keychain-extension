@@ -93,6 +93,10 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     code: -32602,
     message: 'Invalid method parameter(s).',
   },
+  unconfiguredEns: {
+    code: -32602,
+    message: 'The address uses an ENS but this one was configured.',
+  },
   interalJSONRPCError: {
     code: -32603,
     message: 'Internal JSON-RPC error.',
@@ -109,6 +113,18 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     code: -32003,
     message: 'Transaction rejected.',
   },
+  transactionReverted: {
+    code: -32003,
+    message: 'Transaction reverted.',
+  },
+  insufficientFunds: {
+    code: -32003,
+    message: 'Insufficient funds.',
+  },
+  transactionReplaced: {
+    code: -32003,
+    message: 'Transaction replaced.',
+  },
   methodNotSupported: {
     code: -32004,
     message: 'Method not supported.',
@@ -116,6 +132,30 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
   requestLimitExceeded: {
     code: -32005,
     message: 'Request limit exceeded.',
+  },
+  executionTimeout: {
+    code: -32000,
+    message: 'Execution timeout',
+  },
+  networkError: {
+    code: -32011,
+    message: 'Network error',
+  },
+  nounceTooLow: {
+    code: -32000,
+    message: 'Nounce too low',
+  },
+  gasLimitTooLow: {
+    code: -32010,
+    message: 'Gas limit was too low',
+  },
+  undeterminedError: {
+    code: -1,
+    message: 'Undetermined Error',
+  },
+  unknownError: {
+    code: -1,
+    message: 'Unknown error',
   },
 };
 
@@ -125,4 +165,74 @@ export interface EvmWalletPermissions {
 
 export type EvmWalletDomainPermissions = {
   [key in EvmRequestPermission]?: string[];
+};
+
+export const getErrorFromEtherJS = (
+  errorCode: string,
+  errorExtraDetail?: string,
+) => {
+  let error: ProviderRpcErrorItem;
+  switch (errorCode) {
+    case 'NOT_IMPLEMENTED':
+    case 'UNSUPPORTED_OPERATION':
+      error = ProviderRpcErrorList.unsupportedMethod;
+      break;
+    case 'ACTION_REJECTED':
+      error = ProviderRpcErrorList.userReject;
+      break;
+    case 'BAD_DATA':
+    case 'BUFFER_OVERRUN':
+    case 'INVALID_ARGUMENT':
+    case 'MISSING_ARGUMENT':
+    case 'UNEXPECTED_ARGUMENT':
+      error = ProviderRpcErrorList.invalidMethodParams;
+      break;
+    case 'TIMEOUT':
+      error = ProviderRpcErrorList.executionTimeout;
+      break;
+    case 'NETWORK_ERROR':
+      error = ProviderRpcErrorList.networkError;
+      break;
+    case 'SERVER_ERROR':
+      error = ProviderRpcErrorList.resourceUnavailable;
+      break;
+    case 'NONCE_EXPIRED':
+      error = ProviderRpcErrorList.nounceTooLow;
+      break;
+    case 'REPLACEMENT_UNDERPRICED':
+      error = ProviderRpcErrorList.transactionRejected;
+      break;
+    case 'CALL_EXCEPTION':
+      error = ProviderRpcErrorList.transactionReverted;
+      break;
+    case 'TRANSACTION_REPLACED':
+      error = ProviderRpcErrorList.transactionReplaced;
+      break;
+    case 'UNCONFIGURED_NAME':
+      error = ProviderRpcErrorList.unconfiguredEns;
+      break;
+    case 'INSUFFICIENT_FUNDS':
+      error = ProviderRpcErrorList.insufficientFunds;
+      break;
+
+    // TODO determine what kind of error it should be
+    case 'CANCELLED':
+    case 'NUMERIC_FAULT':
+    case 'OFFCHAIN_FAULT':
+      error = ProviderRpcErrorList.undeterminedError;
+      break;
+
+    case 'VALUE_MISMATCH':
+    case 'UNKNOWN_ERROR':
+    default: {
+      error = ProviderRpcErrorList.unknownError;
+      break;
+    }
+  }
+
+  if (errorExtraDetail) {
+    error = { ...error, message: error.message + ` - ${errorExtraDetail}` };
+  }
+
+  return error;
 };

@@ -71,9 +71,9 @@ export class EvmProvider extends EventEmitter {
         if (event.data.type && event.data.type == 'evm_keychain_response') {
           const result = event.data.response.result;
           const requestId = event.data.response.requestId;
-          if (result && requestId) {
+          if (result !== null && requestId !== null) {
             if (this._requests[requestId]) {
-              this._requests[requestId]({ result });
+              this._requests[requestId]({ result: result });
               delete this._requests[requestId];
             }
           }
@@ -136,8 +136,7 @@ export class EvmProvider extends EventEmitter {
   processRequest = async (args: RequestArguments) => {
     return new Promise((resolve, reject) => {
       this.dispatchCustomEvent('requestEvm', args, (response: any) => {
-        console.log({ response });
-        if (response.result) {
+        if (response.result !== null) {
           resolve(response.result);
         } else {
           reject(response.error);

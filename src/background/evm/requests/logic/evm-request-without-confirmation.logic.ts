@@ -8,6 +8,7 @@ import {
   EvmDappInfo,
   EvmEventName,
   EvmRequest,
+  getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -163,7 +164,7 @@ export const evmRequestWithoutConfirmation = async (
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
             requestId: request.request_id,
-            error: error.info?.info.error,
+            error: getErrorFromEtherJS(error.code, error.shortMessage),
           },
         };
       }
@@ -175,13 +176,13 @@ export const evmRequestWithoutConfirmation = async (
           request.params[0],
         );
       } catch (err) {
-        console.log(err);
         const error = err as any;
+        console.log({ error });
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
             requestId: request.request_id,
-            error: error.info?.info.error,
+            error: getErrorFromEtherJS(error.code, error.shortMessage),
           },
         };
       }
@@ -196,7 +197,6 @@ export const evmRequestWithoutConfirmation = async (
           request.params,
         );
       } catch (err) {
-        console.log(err);
         const error = err as any;
         console.log({ error });
         let value;
@@ -218,6 +218,7 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
+
   requestHandler.closeWindow();
   chrome.tabs.sendMessage(tab, message);
 };
