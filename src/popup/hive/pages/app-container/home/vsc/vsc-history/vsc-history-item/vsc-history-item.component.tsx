@@ -71,10 +71,7 @@ const VscHistoryItem = ({ transaction }: Props) => {
           return chrome.i18n.getMessage('popup_html_vsc_info_withdraw', [
             FormatUtils.withCommas(transaction.amount / 1000 + '', 3),
             FormatUtils.shortenString(transaction.tk, 4),
-            FormatUtils.shortenString(
-              VscUtils.getAddressFromDid(transaction.owner)!,
-              4,
-            ),
+            VscUtils.getAddressFromDid(transaction.owner)!,
           ]);
         }
       default:

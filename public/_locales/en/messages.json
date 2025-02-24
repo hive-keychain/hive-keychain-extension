@@ -4329,7 +4329,7 @@
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_withdraw": {
-    "message": "Withdrew $1 $2 from VSC on address $3",
+    "message": "Withdrew $1 $2 from VSC on account @$3",
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_full_history": {

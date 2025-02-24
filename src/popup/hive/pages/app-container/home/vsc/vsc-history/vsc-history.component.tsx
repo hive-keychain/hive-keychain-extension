@@ -16,8 +16,6 @@ const VscHistory = ({
   activeAccountName,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  let lastOperationFetched = -1;
-
   const [transactions, setTransactions] = useState<(VscTransfer | VscCall)[]>();
 
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
