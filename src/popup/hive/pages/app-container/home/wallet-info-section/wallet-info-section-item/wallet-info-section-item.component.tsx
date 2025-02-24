@@ -223,14 +223,14 @@ const walletInfoSectionItem = ({
                     tokenMarket,
                     hive,
                     [tokenInfo],
-                  ).toFixed(2)}{' '}
+                  ).toFixed(3)}{' '}
                   ($
                   {(
                     TokensUtils.getHiveEngineTokenPrice(
                       tokenBalance,
                       tokenMarket,
                     ) * hive?.usd!
-                  ).toFixed(2)}
+                  ).toFixed(3)}
                   /{chrome.i18n.getMessage('token').toLowerCase()})
                 </div>
                 <div></div>

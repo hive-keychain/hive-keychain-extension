@@ -36,7 +36,15 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 };
 
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
-  const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
+  let tokensMarket = [];
+  let offset = 0;
+  let newTokens;
+  do {
+    newTokens = await TokensUtils.getTokensMarket({}, 1000, offset, []);
+    tokensMarket.push(...newTokens);
+    offset += 1000;
+  } while (tokensMarket.length % 1000 === 0 && newTokens.length);
+
   const action: ActionPayload<TokenMarket[]> = {
     type: HiveActionType.LOAD_TOKENS_MARKET,
     payload: tokensMarket,
