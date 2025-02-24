@@ -1,4 +1,4 @@
-import { Asset, ClaimRewardBalanceOperation } from '@hiveio/dhive';
+import type { Asset, ClaimRewardBalanceOperation } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';

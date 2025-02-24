@@ -1,4 +1,4 @@
-import { ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { Keys } from '@interfaces/keys.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';

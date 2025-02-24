@@ -1,12 +1,12 @@
-import {
+import type {
   AccountCreateOperation,
   AuthorityType,
   ChangeRecoveryAccountOperation,
   CreateClaimedAccountOperation,
-  PrivateKey,
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PrivateKey } from 'hive-tx';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 

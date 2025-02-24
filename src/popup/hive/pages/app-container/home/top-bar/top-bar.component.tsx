@@ -1,4 +1,3 @@
-import { sleep } from '@hiveio/dhive/lib/utils';
 import {
   TransactionOptions,
   TransactionOptionsMetadata,
@@ -30,6 +29,7 @@ import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.a
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 const TopBar = ({
@@ -86,7 +86,7 @@ const TopBar = ({
         activeAccount.keys.posting!,
         options,
       );
-      await sleep(3000);
+      await AsyncUtils.sleep(3000);
       refreshActiveAccount();
       if (claimResult) {
         if (claimResult.isUsingMultisig) {

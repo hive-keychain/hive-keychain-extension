@@ -1,4 +1,4 @@
-import {
+import type {
   CollateralizedConvertOperation,
   ConvertOperation,
 } from '@hiveio/dhive';

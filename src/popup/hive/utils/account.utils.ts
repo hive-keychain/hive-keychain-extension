@@ -1,8 +1,7 @@
-import {
+import type {
   AccountUpdateOperation,
   Authority,
   ClaimAccountOperation,
-  cryptoUtils,
   DynamicGlobalProperties,
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
@@ -10,6 +9,7 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -49,7 +49,7 @@ const getKeys = async (username: string, password: string) => {
   const postingInfo = hiveAccounts[0].posting;
   const memoKey = hiveAccounts[0].memo_key;
 
-  if (cryptoUtils.isWif(password)) {
+  if (isWif(password)) {
     const pubUnknown = KeysUtils.getPublicKeyFromPrivateKeyString(password);
     if (pubUnknown === memoKey) {
       return {

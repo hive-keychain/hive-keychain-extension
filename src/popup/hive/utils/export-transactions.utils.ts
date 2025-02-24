@@ -1,10 +1,6 @@
-import {
-  Asset,
-  utils as DHiveUtils,
-  Operation,
-  TransferOperation,
-} from '@hiveio/dhive';
+import type { Operation, TransferOperation } from '@hiveio/dhive';
 import TransactionUtils from '@popup/hive/utils/transaction.utils';
+import { Asset, HistoryFiltersUtils } from 'hive-keychain-commons';
 import moment from 'moment';
 import { KeychainError } from 'src/keychain-error';
 import Logger from 'src/utils/logger.utils';
@@ -30,8 +26,8 @@ const fetchTransaction = async (
   feedBack?: (percentage: number) => void,
 ): Promise<ExportTransactionOperation[] | undefined> => {
   const MAX_LIMIT = 1000;
-  const op = DHiveUtils.operationOrders;
-  const operationsBitmask = DHiveUtils.makeBitMaskFilter([
+  const op = HistoryFiltersUtils.operationOrders;
+  const operationsBitmask = HistoryFiltersUtils.makeBitMaskFilter([
     op.transfer,
     op.interest,
     op.transfer_to_vesting,

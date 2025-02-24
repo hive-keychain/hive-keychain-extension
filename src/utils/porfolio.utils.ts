@@ -1,4 +1,4 @@
-import { Asset, ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
@@ -10,6 +10,7 @@ import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Asset } from 'hive-keychain-commons';
 import Config from 'src/config';
 import {
   PortfolioBalance,
