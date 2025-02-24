@@ -206,7 +206,6 @@ export const useTransactionHook = (
       }
     } else {
       // TODO check for possible ens
-      // Test if working
       const ensFound = await EvmRequestsUtils.lookupEns(address);
       if (ensFound) {
         const ensResolver = await EvmRequestsUtils.getEnsResolver(ensFound);

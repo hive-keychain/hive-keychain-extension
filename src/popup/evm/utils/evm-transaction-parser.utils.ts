@@ -13,10 +13,12 @@ import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MethodRegistry } from 'eth-method-registry';
+import { ethers } from 'ethers';
 import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 
@@ -210,7 +212,6 @@ const getFieldWarnings = async (
       switch (methodName) {
         case 'transfer': {
           if (name === 'recipient') {
-            // Check error here
             return getAddressWarning(
               value,
               chainId,
@@ -360,6 +361,18 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
+
+  if (!ethers.isAddress(address)) {
+    if ((await EvmRequestsUtils.resolveEns(address)) === '') {
+      warnings.push({
+        ignored: false,
+        level: EvmTransactionWarningLevel.MEDIUM,
+        message: 'evm_ens_recipient_not_existing',
+        type: EvmTransactionWarningType.BASE,
+      });
+    }
+  }
+
   return warnings;
 };
 

@@ -1,3 +1,4 @@
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainRequest } from 'hive-keychain-commons';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -10,6 +11,7 @@ type Props = {
 
 type ResultMessage = {
   msg: { message: string; success: boolean; data: KeychainRequest };
+  command: DialogCommand;
 };
 
 const RequestResponse = ({ data }: Props) => {
@@ -18,6 +20,26 @@ const RequestResponse = ({ data }: Props) => {
       window.close();
     }, 3000);
   }
+
+  const getErrorMessage = () => {
+    switch (data.command) {
+      case DialogCommand.ANSWER_EVM_REQUEST: {
+        return <>{data.msg.message}</>;
+      }
+      case DialogCommand.ANSWER_REQUEST: {
+        return (
+          <>
+            {data.msg.message.split(/<br\s?\/?>/g).map((msg, index) => (
+              <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
+                {msg}
+              </p>
+            ))}
+          </>
+        );
+      }
+    }
+  };
+
   return (
     <>
       <div className="response-message-container">
@@ -36,13 +58,7 @@ const RequestResponse = ({ data }: Props) => {
                 : 'message_container_title_fail',
             )}
           </div>
-          <div className="message">
-            {data.msg.message.split(/<br\s?\/?>/g).map((msg, index) => (
-              <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
-                {msg}
-              </p>
-            ))}
-          </div>
+          <div className="message">{getErrorMessage()}</div>
         </div>
       </div>
       <ButtonComponent

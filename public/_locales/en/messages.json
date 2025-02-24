@@ -4884,6 +4884,10 @@
     "message": "Succesfully sent transaction",
     "description": "SuccesFully sent evm transaction"
   },
+  "evm_send_transaction_failed": {
+    "message": "Transaction failed during broadcast",
+    "description": "Failed transaction"
+  },
   "evm_transaction_domain_blacklisted": {
     "message": "This domain has been flagged for suspicious behavior",
     "description": "Domain is blacklisted"
@@ -4967,5 +4971,9 @@
   "evm_access_list_caption_message": {
     "message": "This transaction is using an access list. You won't be able to chose your gas fee because the access list will try to optimise the cost of the transaction",
     "description": "Evm access list caption message"
+  },
+  "evm_ens_recipient_not_existing": {
+    "message": "This ENS doesn't seem to be linked to a wallet",
+    "description": "Evm ens not matching"
   }
 }

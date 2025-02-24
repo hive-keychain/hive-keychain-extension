@@ -1,6 +1,9 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
-import { EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmRequest,
+  getErrorFromEtherJS,
+} from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 
@@ -23,10 +26,17 @@ export const signV4 = async (
         null,
         res,
         requestHandler.data,
-        'dialog_evm_sign_request_success',
+        await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
       );
     }
   } catch (err) {
-    console.log(err);
+    const error = err as any;
+    return await createEvmMessage(
+      err,
+      null,
+      requestHandler.data,
+      null,
+      getErrorFromEtherJS(error.code).message,
+    );
   }
 };

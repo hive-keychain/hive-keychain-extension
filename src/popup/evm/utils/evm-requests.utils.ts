@@ -91,11 +91,7 @@ const call = async (method: string, params: any[]) => {
   const provider = await instanciateProvider();
 
   const response = await provider.send(method, params);
-  console.log(response);
   return response;
-  // return provider.send(method, params);
-
-  // return EvmRpcUtils.call(method, params, activeChain.rpc[1].url);
 };
 
 const signMessage = async (privateKey: string, message: string) => {
@@ -141,7 +137,6 @@ const getNonce = async (account: EvmAccount) => {
 
 const resolveEns = async (ensAddress: string) => {
   const ensResolver = await getEnsResolver(ensAddress);
-  console.log('ens resolver', { ensResolver });
   return ensResolver ? ensResolver.getAddress() : '';
 };
 

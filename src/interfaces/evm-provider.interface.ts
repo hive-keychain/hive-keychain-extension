@@ -95,7 +95,7 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
   },
   unconfiguredEns: {
     code: -32602,
-    message: 'The address uses an ENS but this one was configured.',
+    message: 'The address uses an ENS but this one was not configured.',
   },
   interalJSONRPCError: {
     code: -32603,
@@ -157,6 +157,12 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     code: -1,
     message: 'Unknown error',
   },
+};
+
+export const getEvmProviderRpcError = (key: string) => {
+  if (!key) return null;
+  const error = ProviderRpcErrorList[key];
+  return error ? error.message : ProviderRpcErrorList.unknownError.message;
 };
 
 export interface EvmWalletPermissions {
