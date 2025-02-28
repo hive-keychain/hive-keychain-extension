@@ -98,22 +98,6 @@
             //   }
 
             // }
-            .value-content-horizontal {
-              display: flex;
-              align-items: center;
-              column-gap: 4px;
-
-              .user-picture {
-                width: 20px;
-                height: 20px;
-                padding: 2px;
-                border: 1px solid var(--card-border);
-                border-radius: 50%;
-                &.no-padding {
-                  padding: unset;
-                }
-              }
-            }
           }
 
           &.string-centered {
@@ -153,42 +137,6 @@
             display: flex;
             flex-direction: column;
             row-gap: 4px;
-          }
-        }
-
-        .warning-container,
-        .information-container {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          justify-content: flex-start;
-          row-gap: 4px;
-
-          .warning,
-          .information {
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            column-gap: 8px;
-            font-style: italic;
-            .warning-icon,
-            .information-icon {
-              height: 16px;
-              width: 16px;
-              svg {
-                height: 16px;
-                width: 16px;
-              }
-              &.high {
-                --warning-color: #{$red};
-              }
-              &.medium {
-                --warning-color: #{$orange};
-              }
-              &.low {
-                --warning-color: #{$yellow};
-              }
-            }
           }
         }
       }

@@ -1,9 +1,22 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmActiveAccount,
+  EVMToken,
+} from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmTokenInfoShortErc20,
+  EVMTokenType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTransactionType,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
+import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -21,10 +34,11 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ethers, Wallet } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -33,6 +47,7 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -135,19 +150,57 @@ const EvmTransfer = ({
     let fields = [
       {
         label: 'popup_html_transfer_from',
-        value: `${FormatUtils.shortenString(activeAccount.address, 10)}`,
+        value: (
+          <EvmAddressComponent
+            address={activeAccount.address}
+            chainId={chain.chainId}
+          />
+        ),
       },
       {
         label: 'popup_html_transfer_to',
-        value: `${FormatUtils.shortenString(form.receiverAddress, 10)}`,
+        value: (
+          <EvmAddressComponent
+            address={form.receiverAddress}
+            chainId={chain.chainId}
+          />
+        ),
+        warnings: [],
       },
       {
         label: 'popup_html_transfer_amount',
-        value: `${FormatUtils.withCommas(form.amount, decimals, true)} ${
-          form.selectedToken.tokenInfo.symbol
-        }`,
+        value: (
+          <div className="value-content-horizontal">
+            {form.selectedToken.tokenInfo && (
+              <EvmTokenLogo tokenInfo={form.selectedToken.tokenInfo} />
+            )}
+            <span>{`${FormatUtils.withCommas(form.amount, decimals, true)} ${
+              form.selectedToken.tokenInfo.symbol
+            }`}</span>
+          </div>
+        ),
       },
     ];
+
+    let transactionData: ProviderTransactionData = {
+      from: activeAccount.address,
+      type: EvmTransactionType.EIP_1559,
+      to: form.receiverAddress,
+      data:
+        form.selectedToken.tokenInfo.type === EVMTokenType.NATIVE
+          ? ''
+          : encodeTransferData(
+              form.selectedToken.tokenInfo,
+              activeAccount,
+              form.receiverAddress,
+              form.amount,
+            ),
+      value:
+        form.selectedToken.tokenInfo.type === EVMTokenType.NATIVE
+          ? form.amount.toString(16)
+          : '0x0',
+    };
+    transactionData.from = activeAccount.address;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
@@ -160,6 +213,7 @@ const EvmTransfer = ({
       receiverAddress: form.receiverAddress,
       amount: form.amount,
       wallet: localAccounts[0].wallet,
+      transactionData: transactionData,
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
@@ -193,6 +247,29 @@ const EvmTransfer = ({
 
   const setAmountToMaxValue = () => {
     setValue('amount', Number(balance));
+  };
+
+  const encodeTransferData = (
+    tokenInfo: EvmTokenInfoShortErc20,
+    selectedAccount: EvmActiveAccount,
+    receiverAddress: string,
+    amount: number,
+  ) => {
+    const provider = EthersUtils.getProvider(chain);
+    const connectedWallet = new Wallet(
+      selectedAccount.wallet.signingKey,
+      provider,
+    );
+    const contract = new ethers.Contract(
+      tokenInfo.address!,
+      Erc20Abi,
+      connectedWallet,
+    );
+
+    return contract.interface.encodeFunctionData('transfer', [
+      receiverAddress,
+      amount * 1000000,
+    ]);
   };
 
   return (

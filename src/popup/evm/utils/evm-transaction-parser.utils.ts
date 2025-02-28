@@ -409,12 +409,15 @@ const getSmartContractWarningAndInfo = async (
 };
 
 const verifyTransactionInformation = async (
-  domain: string,
+  domain?: string,
   to?: string,
   contract?: string,
   proxy?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
-  let url = `evm/verifyTransaction?domain=${domain}`;
+  let url = `evm/verifyTransaction?`;
+  if (domain) {
+    url += `domain=${domain}`;
+  }
   if (to) {
     url += `&to=${to}`;
   }

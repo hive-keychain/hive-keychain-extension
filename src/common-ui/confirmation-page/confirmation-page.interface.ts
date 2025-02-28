@@ -1,5 +1,12 @@
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import {
+  EvmTransactionInfo,
+  EvmTransactionWarning,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+
+export type TransactionWarning = EvmTransactionWarning;
+export type TransactionInfo = EvmTransactionInfo;
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -24,10 +31,12 @@ export interface HiveConfirmationPageParams extends ConfirmationPageParams {
 
 export interface ConfirmationPageFields {
   label: string;
-  value: string;
+  value: string | JSX.Element;
   labelParams?: string[];
   valueParams?: string[];
   valueClassName?: string;
+  warnings?: TransactionWarning[];
+  info?: TransactionInfo[];
 }
 
 export interface EvmConfirmationPageGasFee {

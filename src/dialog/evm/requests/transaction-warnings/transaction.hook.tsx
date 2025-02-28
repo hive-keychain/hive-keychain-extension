@@ -7,18 +7,13 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
@@ -188,50 +183,10 @@ export const useTransactionHook = (
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
   ) => {
-    const isAddress = ethers.isAddress(address);
-
-    let label;
-    let formattedAddress;
-
-    let avatar = null;
-
-    if (isAddress === false) {
-      const ensResolver = await EvmRequestsUtils.getEnsResolver(address);
-
-      const foundAddress = await ensResolver?.getAddress();
-      avatar = await ensResolver?.getAvatar();
-      label = address;
-      if (foundAddress) {
-        address = foundAddress;
-      }
-    } else {
-      // TODO check for possible ens
-      const ensFound = await EvmRequestsUtils.lookupEns(address);
-      if (ensFound) {
-        const ensResolver = await EvmRequestsUtils.getEnsResolver(ensFound);
-        const foundAddress = await ensResolver?.getAddress();
-        avatar = await ensResolver?.getAvatar();
-        label = address;
-        if (foundAddress) {
-          address = foundAddress;
-        }
-      } else {
-        label = await EvmAddressesUtils.getAddressLabel(address, chainId);
-        formattedAddress = EvmFormatUtils.formatAddress(address);
-      }
-    }
-
     return {
       name: 'evm_operation_to',
       type: EvmInputDisplayType.WALLET_ADDRESS,
-      value: (
-        <div className="value-content-horizontal">
-          <EvmAccountImage address={address} avatar={avatar} />
-          <CustomTooltip message={address} skipTranslation>
-            <span>{label ?? formattedAddress}</span>
-          </CustomTooltip>
-        </div>
-      ),
+      value: <EvmAddressComponent address={address} chainId={chainId} />,
       warnings: await EvmTransactionParserUtils.getAddressWarning(
         address,
         chainId,

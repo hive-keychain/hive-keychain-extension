@@ -12,11 +12,17 @@
     .introduction {
       padding: 0px 32px;
       @include caption;
+      @include small-card;
+      display: unset;
+      margin: unset;
     }
 
-    .warning-message {
+    .warning-message-panel {
       @include caption;
       color: $red;
+      @include small-card;
+      display: unset;
+      margin: unset;
     }
 
     .multisig-message {
@@ -50,6 +56,7 @@
       .field {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         .label {
           @include poppins500(14px);
         }
@@ -64,12 +71,46 @@
         }
       }
     }
+
+    .balance-change-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      align-items: flex-start;
+      color: var(--main-font-color);
+      .balance-change-title {
+        align-self: flex-start;
+      }
+
+      .balance-panel {
+        display: flex;
+        flex: 1;
+        column-gap: 8px;
+        align-items: center;
+        line-height: 24px;
+        justify-content: space-between;
+        width: 100%;
+        @include poppins400(14px);
+
+        .icon {
+          --triangle-arrow-color: #{$red};
+          @include icon-size(24px);
+        }
+      }
+    }
   }
 
   .bottom-panel {
     position: absolute;
     left: 0px;
     bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+    padding: 0px 24px;
+    padding-bottom: 16px;
+  }
+  .evm-bottom-panel {
     width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;

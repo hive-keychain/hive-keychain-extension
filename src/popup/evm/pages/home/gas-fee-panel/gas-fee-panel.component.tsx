@@ -61,6 +61,7 @@ export const GasFeePanel = ({
   });
 
   useEffect(() => {
+    console.log(transactionData);
     if (transactionData) init();
   }, [transactionData]);
 

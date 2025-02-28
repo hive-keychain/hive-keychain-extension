@@ -1,21 +1,38 @@
 import { Screen } from '@interfaces/screen.interface';
+import {
+  EvmTokenInfoShort,
+  EvmTokenInfoShortErc20,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import Decimal from 'decimal.js';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { Card } from 'src/common-ui/card/card.component';
 import {
   ConfirmationPageFields,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
+
+interface BalanceInfo {
+  before: string;
+  estimatedAfter: string;
+}
 
 const ConfirmationPage = ({
   fields,
@@ -33,14 +50,21 @@ const ConfirmationPage = ({
   receiverAddress,
   amount,
   wallet,
+  selectedAccount,
+  transactionData,
   goBack,
   setTitleContainerProperties,
   setErrorMessage,
 }: PropsType) => {
   const [hasField] = useState(fields && fields.length !== 0);
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
+  const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
 
   useEffect(() => {
+    initConfirmationPage();
+  }, []);
+
+  const initConfirmationPage = async () => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
@@ -56,7 +80,11 @@ const ConfirmationPage = ({
         }
       },
     });
-  }, []);
+
+    initBalance(tokenInfo);
+
+    console.log({ receiverAddress, transactionData });
+  };
 
   const handleClickOnConfirm = () => {
     if ((hasGasFee && !!selectedFee) || !hasGasFee)
@@ -71,6 +99,25 @@ const ConfirmationPage = ({
     goBack();
   };
 
+  const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
+    const balance = await EvmTokensUtils.getTokenBalance(
+      selectedAccount?.wallet.address!,
+      chain!,
+      tokenInfo,
+    );
+
+    setBalanceInfo({
+      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
+      estimatedAfter: `${FormatUtils.withCommas(
+        new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
+        (tokenInfo as EvmTokenInfoShortErc20).decimals || 8,
+        true,
+      )}  ${tokenInfo?.symbol}`,
+    });
+  };
+
+  const handleOnWarningClicked = (index: number) => {};
+
   return (
     <div
       className="confirmation-page"
@@ -83,7 +130,7 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div data-testid="warning-message" className="warning-message">
+          <div data-testid="warning-message" className="warning-message-panel">
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
@@ -102,9 +149,15 @@ const ConfirmationPage = ({
                     {field.value}
                   </div>
                 </div>
+                {field.warnings && (
+                  <ConfirmationWarnings
+                    warnings={field.warnings}
+                    onWarningClicked={(index) => handleOnWarningClicked(index)}
+                  />
+                )}
                 {index !== fields.length - 1 && (
                   <Separator
-                    key={` separator-${field.label}`}
+                    key={`separator-${field.label}`}
                     type={'horizontal'}
                     fullSize
                   />
@@ -113,20 +166,32 @@ const ConfirmationPage = ({
             ))}
           </div>
         )}
+        {balanceInfo && (
+          <Card className="balance-change-panel">
+            <div className="balance-change-title">
+              {chrome.i18n.getMessage('evm_balance_change_title')}
+            </div>
+
+            <div className="balance-panel">
+              <div className="balance-before">{balanceInfo?.before}</div>
+              <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
+              <div className="balance-after">{balanceInfo?.estimatedAfter}</div>
+            </div>
+          </Card>
+        )}
         {hasGasFee && (
           <GasFeePanel
             chain={chain}
             tokenInfo={tokenInfo}
-            // receiverAddress={receiverAddress}
-            // amount={amount}
             wallet={wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
             transactionType={(chain as EvmChain).defaultTransactionType}
+            transactionData={transactionData}
           />
         )}
       </div>
-      <div className="bottom-panel">
+      <div className="evm-bottom-panel">
         <ButtonComponent
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
@@ -164,6 +229,9 @@ const mapStateToProps = (state: RootState) => {
     receiverAddress: state.navigation.stack[0].params.receiverAddress,
     amount: state.navigation.stack[0].params.amount,
     wallet: state.navigation.stack[0].params.wallet,
+    selectedAccount: state.evm.activeAccount,
+    transactionData: state.navigation.stack[0].params
+      .transactionData as ProviderTransactionData,
   };
 };
 

@@ -30,7 +30,7 @@ export interface ProviderTransactionData {
   args?: any[];
   to?: string;
   from: string;
-  decodedData: {
+  decodedData?: {
     receiverAddress: string;
     amount: number;
   };
