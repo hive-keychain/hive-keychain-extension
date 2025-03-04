@@ -21,7 +21,7 @@ interface Props {
   warningHook: useTransactionHook;
 }
 
-export const EvmWarningMultiplePopupComponent = ({ warningHook }: Props) => {
+export const EvmSinglePopupComponent = ({ warningHook }: Props) => {
   return (
     <PopupContainer
       className="transaction-warning-content"

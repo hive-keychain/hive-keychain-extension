@@ -1,3 +1,4 @@
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   EvmTokenInfoShort,
@@ -20,13 +21,17 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { Card } from 'src/common-ui/card/card.component';
 import {
+  ConfirmationPageEvmFields,
   ConfirmationPageFields,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 
 interface BalanceInfo {
@@ -60,6 +65,11 @@ const ConfirmationPage = ({
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
 
+  const transactionHook = useTransactionHook(
+    {} as EvmRequestMessage,
+    {} as EvmRequest,
+  );
+
   useEffect(() => {
     initConfirmationPage();
   }, []);
@@ -82,11 +92,14 @@ const ConfirmationPage = ({
     });
 
     initBalance(tokenInfo);
-
-    console.log({ receiverAddress, transactionData });
+    transactionHook.setConfirmationPageFields(fields);
   };
 
   const handleClickOnConfirm = () => {
+    if (transactionHook && transactionHook.hasWarning()) {
+      transactionHook.setWarningsPopupOpened(true);
+      return;
+    }
     if ((hasGasFee && !!selectedFee) || !hasGasFee)
       afterConfirmAction(selectedFee);
     else setErrorMessage('popup_html_evm_gas_fee_not_selected');
@@ -116,7 +129,17 @@ const ConfirmationPage = ({
     });
   };
 
-  const handleOnWarningClicked = (index: number) => {};
+  const handleOnWarningClicked = (
+    field: ConfirmationPageFields,
+    warningIndex: number,
+    fieldIndex: number,
+  ) => {
+    transactionHook.openSingleWarningPopup(
+      fieldIndex,
+      warningIndex,
+      field.warnings![warningIndex],
+    );
+  };
 
   return (
     <div
@@ -149,10 +172,12 @@ const ConfirmationPage = ({
                     {field.value}
                   </div>
                 </div>
-                {field.warnings && (
+                {field.warnings && field.warnings.length > 0 && (
                   <ConfirmationWarnings
                     warnings={field.warnings}
-                    onWarningClicked={(index) => handleOnWarningClicked(index)}
+                    onWarningClicked={(warningIndex) =>
+                      handleOnWarningClicked(field, warningIndex, index)
+                    }
                   />
                 )}
                 {index !== fields.length - 1 && (
@@ -206,6 +231,7 @@ const ConfirmationPage = ({
           }}
           type={ButtonType.IMPORTANT}></ButtonComponent>
       </div>
+      <ConfirmationPopup transactionHook={transactionHook} />
     </div>
   );
 };
@@ -213,7 +239,8 @@ const ConfirmationPage = ({
 const mapStateToProps = (state: RootState) => {
   return {
     message: state.navigation.stack[0].params.message as string,
-    fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
+    fields: state.navigation.stack[0].params
+      .fields as ConfirmationPageEvmFields[],
     warningMessage: state.navigation.stack[0].params.warningMessage as string,
     warningParams: state.navigation.stack[0].params.warningParams,
     skipWarningTranslation:

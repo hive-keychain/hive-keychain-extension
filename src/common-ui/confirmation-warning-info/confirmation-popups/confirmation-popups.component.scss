@@ -1,0 +1,65 @@
+.transaction-warning-content {
+  .warning-top-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 8px;
+    .title {
+      @include poppins400(14px);
+      color: var(--main-font-color);
+    }
+
+    $icon-size: 50px;
+    .icon {
+      width: $icon-size;
+      height: $icon-size;
+      svg {
+        width: $icon-size;
+        height: $icon-size;
+      }
+    }
+  }
+
+  .warnings {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .warning {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      .warning-icon {
+        height: 16px;
+        width: 16px;
+        svg {
+          height: 16px;
+          width: 16px;
+        }
+        &.high {
+          --warning-color: #{$red};
+        }
+        &.medium {
+          --warning-color: #{$orange};
+        }
+        &.low {
+          --warning-color: #{$yellow};
+        }
+      }
+      .warning-message {
+        @include poppins400(12px);
+        color: var(--main-font-color);
+      }
+    }
+  }
+
+  .checkbox-panel {
+    width: calc(100% - 32px);
+  }
+
+  .buttons-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+  }
+}

@@ -1,4 +1,8 @@
-import { EvmTransactionWarningLevel } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionWarning,
+  EvmTransactionWarningLevel,
+  TransactionConfirmationField,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React from 'react';
 import ButtonComponent, {
@@ -8,6 +12,7 @@ import {
   BackgroundType,
   CheckboxPanelComponent,
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -17,7 +22,7 @@ interface Props {
   warningHook: useTransactionHook;
 }
 
-export const EvmWarningSinglePopupComponent = ({ warningHook }: Props) => {
+export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
   return (
     <PopupContainer
       className="transaction-warning-content"
@@ -29,35 +34,40 @@ export const EvmWarningSinglePopupComponent = ({ warningHook }: Props) => {
         </div>
       </div>
       <div className="warnings">
-        {warningHook.fields &&
-          warningHook
-            .getAllFieldsWithNotIgnoredWarnings(warningHook.fields)
-            .map((field) => (
+        {warningHook
+          .getAllFieldsWithNotIgnoredWarnings()
+          .map(
+            (
+              field: ConfirmationPageEvmFields | TransactionConfirmationField,
+            ) => (
               <>
                 {field.name && (
                   <div className="field-name">
                     {chrome.i18n.getMessage(field.name)}
                   </div>
                 )}
-                {field.warnings?.map((warning, warningIndex) => {
-                  if (warning.ignored === false) {
-                    return (
-                      <div
-                        className="warning"
-                        key={`warning-${field.name}-warning-${warningIndex}`}>
-                        <SVGIcon
-                          className={`warning-icon ${warning?.level}`}
-                          icon={SVGIcons.GLOBAL_WARNING}
-                        />
-                        <div className="warning-message">
-                          {chrome.i18n.getMessage(warning?.message!)}
+                {field.warnings?.map(
+                  (warning: EvmTransactionWarning, warningIndex: number) => {
+                    if (warning.ignored === false) {
+                      return (
+                        <div
+                          className="warning"
+                          key={`warning-${field.name}-warning-${warningIndex}`}>
+                          <SVGIcon
+                            className={`warning-icon ${warning?.level}`}
+                            icon={SVGIcons.GLOBAL_WARNING}
+                          />
+                          <div className="warning-message">
+                            {chrome.i18n.getMessage(warning?.message!)}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }
-                })}
+                      );
+                    }
+                  },
+                )}
               </>
-            ))}
+            ),
+          )}
       </div>
 
       {EvmTransactionParserUtils.getHighestWarning(

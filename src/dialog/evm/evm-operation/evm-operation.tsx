@@ -4,12 +4,11 @@ import React, { useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmWarningMultiplePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-multiple-popup.component';
-import { EvmWarningSinglePopupComponent } from 'src/dialog/evm/requests/transaction-warnings/warning-single-popup.component';
 
 type Props = {
   title: string;
@@ -113,17 +112,8 @@ export const EvmOperation = ({
 
         <LoadingComponent hide={!loading} />
       </div>
-      {warningHook &&
-        warningHook.warningsPopupOpened &&
-        warningHook.hasWarning() && (
-          <EvmWarningSinglePopupComponent warningHook={warningHook} />
-        )}
 
-      {warningHook &&
-        warningHook.singleWarningPopupOpened &&
-        warningHook.selectedSingleWarning && (
-          <EvmWarningMultiplePopupComponent warningHook={warningHook} />
-        )}
+      {warningHook && <ConfirmationPopup transactionHook={warningHook} />}
     </>
   );
 };

@@ -321,10 +321,12 @@ export const SendTransaction = (props: Props) => {
                 const metadata = await EvmNFTUtils.getMetadataFromURI(uri);
                 const src = metadata.image;
                 transactionConfirmationFields.otherFields.push({
+                  name: '',
                   type: EvmInputDisplayType.STRING_CENTERED,
                   value: <div className="nft-name">{metadata.name}</div>,
                 });
                 transactionConfirmationFields.otherFields.push({
+                  name: '',
                   type: EvmInputDisplayType.IMAGE,
                   value: <img src={src} />,
                 });

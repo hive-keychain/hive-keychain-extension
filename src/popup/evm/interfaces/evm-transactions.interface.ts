@@ -72,7 +72,7 @@ export interface EvmTransactionInfo {
 }
 
 export interface TransactionConfirmationField {
-  name?: string;
+  name: string;
   value: any;
   type: string;
   warnings?: EvmTransactionWarning[];

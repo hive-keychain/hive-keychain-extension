@@ -9,7 +9,7 @@ export type TransactionWarning = EvmTransactionWarning;
 export type TransactionInfo = EvmTransactionInfo;
 
 export interface ConfirmationPageParams {
-  fields: ConfirmationPageFields[];
+  fields: ConfirmationPageFields[] | ConfirmationPageEvmFields[];
   message: string;
   warningMessage?: string;
   warningParams?: string[];
@@ -37,6 +37,10 @@ export interface ConfirmationPageFields {
   valueClassName?: string;
   warnings?: TransactionWarning[];
   info?: TransactionInfo[];
+}
+
+export interface ConfirmationPageEvmFields extends ConfirmationPageFields {
+  name: string;
 }
 
 export interface EvmConfirmationPageGasFee {

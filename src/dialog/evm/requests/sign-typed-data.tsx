@@ -116,6 +116,7 @@ export const SignTypedData = (props: Props) => {
     } as TransactionConfirmationField);
 
     transactionConfirmationFields.otherFields.push({
+      name: '',
       type: EvmInputDisplayType.STRING_CENTERED,
       value: chrome.i18n.getMessage('evm_sign_typed_data_message'),
     });

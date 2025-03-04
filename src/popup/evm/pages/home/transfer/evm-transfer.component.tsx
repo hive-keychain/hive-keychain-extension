@@ -18,6 +18,7 @@ import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
   addToLoadingList,
@@ -147,6 +148,9 @@ const EvmTransfer = ({
         ? form.selectedToken.tokenInfo.decimals
         : 18;
 
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation();
+
     let fields = [
       {
         label: 'popup_html_transfer_from',
@@ -165,7 +169,11 @@ const EvmTransfer = ({
             chainId={chain.chainId}
           />
         ),
-        warnings: [],
+        warnings: await EvmTransactionParserUtils.getAddressWarning(
+          form.receiverAddress,
+          chain.chainId,
+          transactionInfo,
+        ),
       },
       {
         label: 'popup_html_transfer_amount',

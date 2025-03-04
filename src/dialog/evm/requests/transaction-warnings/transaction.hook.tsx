@@ -4,6 +4,7 @@ import {
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
   EvmTransactionWarningType,
+  TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -13,6 +14,7 @@ import {
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
+import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
@@ -31,8 +33,13 @@ export const useTransactionHook = (
     useState<SelectedWarning>();
 
   const [fields, setFields] = useState<TransactionConfirmationFields>();
+
+  const [confirmationPageFields, setConfirmationPageFields] =
+    useState<ConfirmationPageEvmFields[]>();
+
   const [bypassWarning, setBypassWarning] = useState(false);
   const [whitelistLabel, setWhitelistLabel] = useState('');
+
   const [warningsPopupOpened, setWarningsPopupOpened] = useState(false);
   const [singleWarningPopupOpened, setSingleWarningPopupOpened] =
     useState(false);
@@ -62,22 +69,39 @@ export const useTransactionHook = (
     setSingleWarningPopupOpened(true);
   };
 
+  // TODO
   const ignoreAllWarnings = () => {
-    const newFields: TransactionConfirmationFields = { ...fields! };
-    for (const fields of newFields.otherFields) {
-      if (fields.warnings)
-        fields.warnings.forEach((warning) => {
-          warning.ignored = true;
-        });
+    if (fields) {
+      const newFields: TransactionConfirmationFields = { ...fields! };
+      for (const fields of newFields.otherFields) {
+        if (fields.warnings)
+          fields.warnings.forEach((warning) => {
+            warning.ignored = true;
+          });
+      }
+      setFields(newFields);
+    } else if (confirmationPageFields) {
+      const newFields: ConfirmationPageEvmFields[] = [
+        ...confirmationPageFields,
+      ];
+
+      for (const fields of newFields) {
+        if (fields.warnings)
+          fields.warnings.forEach((warning) => {
+            warning.ignored = true;
+          });
+      }
+      setConfirmationPageFields(newFields);
     }
-    setFields(newFields);
     closePopup();
   };
 
   const getAllNotIgnoredWarnings = (): EvmTransactionWarning[] => {
-    if (!fields) return [];
+    const localFields = getFields();
+
+    if (!localFields || localFields.length === 0) return [];
     const warnings: EvmTransactionWarning[] = [];
-    fields.otherFields.forEach((field) =>
+    localFields.forEach((field) =>
       warnings.push(
         ...(field.warnings?.filter((warning) => !warning.ignored) ?? []),
       ),
@@ -93,7 +117,7 @@ export const useTransactionHook = (
         EvmTransactionWarningLevel.HIGH &&
       !bypassWarning
     ) {
-      // display error message
+      //TODO  display error message
     } else {
       if (selectedSingleWarning.warning.onConfirm) {
         switch (selectedSingleWarning.warning.type) {
@@ -111,51 +135,88 @@ export const useTransactionHook = (
     }
   };
 
+  // TODO fix
   const handleOnConfirmClick = () => {
     if (hasWarning()) {
       setWarningsPopupOpened(true);
     } else {
       setLoading(true);
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
-        value: {
-          request: request,
-          tab: data.tab,
-          domain: data.dappInfo.domain,
-          extraData: {
-            gasFee: selectedFee,
+
+      if (fields) {
+        chrome.runtime.sendMessage({
+          command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+          value: {
+            request: request,
+            tab: data.tab,
+            domain: data.dappInfo.domain,
+            extraData: {
+              gasFee: selectedFee,
+            },
           },
-        },
-      });
+        });
+      } else if (confirmationPageFields) {
+        //TODO see what to do here
+        console.log('on confirmation page');
+      }
     }
   };
 
-  const getAllFieldsWithNotIgnoredWarnings = (
-    fields: TransactionConfirmationFields,
-  ) => {
-    if (!fields) return [];
-    return fields?.otherFields.filter(
-      (field) =>
+  const getFields = () => {
+    if (fields) return fields.otherFields;
+    else if (confirmationPageFields) {
+      return confirmationPageFields;
+    } else return [];
+  };
+
+  const getAllFieldsWithNotIgnoredWarnings = () => {
+    const localFields = getFields();
+    console.log({ localFields, fields, confirmationPageFields });
+    if (!localFields || localFields.length === 0) return [];
+    //@ts-ignore
+    return localFields.filter(
+      (field: TransactionConfirmationField | ConfirmationPageEvmFields) =>
         field.warnings &&
-        field.warnings.some((warning) => warning.ignored === false),
+        field.warnings.some(
+          (warning: EvmTransactionWarning) => warning.ignored === false,
+        ),
     );
   };
 
   const hasWarning = () => {
-    return fields?.otherFields.some(
-      (field) =>
-        field.warnings &&
-        field.warnings.length > 0 &&
-        field.warnings.some((warning) => warning.ignored === false),
-    );
+    const localFields = getFields();
+
+    if (localFields)
+      return localFields?.some(
+        (field) =>
+          field.warnings &&
+          field.warnings.length > 0 &&
+          field.warnings.some((warning) => warning.ignored === false),
+      );
+
+    return false;
   };
 
   const ignoreWarning = (fieldIndex: number, warningIndex: number) => {
-    const newFields: TransactionConfirmationFields = { ...fields! };
-    if (newFields.otherFields && !!newFields.otherFields[fieldIndex].warnings) {
-      newFields.otherFields[fieldIndex].warnings![warningIndex].ignored = true;
+    if (fields) {
+      const newFields: TransactionConfirmationFields = { ...fields! };
+      if (
+        newFields.otherFields &&
+        !!newFields.otherFields[fieldIndex].warnings
+      ) {
+        newFields.otherFields[fieldIndex].warnings![warningIndex].ignored =
+          true;
+      }
+      setFields(newFields);
+    } else if (confirmationPageFields) {
+      const newFields: ConfirmationPageEvmFields[] = [
+        ...confirmationPageFields,
+      ];
+      if (!!newFields[fieldIndex].warnings) {
+        newFields[fieldIndex].warnings![warningIndex].ignored = true;
+      }
+      setConfirmationPageFields(newFields);
     }
-    setFields(newFields);
+
     closePopup();
   };
 
@@ -225,6 +286,8 @@ export const useTransactionHook = (
     setSelectedFee,
     ready,
     setReady,
+    confirmationPageFields,
+    setConfirmationPageFields,
   };
 };
 
