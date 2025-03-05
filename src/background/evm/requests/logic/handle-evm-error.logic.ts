@@ -12,7 +12,6 @@ export const handleEvmError = async (
   requestHandler: EvmRequestHandler,
   tab: number,
   request: EvmRequest,
-  domain: string,
   providerError: ProviderRpcErrorItem,
   errorMessage: string,
   errorMessageParams: string[],
@@ -21,7 +20,7 @@ export const handleEvmError = async (
     command: BackgroundCommand.SEND_EVM_ERROR,
     value: {
       requestId: request.request_id,
-      result: { code: providerError.code, message: providerError.message },
+      error: { code: providerError.code, message: providerError.message },
     },
   };
   chrome.tabs.sendMessage(tab, message);

@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(
     sender: chrome.runtime.MessageSender,
     sendResp: (response?: any) => void,
   ) => {
-    console.log('in content script', { backgroundMessage });
+    console.log({ backgroundMessage });
 
     if (backgroundMessage.command === BackgroundCommand.SEND_EVM_RESPONSE) {
       sendResponseToEvm(backgroundMessage.value);

@@ -62,61 +62,6 @@ export const evmRequestWithoutConfirmation = async (
       sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
       break;
     }
-    // case EvmRequestMethod.GET_BLOCK_BY_NUMBER:
-    // case EvmRequestMethod.GET_BLOCK_BY_HASH: {
-    //   message.value.result = await EvmRequestsUtils.getBlock(
-    //     request.params[0],
-    //     request.params[1],
-    //   );
-    //   break;
-    // }
-
-    // case EvmRequestMethod.GET_CODE: {
-    //   message.value.result = await EvmRequestsUtils.getCode(
-    //     request.params[0],
-    //     request.params[1],
-    //   );
-    //   break;
-    // }
-    // case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_NUMBER:
-    // case EvmRequestMethod.GET_TRANSACTION_COUNT_BY_HASH: {
-    //   message.value.result = await EvmRequestsUtils.getTransactionCountByBlock(
-    //     request.params[0],
-    //     request.params[1],
-    //   );
-    //   break;
-    // }
-    // case EvmRequestMethod.GET_TRANSACTION_BY_HASH_AND_INDEX:
-    // case EvmRequestMethod.GET_TRANSACTION_BY_BLOCK_NUMBER_AND_INDEX: {
-    //   message.value.result =
-    //     await EvmRequestsUtils.getTransactionByBlockAndIndex(
-    //       request.params[0],
-    //       request.params[1],
-    //     );
-    //   break;
-    // }
-
-    // case EvmRequestMethod.GET_TRANSACTION_BY_HASH: {
-    //   message.value.result = await EvmRequestsUtils.getTransactionByHash(
-    //     request.params[0],
-    //   );
-    //   break;
-    // }
-    // case EvmRequestMethod.GET_TRANSACTION_COUNT_FOR_ADDRESS: {
-    //   message.value.result =
-    //     await EvmRequestsUtils.getTransactionCountForAddress(
-    //       request.params[0],
-    //       request.params[1],
-    //     );
-    //   break;
-    // }
-
-    // case EvmRequestMethod.GET_TRANSACTION_RECEIPT: {
-    //   message.value.result = await EvmRequestsUtils.getTransactionReceipt(
-    //     request.params[0],
-    //   );
-    //   break;
-    // }
 
     case EvmRequestMethod.PERSONAL_RECOVER: {
       message.value.result = await EvmRequestsUtils.personalRecover(
