@@ -32,13 +32,6 @@ export const evmRequestWithoutConfirmation = async (
   };
 
   switch (request.method) {
-    // case EvmRequestMethod.GET_BALANCE: {
-    //   message.value.result = await EvmRequestsUtils.getBalance(
-    //     request.params[0],
-    //     request.params[1],
-    //   );
-    //   break;
-    // }
     case EvmRequestMethod.GET_CHAIN: {
       message.value.result = await EvmChainUtils.getLastEvmChainId();
       break;

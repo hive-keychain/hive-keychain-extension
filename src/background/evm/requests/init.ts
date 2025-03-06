@@ -33,6 +33,8 @@ export const initEvmRequestHandler = async (
 ) => {
   Logger.info('Initializing EVM request logic');
 
+  console.log({ request });
+
   if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {

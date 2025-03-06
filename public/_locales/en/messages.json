@@ -4975,5 +4975,17 @@
   "evm_ens_recipient_not_existing": {
     "message": "This ENS doesn't seem to be linked to a wallet",
     "description": "Evm ens not matching"
+  },
+  "evm_warning_possible_duplicated_transaction_title": {
+    "message": "Possible duplicate",
+    "description": "Possible duplicated malicious transaction title"
+  },
+  "evm_warning_possible_duplicated_transaction": {
+    "message": "This transaction is similar to a similar transaction you processed. This could be a malicious transaction.",
+    "description": "Possible duplicated malicious transaction"
+  },
+  "evm_warning_possible_duplicated_transaction_sent_at": {
+    "message": "Sent on $1",
+    "description": "Possible duplicated malicious transaction sent on"
   }
 }

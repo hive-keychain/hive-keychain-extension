@@ -13,11 +13,13 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import React, { useState } from 'react';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
+import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
 
 interface SelectedWarning {
   warning: EvmTransactionWarning;
@@ -49,6 +51,13 @@ export const useTransactionHook = (
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
 
+  const [duplicatedTransactionField, setDuplicatedTransactionWarning] =
+    useState<TransactionConfirmationField>();
+
+  useEffect(() => {
+    initDuplicateRequestWarningField();
+  }, [request]);
+
   const closePopup = () => {
     setWarningsPopupOpened(false);
     setSingleWarningPopupOpened(false);
@@ -69,9 +78,70 @@ export const useTransactionHook = (
     setSingleWarningPopupOpened(true);
   };
 
-  // TODO
+  const handleSingleWarningIgnore = (
+    selectedSingleWarning: SelectedWarning,
+  ) => {
+    if (
+      selectedSingleWarning?.warning.level ===
+        EvmTransactionWarningLevel.HIGH &&
+      !bypassWarning
+    ) {
+      //TODO  display error message
+    } else {
+      if (selectedSingleWarning.warning.onConfirm) {
+        switch (selectedSingleWarning.warning.type) {
+          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
+            selectedSingleWarning.warning.onConfirm(whitelistLabel);
+            break;
+          }
+        }
+      }
+      setBypassWarning(false);
+      ignoreWarning(
+        selectedSingleWarning.fieldIndex!,
+        selectedSingleWarning.warningIndex,
+      );
+    }
+  };
+
+  const ignoreWarning = (fieldIndex: number, warningIndex: number) => {
+    if (fieldIndex === -1 && warningIndex === -1) {
+      if (duplicatedTransactionField) {
+        const newDuplicated = { ...duplicatedTransactionField };
+        newDuplicated.warnings![0].ignored = true;
+        setDuplicatedTransactionWarning(newDuplicated);
+      }
+    } else if (fields) {
+      const newFields: TransactionConfirmationFields = { ...fields! };
+      if (
+        newFields.otherFields &&
+        !!newFields.otherFields[fieldIndex].warnings
+      ) {
+        newFields.otherFields[fieldIndex].warnings![warningIndex].ignored =
+          true;
+      }
+      setFields(newFields);
+    } else if (confirmationPageFields) {
+      const newFields: ConfirmationPageEvmFields[] = [
+        ...confirmationPageFields,
+      ];
+      if (!!newFields[fieldIndex].warnings) {
+        newFields[fieldIndex].warnings![warningIndex].ignored = true;
+      }
+      setConfirmationPageFields(newFields);
+    }
+
+    closePopup();
+  };
+
   const ignoreAllWarnings = () => {
     if (fields) {
+      if (duplicatedTransactionField) {
+        const newDuplicated = { ...duplicatedTransactionField };
+        newDuplicated.warnings![0].ignored = true;
+        setDuplicatedTransactionWarning(newDuplicated);
+      }
+
       const newFields: TransactionConfirmationFields = { ...fields! };
       for (const fields of newFields.otherFields) {
         if (fields.warnings)
@@ -109,30 +179,18 @@ export const useTransactionHook = (
     return warnings;
   };
 
-  const handleSingleWarningIgnore = (
-    selectedSingleWarning: SelectedWarning,
-  ) => {
-    if (
-      selectedSingleWarning?.warning.level ===
-        EvmTransactionWarningLevel.HIGH &&
-      !bypassWarning
-    ) {
-      //TODO  display error message
-    } else {
-      if (selectedSingleWarning.warning.onConfirm) {
-        switch (selectedSingleWarning.warning.type) {
-          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
-            selectedSingleWarning.warning.onConfirm(whitelistLabel);
-            break;
-          }
-        }
-      }
-      setBypassWarning(false);
-      ignoreWarning(
-        selectedSingleWarning.fieldIndex!,
-        selectedSingleWarning.warningIndex,
-      );
-    }
+  const getAllFieldsWithNotIgnoredWarnings = () => {
+    const localFields = getFields();
+
+    if (!localFields || localFields.length === 0) return [];
+    //@ts-ignore
+    return localFields.filter(
+      (field: TransactionConfirmationField | ConfirmationPageEvmFields) =>
+        field.warnings &&
+        field.warnings.some(
+          (warning: EvmTransactionWarning) => warning.ignored === false,
+        ),
+    );
   };
 
   // TODO fix
@@ -162,62 +220,34 @@ export const useTransactionHook = (
   };
 
   const getFields = () => {
-    if (fields) return fields.otherFields;
+    if (fields)
+      if (duplicatedTransactionField)
+        return [...fields.otherFields, duplicatedTransactionField];
+      else return fields.otherFields;
     else if (confirmationPageFields) {
       return confirmationPageFields;
     } else return [];
   };
 
-  const getAllFieldsWithNotIgnoredWarnings = () => {
-    const localFields = getFields();
-    console.log({ localFields, fields, confirmationPageFields });
-    if (!localFields || localFields.length === 0) return [];
-    //@ts-ignore
-    return localFields.filter(
-      (field: TransactionConfirmationField | ConfirmationPageEvmFields) =>
-        field.warnings &&
-        field.warnings.some(
-          (warning: EvmTransactionWarning) => warning.ignored === false,
-        ),
-    );
-  };
-
   const hasWarning = () => {
     const localFields = getFields();
 
+    const hasDuplicatedWarning =
+      duplicatedTransactionField !== undefined &&
+      duplicatedTransactionField.warnings !== undefined &&
+      duplicatedTransactionField.warnings[0].ignored === false;
+
     if (localFields)
-      return localFields?.some(
-        (field) =>
-          field.warnings &&
-          field.warnings.length > 0 &&
-          field.warnings.some((warning) => warning.ignored === false),
+      return (
+        localFields?.some(
+          (field) =>
+            field.warnings &&
+            field.warnings.length > 0 &&
+            field.warnings.some((warning) => warning.ignored === false),
+        ) || hasDuplicatedWarning
       );
 
     return false;
-  };
-
-  const ignoreWarning = (fieldIndex: number, warningIndex: number) => {
-    if (fields) {
-      const newFields: TransactionConfirmationFields = { ...fields! };
-      if (
-        newFields.otherFields &&
-        !!newFields.otherFields[fieldIndex].warnings
-      ) {
-        newFields.otherFields[fieldIndex].warnings![warningIndex].ignored =
-          true;
-      }
-      setFields(newFields);
-    } else if (confirmationPageFields) {
-      const newFields: ConfirmationPageEvmFields[] = [
-        ...confirmationPageFields,
-      ];
-      if (!!newFields[fieldIndex].warnings) {
-        newFields[fieldIndex].warnings![warningIndex].ignored = true;
-      }
-      setConfirmationPageFields(newFields);
-    }
-
-    closePopup();
   };
 
   const getDomainWarnings = async (
@@ -256,8 +286,40 @@ export const useTransactionHook = (
     };
   };
 
+  const initDuplicateRequestWarningField = async () => {
+    if (!request.method) return;
+    const savedRequest = await EvmWarningUtils.checkRequestHash(request);
+    if (savedRequest) {
+      const field: TransactionConfirmationField = {
+        name: 'evm_warning_possible_duplicated_transaction_title',
+        type: EvmInputDisplayType.LONG_TEXT,
+        value: (
+          <div>
+            <b>
+              {chrome.i18n.getMessage(
+                'evm_warning_possible_duplicated_transaction_sent_at',
+                [moment(savedRequest.timestamp).format('YYYY-MM-DD HH:mm:ss')],
+              )}
+            </b>
+            <div>{JSON.stringify(savedRequest.request)}</div>
+          </div>
+        ),
+        warnings: [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_possible_duplicated_transaction',
+          } as EvmTransactionWarning,
+        ],
+      };
+      setDuplicatedTransactionWarning(field);
+    }
+  };
+
   return {
     fields,
+    // setTransactionFields,
     setFields,
     selectedSingleWarning,
     setSelectedSingleWarning,
@@ -288,6 +350,7 @@ export const useTransactionHook = (
     setReady,
     confirmationPageFields,
     setConfirmationPageFields,
+    duplicatedTransactionField,
   };
 };
 

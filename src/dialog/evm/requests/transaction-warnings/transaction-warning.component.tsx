@@ -42,20 +42,35 @@ export const EvmTransactionWarningsComponent = ({
           <EvmRequestItem field={warningHook.fields.mainTokenAmount} />
         )}
 
+      {warningHook.duplicatedTransactionField !== undefined && (
+        <EvmRequestItem
+          field={warningHook.duplicatedTransactionField}
+          onWarningClicked={() =>
+            warningHook.openSingleWarningPopup(
+              -1,
+              -1,
+              warningHook.duplicatedTransactionField!.warnings![0],
+            )
+          }
+        />
+      )}
+
       {warningHook.fields &&
-        warningHook.fields.otherFields?.map((f, index) => (
-          <EvmRequestItem
-            key={`${f.name}-${index}`}
-            field={f}
-            onWarningClicked={(warningIndex: number) =>
-              warningHook.openSingleWarningPopup(
-                index,
-                warningIndex,
-                f.warnings![warningIndex],
-              )
-            }
-          />
-        ))}
+        warningHook.fields.otherFields?.map((f, index) => {
+          return (
+            <EvmRequestItem
+              key={`${f.name}-${index}`}
+              field={f}
+              onWarningClicked={(warningIndex: number) =>
+                warningHook.openSingleWarningPopup(
+                  index,
+                  warningIndex,
+                  f.warnings![warningIndex],
+                )
+              }
+            />
+          );
+        })}
     </>
   );
 };
