@@ -6,13 +6,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 export interface SavedRequest {
   request: EvmRequest;
   timestamp: number;
+  domain: string;
 }
 
 export interface LastHashes {
   [hash: string]: SavedRequest;
 }
 
-export const checkRequestHash = async (request: EvmRequest) => {
+export const checkRequestHash = async (request: EvmRequest, domain: string) => {
   const requestWithoutRequestId = {
     method: request.method,
     params: request.params,
@@ -28,15 +29,17 @@ export const checkRequestHash = async (request: EvmRequest) => {
       lastHashes[hash] = {
         request,
         timestamp: Date.now(),
+        domain,
       };
     } else {
-      return lastHashes[hash];
+      if (lastHashes[hash].domain === domain) return lastHashes[hash];
     }
   } else {
     lastHashes = {
       [hash]: {
         request: request,
         timestamp: Date.now(),
+        domain,
       },
     };
   }

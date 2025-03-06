@@ -288,7 +288,10 @@ export const useTransactionHook = (
 
   const initDuplicateRequestWarningField = async () => {
     if (!request.method) return;
-    const savedRequest = await EvmWarningUtils.checkRequestHash(request);
+    const savedRequest = await EvmWarningUtils.checkRequestHash(
+      request,
+      data.dappInfo.domain,
+    );
     if (savedRequest) {
       const field: TransactionConfirmationField = {
         name: 'evm_warning_possible_duplicated_transaction_title',
