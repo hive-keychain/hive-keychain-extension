@@ -13,6 +13,7 @@ import { ethers } from 'ethers';
 export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
+  domain: string,
 ): boolean => {
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {

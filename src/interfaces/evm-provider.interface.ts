@@ -164,6 +164,12 @@ export const getEvmProviderRpcError = (key: string) => {
   const error = ProviderRpcErrorList[key];
   return error ? error.message : ProviderRpcErrorList.unknownError.message;
 };
+export const getEvmProviderRpcFullError = (
+  key: string,
+): ProviderRpcErrorItem => {
+  const error = ProviderRpcErrorList[key];
+  return error ?? ProviderRpcErrorList.unknownError;
+};
 
 export interface EvmWalletPermissions {
   [domain: string]: EvmWalletDomainPermissions;

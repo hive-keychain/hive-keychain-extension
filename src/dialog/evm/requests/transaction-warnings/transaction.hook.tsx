@@ -19,6 +19,7 @@ import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confi
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
+import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
 
 interface SelectedWarning {
@@ -54,8 +55,12 @@ export const useTransactionHook = (
   const [duplicatedTransactionField, setDuplicatedTransactionWarning] =
     useState<TransactionConfirmationField>();
 
+  const [shouldDisplayBlockButton, setShouldDisplayBlockButton] =
+    useState<boolean>();
+
   useEffect(() => {
     initDuplicateRequestWarningField();
+    initShouldDiplayBlockButton();
   }, [request]);
 
   const closePopup = () => {
@@ -320,6 +325,13 @@ export const useTransactionHook = (
     }
   };
 
+  const initShouldDiplayBlockButton = async () => {
+    if (!request.method) return;
+    setShouldDisplayBlockButton(
+      await DappRequestUtils.checkIfHasTooManyRequest(data.dappInfo.domain),
+    );
+  };
+
   return {
     fields,
     // setTransactionFields,
@@ -354,6 +366,7 @@ export const useTransactionHook = (
     confirmationPageFields,
     setConfirmationPageFields,
     duplicatedTransactionField,
+    shouldDisplayBlockButton,
   };
 };
 

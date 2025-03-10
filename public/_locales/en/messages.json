@@ -4987,5 +4987,9 @@
   "evm_warning_possible_duplicated_transaction_sent_at": {
     "message": "Sent on $1",
     "description": "Possible duplicated malicious transaction sent on"
+  },
+  "evm_too_many_transaction_button": {
+    "message": "Block this app for $1 minute(s)",
+    "description": "Label for block dapp button"
   }
 }

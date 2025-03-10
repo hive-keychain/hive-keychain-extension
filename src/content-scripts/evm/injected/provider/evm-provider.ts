@@ -115,7 +115,7 @@ export class EvmProvider extends EventEmitter {
 
   async request(args: RequestArguments): Promise<any> {
     try {
-      validateRequest(args.method, args.params);
+      validateRequest(args.method, args.params, '');
       switch (args.method) {
         case EvmRequestMethod.GET_ACCOUNTS: {
           return this._accounts;

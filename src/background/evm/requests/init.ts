@@ -12,16 +12,22 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
 import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-deprecated-methods.logic';
+import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
   unlockWallet,
 } from '@background/hive/requests/logic';
-import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmDappInfo,
+  EvmRequest,
+  getEvmProviderRpcFullError,
+} from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -35,7 +41,17 @@ export const initEvmRequestHandler = async (
 
   console.log({ request });
 
-  if (EvmDeprecatedMethods.includes(request.method)) {
+  if (await DappRequestUtils.isDappLocked(dappInfo.domain)) {
+    const providerError = getEvmProviderRpcFullError('userReject');
+    handleEvmError(
+      requestHandler,
+      requestHandler.data.tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+    );
+  } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);

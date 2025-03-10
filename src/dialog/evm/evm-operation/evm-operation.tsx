@@ -9,6 +9,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 
 type Props = {
   title: string;
@@ -69,6 +70,11 @@ export const EvmOperation = ({
     });
   };
 
+  const cancelAndBlock = async () => {
+    onClose();
+    await DappRequestUtils.lockDomain(domain);
+  };
+
   return (
     <>
       <div className={`operation ${caption ? 'has-caption' : ''}`}>
@@ -92,6 +98,16 @@ export const EvmOperation = ({
 
           {bottomPanel && <>{bottomPanel}</>}
         </div>
+
+        {/* add button to cancel request and block dapp */}
+        {warningHook?.shouldDisplayBlockButton && (
+          <ButtonComponent
+            label="evm_too_many_transaction_button"
+            type={ButtonType.ALTERNATIVE}
+            onClick={cancelAndBlock}
+            height="small"
+          />
+        )}
 
         {!loading && (
           <div className={`operation-buttons `}>
