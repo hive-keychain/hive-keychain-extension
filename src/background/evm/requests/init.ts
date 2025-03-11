@@ -39,19 +39,7 @@ export const initEvmRequestHandler = async (
 ) => {
   Logger.info('Initializing EVM request logic');
 
-  console.log({ request });
-
-  if (await DappRequestUtils.isDappLocked(dappInfo.domain)) {
-    const providerError = getEvmProviderRpcFullError('userReject');
-    handleEvmError(
-      requestHandler,
-      requestHandler.data.tab!,
-      request,
-      providerError,
-      providerError.message,
-      [],
-    );
-  } else if (EvmDeprecatedMethods.includes(request.method)) {
+  if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
@@ -61,6 +49,20 @@ export const initEvmRequestHandler = async (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
   ) {
+    if (await DappRequestUtils.isDappLocked(dappInfo.domain)) {
+      const providerError = getEvmProviderRpcFullError('userReject');
+      handleEvmError(
+        requestHandler,
+        requestHandler.data.tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        true,
+      );
+      return;
+    }
+
     const mk = await MkModule.getMk();
     const accounts = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_ACCOUNTS,

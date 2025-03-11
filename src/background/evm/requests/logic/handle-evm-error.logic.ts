@@ -15,6 +15,7 @@ export const handleEvmError = async (
   providerError: ProviderRpcErrorItem,
   errorMessage: string,
   errorMessageParams: string[],
+  hideDialog?: boolean,
 ) => {
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_ERROR,
@@ -25,16 +26,18 @@ export const handleEvmError = async (
   };
   chrome.tabs.sendMessage(tab, message);
 
-  const callback = async () => {
-    chrome.runtime.sendMessage({
-      command: DialogCommand.SEND_DIALOG_ERROR,
-      msg: {
-        display_msg: await chrome.i18n.getMessage(
-          errorMessage,
-          errorMessageParams,
-        ),
-      },
-    });
-  };
-  createPopup(callback, requestHandler);
+  if (!hideDialog) {
+    const callback = async () => {
+      chrome.runtime.sendMessage({
+        command: DialogCommand.SEND_DIALOG_ERROR,
+        msg: {
+          display_msg: await chrome.i18n.getMessage(
+            errorMessage,
+            errorMessageParams,
+          ),
+        },
+      });
+    };
+    createPopup(callback, requestHandler);
+  }
 };

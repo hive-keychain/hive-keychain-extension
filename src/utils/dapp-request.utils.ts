@@ -49,7 +49,6 @@ const checkIfHasTooManyRequest = async (domain: string) => {
     guard,
   );
 
-  console.log({ domain: guard[domain] });
   return guard[domain].requestCount > REQUEST_LIMIT_PER_DAPP;
 };
 

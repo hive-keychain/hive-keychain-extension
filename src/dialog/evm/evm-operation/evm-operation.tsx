@@ -99,16 +99,6 @@ export const EvmOperation = ({
           {bottomPanel && <>{bottomPanel}</>}
         </div>
 
-        {/* add button to cancel request and block dapp */}
-        {warningHook?.shouldDisplayBlockButton && (
-          <ButtonComponent
-            label="evm_too_many_transaction_button"
-            type={ButtonType.ALTERNATIVE}
-            onClick={cancelAndBlock}
-            height="small"
-          />
-        )}
-
         {!loading && (
           <div className={`operation-buttons `}>
             <ButtonComponent
@@ -124,6 +114,15 @@ export const EvmOperation = ({
               height="small"
             />
           </div>
+        )}
+        {/* add button to cancel request and block dapp */}
+        {warningHook?.shouldDisplayBlockButton && (
+          <ButtonComponent
+            label="evm_too_many_transaction_button"
+            type={ButtonType.ALTERNATIVE}
+            onClick={cancelAndBlock}
+            height="small"
+          />
         )}
 
         <LoadingComponent hide={!loading} />
