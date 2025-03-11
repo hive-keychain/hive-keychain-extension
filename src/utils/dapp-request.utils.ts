@@ -1,5 +1,6 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const REQUEST_LIMIT_PER_DAPP = 3;
 const REQUEST_TIME_LIMIT_PER_DAPP_IN_MINUTE = 1;
@@ -84,10 +85,17 @@ const saveLockedDapp = async (lockedDapps: LockedDapps) => {
 const isDappLocked = async (domain: string) => {
   const now = Date.now();
   const dappsLocks = await getLockedDapps();
+
   if (
     dappsLocks[domain] &&
-    now - dappsLocks[domain] < REQUEST_LIMIT_PER_DAPP * 60 * 1000
+    now - dappsLocks[domain] < REQUEST_LOCK_TIME_IN_MINUTE * 60 * 1000
   ) {
+    Logger.warn(
+      `${domain} still locked for ${
+        (REQUEST_LOCK_TIME_IN_MINUTE * 60 * 1000 - (now - dappsLocks[domain])) /
+        1000
+      }s`,
+    );
     return true;
   } else {
     await unlockDomain(domain);

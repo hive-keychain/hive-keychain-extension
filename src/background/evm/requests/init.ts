@@ -49,7 +49,10 @@ export const initEvmRequestHandler = async (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
   ) {
-    if (await DappRequestUtils.isDappLocked(dappInfo.domain)) {
+    if (
+      request.method !== EvmRequestMethod.REQUEST_ACCOUNTS &&
+      (await DappRequestUtils.isDappLocked(dappInfo.domain))
+    ) {
       const providerError = getEvmProviderRpcFullError('userReject');
       handleEvmError(
         requestHandler,
