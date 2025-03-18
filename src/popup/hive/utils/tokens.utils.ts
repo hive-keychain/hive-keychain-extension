@@ -377,11 +377,12 @@ const getOutgoingDelegations = async (
 const getAllTokens = async (): Promise<Token[]> => {
   let tokens = [];
   let offset = 0;
+  let newTokens;
   do {
-    const newTokens = await getTokens(offset);
+    newTokens = await getTokens(offset);
     tokens.push(...newTokens);
     offset += 1000;
-  } while (tokens.length % 1000 === 0);
+  } while (tokens.length % 1000 === 0 && newTokens.length);
   return tokens;
 };
 

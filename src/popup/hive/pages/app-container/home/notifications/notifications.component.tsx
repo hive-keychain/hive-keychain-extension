@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Notification } from '@interfaces/notifications.interface';

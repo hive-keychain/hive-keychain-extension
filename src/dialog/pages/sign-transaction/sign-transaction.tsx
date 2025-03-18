@@ -1,5 +1,5 @@
 import HiveLedgerApp from '@engrave/ledger-app-hive';
-import { Transaction } from '@hiveio/dhive';
+import type { Transaction } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { LoadingOperation } from '@popup/multichain/reducers/loading.reducer';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';

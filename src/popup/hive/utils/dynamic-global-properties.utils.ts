@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getDynamicGlobalProperties =

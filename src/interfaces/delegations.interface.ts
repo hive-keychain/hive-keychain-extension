@@ -1,4 +1,4 @@
-import { VestingDelegation } from '@hiveio/dhive';
+import type { VestingDelegation } from '@hiveio/dhive';
 
 export interface Delegations {
   incoming: IncomingDelegation[];

@@ -13,7 +13,7 @@ export const addAccount = async (
   const { username, keys } = data;
   let err = null;
   const mk = await MkModule.getMk();
-  const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  const accounts = (await AccountUtils.getAccountsFromLocalStorage(mk)) || [];
   const account = await AccountUtils.getExtendedAccount(username);
   if (account) {
     const savedKeys: Keys = { ...keys };

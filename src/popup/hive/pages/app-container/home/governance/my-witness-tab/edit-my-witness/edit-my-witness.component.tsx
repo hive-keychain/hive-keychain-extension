@@ -1,4 +1,4 @@
-import { PriceType } from '@hiveio/dhive';
+import type { PriceType } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   WitnessFormField,

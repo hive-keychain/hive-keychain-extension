@@ -117,7 +117,9 @@ const PowerUpDown = ({
   );
 
   useEffect(() => {
-    const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
+    const hiveBalance = FormatUtils.toNumber(
+      activeAccount.account.balance as string,
+    );
 
     let totalOutgoingVestingShares = 0;
     for (const delegation of delegations.outgoing) {
