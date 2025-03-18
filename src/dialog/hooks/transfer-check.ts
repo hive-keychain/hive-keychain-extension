@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 import CurrencyUtils, {
   BaseCurrencies,
 } from 'src/popup/hive/utils/currency.utils';
-import { getPhishingAccounts } from 'src/popup/hive/utils/phishing.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
+import PhishingUtils from 'src/utils/phishing.utils';
 
 export const useTransferCheck = (
   data: RequestTransfer | RequestSendToken,
@@ -16,7 +16,7 @@ export const useTransferCheck = (
 ) => {
   const [header, setHeader] = useState<string | undefined>(undefined);
   useEffect(() => {
-    getPhishingAccounts().then((accs: string[]) => {
+    PhishingUtils.getPhishingAccounts().then((accs: string[]) => {
       let warning;
       if (accs.includes(data.to)) {
         warning = chrome.i18n.getMessage('popup_warning_phishing', [data.to]);

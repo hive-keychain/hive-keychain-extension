@@ -1,5 +1,5 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
-import { Asset, ExtendedAccount } from '@hiveio/dhive';
+import { type ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
@@ -8,7 +8,7 @@ import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { IStep, ISwap, SwapStatus } from 'hive-keychain-commons';
+import { Asset, IStep, ISwap, SwapStatus } from 'hive-keychain-commons';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';

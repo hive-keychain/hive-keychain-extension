@@ -1,4 +1,4 @@
-import {
+import type {
   RecurrentTransferOperation,
   Transaction,
   TransferOperation,

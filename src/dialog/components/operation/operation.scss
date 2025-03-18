@@ -25,6 +25,9 @@
 
   .operation-header {
     padding: 0 12px 12px 12px;
+    &.operation-red {
+      color: $red;
+    }
   }
   .operation-body {
     display: flex;

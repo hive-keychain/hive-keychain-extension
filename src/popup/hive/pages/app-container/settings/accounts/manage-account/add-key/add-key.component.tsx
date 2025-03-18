@@ -13,7 +13,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { addKey } from 'src/popup/hive/actions/account.actions';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
-import { ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Screen } from '@reference-data/screen.enum';

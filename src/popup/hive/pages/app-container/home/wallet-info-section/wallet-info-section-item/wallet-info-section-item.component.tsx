@@ -1,4 +1,3 @@
-import { Asset } from '@hiveio/dhive';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
@@ -10,6 +9,7 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
+import { Asset } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -223,14 +223,14 @@ const walletInfoSectionItem = ({
                     tokenMarket,
                     hive,
                     [tokenInfo],
-                  ).toFixed(2)}{' '}
+                  ).toFixed(3)}{' '}
                   ($
                   {(
                     TokensUtils.getHiveEngineTokenPrice(
                       tokenBalance,
                       tokenMarket,
                     ) * hive?.usd!
-                  ).toFixed(2)}
+                  ).toFixed(3)}
                   /{chrome.i18n.getMessage('token').toLowerCase()})
                 </div>
                 <div></div>

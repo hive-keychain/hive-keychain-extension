@@ -1,5 +1,5 @@
 import { KeychainApi } from '@api/keychain';
-import { DelegateVestingSharesOperation } from '@hiveio/dhive';
+import type { DelegateVestingSharesOperation } from '@hiveio/dhive';
 import {
   Delegator,
   PendingOutgoingUndelegation,
