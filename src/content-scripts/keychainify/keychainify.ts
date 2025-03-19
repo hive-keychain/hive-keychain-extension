@@ -1,29 +1,16 @@
 /* istanbul ignore file */
-import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { HiveUriTransaction } from 'src/content-scripts/keychainify/hive-uri.types';
 import Logger from 'src/utils/logger.utils';
 const hiveuri = require('hive-uri');
 if (window.chrome) {
   //@ts-ignore
   window.chrome.storage.session = undefined;
 }
-
-type HiveOperation =
-  | ['transfer', { to: string; amount: string; memo: string }]
-  | ['account_witness_proxy', { proxy: string }]
-  | ['account_witness_vote', { witness: string; approve: boolean }]
-  | ['delegate_vesting_shares', { delegatee: string; vesting_shares: string }];
-
-type HiveUriTransaction = {
-  tx: {
-    ref_block_num: string;
-    ref_block_prefix: string;
-    expiration: string;
-    extensions: any[];
-    operations: HiveOperation[];
-  };
-  params: Record<string, unknown>;
-};
 
 /**
  *
@@ -79,8 +66,12 @@ export default {
       defaults = {};
 
     switch (true) {
+      /**
+       * Parse all operations from a valid hive-uri
+       */
       case url.includes('hive://'):
         this.parseHiveUri(url, tab);
+        break;
       /**
        * Transfer fund
        * i.e. : https://hivesigner.com/sign/transfer?to=lecaillon&amount=1%20HIVE
@@ -196,19 +187,27 @@ export default {
     }
   },
 
+  /**
+   * Parse and process all the operations in the URI
+   *
+   * @param uri
+   * @param tab
+   * @param account optional for anonymous op
+   */
   parseHiveUri(uri: string, tab: any, account: string = '') {
     const hiveUriTx = hiveuri.decode(uri) as HiveUriTransaction;
     const { operations } = hiveUriTx.tx;
     operations.forEach(([type, data]) => {
       switch (type) {
         case 'transfer':
+          const [transferAmount, transferCurrency] = data.amount.split(' ');
           this.requestTransfer(
             tab,
             account,
             data.to,
-            data.amount.split(' ')[0],
+            transferAmount,
             data.memo,
-            'HIVE',
+            transferCurrency,
             '',
             false,
           );
@@ -231,6 +230,29 @@ export default {
             data.delegatee,
             data.vesting_shares,
             'HP',
+          );
+          break;
+        case 'update_proposal_votes':
+          this.requestProposalVotes(
+            tab,
+            account,
+            data.proposal_ids,
+            data.approve,
+          );
+          break;
+        case 'recurrent_transfer':
+          const [recurrentTxAmount, recurrentTxCurrency] =
+            data.amount.split(' ');
+
+          this.requestRecurrentTransfer(
+            tab,
+            account,
+            data.to,
+            recurrentTxAmount,
+            recurrentTxCurrency,
+            data.memo,
+            data.recurrence,
+            data.executions,
           );
           break;
         default:
@@ -277,7 +299,7 @@ export default {
     enforce = false,
   ) {
     const request = {
-      type: 'transfer',
+      type: KeychainRequestTypes.transfer,
       username: account,
       to: to,
       amount: (+amount).toFixed(3),
@@ -308,7 +330,7 @@ export default {
     vote: number,
   ) {
     var request = {
-      type: 'witnessVote',
+      type: KeychainRequestTypes.witnessVote,
       username: username,
       witness: witness,
       vote: vote,
@@ -329,7 +351,7 @@ export default {
    */
   requestProxy: function (tab: any, username: string, proxy: string) {
     var request = {
-      type: 'proxy',
+      type: KeychainRequestTypes.proxy,
       username,
       proxy,
     };
@@ -353,14 +375,14 @@ export default {
     unit: string,
   ) {
     type Request = {
-      type: 'delegation';
+      type: KeychainRequestTypes.delegation;
       delegatee: string;
       amount: string;
       unit: string;
       username?: string;
     };
     const request: Request = {
-      type: 'delegation',
+      type: KeychainRequestTypes.delegation,
       delegatee,
       amount,
       unit,
@@ -411,6 +433,62 @@ export default {
       redirect_uri,
     };
 
+    this.dispatchRequest(tab, request);
+  },
+
+  /**
+   * Requesting a Keychain update_proposal_votes
+   * @param tab
+   * @param username
+   * @param proposal_ids
+   * @param approve
+   */
+  requestProposalVotes(
+    tab: any,
+    username: string,
+    proposal_ids: number[],
+    approve: boolean,
+  ) {
+    const request = {
+      type: KeychainRequestTypes.updateProposalVote,
+      username,
+      proposal_ids,
+      approve,
+    };
+    this.dispatchRequest(tab, request);
+  },
+
+  /**
+   * Requesting a Keychain recurrent_transfer
+   * @param tab
+   * @param account
+   * @param to
+   * @param amount
+   * @param currency
+   * @param memo
+   * @param recurrence
+   * @param executions
+   */
+  requestRecurrentTransfer(
+    tab: any,
+    account: string,
+    to: string,
+    amount: string,
+    currency: string,
+    memo: string,
+    recurrence: string,
+    executions: string,
+  ) {
+    const request = {
+      type: KeychainRequestTypes.recurrentTransfer,
+      username: account,
+      to,
+      amount: (+amount).toFixed(3),
+      currency,
+      memo,
+      recurrence,
+      executions,
+    };
     this.dispatchRequest(tab, request);
   },
   /**
