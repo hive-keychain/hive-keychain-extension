@@ -2,11 +2,29 @@
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
-
+const hiveuri = require('hive-uri');
 if (window.chrome) {
   //@ts-ignore
   window.chrome.storage.session = undefined;
 }
+
+type HiveOperation =
+  | ['transfer', { to: string; amount: string; memo: string }]
+  | ['account_witness_proxy', { proxy: string }]
+  | ['account_witness_vote', { witness: string; approve: boolean }]
+  | ['delegate_vesting_shares', { delegatee: string; vesting_shares: string }];
+
+type HiveUriTransaction = {
+  tx: {
+    ref_block_num: string;
+    ref_block_prefix: string;
+    expiration: string;
+    extensions: any[];
+    operations: HiveOperation[];
+  };
+  params: Record<string, unknown>;
+};
+
 /**
  *
  * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
@@ -39,7 +57,8 @@ export default {
       url.includes('hivesigner.com/sign/account-witness-vote') ||
       url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
       url.includes('hivesigner.com/sign/custom-json') ||
-      url.includes('hivesigner.com/sign/account-witness-proxy')
+      url.includes('hivesigner.com/sign/account-witness-proxy') ||
+      url.startsWith('hive://')
     );
   },
 
@@ -60,6 +79,8 @@ export default {
       defaults = {};
 
     switch (true) {
+      case url.includes('hive://'):
+        this.parseHiveUri(url, tab);
       /**
        * Transfer fund
        * i.e. : https://hivesigner.com/sign/transfer?to=lecaillon&amount=1%20HIVE
@@ -173,6 +194,49 @@ export default {
         );
         break;
     }
+  },
+
+  parseHiveUri(uri: string, tab: any, account: string = '') {
+    const hiveUriTx = hiveuri.decode(uri) as HiveUriTransaction;
+    const { operations } = hiveUriTx.tx;
+    operations.forEach(([type, data]) => {
+      switch (type) {
+        case 'transfer':
+          this.requestTransfer(
+            tab,
+            account,
+            data.to,
+            data.amount.split(' ')[0],
+            data.memo,
+            'HIVE',
+            '',
+            false,
+          );
+          break;
+        case 'account_witness_proxy':
+          this.requestProxy(tab, account, data.proxy);
+          break;
+        case 'account_witness_vote':
+          this.requestWitnessVote(
+            tab,
+            account,
+            data.witness,
+            data.approve ? 1 : 0,
+          );
+          break;
+        case 'delegate_vesting_shares':
+          this.requestDelegation(
+            tab,
+            account,
+            data.delegatee,
+            data.vesting_shares,
+            'HP',
+          );
+          break;
+        default:
+          Logger.error(`Unsupported operation: ${type}`);
+      }
+    });
   },
 
   /**
@@ -373,7 +437,7 @@ export default {
         }
       }
     }
-
+    Logger.info(`${JSON.stringify(argsParsed, null, 2)}`);
     return argsParsed;
   },
 };
