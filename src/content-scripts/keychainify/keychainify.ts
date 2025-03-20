@@ -1,28 +1,33 @@
 /* istanbul ignore file */
-import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypes,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import * as HiveUri from 'hive-uri';
+import { HiveUriTransaction } from 'src/content-scripts/keychainify/hive-uri.types';
 import Logger from 'src/utils/logger.utils';
 
 if (window.chrome) {
   //@ts-ignore
   window.chrome.storage.session = undefined;
 }
+
 /**
  *
- * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
+ * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise<boolean>), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
  */
 export default {
   /**
    * Checks local storage for whether the feature has been disabled by the user
    * @returns {Promise}
    */
-  isKeychainifyEnabled: function () {
+  isKeychainifyEnabled: function (): Promise<boolean> {
     return new Promise(function (resolve, reject) {
       try {
         chrome.storage.local.get(['keychainify_enabled'], function (items) {
-          const featureStatus =
-            items.hasOwnProperty('keychainify_enabled') &&
-            items.keychainify_enabled;
+          const featureStatus = (items.hasOwnProperty('keychainify_enabled') &&
+            items.keychainify_enabled) as boolean;
 
           resolve(featureStatus);
         });
@@ -33,14 +38,18 @@ export default {
     });
   },
 
-  isUrlSupported: function (url: string) {
+  isSupportedHiveSignerUrl: function (url: string) {
     return (
       url.includes('hivesigner.com/sign/transfer') ||
       url.includes('hivesigner.com/sign/account-witness-vote') ||
       url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
       url.includes('hivesigner.com/sign/custom-json') ||
       url.includes('hivesigner.com/sign/account-witness-proxy')
+      //
     );
+  },
+  isSupportedHiveUri: function (uri: string) {
+    return uri.startsWith('hive://');
   },
 
   /**
@@ -60,6 +69,12 @@ export default {
       defaults = {};
 
     switch (true) {
+      /**
+       * Parse all operations from a valid hive-uri
+       */
+      case url.includes('hive://'):
+        this.parseHiveUri(url, tab);
+        break;
       /**
        * Transfer fund
        * i.e. : https://hivesigner.com/sign/transfer?to=lecaillon&amount=1%20HIVE
@@ -176,6 +191,109 @@ export default {
   },
 
   /**
+   * Parse and process all the operations in the URI
+   *
+   * @param uri
+   * @param tab
+   * @param account optional for anonymous op
+   */
+  parseHiveUri(uri: string, tab: any, account: string = '') {
+    const hiveUriTx = HiveUri.decode(uri) as HiveUriTransaction;
+    const { operations } = hiveUriTx.tx;
+    operations.forEach(([type, data]) => {
+      switch (type) {
+        /**
+         * Transfer fund
+         * i.e. : hive://sign/op/WyJ0cmFuc2ZlciIseyJ0byI6ImhyZGNyLWhpdmUiLCJhbW91bnQiOiIwLjAwMSBISVZFIiwibWVtbyI6InRlc3QifV0.
+         */
+        case 'transfer':
+          const [transferAmount, transferCurrency] = data.amount.split(' ');
+          this.requestTransfer(
+            tab,
+            account,
+            data.to,
+            transferAmount,
+            data.memo,
+            transferCurrency,
+            '',
+            false,
+          );
+          break;
+
+        /**
+         * Delegate Hive Power
+         * i.e. : hive://sign/op/WyJkZWxlZ2F0ZV92ZXN0aW5nX3NoYXJlcyIseyJkZWxlZ2F0ZWUiOiJocmRjci1oaXZlIiwidmVzdGluZ19zaGFyZXMiOiIwLjAwMSBIUCJ9XQ..
+         */
+        case 'delegate_vesting_shares':
+          this.requestDelegation(
+            tab,
+            account,
+            data.delegatee,
+            data.vesting_shares,
+            'HP',
+          );
+          break;
+
+        /**
+         * Vote for witness
+         * i.e. : hive://sign/op/WyJhY2NvdW50X3dpdG5lc3Nfdm90ZSIseyJ3aXRuZXNzIjoic3Rvb2RrZXYiLCJhcHByb3ZlIjp0cnVlfV0.
+         */
+        case 'account_witness_vote':
+          this.requestWitnessVote(
+            tab,
+            account,
+            data.witness,
+            data.approve ? 1 : 0,
+          );
+          break;
+
+        /**
+         * Chose a proxy
+         * i.e. : hive://sign/op/WyJhY2NvdW50X3dpdG5lc3NfcHJveHkiLHsicHJveHkiOiJwYW1wYW1wb21wb20ifV0.
+         */
+        case 'account_witness_proxy':
+          this.requestProxy(tab, account, data.proxy);
+          break;
+
+        /**
+         * Update proposal
+         * i.e. : hive://sign/op/WyJ1cGRhdGVfcHJvcG9zYWxfdm90ZXMiLHsicHJvcG9zYWxfaWRzIjpbMF0sImFwcHJvdmUiOnRydWUsImV4dGVuc2lvbnMiOltdfV0.
+         */
+        case 'update_proposal_votes':
+          this.requestProposalVotes(
+            tab,
+            account,
+            data.proposal_ids,
+            data.approve,
+          );
+          break;
+
+        /**
+         * Recurrent fund transfer
+         * i.e. : hive://sign/op/WyJyZWN1cnJlbnRfdHJhbnNmZXIiLHsidG8iOiJzdG9vZGtldiIsImFtb3VudCI6IjAuMDAxIEhJVkUiLCJtZW1vIjoiIiwicmVjdXJyZW5jZSI6MjQsImV4ZWN1dGlvbnMiOjIsImV4dGVuc2lvbnMiOltdfV0.
+         */
+        case 'recurrent_transfer':
+          const [recurrentTxAmount, recurrentTxCurrency] =
+            data.amount.split(' ');
+
+          this.requestRecurrentTransfer(
+            tab,
+            account,
+            data.to,
+            recurrentTxAmount,
+            recurrentTxCurrency,
+            data.memo,
+            data.recurrence,
+            data.executions,
+          );
+          break;
+        default:
+          Logger.error(`Unsupported operation: ${type}`);
+      }
+    });
+  },
+
+  /**
    * Dispatch a Keychain operation
    * @param tab
    * @param request
@@ -213,7 +331,7 @@ export default {
     enforce = false,
   ) {
     const request = {
-      type: 'transfer',
+      type: KeychainRequestTypes.transfer,
       username: account,
       to: to,
       amount: (+amount).toFixed(3),
@@ -244,7 +362,7 @@ export default {
     vote: number,
   ) {
     var request = {
-      type: 'witnessVote',
+      type: KeychainRequestTypes.witnessVote,
       username: username,
       witness: witness,
       vote: vote,
@@ -265,7 +383,7 @@ export default {
    */
   requestProxy: function (tab: any, username: string, proxy: string) {
     var request = {
-      type: 'proxy',
+      type: KeychainRequestTypes.proxy,
       username,
       proxy,
     };
@@ -289,14 +407,14 @@ export default {
     unit: string,
   ) {
     type Request = {
-      type: 'delegation';
+      type: KeychainRequestTypes.delegation;
       delegatee: string;
       amount: string;
       unit: string;
       username?: string;
     };
     const request: Request = {
-      type: 'delegation',
+      type: KeychainRequestTypes.delegation,
       delegatee,
       amount,
       unit,
@@ -349,6 +467,62 @@ export default {
 
     this.dispatchRequest(tab, request);
   },
+
+  /**
+   * Requesting a Keychain update_proposal_votes
+   * @param tab
+   * @param username
+   * @param proposal_ids
+   * @param approve
+   */
+  requestProposalVotes(
+    tab: any,
+    username: string,
+    proposal_ids: number[],
+    approve: boolean,
+  ) {
+    const request = {
+      type: KeychainRequestTypes.updateProposalVote,
+      username,
+      proposal_ids,
+      approve,
+    };
+    this.dispatchRequest(tab, request);
+  },
+
+  /**
+   * Requesting a Keychain recurrent_transfer
+   * @param tab
+   * @param account
+   * @param to
+   * @param amount
+   * @param currency
+   * @param memo
+   * @param recurrence
+   * @param executions
+   */
+  requestRecurrentTransfer(
+    tab: any,
+    account: string,
+    to: string,
+    amount: string,
+    currency: string,
+    memo: string,
+    recurrence: string,
+    executions: string,
+  ) {
+    const request = {
+      type: KeychainRequestTypes.recurrentTransfer,
+      username: account,
+      to,
+      amount: (+amount).toFixed(3),
+      currency,
+      memo,
+      recurrence,
+      executions,
+    };
+    this.dispatchRequest(tab, request);
+  },
   /**
    * Parsing the query string
    * @param url
@@ -373,7 +547,6 @@ export default {
         }
       }
     }
-
     return argsParsed;
   },
 };
