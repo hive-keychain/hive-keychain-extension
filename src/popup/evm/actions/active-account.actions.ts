@@ -37,15 +37,11 @@ export const loadEvmActiveAccount =
       allTokens.filter((token) => token.type === EVMTokenType.ERC20),
     );
 
-    console.log({ allTokens });
-
     let erc721Tokens = await EvmTokensUtils.getErc721Tokens(
       wallet.address,
       chain,
       allTokens.filter((token) => token.type === EVMTokenType.ERC721),
     );
-
-    console.log({ nativeAndErc20Tokens, erc721Tokens });
 
     await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
 

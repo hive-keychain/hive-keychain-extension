@@ -27,7 +27,6 @@ const getGasLimit = async (
       let multiplier = 1.5;
       return Decimal.mul(Number(estimation), multiplier).toNumber();
     } catch (e) {
-      console.log(e);
       const tx: TransactionRequest = {
         from: wallet.address,
         data: data,

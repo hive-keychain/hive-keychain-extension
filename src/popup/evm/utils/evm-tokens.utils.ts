@@ -204,16 +204,11 @@ const getErc721Tokens = async (
 
   const idsPerCollection: any = {};
 
-  console.log({ tokens });
-
   for (const token of tokens) {
-    console.log(token);
     if (!idsPerCollection[token.address.toLowerCase()]) {
       idsPerCollection[token.address.toLowerCase()] = [];
     }
   }
-
-  console.log({ finalTransactions });
 
   for (const tx of finalTransactions) {
     if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
@@ -346,7 +341,6 @@ const getTokenListForWalletAddress = async (
         tokensMetadata = await KeychainApi.get(
           `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
         );
-        console.log('ici', { tokensMetadata });
       } catch (err) {
         Logger.error('Error while fetching tokens metadata', err);
         tokensMetadata =

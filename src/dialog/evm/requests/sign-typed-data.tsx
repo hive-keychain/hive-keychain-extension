@@ -53,7 +53,6 @@ export const SignTypedData = (props: Props) => {
 
   useEffect(() => {
     init();
-    console.log(message);
   }, []);
 
   const init = async () => {
@@ -201,8 +200,6 @@ export const SignTypedData = (props: Props) => {
   };
 
   const formatValue = (value: any, inputDisplayType: EvmInputDisplayType) => {
-    console.log(value, inputDisplayType);
-
     let formatedValue;
     switch (inputDisplayType) {
       case EvmInputDisplayType.ADDRESS:
