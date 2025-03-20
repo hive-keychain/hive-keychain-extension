@@ -15,20 +15,19 @@ if (window.chrome) {
 
 /**
  *
- * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
+ * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise<boolean>), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
  */
 export default {
   /**
    * Checks local storage for whether the feature has been disabled by the user
    * @returns {Promise}
    */
-  isKeychainifyEnabled: function () {
+  isKeychainifyEnabled: function (): Promise<boolean> {
     return new Promise(function (resolve, reject) {
       try {
         chrome.storage.local.get(['keychainify_enabled'], function (items) {
-          const featureStatus =
-            items.hasOwnProperty('keychainify_enabled') &&
-            items.keychainify_enabled;
+          const featureStatus = (items.hasOwnProperty('keychainify_enabled') &&
+            items.keychainify_enabled) as boolean;
 
           resolve(featureStatus);
         });
@@ -39,15 +38,18 @@ export default {
     });
   },
 
-  isUrlSupported: function (url: string) {
+  isSupportedHiveSignerUrl: function (url: string) {
     return (
       url.includes('hivesigner.com/sign/transfer') ||
       url.includes('hivesigner.com/sign/account-witness-vote') ||
       url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
       url.includes('hivesigner.com/sign/custom-json') ||
-      url.includes('hivesigner.com/sign/account-witness-proxy') ||
-      url.startsWith('hive://')
+      url.includes('hivesigner.com/sign/account-witness-proxy')
+      //
     );
+  },
+  isSupportedHiveUri: function (uri: string) {
+    return uri.startsWith('hive://');
   },
 
   /**
@@ -200,6 +202,10 @@ export default {
     const { operations } = hiveUriTx.tx;
     operations.forEach(([type, data]) => {
       switch (type) {
+        /**
+         * Transfer fund
+         * i.e. : hive://sign/op/WyJ0cmFuc2ZlciIseyJ0byI6ImhyZGNyLWhpdmUiLCJhbW91bnQiOiIwLjAwMSBISVZFIiwibWVtbyI6InRlc3QifV0.
+         */
         case 'transfer':
           const [transferAmount, transferCurrency] = data.amount.split(' ');
           this.requestTransfer(
@@ -213,17 +219,11 @@ export default {
             false,
           );
           break;
-        case 'account_witness_proxy':
-          this.requestProxy(tab, account, data.proxy);
-          break;
-        case 'account_witness_vote':
-          this.requestWitnessVote(
-            tab,
-            account,
-            data.witness,
-            data.approve ? 1 : 0,
-          );
-          break;
+
+        /**
+         * Delegate Hive Power
+         * i.e. : hive://sign/op/WyJkZWxlZ2F0ZV92ZXN0aW5nX3NoYXJlcyIseyJkZWxlZ2F0ZWUiOiJocmRjci1oaXZlIiwidmVzdGluZ19zaGFyZXMiOiIwLjAwMSBIUCJ9XQ..
+         */
         case 'delegate_vesting_shares':
           this.requestDelegation(
             tab,
@@ -233,6 +233,32 @@ export default {
             'HP',
           );
           break;
+
+        /**
+         * Vote for witness
+         * i.e. : hive://sign/op/WyJhY2NvdW50X3dpdG5lc3Nfdm90ZSIseyJ3aXRuZXNzIjoic3Rvb2RrZXYiLCJhcHByb3ZlIjp0cnVlfV0.
+         */
+        case 'account_witness_vote':
+          this.requestWitnessVote(
+            tab,
+            account,
+            data.witness,
+            data.approve ? 1 : 0,
+          );
+          break;
+
+        /**
+         * Chose a proxy
+         * i.e. : hive://sign/op/WyJhY2NvdW50X3dpdG5lc3NfcHJveHkiLHsicHJveHkiOiJwYW1wYW1wb21wb20ifV0.
+         */
+        case 'account_witness_proxy':
+          this.requestProxy(tab, account, data.proxy);
+          break;
+
+        /**
+         * Update proposal
+         * i.e. : hive://sign/op/WyJ1cGRhdGVfcHJvcG9zYWxfdm90ZXMiLHsicHJvcG9zYWxfaWRzIjpbMF0sImFwcHJvdmUiOnRydWUsImV4dGVuc2lvbnMiOltdfV0.
+         */
         case 'update_proposal_votes':
           this.requestProposalVotes(
             tab,
@@ -241,6 +267,11 @@ export default {
             data.approve,
           );
           break;
+
+        /**
+         * Recurrent fund transfer
+         * i.e. : hive://sign/op/WyJyZWN1cnJlbnRfdHJhbnNmZXIiLHsidG8iOiJzdG9vZGtldiIsImFtb3VudCI6IjAuMDAxIEhJVkUiLCJtZW1vIjoiIiwicmVjdXJyZW5jZSI6MjQsImV4ZWN1dGlvbnMiOjIsImV4dGVuc2lvbnMiOltdfV0.
+         */
         case 'recurrent_transfer':
           const [recurrentTxAmount, recurrentTxCurrency] =
             data.amount.split(' ');
