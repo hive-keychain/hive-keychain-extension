@@ -4,9 +4,10 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import * as HiveUri from 'hive-uri';
 import { HiveUriTransaction } from 'src/content-scripts/keychainify/hive-uri.types';
 import Logger from 'src/utils/logger.utils';
-const hiveuri = require('hive-uri');
+
 if (window.chrome) {
   //@ts-ignore
   window.chrome.storage.session = undefined;
@@ -195,7 +196,7 @@ export default {
    * @param account optional for anonymous op
    */
   parseHiveUri(uri: string, tab: any, account: string = '') {
-    const hiveUriTx = hiveuri.decode(uri) as HiveUriTransaction;
+    const hiveUriTx = HiveUri.decode(uri) as HiveUriTransaction;
     const { operations } = hiveUriTx.tx;
     operations.forEach(([type, data]) => {
       switch (type) {
@@ -515,7 +516,6 @@ export default {
         }
       }
     }
-    Logger.info(`${JSON.stringify(argsParsed, null, 2)}`);
     return argsParsed;
   },
 };

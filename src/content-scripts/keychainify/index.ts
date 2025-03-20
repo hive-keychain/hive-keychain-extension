@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-import Logger from 'src/utils/logger.utils';
 import keychainify from './keychainify';
 
 type Props = { process: Process; init: () => void };
@@ -75,8 +74,6 @@ let contentScript: Props = {
           contentScript.process.observerConfig,
         );
       });
-
-      //hive-uri goes here
     },
 
     /**
@@ -95,7 +92,6 @@ let contentScript: Props = {
           !anchor.classList.contains('keychainify-checked') && // That was not checked before
           keychainify.isUrlSupported(anchor.href)
         ) {
-          Logger.info(`${anchor.href}`);
           anchor.addEventListener('click', async function (e) {
             e.preventDefault();
             e.stopPropagation();
