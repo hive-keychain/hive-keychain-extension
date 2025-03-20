@@ -1,4 +1,4 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmTokenHistory,
   EvmTokenHistoryItem,
@@ -255,7 +255,7 @@ const EvmTokenHistoryPage = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    token: state.navigation.params.token as EVMToken,
+    token: state.navigation.params.token as NativeAndErc20Token,
     chain: state.chain as EvmChain,
     activeAccount: state.evm.activeAccount,
   };

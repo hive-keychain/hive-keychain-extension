@@ -1,5 +1,5 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
 import {
   EvmLocalHistory,
@@ -200,7 +200,7 @@ const fetchHistory = async (
 };
 
 const loadHistory = async (
-  token: EVMToken,
+  token: NativeAndErc20Token,
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,
@@ -367,7 +367,7 @@ const loadHistory = async (
 };
 
 const loadMore = async (
-  token: EVMToken,
+  token: NativeAndErc20Token,
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,

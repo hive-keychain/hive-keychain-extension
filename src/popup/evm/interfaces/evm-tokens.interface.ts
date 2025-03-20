@@ -22,16 +22,41 @@ export type EvmTokenInfoShortNative = EvmTokenInfoBase & {
   coingeckoId: string;
 };
 
+export type EvmTokenInfoShortSmartContract =
+  | EvmTokenInfoShortErc20
+  | EvmTokenInfoShortErc721
+  | EvmTokenInfoShortErc1155;
+
 export type EvmTokenInfoShortErc20 = EvmTokenInfoBase & {
   type: EVMTokenType.ERC20;
+  address: string;
   decimals: number;
   validated: number;
   possibleSpam: boolean;
   verifiedContract: boolean;
 };
+export type EvmTokenInfoShortErc721 = EvmTokenInfoBase & {
+  type: EVMTokenType.ERC721;
+  address: string;
+  decimals: number;
+  validated: number;
+  possibleSpam: boolean;
+  verifiedContract: boolean;
+};
+export type EvmTokenInfoShortErc1155 = EvmTokenInfoBase & {
+  type: EVMTokenType.ERC1155;
+  address: string;
+  decimals: number;
+  validated: number;
+  possibleSpam: boolean;
+  verifiedContract: boolean;
+};
+
 export type EvmTokenInfoShort =
   | EvmTokenInfoShortErc20
-  | EvmTokenInfoShortNative;
+  | EvmTokenInfoShortNative
+  | EvmTokenInfoShortErc721
+  | EvmTokenInfoShortErc1155;
 
 export type EvmTokenInfo = EvmTokenInfoShort & {
   blockNumber: number;

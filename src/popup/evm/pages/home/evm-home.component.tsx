@@ -1,7 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
@@ -56,8 +55,6 @@ const Home = ({
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
-  const [tokens, setTokens] = useState<EVMToken[]>();
-
   useEffect(() => {
     resetTitleContainerProperties();
     initWhatsNew();
@@ -71,7 +68,6 @@ const Home = ({
   useEffect(() => {
     if (activeAccount.wallet.address) {
       refreshAccountBalances();
-      setTokens(undefined);
       ChainUtils.setPreviousChain(chain);
       ChainUtils.addChainToSetupChains(chain);
     }
@@ -81,19 +77,17 @@ const Home = ({
     if (
       !ArrayUtils.includesAll(
         Object.keys(prices),
-        activeAccount.balances.map((b) => b.tokenInfo.symbol),
+        activeAccount.nativeAndErc20Tokens.map((b) => b.tokenInfo.symbol),
       )
-    )
-      fetchPrices(activeAccount.balances.map((t) => t.tokenInfo));
-  }, [activeAccount.balances]);
+    ) {
+      fetchPrices(activeAccount.nativeAndErc20Tokens.map((t) => t.tokenInfo));
+    }
 
-  useEffect(() => {
-    if (activeAccount.balances?.length > 0) setTokens(activeAccount.balances);
-  }, [activeAccount.balances]);
-
-  useEffect(() => {
-    if (tokens && tokens.length > 0) {
-      const mainToken = tokens.find(
+    if (
+      activeAccount.nativeAndErc20Tokens &&
+      activeAccount.nativeAndErc20Tokens.length > 0
+    ) {
+      const mainToken = activeAccount.nativeAndErc20Tokens.find(
         (token) => token.tokenInfo.type === EVMTokenType.NATIVE,
       );
       EvmTokensHistoryUtils.fetchFullMainTokenHistory(
@@ -103,7 +97,7 @@ const Home = ({
         activeAccount.wallet.signingKey,
       );
     }
-  }, [tokens]);
+  }, [activeAccount.nativeAndErc20Tokens]);
 
   const loadActiveAccount = async (chain: EvmChain) => {
     if (chain) {
@@ -202,13 +196,13 @@ const Home = ({
             accountValues={{
               [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
                 EvmTokensUtils.getTotalBalanceInUsd(
-                  activeAccount.balances,
+                  activeAccount.nativeAndErc20Tokens,
                   prices,
                 ),
               )}`,
               [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
                 EvmTokensUtils.getTotalBalanceInMainToken(
-                  activeAccount.balances,
+                  activeAccount.nativeAndErc20Tokens,
                   chain,
                   prices,
                 ),
@@ -219,7 +213,10 @@ const Home = ({
             <EvmDappStatusComponent />
           </div>
         </div>
-        <EvmWalletInfoSectionComponent evmTokens={tokens} prices={prices} />
+        <EvmWalletInfoSectionComponent
+          activeAccount={activeAccount}
+          prices={prices}
+        />
       </div>
       <ActionsSectionComponent
         selectedToken={chain.mainToken}

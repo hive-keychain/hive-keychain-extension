@@ -3,6 +3,26 @@
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BaseApi } from 'src/api/base';
 
+const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
+  const response = await get(`
+    ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
+  `);
+
+  return response.result ?? [];
+};
+
+const getErc721TokenTransactions = async (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number,
+  limit: number,
+) => {
+  const response = await get(`
+    ${chain.blockExplorerApi?.url}/api?module=account&action=tokennfttx&address=${walletAddress}&page=${page}&offset=${limit}&sort=asc
+    `);
+  return response.result ?? [];
+};
+
 const getTokenTx = (walletAddress: string, chain: EvmChain, offset: number) => {
   return get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&startblock=0&endblock=99999999&offset=${offset}&sort=asc`,
@@ -41,4 +61,6 @@ export const EtherscanApi = {
   getTokenTx,
   getHistory,
   getAbi,
+  discoverTokens,
+  getErc721TokenTransactions,
 };

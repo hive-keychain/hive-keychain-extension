@@ -1,5 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {
@@ -11,7 +11,7 @@ export interface ActionButton {
 }
 
 export const EVMWalletInfoSectionActions = (
-  token: EVMToken,
+  token: NativeAndErc20Token,
 ): ActionButton[] => {
   return [
     {

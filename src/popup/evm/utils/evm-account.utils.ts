@@ -1,8 +1,8 @@
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 
-const filterSpamTokens = (tokens: EVMToken[]) => {
+const filterSpamTokens = (tokens: NativeAndErc20Token[]) => {
   return tokens.filter(
     (token) =>
       token.tokenInfo.type === EVMTokenType.NATIVE ||

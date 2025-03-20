@@ -6,7 +6,9 @@ import { HDNodeWallet } from 'ethers';
 export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
-    balances: [],
+    nativeAndErc20Tokens: [],
+    erc721Tokens: [],
+    erc1155Tokens: [],
     wallet: {} as HDNodeWallet,
   },
   { type, payload }: ActionPayload<EvmActiveAccount>,

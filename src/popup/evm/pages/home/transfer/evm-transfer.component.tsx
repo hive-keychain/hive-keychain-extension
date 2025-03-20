@@ -2,10 +2,10 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Screen } from '@interfaces/screen.interface';
 import {
   EvmActiveAccount,
-  EVMToken,
+  NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmTokenInfoShortErc20,
+  EvmTokenInfoShortSmartContract,
   EVMTokenType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
@@ -58,7 +58,7 @@ import Logger from 'src/utils/logger.utils';
 
 interface TransferForm {
   receiverAddress: string;
-  selectedToken: EVMToken;
+  selectedToken: NativeAndErc20Token;
   amount: number;
 }
 
@@ -113,17 +113,17 @@ const EvmTransfer = ({
   useEffect(() => {
     if (activeAccount) {
       setTokenOptions(
-        EvmAccountUtils.filterSpamTokens(activeAccount.balances).map(
-          (tokenBalance, index) => {
-            return {
-              label: tokenBalance.tokenInfo.symbol.toUpperCase(),
-              subLabel: tokenBalance.tokenInfo.name,
-              value: tokenBalance,
-              img: tokenBalance.tokenInfo.logo,
-              key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
-            };
-          },
-        ),
+        EvmAccountUtils.filterSpamTokens(
+          activeAccount.nativeAndErc20Tokens,
+        ).map((tokenBalance, index) => {
+          return {
+            label: tokenBalance.tokenInfo.symbol.toUpperCase(),
+            subLabel: tokenBalance.tokenInfo.name,
+            value: tokenBalance,
+            img: tokenBalance.tokenInfo.logo,
+            key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
+          };
+        }),
       );
     }
   }, [activeAccount]);
@@ -258,7 +258,7 @@ const EvmTransfer = ({
   };
 
   const encodeTransferData = (
-    tokenInfo: EvmTokenInfoShortErc20,
+    tokenInfo: EvmTokenInfoShortSmartContract,
     selectedAccount: EvmActiveAccount,
     receiverAddress: string,
     amount: number,

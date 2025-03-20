@@ -1,10 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ActionButton } from 'src/interfaces/action-button.interface';
 
 export const EvmActionButtonList = (
-  selectedToken: EVMToken,
+  selectedToken: NativeAndErc20Token,
 ): ActionButton[] => {
   return [
     {

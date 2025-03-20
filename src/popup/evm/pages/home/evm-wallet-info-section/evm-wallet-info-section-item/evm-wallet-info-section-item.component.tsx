@@ -1,5 +1,5 @@
 import { Asset } from '@hiveio/dhive';
-import { EVMToken } from '@popup/evm/interfaces/active-account.interface';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
@@ -15,7 +15,7 @@ import { ColorsUtils } from 'src/utils/colors.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface EVMWalletSectionInfoItemProps {
-  token: EVMToken;
+  token: NativeAndErc20Token;
   icon: SVGIcons;
   addBackground?: boolean;
   mainValue: string | Asset | number;
@@ -70,12 +70,15 @@ const WalletInfoSectionItem = ({
     );
   };
 
-  const handleHistoryClick = (event: BaseSyntheticEvent, token?: EVMToken) => {
+  const handleHistoryClick = (
+    event: BaseSyntheticEvent,
+    token?: NativeAndErc20Token,
+  ) => {
     event.stopPropagation();
     navigateToWithParams(EvmScreen.EVM_TOKEN_HISTORY, { token });
   };
 
-  const goToTokenWebsite = (token: EVMToken) => {
+  const goToTokenWebsite = (token: NativeAndErc20Token) => {
     // chrome.tabs.create({ url: token });
   };
 
