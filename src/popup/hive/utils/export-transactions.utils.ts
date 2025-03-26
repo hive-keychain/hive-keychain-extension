@@ -55,9 +55,19 @@ const fetchTransaction = async (
   let operations: ExportTransactionOperation[] = [];
   let forceStop = false;
   let percentageDuration;
-  endDate = new Date();
+
   if (startDate) {
-    percentageDuration = endDate.getTime() - new Date(startDate).getTime();
+    startDate = moment(startDate).startOf('day').toDate();
+  }
+  if (!endDate) {
+    endDate = new Date();
+  } else {
+    endDate = moment(endDate).endOf('day').toDate();
+  }
+
+
+  if (startDate) {
+    percentageDuration = endDate.getTime() - startDate.getTime();
   }
 
   try {
