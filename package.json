@@ -55,7 +55,7 @@
     "@types/chrome": "^0.0.243",
     "@types/crypto-js": "4.1.1",
     "@types/yargs": "17.0.11",
-    "axios": "0.28.0",
+    "axios": "1.8.2",
     "crypto-js": "4.1.1",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
