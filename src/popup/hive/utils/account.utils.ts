@@ -50,23 +50,30 @@ const getKeys = async (username: string, password: string) => {
   const memoKey = hiveAccounts[0].memo_key;
 
   if (isWif(password)) {
+    let matchingKeys: Keys = {};
     const pubUnknown = KeysUtils.getPublicKeyFromPrivateKeyString(password);
     if (pubUnknown === memoKey) {
-      return {
+      matchingKeys = {
+        ...matchingKeys,
         memo: password,
         memoPubkey: memoKey,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         posting: password,
         postingPubkey: pubUnknown,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         active: password,
         activePubkey: pubUnknown,
       };
     }
+    return matchingKeys;
   }
 
   const keys = KeysUtils.derivateFromMasterPassword(
