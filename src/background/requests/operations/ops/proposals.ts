@@ -91,7 +91,7 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
         );
         LedgerModule.signTransactionFromLedger({
@@ -110,7 +110,7 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
           key!,
         );
