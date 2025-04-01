@@ -1,4 +1,3 @@
-import type { Operation } from '@hiveio/dhive';
 import { ExportTransactionsUtils } from 'hive-keychain-commons';
 import moment from 'moment';
 import { KeychainError } from 'src/keychain-error';

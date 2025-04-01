@@ -276,7 +276,7 @@ const removeProposal = Joi.object({
 });
 
 const updateProposalVote = Joi.object({
-  username,
+  username: Joi.string().allow(null),
   proposal_ids,
   approve: Joi.boolean().required(),
   extensions: Joi.alternatives(Joi.array(), Joi.string()),
@@ -312,7 +312,7 @@ const swap = Joi.object({
 });
 
 const recurrentTransfer = Joi.object({
-  username,
+  username: Joi.string().allow(null),
   to: username,
   amount: Joi.alternatives()
     .try(amount, Joi.string().valid('0'))
