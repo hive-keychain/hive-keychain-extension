@@ -4991,5 +4991,17 @@
   "evm_too_many_transaction_button": {
     "message": "Block this app for $1 minute(s)",
     "description": "Label for block dapp button"
+  },
+  "evm_all_nft_collections": {
+    "message": "All NFT collections",
+    "description": "All nft collections"
+  },
+  "evm_nft_token_id": {
+    "message": "Token ID",
+    "description": "NFT token id"
+  },
+  "evm_nft_token_type": {
+    "message": "Token type",
+    "description": "Token type"
   }
 }

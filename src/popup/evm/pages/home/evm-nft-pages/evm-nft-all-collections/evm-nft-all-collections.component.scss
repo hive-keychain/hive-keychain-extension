@@ -1,0 +1,23 @@
+.evm-nft-all-collections {
+  @include pageLayoutRowGap;
+  flex: 1;
+  overflow: hidden;
+
+  .nft-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 8px;
+    column-gap: 6px;
+    .nft-collection-item {
+      @include small-card();
+      display: flex;
+      flex-direction: column;
+      margin: unset;
+      cursor: pointer;
+      img {
+        height: 160px;
+        width: 160px;
+      }
+    }
+  }
+}

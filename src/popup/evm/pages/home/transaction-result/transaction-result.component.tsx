@@ -1,6 +1,6 @@
 import {
-  EvmTokenInfoShort,
-  EvmTokenInfoShortErc20,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -232,7 +232,7 @@ const EvmTransactionResult = ({
                 {amount
                   ? FormatUtils.withCommas(
                       amount,
-                      (tokenInfo as EvmTokenInfoShortErc20).decimals ?? 18,
+                      (tokenInfo as EvmSmartContractInfoErc20).decimals ?? 18,
                       true,
                     )
                   : 1}{' '}
@@ -353,7 +353,8 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.evm.activeAccount,
     transactionResponse: state.navigation.stack[0].params
       .transactionResponse as TransactionResponse,
-    tokenInfo: state.navigation.stack[0].params.tokenInfo as EvmTokenInfoShort,
+    tokenInfo: state.navigation.stack[0].params
+      .tokenInfo as EvmSmartContractInfo,
     amount: state.navigation.stack[0].params.amount,
     receiverAddress: state.navigation.stack[0].params.receiverAddress,
     gasFee: state.navigation.stack[0].params.gasFee,

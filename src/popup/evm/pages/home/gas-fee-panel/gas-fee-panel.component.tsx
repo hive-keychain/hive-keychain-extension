@@ -1,4 +1,4 @@
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -28,7 +28,7 @@ import { MathUtils } from 'src/utils/math.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  tokenInfo?: EvmTokenInfoShort;
+  tokenInfo?: EvmSmartContractInfo;
   wallet: HDNodeWallet;
   selectedFee?: GasFeeEstimationBase;
   onSelectFee: (fee: GasFeeEstimationBase) => void;

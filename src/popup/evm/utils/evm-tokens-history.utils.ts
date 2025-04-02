@@ -10,8 +10,9 @@ import {
   EvmTokenTransferOutHistoryItem,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
-  EvmTokenInfoShort,
-  EVMTokenType,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc20,
+  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
@@ -29,7 +30,7 @@ const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
 
 const fetchHistory = async (
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   chain: EvmChain,
   walletAddress: string,
   walletSigningKey: SigningKey,
@@ -37,7 +38,7 @@ const fetchHistory = async (
   lastBlock: number,
 ): Promise<EvmTokenHistory> => {
   Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
-  if (tokenInfo.type === EVMTokenType.NATIVE) {
+  if (tokenInfo.type === EVMSmartContractType.NATIVE) {
     let response;
     const events = [];
     let page = 1;
@@ -130,7 +131,7 @@ const fetchHistory = async (
           to: e.args[1],
           amount: EvmTokensUtils.formatTokenValue(
             e.args[2],
-            tokenInfo.decimals,
+            (tokenInfo as EvmSmartContractInfoErc20).decimals,
           ),
           timestamp: block.timestamp * 1000,
           label: '',
@@ -164,7 +165,7 @@ const fetchHistory = async (
           to: e.args[1],
           amount: EvmTokensUtils.formatTokenValue(
             e.args[2],
-            tokenInfo.decimals,
+            (tokenInfo as EvmSmartContractInfoErc20).decimals,
           ),
           timestamp: block.timestamp * 1000,
           label: '',
@@ -276,7 +277,7 @@ const loadHistory = async (
         chain,
         walletAddress,
         walletSigningKey,
-        token.tokenInfo.type === EVMTokenType.NATIVE ? 0 : firstBlock,
+        token.tokenInfo.type === EVMSmartContractType.NATIVE ? 0 : firstBlock,
         lastBlock,
       );
       history.events = [...history.events, ...h.events];
@@ -309,7 +310,7 @@ const loadHistory = async (
     const canceledTransaction = canceledTransactions.find(
       (transaction) => transaction.nonce === historyItem.nonce,
     );
-    if (token.tokenInfo.type === EVMTokenType.NATIVE) {
+    if (token.tokenInfo.type === EVMSmartContractType.NATIVE) {
       if (historyItem.isCanceled) {
         historyItem.label = chrome.i18n.getMessage(
           'popup_html_evm_history_transaction_canceled',
@@ -320,7 +321,7 @@ const loadHistory = async (
     finalHistory.events.push(historyItem);
   }
 
-  if (token.tokenInfo.type === EVMTokenType.ERC20) {
+  if (token.tokenInfo.type === EVMSmartContractType.ERC20) {
     const tokenCanceledTransactions = canceledTransactions.filter(
       (tx) =>
         tx.tokenInfo.coingeckoId === token.tokenInfo.coingeckoId &&
@@ -423,7 +424,7 @@ const getCommonHistoryItem = (e: any) => {
 const getSavedHistory = async (
   chain: string,
   walletAddress: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
 ): Promise<EvmTokenHistory | undefined> => {
   let localHistory: EvmLocalHistory =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -449,7 +450,7 @@ const getSavedHistory = async (
 const saveLocalHistory = async (
   history: EvmTokenHistory,
   address: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   chain: EvmChain,
 ) => {
   let localHistory: EvmLocalHistory =
@@ -477,7 +478,7 @@ const saveLocalHistory = async (
 
 const fetchFullMainTokenHistory = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   walletAddress: string,
   walletSigningKey: SigningKey,
 ) => {

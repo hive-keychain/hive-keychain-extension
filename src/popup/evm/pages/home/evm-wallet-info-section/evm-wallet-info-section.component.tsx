@@ -1,18 +1,23 @@
-import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmActiveAccount,
+  EvmErc721Token,
+} from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
+import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import React, { useState } from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
   prices: EvmPrices;
+  onClickOnNftPreview: (
+    params: EvmErc721Token | EvmErc721Token[],
+    screen: EvmScreen,
+  ) => void;
 }
 
 enum EvmDisplayedPage {
@@ -24,6 +29,7 @@ enum EvmDisplayedPage {
 const WalletInfoSection = ({
   activeAccount,
   prices,
+  onClickOnNftPreview,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     EvmDisplayedPage.ERC20,
@@ -38,12 +44,12 @@ const WalletInfoSection = ({
               activeAccount.nativeAndErc20Tokens,
               prices,
             )
-              .filter(
-                (token) =>
-                  (token.tokenInfo.type === EVMTokenType.NATIVE ||
-                    !token.tokenInfo.possibleSpam) &&
-                  token.tokenInfo.type !== EVMTokenType.ERC721,
-              )
+              // .filter(
+              //   (token) =>
+              //     (token.tokenInfo.type === EVMSmartContractType.NATIVE ||
+              //       !token.tokenInfo.possibleSpam) &&
+              //     token.tokenInfo.type !== EVMSmartContractType.ERC721,
+              // )
               .map((token, index) => (
                 <EVMWalletInfoSectionItemComponent
                   key={`${token.tokenInfo.name}-${index}`}
@@ -58,36 +64,10 @@ const WalletInfoSection = ({
       }
       case EvmDisplayedPage.ERC721: {
         return (
-          <div className="nft-gallery">
-            {activeAccount.erc721Tokens
-              .filter((tokens) => tokens.tokenInfo.type === EVMTokenType.ERC721)
-              .slice(0, 4)
-              .map((token) => (
-                <div className="nft-collection">
-                  <div className="nft-collection-name">
-                    {token.tokenInfo.name}
-                  </div>
-                  <div className="nft-collection-preview">
-                    <div className="nft-preview-container">
-                      {token.collection.map((collectionItem) => (
-                        <CustomTooltip
-                          message={collectionItem.metadata.name}
-                          skipTranslation>
-                          <img
-                            className="nft-preview"
-                            src={collectionItem.metadata.image}
-                          />
-                        </CustomTooltip>
-                      ))}
-                    </div>
-                    <SVGIcon
-                      className="go-to-icon"
-                      icon={SVGIcons.GLOBAL_ARROW}
-                    />
-                  </div>
-                </div>
-              ))}
-          </div>
+          <EvmWalletNftGalleryComponent
+            activeAccount={activeAccount}
+            onClickOnNftPreview={onClickOnNftPreview}
+          />
         );
       }
     }

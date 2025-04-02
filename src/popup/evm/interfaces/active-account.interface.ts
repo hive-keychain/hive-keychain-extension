@@ -1,8 +1,9 @@
 import { EvmNFTMetadata } from '@popup/evm/interfaces/evm-ntf.interface';
 import {
-  EvmTokenInfoShort,
-  EvmTokenInfoShortErc1155,
-  EvmTokenInfoShortErc721,
+  EvmSmartContractInfoErc1155,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoErc721,
+  EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { HDNodeWallet } from 'ethers';
 
@@ -18,11 +19,11 @@ export interface NativeAndErc20Token {
   formattedBalance: string;
   balance: bigint;
   balanceInteger: number;
-  tokenInfo: EvmTokenInfoShort;
+  tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
 }
 
 export interface EvmErc721Token {
-  tokenInfo: EvmTokenInfoShortErc721;
+  tokenInfo: EvmSmartContractInfoErc721;
   collection: EvmErc721TokenCollectionItem[];
 }
 export interface EvmErc721TokenCollectionItem {
@@ -31,7 +32,7 @@ export interface EvmErc721TokenCollectionItem {
 }
 
 export interface EvmErc1155Token {
-  tokenInfo: EvmTokenInfoShortErc1155;
+  tokenInfo: EvmSmartContractInfoErc1155;
   collection: any[]; //TODO specify
 }
 

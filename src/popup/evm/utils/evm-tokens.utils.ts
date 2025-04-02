@@ -5,14 +5,16 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmTokenInfoShort,
-  EvmTokenInfoShortErc721,
-  EVMTokenType,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoErc721,
+  EvmSmartContractInfoNative,
+  EvmSmartContractNonNativeBase,
+  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import {
   AbiList,
-  ERC1155Abi,
   Erc20Abi,
   ERC721Abi,
 } from '@popup/evm/reference-data/abi.data';
@@ -42,7 +44,9 @@ const getTotalBalanceInUsd = (
         Number(
           ethers.formatUnits(
             b.balance,
-            b.tokenInfo.type === EVMTokenType.ERC20 ? b.tokenInfo.decimals : 18,
+            b.tokenInfo.type === EVMSmartContractType.ERC20
+              ? b.tokenInfo.decimals
+              : 18,
           ),
         )
     );
@@ -67,48 +71,54 @@ const getTotalBalanceInMainToken = (
 const getTokenBalances = async (
   walletAddress: string,
   chain: EvmChain,
-  tokensMetadata: EvmTokenInfoShort[],
+  tokensMetadata: EvmSmartContractInfo[],
 ) => {
   if (
     !tokensMetadata.some(
-      (tokenMetadata) => tokenMetadata.type === EVMTokenType.NATIVE,
+      (tokenMetadata) => tokenMetadata.type === EVMSmartContractType.NATIVE,
     )
   ) {
     const mainTokenMetadata = {
-      type: EVMTokenType.NATIVE,
+      type: EVMSmartContractType.NATIVE,
       name: chain.mainToken,
       symbol: chain.mainToken,
       chainId: chain.chainId,
       logo: chain.logo,
       backgroundColor: '',
       coingeckoId: '',
-    } as EvmTokenInfoShort;
+    } as EvmSmartContractInfo;
     tokensMetadata.push(mainTokenMetadata);
   }
-  const balances: Promise<NativeAndErc20Token | undefined>[] = tokensMetadata
-    .filter(
-      (token) => token.type === EVMTokenType.NATIVE || !token.possibleSpam,
-    )
-    .map(async (token) => getTokenBalance(walletAddress, chain, token));
 
-  const result = (await Promise.all(balances)).filter((balance) => !!balance);
+  const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
+    tokensMetadata
+      .filter(
+        (token) =>
+          token.type === EVMSmartContractType.NATIVE ||
+          (token.type === EVMSmartContractType.ERC20 && !token.possibleSpam),
+      )
+      .map(async (token) => getTokenBalance(walletAddress, chain, token));
+
+  const result = (await Promise.all(balancesPromises)).filter(
+    (balance) => !!balance,
+  );
   return result;
 };
 
 const getTokenBalance = async (
   walletAddress: string,
   chain: EvmChain,
-  token: EvmTokenInfoShort,
+  token: EvmSmartContractInfo,
 ) => {
   const provider = EthersUtils.getProvider(chain);
   try {
     let formattedBalance;
     let balance;
     let balanceInteger;
-    let collection;
+    let tokenInfo;
 
     switch (token.type) {
-      case EVMTokenType.NATIVE: {
+      case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
         formattedBalance = FormatUtils.withCommas(
           Number(parseFloat(ethers.formatEther(balance))),
@@ -116,65 +126,48 @@ const getTokenBalance = async (
           true,
         );
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+        tokenInfo = token as EvmSmartContractInfoNative;
         break;
       }
 
-      case EVMTokenType.ERC20: {
+      case EVMSmartContractType.ERC20: {
         const contract = new ethers.Contract(
-          token.address!,
+          (token as EvmSmartContractInfoErc20).address,
           Erc20Abi,
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
         formattedBalance = FormatUtils.withCommas(
-          Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-          token.decimals,
+          Number(
+            parseFloat(
+              ethers.formatUnits(
+                balance,
+                (token as EvmSmartContractInfoErc20).decimals,
+              ),
+            ),
+          ),
+          (token as EvmSmartContractInfoErc20).decimals,
           true,
         );
         balanceInteger = Number(
-          parseFloat(ethers.formatUnits(balance, token.decimals)),
+          parseFloat(
+            ethers.formatUnits(
+              balance,
+              (token as EvmSmartContractInfoErc20).decimals,
+            ),
+          ),
         );
+        tokenInfo = token as EvmSmartContractInfoErc20;
 
         break;
       }
-      case EVMTokenType.ERC721: {
-        const contract = new ethers.Contract(
-          token.address!,
-          ERC721Abi,
-          provider,
-        );
-        balance = await contract.balanceOf(walletAddress);
-        formattedBalance = FormatUtils.withCommas(
-          Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-          token.decimals,
-          true,
-        );
-        balanceInteger = Number(
-          parseFloat(ethers.formatUnits(balance, token.decimals)),
-        );
-        break;
-      }
-      case EVMTokenType.ERC1155: {
-        const contract = new ethers.Contract(
-          token.address!,
-          ERC1155Abi,
-          provider,
-        );
-        balance = await contract.balanceOf(walletAddress);
-        formattedBalance = FormatUtils.withCommas(
-          Number(parseFloat(ethers.formatUnits(balance, token.decimals))),
-          token.decimals,
-          true,
-        );
-        balanceInteger = Number(
-          parseFloat(ethers.formatUnits(balance, token.decimals)),
-        );
-        break;
-      }
+
+      default:
+        return undefined;
     }
 
     return {
-      tokenInfo: token,
+      tokenInfo: tokenInfo,
       formattedBalance: formattedBalance,
       balance: balance,
       balanceInteger: balanceInteger,
@@ -187,7 +180,7 @@ const getTokenBalance = async (
 const getErc721Tokens = async (
   walletAddress: string,
   chain: EvmChain,
-  tokens: EvmTokenInfoShort[],
+  tokens: EvmSmartContractInfoErc721[],
 ) => {
   const LIMIT = 1000;
   let finalTransactions: any[] = [];
@@ -211,6 +204,13 @@ const getErc721Tokens = async (
   }
 
   for (const tx of finalTransactions) {
+    if (
+      !tokens
+        .map((token) => token.address.toLowerCase())
+        .includes(tx.contractAddress)
+    )
+      continue;
+
     if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
       idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
     } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
@@ -226,18 +226,19 @@ const getErc721Tokens = async (
     const provider = EthersUtils.getProvider(chain);
     const contract = new ethers.Contract(token!.address!, ERC721Abi, provider);
     const collection: EvmErc721TokenCollectionItem[] = [];
+
+    const collectionPromises: Promise<EvmErc721TokenCollectionItem>[] = [];
+
     for (const tokenId of idsPerCollection[contractAddress]) {
-      const metadata = await EvmNFTUtils.getMetadataFromURI(
-        await contract.tokenURI(tokenId),
+      collectionPromises.push(
+        EvmNFTUtils.getMetadataFromTokenId(tokenId, contract),
       );
-      collection.push({
-        id: tokenId,
-        metadata: metadata,
-      });
     }
+
     erc721tokens.push({
-      tokenInfo: token as EvmTokenInfoShortErc721,
-      collection: collection,
+      tokenInfo: token as EvmSmartContractInfoErc721,
+      // collection: [...collection, ...collection],
+      collection: await Promise.all(collectionPromises),
     });
   }
 
@@ -247,7 +248,7 @@ const getErc721Tokens = async (
 const discoverTokens = async (
   walletAddress: string,
   chain: EvmChain,
-): Promise<EvmTokenInfoShort[]> => {
+): Promise<EvmSmartContractInfo[]> => {
   let allSavedMetadata = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
   );
@@ -262,13 +263,14 @@ const discoverTokens = async (
   const addresses: string[] = [];
 
   let addressesToFetch: string[] = [];
-
+  console.log({ chain });
   switch (chain.blockExplorerApi?.type) {
     case BlockExporerType.ETHERSCAN: {
       const discoveredTokens = await EtherscanApi.discoverTokens(
         walletAddress,
         chain,
       );
+      console.log({ discoveredTokens });
 
       for (const token of discoveredTokens) {
         if (
@@ -284,6 +286,8 @@ const discoverTokens = async (
       return [];
   }
 
+  console.log({ addresses });
+
   for (const address of addresses) {
     if (!chainTokenMetaData.find((stm: any) => stm.address)) {
       addressesToFetch.push(address);
@@ -293,8 +297,10 @@ const discoverTokens = async (
     return allSavedMetadata[chain.chainId];
   }
   const tokensMetadata = await KeychainApi.get(
-    `evm/tokensInfoShort/${chain.chainId}/${addressesToFetch?.join(',')}`,
+    `evm/smart-contracts-info/${chain.chainId}/${addressesToFetch?.join(',')}`,
   );
+
+  console.log({ tokensMetadata });
 
   const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
   allSavedMetadata[chain.chainId] = newMetadata;
@@ -302,14 +308,14 @@ const discoverTokens = async (
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
     allSavedMetadata,
   );
-
+  console.log(newMetadata);
   return newMetadata;
 };
 
 const getTokenListForWalletAddress = async (
   walletAddress: string,
   chain: EvmChain,
-): Promise<EvmTokenInfoShort[]> => {
+): Promise<EvmSmartContractInfo[]> => {
   switch (chain.blockExplorerApi?.type) {
     case BlockExporerType.ETHERSCAN: {
       let result;
@@ -361,7 +367,7 @@ const getTokenListForWalletAddress = async (
 const getTokenInfo = async (
   chainId: EvmChain['chainId'],
   address?: string,
-): Promise<EvmTokenInfoShort> => {
+): Promise<EvmSmartContractInfo> => {
   const tokensMetadataPerChain =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -377,12 +383,13 @@ const getTokenInfo = async (
   if (tokenMetaData) {
     if (address) {
       token = tokenMetaData.find(
-        (t: EvmTokenInfoShort) =>
+        (t: EvmSmartContractNonNativeBase) =>
           t.address?.toLowerCase() === address.toLowerCase(),
       );
     } else {
       token = tokenMetaData.find(
-        (t: EvmTokenInfoShort) => !t.address.toLowerCase(),
+        (t: EvmSmartContractInfoNative) =>
+          t.type === EVMSmartContractType.NATIVE,
       );
     }
   }
@@ -393,8 +400,8 @@ const sortTokens = (tokens: NativeAndErc20Token[], prices: EvmPrices) => {
   return tokens.sort((tokenA, tokenB) => {
     const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
     const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
-    if (tokenA.tokenInfo.type === EVMTokenType.NATIVE) return -1;
-    else if (tokenB.tokenInfo.type === EVMTokenType.NATIVE) return 1;
+    if (tokenA.tokenInfo.type === EVMSmartContractType.NATIVE) return -1;
+    else if (tokenB.tokenInfo.type === EVMSmartContractType.NATIVE) return 1;
     else {
       const tokenAPrice =
         priceA.usd *
@@ -424,15 +431,27 @@ const getMainTokenInfo = async (chain: EvmChain) => {
   );
   if (tokens && tokens[chain.chainId]) {
     return tokens[chain.chainId].find(
-      (t: EvmTokenInfoShort) =>
+      (t: EvmSmartContractInfo) =>
         t.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
     );
   }
 };
 
-const displayValue = (value: number, tokenInfo: EvmTokenInfoShort) => {
-  const decimals =
-    tokenInfo.type === EVMTokenType.NATIVE ? 18 : tokenInfo.decimals;
+const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
+  let decimals;
+
+  switch (tokenInfo.type) {
+    case EVMSmartContractType.NATIVE:
+      decimals = 18;
+    case EVMSmartContractType.ERC20:
+      decimals = (tokenInfo as EvmSmartContractInfoErc20).decimals;
+    case EVMSmartContractType.ERC721:
+    case EVMSmartContractType.ERC721Enumerable:
+    case EVMSmartContractType.ERC1155: {
+      decimals = 0;
+    }
+  }
+
   return FormatUtils.withCommas(value, decimals, true);
 };
 

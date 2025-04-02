@@ -1,12 +1,12 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAppStatus } from '@popup/evm/reducers/app-status.reducer';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { CoingeckoApi } from 'src/api/coingecko';
 import Logger from 'src/utils/logger.utils';
 
 export const fetchPrices =
-  (tokensMetadata: EvmTokenInfoShort[]): AppThunk =>
+  (tokensMetadata: EvmSmartContractInfo[]): AppThunk =>
   async (dispatch) => {
     Logger.info('Fetching prices...');
 
@@ -17,10 +17,10 @@ export const fetchPrices =
           'simple/price',
           `ids=${tokensMetadata
             .filter(
-              (tm: EvmTokenInfoShort) =>
+              (tm: EvmSmartContractInfo) =>
                 !!tm.coingeckoId && tm.coingeckoId.length > 0,
             )
-            .map((tm: EvmTokenInfoShort) => tm.coingeckoId)
+            .map((tm: EvmSmartContractInfo) => tm.coingeckoId)
             .join(',')}&vs_currencies=usd`,
         );
 

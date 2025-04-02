@@ -1,4 +1,4 @@
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React from 'react';
@@ -10,7 +10,7 @@ interface Props {
   warningHook: useTransactionHook;
   selectedAccount?: EvmAccount;
   chain?: EvmChain;
-  tokenInfo?: EvmTokenInfoShort;
+  tokenInfo?: EvmSmartContractInfo;
 }
 export const EvmTransactionWarningsComponent = ({
   warningHook,

@@ -1,8 +1,8 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
-  EvmTokenInfoShort,
-  EvmTokenInfoShortErc20,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -112,7 +112,7 @@ const ConfirmationPage = ({
     goBack();
   };
 
-  const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
+  const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
     const balance = await EvmTokensUtils.getTokenBalance(
       selectedAccount?.wallet.address!,
       chain!,
@@ -123,7 +123,7 @@ const ConfirmationPage = ({
       before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
       estimatedAfter: `${FormatUtils.withCommas(
         new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-        (tokenInfo as EvmTokenInfoShortErc20).decimals || 8,
+        (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
         true,
       )}  ${tokenInfo?.symbol}`,
     });

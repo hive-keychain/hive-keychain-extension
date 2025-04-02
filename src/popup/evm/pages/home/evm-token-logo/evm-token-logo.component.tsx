@@ -1,10 +1,10 @@
-import { EvmTokenInfoShort } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import React, { useEffect, useState } from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 
 interface TokenLogoProps {
-  tokenInfo: EvmTokenInfoShort;
+  tokenInfo: EvmSmartContractInfo;
 }
 
 export const EvmTokenLogo = ({ tokenInfo }: TokenLogoProps) => {

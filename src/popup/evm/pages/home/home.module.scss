@@ -3,9 +3,12 @@
 @import './gas-fee-panel/gas-fee-panel.component.scss';
 @import './evm-wallet-info-section/evm-wallet-info-section.component.scss';
 @import './evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component.scss';
+@import './evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component.scss';
+@import './evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component.scss';
 @import './token-history/evm-token-history.component.scss';
 @import './token-history/token-history-item/evm-token-history-item.component.scss';
 @import './transaction-result/transaction-result.component.scss';
 @import './evm-dapp-status/evm-dapp-status.component.scss';
 @import './settings/evm-settings.module.scss';
 @import './evm-token-logo/evm-token-logo.component.scss';
+@import './evm-nft-pages/evm-nft-pages.module.scss';

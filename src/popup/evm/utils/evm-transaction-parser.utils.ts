@@ -1,6 +1,6 @@
 import { Interface } from '@ethersproject/abi';
 import * as Eth from '@metamask/ethjs';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
@@ -46,7 +46,7 @@ const getDisplayInputType = (
 ): EvmInputDisplayType => {
   const tokenType = EvmTokensUtils.getTokenType(abi);
   switch (tokenType) {
-    case EVMTokenType.ERC20: {
+    case EVMSmartContractType.ERC20: {
       switch (methodName) {
         case 'transfer': {
           switch (name) {
@@ -79,7 +79,7 @@ const getDisplayInputType = (
       }
       break;
     }
-    case EVMTokenType.ERC721: {
+    case EVMSmartContractType.ERC721: {
       switch (methodName) {
         case 'approve': {
           switch (name) {
@@ -121,7 +121,7 @@ const getDisplayInputType = (
       }
       break;
     }
-    case EVMTokenType.ERC1155: {
+    case EVMSmartContractType.ERC1155: {
       switch (methodName) {
         case 'transferBatch': {
           switch (name) {
@@ -176,7 +176,7 @@ const getDisplayInputType = (
 const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
   const tokenType = EvmTokensUtils.getTokenType(abi);
   switch (tokenType) {
-    case EVMTokenType.ERC20: {
+    case EVMSmartContractType.ERC20: {
       switch (methodName) {
         case 'approve':
         case 'transfer': {
@@ -185,7 +185,7 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
       }
       break;
     }
-    case EVMTokenType.ERC721: {
+    case EVMSmartContractType.ERC721: {
       return false;
     }
     default: {
@@ -208,7 +208,7 @@ const getFieldWarnings = async (
   const tokenType = EvmTokensUtils.getTokenType(abi);
   const warnings: EvmTransactionWarning[] = [];
   switch (tokenType) {
-    case EVMTokenType.ERC20: {
+    case EVMSmartContractType.ERC20: {
       switch (methodName) {
         case 'transfer': {
           if (name === 'recipient') {
@@ -223,7 +223,7 @@ const getFieldWarnings = async (
       }
       break;
     }
-    case EVMTokenType.ERC721: {
+    case EVMSmartContractType.ERC721: {
       break;
     }
     default: {

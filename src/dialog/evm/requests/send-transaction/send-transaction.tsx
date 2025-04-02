@@ -1,9 +1,9 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
-  EvmTokenInfoShort,
-  EvmTokenInfoShortErc20,
-  EVMTokenType,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc20,
+  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
@@ -55,7 +55,7 @@ export const SendTransaction = (props: Props) => {
 
   const [caption, setCaption] = useState<string>();
   const [chain, setChain] = useState<EvmChain>();
-  const [tokenInfo, setTokenInfo] = useState<EvmTokenInfoShort>();
+  const [tokenInfo, setTokenInfo] = useState<EvmSmartContractInfo>();
   const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
@@ -278,7 +278,7 @@ export const SendTransaction = (props: Props) => {
                       new Decimal(Number(decodedTransactionData.args[index]))
                         .div(new Decimal(EvmFormatUtils.WEI))
                         .toNumber(),
-                      (usedToken as EvmTokenInfoShortErc20).decimals,
+                      (usedToken as EvmSmartContractInfoErc20).decimals,
                       true,
                     )}  ${usedToken?.symbol}`;
                     break;
@@ -316,7 +316,7 @@ export const SendTransaction = (props: Props) => {
                   ),
                 });
               }
-              if (contractType === EVMTokenType.ERC721 && tokenId) {
+              if (contractType === EVMSmartContractType.ERC721 && tokenId) {
                 const uri: string = await contract.tokenURI(tokenId);
                 const metadata = await EvmNFTUtils.getMetadataFromURI(uri);
                 const src = metadata.image;
@@ -386,7 +386,7 @@ export const SendTransaction = (props: Props) => {
                       new Decimal(Number(input.value))
                         .div(new Decimal(EvmFormatUtils.WEI))
                         .toNumber(),
-                      (usedToken as EvmTokenInfoShortErc20).decimals,
+                      (usedToken as EvmSmartContractInfoErc20).decimals,
                       true,
                     )} ${usedToken?.symbol}`;
                     break;
@@ -554,7 +554,7 @@ export const SendTransaction = (props: Props) => {
     transactionHook.setLoading(false);
   };
 
-  const initBalance = async (tokenInfo: EvmTokenInfoShort) => {
+  const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
     const balance = await EvmTokensUtils.getTokenBalance(
       selectedAccount?.wallet.address!,
       chain!,
@@ -565,7 +565,7 @@ export const SendTransaction = (props: Props) => {
       before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
       estimatedAfter: `${FormatUtils.withCommas(
         new Decimal(balance?.balanceInteger!).sub(transferAmount!).toString(),
-        (tokenInfo as EvmTokenInfoShortErc20).decimals || 8,
+        (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
         true,
       )}  ${tokenInfo?.symbol}`,
     });

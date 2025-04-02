@@ -1,69 +1,60 @@
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 
-export enum EVMTokenType {
+export enum EVMSmartContractType {
   NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
   ERC721 = 'ERC721',
+  ERC721Enumerable = 'ERC721Enumerable',
   ERC1155 = 'ERC1155',
 }
 
-export type EvmTokenInfoBase = {
+export interface EvmSmartContractInfoBase {
   name: string;
   symbol: string;
   logo: string;
   chainId: string;
   backgroundColor: string;
   coingeckoId?: string;
-  address: string;
-};
+  // links: { [name: string]: string[] | string };
+}
 
-export type EvmTokenInfoShortNative = EvmTokenInfoBase & {
-  type: EVMTokenType.NATIVE;
+export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {
+  type: EVMSmartContractType.NATIVE;
   coingeckoId: string;
-};
-
-export type EvmTokenInfoShortSmartContract =
-  | EvmTokenInfoShortErc20
-  | EvmTokenInfoShortErc721
-  | EvmTokenInfoShortErc1155;
-
-export type EvmTokenInfoShortErc20 = EvmTokenInfoBase & {
-  type: EVMTokenType.ERC20;
-  address: string;
-  decimals: number;
-  validated: number;
-  possibleSpam: boolean;
-  verifiedContract: boolean;
-};
-export type EvmTokenInfoShortErc721 = EvmTokenInfoBase & {
-  type: EVMTokenType.ERC721;
-  address: string;
-  decimals: number;
-  validated: number;
-  possibleSpam: boolean;
-  verifiedContract: boolean;
-};
-export type EvmTokenInfoShortErc1155 = EvmTokenInfoBase & {
-  type: EVMTokenType.ERC1155;
-  address: string;
-  decimals: number;
-  validated: number;
-  possibleSpam: boolean;
-  verifiedContract: boolean;
-};
-
-export type EvmTokenInfoShort =
-  | EvmTokenInfoShortErc20
-  | EvmTokenInfoShortNative
-  | EvmTokenInfoShortErc721
-  | EvmTokenInfoShortErc1155;
-
-export type EvmTokenInfo = EvmTokenInfoShort & {
-  blockNumber: number;
   createdAt: string;
   categories: string[];
-  links: { [link: string]: any };
-};
+}
+
+export interface EvmSmartContractNonNativeBase
+  extends EvmSmartContractInfoBase {
+  address: string;
+  possibleSpam: boolean;
+  verifiedContract: boolean;
+}
+
+export interface EvmSmartContractInfoErc20
+  extends EvmSmartContractNonNativeBase {
+  type: EVMSmartContractType.ERC20;
+  decimals: number;
+  validated: number;
+}
+
+export interface EvmSmartContractInfoErc721
+  extends EvmSmartContractNonNativeBase {
+  type: EVMSmartContractType;
+  name: string;
+}
+export interface EvmSmartContractInfoErc1155
+  extends EvmSmartContractNonNativeBase {
+  type: EVMSmartContractType;
+  name: string;
+}
+
+export type EvmSmartContractInfo =
+  | EvmSmartContractInfoErc20
+  | EvmSmartContractInfoNative
+  | EvmSmartContractInfoErc721
+  | EvmSmartContractInfoErc1155;
 
 export interface UserPendingTransactions {
   [userAddress: string]: PendingTransactionData[];
@@ -72,7 +63,7 @@ export interface UserPendingTransactions {
 export interface PendingTransactionData {
   transaction: any;
   amount: number;
-  tokenInfo: EvmTokenInfoShort;
+  tokenInfo: EvmSmartContractInfo;
   gasFee: GasFeeEstimationBase;
   receiverAddress: string;
 }

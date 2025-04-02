@@ -1,7 +1,7 @@
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 
 export interface EvmAbi {
-  type: EVMTokenType;
+  type: EVMSmartContractType;
   abi: any[];
   methods: string[];
 }
@@ -1350,7 +1350,7 @@ export const ERC1155Abi = [
 
 export const AbiList: EvmAbi[] = [
   {
-    type: EVMTokenType.ERC20,
+    type: EVMSmartContractType.ERC20,
     abi: Erc20Abi,
     methods: [
       'totalSupply',
@@ -1364,7 +1364,7 @@ export const AbiList: EvmAbi[] = [
     ],
   },
   {
-    type: EVMTokenType.ERC721,
+    type: EVMSmartContractType.ERC721,
     abi: ERC721Abi,
     methods: [
       'balanceOf',
@@ -1388,7 +1388,7 @@ export const AbiList: EvmAbi[] = [
     ],
   },
   {
-    type: EVMTokenType.ERC721,
+    type: EVMSmartContractType.ERC721,
     abi: ERC721EnumerableAbi,
     methods: [
       'balanceOf',
@@ -1413,7 +1413,7 @@ export const AbiList: EvmAbi[] = [
     ],
   },
   {
-    type: EVMTokenType.ERC1155,
+    type: EVMSmartContractType.ERC1155,
     abi: ERC1155Abi,
     methods: [
       'balanceOf',

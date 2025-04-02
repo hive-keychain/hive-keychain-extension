@@ -1,7 +1,8 @@
 import { Screen } from '@interfaces/screen.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
-import { EVMTokenType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
@@ -12,7 +13,11 @@ import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+  NavigationParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -20,7 +25,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
@@ -41,12 +46,13 @@ import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 const Home = ({
   chain,
   accounts,
-  resetTitleContainerProperties,
   activeAccount,
-  loadEvmActiveAccount,
-  navigateTo,
   prices,
+  navigateTo,
+  loadEvmActiveAccount,
+  resetTitleContainerProperties,
   fetchPrices,
+  navigateToWithParams,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -88,7 +94,7 @@ const Home = ({
       activeAccount.nativeAndErc20Tokens.length > 0
     ) {
       const mainToken = activeAccount.nativeAndErc20Tokens.find(
-        (token) => token.tokenInfo.type === EVMTokenType.NATIVE,
+        (token) => token.tokenInfo.type === EVMSmartContractType.NATIVE,
       );
       EvmTokensHistoryUtils.fetchFullMainTokenHistory(
         chain,
@@ -177,6 +183,26 @@ const Home = ({
     }
   };
 
+  const handleClickOnNftCollection = (
+    params: EvmErc721Token | EvmErc721Token[],
+    screen: EvmScreen,
+  ) => {
+    switch (screen) {
+      case EvmScreen.EVM_NFT_COLLECTION_PAGE: {
+        navigateToWithParams(EvmScreen.EVM_NFT_COLLECTION_PAGE, {
+          collection: params,
+        } as NavigationParams);
+        break;
+      }
+      case EvmScreen.EVM_NFT_ALL_NFTS_PAGE: {
+        navigateToWithParams(EvmScreen.EVM_NFT_ALL_NFTS_PAGE, {
+          collections: params,
+        } as NavigationParams);
+        break;
+      }
+    }
+  };
+
   return (
     <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       <TopBarComponent
@@ -216,6 +242,7 @@ const Home = ({
         <EvmWalletInfoSectionComponent
           activeAccount={activeAccount}
           prices={prices}
+          onClickOnNftPreview={handleClickOnNftCollection}
         />
       </div>
       <ActionsSectionComponent
@@ -245,6 +272,7 @@ const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
   navigateTo,
   fetchPrices,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

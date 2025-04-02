@@ -1,6 +1,6 @@
 import {
-  EvmTokenInfoShort,
-  EVMTokenType,
+  EvmSmartContractInfo,
+  EVMSmartContractType,
   PendingTransactionData,
   UserPendingTransactions,
 } from '@popup/evm/interfaces/evm-tokens.interface';
@@ -31,7 +31,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const transfer = async (
   chain: EvmChain,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   receiverAddress: string,
   amount: number,
   wallet: HDNodeWallet,
@@ -66,7 +66,7 @@ const transfer = async (
     }
   }
 
-  if (tokenInfo.type === EVMTokenType.ERC20) {
+  if (tokenInfo.type === EVMSmartContractType.ERC20) {
     const contract = new ethers.Contract(
       tokenInfo.address!,
       Erc20Abi,
@@ -122,7 +122,7 @@ const cancel = async (
   gasFee: GasFeeEstimationBase,
   wallet: HDNodeWallet,
   amount: number,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   receiverAddress: string,
   transactionType: EvmTransactionType,
 ) => {
@@ -170,7 +170,7 @@ const cancel = async (
 
   return transfer(
     chain,
-    { type: EVMTokenType.NATIVE } as EvmTokenInfoShort,
+    { type: EVMSmartContractType.NATIVE } as EvmSmartContractInfo,
     ethers.ZeroAddress,
     0,
     wallet,
@@ -182,7 +182,7 @@ const cancel = async (
 const addPendingTransaction = async (
   transactionResponse: TransactionResponse,
   address: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   amount: number,
   gasFee: GasFeeEstimationBase,
   receiverAddress: string,
@@ -232,7 +232,7 @@ const deleteFromPendingTransactions = async (
 
 const getPendingTransactions = async (
   address: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
 ) => {
   const data = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
@@ -249,7 +249,7 @@ const getPendingTransactions = async (
 const getCanceledTransactions = async (
   chain: EvmChain,
   address: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
 ): Promise<CanceledTransactionData[]> => {
   const data = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
@@ -280,7 +280,7 @@ const getAllCanceledTransactions = async (
 const addCanceledTransaction = async (
   transactionResponse: TransactionResponse,
   address: string,
-  tokenInfo: EvmTokenInfoShort,
+  tokenInfo: EvmSmartContractInfo,
   amount: number,
   receiverAddress: string,
   chain: EvmChain,

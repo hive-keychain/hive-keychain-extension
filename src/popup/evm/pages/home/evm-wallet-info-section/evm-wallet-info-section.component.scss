@@ -13,47 +13,6 @@
     padding-top: 12px;
     padding-bottom: 100px;
     grid-area: only;
-
-    .nft-gallery {
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      row-gap: 12px;
-      width: 100%;
-      .nft-collection {
-        @include small-card();
-        display: flex;
-        flex-direction: column;
-        row-gap: 4px;
-        align-items: flex-start;
-        .nft-collection-name {
-          @include poppins500(16px);
-          color: var(--main-font-color);
-        }
-        .nft-collection-preview {
-          display: grid;
-          grid-template-columns: 4fr 1fr;
-          width: 100%;
-          .nft-preview-container {
-            display: flex;
-            column-gap: 8px;
-          }
-
-          .go-to-icon {
-            align-self: center;
-            justify-self: right;
-            transform: rotate(-90deg);
-          }
-
-          img {
-            height: 64px;
-            width: 64px;
-            border: solid 1px var(--card-border);
-            border-radius: 8px;
-          }
-        }
-      }
-    }
   }
 
   .no-token {

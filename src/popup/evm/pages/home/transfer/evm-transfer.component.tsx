@@ -5,8 +5,10 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmTokenInfoShortSmartContract,
-  EVMTokenType,
+  EvmSmartContractInfoErc1155,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoErc721,
+  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
@@ -144,7 +146,7 @@ const EvmTransfer = ({
     }
 
     const decimals =
-      form.selectedToken.tokenInfo.type === EVMTokenType.ERC20
+      form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
         ? form.selectedToken.tokenInfo.decimals
         : 18;
 
@@ -195,7 +197,7 @@ const EvmTransfer = ({
       type: EvmTransactionType.EIP_1559,
       to: form.receiverAddress,
       data:
-        form.selectedToken.tokenInfo.type === EVMTokenType.NATIVE
+        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? ''
           : encodeTransferData(
               form.selectedToken.tokenInfo,
@@ -204,7 +206,7 @@ const EvmTransfer = ({
               form.amount,
             ),
       value:
-        form.selectedToken.tokenInfo.type === EVMTokenType.NATIVE
+        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? form.amount.toString(16)
           : '0x0',
     };
@@ -258,7 +260,10 @@ const EvmTransfer = ({
   };
 
   const encodeTransferData = (
-    tokenInfo: EvmTokenInfoShortSmartContract,
+    tokenInfo:
+      | EvmSmartContractInfoErc20
+      | EvmSmartContractInfoErc721
+      | EvmSmartContractInfoErc1155,
     selectedAccount: EvmActiveAccount,
     receiverAddress: string,
     amount: number,
