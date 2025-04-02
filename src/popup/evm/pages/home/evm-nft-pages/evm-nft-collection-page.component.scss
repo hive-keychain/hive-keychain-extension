@@ -9,16 +9,7 @@
     row-gap: 4px;
     column-gap: 4px;
     overflow: auto;
-    .nft-collection-item {
-      @include small-card();
-      display: flex;
-      flex-direction: column;
-      margin: unset;
-      cursor: pointer;
-      img {
-        height: 160px;
-        width: 160px;
-      }
-    }
+    margin-bottom: -20px;
+    padding-bottom: 20px;
   }
 }

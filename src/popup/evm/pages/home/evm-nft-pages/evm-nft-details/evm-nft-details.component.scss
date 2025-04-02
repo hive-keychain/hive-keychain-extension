@@ -5,11 +5,10 @@
   align-items: flex-start;
   margin: unset;
   row-gap: 8px;
-  grid-area: 1 / 1 / 2 / 3;
+
   img {
-    height: auto;
-    max-height: 300px;
-    align-self: center;
+    height: 160px;
+    width: 160px;
   }
   .collection-name {
     @include poppins300(12px);
@@ -24,6 +23,18 @@
     }
     .value {
       @include poppins300(12px);
+    }
+  }
+
+  &.expanded {
+    grid-column-start: 1;
+    grid-column-end: -1;
+
+    img {
+      height: auto;
+      max-height: 300px;
+      align-self: center;
+      width: unset;
     }
   }
 }

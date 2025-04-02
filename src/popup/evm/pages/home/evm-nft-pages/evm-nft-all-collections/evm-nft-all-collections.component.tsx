@@ -1,7 +1,4 @@
-import {
-  EvmErc721Token,
-  EvmErc721TokenCollectionItem,
-} from '@popup/evm/interfaces/active-account.interface';
+import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -13,8 +10,8 @@ export const EvmNftAllCollections = ({
   collections,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [selectedNft, setSelectedNft] =
-    useState<EvmErc721TokenCollectionItem>();
+  const [selectedNftIndex, setSelectedNftIndex] = useState<number>();
+
   const [selectedCollection, setSelectedCollection] =
     useState<EvmErc721Token>();
 
@@ -28,21 +25,17 @@ export const EvmNftAllCollections = ({
     <div className="evm-nft-collection-page evm-nft-all-collections">
       <FormContainer>
         <div className="nft-list">
-          {selectedNft && selectedCollection && (
-            <EvmNftDetails nft={selectedNft} collection={selectedCollection} />
-          )}
           {collections.map((collection) =>
             collection.collection.map((item, itemIndex) => (
-              <div
-                key={`item-${itemIndex}`}
-                className={`nft-collection-item `}
+              <EvmNftDetails
+                nft={item}
+                collection={collection}
                 onClick={() => {
-                  setSelectedNft(item);
+                  setSelectedNftIndex(itemIndex);
                   setSelectedCollection(collection);
-                }}>
-                <img src={item.metadata.image} />
-                <div className="name">{item.metadata.name}</div>
-              </div>
+                }}
+                expanded={itemIndex === selectedNftIndex}
+              />
             )),
           )}
         </div>
