@@ -31,7 +31,7 @@ const EvmNftCollection = ({
           <EvmNftDetails nft={selectedNft} collection={collection} />
         )}
 
-        <div className="nft-collection">
+        <div className="nft-list">
           {collection.collection.map((item, index) => (
             <div
               key={`item-${index}`}
