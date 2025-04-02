@@ -11,7 +11,10 @@ interface Props {
 
 export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
   return (
-    <div className="nft-collection-preview-card" onClick={() => onClick()}>
+    <div
+      className="nft-collection-preview-card"
+      onClick={() => onClick()}
+      key={`collection-${token.tokenInfo.address}`}>
       <div className="nft-collection-name">{token.tokenInfo.name}</div>
       <div className="nft-collection-preview">
         <div className="nft-preview-container">

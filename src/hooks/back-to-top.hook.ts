@@ -6,14 +6,12 @@ export const useBackToTop = () => {
   const list = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(list);
     if (list.current !== null && list.current !== undefined) {
       list.current.onscroll = (event: any) => handleScroll(event);
     }
   }, [list]);
 
   const handleScroll = (event: any) => {
-    console.log(event.target.scrollTop);
     setDisplayBackToTop(event.target.scrollTop !== 0);
   };
 
