@@ -7,7 +7,6 @@ import React from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { Separator } from 'src/common-ui/separator/separator.component';
 
 interface Props {
   nft: EvmErc721TokenCollectionItem;
@@ -18,6 +17,7 @@ export const EvmNftDetails = ({ nft, collection }: Props) => {
   return (
     <>
       <div className="detailed-nft">
+        <div>X</div>
         <img src={nft.metadata.image} />
         <div className="name">{nft.metadata.name}</div>
         <div className="collection-name">{nft.metadata.name}</div>
@@ -41,14 +41,13 @@ export const EvmNftDetails = ({ nft, collection }: Props) => {
           </div>
           <div className="value">{collection.tokenInfo.type}</div>
         </div>
+        <ButtonComponent
+          label="popup_html_send_transfer"
+          onClick={() => console.log('sending', nft, collection)}
+          type={ButtonType.IMPORTANT}
+          height="small"
+        />
       </div>
-      <ButtonComponent
-        label="popup_html_send_transfer"
-        onClick={() => console.log('sending', nft, collection)}
-        type={ButtonType.IMPORTANT}
-        height="small"
-      />
-      <Separator type="horizontal" fullSize />
     </>
   );
 };

@@ -8,6 +8,8 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
+import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
+import { useBackToTop } from 'src/hooks/back-to-top.hook';
 
 const EvmNftCollection = ({
   collection,
@@ -15,6 +17,8 @@ const EvmNftCollection = ({
 }: PropsFromRedux) => {
   const [selectedNft, setSelectedNft] =
     useState<EvmErc721TokenCollectionItem>();
+
+  const backToTopHook = useBackToTop();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -27,11 +31,10 @@ const EvmNftCollection = ({
   return (
     <div className="evm-nft-collection-page">
       <FormContainer>
-        {selectedNft && collection && (
-          <EvmNftDetails nft={selectedNft} collection={collection} />
-        )}
-
-        <div className="nft-list">
+        <div className="nft-list" ref={backToTopHook.list}>
+          {selectedNft && collection && (
+            <EvmNftDetails nft={selectedNft} collection={collection} />
+          )}
           {collection.collection.map((item, index) => (
             <div
               key={`item-${index}`}
@@ -46,6 +49,9 @@ const EvmNftCollection = ({
               </div>
             </div>
           ))}
+          {backToTopHook.displayScrollToTop && (
+            <BackToTopButton element={backToTopHook.list} />
+          )}
         </div>
       </FormContainer>
     </div>

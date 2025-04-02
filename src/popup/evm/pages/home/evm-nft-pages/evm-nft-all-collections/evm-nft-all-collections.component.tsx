@@ -27,11 +27,10 @@ export const EvmNftAllCollections = ({
   return (
     <div className="evm-nft-collection-page evm-nft-all-collections">
       <FormContainer>
-        {selectedNft && selectedCollection && (
-          <EvmNftDetails nft={selectedNft} collection={selectedCollection} />
-        )}
-
         <div className="nft-list">
+          {selectedNft && selectedCollection && (
+            <EvmNftDetails nft={selectedNft} collection={selectedCollection} />
+          )}
           {collections.map((collection) =>
             collection.collection.map((item, itemIndex) => (
               <div

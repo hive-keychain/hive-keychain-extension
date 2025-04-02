@@ -6,8 +6,9 @@
   .nft-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    row-gap: 8px;
-    column-gap: 6px;
+    row-gap: 4px;
+    column-gap: 4px;
+    overflow: auto;
     .nft-collection-item {
       @include small-card();
       display: flex;
