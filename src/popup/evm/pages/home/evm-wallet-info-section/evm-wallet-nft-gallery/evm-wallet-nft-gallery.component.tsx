@@ -31,6 +31,8 @@ export const EvmWalletNftGalleryComponent = ({
       }
     }
     setOther(otherTokens);
+
+    console.log(otherTokens);
   }, []);
 
   return (
@@ -52,19 +54,23 @@ export const EvmWalletNftGalleryComponent = ({
           onClick={() =>
             onClickOnNftPreview(other, EvmScreen.EVM_NFT_ALL_NFTS_PAGE)
           }>
-          <div className="nft-collection-name">Other</div>
+          <div className="nft-collection-name">
+            {chrome.i18n.getMessage('global_other')}
+          </div>
           <div className="nft-collection-preview">
             <div className="nft-preview-container">
               {other.map((otherToken, index) => (
-                <CustomTooltip
-                  message={otherToken.collection[0].metadata.name}
-                  skipTranslation
-                  key={`${otherToken}-${index}`}>
-                  <img
-                    className="nft-preview"
-                    src={otherToken.collection[0].metadata.image}
-                  />
-                </CustomTooltip>
+                <React.Fragment
+                  key={`${otherToken.tokenInfo.address}-${index}`}>
+                  <CustomTooltip
+                    message={otherToken.collection[0].metadata.name}
+                    skipTranslation>
+                    <img
+                      className="nft-preview"
+                      src={otherToken.collection[0].metadata.image}
+                    />
+                  </CustomTooltip>
+                </React.Fragment>
               ))}
             </div>
             <SVGIcon className="go-to-icon" icon={SVGIcons.GLOBAL_ARROW} />

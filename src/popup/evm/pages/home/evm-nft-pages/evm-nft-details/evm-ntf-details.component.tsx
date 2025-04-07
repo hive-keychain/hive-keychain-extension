@@ -22,44 +22,54 @@ export const EvmNftDetails = ({
   onClick,
 }: Props) => {
   return (
-    <>
-      <div
-        className={`detailed-nft ${expanded ? 'expanded' : ''}`}
-        onClick={() => onClick()}>
-        <img src={nft.metadata.image} />
-        <div className="name">{nft.metadata.name}</div>
-        {expanded && (
-          <>
-            <div className="collection-name">{collection.tokenInfo.name}</div>
-            <div className="label-value smart-contract-address">
-              <div className="label">
-                {chrome.i18n.getMessage('evm_operation_smart_contract_address')}
-              </div>
-              <div className="value">
-                {EvmFormatUtils.formatAddress(collection.tokenInfo.address)}
-              </div>
+    <div
+      key={`${collection.tokenInfo.address}-${nft.id}`}
+      className={`detailed-nft ${expanded ? 'expanded' : ''}`}
+      onClick={() => onClick()}>
+      <img src={nft.metadata.image} />
+      <div className="name">{nft.metadata.name}</div>
+      {expanded && (
+        <>
+          <div className="collection-name">{collection.tokenInfo.name}</div>
+          <div className="label-value smart-contract-address">
+            <div className="label">
+              {chrome.i18n.getMessage('evm_operation_smart_contract_address')}
             </div>
-            <div className="label-value smart-contract-address">
-              <div className="label">
-                {chrome.i18n.getMessage('evm_nft_token_id')}
-              </div>
-              <div className="value">{nft.id}</div>
+            <div className="value">
+              {EvmFormatUtils.formatAddress(collection.tokenInfo.address)}
             </div>
-            <div className="label-value smart-contract-address">
-              <div className="label">
-                {chrome.i18n.getMessage('evm_nft_token_type')}
-              </div>
-              <div className="value">{collection.tokenInfo.type}</div>
+          </div>
+          <div className="label-value smart-contract-address">
+            <div className="label">
+              {chrome.i18n.getMessage('evm_nft_token_id')}
             </div>
-            <ButtonComponent
-              label="popup_html_send_transfer"
-              onClick={() => console.log('sending', nft, collection)}
-              type={ButtonType.IMPORTANT}
-              height="small"
-            />
-          </>
-        )}
-      </div>
-    </>
+            <div className="value">{nft.id}</div>
+          </div>
+          <div className="label-value smart-contract-address">
+            <div className="label">
+              {chrome.i18n.getMessage('evm_nft_token_type')}
+            </div>
+            <div className="value">{collection.tokenInfo.type}</div>
+          </div>
+
+          {nft.metadata.attributes &&
+            nft.metadata.attributes.map((attribute) => (
+              <div
+                className="label-value smart-contract-address"
+                key={`${collection.tokenInfo.address}-${nft.id}-${attribute.trait_type}`}>
+                <div className="label">{attribute.trait_type}</div>
+                <div className="value">{attribute.value}</div>
+              </div>
+            ))}
+
+          <ButtonComponent
+            label="popup_html_send_transfer"
+            onClick={() => console.log('sending', nft, collection)}
+            type={ButtonType.IMPORTANT}
+            height="small"
+          />
+        </>
+      )}
+    </div>
   );
 };

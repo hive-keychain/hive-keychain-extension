@@ -5003,5 +5003,9 @@
   "evm_nft_token_type": {
     "message": "Token type",
     "description": "Token type"
+  },
+  "global_other": {
+    "message": "Other",
+    "description": "Global word"
   }
 }

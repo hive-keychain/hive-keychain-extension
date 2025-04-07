@@ -15,8 +15,6 @@ import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { HDNodeWallet } from 'ethers';
 
-const forcedWallet = '0x64F0Abfdad091f2A61fe4E469F9d04C538C79Ea2';
-
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
   async (dispatch, getState) => {
@@ -32,23 +30,18 @@ export const loadEvmActiveAccount =
     });
 
     const allTokens = await EvmTokensUtils.discoverTokens(
-      // wallet.address,
-      forcedWallet,
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
     );
 
-    console.log({ allTokens });
-
     let nativeAndErc20Tokens = await EvmTokensUtils.getTokenBalances(
-      // wallet.address,
-      forcedWallet,
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
       allTokens.filter((token) => token.type === EVMSmartContractType.ERC20),
     );
 
     let erc721Tokens = await EvmTokensUtils.getErc721Tokens(
-      // wallet.address,
-      forcedWallet,
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
       allTokens.filter(
         (token) => token.type === EVMSmartContractType.ERC721,

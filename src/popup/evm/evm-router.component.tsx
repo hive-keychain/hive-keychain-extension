@@ -5,8 +5,8 @@ import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-ne
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
-import { EvmNftAllCollectionsComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections/evm-nft-all-collections.component';
-import { EvmNftCollectionComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection/evm-ntf-collection.component';
+import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
+import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import EvmAccountsComponent from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
@@ -58,9 +58,9 @@ const EvmAppRouter = ({
         return <>Swap history</>;
       // NFT
       case EvmScreen.EVM_NFT_COLLECTION_PAGE:
-        return <EvmNftCollectionComponent />;
+        return <EvmNftCollectionPageComponent />;
       case EvmScreen.EVM_NFT_ALL_NFTS_PAGE:
-        return <EvmNftAllCollectionsComponent />;
+        return <EvmNftAllCollectionsPageComponent />;
 
       // Settings
       case EvmScreen.EVM_SETTINGS: {
