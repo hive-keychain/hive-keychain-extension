@@ -68,12 +68,11 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    loadActiveAccount(chain);
+    if (!activeAccount.isInitialized) loadActiveAccount(chain);
   }, [chain]);
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
-      refreshAccountBalances();
       ChainUtils.setPreviousChain(chain);
       ChainUtils.addChainToSetupChains(chain);
     }

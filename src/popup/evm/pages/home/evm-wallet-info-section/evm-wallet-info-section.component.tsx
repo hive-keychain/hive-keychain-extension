@@ -99,7 +99,7 @@ const WalletInfoSection = ({
             {getDisplayedSection()}
           </>
         )}
-        {!activeAccount && <RotatingLogoComponent />}
+        {!activeAccount.isInitialized && <RotatingLogoComponent />}
       </div>
     </div>
   );

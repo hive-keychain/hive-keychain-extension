@@ -13,6 +13,7 @@ export interface EvmActiveAccount {
   erc721Tokens: EvmErc721Token[];
   erc1155Tokens: EvmErc1155Token[];
   wallet: HDNodeWallet;
+  isInitialized: boolean;
 }
 
 export interface NativeAndErc20Token {

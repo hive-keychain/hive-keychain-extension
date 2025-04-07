@@ -10,6 +10,7 @@ export const EvmActiveAccountReducer = (
     erc721Tokens: [],
     erc1155Tokens: [],
     wallet: {} as HDNodeWallet,
+    isInitialized: false,
   },
   { type, payload }: ActionPayload<EvmActiveAccount>,
 ): EvmActiveAccount => {

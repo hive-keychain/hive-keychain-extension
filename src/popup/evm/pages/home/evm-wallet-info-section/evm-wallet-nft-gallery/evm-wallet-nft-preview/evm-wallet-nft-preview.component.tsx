@@ -11,9 +11,7 @@ interface Props {
 }
 
 export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
-  useEffect(() => {
-    console.log(`collection-${token.tokenInfo.address}`);
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <div

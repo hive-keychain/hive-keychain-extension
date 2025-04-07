@@ -263,14 +263,12 @@ const discoverTokens = async (
   const addresses: string[] = [];
 
   let addressesToFetch: string[] = [];
-  console.log({ chain });
   switch (chain.blockExplorerApi?.type) {
     case BlockExporerType.ETHERSCAN: {
       const discoveredTokens = await EtherscanApi.discoverTokens(
         walletAddress,
         chain,
       );
-      console.log({ discoveredTokens });
 
       for (const token of discoveredTokens) {
         if (
@@ -286,8 +284,6 @@ const discoverTokens = async (
       return [];
   }
 
-  console.log({ addresses });
-
   for (const address of addresses) {
     if (!chainTokenMetaData.find((stm: any) => stm.address)) {
       addressesToFetch.push(address);
@@ -300,15 +296,12 @@ const discoverTokens = async (
     `evm/smart-contracts-info/${chain.chainId}/${addressesToFetch?.join(',')}`,
   );
 
-  console.log({ tokensMetadata });
-
   const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
   allSavedMetadata[chain.chainId] = newMetadata;
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
     allSavedMetadata,
   );
-  console.log(newMetadata);
   return newMetadata;
 };
 

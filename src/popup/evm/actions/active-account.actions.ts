@@ -26,6 +26,7 @@ export const loadEvmActiveAccount =
         wallet: wallet,
         erc1155Tokens: [] as EvmErc1155Token[],
         erc721Tokens: [] as EvmErc721Token[],
+        isInitialized: false,
       } as EvmActiveAccount,
     });
 
@@ -58,6 +59,7 @@ export const loadEvmActiveAccount =
         erc721Tokens: erc721Tokens,
         erc1155Tokens: [],
         wallet: wallet,
+        isInitialized: true,
       } as EvmActiveAccount,
     });
   };
