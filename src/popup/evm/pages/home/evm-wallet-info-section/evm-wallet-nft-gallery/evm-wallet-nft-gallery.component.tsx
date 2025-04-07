@@ -54,8 +54,10 @@ export const EvmWalletNftGalleryComponent = ({
           onClick={() =>
             onClickOnNftPreview(other, EvmScreen.EVM_NFT_ALL_NFTS_PAGE)
           }>
-          <div className="nft-collection-name">
-            {chrome.i18n.getMessage('global_other')}
+          <div className="nft-collection-name-panel">
+            <span className="nft-collection-name">
+              {chrome.i18n.getMessage('global_other')}
+            </span>
           </div>
           <div className="nft-collection-preview">
             <div className="nft-preview-container">

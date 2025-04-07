@@ -6,9 +6,19 @@
   align-items: flex-start;
   cursor: pointer;
 
-  .nft-collection-name {
-    @include poppins500(16px);
-    color: var(--main-font-color);
+  .nft-collection-name-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+    .nft-collection-name {
+      @include poppins500(16px);
+      color: var(--main-font-color);
+    }
+    .nft-collection-address {
+      @include poppins300(13px);
+      opacity: 0.8;
+      font-style: italic;
+    }
   }
   .nft-collection-preview {
     display: grid;

@@ -1,4 +1,5 @@
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import React, { useEffect } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -19,7 +20,12 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
       className="nft-collection-preview-card"
       onClick={() => onClick()}
       key={`collection-${token.tokenInfo.address}`}>
-      <div className="nft-collection-name">{token.tokenInfo.name}</div>
+      <div className="nft-collection-name-panel">
+        <span className="ntf-collection-name">{token.tokenInfo.name}</span>
+        <span className="nft-collection-address">
+          {EvmFormatUtils.formatAddress(token.tokenInfo.address)}
+        </span>
+      </div>
       <div className="nft-collection-preview">
         <div className="nft-preview-container">
           {token.collection.slice(0, 4).map((collectionItem) => (
