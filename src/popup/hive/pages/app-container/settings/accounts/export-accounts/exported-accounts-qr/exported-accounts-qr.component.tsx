@@ -35,6 +35,24 @@ const ExportedAccountsQR = ({
     exportAllAccountsQR();
   }, []);
 
+  useEffect(() => {
+    document.onkeydown = function (e) {
+      switch (e.code) {
+        case 'ArrowLeft': // left arrow pressed
+          pageIndex === 0 ? null : movePrevious();
+          break;
+
+        case 'ArrowRight': // right arrow pressed
+          pageIndex === accountsDataQR.length - 1 ? null : moveNext();
+          break;
+      }
+      e.preventDefault(); // prevent the default action (scroll / move caret)
+    };
+    return () => {
+      document.onkeydown = null;
+    };
+  }, [pageIndex]);
+
   const exportAllAccountsQR = () => {
     let tempAccountsDataQR: {
       data: string;
@@ -87,6 +105,7 @@ const ExportedAccountsQR = ({
                 ) + ' '}
               </div>
               <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</div>
+              <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer3')}</div>
             </div>
           </div>
           <div className="qr-code-container">
