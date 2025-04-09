@@ -29,7 +29,7 @@ export const EvmNftDetails = ({
       onClick={() => onClick()}>
       <img src={nft.metadata.image} />
       <div className="name">{nft.metadata.name}</div>
-      {(nft as EvmErc1155TokenCollectionItem).balance > 1 && (
+      {(nft as EvmErc1155TokenCollectionItem).balance > 1 && !expanded && (
         <div className="nft-balance">
           {(nft as EvmErc1155TokenCollectionItem).balance}
         </div>
@@ -51,6 +51,16 @@ export const EvmNftDetails = ({
             </div>
             <div className="value">{nft.id}</div>
           </div>
+          {(nft as EvmErc1155TokenCollectionItem)?.balance && (
+            <div className="label-value smart-contract-address">
+              <div className="label">
+                {chrome.i18n.getMessage('popup_html_balance')}
+              </div>
+              <div className="value">
+                {(nft as EvmErc1155TokenCollectionItem)?.balance}
+              </div>
+            </div>
+          )}
           <div className="label-value smart-contract-address">
             <div className="label">
               {chrome.i18n.getMessage('evm_nft_token_type')}

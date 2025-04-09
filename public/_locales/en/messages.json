@@ -613,7 +613,7 @@
   },
   "popup_html_balance": {
     "message": "Balance",
-    "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
+    "description": "When initiating a HIVE or HBD transfer."
   },
   "popup_html_loading": {
     "message": "Loading...",
