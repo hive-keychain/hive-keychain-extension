@@ -1,6 +1,9 @@
-import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmErc1155TokenCollectionItem,
+  EvmErc721Token,
+} from '@popup/evm/interfaces/active-account.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -11,8 +14,6 @@ interface Props {
 }
 
 export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
-  useEffect(() => {}, []);
-
   return (
     <div
       className="nft-collection-preview-card"
@@ -32,10 +33,21 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
               <CustomTooltip
                 message={collectionItem.metadata.name}
                 skipTranslation>
-                <img
-                  className="nft-preview"
-                  src={collectionItem.metadata.image}
-                />
+                <>
+                  <img
+                    className="nft-preview"
+                    src={collectionItem.metadata.image}
+                  />
+                  {(collectionItem as EvmErc1155TokenCollectionItem).balance >
+                    1 && (
+                    <div className="nft-balance">
+                      {
+                        (collectionItem as EvmErc1155TokenCollectionItem)
+                          .balance
+                      }
+                    </div>
+                  )}
+                </>
               </CustomTooltip>
             </React.Fragment>
           ))}

@@ -24,28 +24,32 @@ export const EvmWalletNftGalleryComponent = ({
   const [other, setOther] = useState<EvmErc721Token[]>([]);
 
   useEffect(() => {
+    console.log(activeAccount.nfts);
     const otherTokens = [];
-    for (const token of activeAccount.erc721Tokens) {
+    for (const token of activeAccount.nfts) {
       if (token.collection.length === 1) {
         otherTokens.push(token);
       }
     }
     setOther(otherTokens);
-
-    console.log(otherTokens);
   }, []);
 
   return (
     <div className="nft-gallery">
-      {activeAccount.erc721Tokens
+      {activeAccount.nfts
         .filter((token) => token.collection.length > 1)
-        .map((token) => (
-          <EvmWalletNftPreviewComponent
-            token={token}
-            onClick={() =>
-              onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
-            }
-          />
+        .sort((tokenA, tokenB) =>
+          tokenA.tokenInfo.name > tokenB.tokenInfo.name ? 1 : -1,
+        )
+        .map((token, index) => (
+          <React.Fragment key={index}>
+            <EvmWalletNftPreviewComponent
+              token={token}
+              onClick={() =>
+                onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
+              }
+            />
+          </React.Fragment>
         ))}
 
       {other.length > 0 && (
@@ -53,7 +57,8 @@ export const EvmWalletNftGalleryComponent = ({
           className="nft-collection-preview-card"
           onClick={() =>
             onClickOnNftPreview(other, EvmScreen.EVM_NFT_ALL_NFTS_PAGE)
-          }>
+          }
+          key={'nft-preview-card-other'}>
           <div className="nft-collection-name-panel">
             <span className="nft-collection-name">
               {chrome.i18n.getMessage('global_other')}

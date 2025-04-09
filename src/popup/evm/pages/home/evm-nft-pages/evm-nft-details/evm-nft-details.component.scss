@@ -5,11 +5,29 @@
   align-items: flex-start;
   margin: unset;
   row-gap: 8px;
+  position: relative;
 
   img {
     height: 160px;
     width: 160px;
   }
+
+  .nft-balance {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 4px;
+    font-size: 12px;
+    height: 12px;
+    width: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .collection-name {
     @include poppins300(12px);
     opacity: 0.8;

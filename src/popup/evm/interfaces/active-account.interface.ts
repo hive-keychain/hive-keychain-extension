@@ -10,8 +10,7 @@ import { HDNodeWallet } from 'ethers';
 export interface EvmActiveAccount {
   address: string;
   nativeAndErc20Tokens: NativeAndErc20Token[];
-  erc721Tokens: EvmErc721Token[];
-  erc1155Tokens: EvmErc1155Token[];
+  nfts: (EvmErc721Token | EvmErc1155Token)[];
   wallet: HDNodeWallet;
   isInitialized: boolean;
 }
@@ -31,10 +30,15 @@ export interface EvmErc721TokenCollectionItem {
   id: string;
   metadata: EvmNFTMetadata;
 }
+export interface EvmErc1155TokenCollectionItem {
+  id: string;
+  balance: number;
+  metadata: EvmNFTMetadata;
+}
 
 export interface EvmErc1155Token {
   tokenInfo: EvmSmartContractInfoErc1155;
-  collection: any[]; //TODO specify
+  collection: EvmErc1155TokenCollectionItem[];
 }
 
 export interface EvmSavedActiveAccounts {

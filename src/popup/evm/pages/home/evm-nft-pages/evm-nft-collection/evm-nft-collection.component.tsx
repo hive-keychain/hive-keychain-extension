@@ -73,16 +73,18 @@ export const EvmNftCollectionComponent = ({
         <div className="nft-list" ref={backToTopHook.list}>
           {filteredItems &&
             filteredItems.map((listItem, index) => (
-              <EvmNftDetails
-                nft={listItem.item}
-                collection={listItem.collection}
-                onClick={() => handleClick(listItem)}
-                expanded={
-                  selectedCollectionListItem?.collection.tokenInfo.address ===
-                    listItem.collection.tokenInfo.address &&
-                  listItem.item.id === selectedCollectionListItem.item.id
-                }
-              />
+              <React.Fragment key={index}>
+                <EvmNftDetails
+                  nft={listItem.item}
+                  collection={listItem.collection}
+                  onClick={() => handleClick(listItem)}
+                  expanded={
+                    selectedCollectionListItem?.collection.tokenInfo.address ===
+                      listItem.collection.tokenInfo.address &&
+                    listItem.item.id === selectedCollectionListItem.item.id
+                  }
+                />
+              </React.Fragment>
             ))}
           {backToTopHook.displayScrollToTop && (
             <BackToTopButton element={backToTopHook.list} />

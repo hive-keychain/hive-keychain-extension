@@ -1,11 +1,14 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
+  EvmErc1155Token,
+  EvmErc1155TokenCollectionItem,
   EvmErc721Token,
   EvmErc721TokenCollectionItem,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmSmartContractInfo,
+  EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc20,
   EvmSmartContractInfoErc721,
   EvmSmartContractInfoNative,
@@ -15,6 +18,7 @@ import {
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import {
   AbiList,
+  ERC1155Abi,
   Erc20Abi,
   ERC721Abi,
 } from '@popup/evm/reference-data/abi.data';
@@ -231,7 +235,11 @@ const getErc721Tokens = async (
 
     for (const tokenId of idsPerCollection[contractAddress]) {
       collectionPromises.push(
-        EvmNFTUtils.getMetadataFromTokenId(tokenId, contract),
+        EvmNFTUtils.getMetadataFromTokenId(
+          EVMSmartContractType.ERC721,
+          tokenId,
+          contract,
+        ),
       );
     }
 
@@ -244,9 +252,58 @@ const getErc721Tokens = async (
 
   return erc721tokens;
 };
+const getErc1155Tokens = async (
+  allTokens: any[],
+  tokenInfos: EvmSmartContractInfoErc1155[],
+  chain: EvmChain,
+): Promise<EvmErc1155Token[]> => {
+  const erc1155Tokens: EvmErc1155Token[] = [];
 
-const discoverTokens = async (
-  walletAddress: string,
+  for (const tokenInfo of tokenInfos) {
+    console.log(
+      tokenInfo,
+      allTokens.filter((token) => token.contractAddress === tokenInfo.address),
+    );
+    const tokens = allTokens.filter(
+      (token) => token.contractAddress === tokenInfo.address,
+    );
+    const erc1155Token: EvmErc1155Token = {
+      tokenInfo: tokenInfo,
+      collection: [],
+    };
+    for (const token of tokens) {
+      const provider = EthersUtils.getProvider(chain);
+      const contract = new ethers.Contract(
+        tokenInfo.address,
+        ERC1155Abi,
+        provider,
+      );
+
+      erc1155Token.collection.push(
+        (await EvmNFTUtils.getMetadataFromTokenId(
+          EVMSmartContractType.ERC1155,
+          token.id,
+          contract,
+          Number(token.balance),
+        )) as EvmErc1155TokenCollectionItem,
+      );
+    }
+    erc1155Tokens.push(erc1155Token);
+  }
+  return erc1155Tokens;
+};
+
+const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
+  switch (chain.blockExplorerApi?.type) {
+    case BlockExporerType.ETHERSCAN:
+      return await EtherscanApi.discoverTokens(walletAddress, chain);
+    default:
+      return [];
+  }
+};
+
+const getTokensFullDetails = async (
+  discoveredTokens: any[],
   chain: EvmChain,
 ): Promise<EvmSmartContractInfo[]> => {
   let allSavedMetadata = await LocalStorageUtils.getValueFromLocalStorage(
@@ -263,38 +320,33 @@ const discoverTokens = async (
   const addresses: string[] = [];
 
   let addressesToFetch: string[] = [];
-  switch (chain.blockExplorerApi?.type) {
-    case BlockExporerType.ETHERSCAN: {
-      const discoveredTokens = await EtherscanApi.discoverTokens(
-        walletAddress,
-        chain,
-      );
 
-      for (const token of discoveredTokens) {
-        if (
-          !addresses.includes(token.contractAddress) &&
-          !!token.contractAddress
-        ) {
-          addresses.push(token.contractAddress);
-        }
-      }
-      break;
+  for (const token of discoveredTokens) {
+    if (!addresses.includes(token.contractAddress) && !!token.contractAddress) {
+      addresses.push(token.contractAddress);
     }
-    default:
-      return [];
   }
 
+  console.log({ addresses });
+
   for (const address of addresses) {
-    if (!chainTokenMetaData.find((stm: any) => stm.address)) {
+    console.log(chainTokenMetaData.find((stm: any) => stm.address === address));
+    if (!chainTokenMetaData.find((stm: any) => stm.address === address)) {
       addressesToFetch.push(address);
     }
   }
+
   if (addressesToFetch.length === 0) {
-    return allSavedMetadata[chain.chainId];
+    return chainTokenMetaData;
   }
+
+  console.log({ addressesToFetch });
+
   const tokensMetadata = await KeychainApi.get(
     `evm/smart-contracts-info/${chain.chainId}/${addressesToFetch?.join(',')}`,
   );
+
+  console.log({ tokensMetadata });
 
   const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
   allSavedMetadata[chain.chainId] = newMetadata;
@@ -302,6 +354,8 @@ const discoverTokens = async (
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
     allSavedMetadata,
   );
+
+  console.log({ newMetadata });
   return newMetadata;
 };
 
@@ -477,5 +531,7 @@ export const EvmTokensUtils = {
   getTokenInfo,
   getTokenType,
   discoverTokens,
+  getTokensFullDetails,
   getErc721Tokens,
+  getErc1155Tokens,
 };

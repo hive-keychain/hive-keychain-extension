@@ -7,8 +7,7 @@ export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
     nativeAndErc20Tokens: [],
-    erc721Tokens: [],
-    erc1155Tokens: [],
+    nfts: [],
     wallet: {} as HDNodeWallet,
     isInitialized: false,
   },

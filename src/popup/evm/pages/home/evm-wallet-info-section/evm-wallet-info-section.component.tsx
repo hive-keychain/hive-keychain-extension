@@ -21,9 +21,8 @@ interface EvmWalletInfoSectionProps {
 }
 
 enum EvmDisplayedPage {
-  ERC20 = 'ERC20',
-  ERC721 = 'ERC721',
-  // ERC1155 = 'ERC1155',
+  TOKENS = 'tokens',
+  NTFS = 'nfts',
 }
 
 const WalletInfoSection = ({
@@ -32,12 +31,12 @@ const WalletInfoSection = ({
   onClickOnNftPreview,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
-    EvmDisplayedPage.ERC20,
+    EvmDisplayedPage.TOKENS,
   );
 
   const getDisplayedSection = () => {
     switch (displayedSection) {
-      case EvmDisplayedPage.ERC20: {
+      case EvmDisplayedPage.TOKENS: {
         return (
           <>
             {EvmTokensUtils.sortTokens(
@@ -62,7 +61,7 @@ const WalletInfoSection = ({
           </>
         );
       }
-      case EvmDisplayedPage.ERC721: {
+      case EvmDisplayedPage.NTFS: {
         return (
           <EvmWalletNftGalleryComponent
             activeAccount={activeAccount}
@@ -84,14 +83,12 @@ const WalletInfoSection = ({
               selectedValue={displayedSection}
               values={[
                 {
-                  label: EvmDisplayedPage.ERC20,
-                  value: EvmDisplayedPage.ERC20,
-                  skipLabelTranslation: true,
+                  label: `evm_tab_${EvmDisplayedPage.TOKENS}`,
+                  value: EvmDisplayedPage.TOKENS,
                 },
                 {
-                  label: EvmDisplayedPage.ERC721,
-                  value: EvmDisplayedPage.ERC721,
-                  skipLabelTranslation: true,
+                  label: `evm_tab_${EvmDisplayedPage.NTFS}`,
+                  value: EvmDisplayedPage.NTFS,
                 },
               ]}
               id="tabs"

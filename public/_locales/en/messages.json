@@ -5007,5 +5007,14 @@
   "global_other": {
     "message": "Other",
     "description": "Global word"
+  },
+  "evm_tab_tokens": {
+    "message": "Tokens",
+    "description": "Tokens tab"
+  },
+
+  "evm_tab_nfts": {
+    "message": "NFTs",
+    "description": "NFTs tab"
   }
 }

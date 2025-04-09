@@ -1,4 +1,5 @@
 import {
+  EvmErc1155TokenCollectionItem,
   EvmErc721Token,
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
@@ -9,8 +10,8 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 
 interface Props {
-  nft: EvmErc721TokenCollectionItem;
-  collection: EvmErc721Token;
+  nft: EvmErc721TokenCollectionItem | EvmErc1155TokenCollectionItem;
+  collection: EvmErc721Token | EvmErc721Token;
   expanded?: boolean;
   onClick: () => void;
 }
@@ -28,6 +29,11 @@ export const EvmNftDetails = ({
       onClick={() => onClick()}>
       <img src={nft.metadata.image} />
       <div className="name">{nft.metadata.name}</div>
+      {(nft as EvmErc1155TokenCollectionItem).balance > 1 && (
+        <div className="nft-balance">
+          {(nft as EvmErc1155TokenCollectionItem).balance}
+        </div>
+      )}
       {expanded && (
         <>
           <div className="collection-name">{collection.tokenInfo.name}</div>
