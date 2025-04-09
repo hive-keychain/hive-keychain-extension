@@ -1,6 +1,7 @@
-import { Asset, ClaimRewardBalanceOperation } from '@hiveio/dhive';
+import type { Asset, ClaimRewardBalanceOperation } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -10,6 +11,7 @@ const claimRewards = async (
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
   postingKey: string,
+  options?: TransactionOptions,
 ): Promise<TransactionResult | null> => {
   return await HiveTxUtils.sendOperation(
     [
@@ -24,6 +26,8 @@ const claimRewards = async (
       ] as ClaimRewardBalanceOperation,
     ],
     postingKey,
+    false,
+    options,
   );
 };
 

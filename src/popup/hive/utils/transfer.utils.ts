@@ -1,9 +1,9 @@
-import {
+import type {
   RecurrentTransferOperation,
   Transaction,
   TransferOperation,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
 import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
@@ -86,12 +86,14 @@ const sendTransfer = (
   iterations: number,
   frequency: number,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
       activeKey,
       true,
+      options,
     );
   } else {
     return HiveTxUtils.sendOperation(
@@ -107,6 +109,7 @@ const sendTransfer = (
       ],
       activeKey,
       true,
+      options,
     );
   }
 };

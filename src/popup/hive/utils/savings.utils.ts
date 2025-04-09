@@ -1,11 +1,11 @@
-import {
-  Asset,
+import type {
   CancelTransferFromSavingsOperation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
+import { Asset } from 'hive-keychain-commons';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -15,10 +15,13 @@ const deposit = async (
   receiver: string,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [await getDepositOperation(username, receiver, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -27,10 +30,13 @@ const withdraw = async (
   to: string,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [await getWithdrawOperation(username, to, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -99,10 +105,13 @@ const cancelCurrentWithdrawSaving = async (
   username: string,
   request_id: number,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [SavingsUtils.getCancelTransferFromSavingsOperation(username, request_id)],
     activeKey,
+    false,
+    options,
   );
 };
 
@@ -113,16 +122,20 @@ const hasBalance = (balance: string | Asset, greaterOrEqualTo: number) => {
     : balance.amount >= greaterOrEqualTo;
 };
 
-const claimSavings = async (activeAccount: ActiveAccount) => {
+const claimSavings = async (
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const { hbd_balance, savings_hbd_balance } = activeAccount.account;
-  const hasHbd = hasBalance(hbd_balance, 0.001);
-  const hasSavings = hasBalance(savings_hbd_balance, 0.001);
+  const hasHbd = hasBalance(hbd_balance as Asset, 0.001);
+  const hasSavings = hasBalance(savings_hbd_balance as Asset, 0.001);
   if (hasHbd) {
     return SavingsUtils.deposit(
       '0.001 HBD',
       activeAccount.name!,
       activeAccount.name!,
       activeAccount.keys.active!,
+      options,
     );
   } else if (hasSavings) {
     return SavingsUtils.withdraw(
@@ -130,6 +143,7 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
       activeAccount.name!,
       activeAccount.name!,
       activeAccount.keys.active!,
+      options,
     );
   } else {
     Logger.error(

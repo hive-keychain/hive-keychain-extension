@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   Witness,
   WitnessInfo,
@@ -94,7 +95,7 @@ const WitnessInformation = ({
         [activeAccount.name!],
       ),
       title: `popup_html_disable_witness`,
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_update_witness_operation');
 
         try {
@@ -113,6 +114,7 @@ const WitnessInformation = ({
               url: witnessInfo.url,
             } as WitnessParamsForm,
             activeAccount.keys.active!,
+            options,
           );
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_update_witness_operation');
@@ -155,7 +157,7 @@ const WitnessInformation = ({
           valueClassName: 'xs-font',
         },
       ],
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_update_witness_operation');
         try {
           const success = await WitnessUtils.updateWitnessParameters(
@@ -168,6 +170,7 @@ const WitnessInformation = ({
               url: witnessInfo.url,
             } as WitnessParamsForm,
             activeAccount.keys.active!,
+            options,
           );
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_update_witness_operation');

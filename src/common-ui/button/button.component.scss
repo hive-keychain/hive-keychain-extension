@@ -45,7 +45,7 @@
   &.alternative {
     color: var(--main-font-color);
     background-color: var(--button-alternative-background-color);
-    border: 1px solid var(--button-alternative-border-color);
+    border: 1px solid var(--popup-alternative-button-border-color);
     &:hover {
       box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
       transition: box-shadow 0.5s ease-in-out;

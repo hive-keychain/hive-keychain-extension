@@ -1,6 +1,6 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Currency } from '@interfaces/bittrex.interface';
-import { Key, KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import {
   PendingUnstaking,
@@ -20,10 +20,12 @@ const stakeToken = (
   amount: string,
   activeKey: Key,
   username: string,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [TokensUtils.getStakeTokenOperation(to, symbol, amount, username)],
     activeKey,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -62,10 +64,12 @@ const unstakeToken = (
   amount: string,
   activeKey: Key,
   username: string,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [TokensUtils.getUnstakeTokenOperation(symbol, amount, username)],
     activeKey,
+    options,
   );
 };
 
@@ -73,6 +77,7 @@ const unstakeToken = (
 const cancelUnstakeToken = (
   transactionId: string,
   activeAccount: ActiveAccount,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [
@@ -82,6 +87,7 @@ const cancelUnstakeToken = (
       ),
     ],
     activeAccount.keys.active!,
+    options,
   );
 };
 
@@ -137,10 +143,12 @@ const delegateToken = (
   amount: string,
   activeKey: Key,
   username: string,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [TokensUtils.getDelegateTokenOperation(to, symbol, amount, username)],
     activeKey,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -180,6 +188,7 @@ const cancelDelegationToken = (
   amount: string,
   activeKey: Key,
   username: string,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [
@@ -191,6 +200,7 @@ const cancelDelegationToken = (
       ),
     ],
     activeKey,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -236,10 +246,12 @@ const sendToken = (
   memo: string,
   activeKey: Key,
   username: string,
+  options?: TransactionOptions,
 ) => {
   return HiveEngineUtils.sendOperation(
     [TokensUtils.getSendTokenOperation(currency, to, amount, memo, username)],
     activeKey,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -365,11 +377,12 @@ const getOutgoingDelegations = async (
 const getAllTokens = async (): Promise<Token[]> => {
   let tokens = [];
   let offset = 0;
+  let newTokens;
   do {
-    const newTokens = await getTokens(offset);
+    newTokens = await getTokens(offset);
     tokens.push(...newTokens);
     offset += 1000;
-  } while (tokens.length % 1000 === 0);
+  } while (tokens.length % 1000 === 0 && newTokens.length);
   return tokens;
 };
 

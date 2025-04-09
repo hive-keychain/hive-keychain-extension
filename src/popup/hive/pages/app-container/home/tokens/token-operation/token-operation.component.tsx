@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import {
@@ -200,7 +201,7 @@ const TokensOperation = ({
       fields: fields,
       title: `popup_html_${operationType}_tokens`,
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
           `popup_html_${operationType}_tokens`,
           KeysUtils.getKeyType(
@@ -218,6 +219,7 @@ const TokensOperation = ({
                 form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
+                options,
               );
               break;
             case TokenOperationType.STAKE:
@@ -227,6 +229,7 @@ const TokensOperation = ({
                 form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
+                options,
               );
               break;
             case TokenOperationType.UNSTAKE:
@@ -235,6 +238,7 @@ const TokensOperation = ({
                 form.amount.toString(),
                 activeAccount.keys.active!,
                 activeAccount.name!,
+                options,
               );
               break;
           }

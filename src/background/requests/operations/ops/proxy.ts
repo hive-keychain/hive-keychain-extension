@@ -6,7 +6,7 @@ import {
   RequestId,
   RequestProxy,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -16,6 +16,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastProxy = async (
   requestHandler: RequestsHandler,
   data: RequestProxy & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result, err, err_message;
 
@@ -46,7 +47,12 @@ export const broadcastProxy = async (
         break;
       }
       default: {
-        result = await ProxyUtils.setAsProxy(data.proxy, data.username!, key);
+        result = await ProxyUtils.setAsProxy(
+          data.proxy,
+          data.username!,
+          key,
+          options,
+        );
         break;
       }
     }

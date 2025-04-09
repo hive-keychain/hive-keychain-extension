@@ -1357,6 +1357,10 @@
     "message": "Request was canceled by the user.",
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
+  "bgd_lifecycle_request_pending_multisig": {
+    "message": "The request is currently pending multisig approval from other signers. You will be notified by Keychain if/when it is successfully broadcasted.",
+    "description": "Generic answer to websites when the window is closed during multisig (in the background so it wont show on screen)"
+  },
   "bgd_context_transfer_user": {
     "message": "Transfer HIVE/HBD to @%s",
     "description": "Context menu (when right click on a username on steemit)"
@@ -1601,6 +1605,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_phishing_domain": {
+    "message": "@$1 has been flagged as a malicious domain, check the spelling and make sure this is the dApp you want to use.",
+    "description": "When trying to transfer to a blacklisted account"
+  },
   "popup_warning_private_key_in_memo": {
     "message": "Sending a private key as memo is a huge security risk.",
     "description": "When trying to use memo with a private key"
@@ -1779,7 +1787,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autostake_tokens_info": {
-    "message": "Automatically staking can increase your gains",
+    "message": "Automatically staking your tokens can increase your gains",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
@@ -1853,6 +1861,10 @@
   },
   "popup_html_confirm_cancel_power_down_message": {
     "message": "Please confirm that you want to cancel your power down.",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_confirm_cancel_power_down_title": {
+    "message": "Confirm cancel power down",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
@@ -2209,6 +2221,10 @@
   },
   "html_popup_transfer_fund_operation": {
     "message": "Transferring funds",
+    "description": "Transfer fund operation"
+  },
+  "html_popup_stop_recc_transfer_fund_operation": {
+    "message": "Stopping a recurrent transfer",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
@@ -3848,7 +3864,7 @@
     "description": "Form validation error: should be greater than"
   },
   "validation_error_less_or_equal_value": {
-    "message": "Value should be less than or equal to $1",
+    "message": "Value should be smaller than or equal to your balance",
     "description": "Form validation error: should be less than (or equal)"
   },
   "message_container_title_success": {
@@ -4000,7 +4016,7 @@
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_signed_successfully": {
-    "message": "Your transaction was signed. You will be notified when it will be broadcasted",
+    "message": "Your transaction was signed. You will be notified when it is broadcasted",
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_broadcasted": {
@@ -4036,7 +4052,7 @@
     "description": "Using multisig to process transaction"
   },
   "multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted",
     "description": "Tx sent to multisig backend success message"
   },
   "multisig_disclaimer_message": {
@@ -4047,8 +4063,12 @@
     "message": "Sending encoded transaction to Multisig server and potential signers",
     "description": "Message to inform user transmiting to multisig backend"
   },
+  "multisig_transmitting_to_2fa": {
+    "message": "Sending encoded transaction to Multisig server and 2FA bot",
+    "description": "Message to inform user transmiting to multisig backend"
+  },
   "swap_multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it will be broadcasted. Once broadcasted, your swap will be processed.",
+    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted. Once broadcasted, your swap will be processed.",
     "description": "Tx sent to multisig backend success message"
   },
   "html_popup_ecosystem_retrieving_error": {
@@ -4172,11 +4192,11 @@
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "@$1 received $2 as part of power down",
+    "message": "@$1 received $2 as part of a power down",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "@$1 received $2 as part of power down of @$3",
+    "message": "@$1 received $2 as part of a power down of @$3",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {
@@ -4255,6 +4275,14 @@
     "message": "Fetching data... $1/$2... Currently fetching @$3",
     "description": "Portfolio fetching message"
   },
+  "multisig_bot_two_fa_code": {
+    "message": "@$1 One Time Password:",
+    "description": "Two fa code label"
+  },
+  "multisig_bot_two_fa_codes": {
+    "message": "2FA Codes",
+    "description": "Two fa code label"
+  },
   "notification_confirm_save": {
     "message": "Are you sure you want to save your changes ?",
     "description": "Notification save changes message"
@@ -4270,5 +4298,25 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_transaction_metadata": {
+    "message": "Transaction metadata",
+    "description": "Transaction metadata"
+  },
+  "popup_html_proposal_vote": {
+    "message": "Keychain Proposal",
+    "description": "Proposal vote"
+  },
+  "error_otp_not_verified": {
+    "message": "Your One Time Password is incorrect. Please try again",
+    "description": "Error message if otp isn't verified"
+  },
+  "error_otp_already_used": {
+    "message": "Your One Time Password has already been used. Please use the next one.",
+    "description": "Error message if otp has been used already"
+  },
+  "error_granularity": {
+    "message": "This operation isn't allowed under granularity rules",
+    "description": "Error message if granularity failed has been used already"
   }
 }

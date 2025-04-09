@@ -1,12 +1,12 @@
-import {
-  Asset,
+import type {
   CreateProposalOperation,
   DynamicGlobalProperties,
   RemoveProposalOperation,
   UpdateProposalVotesOperation,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -33,7 +33,11 @@ const hasVotedForProposal = async (
   return listProposalVotes[0].voter === username;
 };
 /* istanbul ignore next */
-const voteForKeychainProposal = async (username: string, activeKey: Key) => {
+const voteForKeychainProposal = async (
+  username: string,
+  activeKey: Key,
+  options?: TransactionOptions,
+) => {
   return await HiveTxUtils.sendOperation(
     [
       ProposalUtils.getUpdateProposalVoteOperation(
@@ -43,6 +47,8 @@ const voteForKeychainProposal = async (username: string, activeKey: Key) => {
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 
@@ -51,6 +57,7 @@ const voteForProposal = async (
   proposalId: number,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [
@@ -61,6 +68,8 @@ const voteForProposal = async (
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -68,6 +77,7 @@ const unvoteProposal = async (
   proposalId: number,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [
@@ -78,6 +88,8 @@ const unvoteProposal = async (
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -86,6 +98,7 @@ const updateProposalVotes = async (
   username: string,
   approve: boolean,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [
@@ -96,6 +109,8 @@ const updateProposalVotes = async (
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -261,6 +276,7 @@ const createProposal = (
   permlink: string,
   extensions: any,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -276,6 +292,8 @@ const createProposal = (
       ),
     ],
     key,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -334,10 +352,13 @@ const removeProposal = (
   ids: number[],
   extensions: any,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [ProposalUtils.getRemoveProposalOperation(owner, ids, extensions)],
     key!,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */

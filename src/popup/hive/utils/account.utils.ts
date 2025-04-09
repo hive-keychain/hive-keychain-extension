@@ -1,8 +1,7 @@
-import {
+import type {
   AccountUpdateOperation,
   Authority,
   ClaimAccountOperation,
-  cryptoUtils,
   DynamicGlobalProperties,
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
@@ -10,10 +9,16 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
+import {
+  Key,
+  Keys,
+  KeyType,
+  TransactionOptions,
+} from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -44,24 +49,31 @@ const getKeys = async (username: string, password: string) => {
   const postingInfo = hiveAccounts[0].posting;
   const memoKey = hiveAccounts[0].memo_key;
 
-  if (cryptoUtils.isWif(password)) {
+  if (isWif(password)) {
+    let matchingKeys: Keys = {};
     const pubUnknown = KeysUtils.getPublicKeyFromPrivateKeyString(password);
     if (pubUnknown === memoKey) {
-      return {
+      matchingKeys = {
+        ...matchingKeys,
         memo: password,
         memoPubkey: memoKey,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         posting: password,
         postingPubkey: pubUnknown,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         active: password,
         activePubkey: pubUnknown,
       };
     }
+    return matchingKeys;
   }
 
   const keys = KeysUtils.derivateFromMasterPassword(
@@ -511,7 +523,11 @@ const generateQRCode = (account: LocalAccount, includePublicKey = true) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
+const claimAccounts = async (
+  rc: RC,
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
     activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
@@ -531,6 +547,8 @@ const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
         ] as ClaimAccountOperation,
       ],
       activeAccount.keys.active!,
+      false,
+      options,
     );
   } else Logger.info('Not enough RC% to claim account');
 };
@@ -542,6 +560,7 @@ const updateAccount = (
   memo: string,
   stringifiedMetadata: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -554,6 +573,8 @@ const updateAccount = (
       ),
     ],
     key!,
+    false,
+    options,
   );
 };
 

@@ -1,12 +1,12 @@
-import {
+import type {
   AccountCreateOperation,
   AuthorityType,
   ChangeRecoveryAccountOperation,
   CreateClaimedAccountOperation,
-  PrivateKey,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PrivateKey } from 'hive-tx';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
@@ -59,6 +59,7 @@ const createAccount = async (
   authorities: AccountAuthorities,
   price?: number,
   generatedKeys?: GeneratedKeys,
+  options?: TransactionOptions,
 ) => {
   let success = null;
   switch (creationType) {
@@ -69,6 +70,7 @@ const createAccount = async (
         parentUsername,
         parentActiveKey,
         price!,
+        options,
       );
       break;
     }
@@ -78,6 +80,7 @@ const createAccount = async (
         newUsername,
         parentUsername,
         parentActiveKey,
+        options,
       );
       break;
     }
@@ -104,6 +107,7 @@ const createAccountUsingTicket = (
   newUsername: string,
   parentUsername: string,
   parentActiveKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -114,6 +118,8 @@ const createAccountUsingTicket = (
       ),
     ],
     parentActiveKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -155,6 +161,7 @@ const createPayingAccount = (
   parentUsername: string,
   parentActiveKey: Key,
   price: number,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -170,6 +177,8 @@ const createPayingAccount = (
       ] as AccountCreateOperation,
     ],
     parentActiveKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */
@@ -200,6 +209,7 @@ const setRecoveryAccountOperation = (
   accountName: string,
   newRecoveryAccount: string,
   ownerKey: string,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -213,6 +223,8 @@ const setRecoveryAccountOperation = (
       ] as ChangeRecoveryAccountOperation,
     ],
     ownerKey as Key,
+    false,
+    options,
   );
 };
 

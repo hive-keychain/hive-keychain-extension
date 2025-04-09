@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { PendingUnstaking, Token } from '@interfaces/tokens.interface';
 import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -78,13 +79,14 @@ const TokenPendingUnstake = ({
       title: 'html_popup_pending_unstake',
       titleParams: [tokenInfo.symbol],
       fields: fields,
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         let success;
         try {
           addToLoadingList('html_popup_canceling_unstake_token');
           success = await TokensUtils.cancelUnstakeToken(
             pendingUnstake.txID,
             activeAccount,
+            options,
           );
           if (success) {
             setTimeout(() => {

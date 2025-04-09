@@ -7,7 +7,8 @@ import {
   RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -17,6 +18,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastCreateProposal = async (
   requestHandler: RequestsHandler,
   data: RequestCreateProposal & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   const key = requestHandler.data.key;
@@ -81,8 +83,15 @@ export const broadcastCreateProposal = async (
 export const broadcastUpdateProposalVote = async (
   requestHandler: RequestsHandler,
   data: RequestUpdateProposalVote & RequestId,
+  options?: TransactionOptions,
 ) => {
-  const key = requestHandler.data.key;
+  let key = requestHandler.data.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
   let result, err, err_message;
   try {
     switch (KeysUtils.getKeyType(key!)) {
@@ -91,7 +100,7 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
         );
         LedgerModule.signTransactionFromLedger({
@@ -110,9 +119,10 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
           key!,
+          options,
         );
         break;
       }
@@ -164,6 +174,7 @@ export const broadcastUpdateProposalVote = async (
 export const broadcastRemoveProposal = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveProposal & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, ids, err_message;
   const key = requestHandler.data.key;
@@ -197,6 +208,7 @@ export const broadcastRemoveProposal = async (
           ids,
           data.extensions,
           key!,
+          options,
         );
         break;
       }

@@ -3,6 +3,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   RCDelegationValue,
   RcDelegation,
@@ -194,7 +195,7 @@ const RCDelegations = ({
         ? 'popup_html_cancel_rc_delegation_title'
         : 'popup_html_rc_delegation_title',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
           isCancel
             ? 'html_popup_cancel_delegate_rc_operation'
@@ -208,6 +209,7 @@ const RCDelegations = ({
             form.delegatee,
             activeAccount.name!,
             activeAccount.keys.posting!,
+            options,
           );
 
           removeFromLoadingList(

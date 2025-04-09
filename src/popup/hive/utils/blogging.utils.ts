@@ -1,9 +1,9 @@
-import {
+import type {
   CommentOperation,
   CommentOptionsOperation,
   VoteOperation,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const vote = (
@@ -12,10 +12,13 @@ const vote = (
   permlink: string,
   weight: number,
   privateKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [BloggingUtils.getVoteOperation(voter, author, permlink, weight)],
     privateKey,
+    false,
+    options,
   );
 };
 const post = async (
@@ -27,6 +30,7 @@ const post = async (
   body: string,
   stringifyMetadata: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -41,6 +45,8 @@ const post = async (
       ),
     ],
     key,
+    false,
+    options,
   );
 };
 
@@ -54,6 +60,7 @@ const comment = async (
   stringifyMetadata: string,
   stringifyCommentOptions: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     BloggingUtils.getCommentOperation(
@@ -67,6 +74,8 @@ const comment = async (
       stringifyCommentOptions,
     ),
     key,
+    false,
+    options,
   );
 };
 

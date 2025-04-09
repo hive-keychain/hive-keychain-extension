@@ -1,14 +1,14 @@
 import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { Operation } from '@hiveio/dhive';
+import type { Operation } from '@hiveio/dhive';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -20,6 +20,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastOperations = async (
   requestHandler: RequestsHandler,
   data: RequestBroadcast & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result, err, err_message;
   const key = requestHandler.data.key;
@@ -90,7 +91,12 @@ export const broadcastOperations = async (
         break;
       }
       default: {
-        result = await HiveTxUtils.sendOperation(operations, key!);
+        result = await HiveTxUtils.sendOperation(
+          operations,
+          key!,
+          false,
+          options,
+        );
         break;
       }
     }

@@ -6,7 +6,11 @@ import {
   RequestCustomJSON,
   RequestId,
 } from '@interfaces/keychain.interface';
-import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
+import {
+  KeyType,
+  PrivateKeyType,
+  TransactionOptions,
+} from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -16,6 +20,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastCustomJson = async (
   requestHandler: RequestsHandler,
   data: RequestCustomJSON & RequestId,
+  options?: TransactionOptions,
 ) => {
   let key = requestHandler.data.key;
   if (!key) {
@@ -53,6 +58,7 @@ export const broadcastCustomJson = async (
           key!,
           data.method.toUpperCase() as KeyType,
           data.id,
+          options,
         );
         break;
       }

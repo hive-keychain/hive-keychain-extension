@@ -1,19 +1,27 @@
 import {
+  KeychainKeyTypes,
   KeychainKeyTypesLC,
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
+import { useDomainCheck } from 'src/dialog/hooks/domain-check';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
@@ -50,11 +58,27 @@ const Operation = ({
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
   const [useMultisig, setUseMultisig] = useState(false);
+  const [twoFABots, setTwoFABots] = useState<{ [botName: string]: string }>({});
+  const domainHeader = useDomainCheck({ ...data, domain });
 
   useEffect(() => {
     if (data && (username || data.username)) checkForMultsig();
   }, [data, username]);
 
+  const saveIsMultisig = async () => {
+    if (useMultisig) {
+      LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__REQUEST_HANDLER,
+      ).then((data) => {
+        data.isMultisig = true;
+
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.__REQUEST_HANDLER,
+          data,
+        );
+      });
+    }
+  };
   const checkForMultsig = async () => {
     let useMultisig = false;
     const name = (username || data.username)!;
@@ -87,6 +111,19 @@ const Operation = ({
             method,
           );
           setUseMultisig(useMultisig);
+
+          if (useMultisig) {
+            const accounts = await MultisigUtils.get2FAAccounts(
+              initiatorAccount,
+              KeychainKeyTypes.active,
+            );
+
+            accounts.forEach((acc) =>
+              setTwoFABots((old) => {
+                return { ...old, [acc]: '' };
+              }),
+            );
+          }
         }
         break;
       }
@@ -101,6 +138,19 @@ const Operation = ({
             method,
           );
           setUseMultisig(useMultisig);
+
+          if (useMultisig) {
+            const accounts = await MultisigUtils.get2FAAccounts(
+              initiatorAccount,
+              KeychainKeyTypes.posting,
+            );
+
+            accounts.forEach((acc) =>
+              setTwoFABots((old) => {
+                return { ...old, [acc]: '' };
+              }),
+            );
+          }
         }
         break;
       }
@@ -111,6 +161,8 @@ const Operation = ({
 
   const genericOnConfirm = () => {
     setLoading(true);
+    const metadata = { twoFACodes: twoFABots };
+    saveIsMultisig();
     chrome.runtime.sendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
@@ -118,6 +170,7 @@ const Operation = ({
         tab: tab,
         domain: domain,
         keep,
+        options: { metaData: metadata } as TransactionOptions,
       },
     });
   };
@@ -131,9 +184,15 @@ const Operation = ({
           overflow: 'scroll',
           display: 'flex',
           flexDirection: 'column',
+          rowGap: '16px',
         }}>
         <div>
           <DialogHeader title={title} />
+          {domainHeader && (
+            <div className={`operation-header operation-red`}>
+              {domainHeader}
+            </div>
+          )}
           {header && (
             <div
               className={`operation-header ${
@@ -174,6 +233,26 @@ const Operation = ({
           </div>
         </div>
       </div>
+      {twoFABots && Object.keys(twoFABots).length > 0 && (
+        <div className="two-fa-codes-panel">
+          {Object.entries(twoFABots).map(([botName, code]) => (
+            <InputComponent
+              key={`${botName}-2fa-code`}
+              type={InputType.TEXT}
+              value={code}
+              onChange={(value) => {
+                setTwoFABots((old) => {
+                  return { ...old, [botName]: value };
+                });
+              }}
+              label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+                botName,
+              ])}
+              skipLabelTranslation
+            />
+          ))}
+        </div>
+      )}
       {canWhitelist && (
         <CheckboxPanelComponent
           onChange={setKeep}
@@ -211,7 +290,13 @@ const Operation = ({
 
       <LoadingComponent
         hide={!loading}
-        caption={useMultisig ? 'multisig_transmitting_to_multisig' : undefined}
+        caption={
+          useMultisig
+            ? twoFABots && Object.keys(twoFABots).length > 0
+              ? 'multisig_transmitting_to_2fa'
+              : 'multisig_transmitting_to_multisig'
+            : undefined
+        }
       />
     </div>
   );

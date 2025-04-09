@@ -1,5 +1,5 @@
-import { ExtendedAccount } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import type { ExtendedAccount } from '@hiveio/dhive';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 
 export interface MultisigAccountKeyConfig {
@@ -27,6 +27,7 @@ export enum SocketMessageCommand {
   REQUEST_LOCK = 'request_lock',
   NOTIFY_TRANSACTION_BROADCASTED = 'notify_transaction_broadcasted',
   TRANSACTION_BROADCASTED_NOTIFICATION = 'transaction_broadcasted_notification',
+  TRANSACTION_ERROR_NOTIFICATION = 'transaction_error_notification',
 }
 
 export interface SocketMessage {
@@ -94,6 +95,7 @@ export interface RequestSignatureSigner {
   encryptedTransaction: string; // Encrypted transaction with signer key
   publicKey: string;
   weight: string;
+  metaData?: any;
 }
 
 export interface SignTransactionMessage extends SocketMessagePayload {
@@ -167,6 +169,7 @@ export interface MultisigRequestSignatures {
   transactionAccount: ExtendedAccount;
   signature: string;
   method: KeychainKeyTypes;
+  options: TransactionOptions;
 }
 
 export enum MultisigStep {
@@ -174,6 +177,7 @@ export enum MultisigStep {
   NOTIFY_TRANSACTION_BROADCASTED = 'NOTIFY_TRANSACTION_BROADCASTED',
   SIGN_TRANSACTION_FEEDBACK = 'SIGN_TRANSACTION_FEEDBACK',
   UNLOCK_WALLET = 'UNLOCK_WALLET',
+  NOTIFY_ERROR = 'NOTIFY_ERROR',
 }
 
 export interface ConnectDisconnectMessage {

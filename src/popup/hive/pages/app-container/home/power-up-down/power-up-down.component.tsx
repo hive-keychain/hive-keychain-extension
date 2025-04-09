@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
   addToLoadingList,
@@ -116,7 +117,9 @@ const PowerUpDown = ({
   );
 
   useEffect(() => {
-    const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
+    const hiveBalance = FormatUtils.toNumber(
+      activeAccount.account.balance as string,
+    );
 
     let totalOutgoingVestingShares = 0;
     for (const delegation of delegations.outgoing) {
@@ -207,7 +210,7 @@ const PowerUpDown = ({
           : 'html_popup_power_down',
       fields: fields,
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         let success;
         try {
           switch (powerType) {
@@ -218,6 +221,7 @@ const PowerUpDown = ({
                 form.receiver,
                 formattedAmount,
                 activeAccount.keys.active!,
+                options,
               );
               break;
             case PowerType.POWER_DOWN:
@@ -229,6 +233,7 @@ const PowerUpDown = ({
                   globalProperties.globals!,
                 ).toFixed(6)} VESTS`,
                 activeAccount.keys.active!,
+                options,
               );
           }
           if (success) {
@@ -267,14 +272,14 @@ const PowerUpDown = ({
 
   const handleCancelButtonClick = (form: PowerUpDownForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      title: '',
+      title: 'popup_html_confirm_cancel_power_down_title',
       method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_power_down_message',
       ),
       fields: [],
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_cancel_power_down_operation');
         try {
           let success = await PowerUtils.powerDown(
@@ -283,6 +288,7 @@ const PowerUpDown = ({
               6,
             )} VESTS`,
             activeAccount.keys.active!,
+            options,
           );
 
           if (success) {

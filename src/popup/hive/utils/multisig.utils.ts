@@ -11,7 +11,7 @@ if (process.env.IS_FIREFOX) {
   }
 }
 
-import {
+import type {
   AccountCreateOperation,
   AccountCreateWithDelegationOperation,
   AccountUpdate2Operation,
@@ -52,6 +52,7 @@ import {
   ResetAccountOperation,
   SetResetAccountOperation,
   SetWithdrawVestingRouteOperation,
+  SignedTransaction,
   Transaction,
   TransferFromSavingsOperation,
   TransferOperation,
@@ -64,6 +65,14 @@ import {
   WitnessSetPropertiesOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
+import { MultisigAccountConfig } from '@interfaces/multisig.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getUsernameFromTransaction = (tx: Transaction) => {
   let username;
@@ -234,16 +243,6 @@ const getUsernameFromTransaction = (tx: Transaction) => {
   return username;
 };
 
-import { SignedTransaction } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
-import { MultisigAccountConfig } from '@interfaces/multisig.interface';
-import AccountUtils from '@popup/hive/utils/account.utils';
-import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
-
 const saveMultisigConfig = async (
   account: string,
   newAccountConfig: MultisigAccountConfig,
@@ -276,6 +275,17 @@ const encodeTransaction = async (
     key,
     receiverPubKey,
     `#${JSON.stringify(transaction)}`,
+  );
+};
+const encodeMetadata = async (
+  metadata: any,
+  key: string,
+  receiverPubKey: string,
+) => {
+  return encodeModule.encode(
+    key,
+    receiverPubKey,
+    `#${JSON.stringify(metadata)}`,
   );
 };
 
@@ -350,12 +360,85 @@ const isMultisigCompatible = () => {
   return process.env.IS_FIREFOX || +chromeVersion >= 116;
 };
 
+export interface TwoFABotConfiguration {
+  name: string;
+  configPath: string;
+}
+
+const get2FAAccounts = async (
+  account: ExtendedAccount,
+  method: KeychainKeyTypes,
+) => {
+  let potentialBots;
+  switch (method) {
+    case KeychainKeyTypes.active: {
+      potentialBots = account.active.account_auths.map(([username, weigth]) => {
+        return username;
+      });
+      break;
+    }
+    case KeychainKeyTypes.posting: {
+      potentialBots = account.posting.account_auths.map(
+        ([username, weigth]) => {
+          return username;
+        },
+      );
+      break;
+    }
+  }
+  if (!potentialBots) {
+    return [];
+  }
+  const extendedAccounts = await AccountUtils.getExtendedAccounts(
+    potentialBots,
+  );
+  const botNames = [];
+  for (const extendedAccount of extendedAccounts) {
+    let metadata;
+    try {
+      metadata = JSON.parse(extendedAccount['json_metadata']);
+    } catch (e) {
+      continue;
+    }
+    if (metadata.isMultisigBot) {
+      botNames.push(extendedAccount.name);
+    }
+  }
+  return botNames;
+};
+
+const getTwoFaBotUserConfig = async (configPath: string, username: string) => {
+  return await new Promise((resolve, reject) => {
+    try {
+      fetch(`${configPath.replace(':username', username)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then((res) => {
+          if (res && res.status === 200) {
+            return res.json();
+          }
+        })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const MultisigUtils = {
+  get2FAAccounts,
   getUsernameFromTransaction,
   saveMultisigConfig,
   getMultisigAccountConfig,
   decodeTransaction,
   encodeTransaction,
+  encodeMetadata,
   getPotentialSigners,
   isMultisigCompatible,
 };

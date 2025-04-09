@@ -21,7 +21,10 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { loadTokenHistory } from 'src/popup/hive/actions/token.actions';
+import {
+  fetchMoreTokenHistory,
+  loadTokenHistory,
+} from 'src/popup/hive/actions/token.actions';
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { TokenTransactionUtils } from 'src/popup/hive/utils/token-transaction.utils';
 
@@ -31,17 +34,17 @@ const TokensHistory = ({
   tokenHistory,
   loadTokenHistory,
   setTitleContainerProperties,
+  isTokenHistoryLoading,
+  shouldLoadMore,
+  fetchMoreTokenHistory,
 }: PropsFromRedux) => {
   const [displayedTransactions, setDisplayedTransactions] = useState<
     TokenTransaction[]
   >([]);
-
   const [filterValue, setFilterValue] = useState('');
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
 
   const walletItemList = useRef<HTMLDivElement>(null);
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTokenHistory(activeAccountName!, currentTokenBalance.symbol);
@@ -90,7 +93,6 @@ const TokensHistory = ({
         );
       }),
     );
-    setLoading(false);
   }, [tokenHistory, filterValue]);
 
   const handleScroll = (event: any) => {
@@ -115,7 +117,7 @@ const TokensHistory = ({
             key={transaction._id}
             transaction={transaction}></TokenHistoryItemComponent>
         ))}
-        {displayedTransactions.length === 0 && (
+        {displayedTransactions.length === 0 && !isTokenHistoryLoading && (
           <div className="empty-history-panel">
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <div className="text">
@@ -130,7 +132,22 @@ const TokensHistory = ({
             </div>
           </div>
         )}
-        {loading && (
+        {shouldLoadMore && !isTokenHistoryLoading && (
+          <div
+            className="load-more-panel"
+            onClick={() => {
+              fetchMoreTokenHistory(
+                activeAccountName!,
+                currentTokenBalance.symbol,
+              );
+            }}>
+            <span className="label">
+              {chrome.i18n.getMessage('popup_html_load_more')}
+            </span>
+            <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
+          </div>
+        )}
+        {isTokenHistoryLoading && (
           <div className="rotating-logo-container">
             <RotatingLogoComponent></RotatingLogoComponent>
           </div>
@@ -146,13 +163,16 @@ const mapStateToProps = (state: RootState) => {
     activeAccountName: state.hive.activeAccount?.name,
     userTokens: state.hive.userTokens,
     currentTokenBalance: state.navigation.params?.tokenBalance as TokenBalance,
-    tokenHistory: state.hive.tokenHistory as TokenTransaction[],
+    tokenHistory: state.hive.tokenHistory.list as TokenTransaction[],
+    isTokenHistoryLoading: state.hive.tokenHistory.loading,
+    shouldLoadMore: state.hive.tokenHistory.shouldLoadMore,
   };
 };
 
 const connector = connect(mapStateToProps, {
   loadTokenHistory,
   setTitleContainerProperties,
+  fetchMoreTokenHistory,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -37,13 +37,13 @@ export const exchanges: Exchange[] = [
   //   image: 'bithumb.png',
   //   link: 'https://en.bithumb.com/trade/order/HIVE_KRW',
   // },
-  {
-    name: 'Ionomy',
-    image: SVGIcons.BUY_IONOMY,
-    link: 'https://exchange.ionomy.com/en/markets/btc-hive',
-    username: 'ionomy',
-    acceptedCoins: ['HIVE', 'HBD'],
-  },
+  // {
+  //   name: 'Ionomy',
+  //   image: SVGIcons.BUY_IONOMY,
+  //   link: 'https://exchange.ionomy.com/en/markets/btc-hive',
+  //   username: 'ionomy',
+  //   acceptedCoins: ['HIVE', 'HBD'],
+  // },
   {
     name: 'Huobi',
     image: SVGIcons.BUY_HUOBI,

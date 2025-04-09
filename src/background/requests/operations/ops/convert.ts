@@ -2,7 +2,7 @@ import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
@@ -16,6 +16,7 @@ import Logger from 'src/utils/logger.utils';
 export const convert = async (
   requestHandler: RequestsHandler,
   data: RequestConvert & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result, err, err_message;
   const { username, amount, collaterized } = data;
@@ -61,6 +62,7 @@ export const convert = async (
           amountS,
           conversionType,
           key!,
+          options,
         );
         break;
       }

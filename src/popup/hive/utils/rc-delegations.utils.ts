@@ -1,7 +1,7 @@
-import { Asset } from '@hiveio/dhive';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import { Key, KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
+import { Asset } from 'hive-keychain-commons';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
@@ -30,8 +30,9 @@ const cancelDelegation = async (
   delegatee: string,
   username: string,
   postingKey: Key,
+  options?: TransactionOptions,
 ) => {
-  return sendDelegation(0, delegatee, username, postingKey);
+  return sendDelegation(0, delegatee, username, postingKey, options);
 };
 /* istanbul ignore next */
 const sendDelegation = async (
@@ -39,10 +40,13 @@ const sendDelegation = async (
   delegatee: string,
   username: string,
   postingKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [RcDelegationsUtils.getRcDelegationOperation(delegatee, value, username)],
     postingKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */

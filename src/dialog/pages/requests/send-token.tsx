@@ -1,7 +1,8 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import React from 'react';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
+import React, { useEffect, useState } from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
@@ -21,6 +22,7 @@ const SendToken = (props: Props) => {
   const { data, rpc, hiveEngineConfig } = props;
   const { memo } = data;
   const header = useTransferCheck(data, rpc);
+  const [precision, setPrecision] = useState(3);
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {
@@ -29,6 +31,13 @@ const SendToken = (props: Props) => {
   } else {
     memoField = chrome.i18n.getMessage('popup_empty');
   }
+
+  useEffect(() => {
+    TokensUtils.getTokenPrecision(data.currency).then((precision) => {
+      data.amount = parseFloat(data.amount).toFixed(precision);
+      setPrecision(precision);
+    });
+  }, []);
 
   return (
     <Operation
@@ -42,15 +51,18 @@ const SendToken = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
-        content={`${FormatUtils.formatCurrencyValue(data.amount)} ${
-          data.currency
-        }`}
+        content={`${FormatUtils.formatCurrencyValue(
+          data.amount,
+          precision,
+          true,
+        )} ${data.currency}`}
       />
       <Separator type={'horizontal'} fullSize />
       <RequestTokenBalance
         username={data.username}
         amount={parseFloat(data.amount)}
         currency={data.currency}
+        precision={precision}
         hiveEngineConfig={hiveEngineConfig}
       />
 

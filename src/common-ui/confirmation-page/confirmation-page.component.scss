@@ -5,6 +5,10 @@
     flex-direction: column;
     row-gap: 16px;
     padding: 0px 24px;
+    flex: 1;
+    &.twofa {
+      max-height: 400px;
+    }
     .introduction {
       padding: 0px 32px;
       @include caption;

@@ -1,5 +1,5 @@
-import { ExtendedAccount } from '@hiveio/dhive';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import type { ExtendedAccount } from '@hiveio/dhive';
+import type { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { Keys } from '@interfaces/keys.interface';
 import { RcDelegationsInfo } from '@interfaces/rc-delegation.interface';
 export type RC = Manabar & RcDelegationsInfo;

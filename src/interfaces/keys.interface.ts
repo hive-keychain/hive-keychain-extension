@@ -22,3 +22,11 @@ export enum PrivateKeyType {
   PRIVATE_KEY = 'PRIVATE_KEY',
   MULTISIG = 'MULTISIG',
 }
+
+export interface TransactionOptions {
+  metaData?: TransactionOptionsMetadata;
+}
+
+export interface TransactionOptionsMetadata {
+  twoFACodes?: { [botName: string]: string };
+}

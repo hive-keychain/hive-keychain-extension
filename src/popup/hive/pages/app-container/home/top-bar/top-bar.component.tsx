@@ -1,7 +1,12 @@
-import { sleep } from '@hiveio/dhive/lib/utils';
+import {
+  TransactionOptions,
+  TransactionOptionsMetadata,
+} from '@interfaces/keys.interface';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
 import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import {
+  addCaptionToLoading,
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
@@ -9,11 +14,14 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
+import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -21,6 +29,7 @@ import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.a
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 const TopBar = ({
@@ -34,6 +43,9 @@ const TopBar = ({
   setErrorMessage,
   setSuccessMessage,
   loadUserTokens,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -63,24 +75,21 @@ const TopBar = ({
     setTimeout(() => setRotateLogo(false), 1000);
   };
 
-  const claim = async (): Promise<void> => {
-    if (!activeAccount.keys.posting) {
-      setErrorMessage('popup_accounts_err_claim');
-      return;
-    }
-    addToLoadingList('popup_html_claiming_rewards');
+  const claim = async (options?: TransactionOptions) => {
     try {
-      const claimSuccessful = await RewardsUtils.claimRewards(
+      addToLoadingList('popup_html_claiming_rewards');
+      const claimResult = await RewardsUtils.claimRewards(
         activeAccount.name!,
         activeAccount.account.reward_hive_balance,
         activeAccount.account.reward_hbd_balance,
         activeAccount.account.reward_vesting_balance,
         activeAccount.keys.posting!,
+        options,
       );
-      await sleep(3000);
+      await AsyncUtils.sleep(3000);
       refreshActiveAccount();
-      if (claimSuccessful) {
-        if (claimSuccessful.isUsingMultisig) {
+      if (claimResult) {
+        if (claimResult.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
           const rewardHp =
@@ -114,6 +123,43 @@ const TopBar = ({
     }
   };
 
+  const handleClickOnClaim = async (): Promise<void> => {
+    if (!activeAccount.keys.posting) {
+      setErrorMessage('popup_accounts_err_claim');
+      return;
+    } else {
+      const twoFaAccounts = await MultisigUtils.get2FAAccounts(
+        activeAccount.account,
+        KeychainKeyTypes.active,
+      );
+
+      let initialMetadata = {} as TransactionOptionsMetadata;
+      for (const account of twoFaAccounts) {
+        if (!initialMetadata.twoFACodes) initialMetadata.twoFACodes = {};
+        initialMetadata.twoFACodes[account] = '';
+      }
+
+      if (twoFaAccounts.length > 0) {
+        openModal({
+          title: 'popup_html_transaction_metadata',
+          children: (
+            <MetadataPopup
+              initialMetadata={initialMetadata}
+              onSubmit={(metadata: TransactionOptionsMetadata) => {
+                addCaptionToLoading('multisig_transmitting_to_2fa');
+                claim({ metaData: metadata });
+                closeModal();
+              }}
+              onCancel={() => closeModal()}
+            />
+          ),
+        });
+      } else {
+        claim();
+      }
+    }
+  };
+
   return (
     <div className="top-bar">
       <SVGIcon
@@ -137,7 +183,7 @@ const TopBar = ({
           icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
           dataTestId="reward-claim-icon"
           className="claim-button"
-          onClick={() => claim()}
+          onClick={() => handleClickOnClaim()}
           hoverable
         />
       )}
@@ -162,6 +208,9 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   loadUserTokens,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

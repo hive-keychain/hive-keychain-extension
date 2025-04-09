@@ -6,7 +6,7 @@ import {
   RequestDelegation,
   RequestId,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
@@ -17,6 +17,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastDelegation = async (
   requestHandler: RequestsHandler,
   data: RequestDelegation & RequestId,
+  options?: TransactionOptions,
 ) => {
   let key = requestHandler.data.key;
   if (!key) {
@@ -69,6 +70,7 @@ export const broadcastDelegation = async (
           data.delegatee,
           delegatedVests,
           key,
+          options,
         );
         break;
       }

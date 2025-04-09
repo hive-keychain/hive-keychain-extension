@@ -1,4 +1,4 @@
-import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import type { OperationName, VirtualOperationName } from '@hiveio/dhive';
 import moment from 'moment';
 
 export type NotificationOperationName = OperationName | VirtualOperationName;

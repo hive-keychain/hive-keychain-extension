@@ -1,5 +1,5 @@
-import { CustomJsonOperation } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import type { CustomJsonOperation } from '@hiveio/dhive';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { KeychainError } from 'src/keychain-error';
@@ -11,10 +11,12 @@ import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.in
 const sendOperation = async (
   operations: CustomJsonOperation[],
   key: Key,
+  options?: TransactionOptions,
 ): Promise<HiveEngineTransactionStatus> => {
   const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
+    options,
   );
 
   if (transactionResult) {

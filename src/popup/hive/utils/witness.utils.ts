@@ -1,11 +1,11 @@
 import { KeychainApi } from '@api/keychain';
-import {
+import type {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import {
   LastSigningKeys,
   Witness,
@@ -24,20 +24,31 @@ export const WITNESS_DISABLED_KEY =
   'STM1111111111111111111111111111111114T1Anm';
 
 /* istanbul ignore next */
-const voteWitness = async (witness: Witness, voter: string, activeKey: Key) => {
+const voteWitness = async (
+  witness: Witness,
+  voter: string,
+  activeKey: Key,
+  options?: TransactionOptions,
+) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
     voter,
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const unvoteWitness = async (
   witness: Witness,
   voter: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     false,
@@ -45,7 +56,12 @@ const unvoteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const updateWitnessVote = async (
@@ -53,6 +69,7 @@ const updateWitnessVote = async (
   witness: Witness,
   approve: boolean,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     approve,
@@ -60,17 +77,28 @@ const updateWitnessVote = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
+  return WitnessUtils.sendWitnessOperation(
+    witnessOperation,
+    voter,
+    activeKey,
+    options,
+  );
 };
 /* istanbul ignore next */
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   username: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   GovernanceUtils.removeFromIgnoreRenewal(username);
 
-  return await HiveTxUtils.sendOperation([witnessOperation], activeKey);
+  return await HiveTxUtils.sendOperation(
+    [witnessOperation],
+    activeKey,
+    false,
+    options,
+  );
 };
 /* istanbul ignore next */
 const getWitnessVoteOperation = (
@@ -124,6 +152,7 @@ const updateWitnessParameters = async (
   witnessAccountName: string,
   witnessParamsForm: WitnessParamsForm,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const witnessAccountUpdateOperation = getWitnessAccountUpdateOperation(
     witnessAccountName,
@@ -132,6 +161,8 @@ const updateWitnessParameters = async (
   return await HiveTxUtils.sendOperation(
     [witnessAccountUpdateOperation],
     activeKey,
+    true,
+    options,
   );
 };
 

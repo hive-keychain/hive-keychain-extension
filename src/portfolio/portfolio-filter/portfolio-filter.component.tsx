@@ -1,4 +1,4 @@
-import { ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';

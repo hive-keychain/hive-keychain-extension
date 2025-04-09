@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
@@ -140,13 +141,15 @@ const SavingsPage = ({
       fetchCurrentWithdrawingList();
     }
     const hbdSavings = FormatUtils.toNumber(
-      activeAccount.account.savings_hbd_balance,
+      activeAccount.account.savings_hbd_balance as string,
     );
     const hiveSavings = FormatUtils.toNumber(
-      activeAccount.account.savings_balance,
+      activeAccount.account.savings_balance as string,
     );
-    const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
-    const hive = FormatUtils.toNumber(activeAccount.account.balance);
+    const hbd = FormatUtils.toNumber(
+      activeAccount.account.hbd_balance as string,
+    );
+    const hive = FormatUtils.toNumber(activeAccount.account.balance as string);
 
     const liquidValue = watch('currency') === 'hive' ? hive : hbd;
     const savingsValue =
@@ -261,7 +264,7 @@ const SavingsPage = ({
         { label: 'popup_html_username', value: `@${form.username}` },
       ],
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         try {
           let success;
           switch (watch('type')) {
@@ -272,6 +275,7 @@ const SavingsPage = ({
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
+                options,
               );
               break;
             case SavingOperationType.WITHDRAW:
@@ -281,6 +285,7 @@ const SavingsPage = ({
                 form.username,
                 activeAccount.name!,
                 activeAccount.keys.active!,
+                options,
               );
               break;
           }

@@ -7,7 +7,7 @@ import {
   RequestId,
   RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
@@ -19,6 +19,7 @@ import Logger from 'src/utils/logger.utils';
 export const recurrentTransfer = async (
   requestHandler: RequestsHandler,
   data: RequestRecurrentTransfer & RequestId,
+  options?: TransactionOptions,
 ) => {
   const { username, to, amount, recurrence, executions } = data;
   let { memo } = data;
@@ -82,6 +83,7 @@ export const recurrentTransfer = async (
           executions,
           recurrence,
           key,
+          options,
         );
         break;
       }

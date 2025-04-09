@@ -1,10 +1,10 @@
-import { Account, ExtendedAccount, PrivateKey } from '@hiveio/dhive';
+import type { Account, ExtendedAccount } from '@hiveio/dhive';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { PrivateKey } from 'hive-tx';
 import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
-
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
     const privateKey = PrivateKey.fromString(privateKeyS);
@@ -14,7 +14,6 @@ const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
     return null;
   }
 };
-
 const getPubkeyWeight = (publicKey: any, permissions: any) => {
   for (let n in permissions.key_auths) {
     const keyWeight = permissions.key_auths[n];
@@ -124,7 +123,6 @@ const isUsingMultisig = (
       const keyAuth = transactionAccount.active.key_auths.find(
         ([keyAuth, w]) => keyAuth === publicKey,
       );
-
       if (
         (accAuth && accAuth[1] < transactionAccount.active.weight_threshold) ||
         (keyAuth && keyAuth[1] < transactionAccount.active.weight_threshold)
