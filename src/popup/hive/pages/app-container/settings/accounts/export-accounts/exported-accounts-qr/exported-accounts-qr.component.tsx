@@ -51,7 +51,7 @@ const ExportedAccountsQR = ({
     return () => {
       document.onkeydown = null;
     };
-  }, [pageIndex]);
+  }, [pageIndex, accountsDataQR]);
 
   const exportAllAccountsQR = () => {
     let tempAccountsDataQR: {
@@ -77,11 +77,13 @@ const ExportedAccountsQR = ({
   };
 
   const moveNext = () => {
-    setPageIndex((newPageIndex) => newPageIndex + 1);
+    setPageIndex((newPageIndex) =>
+      Math.min(newPageIndex + 1, accountsDataQR.length - 1),
+    );
   };
 
   const movePrevious = () => {
-    setPageIndex((newPageIndex) => newPageIndex - 1);
+    setPageIndex((newPageIndex) => Math.max(0, newPageIndex - 1));
   };
 
   const closePage = () => {
