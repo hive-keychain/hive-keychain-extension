@@ -79,6 +79,7 @@ export const EvmNftDetails = ({
             ))}
 
           <ButtonComponent
+            additionalClass="send-button"
             label="popup_html_send_transfer"
             onClick={() => console.log('sending', nft, collection)}
             type={ButtonType.IMPORTANT}

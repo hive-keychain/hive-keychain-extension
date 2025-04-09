@@ -31,6 +31,7 @@
   .collection-name {
     @include poppins300(12px);
     opacity: 0.8;
+    margin-bottom: 16px;
   }
   .label-value {
     width: 100%;
@@ -53,6 +54,10 @@
       max-height: 300px;
       align-self: center;
       width: unset;
+    }
+
+    .send-button {
+      margin-top: 16px;
     }
   }
 }
