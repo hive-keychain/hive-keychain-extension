@@ -1,3 +1,4 @@
+import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
@@ -124,6 +125,8 @@ const AppRouter = ({
         return <AddAccountRouterComponent />;
       case Screen.ACCOUNT_PAGE_ADD_BY_KEYS:
         return <AddByKeysComponent />;
+      case Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN:
+        return <KeylessKeychainComponent />;
       case Screen.ACCOUNT_PAGE_ADD_BY_AUTH:
         return <AddByAuthComponent />;
       case Screen.ACCOUNT_PAGE_IMPORT_KEYS:

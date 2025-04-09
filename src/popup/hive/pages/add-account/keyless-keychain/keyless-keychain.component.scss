@@ -1,0 +1,29 @@
+.keyless-keychain-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .caption {
+    @include caption();
+    font-size: a {
+      color: $red;
+    }
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    margin-top: auto;
+    padding-bottom: 24px;
+  }
+}

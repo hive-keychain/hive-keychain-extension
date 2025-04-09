@@ -8,7 +8,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '../import-keys/import-keys.component';
-
+import { KeylessKeychainComponent } from '../keyless-keychain/keyless-keychain.component';
 const AddAccountRouter = ({
   currentPage,
   titleProperties,
@@ -25,6 +25,8 @@ const AddAccountRouter = ({
         return <ImportKeysComponent />;
       case Screen.ACCOUNT_PAGE_SELECT_KEYS:
         return <SelectKeysComponent />;
+      case Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN:
+        return <KeylessKeychainComponent />;
     }
   };
 
