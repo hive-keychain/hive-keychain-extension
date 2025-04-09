@@ -1,11 +1,10 @@
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -20,7 +19,16 @@ const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
   return (
     <div
       data-testid={`${Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN}-page`}
-      className="keyless-keychain-page">
+      className="keyless-keychain-page"
+      style={{
+        height: '100%',
+        display: 'grid',
+        gridTemplateRows: '70px 1fr',
+      }}>
+      <PageTitleComponent
+        title={'popup_html_keyless_keychain'}
+        isBackButtonEnabled={false}
+        isCloseButtonDisabled={true}></PageTitleComponent>
       <div className="content">
         <div
           className="caption"
@@ -40,15 +48,11 @@ const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
   );
 };
 const mapStateToProps = (state: RootState) => {
-  return {
-    accounts: state.hive.accounts,
-  };
+  return {};
 };
 
 const connector = connect(mapStateToProps, {
   navigateTo,
-  setAccounts,
-  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

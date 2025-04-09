@@ -223,6 +223,10 @@
     "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io\" target=\"_blank\" >signup.hive.io</a>.",
     "description": "When adding new account"
   },
+  "popup_html_keyless_keychain": {
+    "message": "Keyless Keychain",
+    "description": "Keyless keychain"
+  },
   "popup_html_keyless_keychain_setup": {
     "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device.",
     "description": "When setting up keyless keychain"

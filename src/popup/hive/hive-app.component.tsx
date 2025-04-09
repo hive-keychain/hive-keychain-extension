@@ -15,10 +15,12 @@ import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
+import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -33,7 +35,9 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { ColorsUtils } from 'src/utils/colors.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+
 let rpc: string | undefined = '';
 const HiveApp = ({
   mk,
@@ -62,9 +66,40 @@ const HiveApp = ({
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
+  const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
+    useState<boolean>(false);
 
   useEffect(() => {
     initApplication();
+  }, []);
+
+  // Check if keyless keychain is enabled/disabled
+  useEffect(() => {
+    const checkKeylessKeychain = async () => {
+      const enabled = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
+      );
+      setIsKeylessKeychainEnabled(enabled);
+    };
+
+    checkKeylessKeychain();
+
+    // Set up a listener for changes to the keyless keychain status
+    const handleStorageChange = (changes: {
+      [key: string]: chrome.storage.StorageChange;
+    }) => {
+      if (changes[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED]) {
+        setIsKeylessKeychainEnabled(
+          changes[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED].newValue,
+        );
+      }
+    };
+
+    chrome.storage.local.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.local.onChanged.removeListener(handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -123,7 +158,6 @@ const HiveApp = ({
   const initApplication = async () => {
     ColorsUtils.downloadColors();
     loadCurrencyPrices();
-
     const storedAccounts = await AccountUtils.hasStoredAccounts();
 
     let accountsFromStorage: LocalAccount[] = [];
@@ -181,7 +215,11 @@ const HiveApp = ({
       return <SignInRouterComponent />;
     } else {
       if (accounts && accounts.length === 0) {
-        return <AddAccountRouterComponent />;
+        return isKeylessKeychainEnabled ? (
+          <KeylessKeychainComponent />
+        ) : (
+          <AddAccountRouterComponent />
+        );
       } else {
         return <AppRouterComponent />;
       }

@@ -1,3 +1,4 @@
+import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
@@ -8,7 +9,6 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '../import-keys/import-keys.component';
-import { KeylessKeychainComponent } from '../keyless-keychain/keyless-keychain.component';
 const AddAccountRouter = ({
   currentPage,
   titleProperties,
@@ -81,7 +81,9 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { navigateTo });
+const connector = connect(mapStateToProps, {
+  navigateTo,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AddAccountRouterComponent = connector(AddAccountRouter);
