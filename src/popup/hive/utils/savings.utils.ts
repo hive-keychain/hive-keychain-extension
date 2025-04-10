@@ -1,11 +1,11 @@
-import {
-  Asset,
+import type {
   CancelTransferFromSavingsOperation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
+import { Asset } from 'hive-keychain-commons';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -127,8 +127,8 @@ const claimSavings = async (
   options?: TransactionOptions,
 ) => {
   const { hbd_balance, savings_hbd_balance } = activeAccount.account;
-  const hasHbd = hasBalance(hbd_balance, 0.001);
-  const hasSavings = hasBalance(savings_hbd_balance, 0.001);
+  const hasHbd = hasBalance(hbd_balance as Asset, 0.001);
+  const hasSavings = hasBalance(savings_hbd_balance as Asset, 0.001);
   if (hasHbd) {
     return SavingsUtils.deposit(
       '0.001 HBD',

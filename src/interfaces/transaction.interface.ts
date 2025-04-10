@@ -1,4 +1,4 @@
-import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import type { OperationName, VirtualOperationName } from '@hiveio/dhive';
 
 export type CustomTransactionType = 'savings' | 'power_up_down';
 export interface Transactions {

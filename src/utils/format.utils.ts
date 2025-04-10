@@ -1,6 +1,7 @@
-import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 
 const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {

@@ -1,4 +1,3 @@
-import { Asset } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   AccountCreationType,
@@ -9,6 +8,7 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
+import { Asset } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';

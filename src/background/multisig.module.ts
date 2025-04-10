@@ -5,8 +5,7 @@ import {
 import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
-import { SignedTransaction } from '@hiveio/dhive';
-import { sleep } from '@hiveio/dhive/lib/utils';
+import type { SignedTransaction } from '@hiveio/dhive';
 import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import {
   ConnectDisconnectMessage,
@@ -41,6 +40,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
 import Config from 'src/config';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
@@ -103,7 +103,7 @@ const setupRefreshConnections = () => {
         const accountMultisigConfig = multisigConfig[value.account];
         if (value.connect) {
           if (!socket.connected) socket.connect();
-          await sleep(1000);
+          await AsyncUtils.sleep(1000);
           connectSocket(multisigConfig);
           shouldReconnectSocket = true;
           connectToBackend(value.account, accountMultisigConfig);
@@ -152,7 +152,7 @@ const createConnectionIfNeeded = async (data: MultisigRequestSignatures) => {
     shouldReconnectSocket = true;
     socket.connect();
     connectSocket({});
-    await sleep(1000);
+    await AsyncUtils.sleep(1000);
   }
   const config: MultisigConfig =
     (await LocalStorageUtils.getValueFromLocalStorage(
@@ -190,7 +190,7 @@ const createConnectionIfNeeded = async (data: MultisigRequestSignatures) => {
     };
     await connectToBackend(data.initiatorAccount.name, config);
 
-    await sleep(1000);
+    await AsyncUtils.sleep(1000);
   }
 };
 
@@ -294,7 +294,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
         return;
       }
       const signer = signatureRequest.signers[signerIndex];
-      await sleep(800 * (signerIndex + 2));
+      await AsyncUtils.sleep(800 * (signerIndex + 2));
 
       const signedTransaction = await MultisigModule.processSignatureRequest(
         signatureRequest,
@@ -381,7 +381,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     },
   );
   socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, async (e) => {
-    await sleep(200);
+    await AsyncUtils.sleep(200);
     if (!lockedRequests.includes(e.signatureRequest.id)) {
       lockedRequests.push(e.signatureRequest.id);
       openWindow({

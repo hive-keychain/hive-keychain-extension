@@ -2,6 +2,39 @@
   @include pageLayoutRowGap;
   overflow: hidden;
 
+  .load-more-panel {
+    @include small-card;
+    height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    .label {
+      color: var(--main-font-color);
+    }
+    .icon-component {
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  .rotating-logo-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      @include icon-size(50px);
+      svg {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
   .custom-input {
     padding: 0px 16px;
     box-sizing: border-box;

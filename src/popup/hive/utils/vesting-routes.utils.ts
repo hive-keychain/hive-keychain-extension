@@ -1,4 +1,4 @@
-import { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
+import type { SetWithdrawVestingRouteOperation } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {

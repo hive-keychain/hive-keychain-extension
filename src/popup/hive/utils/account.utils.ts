@@ -1,8 +1,7 @@
-import {
+import type {
   AccountUpdateOperation,
   Authority,
   ClaimAccountOperation,
-  cryptoUtils,
   DynamicGlobalProperties,
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
@@ -10,6 +9,7 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -49,24 +49,31 @@ const getKeys = async (username: string, password: string) => {
   const postingInfo = hiveAccounts[0].posting;
   const memoKey = hiveAccounts[0].memo_key;
 
-  if (cryptoUtils.isWif(password)) {
+  if (isWif(password)) {
+    let matchingKeys: Keys = {};
     const pubUnknown = KeysUtils.getPublicKeyFromPrivateKeyString(password);
     if (pubUnknown === memoKey) {
-      return {
+      matchingKeys = {
+        ...matchingKeys,
         memo: password,
         memoPubkey: memoKey,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, postingInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         posting: password,
         postingPubkey: pubUnknown,
       };
-    } else if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
-      return {
+    }
+    if (KeysUtils.getPubkeyWeight(pubUnknown, activeInfo)) {
+      matchingKeys = {
+        ...matchingKeys,
         active: password,
         activePubkey: pubUnknown,
       };
     }
+    return matchingKeys;
   }
 
   const keys = KeysUtils.derivateFromMasterPassword(
@@ -495,23 +502,25 @@ const addKeyFromLedger = async (username: string, keys: Keys) => {
   return await AccountUtils.saveAccounts(accounts, mk);
 };
 /* istanbul ignore next */
-const generateQRCode = (account: LocalAccount) => {
+const generateQRCode = (account: LocalAccount, includePublicKey = true) => {
   let acc: LocalAccount = { name: account.name, keys: {} };
   if (KeysUtils.isExportable(account.keys.active, account.keys.activePubkey)) {
     acc.keys.active = account.keys.active;
-    acc.keys.activePubkey = account.keys.activePubkey;
+    if (includePublicKey || account.keys.activePubkey?.startsWith('@'))
+      acc.keys.activePubkey = account.keys.activePubkey;
   }
   if (
     KeysUtils.isExportable(account.keys.posting, account.keys.postingPubkey)
   ) {
     acc.keys.posting = account.keys.posting;
-    acc.keys.postingPubkey = account.keys.postingPubkey;
+    if (includePublicKey || account.keys.postingPubkey?.startsWith('@'))
+      acc.keys.postingPubkey = account.keys.postingPubkey;
   }
   if (KeysUtils.isExportable(account.keys.memo, account.keys.memoPubkey)) {
     acc.keys.memo = account.keys.memo;
-    acc.keys.memoPubkey = account.keys.memoPubkey;
+    if (includePublicKey) acc.keys.memoPubkey = account.keys.memoPubkey;
   }
-  return JSON.stringify(acc);
+  return acc;
 };
 
 const claimAccounts = async (

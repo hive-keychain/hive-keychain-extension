@@ -1,5 +1,5 @@
 import { KeychainApi } from '@api/keychain';
-import {
+import type {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';

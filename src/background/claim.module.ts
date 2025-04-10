@@ -1,9 +1,9 @@
 import { ActiveAccountModule } from '@background/active-account.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
-import { Asset } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -142,7 +142,8 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
     baseDate = moment(baseDate).utcOffset('+0000', true);
     const hasSavingsToClaim =
       Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
-      Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
+      Asset.from(activeAccount?.account.savings_hbd_balance! as Asset).amount >
+        0;
 
     if (!hasSavingsToClaim) {
       Logger.info(

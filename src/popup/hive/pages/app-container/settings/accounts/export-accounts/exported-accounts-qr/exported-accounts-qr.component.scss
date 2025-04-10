@@ -1,0 +1,49 @@
+.settings-exported-accounts-qr {
+  @include pageLayoutRowGap();
+  row-gap: 16px;
+  justify-content: flex-start;
+  overflow-y: auto;
+
+  .qr-exported-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    align-self: center;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    z-index: 2;
+    border-radius: 20px;
+
+    .qr-code-disclaimer,
+    .qr-code-container {
+      @include caption;
+      padding: 12px;
+      text-align: justify;
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      .qrcode {
+        align-self: center;
+      }
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      width: 85%;
+      margin-bottom: 16px;
+      .button-export-accounts-qr {
+        width: 40%;
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+    }
+  }
+
+  .text {
+    @include caption();
+  }
+}

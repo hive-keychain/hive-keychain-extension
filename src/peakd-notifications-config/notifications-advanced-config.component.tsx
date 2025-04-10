@@ -1,4 +1,4 @@
-import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import type { OperationName, VirtualOperationName } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Message } from '@interfaces/message.interface';
 import {
