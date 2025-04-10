@@ -1,3 +1,4 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -21,7 +22,7 @@ const ExportedAccountsQR = ({
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const [accountsDataQR, setaccountsDataQR] = useState<
     {
-      data: string;
+      data: LocalAccount[];
       index: number;
       total: number;
     }[]
@@ -55,7 +56,7 @@ const ExportedAccountsQR = ({
 
   const exportAllAccountsQR = () => {
     let tempAccountsDataQR: {
-      data: string;
+      data: LocalAccount[];
       index: number;
       total: number;
     }[] = [];
@@ -64,10 +65,8 @@ const ExportedAccountsQR = ({
       index++;
       const tempLocalAccountsChunk = [...localAccounts].splice(i, 2);
       tempAccountsDataQR.push({
-        data: JSON.stringify(
-          tempLocalAccountsChunk.map((t) =>
-            AccountUtils.generateQRCode(t, false),
-          ),
+        data: tempLocalAccountsChunk.map((t) =>
+          AccountUtils.generateQRCode(t, false),
         ),
         index,
         total: Math.ceil(localAccounts.length / 2),
@@ -114,15 +113,15 @@ const ExportedAccountsQR = ({
             <div>
               {accountsDataQR[pageIndex].index}/
               {accountsDataQR[pageIndex].total} : @
-              {JSON.parse(accountsDataQR[pageIndex].data)
-                .map((e: string) => JSON.parse(e).name)
+              {accountsDataQR[pageIndex].data
+                .map((e: LocalAccount) => e.name)
                 .join(', @')}
             </div>
             <div ref={qrCodeRef}></div>
             <QRCode
               data-testid="qrcode"
               className="qrcode"
-              size={260}
+              size={300}
               value={`${QR_CONTENT_PREFIX}${encode(
                 JSON.stringify(accountsDataQR[pageIndex]),
               )}`}

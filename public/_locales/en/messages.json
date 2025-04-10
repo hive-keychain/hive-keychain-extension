@@ -512,7 +512,7 @@
     "description": "on manage accounts"
   },
   "popup_html_qr_disclaimer3": {
-    "message": "Use left and right arrows to navigate through the accounts.",
+    "message": "Use the left and right arrows to navigate through the accounts.",
     "description": "on manage accounts"
   },
   "popup_html_hide_qr": {

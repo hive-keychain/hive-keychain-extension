@@ -520,7 +520,7 @@ const generateQRCode = (account: LocalAccount, includePublicKey = true) => {
     acc.keys.memo = account.keys.memo;
     if (includePublicKey) acc.keys.memoPubkey = account.keys.memoPubkey;
   }
-  return JSON.stringify(acc);
+  return acc;
 };
 
 const claimAccounts = async (

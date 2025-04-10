@@ -209,8 +209,8 @@ const AccountKeysList = ({
                 data-testid="qrcode"
                 className="qrcode"
                 size={240}
-                value={`keychain://add_account=${AccountUtils.generateQRCode(
-                  account!,
+                value={`keychain://add_account=${JSON.stringify(
+                  AccountUtils.generateQRCode(account!),
                 )}`}
                 bgColor="var(--qrcode-background-color)"
                 fgColor="var(--qrcode-foreground-color)"
