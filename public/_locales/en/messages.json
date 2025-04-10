@@ -5016,5 +5016,29 @@
   "evm_tab_nfts": {
     "message": "NFTs",
     "description": "NFTs tab"
+  },
+  "evm_menu_advanced": {
+    "message": "Advanced",
+    "description": "Evm Advanced menu"
+  },
+  "evm_menu_advanced_smart_contracts": {
+    "message": "Smart Contracts",
+    "description": "Evm Advanced smart contracts"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_title": {
+    "message": "Display possible spam",
+    "description": "Evm Advanced smart contract display possible spam option title"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_hint": {
+    "message": "Keychain will display smart contracts that have possibly been flagged as spam",
+    "description": "Evm Advanced smart contract display possible spam option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_title": {
+    "message": "Display non verified",
+    "description": "Evm Advanced smart contract display non verified option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_hint": {
+    "message": "Keychain will display all smart contracts that haven't been verified yet",
+    "description": "Evm Advanced smart contract display non verified option title"
   }
 }

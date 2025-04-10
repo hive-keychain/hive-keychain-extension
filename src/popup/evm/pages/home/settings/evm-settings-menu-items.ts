@@ -10,6 +10,11 @@ export const EvmSettingsMenuItems = (logout: () => void): MenuItem[] => {
       nextScreen: Screen.EVM_ACCOUNTS_SETTINGS,
     },
     {
+      label: 'evm_menu_advanced',
+      icon: SVGIcons.MENU_ADVANCED_SETTINGS,
+      nextScreen: Screen.EVM_ADVANCED_SETTINGS,
+    },
+    {
       label: 'popup_html_help',
       icon: SVGIcons.MENU_HELP,
       nextScreen: Screen.SETTINGS_HELP,

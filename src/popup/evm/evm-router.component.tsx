@@ -8,6 +8,7 @@ import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import EvmAccountsComponent from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
+import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
@@ -63,11 +64,12 @@ const EvmAppRouter = ({
         return <EvmNftAllCollectionsPageComponent />;
 
       // Settings
-      case EvmScreen.EVM_SETTINGS: {
+      case EvmScreen.EVM_SETTINGS:
         return <EvmSettingPage />;
-      }
       case EvmScreen.EVM_ACCOUNTS_SETTINGS:
         return <EvmAccountsComponent />;
+      case EvmScreen.EVM_ADVANCED_SETTINGS:
+        return <EvmAdvancedSettingsComponent />;
       default:
         return globalRouter(page);
     }

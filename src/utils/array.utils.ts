@@ -47,10 +47,23 @@ const includesAll = (arr: any[], values: any[], key?: string) => {
   } else return values.every((v) => arr.includes(v));
 };
 
+const getSetDescendantProp = (obj: any, path: string, value: any) => {
+  var way = path.replace(/\[/g, '.').replace(/\]/g, '').split('.'),
+    last = way.pop();
+  way.reduce(function (o, k, i, kk) {
+    return (o[k] =
+      //@ts-ignore
+      o[k] || (isFinite(i + 1 in kk ? kk[i + 1] : last) ? [] : {}));
+    //@ts-ignore
+  }, obj)[last] = value;
+  return obj;
+};
+
 export const ArrayUtils = {
   mergeWithoutDuplicate,
   getMaxValue,
   getMinValue,
   findCommons,
   includesAll,
+  getSetDescendantProp,
 };

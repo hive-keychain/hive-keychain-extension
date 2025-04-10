@@ -1,0 +1,24 @@
+.evm-advanced-settings-page {
+  @include pageLayoutRowGap;
+  row-gap: 24px;
+  padding: 0px 24px;
+  margin-top: 3px;
+  padding-bottom: 24px;
+  .fields {
+    @include fields-panel;
+    .settings-section {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      .section-title {
+        @include poppins400(16px);
+        color: var(--main-font-color);
+      }
+      .section-fields {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+      }
+    }
+  }
+}
