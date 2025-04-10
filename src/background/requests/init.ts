@@ -32,14 +32,13 @@ export default async (
     accounts: string;
     current_rpc?: Rpc;
     no_confirm: NoConfirm;
-    keyless_keychain_enabled: boolean;
+    KEYLESS_KEYCHAIN_ENABLED: boolean;
   } = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.ACCOUNTS,
     LocalStorageKeyEnum.NO_CONFIRM,
     LocalStorageKeyEnum.CURRENT_RPC,
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
   ]);
-
   let rpc = items.current_rpc || Config.rpc.DEFAULT;
   if (request.rpc) {
     const override_rpc = await RpcUtils.findRpc(request.rpc);
@@ -53,7 +52,7 @@ export default async (
   if (
     !items.accounts &&
     type !== KeychainRequestTypes.addAccount &&
-    !items.keyless_keychain_enabled
+    !items.KEYLESS_KEYCHAIN_ENABLED
   ) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);
@@ -63,7 +62,7 @@ export default async (
   } else if (!mk) {
     // if locked
     Logic.unlockWallet(requestHandler, tab!, request, domain);
-  } else if (items.keyless_keychain_enabled) {
+  } else if (items.KEYLESS_KEYCHAIN_ENABLED) {
     Logic.keylessKeychainRequest(requestHandler, tab!, request, domain);
   } else {
     const accounts = items.accounts
