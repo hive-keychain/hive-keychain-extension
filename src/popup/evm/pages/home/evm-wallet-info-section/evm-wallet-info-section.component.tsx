@@ -2,11 +2,10 @@ import {
   EvmActiveAccount,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
+import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-tokens/evm-wallet-tokens.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import React, { useState } from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
@@ -38,27 +37,10 @@ const WalletInfoSection = ({
     switch (displayedSection) {
       case EvmDisplayedPage.TOKENS: {
         return (
-          <>
-            {EvmTokensUtils.sortTokens(
-              activeAccount.nativeAndErc20Tokens,
-              prices,
-            )
-              // .filter(
-              //   (token) =>
-              //     (token.tokenInfo.type === EVMSmartContractType.NATIVE ||
-              //       !token.tokenInfo.possibleSpam) &&
-              //     token.tokenInfo.type !== EVMSmartContractType.ERC721,
-              // )
-              .map((token, index) => (
-                <EVMWalletInfoSectionItemComponent
-                  key={`${token.tokenInfo.name}-${index}`}
-                  token={token}
-                  mainValueLabel={token.tokenInfo.symbol}
-                  mainValue={token.formattedBalance}
-                  mainValueSubLabel={token.tokenInfo.name}
-                />
-              ))}
-          </>
+          <EvmWalletTokensComponent
+            prices={prices}
+            activeAccount={activeAccount}
+          />
         );
       }
       case EvmDisplayedPage.NTFS: {

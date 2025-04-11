@@ -23,6 +23,7 @@ import {
   ERC721Abi,
 } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import {
   BlockExporerType,
@@ -95,18 +96,37 @@ const getTokenBalances = async (
   }
 
   const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
-    tokensMetadata
-      .filter(
-        (token) =>
-          token.type === EVMSmartContractType.NATIVE ||
-          (token.type === EVMSmartContractType.ERC20 && !token.possibleSpam),
-      )
-      .map(async (token) => getTokenBalance(walletAddress, chain, token));
+    tokensMetadata.map(async (token) =>
+      getTokenBalance(walletAddress, chain, token),
+    );
 
   const result = (await Promise.all(balancesPromises)).filter(
     (balance) => !!balance,
   );
   return result;
+};
+
+const filterTokensBasedOnSettings = async (
+  tokens: (NativeAndErc20Token | EvmErc721Token | EvmErc1155Token)[],
+) => {
+  const evmSettings = await EvmSettingsUtils.getSettings();
+
+  return tokens.filter((token) => {
+    if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
+      if (
+        !evmSettings.smartContracts.displayNonVerifiedContracts &&
+        !token.tokenInfo.verifiedContract
+      )
+        return false;
+
+      if (
+        !evmSettings.smartContracts.displayPossibleSpam &&
+        token.tokenInfo.possibleSpam
+      )
+        return false;
+    }
+    return true;
+  });
 };
 
 const getTokenBalance = async (
@@ -260,10 +280,6 @@ const getErc1155Tokens = async (
   const erc1155Tokens: EvmErc1155Token[] = [];
 
   for (const tokenInfo of tokenInfos) {
-    console.log(
-      tokenInfo,
-      allTokens.filter((token) => token.contractAddress === tokenInfo.address),
-    );
     const tokens = allTokens.filter(
       (token) => token.contractAddress === tokenInfo.address,
     );
@@ -327,10 +343,7 @@ const getTokensFullDetails = async (
     }
   }
 
-  console.log({ addresses });
-
   for (const address of addresses) {
-    console.log(chainTokenMetaData.find((stm: any) => stm.address === address));
     if (!chainTokenMetaData.find((stm: any) => stm.address === address)) {
       addressesToFetch.push(address);
     }
@@ -340,13 +353,9 @@ const getTokensFullDetails = async (
     return chainTokenMetaData;
   }
 
-  console.log({ addressesToFetch });
-
   const tokensMetadata = await KeychainApi.get(
     `evm/smart-contracts-info/${chain.chainId}/${addressesToFetch?.join(',')}`,
   );
-
-  console.log({ tokensMetadata });
 
   const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
   allSavedMetadata[chain.chainId] = newMetadata;
@@ -355,7 +364,6 @@ const getTokensFullDetails = async (
     allSavedMetadata,
   );
 
-  console.log({ newMetadata });
   return newMetadata;
 };
 
@@ -534,4 +542,5 @@ export const EvmTokensUtils = {
   getTokensFullDetails,
   getErc721Tokens,
   getErc1155Tokens,
+  filterTokensBasedOnSettings,
 };

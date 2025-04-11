@@ -24,7 +24,6 @@ export const EvmWalletNftGalleryComponent = ({
   const [other, setOther] = useState<EvmErc721Token[]>([]);
 
   useEffect(() => {
-    console.log(activeAccount.nfts);
     const otherTokens = [];
     for (const token of activeAccount.nfts) {
       if (token.collection.length === 1) {

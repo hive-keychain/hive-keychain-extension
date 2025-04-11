@@ -19,7 +19,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -114,25 +114,30 @@ const EvmTransfer = ({
 
   useEffect(() => {
     if (activeAccount) {
-      setTokenOptions(
-        EvmAccountUtils.filterSpamTokens(
-          activeAccount.nativeAndErc20Tokens,
-        ).map((tokenBalance, index) => {
-          return {
-            label: tokenBalance.tokenInfo.symbol.toUpperCase(),
-            subLabel: tokenBalance.tokenInfo.name,
-            value: tokenBalance,
-            img: tokenBalance.tokenInfo.logo,
-            key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
-          };
-        }),
-      );
     }
   }, [activeAccount]);
 
   useEffect(() => {
     setBalance(watch('selectedToken').balanceInteger);
   }, [watch('selectedToken')]);
+
+  const init = async () => {
+    setTokenOptions(
+      (
+        await EvmTokensUtils.filterTokensBasedOnSettings(
+          activeAccount.nativeAndErc20Tokens,
+        )
+      ).map((tokenBalance, index) => {
+        return {
+          label: tokenBalance.tokenInfo.symbol.toUpperCase(),
+          subLabel: tokenBalance.tokenInfo.name,
+          value: tokenBalance,
+          img: tokenBalance.tokenInfo.logo,
+          key: `item-${tokenBalance.tokenInfo.symbol}-${index}`,
+        };
+      }),
+    );
+  };
 
   const handleClickOnSend = async (form: TransferForm) => {
     if (form.amount <= 0) {
