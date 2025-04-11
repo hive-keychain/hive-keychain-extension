@@ -1,13 +1,17 @@
-import { RequestsHandler } from "@background/requests/request-handler";
-import { KeychainRequest } from "@interfaces/keychain.interface";
-
-export const keylessKeychainRequest = (
+import { RequestsHandler } from '@background/requests/request-handler';
+import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
+import {
+  KeychainRequest,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
+export const keylessKeychainRequest = async (
   requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
 ) => {
-
-    //TODO: l
+  if (request.type === KeychainRequestTypes.signBuffer) {
+    // handle login/registration
+    await KeylessKeychainUtils.registerUserAndDapp(request, domain);
+  }
 };
-
