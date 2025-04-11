@@ -1,5 +1,6 @@
 import { RequestsHandler } from '@background/requests/request-handler';
 import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
+import { AUTH_PAYLOD } from '@interfaces/has.interface';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -12,24 +13,42 @@ export const keylessKeychainRequest = async (
   request: KeychainRequest,
   domain: string,
 ) => {
-
   await HASUtils.connect();
 
   if (request.type === KeychainRequestTypes.signBuffer) {
-    // handle login/registration
-    const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(request, domain);
-    const keylessAuthDataUserDictionary = await KeylessKeychainUtils.getKeylessAuthDataUserDictionary();
-    console.log(`initial keylessAuthDataUserDictionary:${JSON.stringify(keylessAuthDataUserDictionary,null,2)}`);
-    if(keylessAuthData){
-    const keylessRequest: KeylessRequest = {
-      ...keylessAuthData,
-      request: request,
+    if (!request.username) {
+      throw new Error('Username is required');
     }
-    //
-    const auth_wait =   await HASUtils.authenticate(keylessRequest);
-    await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(keylessRequest, auth_wait);
-    const keylessAuthDataUserDictionary = await KeylessKeychainUtils.getKeylessAuthDataUserDictionary();
-    console.log(`updated keylessAuthDataUserDictionary:${JSON.stringify(keylessAuthDataUserDictionary,null,2)}`);
+    const username = request.username;
+    // handle login/registration
+    const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(
+      request,
+      domain,
+    );
+    if (keylessAuthData) {
+      const keylessRequest: KeylessRequest = {
+        ...keylessAuthData,
+        request: request,
+      };
+      //
+      const auth_wait = await HASUtils.authenticate(keylessRequest);
+      await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
+        keylessRequest,
+        auth_wait,
+      );
+
+      const auth_payload: AUTH_PAYLOD = {
+        account: username,
+        uuid: auth_wait.uuid,
+        key: keylessRequest.authKey,
+        host: `wss://hive-auth.arcange.eu/`,
+      };
+      const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
+        auth_payload,
+      );
+      console.log(`auth_payload_uri:${auth_payload_uri}`);
+
+      //TODO: show the QR code of the auth_payload_uri
     }
   }
 };

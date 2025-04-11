@@ -1,12 +1,24 @@
-import { AUTH_REQ, AUTH_REQ_DATA, AUTH_WAIT } from '@interfaces/has.interface';
+import {
+  AUTH_PAYLOD,
+  AUTH_REQ,
+  AUTH_REQ_DATA,
+  AUTH_WAIT,
+} from '@interfaces/has.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
-const APP_META = {name:"myapp", description:"My HAS compatible application", icon:undefined}
+const APP_META = {
+  name: 'myapp',
+  description: 'My HAS compatible application',
+  icon: undefined,
+};
 
 let ws: WebSocket;
 let reconnectInterval = 1000; // Initial reconnection delay
 
-const setupWebSocketHandlers = (resolve: () => void, reject: (error: any) => void) => {
+const setupWebSocketHandlers = (
+  resolve: () => void,
+  reject: (error: any) => void,
+) => {
   ws.onopen = () => {
     console.log('WebSocket connected');
     reconnectInterval = 1000; // Reset the reconnection delay
@@ -41,13 +53,20 @@ const connect = (): Promise<void> => {
   });
 };
 
-const authenticate = async (keylessRequest: KeylessRequest): Promise<AUTH_WAIT> => {
+const authenticate = async (
+  keylessRequest: KeylessRequest,
+): Promise<AUTH_WAIT> => {
   console.log('Authenticating...');
-  
+
   // Check if the request is not yet expired
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
     console.log('request is not yet expired');
-    return {cmd:"auth_wait", uuid:keylessRequest.uuid, expire:keylessRequest.expire, account:keylessRequest.request.username} as AUTH_WAIT;
+    return {
+      cmd: 'auth_wait',
+      uuid: keylessRequest.uuid,
+      expire: keylessRequest.expire,
+      account: keylessRequest.request.username,
+    } as AUTH_WAIT;
   }
 
   // Validate username
@@ -57,12 +76,17 @@ const authenticate = async (keylessRequest: KeylessRequest): Promise<AUTH_WAIT> 
 
   // Prepare authentication request data
   const auth_req_data: AUTH_REQ_DATA = {
-    app: { name: keylessRequest.appName }
+    app: { name: keylessRequest.appName },
   };
-  const auth_req_data_base64 = Buffer.from(JSON.stringify(auth_req_data)).toString('base64');
-  const auth_req_data_encrypted = await EncryptUtils.encrypt(auth_req_data_base64, keylessRequest.authKey);
+  const auth_req_data_base64 = Buffer.from(
+    JSON.stringify(auth_req_data),
+  ).toString('base64');
+  const auth_req_data_encrypted = await EncryptUtils.encrypt(
+    auth_req_data_base64,
+    keylessRequest.authKey,
+  );
   const auth_req: AUTH_REQ = {
-    cmd: "auth_req",
+    cmd: 'auth_req',
     account: keylessRequest.request.username,
     data: auth_req_data_encrypted,
   };
@@ -75,14 +99,18 @@ const authenticate = async (keylessRequest: KeylessRequest): Promise<AUTH_WAIT> 
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
 
-      if (message.cmd === "auth_wait") {
+      if (message.cmd === 'auth_wait') {
         // AUTH_WAIT received
         ws.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
-      } else if (message.cmd === "auth_nack" || message.cmd === "auth_err") {
+      } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
         // Authentication failed or error
         ws.removeEventListener('message', handleMessage);
-        reject(new Error(`Authentication failed: ${message.error || 'Unknown error'}`));
+        reject(
+          new Error(
+            `Authentication failed: ${message.error || 'Unknown error'}`,
+          ),
+        );
       }
     };
 
@@ -90,9 +118,18 @@ const authenticate = async (keylessRequest: KeylessRequest): Promise<AUTH_WAIT> 
   });
 };
 
+const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOD) => {
+  const auth_payload_base64 = Buffer.from(
+    JSON.stringify(auth_payload),
+  ).toString('base64');
+  const auth_payload_uri = `has://auth_req/${auth_payload_base64}`;
+  return auth_payload_uri;
+};
+
 const HASUtils = {
-    authenticate,
-    connect
-}
+  authenticate,
+  connect,
+  generateAuthPayloadURI,
+};
 
 export default HASUtils;
