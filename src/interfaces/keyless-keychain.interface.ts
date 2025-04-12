@@ -1,9 +1,16 @@
+import { KeychainRequest } from "@interfaces/keychain.interface";
+
 export interface KeylessAuthData {
-  app_name: string;
-  auth_key: string;
+  appName: string;
+  authKey: string;
   uuid?: string;
   expire?: number;
+  challenge?: string;
 }
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];
+}
+
+export interface KeylessRequest extends KeylessAuthData{
+  request:KeychainRequest;
 }

@@ -1,9 +1,8 @@
-import { KeylessAuthDataUserDictionary } from '@interfaces/keyless-keychain.interface';
-
 import MkModule from '@background/mk.module';
+import { AUTH_WAIT } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
-import { KeylessAuthData } from '@interfaces/keyless-keychain.interface';
-
+import { KeylessAuthData, KeylessAuthDataUserDictionary, KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -33,11 +32,38 @@ const registerUserAndDapp = async (
     }
 
     // return existing auth data when it exists and is not expired
+    if(keylessAuthData && !isKeylessAuthDataExpired(keylessAuthData)) {
+      return keylessAuthData;
+    }
+    //store the keylessAuthData in the local storage
+    await storeKeylessAuthData(request.username, keylessAuthData);
+
+    // return existing auth data when it exists and is not expired
     return keylessAuthData;
   } catch (error:any) {
-    throw new Error(`Error in registerUserAndDapp: ${error.message}`);
+    throw new Error(`Error in registerUserAnd Dapp: ${error.message}`);
   } 
 };
+
+const updateAuthenticatedKeylessAuthData = async (keylessRequest: KeylessRequest, authWait: AUTH_WAIT) => {
+  try {
+    if (!keylessRequest.request.username) {
+      throw new Error('Username is missing in the keyless request.');
+    }
+
+    const username = keylessRequest.request.username;
+    const keylessAuthData: KeylessAuthData = {
+      appName: keylessRequest.appName,
+      authKey: keylessRequest.authKey,
+      uuid: authWait.uuid,
+      expire: authWait.expire,
+    };
+
+    await storeKeylessAuthData(username, keylessAuthData);
+  } catch (error: any) {
+    throw new Error(`Error updating authenticated keyless auth data: ${error.message}`);
+  }
+}
 
 /**
  * Generate keyless auth data for a given username and app name and store it in the local storage.
@@ -48,27 +74,17 @@ const registerUserAndDapp = async (
  */
 const generateKeylessAuthData = async (
   username: string,
-  app_name: string,
+  appName: string,
 ): Promise<KeylessAuthData | undefined> => {
   try {
-    const keyless_auth_data_user_dictionary = await getKeylessAuthDataUserDictionary() || {} as KeylessAuthDataUserDictionary;
-
-    const auth_key = crypto.randomUUID();
-
-    // Remove existing auth data if it exists
-    await removeKeylessAuthData(username, app_name);
-
+    const authKey = crypto.randomUUID();
+    const keylessAuthData: KeylessAuthData = {
+      appName,
+      authKey,
+    }; 
     // Create new keyless auth data
-    keyless_auth_data_user_dictionary[username] = keyless_auth_data_user_dictionary[username] || [];
-    keyless_auth_data_user_dictionary[username].push({
-      app_name,
-      auth_key,
-    });
-
-    await storeKeylessAuthDataUserDictionary(keyless_auth_data_user_dictionary);
-    return keyless_auth_data_user_dictionary[username].find(
-      (data: KeylessAuthData) => data.app_name === app_name,
-    );
+    await storeKeylessAuthData(username, keylessAuthData);
+    return keylessAuthData;
   } catch (e) {
     throw new Error(`Error generating keyless auth data: ${e}`);
   }
@@ -81,17 +97,27 @@ const generateKeylessAuthData = async (
 const getKeylessAuthDataUserDictionary = async (): Promise<
   KeylessAuthDataUserDictionary | undefined
 > => {
-  const keyless_auth_data_user_dictionary =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
-    );
-  if (!keyless_auth_data_user_dictionary) return undefined;
-  const mk = await MkModule.getMk();
-  if (!mk) throw new Error('MK not found');
-  //decrypt the keyless_auth_data_user_dictionary with mk
-  const decrypted_keyless_auth_data_user_dictionary =
-    EncryptUtils.decryptToJson(keyless_auth_data_user_dictionary, mk);
-  return decrypted_keyless_auth_data_user_dictionary;
+  try {
+    const keylessAuthDataUserDictionary =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
+      );
+    if (!keylessAuthDataUserDictionary) {
+      return undefined;
+    }
+
+    const mk = await MkModule.getMk();
+    if (!mk) {
+      throw new Error('MK not found');
+    }
+
+    // Decrypt the keyless_auth_data_user_dictionary with mk
+    const decryptedKeylessAuthDataUserDictionary =
+      EncryptUtils.decrypt(keylessAuthDataUserDictionary, mk);
+    return JSON.parse(decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8));
+  } catch (error: any) {
+    throw new Error(`Failed to get keyless auth data user dictionary: ${error.message}`);
+  }
 };
 
 /**
@@ -99,18 +125,22 @@ const getKeylessAuthDataUserDictionary = async (): Promise<
  * @param keyless_auth_data_user_dictionary - The keyless auth data user dictionary
  */
 const storeKeylessAuthDataUserDictionary = async (
-  keyless_auth_data_user_dictionary: KeylessAuthDataUserDictionary,
+  keylessAuthDataUserDictionary: KeylessAuthDataUserDictionary,
 ) => {
-  const mk = await MkModule.getMk();
-  if (!mk) throw new Error('MK not found');
-  const encrypted_keyless_auth_data_user_dictionary = EncryptUtils.encrypt(
-    JSON.stringify(keyless_auth_data_user_dictionary),
-    mk,
-  );
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
-    encrypted_keyless_auth_data_user_dictionary,
-  );
+  try {
+    const mk = await MkModule.getMk();
+    if (!mk) throw new Error('MK not found');
+    const encryptedKeylessAuthDataUserDictionary = EncryptUtils.encrypt(
+      JSON.stringify(keylessAuthDataUserDictionary),
+      mk,
+    );
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
+      encryptedKeylessAuthDataUserDictionary,
+    );
+  } catch (error: any) {
+    throw new Error(`Failed to store keyless auth data user dictionary: ${error.message}`);
+  }
 };
 
 /**
@@ -121,10 +151,10 @@ const storeKeylessAuthDataUserDictionary = async (
 const getKeylessAuthDataArray = async (
   username: string,
 ): Promise<KeylessAuthData[] | undefined> => {
-  const keyless_auth_data_user_dictionary =
+  const keylessAuthDataUserDictionary =
     await getKeylessAuthDataUserDictionary();
-  if (!keyless_auth_data_user_dictionary) return undefined;
-  return keyless_auth_data_user_dictionary[username];
+  if (!keylessAuthDataUserDictionary) return undefined;
+  return keylessAuthDataUserDictionary[username];
 };
 
 /**
@@ -135,12 +165,12 @@ const getKeylessAuthDataArray = async (
  */
 const getKeylessAuthDataByAppName = async (
   username: string,
-  app_name: string,
+  appName: string,
 ) => {
-  const keyless_auth_data_array = await getKeylessAuthDataArray(username);
-  if (!keyless_auth_data_array) return undefined;
-  return keyless_auth_data_array.find(
-    (data: KeylessAuthData) => data.app_name === app_name,
+  const keylessAuthDataArray = await getKeylessAuthDataArray(username);
+  if (!keylessAuthDataArray) return undefined;
+  return keylessAuthDataArray.find(
+    (data: KeylessAuthData) => data.appName === appName,
   );
 };
 
@@ -151,9 +181,9 @@ const getKeylessAuthDataByAppName = async (
  * @returns The keyless auth data for the given uuid
  */
 const getKeylessAuthDataByUUID = async (username: string, uuid: string) => {
-  const keyless_auth_data_array = await getKeylessAuthDataArray(username);
-  if (!keyless_auth_data_array) return undefined;
-  return keyless_auth_data_array.find(
+  const keylessAuthDataArray = await getKeylessAuthDataArray(username);
+  if (!keylessAuthDataArray) return undefined;
+  return keylessAuthDataArray.find(
     (data: KeylessAuthData) => data.uuid === uuid,
   );
 };
@@ -163,13 +193,14 @@ const getKeylessAuthDataByUUID = async (username: string, uuid: string) => {
  * @param keyless_auth_data - The keyless auth data
  * @returns True if the keyless auth data is expired, false otherwise
  */
-const isKeylessAuthDataExpired = (keyless_auth_data: KeylessAuthData) => {
-  if (!keyless_auth_data.expire) return true;
-  return keyless_auth_data.expire < Date.now();
+const isKeylessAuthDataExpired = (keylessAuthData: KeylessAuthData) => {
+  if (!keylessAuthData.expire) return true;
+  return keylessAuthData.expire < Date.now();
 };
 
 /**
- * Store the keyless auth data in the local storage
+ * Save the keyless authentication data to local storage for future use.
+ * Overwrites the existing data if it exists based on either uuid or appName.
  * @param username - The username of the user
  * @param keylessAuthData - The keyless auth data
  */
@@ -178,16 +209,29 @@ const storeKeylessAuthData = async (
   keylessAuthData: KeylessAuthData
 ) => {
   try {
-    let keyless_auth_data_user_dictionary =
+    let keylessAuthDataUserDictionary =
       await getKeylessAuthDataUserDictionary();
-    if (!keyless_auth_data_user_dictionary) {
-      keyless_auth_data_user_dictionary = {} as KeylessAuthDataUserDictionary;
+    //initialize the keylessAuthDataUserDictionary if it does not exist
+    if (!keylessAuthDataUserDictionary) {
+      keylessAuthDataUserDictionary = {} as KeylessAuthDataUserDictionary;
     }
-    if (!keyless_auth_data_user_dictionary[username]) {
-      keyless_auth_data_user_dictionary[username] = [];
+    //initialize the keylessAuthDataUserDictionary[username] if it does not exist
+    if (!keylessAuthDataUserDictionary[username]) {
+      keylessAuthDataUserDictionary[username] = [];
     }
-    keyless_auth_data_user_dictionary[username].push(keylessAuthData);
-    await storeKeylessAuthDataUserDictionary(keyless_auth_data_user_dictionary);
+    const userAuthDataArray = keylessAuthDataUserDictionary[username];
+    //if the userAuthDataArray already contains the keylessAuthData by uuid, remove it
+    if (userAuthDataArray.find((data: KeylessAuthData) => data.uuid === keylessAuthData.uuid)) {
+      userAuthDataArray.splice(userAuthDataArray.indexOf(keylessAuthData), 1);
+    }
+    //if the userAuthDataArray already contains the keylessAuthData by appName, remove it
+    if (userAuthDataArray.find((data: KeylessAuthData) => data.appName === keylessAuthData.appName)) {
+      userAuthDataArray.splice(userAuthDataArray.indexOf(keylessAuthData), 1);
+    }
+    //add the keylessAuthData to the userAuthDataArray
+    userAuthDataArray.push(keylessAuthData);
+    keylessAuthDataUserDictionary[username] = userAuthDataArray;
+    await storeKeylessAuthDataUserDictionary(keylessAuthDataUserDictionary);
   } catch (e) {
     throw new Error(`Error storing keyless auth data: ${e}`);
   }
@@ -200,15 +244,15 @@ const storeKeylessAuthData = async (
  */
 const removeKeylessAuthData = async (username: string, uuid: string) => {
   try {
-    let keyless_auth_data_user_dictionary =
+    let keylessAuthDataUserDictionary =
       await getKeylessAuthDataUserDictionary();
-    if (!keyless_auth_data_user_dictionary || !keyless_auth_data_user_dictionary[username]) {
+    if (!keylessAuthDataUserDictionary || !keylessAuthDataUserDictionary[username]) {
       return;
     }
-    keyless_auth_data_user_dictionary[username] = keyless_auth_data_user_dictionary[username].filter(
+    keylessAuthDataUserDictionary[username] = keylessAuthDataUserDictionary[username].filter(
       (data: KeylessAuthData) => data.uuid !== uuid
     );
-    await storeKeylessAuthDataUserDictionary(keyless_auth_data_user_dictionary);
+    await storeKeylessAuthDataUserDictionary(keylessAuthDataUserDictionary);
   } catch (e) {
     throw new Error(`Error removing keyless auth data: ${e}`);
   }
@@ -219,7 +263,9 @@ const KeylessKeychainUtils = {
   getKeylessAuthDataByUUID, 
   getKeylessAuthDataByAppName,
   storeKeylessAuthData,
-  removeKeylessAuthData
+  removeKeylessAuthData,
+  updateAuthenticatedKeylessAuthData,
+  getKeylessAuthDataUserDictionary
 };
 
 export default KeylessKeychainUtils;
