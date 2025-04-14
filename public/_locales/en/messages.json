@@ -228,7 +228,11 @@
     "description": "Keyless keychain"
   },
   "popup_html_keyless_keychain_setup": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device.",
+    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp and scan the QR code with your mobile device to connect to HiveAuth Hive DApp to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_setup_qr": {
+    "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_leave_button": {
@@ -1337,6 +1341,10 @@
     "message": "Every $1 day(s) and $2 hours(s)",
     "description": "When requesting recurrent transfers"
   },
+  "bgd_keyless_keychain_error": {
+    "message": "Keyless Keychain Error",
+    "description": "Keyless Keychain Error"
+  },
   "bgd_init_no_wallet": {
     "message": "No wallet!",
     "description": "when user didnt create a wallet yet"
@@ -1741,6 +1749,16 @@
   "dialog_header_register": {
     "message": "Welcome to Keychain",
     "description": "When registering from request"
+  },
+
+  "dialog_register_keyless_title": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
+
+  "dialog_register_keyless_loading": {
+    "message": "Registering to HiveAuth",
+    "description": "When registering to keyless keychain"
   },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
