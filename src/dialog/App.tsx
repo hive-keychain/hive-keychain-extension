@@ -3,6 +3,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import DialogError from 'src/dialog/pages/error';
+import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
 import Register from 'src/dialog/pages/register/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
@@ -77,6 +78,8 @@ const App = () => {
         return <RequestResponse data={data} />;
       case DialogCommand.SIGN_WITH_LEDGER:
         return <SignTransaction data={data} />;
+      case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
+        return <RegisterKeylessComponent data={data} />;
       default:
         return null;
     }

@@ -21,9 +21,11 @@ export interface AUTH_WAIT {
   account: string;
 }
 
-export interface AUTH_PAYLOD {
+export interface AUTH_PAYLOAD {
   account: string;
   uuid: string;
   key: string;
   host: string;
 }
+
+export type AUTH_PAYLOAD_URI = `has://auth?${string}` | string | undefined;

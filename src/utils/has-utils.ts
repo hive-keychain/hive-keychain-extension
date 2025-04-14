@@ -1,6 +1,6 @@
 import {
-  AUTH_PAYLOD,
-  AUTH_REQ,
+  AUTH_PAYLOAD_URI,
+  AUTH_REQ,AUTH_PAYLOAD,
   AUTH_REQ_DATA,
   AUTH_WAIT,
 } from '@interfaces/has.interface';
@@ -56,11 +56,8 @@ const connect = (): Promise<void> => {
 const authenticate = async (
   keylessRequest: KeylessRequest,
 ): Promise<AUTH_WAIT> => {
-  console.log('Authenticating...');
-
   // Check if the request is not yet expired
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
-    console.log('request is not yet expired');
     return {
       cmd: 'auth_wait',
       uuid: keylessRequest.uuid,
@@ -118,12 +115,12 @@ const authenticate = async (
   });
 };
 
-const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOD) => {
+const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOAD) => {
   const auth_payload_base64 = Buffer.from(
     JSON.stringify(auth_payload),
   ).toString('base64');
   const auth_payload_uri = `has://auth_req/${auth_payload_base64}`;
-  return auth_payload_uri;
+  return auth_payload_uri as AUTH_PAYLOAD_URI;
 };
 
 const HASUtils = {
