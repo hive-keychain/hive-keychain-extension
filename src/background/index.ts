@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
+import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { MultisigModule } from '@background/multisig.module';
 import init from '@background/requests/init';
@@ -113,6 +114,12 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_BACK_SETTINGS:
       SettingsModule.sendBackImportedFileContent(
         JSON.parse(backgroundMessage.value),
+      );
+      break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN:
+      KeylessKeychainModule.handleOperation(
+        backgroundMessage.value.request,
+        backgroundMessage.value.domain,
       );
       break;
     case BackgroundCommand.PING:
