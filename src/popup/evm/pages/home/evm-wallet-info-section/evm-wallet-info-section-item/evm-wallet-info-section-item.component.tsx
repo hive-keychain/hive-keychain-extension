@@ -116,11 +116,23 @@ const WalletInfoSectionItem = ({
           </div>
         )}
         <div className="main-value-label">
-          <div className="label">{mainValueLabel}</div>
-          <div className="sub-label">{mainValueSubLabel}</div>
+          <div className="label">
+            {mainValueLabel.length > 20
+              ? `${mainValueLabel.slice(0, 20)}...`
+              : mainValueLabel}
+          </div>
+          <div className="sub-label">
+            {subValueLabel && subValueLabel.length > 20
+              ? `${subValueLabel.slice(0, 20)}...`
+              : subValueLabel}
+          </div>
         </div>
         <div className="value">
-          <div className="main-value">{mainValue}</div>
+          <div className="main-value">
+            {mainValue.toString().length > 10
+              ? `${mainValue.toString().slice(0, 10)}...`
+              : mainValue}
+          </div>
           {!!subValue &&
             parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
               <div className="sub-value">

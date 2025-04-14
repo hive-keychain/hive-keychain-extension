@@ -30,7 +30,7 @@ const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
     }
     return metadata;
   } catch (err) {
-    console.log(err);
+    console.log({ err });
     return {
       attributes: [],
       description: '',
@@ -56,6 +56,7 @@ const getMetadataFromTokenId = async (
       break;
   }
 
+  console.log(uri);
   const collectionItem = {
     id: tokenId,
     metadata: await getMetadataFromURI(uri),

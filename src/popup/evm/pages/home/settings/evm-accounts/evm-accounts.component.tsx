@@ -34,13 +34,14 @@ const EvmAccountsComponent = ({
       isCloseButtonDisabled: false,
     });
   }, []);
+
   const onCopyAddress = (account: EvmAccount) => {
     navigator.clipboard.writeText(account.wallet.address);
     setInfoMessage('popup_html_text_copied', [account.wallet.address]);
   };
 
   return (
-    <>
+    <div className="evm-accounts-page">
       <div className="seeds">
         <ComplexeCustomSelect
           options={options}
@@ -64,7 +65,7 @@ const EvmAccountsComponent = ({
           />
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

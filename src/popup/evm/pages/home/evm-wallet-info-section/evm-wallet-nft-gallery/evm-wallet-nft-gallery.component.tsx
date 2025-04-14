@@ -30,6 +30,7 @@ export const EvmWalletNftGalleryComponent = ({
         otherTokens.push(token);
       }
     }
+    console.log({ otherTokens });
     setOther(otherTokens);
   }, []);
 

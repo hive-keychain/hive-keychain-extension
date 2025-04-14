@@ -1,14 +1,8 @@
-.account-panel {
-  display: flex;
+.evm-accounts-page {
+  @include pageLayoutRowGap();
   padding: 16px;
-  border-radius: 22px;
-  border: 1px solid var(--input-border);
-  background: var(--input-background);
-  margin: 6px 24px;
-
-  .seeds {
-    display: flex;
-    column-gap: 8px;
-    justify-content: center;
+  .account-panel {
+    @include small-card();
+    margin: unset;
   }
 }
