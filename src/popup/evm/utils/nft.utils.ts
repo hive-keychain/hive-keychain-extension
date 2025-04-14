@@ -13,8 +13,8 @@ const getImgFromURI = async (metadata: EvmNFTMetadata): Promise<string> => {
 };
 
 const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
+  let metadata;
   try {
-    let metadata;
     if (uri.startsWith('ipfs://')) {
       uri = uri.replace('ipfs://', '');
       metadata = await IPFSApi.getURI(uri);
@@ -28,15 +28,19 @@ const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
       const json = atob(uri.substring(29));
       metadata = JSON.parse(json);
     }
+    console.log({ metadata });
     return metadata;
   } catch (err) {
-    console.log({ err });
-    return {
-      attributes: [],
-      description: '',
-      image: 'https://placehold.co/600x600?text=Not+Found',
-      name: 'No name',
-    };
+    console.log('error', { err });
+  } finally {
+    return (
+      metadata ?? {
+        attributes: [],
+        description: '',
+        image: 'https://placehold.co/600x600?text=Not+Found',
+        name: 'No name',
+      }
+    );
   }
 };
 
