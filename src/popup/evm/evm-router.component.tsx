@@ -6,6 +6,7 @@ import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
+import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import EvmAccountsComponent from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
@@ -62,6 +63,8 @@ const EvmAppRouter = ({
         return <EvmNftCollectionPageComponent />;
       case EvmScreen.EVM_NFT_ALL_NFTS_PAGE:
         return <EvmNftAllCollectionsPageComponent />;
+      case EvmScreen.EVM_NFT_TRANSFER_PAGE:
+        return <EvmNFTTransferComponent />;
 
       // Settings
       case EvmScreen.EVM_SETTINGS:
@@ -70,6 +73,7 @@ const EvmAppRouter = ({
         return <EvmAccountsComponent />;
       case EvmScreen.EVM_ADVANCED_SETTINGS:
         return <EvmAdvancedSettingsComponent />;
+
       default:
         return globalRouter(page);
     }

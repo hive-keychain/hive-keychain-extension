@@ -3,6 +3,8 @@ import {
   EvmNftCollectionComponent,
   EvmNftCollectionListItem,
 } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -11,12 +13,8 @@ import { connect, ConnectedProps } from 'react-redux';
 export const EvmNftAllCollectionsPage = ({
   collections,
   setTitleContainerProperties,
+  navigateToWithParams,
 }: PropsFromRedux) => {
-  const [selectedNftIndex, setSelectedNftIndex] = useState<number>();
-
-  const [selectedCollection, setSelectedCollection] =
-    useState<EvmErc721Token>();
-
   const [allCollections, setAllCollections] =
     useState<EvmNftCollectionListItem[]>();
 
@@ -35,36 +33,22 @@ export const EvmNftAllCollectionsPage = ({
 
     setAllCollections(list);
   }, []);
+
+  const goToSendNftPage = (item: EvmNftCollectionListItem) => {
+    navigateToWithParams(EvmScreen.EVM_NFT_TRANSFER_PAGE, {
+      collectionItem: item,
+    });
+  };
   return (
     <>
       {allCollections && (
         <EvmNftCollectionComponent
           additionalClass="evm-nft-all-collections"
           nftList={allCollections}
-          onClick={(item) => console.log(item)}
+          onSendClick={(item) => goToSendNftPage(item)}
         />
       )}
     </>
-
-    // <div className="evm-nft-collection-page ">
-    //   <FormContainer>
-    //     <div className="nft-list">
-    //       {collections.map((collection) =>
-    //         collection.collection.map((item, itemIndex) => (
-    //           <EvmNftDetails
-    //             nft={item}
-    //             collection={collection}
-    //             onClick={() => {
-    //               setSelectedNftIndex(itemIndex);
-    //               setSelectedCollection(collection);
-    //             }}
-    //             expanded={itemIndex === selectedNftIndex}
-    //           />
-    //         )),
-    //       )}
-    //     </div>
-    //   </FormContainer>
-    // </div>
   );
 };
 
@@ -77,6 +61,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1,4 +1,5 @@
 import {
+  EvmErc1155TokenCollectionItem,
   EvmErc721Token,
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
@@ -12,19 +13,19 @@ import { useBackToTop } from 'src/hooks/back-to-top.hook';
 
 export interface EvmNftCollectionListItem {
   collection: EvmErc721Token;
-  item: EvmErc721TokenCollectionItem;
+  item: EvmErc721TokenCollectionItem | EvmErc1155TokenCollectionItem;
 }
 
 interface Props {
   nftList: EvmNftCollectionListItem[];
   additionalClass?: string;
-  onClick: (item: EvmNftCollectionListItem) => void;
+  onSendClick: (item: EvmNftCollectionListItem) => void;
 }
 
 export const EvmNftCollectionComponent = ({
   nftList,
   additionalClass,
-  onClick,
+  onSendClick,
 }: Props) => {
   const backToTopHook = useBackToTop();
 
@@ -54,8 +55,12 @@ export const EvmNftCollectionComponent = ({
   }, [query]);
 
   const handleClick = (listItem: EvmNftCollectionListItem) => {
-    onClick(listItem);
     setSelectedCollectionListItem(listItem);
+  };
+
+  const handleClickOnSend = () => {
+    if (onSendClick && selectedCollectionListItem)
+      onSendClick(selectedCollectionListItem);
   };
 
   return (
@@ -83,6 +88,7 @@ export const EvmNftCollectionComponent = ({
                       listItem.collection.tokenInfo.address &&
                     listItem.item.id === selectedCollectionListItem.item.id
                   }
+                  onClickSend={() => handleClickOnSend()}
                 />
               </React.Fragment>
             ))}

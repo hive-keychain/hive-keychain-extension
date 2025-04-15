@@ -5040,5 +5040,13 @@
   "evm_menu_advanced_smart_contracts_display_non_verified_hint": {
     "message": "Keychain will display all smart contracts that haven't been verified yet",
     "description": "Evm Advanced smart contract display non verified option title"
+  },
+  "evm_nft_transfer": {
+    "message": "NFT Transfer",
+    "description": "Nft transfer page title"
+  },
+  "evm_nft_transfer_address": {
+    "message": "Address",
+    "description": "NFT Address"
   }
 }

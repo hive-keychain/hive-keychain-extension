@@ -51,9 +51,13 @@
 
     img {
       height: auto;
-      max-height: 300px;
       align-self: center;
-      width: unset;
+      &.normal {
+        max-height: 300px;
+        width: unset;
+      }
+      &.small {
+      }
     }
 
     .send-button {

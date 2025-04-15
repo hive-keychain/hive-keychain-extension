@@ -4,7 +4,7 @@ import {
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
-import React from 'react';
+import React, { BaseSyntheticEvent, useEffect } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -13,7 +13,9 @@ interface Props {
   nft: EvmErc721TokenCollectionItem | EvmErc1155TokenCollectionItem;
   collection: EvmErc721Token | EvmErc721Token;
   expanded?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
+  onClickSend?: () => void;
+  nftSize?: 'small' | 'normal';
 }
 
 export const EvmNftDetails = ({
@@ -21,13 +23,28 @@ export const EvmNftDetails = ({
   collection,
   expanded,
   onClick,
+  onClickSend,
+  nftSize,
 }: Props) => {
+  useEffect(() => {
+    console.log({ nft, collection, expanded });
+  }, []);
+
+  const handleOnClick = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    if (onClick) onClick();
+  };
+  const handleOnClickSend = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    if (onClickSend) onClickSend();
+  };
+
   return (
     <div
       key={`${collection.tokenInfo.address}-${nft.id}`}
       className={`detailed-nft ${expanded ? 'expanded' : ''}`}
-      onClick={() => onClick()}>
-      <img src={nft.metadata.image} />
+      onClick={handleOnClick}>
+      <img className={`${nftSize ?? 'normal'}`} src={nft.metadata.image} />
       <div className="name">{nft.metadata.name}</div>
       {(nft as EvmErc1155TokenCollectionItem).balance > 1 && !expanded && (
         <div className="nft-balance">
@@ -78,13 +95,15 @@ export const EvmNftDetails = ({
               </div>
             ))}
 
-          <ButtonComponent
-            additionalClass="send-button"
-            label="popup_html_send_transfer"
-            onClick={() => console.log('sending', nft, collection)}
-            type={ButtonType.IMPORTANT}
-            height="small"
-          />
+          {onClickSend && (
+            <ButtonComponent
+              additionalClass="send-button"
+              label="popup_html_send_transfer"
+              onClick={(event) => handleOnClickSend(event)}
+              type={ButtonType.IMPORTANT}
+              height="small"
+            />
+          )}
         </>
       )}
     </div>
