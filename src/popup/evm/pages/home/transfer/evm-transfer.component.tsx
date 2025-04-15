@@ -114,6 +114,7 @@ const EvmTransfer = ({
 
   useEffect(() => {
     if (activeAccount) {
+      init();
     }
   }, [activeAccount]);
 

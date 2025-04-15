@@ -25,7 +25,7 @@ const EvmNftCollectionPage = ({
 
   const goToSendNftPage = (item: EvmNftCollectionListItem) => {
     navigateToWithParams(EvmScreen.EVM_NFT_TRANSFER_PAGE, {
-      nft: item,
+      collectionItem: item,
     });
   };
 

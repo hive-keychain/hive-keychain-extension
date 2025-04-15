@@ -51,6 +51,23 @@ const getMetadataFromURI = async (
   }
 };
 
+const getMetadata = async (
+  type: EVMSmartContractType,
+  tokenId: string,
+  contract: ethers.Contract,
+) => {
+  let uri;
+  switch (type) {
+    case EVMSmartContractType.ERC721:
+      uri = await contract.tokenURI(tokenId);
+      break;
+    case EVMSmartContractType.ERC1155:
+      uri = await contract.uri(tokenId);
+      break;
+  }
+  return await getMetadataFromURI(uri, tokenId);
+};
+
 const getMetadataFromTokenId = async (
   type: EVMSmartContractType,
   tokenId: string,
@@ -83,4 +100,5 @@ export const EvmNFTUtils = {
   getMetadataFromURI,
   getImgFromURI,
   getMetadataFromTokenId,
+  getMetadata,
 };

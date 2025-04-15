@@ -122,6 +122,8 @@ const getDisplayInputType = (
       break;
     }
     case EVMSmartContractType.ERC1155: {
+      if (['from', 'to'].includes(name))
+        return EvmInputDisplayType.WALLET_ADDRESS;
       switch (methodName) {
         case 'transferBatch': {
           switch (name) {
@@ -186,6 +188,9 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
       break;
     }
     case EVMSmartContractType.ERC721: {
+      return false;
+    }
+    case EVMSmartContractType.ERC1155: {
       return false;
     }
     default: {

@@ -16,21 +16,23 @@ export const EvmTokenLogo = ({ tokenInfo }: TokenLogoProps) => {
 
   return (
     <>
-      {tokenInfo.logo && (
+      {color !== undefined && tokenInfo.logo && (
         <PreloadedImage
           src={tokenInfo?.logo}
           className="currency-icon"
           addBackground
         />
       )}
-      {!tokenInfo.logo && (
+      {color !== undefined && !tokenInfo.logo && (
         <div
           className="currency-icon add-background"
           style={{
             backgroundColor: `${color}2b`,
             color: `${color}`,
           }}>
-          {tokenInfo.symbol.slice(0, 2)}
+          {tokenInfo.symbol
+            ? tokenInfo.symbol.slice(0, 2)
+            : tokenInfo.name.slice(0, 2)}
         </div>
       )}
     </>

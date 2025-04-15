@@ -138,6 +138,18 @@
             flex-direction: column;
             row-gap: 4px;
           }
+
+          &.image {
+            .value {
+              width: 100%;
+              max-width: unset;
+              display: flex;
+              justify-content: center;
+              img {
+                width: 300px;
+              }
+            }
+          }
         }
       }
 

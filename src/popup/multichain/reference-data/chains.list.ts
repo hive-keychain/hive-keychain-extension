@@ -22,7 +22,7 @@ export const defaultChainList = [
   {
     name: 'Ethereum',
     type: ChainType.EVM,
-    logo: SVGIcons.BLOCKCHAIN_ETHEREUM,
+    logo: 'https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628',
     chainId: '0x1',
     mainToken: 'ETH',
     defaultTransactionType: EvmTransactionType.EIP_1559,

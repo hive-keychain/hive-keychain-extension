@@ -125,6 +125,8 @@ export const SendTransaction = (props: Props) => {
           proxy ?? params.to,
         );
 
+        console.log({ abi });
+
         tData.abi = abi;
 
         tokenAddress = params.to;
@@ -144,6 +146,8 @@ export const SendTransaction = (props: Props) => {
               lastChain as EvmChain,
             );
           }
+
+          console.log({ abi });
 
           if (abi) {
             const contractType = EvmTokensUtils.getTokenType(abi);
@@ -223,6 +227,7 @@ export const SendTransaction = (props: Props) => {
                 index++
               ) {
                 const input = decodedTransactionData?.fragment.inputs[index];
+
                 if (
                   EvmTransactionParserUtils.recipientInputNameList.includes(
                     input.name,
@@ -242,7 +247,7 @@ export const SendTransaction = (props: Props) => {
                       .toNumber(),
                   );
                 }
-                if (input.name === 'tokenId') {
+                if (input.name === 'tokenId' || input.name === 'id') {
                   tokenId = decodedTransactionData.args[index];
                 }
 
@@ -254,7 +259,10 @@ export const SendTransaction = (props: Props) => {
                     input.type,
                     input.name,
                   );
-
+                console.log(
+                  { input, inputDisplayType },
+                  decodedTransactionData.args[index],
+                );
                 switch (inputDisplayType) {
                   case EvmInputDisplayType.WALLET_ADDRESS: {
                     const inputDisplay =
@@ -316,11 +324,15 @@ export const SendTransaction = (props: Props) => {
                   ),
                 });
               }
-              if (contractType === EVMSmartContractType.ERC721 && tokenId) {
-                const uri: string = await contract.tokenURI(tokenId);
-                const metadata = await EvmNFTUtils.getMetadataFromURI(
-                  uri,
+              if (
+                (contractType === EVMSmartContractType.ERC721 ||
+                  contractType === EVMSmartContractType.ERC1155) &&
+                tokenId
+              ) {
+                const metadata = await EvmNFTUtils.getMetadata(
+                  contractType,
                   tokenId,
+                  contract,
                 );
                 const src = metadata.image;
                 transactionConfirmationFields.otherFields.push({
