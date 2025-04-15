@@ -318,7 +318,10 @@ export const SendTransaction = (props: Props) => {
               }
               if (contractType === EVMSmartContractType.ERC721 && tokenId) {
                 const uri: string = await contract.tokenURI(tokenId);
-                const metadata = await EvmNFTUtils.getMetadataFromURI(uri);
+                const metadata = await EvmNFTUtils.getMetadataFromURI(
+                  uri,
+                  tokenId,
+                );
                 const src = metadata.image;
                 transactionConfirmationFields.otherFields.push({
                   name: '',

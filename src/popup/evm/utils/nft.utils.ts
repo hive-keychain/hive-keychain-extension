@@ -12,7 +12,14 @@ const getImgFromURI = async (metadata: EvmNFTMetadata): Promise<string> => {
   return metadata.image;
 };
 
-const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
+const getMetadataFromURI = async (
+  uri: string,
+  tokenId: string,
+): Promise<EvmNFTMetadata> => {
+  if (uri && uri.includes('{id}')) {
+    uri = uri.replace('{id}', tokenId);
+  }
+
   let metadata;
   try {
     if (uri.startsWith('ipfs://')) {
@@ -28,7 +35,7 @@ const getMetadataFromURI = async (uri: string): Promise<EvmNFTMetadata> => {
       const json = atob(uri.substring(29));
       metadata = JSON.parse(json);
     }
-    console.log({ metadata });
+
     return metadata;
   } catch (err) {
     console.log('error', { err });
@@ -63,7 +70,7 @@ const getMetadataFromTokenId = async (
   console.log(uri);
   const collectionItem = {
     id: tokenId,
-    metadata: await getMetadataFromURI(uri),
+    metadata: await getMetadataFromURI(uri, tokenId),
   };
   if (balance) {
     (collectionItem as EvmErc1155TokenCollectionItem).balance = balance;
