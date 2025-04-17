@@ -1,1 +1,29 @@
-{ "name": "Hive Keychain Beta", "description": "Hive Keychain Beta (don't forget to switch back to production version)", "default_locale": "en", "version": "3.9.1", "permissions": [ "storage", "idle", "alarms" ], "host_permissions": [ "https://*/*" ], "action": { "default_popup": "popup.html", "default_icon": "/assets/images/iconhive.png" }, "icons": { "128": "/assets/images/iconhive.png" }, "background": { "service_worker": "backgroundBundle.js", "type": "module" }, "web_accessible_resources": [ { "resources": [ "/images/logo.png", "hive_keychain.js", "_locales/*" ], "matches": [ "https://*/*", "http://0.0.0.0:1337/*", "http://*/*" ], "extension_ids": [] } ], "content_scripts": [ { "matches": [ "https://*/*", "http://0.0.0.0:1337/*", "http://*/*" ], "js": [ "web_interfaceBundle.js", "keychainifyBundle.js" ], "all_frames": true } ], "manifest_version": 3 }
+{
+  "name": "Hive Keychain Beta",
+  "description": "Hive Keychain Beta (don't forget to switch back to production version)",
+  "default_locale": "en",
+  "version": "3.9.1",
+  "permissions": ["storage", "idle", "alarms"],
+  "host_permissions": ["https://*/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "/assets/images/iconhive.png"
+  },
+  "icons": { "128": "/assets/images/iconhive.png" },
+  "background": { "service_worker": "backgroundBundle.js", "type": "module" },
+  "web_accessible_resources": [
+    {
+      "resources": ["/images/logo.png", "hive_keychain.js", "_locales/*"],
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "extension_ids": []
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": ["web_interfaceBundle.js", "keychainifyBundle.js"],
+      "all_frames": true
+    }
+  ],
+  "manifest_version": 3
+}

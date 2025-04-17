@@ -1,1 +1,23 @@
-{ "name": "__MSG_keychain__", "description": "__MSG_description__", "default_locale": "en", "version": "3.9.1", "permissions": [ "storage", "idle", "alarms" ], "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';", "browser_action": { "default_popup": "popup.html", "default_icon": "/assets/images/iconhive.png" }, "icons": { "128": "/assets/images/iconhive.png" }, "background": { "scripts": [ "backgroundBundle.js" ], "persistent": true }, "web_accessible_resources": [ "/images/logo.png", "hive_keychain.js" ], "content_scripts": [ { "matches": [ "https://*/*", "http://0.0.0.0:1337/*", "http://*/*" ], "js": [ "web_interfaceBundle.js", "keychainifyBundle.js" ], "all_frames": true } ], "manifest_version": 2 }
+{
+  "name": "__MSG_keychain__",
+  "description": "__MSG_description__",
+  "default_locale": "en",
+  "version": "3.9.1",
+  "permissions": ["storage", "idle", "alarms"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "/assets/images/iconhive.png"
+  },
+  "icons": { "128": "/assets/images/iconhive.png" },
+  "background": { "scripts": ["backgroundBundle.js"], "persistent": true },
+  "web_accessible_resources": ["/images/logo.png", "hive_keychain.js"],
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": ["web_interfaceBundle.js", "keychainifyBundle.js"],
+      "all_frames": true
+    }
+  ],
+  "manifest_version": 2
+}
