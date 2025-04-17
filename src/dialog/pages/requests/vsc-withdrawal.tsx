@@ -1,23 +1,25 @@
-import { RequestId, RequestVscDeposit } from '@interfaces/keychain.interface';
+import {
+  RequestId,
+  RequestVscWithdrawal,
+} from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
-import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
-  data: RequestVscDeposit & RequestId;
+  data: RequestVscWithdrawal & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
   accounts?: string[];
 };
 
-const VscDeposit = (props: Props) => {
+const VscWithdrawal = (props: Props) => {
   const { data, accounts, rpc } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
 
@@ -34,20 +36,14 @@ const VscDeposit = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_vsc_deposit')}
-      header={chrome.i18n.getMessage(
-        data.to?.startsWith('0x')
-          ? 'dialog_title_vsc_deposit'
-          : 'dialog_title_vsc_hive_deposit_header',
-        [data.currency],
-      )}
+      title={chrome.i18n.getMessage('dialog_title_vsc_withdrawal')}
+      header={chrome.i18n.getMessage('dialog_title_vsc_withdrawal_header', [
+        data.currency,
+      ])}
       {...anonymousProps}
       {...props}>
       {renderUsername()}
-      <RequestItem
-        title="dialog_to"
-        content={data.to || `hive:${anonymousProps.username}`}
-      />
+      <RequestItem title="dialog_to" content={data.to} />
       <Separator type={'horizontal'} fullSize />
 
       <RequestItem
@@ -56,15 +52,20 @@ const VscDeposit = (props: Props) => {
           data.amount,
         )} ${CurrencyUtils.getCurrencyLabel(data.currency, rpc.testnet)}`}
       />
-      <Separator type={'horizontal'} fullSize />
-      <RequestBalance
-        username={anonymousProps.username}
-        rpc={props.rpc}
-        amount={parseFloat(data.amount)}
-        currency={data.currency}
-      />
+      {data.memo.length ? (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestItem title="dialog_memo" content={data.memo} />
+        </>
+      ) : undefined}
+      {data.netId ? (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestItem title="dialog_netid" content={data.netId} />
+        </>
+      ) : undefined}
     </Operation>
   );
 };
 
-export default VscDeposit;
+export default VscWithdrawal;

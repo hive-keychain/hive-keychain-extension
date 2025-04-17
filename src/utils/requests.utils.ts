@@ -13,6 +13,11 @@ export const anonymous_requests = [
   KeychainRequestTypes.recurrentTransfer,
   KeychainRequestTypes.updateProposalVote,
   KeychainRequestTypes.swap,
+  KeychainRequestTypes.vscCallContract,
+  KeychainRequestTypes.vscDeposit,
+  KeychainRequestTypes.vscWithdrawal,
+  KeychainRequestTypes.vscTransfer,
+  KeychainRequestTypes.vscStaking,
 ];
 
 // Get the key needed for each type of transaction

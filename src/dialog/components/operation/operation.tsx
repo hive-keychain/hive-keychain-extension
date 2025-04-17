@@ -26,7 +26,7 @@ import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
   title: string;
-  children: JSX.Element[];
+  children: (JSX.Element | undefined)[];
   onConfirm?: () => void;
   data: KeychainRequest;
   domain: string;

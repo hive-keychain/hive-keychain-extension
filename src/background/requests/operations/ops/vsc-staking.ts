@@ -5,7 +5,7 @@ import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import {
-  RequestVscDeposit,
+  RequestVscStaking,
   VscHistoryType,
   VscStatus,
   VscUtils,
@@ -16,9 +16,9 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
-export const vscDeposit = async (
+export const vscStaking = async (
   requestHandler: RequestsHandler,
-  data: RequestVscDeposit & RequestId,
+  data: RequestVscStaking & RequestId,
 ) => {
   let key = requestHandler.data.key;
   if (!key) {
@@ -71,7 +71,7 @@ export const vscDeposit = async (
     vscResult = {
       ...result,
       vscConfirmed: result
-        ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.DEPOSIT)
+        ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.TRANSFER)
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {

@@ -35,6 +35,9 @@ import Transfer from 'src/dialog/pages/requests/transfer';
 import Vote from 'src/dialog/pages/requests/vote';
 import VscCallContract from 'src/dialog/pages/requests/vsc-call-contract';
 import VscDeposit from 'src/dialog/pages/requests/vsc-deposit';
+import VscStaking from 'src/dialog/pages/requests/vsc-staking';
+import VscTransfer from 'src/dialog/pages/requests/vsc-transfer';
+import VscWithdrawal from 'src/dialog/pages/requests/vsc-withdrawal';
 import WitnessVote from 'src/dialog/pages/requests/witness-vote';
 
 type Props = {
@@ -113,6 +116,12 @@ const RequestConfirmation = ({ data }: Props) => {
       return <VscCallContract {...data} data={data.data} />;
     case KeychainRequestTypes.vscDeposit:
       return <VscDeposit {...data} data={data.data} />;
+    case KeychainRequestTypes.vscWithdrawal:
+      return <VscWithdrawal {...data} data={data.data} />;
+    case KeychainRequestTypes.vscTransfer:
+      return <VscTransfer {...data} data={data.data} />;
+    case KeychainRequestTypes.vscStaking:
+      return <VscStaking {...data} data={data.data} />;
     default:
       return null;
   }

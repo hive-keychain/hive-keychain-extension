@@ -2,10 +2,10 @@ import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
-import TransferUtils from '@popup/hive/utils/transfer.utils';
+import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import {
-  RequestVscDeposit,
+  RequestVscWithdrawal,
   VscHistoryType,
   VscStatus,
   VscUtils,
@@ -16,10 +16,20 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
-export const vscDeposit = async (
+export const vscWithdrawal = async (
   requestHandler: RequestsHandler,
-  data: RequestVscDeposit & RequestId,
+  data: RequestVscWithdrawal & RequestId,
 ) => {
+  const json = {
+    net_id: data.netId || Config.vsc.BASE_JSON.net_id,
+    from: data.username.startsWith('hive:')
+      ? data.username
+      : `hive:${data.username}`,
+    to: data.to,
+    amount: data.amount,
+    asset: data.currency.toLowerCase(),
+    memo: data.memo,
+  };
   let key = requestHandler.data.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -30,19 +40,14 @@ export const vscDeposit = async (
   let result, vscResult, err, err_message;
 
   try {
-    const keyType = KeysUtils.getKeyType(key!);
-    switch (keyType) {
+    switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
-        const tx = await TransferUtils.getTransferTransaction(
+        const tx = await CustomJsonUtils.getCustomJsonTransaction(
+          json,
           data.username!,
-          Config.vsc.ACCOUNT,
-          data.amount + ' ' + data.currency,
-          data.to ? `to=${data.to}` : '',
-          false,
-          0,
-          0,
+          KeyType.ACTIVE,
+          'vsc.withdraw',
         );
-
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
           key: key!,
@@ -55,15 +60,12 @@ export const vscDeposit = async (
         break;
       }
       default: {
-        result = await TransferUtils.sendTransfer(
+        result = await CustomJsonUtils.send(
+          json,
           data.username!,
-          Config.vsc.ACCOUNT,
-          data.amount + ' ' + data.currency,
-          data.to ? `to=${data.to}` : '',
-          false,
-          0,
-          0,
           key!,
+          KeyType.ACTIVE,
+          'vsc.withdraw',
         );
         break;
       }
@@ -71,7 +73,10 @@ export const vscDeposit = async (
     vscResult = {
       ...result,
       vscConfirmed: result
-        ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.DEPOSIT)
+        ? await VscUtils.waitForStatus(
+            result?.tx_id,
+            VscHistoryType.CONTRACT_CALL,
+          )
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {
@@ -88,8 +93,6 @@ export const vscDeposit = async (
       data,
       vscResult?.vscConfirmed === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
-        : vscResult?.vscConfirmed === VscStatus.CONFIRMED
-        ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,
     );

@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { VscStakingOperation } from 'hive-keychain-commons';
 import Joi from 'joi';
 
 const arrayPublicKeys = Joi.array().items(Joi.string());
@@ -16,7 +17,9 @@ const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
   .required()
   .error(new Error('Amount requires a string with 3 decimals'));
-
+const vscOperation = Joi.string()
+  .valid(VscStakingOperation.STAKING, VscStakingOperation.UNSTAKING)
+  .required();
 const amountToken = Joi.string()
   .regex(/^\d+(\.\d{1,8})?$/)
   .required();
@@ -33,7 +36,11 @@ const rpc = Joi.string().allow(null);
 const date = Joi.string()
   .regex(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)
   .required()
-  .error(new Error('Wrong date format. Ex : "2021-07-25T00:00:00"'));
+  .error(new Error('Wrong date format. Ex : "2024-07-25T00:00:00"'));
+const vscHiveAddress = Joi.string()
+  .regex(/^hive:[a-zA-Z0-9\.\-]+$/)
+  .error(new Error('The address needs to start by "hive:"'))
+  .required();
 
 const proposal_ids = Joi.alternatives(
   Joi.string()
@@ -343,11 +350,41 @@ const vscCallContract = Joi.object({
 });
 
 const vscDeposit = Joi.object({
-  username,
-  address: Joi.string().required(),
+  username: Joi.string().allow(null),
+  to: Joi.string().allow(null),
   amount: Joi.string().required(),
   currency: Joi.string().required(),
   rpc,
+});
+
+const vscWithdrawal = Joi.object({
+  username: Joi.string().allow(null),
+  to: vscHiveAddress,
+  amount: Joi.string().required(),
+  currency: Joi.string().required(),
+  memo: Joi.string().required().allow(''),
+  rpc,
+  netId: Joi.string(),
+});
+
+const vscTransfer = Joi.object({
+  username: Joi.string().allow(null),
+  to: Joi.string().required(),
+  amount: Joi.string().required(),
+  memo: Joi.string().required().allow(''),
+  currency: Joi.string().required(),
+  rpc,
+  netId: Joi.string(),
+});
+
+const vscStaking = Joi.object({
+  username: Joi.string().allow(null),
+  to: Joi.string().required(),
+  amount: Joi.string().required(),
+  currency: Joi.string().required(),
+  operation: vscOperation,
+  rpc,
+  netId: Joi.string(),
 });
 
 const schemas = {
@@ -383,11 +420,16 @@ const schemas = {
   swap,
   vscCallContract,
   vscDeposit,
+  vscWithdrawal,
+  vscTransfer,
+  vscStaking,
 };
 
 export const commonRequestParams = {
   request_id: Joi.number().required(),
   type: Joi.string().required(),
 };
+
+// write a Joi validation that allows only null or string starting by either '0x' or 'hive:'
 
 export default schemas;
