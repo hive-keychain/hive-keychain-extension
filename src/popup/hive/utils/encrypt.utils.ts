@@ -32,6 +32,16 @@ const encrypt = (content: string, encryptPassword: string) => {
   return transitmessage;
 };
 
+function encryptNoIV(content: string, encryptPassword: string) {
+  const encrypted = CryptoJS.AES.encrypt(content, encryptPassword);
+  return encrypted.toString();
+}
+
+function decryptNoIV(content: string, encryptPassword: string) {
+  const decrypted = CryptoJS.AES.decrypt(content, encryptPassword);
+  return decrypted.toString(CryptoJS.enc.Utf8);
+}
+
 function decrypt(transitmessage: string, pass: string) {
   var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
   var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32));
@@ -84,9 +94,11 @@ const decryptToJson = (msg: string, pwd: string) => {
 const EncryptUtils = {
   encryptJson,
   encrypt,
+  encryptNoIV,
   decryptToJson,
   decryptToJsonWithoutMD5Check,
   decrypt,
+  decryptNoIV
 };
 
 export default EncryptUtils;

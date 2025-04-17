@@ -42,8 +42,6 @@ const RegisterKeyless = (props: Props) => {
     registerKeyless();
   }, []);
 
-  useEffect(() => {}, [authPayloadUri]);
-
   return (
     <div
       data-testid={`${DialogCommand.REGISTER_KEYLESS_KEYCHAIN}-dialog`}

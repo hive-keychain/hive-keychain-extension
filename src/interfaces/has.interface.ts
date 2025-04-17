@@ -20,6 +20,23 @@ export interface AUTH_WAIT {
   expire: number;
   account: string;
 }
+export interface AUTH_ACK {
+  cmd: 'auth_ack';
+  uuid: string;
+  data: string | AUTH_ACK_DATA;
+}
+
+export interface AUTH_NACK {
+  cmd: 'auth_nack';
+  uuid: string;
+  data: string;
+}
+
+export interface AUTH_ACK_DATA {
+  expire: number;
+  challenge_data?: object;
+  token?: string; // DEPRECATED - protocol < 1.0 only
+}
 
 export interface AUTH_PAYLOAD {
   account: string;

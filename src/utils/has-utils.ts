@@ -1,16 +1,20 @@
+import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
 import {
+  AUTH_ACK,
+  AUTH_ACK_DATA,
+  AUTH_NACK,
+  AUTH_PAYLOAD,
   AUTH_PAYLOAD_URI,
-  AUTH_REQ,AUTH_PAYLOAD,
+  AUTH_REQ,
   AUTH_REQ_DATA,
   AUTH_WAIT,
 } from '@interfaces/has.interface';
-import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import {
+  KeylessAuthData,
+  KeylessRequest,
+} from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
-const APP_META = {
-  name: 'myapp',
-  description: 'My HAS compatible application',
-  icon: undefined,
-};
+import Logger from 'src/utils/logger.utils';
 
 let ws: WebSocket;
 let reconnectInterval = 1000; // Initial reconnection delay
@@ -75,20 +79,25 @@ const authenticate = async (
   const auth_req_data: AUTH_REQ_DATA = {
     app: { name: keylessRequest.appName },
   };
-  const auth_req_data_base64 = Buffer.from(
-    JSON.stringify(auth_req_data),
-  ).toString('base64');
-  const auth_req_data_encrypted = await EncryptUtils.encrypt(
-    auth_req_data_base64,
+  // Note: the auth_req_data does not need to be converted to base64 before encryption as
+  // it will be converted to base64 by the encryption.
+  const auth_req_data_string = JSON.stringify(auth_req_data);
+  console.log('auth_req_data_string:', { auth_req_data_string });
+  const auth_req_data_encrypted = await EncryptUtils.encryptNoIV(
+    auth_req_data_string,
     keylessRequest.authKey,
   );
+  console.log('auth_req_data_encrypted:', { auth_req_data_encrypted });
   const auth_req: AUTH_REQ = {
     cmd: 'auth_req',
     account: keylessRequest.request.username,
     data: auth_req_data_encrypted,
   };
+  console.log('auth_req:', { auth_req });
 
   // Send the authentication request
+
+  console.log('Sending authentication request:', { auth_req });
   ws.send(JSON.stringify(auth_req));
 
   // Return a promise that resolves with the AUTH_WAIT message
@@ -98,6 +107,7 @@ const authenticate = async (
 
       if (message.cmd === 'auth_wait') {
         // AUTH_WAIT received
+        console.log('AUTH_WAIT received:', { message });
         ws.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
       } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
@@ -123,10 +133,88 @@ const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOAD) => {
   return auth_payload_uri as AUTH_PAYLOAD_URI;
 };
 
+const listenToAuthAck = (
+  username: string,
+  keylessAuthData: KeylessAuthData,
+): Promise<void> => {
+  Logger.log('listenToAuthAck');
+  if (!username || !keylessAuthData) {
+    Logger.log(
+      'listenToAuthAck error: Username and keyless auth data are required',
+    );
+    throw new Error('Username and keyless auth data are required');
+  }
+
+  // Start listening for messages immediately
+  const handleMessage = (event: MessageEvent) => {
+    try {
+      const message = JSON.parse(event.data);
+      Logger.log('listenToAuthAck message:', { message });
+      if (message.cmd === 'auth_ack') {
+        ws.removeEventListener('message', handleMessage);
+        handleAuthAck(username, keylessAuthData, message as AUTH_ACK)
+          .then(() => {})
+          .catch((error) => {
+            console.error('Failed to handle auth ack:', error);
+          });
+      } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
+        ws.removeEventListener('message', handleMessage);
+        handleAuthNack(username, message as AUTH_NACK)
+          .then(() => {})
+          .catch((error) => {
+            console.error('Failed to handle auth nack:', error);
+          });
+      }
+    } catch (error: any) {
+      console.error('Failed to process message:', error);
+    }
+  };
+
+  ws.addEventListener('message', handleMessage);
+
+  // Return immediately without waiting
+  return Promise.resolve();
+};
+
+const handleAuthAck = async (
+  username: string,
+  keylessAuthData: KeylessAuthData,
+  auth_ack: AUTH_ACK,
+): Promise<void> => {
+  try {
+    if (!auth_ack?.data) {
+      throw new Error('Invalid auth acknowledgement data');
+    }
+
+    console.log({ auth_ack });
+    const auth_ack_data: AUTH_ACK_DATA =
+      typeof auth_ack.data === 'string'
+        ? JSON.parse(
+            EncryptUtils.decryptNoIV(auth_ack.data, keylessAuthData.authKey),
+          )
+        : auth_ack.data;
+
+    console.log({ auth_ack_data });
+    if (!auth_ack_data?.expire) {
+      throw new Error('Missing expiration in auth acknowledgement data');
+    }
+
+    keylessAuthData.expire = auth_ack_data.expire;
+    await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
+  } catch (error) {
+    throw new Error(`Failed to update keyless auth data: ${error}`);
+  }
+};
+
+const handleAuthNack = async (username: string, auth_nack: AUTH_NACK) => {
+  await KeylessKeychainUtils.removeKeylessAuthData(username, auth_nack.uuid);
+};
+
 const HASUtils = {
   authenticate,
   connect,
   generateAuthPayloadURI,
+  listenToAuthAck,
 };
 
 export default HASUtils;

@@ -37,7 +37,6 @@ const register = async (request: KeychainRequest, domain: string) => {
         request: request,
       };
 
-      console.log({ keylessRequest });
       //
       const auth_wait = await HASUtils.authenticate(keylessRequest);
       await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
@@ -53,6 +52,7 @@ const register = async (request: KeychainRequest, domain: string) => {
       const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
         auth_payload,
       );
+      await HASUtils.listenToAuthAck(username, keylessAuthData);
       return auth_payload_uri;
     }
   }
