@@ -40,6 +40,7 @@ const VscWithdrawal = (props: Props) => {
       header={chrome.i18n.getMessage('dialog_title_vsc_withdrawal_header', [
         data.currency,
       ])}
+      loadingCaption="dialog_vsc_loading"
       {...anonymousProps}
       {...props}>
       {renderUsername()}

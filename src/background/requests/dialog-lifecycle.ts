@@ -54,6 +54,9 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
   const { windowId, request, request_id, tab, confirmed, isMultisig } =
     requestHandler.data;
   if (id == windowId && !confirmed && tab) {
+    if (request?.type?.includes('vsc')) {
+      return;
+    }
     chrome.tabs.sendMessage(tab!, {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {

@@ -20,9 +20,10 @@ export const vscWithdrawal = async (
   requestHandler: RequestsHandler,
   data: RequestVscWithdrawal & RequestId,
 ) => {
+  const JSON_ID = 'vsc.withdraw';
   const json = {
     net_id: data.netId || Config.vsc.BASE_JSON.net_id,
-    from: data.username.startsWith('hive:')
+    from: data.username!.startsWith('hive:')
       ? data.username
       : `hive:${data.username}`,
     to: data.to,
@@ -46,7 +47,7 @@ export const vscWithdrawal = async (
           json,
           data.username!,
           KeyType.ACTIVE,
-          'vsc.withdraw',
+          JSON_ID,
         );
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
@@ -65,17 +66,18 @@ export const vscWithdrawal = async (
           data.username!,
           key!,
           KeyType.ACTIVE,
-          'vsc.withdraw',
+          JSON_ID,
         );
         break;
       }
     }
     vscResult = {
       ...result,
-      vscConfirmed: result
+      vscStatus: result
         ? await VscUtils.waitForStatus(
             result?.tx_id,
-            VscHistoryType.CONTRACT_CALL,
+            VscHistoryType.WITHDRAW,
+            200,
           )
         : VscStatus.UNCONFIRMED,
     };
@@ -91,8 +93,10 @@ export const vscWithdrawal = async (
       err,
       vscResult,
       data,
-      vscResult?.vscConfirmed === VscStatus.INCLUDED
+      vscResult?.vscStatus === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
+        : vscResult?.vscStatus === VscStatus.CONFIRMED
+        ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,
     );

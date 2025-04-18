@@ -70,7 +70,7 @@ export const vscDeposit = async (
     }
     vscResult = {
       ...result,
-      vscConfirmed: result
+      vscStatus: result
         ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.DEPOSIT)
         : VscStatus.UNCONFIRMED,
     };
@@ -86,9 +86,9 @@ export const vscDeposit = async (
       err,
       vscResult,
       data,
-      vscResult?.vscConfirmed === VscStatus.INCLUDED
+      vscResult?.vscStatus === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
-        : vscResult?.vscConfirmed === VscStatus.CONFIRMED
+        : vscResult?.vscStatus === VscStatus.CONFIRMED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,

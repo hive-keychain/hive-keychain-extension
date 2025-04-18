@@ -34,6 +34,7 @@ const VscCallContract = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_title_vsc_call_contract')}
       {...anonymousProps}
       {...props}
+      loadingCaption="dialog_vsc_loading"
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       {renderUsername()}
       <Separator type={'horizontal'} fullSize />

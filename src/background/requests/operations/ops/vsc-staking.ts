@@ -2,8 +2,8 @@ import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
-import TransferUtils from '@popup/hive/utils/transfer.utils';
+import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import {
   RequestVscStaking,
   VscHistoryType,
@@ -20,6 +20,17 @@ export const vscStaking = async (
   requestHandler: RequestsHandler,
   data: RequestVscStaking & RequestId,
 ) => {
+  const JSON_ID =
+    data.operation === 'STAKING' ? 'vsc.stake_hbd' : 'vsc.unstake_hbd';
+  const json = {
+    net_id: data.netId || Config.vsc.BASE_JSON.net_id,
+    from: data.username!.startsWith('hive:')
+      ? data.username
+      : `hive:${data.username}`,
+    to: data.to,
+    amount: data.amount,
+    asset: data.currency.toLowerCase(),
+  };
   let key = requestHandler.data.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -30,19 +41,14 @@ export const vscStaking = async (
   let result, vscResult, err, err_message;
 
   try {
-    const keyType = KeysUtils.getKeyType(key!);
-    switch (keyType) {
+    switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
-        const tx = await TransferUtils.getTransferTransaction(
+        const tx = await CustomJsonUtils.getCustomJsonTransaction(
+          json,
           data.username!,
-          Config.vsc.ACCOUNT,
-          data.amount + ' ' + data.currency,
-          data.to ? `to=${data.to}` : '',
-          false,
-          0,
-          0,
+          KeyType.ACTIVE,
+          JSON_ID,
         );
-
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
           key: key!,
@@ -55,23 +61,24 @@ export const vscStaking = async (
         break;
       }
       default: {
-        result = await TransferUtils.sendTransfer(
+        result = await CustomJsonUtils.send(
+          json,
           data.username!,
-          Config.vsc.ACCOUNT,
-          data.amount + ' ' + data.currency,
-          data.to ? `to=${data.to}` : '',
-          false,
-          0,
-          0,
           key!,
+          KeyType.ACTIVE,
+          JSON_ID,
         );
         break;
       }
     }
     vscResult = {
       ...result,
-      vscConfirmed: result
-        ? await VscUtils.waitForStatus(result?.tx_id, VscHistoryType.TRANSFER)
+      vscStatus: result
+        ? await VscUtils.waitForStatus(
+            result?.tx_id,
+            VscHistoryType.STAKING,
+            200,
+          )
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {
@@ -86,9 +93,9 @@ export const vscStaking = async (
       err,
       vscResult,
       data,
-      vscResult?.vscConfirmed === VscStatus.INCLUDED
+      vscResult?.vscStatus === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
-        : vscResult?.vscConfirmed === VscStatus.CONFIRMED
+        : vscResult?.vscStatus === VscStatus.CONFIRMED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,

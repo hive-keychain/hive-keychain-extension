@@ -1121,6 +1121,10 @@
     "message": "Net ID",
     "description": "When website request a transfer"
   },
+  "dialog_vsc_loading": {
+    "message": "Waiting for VSC confirmation. You can close this window if you want.",
+    "description": "When website request a vsc tx and it is waiting for confirmation"
+  },
   "dialog_evm_address": {
     "message": "EVM Address",
     "description": "When website request a vsc deposit"

@@ -70,7 +70,7 @@ export const vscCallContract = async (
     }
     vscResult = {
       ...result,
-      vscConfirmed: result
+      vscStatus: result
         ? await VscUtils.waitForStatus(
             result?.tx_id,
             VscHistoryType.CONTRACT_CALL,
@@ -89,7 +89,7 @@ export const vscCallContract = async (
       err,
       vscResult,
       data,
-      vscResult?.vscConfirmed === VscStatus.INCLUDED
+      vscResult?.vscStatus === VscStatus.INCLUDED
         ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
         : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,

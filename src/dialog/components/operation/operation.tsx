@@ -38,10 +38,12 @@ type Props = {
   username?: string;
   setUsername?: (username: string) => void;
   redHeader?: boolean;
+  loadingCaption?: string;
 };
 
 const Operation = ({
   title,
+  loadingCaption,
   children,
   onConfirm,
   domain,
@@ -79,6 +81,7 @@ const Operation = ({
       });
     }
   };
+  console.log('loadingCaption', loadingCaption);
   const checkForMultsig = async () => {
     let useMultisig = false;
     const name = (username || data.username)!;
@@ -295,7 +298,7 @@ const Operation = ({
             ? twoFABots && Object.keys(twoFABots).length > 0
               ? 'multisig_transmitting_to_2fa'
               : 'multisig_transmitting_to_multisig'
-            : undefined
+            : loadingCaption
         }
       />
     </div>

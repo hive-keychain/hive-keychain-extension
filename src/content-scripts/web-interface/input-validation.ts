@@ -369,7 +369,7 @@ const vscWithdrawal = Joi.object({
 
 const vscTransfer = Joi.object({
   username: Joi.string().allow(null),
-  to: Joi.string().required(),
+  to: vscHiveAddress,
   amount: Joi.string().required(),
   memo: Joi.string().required().allow(''),
   currency: Joi.string().required(),
@@ -379,7 +379,7 @@ const vscTransfer = Joi.object({
 
 const vscStaking = Joi.object({
   username: Joi.string().allow(null),
-  to: Joi.string().required(),
+  to: vscHiveAddress,
   amount: Joi.string().required(),
   currency: Joi.string().required(),
   operation: vscOperation,
