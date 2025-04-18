@@ -1,7 +1,7 @@
-import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LoadingOperation } from '@popup/multichain/reducers/loading.reducer';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
@@ -13,34 +13,33 @@ type RegisterKeylessProps = {
   data: KeychainRequest;
   tab: number;
   domain: string;
+  auth_payload_uri?: AUTH_PAYLOAD_URI;
 };
 
 type Props = {
   data: RegisterKeylessProps;
 };
 const RegisterKeyless = (props: Props) => {
+  const { data, domain, auth_payload_uri } = props.data;
   const [loadingOperations, setLoadingOperations] = useState<
     LoadingOperation[]
   >([{ name: '', done: false }]);
-  const [authPayloadUri, setAuthPayloadUri] =
-    useState<AUTH_PAYLOAD_URI>(undefined);
 
   useEffect(() => {
-    const registerKeyless = async () => {
-      setLoadingOperations([
-        { name: 'dialog_register_keyless_loading', done: false },
-      ]);
-      const auth_payload_uri = await KeylessKeychainModule.register(
-        props.data.data,
-        props.data.domain,
-      );
-      setAuthPayloadUri(auth_payload_uri);
-      setLoadingOperations([
-        { name: 'dialog_register_keyless_loading', done: true },
-      ]);
-    };
-    registerKeyless();
+    if (!auth_payload_uri) {
+      registerKeyless();
+    }
   }, []);
+
+  const registerKeyless = async () => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.KEYLESS_KEYCHAIN,
+      value: {
+        request: data,
+        domain,
+      },
+    });
+  };
 
   return (
     <div
@@ -61,14 +60,14 @@ const RegisterKeyless = (props: Props) => {
             __html: chrome.i18n.getMessage('popup_html_keyless_keychain_setup'),
           }}></div>
       </div>
-      {authPayloadUri && authPayloadUri !== '' ? (
+      {auth_payload_uri && auth_payload_uri !== '' ? (
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <QRCode value={authPayloadUri} />
+          <QRCode value={auth_payload_uri as string} />
         </div>
       ) : (
         <LoadingComponent operations={loadingOperations} hide={false} />

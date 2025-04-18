@@ -14,6 +14,7 @@ import {
   KeylessRequest,
 } from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
 let ws: WebSocket;
@@ -112,6 +113,7 @@ const authenticate = async (
         resolve(message as AUTH_WAIT);
       } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
         // Authentication failed or error
+        console.log('AUTH_NACK received:', { message });
         ws.removeEventListener('message', handleMessage);
         reject(
           new Error(
@@ -201,6 +203,13 @@ const handleAuthAck = async (
 
     keylessAuthData.expire = auth_ack_data.expire;
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: true,
+        message: 'Keyless authentication successful',
+      },
+    });
   } catch (error) {
     throw new Error(`Failed to update keyless auth data: ${error}`);
   }
@@ -208,6 +217,13 @@ const handleAuthAck = async (
 
 const handleAuthNack = async (username: string, auth_nack: AUTH_NACK) => {
   await KeylessKeychainUtils.removeKeylessAuthData(username, auth_nack.uuid);
+  chrome.runtime.sendMessage({
+    command: DialogCommand.ANSWER_REQUEST,
+    msg: {
+      success: false,
+      message: 'Keyless authentication failed',
+    },
+  });
 };
 
 const HASUtils = {
