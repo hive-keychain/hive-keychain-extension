@@ -71,7 +71,8 @@ const ProposalVotingSection = ({
           globalProperties.globals,
         ) < 100 ||
         localSkipped;
-      sethasVoted(hasVoted);
+      //TODO : Change to hasVoted or it will always hide
+      sethasVoted(true);
     }
   };
 
@@ -142,7 +143,6 @@ const ProposalVotingSection = ({
     if (!localSkipped[activeAccount.name!]) {
       localSkipped[activeAccount.name!] = [];
     }
-
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.PROPOSAL_SKIPPED,
       {
