@@ -81,7 +81,6 @@ const Operation = ({
       });
     }
   };
-  console.log('loadingCaption', loadingCaption);
   const checkForMultsig = async () => {
     let useMultisig = false;
     const name = (username || data.username)!;
