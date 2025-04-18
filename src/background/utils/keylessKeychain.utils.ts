@@ -27,26 +27,33 @@ const registerUserAndDapp = async (
     if (!request?.username) {
       throw new Error('Username is missing in the request.');
     }
+    //always generate new auth data
+    return await generateKeylessAuthData(request.username, domain);
 
-    const keylessAuthData = await getKeylessAuthDataByAppName(
-      request.username,
-      domain,
-    );
+    // NOTE:
+    // Basically, below code will always return the auth data when it exists and is not expired
+    // but if the user logged out, there is no way to know it because the auth data will not be removed from the local storage
+    // so we always generate new auth data
 
-    // generate new auth data when it does not exist or is expired
-    if (!keylessAuthData || isKeylessAuthDataExpired(keylessAuthData)) {
-      return await generateKeylessAuthData(request.username, domain);
-    }
+    // const keylessAuthData = await getKeylessAuthDataByAppName(
+    //   request.username,
+    //   domain,
+    // );
 
-    // return existing auth data when it exists and is not expired
-    if (keylessAuthData && !isKeylessAuthDataExpired(keylessAuthData)) {
-      return keylessAuthData;
-    }
-    //store the keylessAuthData in the local storage
-    await storeKeylessAuthData(request.username, keylessAuthData);
+    // // generate new auth data when it does not exist or is expired
+    // if (!keylessAuthData || isKeylessAuthDataExpired(keylessAuthData)) {
+    //   return await generateKeylessAuthData(request.username, domain);
+    // }
 
-    // return existing auth data when it exists and is not expired
-    return keylessAuthData;
+    // // return existing auth data when it exists and is not expired
+    // if (keylessAuthData && !isKeylessAuthDataExpired(keylessAuthData)) {
+    //   return keylessAuthData;
+    // }
+    // //store the keylessAuthData in the local storage
+    // await storeKeylessAuthData(request.username, keylessAuthData);
+
+    // // return existing auth data when it exists and is not expired
+    // return keylessAuthData;
   } catch (error: any) {
     throw new Error(`Error in registerUserAnd Dapp: ${error.message}`);
   }
