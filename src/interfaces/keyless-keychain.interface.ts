@@ -6,7 +6,14 @@ export interface KeylessAuthData {
   authKey: string;
   uuid?: string;
   expire?: number;
-  challenge?: string;
+  challenge?: KeylessChallenge;
+}
+
+export interface KeylessChallenge {
+  key_type: string;
+  challenge: string;
+  decrypt: boolean; // protocol >= 1
+  nonce: number;
 }
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];

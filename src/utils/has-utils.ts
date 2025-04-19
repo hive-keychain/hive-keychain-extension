@@ -15,6 +15,7 @@ import {
 } from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { RequestSignBuffer } from 'hive-keychain-commons';
 import Logger from 'src/utils/logger.utils';
 
 let ws: WebSocket;
@@ -79,6 +80,12 @@ const authenticate = async (
   // Prepare authentication request data
   const auth_req_data: AUTH_REQ_DATA = {
     app: { name: keylessRequest.appName },
+    challenge: {
+      key_type: (keylessRequest.request as RequestSignBuffer).method,
+      challenge: 'login to peakd',
+      decrypt: false,
+      nonce: Date.now(),
+    },
   };
   // Note: the auth_req_data does not need to be converted to base64 before encryption as
   // it will be converted to base64 by the encryption.

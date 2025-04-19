@@ -1,10 +1,12 @@
+import { KeylessChallenge } from '@interfaces/keyless-keychain.interface';
+
 export interface AUTH_REQ_DATA {
   app: {
     name: string;
     description?: string;
     icon?: string;
   };
-  challenge?: string;
+  challenge: KeylessChallenge;
   toketn?: string;
 }
 
