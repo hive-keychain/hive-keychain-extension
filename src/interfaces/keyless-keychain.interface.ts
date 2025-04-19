@@ -12,8 +12,6 @@ export interface KeylessAuthData {
 export interface KeylessChallenge {
   key_type: string;
   challenge: string;
-  decrypt: boolean; // protocol >= 1
-  nonce: number;
 }
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];

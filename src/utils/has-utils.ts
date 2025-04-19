@@ -81,10 +81,10 @@ const authenticate = async (
   const auth_req_data: AUTH_REQ_DATA = {
     app: { name: keylessRequest.appName },
     challenge: {
-      key_type: (keylessRequest.request as RequestSignBuffer).method,
-      challenge: 'login to peakd',
-      decrypt: false,
-      nonce: Date.now(),
+      challenge: (keylessRequest.request as RequestSignBuffer).message,
+      key_type: (
+        (keylessRequest.request as RequestSignBuffer).method as string
+      ).toLowerCase(),
     },
   };
   // Note: the auth_req_data does not need to be converted to base64 before encryption as
