@@ -20,7 +20,7 @@ type Props = {
   data: RegisterKeylessProps;
 };
 const RegisterKeyless = (props: Props) => {
-  const { data, domain, auth_payload_uri } = props.data;
+  const { data, domain, auth_payload_uri, tab } = props.data;
   const [loadingOperations, setLoadingOperations] = useState<
     LoadingOperation[]
   >([{ name: '', done: false }]);
@@ -35,8 +35,9 @@ const RegisterKeyless = (props: Props) => {
     chrome.runtime.sendMessage({
       command: BackgroundCommand.KEYLESS_KEYCHAIN,
       value: {
-        request: data,
+        data,
         domain,
+        tab,
       },
     });
   };

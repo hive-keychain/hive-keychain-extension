@@ -118,8 +118,9 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.KEYLESS_KEYCHAIN:
       KeylessKeychainModule.handleOperation(
-        backgroundMessage.value.request,
+        backgroundMessage.value.data,
         backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
       );
       break;
     case BackgroundCommand.PING:

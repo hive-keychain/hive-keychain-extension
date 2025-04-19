@@ -1,4 +1,4 @@
-import { AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
+import { AUTH_PAYLOAD_URI, HasChallenge } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export interface KeylessAuthData {
@@ -6,13 +6,10 @@ export interface KeylessAuthData {
   authKey: string;
   uuid?: string;
   expire?: number;
-  challenge?: KeylessChallenge;
+  challenge?: HasChallenge;
 }
 
-export interface KeylessChallenge {
-  key_type: string;
-  challenge: string;
-}
+
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];
 }

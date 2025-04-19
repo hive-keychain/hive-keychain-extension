@@ -1,13 +1,11 @@
-import { KeylessChallenge } from '@interfaces/keyless-keychain.interface';
-
 export interface AUTH_REQ_DATA {
   app: {
     name: string;
     description?: string;
     icon?: string;
   };
-  challenge: KeylessChallenge;
-  toketn?: string;
+  challenge: HasChallenge;
+  token?: string;
 }
 
 export interface AUTH_REQ {
@@ -36,10 +34,14 @@ export interface AUTH_NACK {
 
 export interface AUTH_ACK_DATA {
   expire: number;
-  challenge_data?: object;
-  token?: string; // DEPRECATED - protocol < 1.0 only
+  challenge: HasChallenge;
+  token: string; // DEPRECATED - protocol < 1.0 only
 }
-
+export interface HasChallenge {
+  key_type: string;
+  challenge: string | object;
+  pubkey?: string;
+}
 export interface AUTH_PAYLOAD {
   account: string;
   uuid: string;

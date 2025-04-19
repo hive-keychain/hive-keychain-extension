@@ -1,3 +1,4 @@
+import { createMessage } from '@background/requests/operations/operations.utils';
 import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
 import {
   AUTH_ACK,
@@ -9,10 +10,7 @@ import {
   AUTH_REQ_DATA,
   AUTH_WAIT,
 } from '@interfaces/has.interface';
-import {
-  KeylessAuthData,
-  KeylessRequest,
-} from '@interfaces/keyless-keychain.interface';
+import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
@@ -144,16 +142,16 @@ const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOAD) => {
 
 const listenToAuthAck = (
   username: string,
-  keylessAuthData: KeylessAuthData,
+  keylessRequest: KeylessRequest,
+  tab: number,
 ): Promise<void> => {
   Logger.log('listenToAuthAck');
-  if (!username || !keylessAuthData) {
+  if (!username || !keylessRequest) {
     Logger.log(
       'listenToAuthAck error: Username and keyless auth data are required',
     );
     throw new Error('Username and keyless auth data are required');
   }
-
   // Start listening for messages immediately
   const handleMessage = (event: MessageEvent) => {
     try {
@@ -161,7 +159,7 @@ const listenToAuthAck = (
       Logger.log('listenToAuthAck message:', { message });
       if (message.cmd === 'auth_ack') {
         ws.removeEventListener('message', handleMessage);
-        handleAuthAck(username, keylessAuthData, message as AUTH_ACK)
+        handleAuthAck(username, keylessRequest, message as AUTH_ACK, tab)
           .then(() => {})
           .catch((error) => {
             console.error('Failed to handle auth ack:', error);
@@ -174,7 +172,7 @@ const listenToAuthAck = (
             console.error('Failed to handle auth nack:', error);
           });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to process message:', error);
     }
   };
@@ -187,38 +185,43 @@ const listenToAuthAck = (
 
 const handleAuthAck = async (
   username: string,
-  keylessAuthData: KeylessAuthData,
+  keylessRequest: KeylessRequest,
   auth_ack: AUTH_ACK,
+  tab: number,
 ): Promise<void> => {
+  let message = null;
   try {
     if (!auth_ack?.data) {
       throw new Error('Invalid auth acknowledgement data');
     }
 
-    console.log({ auth_ack });
     const auth_ack_data: AUTH_ACK_DATA =
       typeof auth_ack.data === 'string'
         ? JSON.parse(
-            EncryptUtils.decryptNoIV(auth_ack.data, keylessAuthData.authKey),
+            EncryptUtils.decryptNoIV(auth_ack.data, keylessRequest.authKey),
           )
         : auth_ack.data;
 
-    console.log({ auth_ack_data });
     if (!auth_ack_data?.expire) {
       throw new Error('Missing expiration in auth acknowledgement data');
     }
 
-    keylessAuthData.expire = auth_ack_data.expire;
-    await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
-    chrome.runtime.sendMessage({
-      command: DialogCommand.ANSWER_REQUEST,
-      msg: {
-        success: true,
-        message: 'Keyless authentication successful',
-      },
-    });
+    keylessRequest.expire = auth_ack_data.expire;
+    await KeylessKeychainUtils.storeKeylessAuthData(username, keylessRequest);
+
+    message = await createMessage(
+      null,
+      auth_ack_data.challenge.challenge,
+      keylessRequest.request,
+      await chrome.i18n.getMessage('bgd_ops_sign_success'),
+      null,
+      auth_ack_data.challenge.pubkey,
+    );
+    chrome.tabs.sendMessage(tab, message);
   } catch (error) {
     throw new Error(`Failed to update keyless auth data: ${error}`);
+  } finally {
+    chrome.runtime.sendMessage(message);
   }
 };
 

@@ -3,24 +3,32 @@ import { AUTH_PAYLOAD, AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import {
   KeychainRequest,
   KeychainRequestTypes,
+  RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import HASUtils from 'src/utils/has-utils';
 
-const handleOperation = async (request: KeychainRequest, domain: string) => {
+const handleOperation = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+) => {
   await HASUtils.connect();
-  console.log('handleOperation', request, domain);
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      register(request, domain);
+      register(request, domain, tab);
       break;
     default:
       throw new Error('Invalid request type');
   }
 };
 
-const register = async (request: KeychainRequest, domain: string) => {
+const register = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+) => {
   await HASUtils.connect();
   if (request.type === KeychainRequestTypes.signBuffer) {
     if (!request.username) {
@@ -35,7 +43,11 @@ const register = async (request: KeychainRequest, domain: string) => {
     if (keylessAuthData) {
       const keylessRequest: KeylessRequest = {
         ...keylessAuthData,
-        request: request,
+        request: {
+          ...request,
+          key: (request as RequestSignBuffer).method.toLowerCase(),
+          message: (request as RequestSignBuffer).message.replace(/\\/g, ''),
+        },
       };
 
       //
@@ -53,8 +65,8 @@ const register = async (request: KeychainRequest, domain: string) => {
       const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
         auth_payload,
       );
-      showQRCode(request, domain, auth_payload_uri);
-      await HASUtils.listenToAuthAck(username, keylessAuthData);
+      showQRCode(keylessRequest.request, domain, auth_payload_uri);
+      await HASUtils.listenToAuthAck(username, keylessRequest, tab);
     }
   }
 };
