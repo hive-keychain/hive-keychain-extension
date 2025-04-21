@@ -48,7 +48,15 @@
     z-index: 2;
     border-radius: 20px;
     row-gap: 32px;
+    width: 70%;
+    height: 80%;
 
+    .qr-code-popup-checkbox-container {
+      height: 272px;
+      .checkbox-panel {
+        margin: 12px;
+      }
+    }
     .qr-code-disclaimer {
       @include caption;
       font-weight: 500;
@@ -65,6 +73,7 @@
       padding: 12px;
       max-width: 240px;
       display: flex;
+      margin-bottom: 12px;
       flex-direction: column;
     }
   }
