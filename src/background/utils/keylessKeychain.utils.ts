@@ -202,6 +202,7 @@ const getKeylessAuthDataByAppName = async (
   appName: string,
 ) => {
   const keylessAuthDataArray = await getKeylessAuthDataArray(username);
+
   if (!keylessAuthDataArray) return undefined;
   return keylessAuthDataArray.find(
     (data: KeylessAuthData) => data.appName === appName,
@@ -227,9 +228,11 @@ const getKeylessAuthDataByUUID = async (username: string, uuid: string) => {
  * @param keyless_auth_data - The keyless auth data
  * @returns True if the keyless auth data is expired, false otherwise
  */
-const isKeylessAuthDataExpired = (keylessAuthData: KeylessAuthData) => {
-  if (!keylessAuthData.expire) return true;
-  return keylessAuthData.expire < Date.now();
+const isKeylessAuthDataRegistered = (keylessAuthData: KeylessAuthData) => {
+  if (!keylessAuthData.expire) return false;
+  if (!keylessAuthData.uuid) return false;
+  if (keylessAuthData.expire < Date.now()) return false;
+  return true;
 };
 
 /**
@@ -311,6 +314,7 @@ const KeylessKeychainUtils = {
   removeKeylessAuthData,
   updateAuthenticatedKeylessAuthData,
   getKeylessAuthDataUserDictionary,
+  isKeylessAuthDataRegistered,
 };
 
 export default KeylessKeychainUtils;

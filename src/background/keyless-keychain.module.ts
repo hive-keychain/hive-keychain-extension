@@ -16,6 +16,7 @@ const handleOperation = async (
   tab: number,
 ) => {
   await HASUtils.connect();
+
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
       register(request, domain, tab);
@@ -51,6 +52,8 @@ const register = async (
       };
 
       const auth_wait = await HASUtils.authenticate(keylessRequest);
+      keylessRequest.uuid = auth_wait.uuid;
+      keylessRequest.expire = auth_wait.expire;
       await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
         keylessRequest,
         auth_wait,
@@ -64,13 +67,13 @@ const register = async (
       const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
         auth_payload,
       );
-      showQRCode(keylessRequest.request, domain, auth_payload_uri);
+      showQRCode(keylessRequest, domain, auth_payload_uri);
       await HASUtils.listenToAuthAck(username, keylessRequest, tab);
     }
   }
 };
 const showQRCode = (
-  request: KeychainRequest,
+  request: KeychainRequest | KeylessRequest,
   domain: string,
   auth_payload_uri: AUTH_PAYLOAD_URI,
 ) => {
@@ -81,6 +84,26 @@ const showQRCode = (
     auth_payload_uri,
   });
 };
+
+const checkKeylessRegistration = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+) => {
+  const keylessAuthData =
+    await KeylessKeychainUtils.getKeylessAuthDataByAppName(
+      request.username!,
+      domain,
+    );
+  if (keylessAuthData) {
+    const isRegistered =
+      KeylessKeychainUtils.isKeylessAuthDataRegistered(keylessAuthData);
+    return isRegistered ? keylessAuthData : undefined;
+  }
+  return undefined;
+};
+
 export const KeylessKeychainModule = {
   handleOperation,
+  checkKeylessRegistration,
 };

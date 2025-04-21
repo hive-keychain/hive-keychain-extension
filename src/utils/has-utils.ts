@@ -206,9 +206,17 @@ const handleAuthAck = async (
     if (!auth_ack_data?.expire) {
       throw new Error('Missing expiration in auth acknowledgement data');
     }
-
+    if (keylessRequest.uuid !== auth_ack.uuid) {
+      throw new Error('Invalid auth acknowledgement data');
+    }
     keylessRequest.expire = auth_ack_data.expire;
-    await KeylessKeychainUtils.storeKeylessAuthData(username, keylessRequest);
+    const keylessAuthData = {
+      uuid: keylessRequest.uuid,
+      appName: keylessRequest.appName,
+      authKey: keylessRequest.authKey,
+      expire: keylessRequest.expire,
+    };
+    await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
 
     message = await createMessage(
       null,
