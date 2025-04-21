@@ -7,6 +7,7 @@ import {
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import Config from 'src/config';
 import HASUtils from 'src/utils/has-utils';
 
 const handleOperation = async (
@@ -35,7 +36,6 @@ const register = async (
       throw new Error('Username is required');
     }
     const username = request.username;
-    // handle login/registration
     const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(
       request,
       domain,
@@ -50,7 +50,6 @@ const register = async (
         },
       };
 
-      //
       const auth_wait = await HASUtils.authenticate(keylessRequest);
       await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
         keylessRequest,
@@ -60,7 +59,7 @@ const register = async (
         account: username,
         uuid: auth_wait.uuid,
         key: keylessRequest.authKey,
-        host: `wss://hive-auth.arcange.eu/`,
+        host: Config.keyless.host,
       };
       const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
         auth_payload,

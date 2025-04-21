@@ -14,6 +14,7 @@ import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
+import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
 
 let ws: WebSocket;
@@ -52,7 +53,7 @@ const connect = (): Promise<void> => {
   }
 
   return new Promise<void>((resolve, reject) => {
-    ws = new WebSocket('wss://hive-auth.arcange.eu/');
+    ws = new WebSocket(Config.keyless.host);
     setupWebSocketHandlers(resolve, reject);
   });
 };

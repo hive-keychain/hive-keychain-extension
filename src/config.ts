@@ -58,6 +58,9 @@ const Config = {
   tutorial: {
     baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
   },
+  keyless: {
+    host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
+  },
 };
 
 export default Config;
