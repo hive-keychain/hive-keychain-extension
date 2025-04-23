@@ -2,14 +2,12 @@ import { Screen } from '@interfaces/screen.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
-import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
-import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
@@ -86,21 +84,6 @@ const Home = ({
       )
     ) {
       fetchPrices(activeAccount.nativeAndErc20Tokens.map((t) => t.tokenInfo));
-    }
-
-    if (
-      activeAccount.nativeAndErc20Tokens &&
-      activeAccount.nativeAndErc20Tokens.length > 0
-    ) {
-      const mainToken = activeAccount.nativeAndErc20Tokens.find(
-        (token) => token.tokenInfo.type === EVMSmartContractType.NATIVE,
-      );
-      EvmTokensHistoryUtils.fetchFullMainTokenHistory(
-        chain,
-        mainToken!.tokenInfo,
-        activeAccount.address,
-        activeAccount.wallet.signingKey,
-      );
     }
   }, [activeAccount.nativeAndErc20Tokens]);
 
@@ -242,6 +225,7 @@ const Home = ({
           activeAccount={activeAccount}
           prices={prices}
           onClickOnNftPreview={handleClickOnNftCollection}
+          chain={chain}
         />
       </div>
       <ActionsSectionComponent

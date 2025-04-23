@@ -2,7 +2,7 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 
 export enum EVMSmartContractType {
   NATIVE = 'NATIVE',
-  ERC20 = 'ERC20',
+  ERC20 = 'ERC-20',
   ERC721 = 'ERC721',
   ERC721Enumerable = 'ERC721Enumerable',
   ERC1155 = 'ERC1155',

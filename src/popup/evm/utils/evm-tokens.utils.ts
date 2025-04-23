@@ -78,23 +78,6 @@ const getTokenBalances = async (
   chain: EvmChain,
   tokensMetadata: EvmSmartContractInfo[],
 ) => {
-  if (
-    !tokensMetadata.some(
-      (tokenMetadata) => tokenMetadata.type === EVMSmartContractType.NATIVE,
-    )
-  ) {
-    const mainTokenMetadata = {
-      type: EVMSmartContractType.NATIVE,
-      name: chain.mainToken,
-      symbol: chain.mainToken,
-      chainId: chain.chainId,
-      logo: chain.logo,
-      backgroundColor: '',
-      coingeckoId: '',
-    } as EvmSmartContractInfo;
-    tokensMetadata.push(mainTokenMetadata);
-  }
-
   const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
     tokensMetadata.map(async (token) =>
       getTokenBalance(walletAddress, chain, token),
@@ -349,16 +332,28 @@ const getTokensFullDetails = async (
     }
   }
 
-  if (addressesToFetch.length === 0) {
-    return chainTokenMetaData;
+  let tokensMetadata: any = [];
+
+  if (addressesToFetch.length > 0) {
+    tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
   }
 
-  const tokensMetadata = await KeychainApi.get(
-    `evm/smart-contracts-info/${chain.chainId}/${addressesToFetch?.join(',')}`,
-  );
-
   const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
+
+  if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
+    const mainTokenMetadata = {
+      type: EVMSmartContractType.NATIVE,
+      name: chain.mainToken,
+      symbol: chain.mainToken,
+      chainId: chain.chainId,
+      logo: chain.logo,
+      backgroundColor: '',
+      coingeckoId: '',
+    } as EvmSmartContractInfo;
+    newMetadata.push(mainTokenMetadata);
+  }
   allSavedMetadata[chain.chainId] = newMetadata;
+
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
     allSavedMetadata,
@@ -399,9 +394,7 @@ const getTokenListForWalletAddress = async (
 
       let tokensMetadata = [];
       try {
-        tokensMetadata = await KeychainApi.get(
-          `evm/tokensInfoShort/${chain.chainId}/${addresses?.join(',')}`,
-        );
+        tokensMetadata = await getMetadataFromBackend(addresses, chain);
       } catch (err) {
         Logger.error('Error while fetching tokens metadata', err);
         tokensMetadata =
@@ -417,6 +410,15 @@ const getTokenListForWalletAddress = async (
     default:
       return [];
   }
+};
+
+const getMetadataFromBackend = (
+  addresses: string[],
+  chain: EvmChain,
+): Promise<EvmSmartContractInfo[]> => {
+  return KeychainApi.get(
+    `evm/smart-contracts-info/${chain.chainId}/${addresses?.join(',')}`,
+  );
 };
 
 const getTokenInfo = async (
@@ -486,8 +488,7 @@ const getMainTokenInfo = async (chain: EvmChain) => {
   );
   if (tokens && tokens[chain.chainId]) {
     return tokens[chain.chainId].find(
-      (t: EvmSmartContractInfo) =>
-        t.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
+      (t: EvmSmartContractInfo) => t.type === EVMSmartContractType.NATIVE,
     );
   }
 };
@@ -526,6 +527,18 @@ const getTokenType = (abi: any) => {
   return null;
 };
 
+const getMetadataFromStorage = async (
+  chain: EvmChain,
+): Promise<EvmSmartContractInfo[]> => {
+  const allChainsMetadata = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+  );
+
+  if (allChainsMetadata) {
+    return allChainsMetadata[chain.chainId];
+  } else return [] as EvmSmartContractInfo[];
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -543,4 +556,6 @@ export const EvmTokensUtils = {
   getErc721Tokens,
   getErc1155Tokens,
   filterTokensBasedOnSettings,
+  getMetadataFromStorage,
+  getMetadataFromBackend,
 };

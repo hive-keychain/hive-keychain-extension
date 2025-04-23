@@ -2,17 +2,22 @@ import {
   EvmActiveAccount,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
+import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
 import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-tokens/evm-wallet-tokens.component';
+import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import React, { useState } from 'react';
+import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import React, { useEffect, useState } from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
   prices: EvmPrices;
+  chain: EvmChain;
   onClickOnNftPreview: (
     params: EvmErc721Token | EvmErc721Token[],
     screen: EvmScreen,
@@ -22,16 +27,38 @@ interface EvmWalletInfoSectionProps {
 enum EvmDisplayedPage {
   TOKENS = 'tokens',
   NTFS = 'nfts',
+  HISTORY = 'history',
 }
 
 const WalletInfoSection = ({
   activeAccount,
   prices,
+  chain,
   onClickOnNftPreview,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     EvmDisplayedPage.TOKENS,
   );
+
+  const [history, setHistory] = useState<EvmUserHistory>();
+
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  useEffect(() => {
+    if (activeAccount.isInitialized) loadHistory();
+  }, [activeAccount.isInitialized]);
+
+  const loadHistory = async () => {
+    setLoadingHistory(true);
+    setHistory(
+      await EvmTokensHistoryUtils.fetchHistory(
+        activeAccount.address,
+        chain,
+        history,
+      ),
+    );
+    setLoadingHistory(false);
+  };
 
   const getDisplayedSection = () => {
     switch (displayedSection) {
@@ -48,6 +75,16 @@ const WalletInfoSection = ({
           <EvmWalletNftGalleryComponent
             activeAccount={activeAccount}
             onClickOnNftPreview={onClickOnNftPreview}
+          />
+        );
+      }
+      case EvmDisplayedPage.HISTORY: {
+        return (
+          <EvmHistoryComponent
+            chain={chain}
+            history={history}
+            onClickOnLoadMore={loadHistory}
+            loading={loadingHistory}
           />
         );
       }
@@ -71,6 +108,10 @@ const WalletInfoSection = ({
                 {
                   label: `evm_tab_${EvmDisplayedPage.NTFS}`,
                   value: EvmDisplayedPage.NTFS,
+                },
+                {
+                  label: `evm_tab_${EvmDisplayedPage.HISTORY}`,
+                  value: EvmDisplayedPage.HISTORY,
                 },
               ]}
               id="tabs"

@@ -5017,6 +5017,10 @@
     "message": "NFTs",
     "description": "NFTs tab"
   },
+  "evm_tab_history": {
+    "message": "History",
+    "description": "History tab"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"
@@ -5048,5 +5052,61 @@
   "evm_nft_transfer_address": {
     "message": "Address",
     "description": "NFT Address"
+  },
+  "evm_history_generic_message": {
+    "message": "Transaction sent",
+    "description": "Evm history generic message in case there in not enough information"
+  },
+  "evm_history_smart_contract_creation_message": {
+    "message": "You created the $1 smart contract",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_operation_safe_transfer_from_erc721_in": {
+    "message": "You received $1#$2 from $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_out": {
+    "message": "You sent $1#$2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in": {
+    "message": "You received $1 $2#$3 from $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_out": {
+    "message": "You sent $1 $2#$3 to $4",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in": {
+    "message": "You received $1 $2 from $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out": {
+    "message": "You sent $1 $2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_mint_batch": {
+    "message": "You minted $1 tokens from the $2 collection",
+    "description": "Batch mint operation"
+  },
+  "evm_history_operation_approve_out_erc20": {
+    "message": "You approved $1 to use up to $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc721": {
+    "message": "You approved $1 to use $2#$3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_mintNFTs": {
+    "message": "You minted $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_generic_smart_contract_messages": {
+    "message": "$1 in contract $2",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_smart_contract_operation": {
+    "message": "Broadcasted transaction",
+    "description": "Generic smart contract operation history label"
   }
 }

@@ -1,6 +1,6 @@
 import {
-  EvmTokenHistoryItem,
-  EvmTokenHistoryItemType,
+  EvmUserHistoryItem,
+  EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 interface EvmTokenHistoryItemProps {
-  historyItem: EvmTokenHistoryItem;
+  historyItem: EvmUserHistoryItem;
   chain: Chain;
   goToDetailsPage: () => void;
 }
@@ -33,9 +33,13 @@ export const EvmTokenHistoryItemComponent = ({
 
   const getIcon = () => {
     switch (historyItem.type) {
-      case EvmTokenHistoryItemType.TRANSFER_IN:
-      case EvmTokenHistoryItemType.TRANSFER_OUT:
+      case EvmUserHistoryItemType.TRANSFER_IN:
+      case EvmUserHistoryItemType.TRANSFER_OUT:
         return SVGIcons.WALLET_HISTORY_TRANSFER;
+      case EvmUserHistoryItemType.SMART_CONTRACT_CREATION:
+        return SVGIcons.EVM_SMART_CONTRACT_CREATION;
+      case EvmUserHistoryItemType.SMART_CONTRACT:
+        return SVGIcons.EVM_SMART_CONTRACT;
       default:
         return SVGIcons.WALLET_HIVE_LOGO;
     }

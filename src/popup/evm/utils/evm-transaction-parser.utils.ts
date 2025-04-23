@@ -2,6 +2,8 @@ import { Interface } from '@ethersproject/abi';
 import * as Eth from '@metamask/ethjs';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
+  EvmTransactionDecodedData,
+  EvmTransactionDecodedDataInput,
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
@@ -495,7 +497,7 @@ const findAbiFromData = async (data: string, chain: EvmChain) => {
 const parseData = async (
   data: string,
   chain: EvmChain,
-): Promise<{ operationName: string; inputs: any[] } | undefined> => {
+): Promise<EvmTransactionDecodedData | undefined> => {
   const functionNameInHex = data.slice(0, 10);
 
   const foundSignature = await EvmDataParser.getMethodFromSignature(
@@ -518,7 +520,7 @@ const parseData = async (
         if (parsedRegistry.name && parsedRegistry.args)
           return {
             operationName: parsedRegistry.name,
-            inputs: parsedRegistry.args,
+            inputs: parsedRegistry.args as EvmTransactionDecodedDataInput[],
           };
       } else {
         const name = foundSignature.split('(')[0];

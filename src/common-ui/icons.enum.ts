@@ -27,6 +27,9 @@ export enum SVGIcons {
   EVM_GAS_FEE_CUSTOM = 'evm-gas-fee/gas-fee-custom',
   EVM_GAS_FEE_SUGGESTED = 'evm-gas-fee/gas-fee-suggested',
 
+  EVM_SMART_CONTRACT = 'evm-history/smart-contract',
+  EVM_SMART_CONTRACT_CREATION = 'evm-history/smart-contract-creation',
+
   EVM_TRANSACTION_STATUS_PROCESSING = 'evm-tx-status/processing',
   EVM_TRANSACTION_STATUS_FINISHED = 'evm-tx-status/finished',
   EVM_TRANSACTION_STATUS_CANCELED = 'evm-tx-status/canceled',

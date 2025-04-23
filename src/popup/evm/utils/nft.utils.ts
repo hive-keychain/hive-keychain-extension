@@ -84,7 +84,6 @@ const getMetadataFromTokenId = async (
       break;
   }
 
-  console.log(uri);
   const collectionItem = {
     id: tokenId,
     metadata: await getMetadataFromURI(uri, tokenId),

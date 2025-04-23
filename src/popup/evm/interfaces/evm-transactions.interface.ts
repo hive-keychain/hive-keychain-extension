@@ -108,3 +108,15 @@ export interface EvmTransactionVerificationInformation {
     isWhitelisted: boolean;
   };
 }
+
+export interface EvmTransactionDecodedData {
+  operationName: string;
+  inputs: EvmTransactionDecodedDataInput[];
+}
+
+export interface EvmTransactionDecodedDataInput {
+  components: any;
+  type: string;
+  name: string;
+  value: any;
+}

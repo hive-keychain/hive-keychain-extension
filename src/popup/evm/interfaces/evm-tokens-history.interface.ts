@@ -1,16 +1,21 @@
 import { CanceledTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 
-export interface EvmTokenHistory {
-  events: EvmTokenHistoryItem[];
-  firstBlock: number; // oldest block
-  lastBlock: number; // newest block
+export interface EvmUsersHistory {
+  [walletAddress: string]: EvmUserHistory;
+}
+export interface EvmUserHistory {
+  events: EvmUserHistoryItem[];
+  lastPage: number;
+  fullyFetch: boolean;
 }
 
-export interface EvmTokenHistoryItem {
-  type: EvmTokenHistoryItemType;
-  address: string;
+export interface EvmLocalHistory {
+  [chain: string]: EvmUsersHistory;
+}
+
+export interface EvmUserHistoryItem {
+  type: EvmUserHistoryItemType;
   blockNumber: number;
-  index: number;
   transactionHash: string;
   transactionIndex: number;
   timestamp: number;
@@ -21,30 +26,22 @@ export interface EvmTokenHistoryItem {
   isCanceled?: boolean;
 }
 
-export interface EvmTokenTransferInHistoryItem extends EvmTokenHistoryItem {
-  type: EvmTokenHistoryItemType.TRANSFER_IN;
+export interface EvmTokenTransferInHistoryItem extends EvmUserHistoryItem {
+  type: EvmUserHistoryItemType.TRANSFER_IN;
   from: string;
   to: string;
   amount: string;
 }
-export interface EvmTokenTransferOutHistoryItem extends EvmTokenHistoryItem {
-  type: EvmTokenHistoryItemType.TRANSFER_OUT;
+export interface EvmTokenTransferOutHistoryItem extends EvmUserHistoryItem {
+  type: EvmUserHistoryItemType.TRANSFER_OUT;
   from: string;
   to: string;
   amount: string;
 }
 
-export enum EvmTokenHistoryItemType {
+export enum EvmUserHistoryItemType {
   TRANSFER_IN = 'TRANSFER_IN',
   TRANSFER_OUT = 'TRANSFER_OUT',
-}
-
-export interface EvmUserHistory {
-  [chain: string]: {
-    [token: string]: EvmTokenHistory;
-  };
-}
-
-export interface EvmLocalHistory {
-  [address: string]: EvmUserHistory;
+  SMART_CONTRACT_CREATION = 'SMART_CONTRACT_CREATION',
+  SMART_CONTRACT = 'SMART_CONTRACT',
 }
