@@ -7,9 +7,14 @@ import {
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
 import { loadVscAccountBalance } from '@popup/hive/actions/vsc.actions';
+import { WalletInfoSectionHiveActions } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import { WalletInfoSectionHiveEngineItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-hive-engine-item.component';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -42,6 +47,7 @@ const WalletInfoSection = ({
   loadTokens,
   loadPendingUnstaking,
   loadVscAccountBalance,
+  navigateToWithParams,
   vscAccountBalance,
 }: PropsFromRedux) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
@@ -148,29 +154,39 @@ const WalletInfoSection = ({
     }
   }, [conversions]);
 
+  const handleHistoryClick = () => {
+    navigateToWithParams(Screen.WALLET_HISTORY_PAGE, []);
+  };
+
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
       <div className="wallet-info-section">
         <WalletInfoSectionItemComponent
           tokenSymbol="HIVE"
-          icon={SVGIcons.WALLET_HIVE_LOGO}
+          iconName={SVGIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
+          onHistoryClick={handleHistoryClick}
           mainValueLabel={currencyLabels.hive}
           subValue={activeAccount.account.savings_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          actionButtons={WalletInfoSectionHiveActions('HIVE')}
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HBD"
-          icon={SVGIcons.WALLET_HBD_LOGO}
+          iconName={SVGIcons.WALLET_HBD_LOGO}
           mainValue={activeAccount.account.hbd_balance}
           mainValueLabel={currencyLabels.hbd}
           subValue={activeAccount.account.savings_hbd_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          actionButtons={WalletInfoSectionHiveActions('HBD')}
+          onHistoryClick={handleHistoryClick}
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HP"
-          icon={SVGIcons.WALLET_HP_LOGO}
+          iconName={SVGIcons.WALLET_HP_LOGO}
+          actionButtons={WalletInfoSectionHiveActions('HP')}
+          onHistoryClick={handleHistoryClick}
           mainValue={FormatUtils.toHP(
             activeAccount.account.vesting_shares as string,
             globalProperties.globals,
@@ -238,13 +254,12 @@ const WalletInfoSection = ({
               <FlatList
                 list={filteredTokenList}
                 renderItem={(token: TokenBalance) => (
-                  <WalletInfoSectionItemComponent
+                  <WalletInfoSectionHiveEngineItemComponent
                     key={`token-${token.symbol}`}
                     tokenSymbol={token.symbol}
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
                     tokenMarket={market}
-                    icon={SVGIcons.HIVE_ENGINE}
                     addBackground
                     mainValue={token.balance}
                     mainValueLabel={token.symbol}
@@ -324,7 +339,6 @@ const WalletInfoSection = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state.hive.vscBalance);
   return {
     activeAccount: state.hive.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(
@@ -348,6 +362,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   loadPendingUnstaking,
   loadVscAccountBalance,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
