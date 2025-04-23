@@ -7,7 +7,10 @@ import {
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
 import { loadVscAccountBalance } from '@popup/hive/actions/vsc.actions';
-import { WalletInfoSectionHiveActions } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import {
+  WalletInfoSectionHiveActions,
+  WalletInfoSectionVscActions,
+} from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
 import { WalletInfoSectionHiveEngineItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-hive-engine-item.component';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -302,31 +305,37 @@ const WalletInfoSection = ({
           <div className="line-wrapper">
             <div className="line" />
           </div>
-          <SVGIcon
+          {/* <SVGIcon
             icon={SVGIcons.WALLET_HISTORY_NO_BORDER}
             onClick={() => {
               navigateTo(Screen.VSC_HISTORY_PAGE);
             }}
-          />
+          /> */}
         </div>
         {vscAccountBalance.state === LoadingState.LOADED && (
           <>
             <WalletInfoSectionItemComponent
               key={`vsc-hive`}
               tokenSymbol={currencyLabels.hive}
-              mainValue={vscAccountBalance.balance.hive}
+              mainValue={vscAccountBalance.balance.hive / 1000}
               mainValueLabel={currencyLabels.hive}
-              icon={SVGIcons.HIVE_ENGINE}
-              addBackground
+              iconName={SVGIcons.WALLET_HIVE_LOGO}
+              onHistoryClick={() => {
+                navigateTo(Screen.VSC_HISTORY_PAGE);
+              }}
+              actionButtons={WalletInfoSectionVscActions('HIVE')}
             />
             <WalletInfoSectionItemComponent
               key={`vsc-hbd`}
               tokenSymbol={currencyLabels.hbd}
-              mainValue={vscAccountBalance.balance.hbd}
+              mainValue={vscAccountBalance.balance.hbd / 1000}
               mainValueLabel={currencyLabels.hbd}
-              icon={SVGIcons.HIVE_ENGINE}
-              addBackground
-              subValue={vscAccountBalance.balance.hbd_savings}
+              iconName={SVGIcons.WALLET_HBD_LOGO}
+              onHistoryClick={() => {
+                navigateTo(Screen.VSC_HISTORY_PAGE);
+              }}
+              subValue={vscAccountBalance.balance.hbd_savings / 1000}
+              actionButtons={WalletInfoSectionVscActions('HBD')}
               subValueLabel={chrome.i18n.getMessage(
                 'popup_html_wallet_savings',
               )}
