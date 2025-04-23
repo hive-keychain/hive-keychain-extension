@@ -6,6 +6,7 @@ import {
   loadTokensMarket,
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
+import { loadVscAccountBalance } from '@popup/hive/actions/vsc.actions';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -13,7 +14,7 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, LoadingState } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -40,6 +41,8 @@ const WalletInfoSection = ({
   loadUserTokens,
   loadTokens,
   loadPendingUnstaking,
+  loadVscAccountBalance,
+  vscAccountBalance,
 }: PropsFromRedux) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
@@ -65,6 +68,7 @@ const WalletInfoSection = ({
       loadHiddenTokens();
       loadTokens();
       loadTokensMarket();
+      loadVscAccountBalance(activeAccount.name!);
       loadUserTokens(activeAccount.name!);
       loadPendingUnstaking(activeAccount.name!);
       fetchConversionRequests(activeAccount.name!);
@@ -290,12 +294,37 @@ const WalletInfoSection = ({
             }}
           />
         </div>
+        {vscAccountBalance.state === LoadingState.LOADED && (
+          <>
+            <WalletInfoSectionItemComponent
+              key={`vsc-hive`}
+              tokenSymbol={currencyLabels.hive}
+              mainValue={vscAccountBalance.balance.hive}
+              mainValueLabel={currencyLabels.hive}
+              icon={SVGIcons.HIVE_ENGINE}
+              addBackground
+            />
+            <WalletInfoSectionItemComponent
+              key={`vsc-hbd`}
+              tokenSymbol={currencyLabels.hbd}
+              mainValue={vscAccountBalance.balance.hbd}
+              mainValueLabel={currencyLabels.hbd}
+              icon={SVGIcons.HIVE_ENGINE}
+              addBackground
+              subValue={vscAccountBalance.balance.hbd_savings}
+              subValueLabel={chrome.i18n.getMessage(
+                'popup_html_wallet_savings',
+              )}
+            />
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
+  console.log(state.hive.vscBalance);
   return {
     activeAccount: state.hive.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(
@@ -307,6 +336,7 @@ const mapStateToProps = (state: RootState) => {
     userTokens: state.hive.userTokens,
     market: state.hive.tokenMarket,
     allTokens: state.hive.tokens,
+    vscAccountBalance: state.hive.vscBalance,
   };
 };
 
@@ -317,6 +347,7 @@ const connector = connect(mapStateToProps, {
   loadTokens,
   navigateTo,
   loadPendingUnstaking,
+  loadVscAccountBalance,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -45,7 +45,7 @@ const walletInfoSectionItem = ({
   hive,
   pendingUnstaking,
   navigateToWithParams,
-}: PropsFromRedux) => {
+}: PropsFromRedux & WalletSectionInfoItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
   const reff = useRef<HTMLDivElement>(null);
@@ -397,7 +397,6 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
 });
-type PropsFromRedux = ConnectedProps<typeof connector> &
-  WalletSectionInfoItemProps;
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WalletInfoSectionItemComponent = connector(walletInfoSectionItem);
