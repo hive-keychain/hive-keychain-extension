@@ -22,6 +22,7 @@ import {
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
@@ -264,6 +265,39 @@ const handleAuthNack = async (username: string, auth_nack: AUTH_NACK) => {
   });
 };
 
+const getRequestOperation = async (request: KeychainRequest) => {
+  switch (request.type) {
+    case KeychainRequestTypes.vote:
+      return BloggingUtils.getVoteOperation(
+        request.username,
+        request.author,
+        request.permlink,
+        +request.weight,
+      );
+    case KeychainRequestTypes.transfer:
+      return TransferUtils.getTransferOperation(
+        request.username!,
+        request.to,
+        request.amount + ' ' + request.currency,
+        request.memo,
+      );
+    case KeychainRequestTypes.signTx:
+      return request.tx.operations;
+    case KeychainRequestTypes.post:
+      return BloggingUtils.getPostOperation(
+        '',
+        request.parent_perm!,
+        request.username!,
+        request.permlink,
+        request.title!,
+        request.body,
+        request.json_metadata,
+      );
+    default:
+      return null;
+  }
+};
+
 const signRequest = async (
   request: KeychainRequest,
   domain: string,
@@ -276,15 +310,7 @@ const signRequest = async (
   let op = null;
 
   const keyType = getRequiredWifType(request);
-  switch (request.type) {
-    case KeychainRequestTypes.vote:
-      op = BloggingUtils.getVoteOperation(
-        request.username,
-        request.author,
-        request.permlink,
-        +request.weight,
-      );
-  }
+  op = await getRequestOperation(request);
   if (!op) {
     throw new Error('Invalid request type');
   }
