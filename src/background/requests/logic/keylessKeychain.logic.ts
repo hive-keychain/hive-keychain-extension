@@ -1,3 +1,4 @@
+import { performKeylessOperation } from '@background/index';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import { RequestsHandler } from '@background/requests/request-handler';
@@ -5,7 +6,6 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 export const keylessKeychainRequest = async (
   requestHandler: RequestsHandler,
@@ -19,6 +19,9 @@ export const keylessKeychainRequest = async (
     tab,
   );
   // when it is not yet registered or it is a signBuffer request
+  //TODO: handle when authentication is expired -> if the request is not a signBuffer request,
+  // then create a signBuffer request
+  // out of the information from the actual request and proceed to authentication
   if (!keylessAuthData || request.type === KeychainRequestTypes.signBuffer) {
     console.log('keyless: reauthentication or new registration');
     const callback = async () => {
@@ -32,11 +35,7 @@ export const keylessKeychainRequest = async (
     createPopup(callback, requestHandler);
   } else {
     console.log('keyless: registered, proceed to sign');
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.KEYLESS_KEYCHAIN,
-      data: request,
-      domain,
-      tab,
-    });
+
+    performKeylessOperation(requestHandler, tab, request, domain);
   }
 };

@@ -9,13 +9,24 @@ import {
   AUTH_REQ,
   AUTH_REQ_DATA,
   AUTH_WAIT,
+  HAS_CMD,
+  SIGN_ACK,
+  SIGN_REQ,
+  SIGN_REQ_DATA,
+  SIGN_WAIT,
 } from '@interfaces/has.interface';
+import {
+  KeychainRequest,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
+import { getRequiredWifType } from 'src/utils/requests.utils';
 
 let ws: WebSocket;
 let reconnectInterval = 1000; // Initial reconnection delay
@@ -96,7 +107,7 @@ const authenticate = async (
   );
   console.log('auth_req_data_encrypted:', { auth_req_data_encrypted });
   const auth_req: AUTH_REQ = {
-    cmd: 'auth_req',
+    cmd: HAS_CMD.AUTH_REQ,
     account: keylessRequest.request.username,
     data: auth_req_data_encrypted,
   };
@@ -112,12 +123,15 @@ const authenticate = async (
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
 
-      if (message.cmd === 'auth_wait') {
+      if (message.cmd === HAS_CMD.AUTH_WAIT) {
         // AUTH_WAIT received
         console.log('AUTH_WAIT received:', { message });
         ws.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
-      } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
+      } else if (
+        message.cmd === HAS_CMD.AUTH_NACK ||
+        message.cmd === 'auth_err'
+      ) {
         // Authentication failed or error
         console.log('AUTH_NACK received:', { message });
         ws.removeEventListener('message', handleMessage);
@@ -158,14 +172,17 @@ const listenToAuthAck = (
     try {
       const message = JSON.parse(event.data);
       Logger.log('listenToAuthAck message:', { message });
-      if (message.cmd === 'auth_ack') {
+      if (message.cmd === HAS_CMD.AUTH_ACK) {
         ws.removeEventListener('message', handleMessage);
         handleAuthAck(username, keylessRequest, message as AUTH_ACK, tab)
           .then(() => {})
           .catch((error) => {
             console.error('Failed to handle auth ack:', error);
           });
-      } else if (message.cmd === 'auth_nack' || message.cmd === 'auth_err') {
+      } else if (
+        message.cmd === HAS_CMD.AUTH_NACK ||
+        message.cmd === 'auth_err'
+      ) {
         ws.removeEventListener('message', handleMessage);
         handleAuthNack(username, message as AUTH_NACK)
           .then(() => {})
@@ -210,11 +227,13 @@ const handleAuthAck = async (
       throw new Error('Invalid auth acknowledgement data');
     }
     keylessRequest.expire = auth_ack_data.expire;
+    keylessRequest.token = auth_ack_data.token;
     const keylessAuthData = {
       uuid: keylessRequest.uuid,
       appName: keylessRequest.appName,
       authKey: keylessRequest.authKey,
       expire: keylessRequest.expire,
+      token: keylessRequest.token,
     };
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
 
@@ -245,11 +264,192 @@ const handleAuthNack = async (username: string, auth_nack: AUTH_NACK) => {
   });
 };
 
+const signRequest = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+): Promise<SIGN_WAIT> => {
+  if (!request.username) {
+    throw new Error('Username is required');
+  }
+
+  let op = null;
+
+  const keyType = getRequiredWifType(request);
+  switch (request.type) {
+    case KeychainRequestTypes.vote:
+      op = BloggingUtils.getVoteOperation(
+        request.username,
+        request.author,
+        request.permlink,
+        +request.weight,
+      );
+  }
+  if (!op) {
+    throw new Error('Invalid request type');
+  }
+  const sign_req_data: SIGN_REQ_DATA = {
+    key_type: keyType,
+    ops: [op],
+    broadcast: true,
+    nonce: Date.now(),
+  };
+  const { encryptedSignRequestData, token } =
+    await KeylessKeychainUtils.encryptSignRequestData(
+      request.username,
+      domain,
+      sign_req_data,
+    );
+  const sign_req: SIGN_REQ = {
+    cmd: HAS_CMD.SIGN_REQ,
+    account: request.username,
+    data: encryptedSignRequestData,
+    token,
+  };
+  ws.send(JSON.stringify(sign_req));
+  return new Promise<SIGN_WAIT>((resolve, reject) => {
+    const signWaitHandler = async (event: MessageEvent) => {
+      const response = JSON.parse(event.data);
+      if (response.cmd === HAS_CMD.SIGN_WAIT) {
+        ws.removeEventListener('message', signWaitHandler);
+        try {
+          await handleSignWait(request, domain, tab, response);
+          resolve(response as SIGN_WAIT);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    };
+
+    ws.addEventListener('message', signWaitHandler);
+
+    // Add timeout to prevent infinite waiting
+    setTimeout(() => {
+      ws.removeEventListener('message', signWaitHandler);
+      reject(new Error('Sign wait timeout'));
+    }, 30000); // 30 second timeout
+  });
+};
+
+const handleSignWait = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  sign_wait: SIGN_WAIT,
+) => {
+  return new Promise<void>((resolve, reject) => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const response = JSON.parse(event.data);
+
+        if (
+          response.cmd === HAS_CMD.SIGN_ACK &&
+          response.uuid === sign_wait.uuid
+        ) {
+          // Remove the event listener since we got our response
+          ws.removeEventListener('message', handleMessage);
+
+          // Handle the successful sign ack
+          sendResponseToDapp(request, domain, tab, response, false)
+            .then(() => resolve())
+            .catch((error) => reject(error));
+        } else if (
+          response.cmd === HAS_CMD.SIGN_NACK &&
+          response.uuid === sign_wait.uuid
+        ) {
+          // Remove the event listener since we got our response
+          ws.removeEventListener('message', handleMessage);
+
+          // Handle the failed sign ack
+          sendResponseToDapp(
+            request,
+            domain,
+            tab,
+            response,
+            new Error('Sign request was rejected'),
+          )
+            .then(() => reject(new Error('Sign request was rejected')))
+            .catch((error) => reject(error));
+        }
+      } catch (error) {
+        console.error('Error processing sign message:', error);
+      }
+    };
+
+    // Add the event listener
+    ws.addEventListener('message', handleMessage);
+
+    // Set up expiration timeout
+    const timeout = sign_wait.expire - Date.now();
+    if (timeout <= 0) {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Sign wait request has already expired'));
+      return;
+    }
+
+    const expirationTimer = setTimeout(() => {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Sign wait request expired'));
+    }, timeout);
+
+    // Clean up on promise resolution
+    const cleanup = () => {
+      clearTimeout(expirationTimer);
+      ws.removeEventListener('message', handleMessage);
+    };
+
+    // Ensure cleanup happens whether we resolve or reject
+    resolve = ((originalResolve) => {
+      return (...args) => {
+        cleanup();
+        return originalResolve(...args);
+      };
+    })(resolve);
+
+    reject = ((originalReject) => {
+      return (...args) => {
+        cleanup();
+        return originalReject(...args);
+      };
+    })(reject);
+  });
+};
+
+const sendResponseToDapp = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  response: SIGN_ACK,
+  error?: any,
+) => {
+  const result = {
+    id: response.uuid,
+    tx_id: response.data,
+  };
+  console.log('sendResponseToDapp result:', { result });
+  // Determine if the operation was successful
+  const success = !error && response.broadcast === true;
+
+  const message = await createMessage(
+    error,
+    result,
+    request,
+    success
+      ? await chrome.i18n.getMessage('bgd_ops_keyless_broadcast_success')
+      : error?.message || 'Operation failed',
+    error?.message || null,
+  );
+
+  console.log('sendResponseToDapp message:', { message });
+  chrome.tabs.sendMessage(tab, message);
+};
+
 const HASUtils = {
   authenticate,
   connect,
   generateAuthPayloadURI,
   listenToAuthAck,
+  signRequest,
 };
 
 export default HASUtils;

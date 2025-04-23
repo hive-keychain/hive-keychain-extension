@@ -1,5 +1,5 @@
 import MkModule from '@background/mk.module';
-import { AUTH_WAIT } from '@interfaces/has.interface';
+import { AUTH_WAIT, SIGN_REQ_DATA } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import {
   KeylessAuthData,
@@ -306,6 +306,21 @@ const removeKeylessAuthData = async (username: string, uuid: string) => {
   }
 };
 
+const encryptSignRequestData = async (
+  username: string,
+  domain: string,
+  signRequestData: SIGN_REQ_DATA,
+) => {
+  const keylessAuthData = await getKeylessAuthDataByAppName(username, domain);
+  if (!keylessAuthData) throw new Error('Keyless auth data not found');
+  if (!keylessAuthData.authKey) throw new Error('Auth key not found');
+  const encryptedSignRequestData = EncryptUtils.encryptNoIV(
+    JSON.stringify(signRequestData),
+    keylessAuthData.authKey,
+  );
+  return { encryptedSignRequestData, token: keylessAuthData.token };
+};
+
 const KeylessKeychainUtils = {
   registerUserAndDapp,
   getKeylessAuthDataByUUID,
@@ -315,6 +330,7 @@ const KeylessKeychainUtils = {
   updateAuthenticatedKeylessAuthData,
   getKeylessAuthDataUserDictionary,
   isKeylessAuthDataRegistered,
+  encryptSignRequestData,
 };
 
 export default KeylessKeychainUtils;

@@ -7,8 +7,8 @@ export interface KeylessAuthData {
   uuid?: string;
   expire?: number;
   challenge?: HasChallenge;
+  token?: string;
 }
-
 
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];

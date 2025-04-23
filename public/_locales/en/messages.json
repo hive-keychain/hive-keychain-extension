@@ -1520,6 +1520,12 @@
   "bgd_ops_remove_auth": {
     "message": "Succesfully removed $1 authority from @$2 on account @$3."
   },
+  "bgd_ops_keyless_broadcast_success": {
+    "message": "Keyless transaction has been broadcasted successfully."
+  },
+  "bgd_ops_keyless_broadcast_error": {
+    "message": "Keyless transaction failed to broadcast."
+  },
   "popup_account_redeem": {
     "message": "You have Rewards ready to redeem in the amount of",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"

@@ -137,4 +137,13 @@ export const performOperationFromIndex = async (
   performOperation(requestHandler, request, tab!, request.domain, false);
 };
 
+export const performKeylessOperation = async (
+  requestHandler: RequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  KeylessKeychainModule.handleOperation(request, domain, tab);
+};
+
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
