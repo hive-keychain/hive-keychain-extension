@@ -293,7 +293,7 @@ const getRequestOperation = async (request: KeychainRequest) => {
           request.title || '',
           request.body,
           request.json_metadata,
-          request.comment_options,
+          request.comment_options || '',
         );
       } else {
         return BloggingUtils.getPostOperation(
@@ -306,6 +306,8 @@ const getRequestOperation = async (request: KeychainRequest) => {
           request.json_metadata,
         );
       }
+    case KeychainRequestTypes.broadcast:
+      return request.operations;
     default:
       return null;
   }
@@ -325,6 +327,7 @@ const signRequest = async (
   const keyType = getRequiredWifType(request);
   op = await getRequestOperation(request);
   op = sanitizeOperation(op);
+  console.log('signRequest op:', { op });
   const sign_req_data: SIGN_REQ_DATA = {
     key_type: keyType,
     ops: op,
@@ -370,6 +373,7 @@ const signRequest = async (
 
 const sanitizeOperation = (op: any) => {
   try {
+    console.log('sanitizeOperation op:', { op });
     if (!op) {
       throw new Error('Invalid request type');
     }
@@ -381,7 +385,7 @@ const sanitizeOperation = (op: any) => {
       throw new Error('Operation array cannot be empty');
     }
 
-    if (op.length > 1 && Array.isArray(op[0])) {
+    if (op.length >= 1 && Array.isArray(op[0])) {
       return op;
     }
 

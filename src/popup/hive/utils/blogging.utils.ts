@@ -146,23 +146,35 @@ const getCommentOperation = (
   stringifyMetadata: string,
   stringifyCommentOptions: string,
 ) => {
-  return [
-    [
-      'comment',
-      {
-        parent_author: parentUsername,
-        parent_permlink: parentPerm,
+  const commentOp = [
+    'comment',
+    {
+      parent_author: parentUsername,
+      parent_permlink: parentPerm,
+      author: author,
+      permlink: permlink,
+      title: title,
+      body: body,
+      json_metadata: stringifyMetadata,
+    },
+  ] as CommentOperation;
+
+  // If comment_options is empty, use default values
+  const commentOptions = stringifyCommentOptions
+    ? JSON.parse(stringifyCommentOptions)
+    : {
         author: author,
         permlink: permlink,
-        title: title,
-        body: body,
-        json_metadata: stringifyMetadata,
-      },
-    ] as CommentOperation,
-    [
-      'comment_options',
-      JSON.parse(stringifyCommentOptions),
-    ] as CommentOptionsOperation,
+        max_accepted_payout: '1000000.000 HBD',
+        percent_hbd: 10000,
+        allow_votes: true,
+        allow_curation_rewards: true,
+        extensions: [],
+      };
+
+  return [
+    commentOp,
+    ['comment_options', commentOptions] as CommentOptionsOperation,
   ];
 };
 
