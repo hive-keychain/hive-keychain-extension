@@ -20,9 +20,17 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
+import { ConversionUtils } from '@popup/hive/utils/conversion.utils';
+import { DelegationUtils } from '@popup/hive/utils/delegation.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { PowerUtils } from '@popup/hive/utils/power.utils';
+import ProposalUtils from '@popup/hive/utils/proposal.utils';
+import ProxyUtils from '@popup/hive/utils/proxy.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
+import WitnessUtils from '@popup/hive/utils/witness.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
@@ -308,6 +316,87 @@ const getRequestOperation = async (request: KeychainRequest) => {
       }
     case KeychainRequestTypes.broadcast:
       return request.operations;
+    case KeychainRequestTypes.delegation:
+      return DelegationUtils.getDelegationOperation(
+        request.username!,
+        request.delegatee!,
+        request.amount + ' ' + request.unit,
+      );
+    case KeychainRequestTypes.witnessVote:
+      return WitnessUtils.getWitnessVoteOperation(
+        request.vote,
+        request.username!,
+        request.witness!,
+      );
+    case KeychainRequestTypes.powerUp:
+      return PowerUtils.getPowerUpOperation(
+        request.username!,
+        request.recipient!,
+        request.hive,
+      );
+    case KeychainRequestTypes.powerDown:
+      return PowerUtils.getPowerDownOperation(
+        request.username!,
+        request.hive_power,
+      );
+    case KeychainRequestTypes.recurrentTransfer:
+      return TransferUtils.getRecurrentTransferOperation(
+        request.username!,
+        request.to!,
+        request.amount + ' ' + request.currency,
+        request.memo,
+        request.recurrence,
+        request.executions,
+      );
+    case KeychainRequestTypes.proxy:
+      return ProxyUtils.getSetProxyOperation(request.proxy!, request.username!);
+    case KeychainRequestTypes.createProposal:
+      return ProposalUtils.getCreateProposalOperation(
+        request.username!,
+        request.receiver!,
+        request.start!,
+        request.end!,
+        request.daily_pay!,
+        request.subject!,
+        request.permlink!,
+        request.extensions!,
+      );
+    case KeychainRequestTypes.updateProposalVote:
+      return ProposalUtils.getUpdateProposalVoteOperation(
+        typeof request.proposal_ids === 'string'
+          ? JSON.parse(request.proposal_ids)
+          : request.proposal_ids,
+        request.approve!,
+        request.username!,
+      );
+    case KeychainRequestTypes.removeProposal:
+      return ProposalUtils.getRemoveProposalOperation(
+        request.username!,
+        typeof request.proposal_ids === 'string'
+          ? JSON.parse(request.proposal_ids)
+          : request.proposal_ids,
+        typeof request.extensions === 'string'
+          ? JSON.parse(request.extensions)
+          : request.extensions,
+      );
+    case KeychainRequestTypes.sendToken:
+      return TokensUtils.getSendTokenOperation(
+        request.currency,
+        request.to!,
+        request.amount + ' ' + request.currency,
+        request.memo,
+        request.username!,
+      );
+    case KeychainRequestTypes.convert:
+      return ConversionUtils.getConvertOperation(
+        request.username!,
+        request.request_id,
+        request.amount + ' ' + (request.collaterized ? 'HIVE' : 'HBD'),
+        request.collaterized
+          ? ConversionType.CONVERT_HIVE_TO_HBD
+          : ConversionType.CONVERT_HBD_TO_HIVE,
+      );
+
     default:
       return null;
   }
