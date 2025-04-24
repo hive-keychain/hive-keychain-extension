@@ -284,15 +284,28 @@ const getRequestOperation = async (request: KeychainRequest) => {
     case KeychainRequestTypes.signTx:
       return request.tx.operations;
     case KeychainRequestTypes.post:
-      return BloggingUtils.getPostOperation(
-        '',
-        request.parent_perm!,
-        request.username!,
-        request.permlink,
-        request.title!,
-        request.body,
-        request.json_metadata,
-      );
+      if (request.parent_username) {
+        return BloggingUtils.getCommentOperation(
+          request.parent_username || '',
+          request.parent_perm,
+          request.username,
+          request.permlink,
+          request.title || '',
+          request.body,
+          request.json_metadata,
+          request.comment_options,
+        );
+      } else {
+        return BloggingUtils.getPostOperation(
+          request.parent_username || '',
+          request.parent_perm,
+          request.username,
+          request.permlink,
+          request.title || '',
+          request.body,
+          request.json_metadata,
+        );
+      }
     default:
       return null;
   }
@@ -311,12 +324,10 @@ const signRequest = async (
 
   const keyType = getRequiredWifType(request);
   op = await getRequestOperation(request);
-  if (!op) {
-    throw new Error('Invalid request type');
-  }
+  op = sanitizeOperation(op);
   const sign_req_data: SIGN_REQ_DATA = {
     key_type: keyType,
-    ops: [op],
+    ops: op,
     broadcast: true,
     nonce: Date.now(),
   };
@@ -355,6 +366,32 @@ const signRequest = async (
       reject(new Error('Sign wait timeout'));
     }, 30000); // 30 second timeout
   });
+};
+
+const sanitizeOperation = (op: any) => {
+  try {
+    if (!op) {
+      throw new Error('Invalid request type');
+    }
+    if (!Array.isArray(op)) {
+      throw new Error('Operation must be an array');
+    }
+
+    if (op.length === 0) {
+      throw new Error('Operation array cannot be empty');
+    }
+
+    if (op.length > 1 && Array.isArray(op[0])) {
+      return op;
+    }
+
+    return [op];
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Invalid operation format');
+  }
 };
 
 const handleSignWait = async (
