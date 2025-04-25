@@ -14,7 +14,20 @@
     padding-bottom: 100px;
     grid-area: only;
   }
-
+  .rotating-logo-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      @include icon-size(40px);
+      svg {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
   .no-token,
   .hidden-tokens {
     @include caption();

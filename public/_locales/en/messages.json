@@ -4396,6 +4396,10 @@
     "message": "Called '$1' on contract $2",
     "description": "Upon clicking on VSC History"
   },
+  "popup_html_vsc_unavailable": {
+    "message": "VSC is currently unavailable.",
+    "description": "Main page"
+  },
   "popup_html_vsc_info_deposit": {
     "message": "Deposited $1 $2",
     "description": "Upon clicking on VSC History"

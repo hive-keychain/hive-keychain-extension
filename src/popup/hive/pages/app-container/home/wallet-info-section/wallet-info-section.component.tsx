@@ -28,6 +28,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
@@ -316,7 +317,7 @@ const WalletInfoSection = ({
             <WalletInfoSectionItemComponent
               key={`vsc-hive`}
               tokenSymbol={currencyLabels.hive}
-              mainValue={vscAccountBalance.balance.hive / 1000}
+              mainValue={(vscAccountBalance?.balance?.hive || 0) / 1000}
               mainValueLabel={currencyLabels.hive}
               iconName={SVGIcons.WALLET_HIVE_LOGO}
               onHistoryClick={() => {
@@ -327,19 +328,32 @@ const WalletInfoSection = ({
             <WalletInfoSectionItemComponent
               key={`vsc-hbd`}
               tokenSymbol={currencyLabels.hbd}
-              mainValue={vscAccountBalance.balance.hbd / 1000}
+              mainValue={(vscAccountBalance?.balance?.hbd || 0) / 1000}
               mainValueLabel={currencyLabels.hbd}
               iconName={SVGIcons.WALLET_HBD_LOGO}
               onHistoryClick={() => {
                 navigateTo(Screen.VSC_HISTORY_PAGE);
               }}
-              subValue={vscAccountBalance.balance.hbd_savings / 1000}
+              subValue={(vscAccountBalance?.balance?.hbd_savings || 0) / 1000}
               actionButtons={WalletInfoSectionVscActions('HBD')}
               subValueLabel={chrome.i18n.getMessage(
                 'popup_html_wallet_savings',
               )}
             />
           </>
+        )}
+        {vscAccountBalance.state === LoadingState.LOADING && (
+          <div className="rotating-logo-container">
+            <RotatingLogoComponent />
+          </div>
+        )}
+        {vscAccountBalance.state === LoadingState.FAILED && (
+          <div className="no-token">
+            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+            <span className="text">
+              {chrome.i18n.getMessage('popup_html_vsc_unavailable')}
+            </span>
+          </div>
         )}
       </div>
     </div>
