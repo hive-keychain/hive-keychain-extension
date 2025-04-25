@@ -3,7 +3,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
-import { VscCall, VscTransfer, VscUtils } from 'hive-keychain-commons';
+import { VscHistoryItem, VscUtils } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
@@ -16,7 +16,7 @@ const VscHistory = ({
   activeAccountName,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [transactions, setTransactions] = useState<(VscTransfer | VscCall)[]>();
+  const [transactions, setTransactions] = useState<VscHistoryItem[]>();
 
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
 
@@ -40,11 +40,13 @@ const VscHistory = ({
     setLoading(false);
   };
 
-  const renderListItem = (transaction: VscTransfer | VscCall) => {
+  const renderListItem = (transaction: VscHistoryItem) => {
     return (
       <VscHistoryItemComponent
-        key={transaction.id}
-        transaction={transaction}></VscHistoryItemComponent>
+        key={transaction.txId}
+        username={`hive:${activeAccountName!}`}
+        transaction={transaction}
+      />
     );
   };
 
