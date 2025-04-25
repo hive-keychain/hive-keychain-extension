@@ -98,7 +98,7 @@ const EncryptUtils = {
   decryptToJson,
   decryptToJsonWithoutMD5Check,
   decrypt,
-  decryptNoIV
+  decryptNoIV,
 };
 
 export default EncryptUtils;

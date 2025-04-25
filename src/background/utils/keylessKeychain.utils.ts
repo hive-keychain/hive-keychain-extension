@@ -1,5 +1,9 @@
 import MkModule from '@background/mk.module';
-import { AUTH_WAIT, SIGN_REQ_DATA } from '@interfaces/has.interface';
+import {
+  AUTH_WAIT,
+  CHALLENGE_REQ_DATA,
+  SIGN_REQ_DATA,
+} from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import {
   KeylessAuthData,
@@ -306,19 +310,19 @@ const removeKeylessAuthData = async (username: string, uuid: string) => {
   }
 };
 
-const encryptSignRequestData = async (
+const encryptHiveAuthRequestData = async (
   username: string,
   domain: string,
-  signRequestData: SIGN_REQ_DATA,
+  signRequestData: SIGN_REQ_DATA | CHALLENGE_REQ_DATA,
 ) => {
   const keylessAuthData = await getKeylessAuthDataByAppName(username, domain);
   if (!keylessAuthData) throw new Error('Keyless auth data not found');
   if (!keylessAuthData.authKey) throw new Error('Auth key not found');
-  const encryptedSignRequestData = EncryptUtils.encryptNoIV(
+  const encryptedHiveAuthRequestData = EncryptUtils.encryptNoIV(
     JSON.stringify(signRequestData),
     keylessAuthData.authKey,
   );
-  return { encryptedSignRequestData, token: keylessAuthData.token };
+  return { encryptedHiveAuthRequestData, keylessAuthData };
 };
 
 const KeylessKeychainUtils = {
@@ -330,7 +334,7 @@ const KeylessKeychainUtils = {
   updateAuthenticatedKeylessAuthData,
   getKeylessAuthDataUserDictionary,
   isKeylessAuthDataRegistered,
-  encryptSignRequestData,
+  encryptHiveAuthRequestData,
 };
 
 export default KeylessKeychainUtils;

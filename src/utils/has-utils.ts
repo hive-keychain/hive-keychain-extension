@@ -9,6 +9,11 @@ import {
   AUTH_REQ,
   AUTH_REQ_DATA,
   AUTH_WAIT,
+  CHALLENGE_ACK,
+  CHALLENGE_NACK,
+  CHALLENGE_REQ,
+  CHALLENGE_REQ_DATA,
+  CHALLENGE_WAIT,
   HAS_CMD,
   SIGN_ACK,
   SIGN_REQ,
@@ -19,7 +24,10 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
-import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import {
+  KeylessAuthData,
+  KeylessRequest,
+} from '@interfaces/keyless-keychain.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
@@ -505,8 +513,8 @@ const signRequest = async (
     broadcast: true,
     nonce: Date.now(),
   };
-  const { encryptedSignRequestData, token } =
-    await KeylessKeychainUtils.encryptSignRequestData(
+  const { encryptedHiveAuthRequestData, keylessAuthData } =
+    await KeylessKeychainUtils.encryptHiveAuthRequestData(
       request.username,
       domain,
       sign_req_data,
@@ -514,8 +522,8 @@ const signRequest = async (
   const sign_req: SIGN_REQ = {
     cmd: HAS_CMD.SIGN_REQ,
     account: request.username,
-    data: encryptedSignRequestData,
-    token,
+    data: encryptedHiveAuthRequestData,
+    token: keylessAuthData.token,
   };
   ws.send(JSON.stringify(sign_req));
   return new Promise<SIGN_WAIT>((resolve, reject) => {
@@ -540,6 +548,181 @@ const signRequest = async (
       reject(new Error('Sign wait timeout'));
     }, 30000); // 30 second timeout
   });
+};
+
+const challengeRequest = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+) => {
+  console.log('challengeRequest request:', { request });
+  const challenge_req_data: CHALLENGE_REQ_DATA = {
+    key_type: getRequiredWifType(request).toLowerCase(),
+    challenge: (request as RequestSignBuffer).message,
+    decrypt: request.type === KeychainRequestTypes.decode,
+    nonce: Date.now(),
+  };
+  console.log('challenge_req_data:', { challenge_req_data });
+  const { encryptedHiveAuthRequestData, keylessAuthData } =
+    await KeylessKeychainUtils.encryptHiveAuthRequestData(
+      request.username!,
+      domain,
+      challenge_req_data,
+    );
+  const challenge_req: CHALLENGE_REQ = {
+    cmd: HAS_CMD.CHALLENGE_REQ,
+    account: request.username!,
+    data: encryptedHiveAuthRequestData,
+    token: keylessAuthData.token,
+  };
+  console.log('challenge_req:', { challenge_req });
+  ws.send(JSON.stringify(challenge_req));
+
+  return new Promise<CHALLENGE_WAIT>((resolve, reject) => {
+    const challengeWaitHandler = async (event: MessageEvent) => {
+      const response = JSON.parse(event.data) as CHALLENGE_WAIT;
+      if (response.cmd === HAS_CMD.CHALLENGE_WAIT) {
+        ws.removeEventListener('message', challengeWaitHandler);
+        await handleChallengeWait(
+          request,
+          domain,
+          tab,
+          response,
+          keylessAuthData,
+        );
+        resolve(response as CHALLENGE_WAIT);
+      } else if (
+        response.cmd === HAS_CMD.CHALLENGE_NACK ||
+        response.cmd === 'challenge_err'
+      ) {
+        ws.removeEventListener('message', challengeWaitHandler);
+        reject(new Error('Challenge request failed'));
+      }
+    };
+
+    ws.addEventListener('message', challengeWaitHandler);
+
+    // Add timeout to prevent infinite waiting
+    setTimeout(() => {
+      ws.removeEventListener('message', challengeWaitHandler);
+      reject(new Error('Challenge wait timeout'));
+    }, 30000); // 30 second timeout
+  });
+};
+
+const handleChallengeWait = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  challenge_wait: CHALLENGE_WAIT,
+  keylessAuthData: KeylessAuthData,
+) => {
+  return new Promise<void>((resolve, reject) => {
+    const handleMessage = async (event: MessageEvent) => {
+      try {
+        const challenge_ack = JSON.parse(event.data) as
+          | CHALLENGE_ACK
+          | CHALLENGE_NACK;
+        console.log('challenge_ack.data:', { challenge_ack });
+        if (challenge_ack.cmd === HAS_CMD.CHALLENGE_ACK) {
+          if (challenge_wait.uuid === challenge_ack.uuid) {
+            // Remove the event listener since we got our response
+            ws.removeEventListener('message', handleMessage);
+            await handleChallengeAck(
+              request,
+              domain,
+              tab,
+              challenge_ack,
+              keylessAuthData,
+            );
+            resolve();
+          }
+        } else if (challenge_ack.cmd === HAS_CMD.CHALLENGE_NACK) {
+          // Remove the event listener since we got an error response
+          ws.removeEventListener('message', handleMessage);
+          handleChallengeNack(request, domain, tab, challenge_ack);
+          reject(new Error('Challenge request failed'));
+        }
+      } catch (error) {
+        console.error('Error processing challenge message:', error);
+      }
+    };
+
+    // Add the event listener
+    ws.addEventListener('message', handleMessage);
+
+    // Set up expiration timeout
+    const timeout = challenge_wait.expire - Date.now();
+    if (timeout <= 0) {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Challenge wait request has already expired'));
+      return;
+    }
+
+    const expirationTimer = setTimeout(() => {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Challenge wait request expired'));
+    }, timeout);
+
+    // Clean up on promise resolution
+    const cleanup = () => {
+      clearTimeout(expirationTimer);
+      ws.removeEventListener('message', handleMessage);
+    };
+
+    // Ensure cleanup happens whether we resolve or reject
+    resolve = ((originalResolve) => {
+      return (...args) => {
+        cleanup();
+        return originalResolve(...args);
+      };
+    })(resolve);
+
+    reject = ((originalReject) => {
+      return (...args) => {
+        cleanup();
+        return originalReject(...args);
+      };
+    })(reject);
+  });
+};
+
+const handleChallengeAck = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  challenge_ack: CHALLENGE_ACK,
+  keylessAuthData: KeylessAuthData,
+) => {
+  try {
+    const challenge_ack_data: CHALLENGE_ACK =
+      typeof challenge_ack.data === 'string'
+        ? JSON.parse(
+            EncryptUtils.decryptNoIV(
+              challenge_ack.data,
+              keylessAuthData.authKey,
+            ),
+          )
+        : challenge_ack.data;
+    sendResponseToDapp(request, domain, tab, challenge_ack_data);
+  } catch (error) {
+    console.error('Error processing challenge message:', error);
+  }
+};
+
+const handleChallengeNack = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  challenge_nack: CHALLENGE_NACK,
+) => {
+  sendResponseToDapp(
+    request,
+    domain,
+    tab,
+    challenge_nack,
+    'Challenge request failed',
+  );
 };
 
 const sanitizeOperation = (op: any) => {
@@ -657,16 +840,14 @@ const sendResponseToDapp = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  response: SIGN_ACK,
+  response: SIGN_ACK | CHALLENGE_ACK | CHALLENGE_NACK,
   error?: any,
 ) => {
-  const result = {
-    id: response.uuid,
-    tx_id: response.data,
-  };
+  const result = { ...response };
   console.log('sendResponseToDapp result:', { result });
   // Determine if the operation was successful
-  const success = !error && response.broadcast === true;
+  const success =
+    !error && ('broadcast' in response ? response.broadcast === true : true);
 
   const message = await createMessage(
     error,
@@ -688,6 +869,7 @@ const HASUtils = {
   generateAuthPayloadURI,
   listenToAuthAck,
   signRequest,
+  challengeRequest,
 };
 
 export default HASUtils;

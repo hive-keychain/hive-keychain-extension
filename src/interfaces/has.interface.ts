@@ -7,6 +7,10 @@ export enum HAS_CMD {
   SIGN_WAIT = 'sign_wait',
   SIGN_ACK = 'sign_ack',
   SIGN_NACK = 'sign_nack',
+  CHALLENGE_REQ = 'challenge_req',
+  CHALLENGE_WAIT = 'challenge_wait',
+  CHALLENGE_ACK = 'challenge_ack',
+  CHALLENGE_NACK = 'challenge_nack',
 }
 
 export interface AUTH_REQ_DATA {
@@ -15,7 +19,7 @@ export interface AUTH_REQ_DATA {
     description?: string;
     icon?: string;
   };
-  challenge: HasChallenge;
+  challenge: CHALLENGE_REQ_DATA;
   token?: string;
 }
 
@@ -45,14 +49,44 @@ export interface AUTH_NACK {
 
 export interface AUTH_ACK_DATA {
   expire: number;
-  challenge: HasChallenge;
+  challenge: CHALLENGE_REQ_DATA;
   token: string; // DEPRECATED - protocol < 1.0 only
 }
-export interface HasChallenge {
+export interface CHALLENGE_REQ_DATA {
   key_type: string;
   challenge: string | object;
   pubkey?: string;
+  decrypt?: boolean;
+  nonce?: number;
 }
+
+export interface CHALLENGE_REQ {
+  cmd: HAS_CMD.CHALLENGE_REQ;
+  account: string;
+  data: CHALLENGE_REQ_DATA | string;
+  token?: string;
+}
+
+export interface CHALLENGE_WAIT extends Omit<SIGN_WAIT, 'cmd'> {
+  cmd: HAS_CMD.CHALLENGE_WAIT;
+}
+
+export interface CHALLENGE_ACK extends Omit<AUTH_ACK, 'cmd' | 'data'> {
+  cmd: HAS_CMD.CHALLENGE_ACK;
+  data: string | CHALLENGE_ACK_DATA;
+}
+
+export interface CHALLENGE_ACK_DATA {
+  pubkey: string;
+  challenge: string;
+}
+
+export interface CHALLENGE_NACK {
+  cmd: HAS_CMD.CHALLENGE_NACK;
+  uuid: string;
+  data: string;
+}
+
 export interface AUTH_PAYLOAD {
   account: string;
   uuid: string;

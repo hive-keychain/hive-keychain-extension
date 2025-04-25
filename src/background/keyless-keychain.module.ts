@@ -20,6 +20,12 @@ const handleOperation = async (
     case KeychainRequestTypes.signBuffer:
       register(request, domain, tab);
       break;
+    case KeychainRequestTypes.encode:
+      HASUtils.challengeRequest(request, domain, tab);
+      break;
+    case KeychainRequestTypes.decode:
+      HASUtils.challengeRequest(request, domain, tab);
+      break;
     default:
       console.log(JSON.stringify(request, null, 2));
       const sign_wait = await HASUtils.signRequest(request, domain, tab);
@@ -72,8 +78,8 @@ const register = async (
       await HASUtils.listenToAuthAck(username, keylessRequest, tab);
     }
   }
-  };
-  const showQRCode = (
+};
+const showQRCode = (
   request: KeychainRequest | KeylessRequest,
   domain: string,
   auth_payload_uri: AUTH_PAYLOAD_URI,
