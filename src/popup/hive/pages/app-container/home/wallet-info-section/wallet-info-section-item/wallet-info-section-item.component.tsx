@@ -2,12 +2,11 @@ import { ActionButton } from '@popup/hive/pages/app-container/home/wallet-info-s
 import { WalletInfoSectionItemButton } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, FormatUtils } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, Component, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 
 interface WalletSectionInfoItemProps {
   iconName: SVGIcons;

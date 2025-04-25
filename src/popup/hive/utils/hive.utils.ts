@@ -1,10 +1,6 @@
 import type { ExtendedAccount, Price } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
-import { Asset } from 'hive-keychain-commons';
-import {
-  GlobalProperties,
-  RewardFund,
-} from 'src/interfaces/global-properties.interface';
+import { Asset, GlobalProperties, RewardFund } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';

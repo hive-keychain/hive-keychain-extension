@@ -9,12 +9,12 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 const IncomingOutgoingPage = ({
   delegationType,

@@ -1,8 +1,8 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import Config from 'src/config';
 import RequestItem from 'src/dialog/components/request-item/request-item';
-import FormatUtils from 'src/utils/format.utils';
 import SSC from 'sscjs';
 
 type Props = {

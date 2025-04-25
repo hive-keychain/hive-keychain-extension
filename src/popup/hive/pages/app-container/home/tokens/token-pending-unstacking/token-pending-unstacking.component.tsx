@@ -18,14 +18,13 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 
 interface Props {}
 

@@ -1,6 +1,5 @@
 import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Notification } from '@interfaces/notifications.interface';
 import { NotificationPanelComponent } from '@popup/hive/pages/app-container/home/notifications/notification-panel.component';
 import { NotificationsUtils } from '@popup/hive/utils/notifications/notifications.utils';
@@ -10,6 +9,7 @@ import {
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
 import { RootState } from '@popup/multichain/store';
+import { GlobalProperties } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';

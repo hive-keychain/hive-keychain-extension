@@ -19,6 +19,7 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { FormatUtils } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -46,7 +47,6 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 interface TransferForm {

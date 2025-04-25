@@ -1,5 +1,5 @@
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { CurrencyPrices } from 'src/interfaces/bittrex.interface';
+import { CurrencyPrices } from 'hive-keychain-commons';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 const CurrencyPricesReducer = (

@@ -5,11 +5,10 @@ import type {
   DynamicGlobalProperties,
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
-import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
-import { isWif } from 'hive-keychain-commons';
+import { CurrencyPrices, FormatUtils, isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -26,7 +25,6 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import FormatUtils from 'src/utils/format.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';

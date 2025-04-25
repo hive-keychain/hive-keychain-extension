@@ -1,6 +1,6 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import { FormatUtils } from 'hive-keychain-commons';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
-import FormatUtils from 'src/utils/format.utils';
 
 describe('format.utils tests:\n', () => {
   const iterationValuesNoDecimals = [

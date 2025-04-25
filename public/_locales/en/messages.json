@@ -4397,7 +4397,11 @@
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_deposit": {
-    "message": "Deposited $1 $2 to VSC on address $3",
+    "message": "Deposited $1 $2 to VSC",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_deposit_from": {
+    "message": "$1 deposited $2 $3 to VSC",
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_withdraw": {

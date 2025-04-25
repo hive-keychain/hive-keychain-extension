@@ -22,7 +22,7 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
-import { Asset, LoadingState } from 'hive-keychain-commons';
+import { Asset, FormatUtils, LoadingState } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -32,7 +32,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const WalletInfoSection = ({

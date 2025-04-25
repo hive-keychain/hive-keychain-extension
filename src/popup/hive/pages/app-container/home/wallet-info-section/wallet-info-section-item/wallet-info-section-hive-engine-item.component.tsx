@@ -7,13 +7,13 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { ComponentProps, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   tokenSymbol: string;

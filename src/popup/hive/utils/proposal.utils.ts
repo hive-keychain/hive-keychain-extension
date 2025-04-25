@@ -6,12 +6,11 @@ import type {
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, FormatUtils } from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 const hasVotedForProposal = async (
   username: string,
