@@ -18,10 +18,9 @@ type Props = {
 };
 const VscHistoryItem = ({ transaction, username }: Props) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
-  let expandableContent = false;
-
+  const hasExpandableContent = !!transaction.memo?.length;
   const toggleExpandableContent = () => {
-    if (expandableContent) {
+    if (hasExpandableContent) {
       setExpandablePanelOpened(!isExpandablePanelOpened);
     }
   };
@@ -67,21 +66,64 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
         if (transaction.from === username && transaction.to === username)
           return chrome.i18n.getMessage('popup_html_vsc_info_deposit', [
             FormatUtils.withCommas(transaction.amount / 1000 + '', 3),
-            transaction.asset,
+            transaction.asset.toUpperCase(),
           ]);
-        else if (transaction.to === username)
+        else if (transaction.to === username) {
           return chrome.i18n.getMessage('popup_html_vsc_info_deposit_from', [
-            VscUtils.getAddressFromDid(transaction.from)!,
+            VscUtils.getFormattedAddress(transaction.from)!,
             FormatUtils.withCommas(transaction.amount / 1000 + '', 3),
-            transaction.asset,
+            transaction.asset.toUpperCase(),
           ]);
+        }
       case VscHistoryType.WITHDRAW:
-        return chrome.i18n.getMessage('popup_html_vsc_info_withdraw', [
-          FormatUtils.withCommas(transaction.amount / 1000 + '', 3),
-          FormatUtils.shortenString(transaction.asset, 4),
-          VscUtils.getAddressFromDid(transaction.to)!,
-        ]);
-
+        if (transaction.from === username && transaction.to === username)
+          return chrome.i18n.getMessage('popup_html_vsc_info_withdraw', [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+          ]);
+        else if (transaction.from === username) {
+          return chrome.i18n.getMessage('popup_html_vsc_info_withdraw_to', [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+            VscUtils.getFormattedAddress(transaction.to)!,
+          ]);
+        }
+      case VscHistoryType.TRANSFER:
+        if (transaction.from === username)
+          return chrome.i18n.getMessage('popup_html_vsc_info_transfer_to', [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+            VscUtils.getFormattedAddress(transaction.to)!,
+          ]);
+        else {
+          return chrome.i18n.getMessage('popup_html_vsc_info_transfer_from', [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+            VscUtils.getFormattedAddress(transaction.from)!,
+          ]);
+        }
+      case VscHistoryType.STAKING:
+      case VscHistoryType.UNSTAKING:
+        const type =
+          transaction.type === VscHistoryType.STAKING ? 'stake' : 'unstake';
+        if (transaction.from === username && transaction.to === username)
+          return chrome.i18n.getMessage(`popup_html_vsc_info_${type}`, [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+          ]);
+        else if (transaction.to === username) {
+          return chrome.i18n.getMessage(`popup_html_vsc_info_${type}_from`, [
+            VscUtils.getFormattedAddress(transaction.from)!,
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+          ]);
+        } else {
+          return chrome.i18n.getMessage(`popup_html_vsc_info_${type}_to`, [
+            FormatUtils.withCommas(transaction.amount + '', 3),
+            transaction.asset.toUpperCase(),
+            VscUtils.getFormattedAddress(transaction.to)!,
+          ]);
+        }
       default:
         return;
     }
@@ -92,6 +134,9 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
     switch (transaction.status) {
       case VscStatus.CONFIRMED:
         icon = SVGIcons.SWAPS_STATUS_FINISHED;
+        break;
+      case VscStatus.FAILED:
+        icon = SVGIcons.SWAPS_STATUS_CANCELED;
         break;
       default:
         icon = SVGIcons.SWAPS_STATUS_PROCESSING;
@@ -114,7 +159,7 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
         <div
           data-testid="transaction-expandable-area"
           className={`transaction ${
-            expandableContent ? 'has-expandable-content' : ''
+            hasExpandableContent ? 'has-expandable-content' : ''
           }`}
           key={transaction.txId}
           onClick={toggleExpandableContent}>
@@ -143,8 +188,26 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
                 </div>
               </CustomTooltip>
               {getStatusIcon()}
+              {hasExpandableContent && (
+                <SVGIcon
+                  icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                  className={`expand-collapse ${
+                    isExpandablePanelOpened ? 'open' : 'closed'
+                  }`}
+                />
+              )}
             </div>
           </div>
+          {hasExpandableContent && isExpandablePanelOpened && (
+            <div
+              className={
+                isExpandablePanelOpened
+                  ? 'expandable-panel opened'
+                  : 'expandable-panel closed'
+              }>
+              {transaction.memo}
+            </div>
+          )}
         </div>
       </div>
     </div>

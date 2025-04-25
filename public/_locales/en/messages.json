@@ -4397,15 +4397,51 @@
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_deposit": {
-    "message": "Deposited $1 $2 to VSC",
+    "message": "Deposited $1 $2",
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_deposit_from": {
-    "message": "$1 deposited $2 $3 to VSC",
+    "message": "$1 deposited $2 $3",
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_info_withdraw": {
-    "message": "Withdrew $1 $2 from VSC on account @$3",
+    "message": "Withdrew $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_withdraw_to": {
+    "message": "Withdrew $1 $2 to $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_transfer_to": {
+    "message": "Sent $1 $2 to $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_transfer_from": {
+    "message": "Received $1 $2 from $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake": {
+    "message": "Staked $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake_to": {
+    "message": "Staked $1 $2 for $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake_from": {
+    "message": "$1 staked $2 $3 ",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake": {
+    "message": "Unstaked $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake_to": {
+    "message": "Unstaked $1 $2 for $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake_from": {
+    "message": "$1 unstaked $2 $3 ",
     "description": "Upon clicking on VSC History"
   },
   "popup_html_vsc_full_history": {
