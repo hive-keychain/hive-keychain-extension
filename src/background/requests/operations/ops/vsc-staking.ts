@@ -71,6 +71,8 @@ export const vscStaking = async (
         break;
       }
     }
+    requestHandler.setIsWaitingForConfirmation(true);
+
     vscResult = {
       ...result,
       vscStatus: result

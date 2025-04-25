@@ -71,6 +71,8 @@ export const vscWithdrawal = async (
         break;
       }
     }
+    requestHandler.setIsWaitingForConfirmation(true);
+
     vscResult = {
       ...result,
       vscStatus: result
