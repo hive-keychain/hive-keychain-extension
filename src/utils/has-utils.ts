@@ -21,6 +21,7 @@ import {
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
+import { AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
 import { ConversionUtils } from '@popup/hive/utils/conversion.utils';
 import { DelegationUtils } from '@popup/hive/utils/delegation.utils';
@@ -34,6 +35,7 @@ import WitnessUtils from '@popup/hive/utils/witness.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import Logger from 'src/utils/logger.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
@@ -396,7 +398,87 @@ const getRequestOperation = async (request: KeychainRequest) => {
           ? ConversionType.CONVERT_HIVE_TO_HBD
           : ConversionType.CONVERT_HBD_TO_HIVE,
       );
-
+    case KeychainRequestTypes.createClaimedAccount:
+      return AccountCreationUtils.getCreateClaimedAccountOperation(
+        {
+          owner: JSON.parse(request.owner!),
+          active: JSON.parse(request.active!),
+          posting: JSON.parse(request.posting!),
+          memo_key: request.memo!,
+        },
+        request.new_account!,
+        request.username!,
+      );
+    case KeychainRequestTypes.addAccountAuthority:
+      const addAuthUserAccount = await AccountUtils.getExtendedAccount(
+        request.username!,
+      );
+      const { active: addActive, posting: addPosting } =
+        await AccountUtils.processAuthorityUpdate(
+          addAuthUserAccount,
+          request.role!.toLowerCase() as 'posting' | 'active',
+          request.authorizedUsername!,
+          request.weight,
+        );
+      return AccountUtils.getUpdateAccountOperation(
+        request.username!,
+        addActive,
+        addPosting,
+        addAuthUserAccount.memo_key,
+        addAuthUserAccount.json_metadata,
+      );
+    case KeychainRequestTypes.removeAccountAuthority:
+      const removeAuthUserAccount = await AccountUtils.getExtendedAccount(
+        request.username!,
+      );
+      const { active: removeActive, posting: removePosting } =
+        await AccountUtils.processAuthorityRemoval(
+          removeAuthUserAccount,
+          request.role!.toLowerCase() as 'posting' | 'active',
+          request.authorizedUsername!,
+        );
+      return AccountUtils.getUpdateAccountOperation(
+        request.username!,
+        removeActive,
+        removePosting,
+        removeAuthUserAccount.memo_key,
+        removeAuthUserAccount.json_metadata,
+      );
+    case KeychainRequestTypes.addKeyAuthority:
+      const addKeyUserAccount = await AccountUtils.getExtendedAccount(
+        request.username!,
+      );
+      const { active: addKeyActive, posting: addKeyPosting } =
+        await AccountUtils.processKeyAuthorityUpdate(
+          addKeyUserAccount,
+          request.role!.toLowerCase() as 'posting' | 'active',
+          request.authorizedKey!,
+          request.weight,
+        );
+      return AccountUtils.getUpdateAccountOperation(
+        request.username!,
+        addKeyActive,
+        addKeyPosting,
+        addKeyUserAccount.memo_key,
+        addKeyUserAccount.json_metadata,
+      );
+    case KeychainRequestTypes.removeKeyAuthority:
+      const removeKeyUserAccount = await AccountUtils.getExtendedAccount(
+        request.username!,
+      );
+      const { active: removeKeyActive, posting: removeKeyPosting } =
+        await AccountUtils.processKeyAuthorityRemoval(
+          removeKeyUserAccount,
+          request.role!.toLowerCase() as 'posting' | 'active',
+          request.authorizedKey!,
+        );
+      return AccountUtils.getUpdateAccountOperation(
+        request.username!,
+        removeKeyActive,
+        removeKeyPosting,
+        removeKeyUserAccount.memo_key,
+        removeKeyUserAccount.json_metadata,
+      );
     default:
       return null;
   }
