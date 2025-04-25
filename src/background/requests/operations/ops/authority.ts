@@ -5,7 +5,6 @@ import {
 } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
-  KeychainKeyTypesLC,
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
   RequestId,
@@ -32,32 +31,12 @@ export const broadcastAddAccountAuthority = async (
     const key = requestHandler.data.key;
     const userAccount = await AccountUtils.getExtendedAccount(username);
 
-    const updatedAuthority = userAccount[role as 'posting' | 'active'];
-
-    /** Release callback if the account already exist in the account_auths array */
-    const authorizedAccounts = updatedAuthority.account_auths.map(
-      (auth) => auth[0],
+    const { active, posting } = await AccountUtils.processAuthorityUpdate(
+      userAccount,
+      role as 'posting' | 'active',
+      authorizedUsername,
+      weight,
     );
-
-    const hasAuthority = authorizedAccounts.indexOf(authorizedUsername) !== -1;
-    if (hasAuthority) {
-      throw new KeychainError('already_has_authority_error');
-    }
-
-    /** Use weight_thresold as default weight */
-    weight =
-      weight || userAccount[role as 'posting' | 'active'].weight_threshold;
-    updatedAuthority.account_auths.push([authorizedUsername, +weight]);
-    updatedAuthority.account_auths.sort((a, b) => a[0].localeCompare(b[0]));
-
-    const active =
-      role === KeychainKeyTypesLC.active
-        ? updatedAuthority
-        : userAccount.active;
-    const posting =
-      role === KeychainKeyTypesLC.posting
-        ? updatedAuthority
-        : userAccount.posting;
 
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -127,25 +106,11 @@ export const broadcastRemoveAccountAuthority = async (
     const key = requestHandler.data.key;
     const userAccount = await AccountUtils.getExtendedAccount(username);
 
-    const updatedAuthority = userAccount[role as 'posting' | 'active'];
-    const totalAuthorizedUser = updatedAuthority.account_auths.length;
-    for (let i = 0; i < totalAuthorizedUser; i++) {
-      const user = updatedAuthority.account_auths[i];
-      if (user[0] === authorizedUsername) {
-        updatedAuthority.account_auths.splice(i, 1);
-        break;
-      }
-    }
-
-    /** Release callback if the account does not exist in the account_auths array */
-    if (totalAuthorizedUser === updatedAuthority.account_auths.length) {
-      throw new Error('nothing_to_remove_error');
-    }
-
-    const active =
-      role === KeychainKeyTypesLC.active ? updatedAuthority : undefined;
-    const posting =
-      role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
+    const { active, posting } = await AccountUtils.processAuthorityRemoval(
+      userAccount,
+      role as 'posting' | 'active',
+      authorizedUsername,
+    );
 
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -208,37 +173,20 @@ export const broadcastAddKeyAuthority = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
-
   const { username, authorizedKey } = data;
   let role = data.role.toLowerCase();
-
   let { weight } = data;
+
   try {
     const key = requestHandler.data.key;
     const userAccount = await AccountUtils.getExtendedAccount(username);
-    const updatedAuthority = userAccount[role as 'posting' | 'active'];
 
-    /** Release callback if the key already exist in the key_auths array */
-    const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
-    const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
-    if (hasAuthority) {
-      throw new KeychainError('already_has_authority_error');
-    }
-
-    /** Use weight_thresold as default weight */
-    weight =
-      weight || userAccount[role as 'posting' | 'active'].weight_threshold;
-    updatedAuthority.key_auths.push([authorizedKey, +weight]);
-    updatedAuthority.key_auths.sort((a, b) =>
-      (a[0] as string).localeCompare(b[0] as string),
+    const { active, posting } = await AccountUtils.processKeyAuthorityUpdate(
+      userAccount,
+      role as 'posting' | 'active',
+      authorizedKey,
+      weight,
     );
-
-    const active =
-      role === KeychainKeyTypesLC.active ? updatedAuthority : undefined;
-    const posting =
-      role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
-
-    /** Add authority on user account */
 
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -307,28 +255,13 @@ export const broadcastRemoveKeyAuthority = async (
 
   try {
     const key = requestHandler.data.key;
-
     const userAccount = await AccountUtils.getExtendedAccount(username);
 
-    const updatedAuthority = userAccount[role as 'posting' | 'active'];
-    const totalAuthorizedKey = updatedAuthority.key_auths.length;
-    for (let i = 0; i < totalAuthorizedKey; i++) {
-      const user = updatedAuthority.key_auths[i];
-      if (user[0] === authorizedKey) {
-        updatedAuthority.key_auths.splice(i, 1);
-        break;
-      }
-    }
-
-    /** Release callback if the key does not exist in the key_auths array */
-    if (totalAuthorizedKey === updatedAuthority.key_auths.length) {
-      throw new KeychainError('missing_authority_error');
-    }
-
-    const active =
-      role === KeychainKeyTypesLC.active ? updatedAuthority : undefined;
-    const posting =
-      role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
+    const { active, posting } = await AccountUtils.processKeyAuthorityRemoval(
+      userAccount,
+      role as 'posting' | 'active',
+      authorizedKey,
+    );
 
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
