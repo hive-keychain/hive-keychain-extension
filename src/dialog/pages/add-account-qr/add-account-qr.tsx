@@ -42,24 +42,47 @@ const AddAccountQR = (props: Props) => {
   }, [keys]);
 
   return (
-    <div className="add-account-qr">
-      <div className="qr-code">
+    <div
+      className="add-account-qr"
+      style={{
+        height: '100%',
+        display: 'grid',
+        gridTemplateRows: '70px 1fr',
+        width: '100%',
+      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+        }}>
         <h3>Export your keys!</h3>
         <div className="qr-code-disclaimer">
           This QR Code contains all your private keys for this account and
           should only be used to import your keys to the Hive Keychain mobile
           App. DO NOT share it with anyone!
         </div>
-        <div className="qr-code-container">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            flex: 1,
+            marginTop: '20px',
+          }}>
           {qrCode && (
-            <QRCode
-              data-testid="qrcode"
-              className="qrcode"
-              size={240}
-              value={`keychain://add_account=${qrCode}`}
-              bgColor="#FFFFFF"
-              fgColor="#000000"
-            />
+            <div>
+              <QRCode
+                data-testid="qrcode"
+                size={240}
+                value={`keychain://add_account=${qrCode}`}
+                bgColor="#FFFFFF"
+                fgColor="#000000"
+              />
+            </div>
           )}
         </div>
       </div>
