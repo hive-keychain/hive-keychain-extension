@@ -2,6 +2,7 @@ import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
+import AddAccountQR from 'src/dialog/pages/add-account-qr/add-account-qr';
 import DialogError from 'src/dialog/pages/error';
 import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
 import Register from 'src/dialog/pages/register/register';
@@ -80,6 +81,8 @@ const App = () => {
         return <SignTransaction data={data} />;
       case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
         return <RegisterKeylessComponent data={data} />;
+      case DialogCommand.ADD_ACCOUNT:
+        return <AddAccountQR data={data} />;
       default:
         return null;
     }
