@@ -28,10 +28,12 @@ import {
   KeylessAuthData,
   KeylessRequest,
 } from '@interfaces/keyless-keychain.interface';
+import { KeyType } from '@interfaces/keys.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
 import { ConversionUtils } from '@popup/hive/utils/conversion.utils';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import { DelegationUtils } from '@popup/hive/utils/delegation.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { PowerUtils } from '@popup/hive/utils/power.utils';
@@ -41,7 +43,7 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import WitnessUtils from '@popup/hive/utils/witness.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { RequestSignBuffer } from 'hive-keychain-commons';
+import { KeychainKeyTypes, RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import Logger from 'src/utils/logger.utils';
@@ -487,6 +489,15 @@ const getRequestOperation = async (request: KeychainRequest) => {
         removeKeyUserAccount.memo_key,
         removeKeyUserAccount.json_metadata,
       );
+    case KeychainRequestTypes.custom:
+      return CustomJsonUtils.getCustomJsonOperation(
+        request.json,
+        request.username!,
+        request.method === KeychainKeyTypes.posting
+          ? KeyType.POSTING
+          : KeyType.ACTIVE,
+      );
+
     default:
       return null;
   }
