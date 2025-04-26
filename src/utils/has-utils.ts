@@ -46,6 +46,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainKeyTypes, RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
 import Logger from 'src/utils/logger.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
@@ -344,13 +345,11 @@ const getRequestOperation = async (request: KeychainRequest) => {
       return PowerUtils.getPowerUpOperation(
         request.username!,
         request.recipient!,
-        request.hive,
+        request.hive + ' ' + 'HIVE',
       );
     case KeychainRequestTypes.powerDown:
-      return PowerUtils.getPowerDownOperation(
-        request.username!,
-        request.hive_power,
-      );
+      const vestingShares = await calculateVestingShares(request.hive_power);
+      return PowerUtils.getPowerDownOperation(request.username!, vestingShares);
     case KeychainRequestTypes.recurrentTransfer:
       return TransferUtils.getRecurrentTransferOperation(
         request.username!,
@@ -872,6 +871,24 @@ const sendResponseToDapp = async (
 
   console.log('sendResponseToDapp message:', { message });
   chrome.tabs.sendMessage(tab, message);
+};
+
+/**
+ * Calculates the vesting shares equivalent for a given amount of HIVE Power.
+ * @param hive_power The amount of HIVE Power as a string (e.g., '10.000').
+ * @returns The calculated vesting shares as a string with 6 decimals and ' VESTS' suffix (e.g., '123.456789 VESTS').
+ */
+export const calculateVestingShares = async (
+  hive_power: string,
+): Promise<string> => {
+  const res = await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
+  const totalSteem = res.total_vesting_fund_hive
+    ? Number((res.total_vesting_fund_hive as string).split(' ')[0])
+    : Number(res.total_vesting_fund_hive.split(' ')[0]);
+  const totalVests = Number((res.total_vesting_shares as string).split(' ')[0]);
+  let vestingShares = (parseFloat(hive_power) * totalVests) / totalSteem;
+  vestingShares = Number(vestingShares.toFixed(6));
+  return vestingShares.toString() + ' VESTS';
 };
 
 const HASUtils = {
