@@ -330,10 +330,14 @@ const getRequestOperation = async (request: KeychainRequest) => {
     case KeychainRequestTypes.broadcast:
       return request.operations;
     case KeychainRequestTypes.delegation:
-      return DelegationUtils.getDelegationOperation(
-        request.username!,
-        request.delegatee!,
+      const delegatedVests = await calculateVests(
         request.amount + ' ' + request.unit,
+        request.unit,
+      );
+      return DelegationUtils.getDelegationOperation(
+        request.delegatee!,
+        request.username!,
+        delegatedVests,
       );
     case KeychainRequestTypes.witnessVote:
       return WitnessUtils.getWitnessVoteOperation(
@@ -348,7 +352,7 @@ const getRequestOperation = async (request: KeychainRequest) => {
         request.hive + ' ' + 'HIVE',
       );
     case KeychainRequestTypes.powerDown:
-      const vestingShares = await calculateVestingShares(request.hive_power);
+      const vestingShares = await calculateVests(request.hive_power, 'HP');
       return PowerUtils.getPowerDownOperation(request.username!, vestingShares);
     case KeychainRequestTypes.recurrentTransfer:
       return TransferUtils.getRecurrentTransferOperation(
@@ -874,21 +878,30 @@ const sendResponseToDapp = async (
 };
 
 /**
- * Calculates the vesting shares equivalent for a given amount of HIVE Power.
- * @param hive_power The amount of HIVE Power as a string (e.g., '10.000').
+ * Calculates the vesting shares for a given amount in HP or VESTS.
+ * @param amount The amount as a string (e.g., '10.000').
+ * @param unit The unit of the amount ('HP' or 'VESTS').
  * @returns The calculated vesting shares as a string with 6 decimals and ' VESTS' suffix (e.g., '123.456789 VESTS').
  */
-export const calculateVestingShares = async (
-  hive_power: string,
+export const calculateVests = async (
+  amount: string,
+  unit: string,
 ): Promise<string> => {
-  const res = await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
-  const totalSteem = res.total_vesting_fund_hive
-    ? Number((res.total_vesting_fund_hive as string).split(' ')[0])
-    : Number(res.total_vesting_fund_hive.split(' ')[0]);
-  const totalVests = Number((res.total_vesting_shares as string).split(' ')[0]);
-  let vestingShares = (parseFloat(hive_power) * totalVests) / totalSteem;
-  vestingShares = Number(vestingShares.toFixed(6));
-  return vestingShares.toString() + ' VESTS';
+  if (unit === 'HP') {
+    const global =
+      await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
+    const totalHive = global.total_vesting_fund_hive
+      ? Number((global.total_vesting_fund_hive as string).split(' ')[0])
+      : Number(global.total_vesting_fund_hive.split(' ')[0]);
+    const totalVests = Number(
+      (global.total_vesting_shares as string).split(' ')[0],
+    );
+    let vests = (parseFloat(amount) * totalVests) / totalHive;
+    vests = Number(vests.toFixed(6));
+    return vests.toString() + ' VESTS';
+  } else {
+    return amount + ' VESTS';
+  }
 };
 
 const HASUtils = {
