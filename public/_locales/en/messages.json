@@ -635,6 +635,10 @@
     "message": "Please confirm your transfer.<br>This cannot be undone.",
     "description": "On transfer confirmation page"
   },
+  "popup_html_vsc_deposit_confirm_text": {
+    "message": "Please confirm that you want to deposit these funds to VSC.",
+    "description": "On transfer confirmation page"
+  },
   "popup_html_transfer_confirm_cancel_recurrent": {
     "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
     "description": "On transfer confirmation page"
