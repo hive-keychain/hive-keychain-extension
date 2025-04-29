@@ -300,7 +300,9 @@ const WalletInfoSection = ({
         )}
         <div className="l2-separator">
           <span>
-            <img src="assets/images/wallet/vsc.png" className="no-pointer" />
+            <a href="https://vsc.eco/" target="_blank">
+              <img src="assets/images/wallet/vsc.png" className="no-pointer" />
+            </a>
           </span>
           <div className="line-wrapper">
             <div className="line" />
@@ -319,7 +321,7 @@ const WalletInfoSection = ({
               tokenSymbol={currencyLabels.hive}
               mainValue={(vscAccountBalance?.balance?.hive || 0) / 1000}
               mainValueLabel={currencyLabels.hive}
-              iconName={SVGIcons.WALLET_HIVE_LOGO}
+              iconName={SVGIcons.WALLET_HIVE_VSC_LOGO}
               onHistoryClick={() => {
                 navigateTo(Screen.VSC_HISTORY_PAGE);
               }}
@@ -330,7 +332,7 @@ const WalletInfoSection = ({
               tokenSymbol={currencyLabels.hbd}
               mainValue={(vscAccountBalance?.balance?.hbd || 0) / 1000}
               mainValueLabel={currencyLabels.hbd}
-              iconName={SVGIcons.WALLET_HBD_LOGO}
+              iconName={SVGIcons.WALLET_HBD_VSC_LOGO}
               onHistoryClick={() => {
                 navigateTo(Screen.VSC_HISTORY_PAGE);
               }}

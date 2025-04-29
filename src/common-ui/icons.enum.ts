@@ -145,6 +145,8 @@ export enum SVGIcons {
 
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',
+  WALLET_HIVE_VSC_LOGO = 'wallet/hive-vsc',
+  WALLET_HBD_VSC_LOGO = 'wallet/hbd-vsc',
   WALLET_HP_LOGO = 'wallet/hp-logo',
   WALLET_POWER_DOWN = 'wallet/hp/power-down',
   WALLET_POWER_UP = 'wallet/hive/power-up',
