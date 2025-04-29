@@ -178,13 +178,13 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
               <CustomTooltip
                 dataTestId="scustom-tool-tip"
                 additionalClassName="history-tooltip"
-                message={moment(transaction.timestamp).format(
+                message={moment(transaction.timestamp + 'Z').format(
                   'YYYY/MM/DD , hh:mm:ss a',
                 )}
                 skipTranslation
                 color="grey">
                 <div className="date">
-                  {moment(transaction.timestamp).format('L')}
+                  {moment(transaction.timestamp + 'Z').format('L')}
                 </div>
               </CustomTooltip>
               {getStatusIcon()}
