@@ -128,6 +128,7 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
         return;
     }
   };
+  console.log(transaction.timestamp);
 
   const getStatusIcon = () => {
     let icon;
@@ -178,13 +179,13 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
               <CustomTooltip
                 dataTestId="scustom-tool-tip"
                 additionalClassName="history-tooltip"
-                message={moment(transaction.timestamp + 'Z').format(
+                message={moment(transaction.timestamp).format(
                   'YYYY/MM/DD , hh:mm:ss a',
                 )}
                 skipTranslation
                 color="grey">
                 <div className="date">
-                  {moment(transaction.timestamp + 'Z').format('L')}
+                  {moment(transaction.timestamp).format('L')}
                 </div>
               </CustomTooltip>
               {getStatusIcon()}
