@@ -20,17 +20,10 @@ export const vscStaking = async (
   requestHandler: RequestsHandler,
   data: RequestVscStaking & RequestId,
 ) => {
-  const JSON_ID =
-    data.operation === 'STAKING' ? 'vsc.stake_hbd' : 'vsc.unstake_hbd';
-  const json = {
-    net_id: data.netId || Config.vsc.BASE_JSON.net_id,
-    from: data.username!.startsWith('hive:')
-      ? data.username
-      : `hive:${data.username}`,
-    to: data.to,
-    amount: data.amount,
-    asset: data.currency.toLowerCase(),
-  };
+  const { json, id } = VscUtils.getStakingJson(
+    data,
+    Config.vsc.BASE_JSON.net_id,
+  );
   let key = requestHandler.data.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -47,7 +40,7 @@ export const vscStaking = async (
           json,
           data.username!,
           KeyType.ACTIVE,
-          JSON_ID,
+          id,
         );
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
@@ -66,7 +59,7 @@ export const vscStaking = async (
           data.username!,
           key!,
           KeyType.ACTIVE,
-          JSON_ID,
+          id,
         );
         break;
       }

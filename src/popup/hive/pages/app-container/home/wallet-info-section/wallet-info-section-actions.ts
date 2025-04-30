@@ -169,7 +169,7 @@ export const WalletInfoSectionVscActions = (
       {
         label: 'popup_html_savings',
         icon: SVGIcons.WALLET_SAVINGS,
-        nextScreen: Screen.VSC_SAVINGS_PAGE,
+        nextScreen: Screen.VSC_STAKING_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
     ];

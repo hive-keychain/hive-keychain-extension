@@ -275,7 +275,7 @@ const TransferFromVsc = ({
     <>
       <div
         className="transfer-funds-page"
-        data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
+        data-testid={`${Screen.VSC_TRANSFER_PAGE}-page`}>
         <BalanceSectionComponent
           value={balance}
           unit={currencyLabels[watch('selectedCurrency')]}

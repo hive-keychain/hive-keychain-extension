@@ -24,6 +24,7 @@ import {
   FormatUtils,
   LoadingState,
   VscHistoryType,
+  VscStakingOperation,
   VscStatus,
   VscUtils,
 } from 'hive-keychain-commons';
@@ -34,10 +35,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import {
-  ComplexeCustomSelect,
-  OptionItem,
-} from 'src/common-ui/custom-select/custom-select.component';
+import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -54,19 +52,19 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
-interface WithdrawalForm {
+interface StakingForm {
   receiver: string;
   selectedCurrency: keyof CurrencyLabels;
   amount: number;
-  memo: string;
+  operation: VscStakingOperation;
 }
 
-const withdrawFormRules = FormUtils.createRules<WithdrawalForm>({
+const stakingFormRules = FormUtils.createRules<StakingForm>({
   receiver: Joi.string().required(),
   amount: Joi.number().required().positive().max(Joi.ref('$balance')),
 });
 
-const WithdrawFromVsc = ({
+const StakeOnVsc = ({
   activeAccount,
   navParams,
   currencyLabels,
@@ -83,20 +81,18 @@ const WithdrawFromVsc = ({
   setTitleContainerProperties,
   vscBalance,
 }: PropsFromRedux) => {
-  const { control, handleSubmit, setValue, watch } = useForm<WithdrawalForm>({
+  const { control, handleSubmit, setValue, watch } = useForm<StakingForm>({
     defaultValues: {
-      receiver: formParams.receiverUsername
-        ? formParams.receiverUsername
-        : activeAccount.name,
+      receiver: formParams.receiverUsername || activeAccount.name,
       selectedCurrency: formParams.selectedCurrency
         ? formParams.selectedCurrency
         : navParams.selectedCurrency,
       amount: formParams.amount ? formParams.amount : '',
-      memo: '',
+      operation: VscStakingOperation.STAKING,
     },
     resolver: (values, context, options) => {
-      const resolver = joiResolver<Joi.ObjectSchema<WithdrawalForm>>(
-        withdrawFormRules,
+      const resolver = joiResolver<Joi.ObjectSchema<StakingForm>>(
+        stakingFormRules,
         { context: { balance: balance }, errors: { render: true } },
       );
       return resolver(values, { balance: balance }, options);
@@ -114,17 +110,36 @@ const WithdrawFromVsc = ({
     fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
-      title: 'dialog_title_vsc_withdrawal',
+      title: 'dialog_title_vsc_staking',
       isBackButtonEnabled: true,
     });
   }, []);
 
   useEffect(() => {
-    if (vscBalance.state === LoadingState.LOADED)
+    if (vscBalance.state === LoadingState.LOADED) {
       setBalance(
-        vscBalance.balance![watch('selectedCurrency') as 'hive' | 'hbd'] / 1000,
+        vscBalance.balance![
+          watch('operation') === VscStakingOperation.UNSTAKING
+            ? 'hbd_savings'
+            : 'hbd'
+        ] / 1000,
       );
-  }, [watch('selectedCurrency')]);
+    }
+  }, [watch('operation')]);
+
+  const stakingOperationTypeOptions: {
+    label: string;
+    value: VscStakingOperation;
+  }[] = [
+    {
+      label: chrome.i18n.getMessage('popup_html_token_stake'),
+      value: VscStakingOperation.STAKING,
+    },
+    {
+      label: chrome.i18n.getMessage('popup_html_token_unstake'),
+      value: VscStakingOperation.UNSTAKING,
+    },
+  ];
 
   const options = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -149,7 +164,7 @@ const WithdrawFromVsc = ({
     return watch();
   };
 
-  const handleClickOnSend = async (form: WithdrawalForm) => {
+  const handleClickOnSend = async (form: StakingForm) => {
     if (form.amount <= 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
@@ -160,10 +175,6 @@ const WithdrawFromVsc = ({
       return;
     }
 
-    const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
-      currencyLabels[form.selectedCurrency]
-    }`;
-
     const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
       parseFloat(form.amount.toString()),
     )} ${currencyLabels[form.selectedCurrency]}`;
@@ -173,11 +184,6 @@ const WithdrawFromVsc = ({
       { label: 'popup_html_transfer_to', value: `@${form.receiver}` },
       { label: 'popup_html_transfer_amount', value: stringifiedAmount },
     ];
-    if (form.memo.length)
-      fields.push({
-        label: 'popup_html_transfer_memo',
-        value: form.memo,
-      });
 
     let warningMessage = await TransferUtils.getTransferWarning(
       form.receiver,
@@ -188,17 +194,23 @@ const WithdrawFromVsc = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('dialog_title_vsc_withdrawal_header', [
-        form.selectedCurrency.toUpperCase(),
-      ]),
+      message: chrome.i18n.getMessage(
+        form.operation === VscStakingOperation.STAKING
+          ? 'dialog_title_vsc_staking_header'
+          : 'dialog_title_vsc_unstaking_header',
+        [form.selectedCurrency.toUpperCase()],
+      ),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
-      title: 'dialog_title_vsc_withdrawal',
+      title:
+        form.operation === VscStakingOperation.STAKING
+          ? 'dialog_title_vsc_staking'
+          : 'dialog_title_vsc_unstaking',
       formParams: getFormParams(),
       afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
-          'html_popup_vsc_withdraw_operation',
+          'html_popup_transfer_fund_operation',
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
@@ -214,17 +226,16 @@ const WithdrawFromVsc = ({
 
         try {
           let success;
-          const { json, id } = VscUtils.getWithdrawJson(
+          const { json, id } = VscUtils.getStakingJson(
             {
               username: activeAccount.name,
               to: form.receiver,
               amount: form.amount.toFixed(3),
               currency: form.selectedCurrency,
-              memo: form.memo,
+              operation: form.operation,
             },
             Config.vsc.BASE_JSON.net_id,
           );
-
           success = await CustomJsonUtils.send(
             json,
             activeAccount.name!,
@@ -232,7 +243,8 @@ const WithdrawFromVsc = ({
             KeyType.ACTIVE,
             id,
           );
-          removeFromLoadingList('html_popup_vsc_withdraw_operation');
+
+          removeFromLoadingList('html_popup_transfer_fund_operation');
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -247,7 +259,7 @@ const WithdrawFromVsc = ({
             } else {
               const status = await VscUtils.waitForStatus(
                 success?.tx_id,
-                VscHistoryType.WITHDRAW,
+                VscHistoryType.STAKING,
                 200,
               );
               const message =
@@ -257,7 +269,7 @@ const WithdrawFromVsc = ({
                   ? 'bgd_ops_vsc_confirmed'
                   : 'bgd_ops_vsc_not_included';
 
-              //   removeFromLoadingList('html_popup_confirm_transaction_operation');
+              removeFromLoadingList('html_popup_confirm_transaction_operation');
               setSuccessMessage(message);
             }
           } else {
@@ -276,8 +288,8 @@ const WithdrawFromVsc = ({
   return (
     <>
       <div
-        className="transfer-funds-page"
-        data-testid={`${Screen.VSC_WITHDRAW_PAGE}-page`}>
+        className="vsc-staking-page"
+        data-testid={`${Screen.VSC_STAKING_PAGE}-page`}>
         <BalanceSectionComponent
           value={balance}
           unit={currencyLabels[watch('selectedCurrency')]}
@@ -286,6 +298,17 @@ const WithdrawFromVsc = ({
 
         <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
           <div className="form-fields">
+            <ComplexeCustomSelect
+              label="popup_html_savings_operation_type"
+              options={stakingOperationTypeOptions}
+              selectedItem={{
+                value: watch('operation'),
+                label: stakingOperationTypeOptions.find(
+                  (item) => item.value === watch('operation'),
+                )!.label,
+              }}
+              setSelectedItem={(item) => setValue('operation', item.value)}
+            />
             <FormInputComponent
               name="receiver"
               control={control}
@@ -297,24 +320,14 @@ const WithdrawFromVsc = ({
               autocompleteValues={autocompleteFavoriteUsers}
             />
             <div className="value-panel">
-              <ComplexeCustomSelect
+              <FormInputComponent
+                classname="currency-fake-input"
+                dataTestId="currency-input"
+                control={control}
+                name="selectedCurrency"
+                type={InputType.TEXT}
                 label="popup_html_currency"
-                options={options}
-                selectedItem={
-                  {
-                    value: watch('selectedCurrency'),
-                    label:
-                      currencyLabels[
-                        watch('selectedCurrency') as keyof CurrencyLabels
-                      ],
-                  } as OptionItem
-                }
-                setSelectedItem={(item) =>
-                  setValue(
-                    'selectedCurrency',
-                    item.value as keyof CurrencyLabels,
-                  )
-                }
+                disabled
               />
 
               <div className="value-input-panel">
@@ -332,20 +345,16 @@ const WithdrawFromVsc = ({
                 />
               </div>
             </div>
-            <FormInputComponent
-              name="memo"
-              control={control}
-              dataTestId="input-memo-optional"
-              type={InputType.TEXT}
-              label="popup_html_memo_optional"
-              placeholder="popup_html_memo_optional"
-            />
           </div>
           <OperationButtonComponent
-            dataTestId="send-transfer"
+            dataTestId="send-staking"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleSubmit(handleClickOnSend)}
-            label={'popup_html_withdraw'}
+            label={
+              watch('operation') === VscStakingOperation.UNSTAKING
+                ? 'popup_html_token_unstake'
+                : 'popup_html_token_stake'
+            }
           />
         </FormContainer>
       </div>
@@ -356,7 +365,6 @@ const WithdrawFromVsc = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    vscBalance: state.hive.vscBalance,
     currencyLabels: CurrencyUtils.getCurrencyLabels(
       state.hive.activeRpc?.testnet!,
     ),
@@ -366,6 +374,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     phishing: state.hive.phishing,
     localAccounts: state.hive.accounts,
+    vscBalance: state.hive.vscBalance,
   };
 };
 
@@ -381,4 +390,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const VscWithdrawalComponent = connector(WithdrawFromVsc);
+export const VscStakingComponent = connector(StakeOnVsc);

@@ -58,7 +58,7 @@ interface DepositForm {
   amount: number;
 }
 
-const transferFormRules = FormUtils.createRules<DepositForm>({
+const depositFormRules = FormUtils.createRules<DepositForm>({
   receiver: Joi.string().required(),
   amount: Joi.number().required().positive().max(Joi.ref('$balance')),
 });
@@ -91,7 +91,7 @@ const DepositToVsc = ({
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<DepositForm>>(
-        transferFormRules,
+        depositFormRules,
         { context: { balance: balance }, errors: { render: true } },
       );
       return resolver(values, { balance: balance }, options);
@@ -258,7 +258,7 @@ const DepositToVsc = ({
     <>
       <div
         className="transfer-funds-page"
-        data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
+        data-testid={`${Screen.VSC_DEPOSIT_PAGE}-page`}>
         <BalanceSectionComponent
           value={balance}
           unit={currencyLabels[watch('selectedCurrency')]}
