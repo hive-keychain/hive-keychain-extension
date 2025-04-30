@@ -196,7 +196,13 @@ const DepositToVsc = ({
             activeAccount.keys.activePubkey!,
           ),
         );
-        addToLoadingList('html_popup_confirm_transaction_operation');
+        addToLoadingList(
+          'html_popup_confirm_transaction_operation',
+          undefined,
+          undefined,
+          undefined,
+          true,
+        );
 
         try {
           let success;
