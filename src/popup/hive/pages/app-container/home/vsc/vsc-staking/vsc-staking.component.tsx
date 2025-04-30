@@ -191,6 +191,7 @@ const StakeOnVsc = ({
       '',
       phishing,
       false,
+      true,
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,

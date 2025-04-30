@@ -15,12 +15,14 @@ const getTransferWarning = (
   memo: any,
   phisingAccounts: any,
   isRecurrent?: boolean,
+  isOnVsc?: boolean,
 ) => {
   const exchangeWarning = getExchangeValidationWarning(
     account,
     currency,
     memo.length > 0,
     isRecurrent,
+    isOnVsc,
   );
   if (exchangeWarning) return exchangeWarning;
 
@@ -57,9 +59,12 @@ const getExchangeValidationWarning = (
   currency: string,
   hasMemo: boolean,
   isRecurrent?: boolean,
+  isOnVsc?: boolean,
 ) => {
   const exchange = exchanges.find((exchange) => exchange.username === account);
   if (!exchange) return;
+  if (exchange && isOnVsc)
+    return chrome.i18n.getMessage('popup_warning_exchange_vsc');
   if (!exchange.acceptedCoins.includes(currency)) {
     return chrome.i18n.getMessage('popup_warning_exchange_deposit', [currency]);
   }

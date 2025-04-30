@@ -182,9 +182,10 @@ const WithdrawFromVsc = ({
     let warningMessage = await TransferUtils.getTransferWarning(
       form.receiver,
       currencyLabels[form.selectedCurrency],
-      '',
+      form.memo,
       phishing,
       false,
+      true,
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,

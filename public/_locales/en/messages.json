@@ -1694,6 +1694,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_exchange_vsc": {
+    "message": "Most exchanges don't accept VSC transfers. If you proceed, your funds may be lost.",
+    "description": "When trying to transfer to an exchange account on VSC"
+  },
   "popup_warning_phishing_domain": {
     "message": "@$1 has been flagged as a malicious domain, check the spelling and make sure this is the dApp you want to use.",
     "description": "When trying to transfer to a blacklisted account"
