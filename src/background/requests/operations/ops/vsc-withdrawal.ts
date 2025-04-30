@@ -20,17 +20,10 @@ export const vscWithdrawal = async (
   requestHandler: RequestsHandler,
   data: RequestVscWithdrawal & RequestId,
 ) => {
-  const JSON_ID = 'vsc.withdraw';
-  const json = {
-    net_id: data.netId || Config.vsc.BASE_JSON.net_id,
-    from: data.username!.startsWith('hive:')
-      ? data.username
-      : `hive:${data.username}`,
-    to: data.to,
-    amount: data.amount,
-    asset: data.currency.toLowerCase(),
-    memo: data.memo,
-  };
+  const { json, id: JSON_ID } = VscUtils.getWithdrawJson(
+    data,
+    Config.vsc.BASE_JSON.net_id,
+  );
   let key = requestHandler.data.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(

@@ -128,7 +128,6 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
         return;
     }
   };
-  console.log(transaction.timestamp);
 
   const getStatusIcon = () => {
     let icon;

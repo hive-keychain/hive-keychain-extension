@@ -2308,6 +2308,10 @@
     "message": "Deleting account",
     "description": "delete account operation"
   },
+  "html_popup_vsc_withdraw_operation": {
+    "message": "Withdrawing from VSC",
+    "description": "withdrawing from vsc on main popup"
+  },
   "html_popup_transfer_fund_operation": {
     "message": "Transferring funds",
     "description": "Transfer fund operation"
