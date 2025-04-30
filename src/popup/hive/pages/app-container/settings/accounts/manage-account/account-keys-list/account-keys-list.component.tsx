@@ -20,6 +20,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -46,6 +47,9 @@ const AccountKeysList = ({
   const [account, setAccount] = useState<LocalAccount>();
   const [canDeleteKey, setCanDeleteKey] = useState(true);
 
+  const [check1, setCheck1] = useState<boolean>(false);
+  const [check2, setCheck2] = useState<boolean>(false);
+  const [showQR, setShowQR] = useState<boolean>(false);
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -203,23 +207,55 @@ const AccountKeysList = ({
                 </span>
               </div>
             </div>
-            <div className="qr-code-container">
-              <div ref={qrCodeRef}></div>
-              <QRCode
-                data-testid="qrcode"
-                className="qrcode"
-                size={240}
-                value={`keychain://add_account=${JSON.stringify(
-                  AccountUtils.generateQRCode(account!),
-                )}`}
-                bgColor="var(--qrcode-background-color)"
-                fgColor="var(--qrcode-foreground-color)"
-              />
-            </div>
-            <ButtonComponent
-              label="popup_html_close"
-              onClick={() => setQRCodeDisplayed(false)}
-            />
+            {!showQR ? (
+              <div>
+                <div className="qr-code-popup-checkbox-container">
+                  <CheckboxPanelComponent
+                    text="popup_html_qr_check1"
+                    onChange={(checked) => {
+                      setCheck1(checked);
+                    }}
+                    checked={check1}
+                  />
+                  <CheckboxPanelComponent
+                    text="popup_html_qr_check2"
+                    onChange={(checked) => {
+                      setCheck2(checked);
+                    }}
+                    checked={check2}
+                  />
+                </div>
+                <div className="submit-button-container">
+                  <ButtonComponent
+                    label="popup_html_qr_exported_show_button"
+                    onClick={() => {
+                      if (check1 && check2) setShowQR(true);
+                    }}
+                    type={ButtonType.IMPORTANT}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="qr-code-container">
+                  <div ref={qrCodeRef}></div>
+                  <QRCode
+                    data-testid="qrcode"
+                    className="qrcode"
+                    size={240}
+                    value={`keychain://add_account=${JSON.stringify(
+                      AccountUtils.generateQRCode(account!),
+                    )}`}
+                    bgColor="var(--qrcode-background-color)"
+                    fgColor="var(--qrcode-foreground-color)"
+                  />
+                </div>
+                <ButtonComponent
+                  label="popup_html_close"
+                  onClick={() => setQRCodeDisplayed(false)}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

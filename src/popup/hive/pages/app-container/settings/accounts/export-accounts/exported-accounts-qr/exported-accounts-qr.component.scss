@@ -3,7 +3,15 @@
   row-gap: 16px;
   justify-content: flex-start;
   overflow-y: auto;
-
+  .checkbox-panel {
+    margin: 12px;
+  }
+  .submit-button-container {
+    padding: 12px;
+    width: 80%;
+    display: flex;
+    justify-self: center;
+  }
   .qr-exported-item {
     display: flex;
     flex-direction: column;
@@ -32,6 +40,7 @@
       display: flex;
       flex-direction: row;
       justify-content: space-around;
+      justify-self: center;
       width: 85%;
       margin-bottom: 16px;
       .button-export-accounts-qr {

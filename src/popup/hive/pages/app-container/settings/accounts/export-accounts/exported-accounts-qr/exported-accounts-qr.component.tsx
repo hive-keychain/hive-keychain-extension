@@ -10,6 +10,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 
 export const QR_CONTENT_PREFIX = 'keychain://add_accounts=';
 
@@ -28,6 +29,9 @@ const ExportedAccountsQR = ({
     }[]
   >([]);
   const [pageIndex, setPageIndex] = useState<number>(0);
+  const [check1, setCheck1] = useState<boolean>(false);
+  const [check2, setCheck2] = useState<boolean>(false);
+  const [showQR, setShowQR] = useState<boolean>(false);
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_exported_accounts_QR',
@@ -38,6 +42,7 @@ const ExportedAccountsQR = ({
 
   useEffect(() => {
     document.onkeydown = function (e) {
+      if (!showQR) return;
       switch (e.code) {
         case 'ArrowLeft': // left arrow pressed
           pageIndex === 0 ? null : movePrevious();
@@ -105,47 +110,79 @@ const ExportedAccountsQR = ({
                   'popup_html_qr_exported_set_disclaimer1',
                 ) + ' '}
               </div>
-              <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</div>
+              <div className="red">
+                {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
+              </div>
               <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer3')}</div>
             </div>
           </div>
-          <div className="qr-code-container">
+          {!showQR ? (
             <div>
-              {accountsDataQR[pageIndex].index}/
-              {accountsDataQR[pageIndex].total} : @
-              {accountsDataQR[pageIndex].data
-                .map((e: LocalAccount) => e.name)
-                .join(', @')}
+              <CheckboxPanelComponent
+                text="popup_html_qr_exported_check1"
+                onChange={(checked) => {
+                  setCheck1(checked);
+                }}
+                checked={check1}
+              />
+              <CheckboxPanelComponent
+                text="popup_html_qr_exported_check2"
+                onChange={(checked) => {
+                  setCheck2(checked);
+                }}
+                checked={check2}
+              />
+              <div className="submit-button-container">
+                <ButtonComponent
+                  label="popup_html_qr_exported_show_button"
+                  onClick={() => {
+                    if (check1 && check2) setShowQR(true);
+                  }}
+                  type={ButtonType.IMPORTANT}
+                />
+              </div>
             </div>
-            <div ref={qrCodeRef}></div>
-            <QRCode
-              data-testid="qrcode"
-              className="qrcode"
-              size={300}
-              value={`${QR_CONTENT_PREFIX}${encode(
-                JSON.stringify(accountsDataQR[pageIndex]),
-              )}`}
-              bgColor="var(--qrcode-background-color)"
-              fgColor="var(--qrcode-foreground-color)"
-            />
-          </div>
-          <div className="buttons-container">
-            <ButtonComponent
-              label="popup_html_whats_new_previous"
-              onClick={movePrevious}
-              type={ButtonType.ALTERNATIVE}
-              additionalClass={`button-export-accounts-qr ${
-                pageIndex === 0 ? 'hidden' : ''
-              }`}
-            />
-            <ButtonComponent
-              label="popup_html_whats_new_next"
-              onClick={moveNext}
-              additionalClass={`button-export-accounts-qr ${
-                pageIndex === accountsDataQR.length - 1 ? 'hidden' : ''
-              }`}
-            />
-          </div>
+          ) : (
+            <div>
+              <div className="qr-code-container">
+                <div>
+                  {accountsDataQR[pageIndex].index}/
+                  {accountsDataQR[pageIndex].total} : @
+                  {accountsDataQR[pageIndex].data
+                    .map((e: LocalAccount) => e.name)
+                    .join(', @')}
+                </div>
+                <div ref={qrCodeRef}></div>
+                <QRCode
+                  data-testid="qrcode"
+                  className="qrcode"
+                  size={300}
+                  value={`${QR_CONTENT_PREFIX}${encode(
+                    JSON.stringify(accountsDataQR[pageIndex]),
+                  )}`}
+                  bgColor="var(--qrcode-background-color)"
+                  fgColor="var(--qrcode-foreground-color)"
+                />
+              </div>
+              <div className="buttons-container">
+                <ButtonComponent
+                  label="popup_html_whats_new_previous"
+                  onClick={movePrevious}
+                  type={ButtonType.ALTERNATIVE}
+                  additionalClass={`button-export-accounts-qr ${
+                    pageIndex === 0 ? 'hidden' : ''
+                  }`}
+                />
+                <ButtonComponent
+                  label="popup_html_whats_new_next"
+                  onClick={moveNext}
+                  additionalClass={`button-export-accounts-qr ${
+                    pageIndex === accountsDataQR.length - 1 ? 'hidden' : ''
+                  }`}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
