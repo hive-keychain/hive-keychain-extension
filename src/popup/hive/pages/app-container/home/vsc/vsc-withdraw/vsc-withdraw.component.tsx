@@ -110,12 +110,6 @@ const WithdrawFromVsc = ({
       categories: [],
     });
 
-  let balances = {
-    hive: FormatUtils.toNumber(activeAccount.account.balance as string),
-    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance as string),
-    hp: 0,
-  };
-
   useEffect(() => {
     fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
@@ -351,7 +345,7 @@ const WithdrawFromVsc = ({
             dataTestId="send-transfer"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleSubmit(handleClickOnSend)}
-            label={'popup_html_send_transfer'}
+            label={'popup_html_withdraw'}
           />
         </FormContainer>
       </div>

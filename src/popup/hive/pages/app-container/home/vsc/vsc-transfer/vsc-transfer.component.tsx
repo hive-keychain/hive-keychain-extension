@@ -4,7 +4,8 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
-import { TransactionOptions } from '@interfaces/keys.interface';
+import { KeyType, TransactionOptions } from '@interfaces/keys.interface';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -21,6 +22,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import {
   FormatUtils,
+  LoadingState,
   VscHistoryType,
   VscStatus,
   VscUtils,
@@ -52,13 +54,14 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
-interface DepositForm {
+interface TransferForm {
   receiver: string;
   selectedCurrency: keyof CurrencyLabels;
   amount: number;
+  memo: string;
 }
 
-const transferFormRules = FormUtils.createRules<DepositForm>({
+const transferFormRules = FormUtils.createRules<TransferForm>({
   receiver: Joi.string().required(),
   amount: Joi.number().required().positive().max(Joi.ref('$balance')),
 });
@@ -78,19 +81,19 @@ const TransferFromVsc = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  vscBalance,
 }: PropsFromRedux) => {
-  const { control, handleSubmit, setValue, watch } = useForm<DepositForm>({
+  const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
-      receiver: formParams.receiverUsername
-        ? formParams.receiverUsername
-        : activeAccount.name,
+      receiver: formParams.receiverUsername,
       selectedCurrency: formParams.selectedCurrency
         ? formParams.selectedCurrency
         : navParams.selectedCurrency,
       amount: formParams.amount ? formParams.amount : '',
+      memo: '',
     },
     resolver: (values, context, options) => {
-      const resolver = joiResolver<Joi.ObjectSchema<DepositForm>>(
+      const resolver = joiResolver<Joi.ObjectSchema<TransferForm>>(
         transferFormRules,
         { context: { balance: balance }, errors: { render: true } },
       );
@@ -105,23 +108,20 @@ const TransferFromVsc = ({
       categories: [],
     });
 
-  let balances = {
-    hive: FormatUtils.toNumber(activeAccount.account.balance as string),
-    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance as string),
-    hp: 0,
-  };
-
   useEffect(() => {
     fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
-      title: 'dialog_title_vsc_deposit',
+      title: 'dialog_title_vsc_transfer',
       isBackButtonEnabled: true,
     });
   }, []);
 
   useEffect(() => {
-    setBalance(balances[watch('selectedCurrency')]);
+    if (vscBalance.state === LoadingState.LOADED)
+      setBalance(
+        vscBalance.balance![watch('selectedCurrency') as 'hive' | 'hbd'] / 1000,
+      );
   }, [watch('selectedCurrency')]);
 
   const options = [
@@ -147,7 +147,7 @@ const TransferFromVsc = ({
     return watch();
   };
 
-  const handleClickOnSend = async (form: DepositForm) => {
+  const handleClickOnSend = async (form: TransferForm) => {
     if (form.amount <= 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
@@ -171,6 +171,11 @@ const TransferFromVsc = ({
       { label: 'popup_html_transfer_to', value: `@${form.receiver}` },
       { label: 'popup_html_transfer_amount', value: stringifiedAmount },
     ];
+    if (form.memo.length)
+      fields.push({
+        label: 'popup_html_transfer_memo',
+        value: form.memo,
+      });
 
     let warningMessage = await TransferUtils.getTransferWarning(
       form.receiver,
@@ -181,11 +186,13 @@ const TransferFromVsc = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_vsc_deposit_confirm_text'),
+      message: chrome.i18n.getMessage('dialog_title_vsc_transfer_header', [
+        form.selectedCurrency.toUpperCase(),
+      ]),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
-      title: 'dialog_title_vsc_deposit',
+      title: 'dialog_title_vsc_transfer',
       formParams: getFormParams(),
       afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
@@ -195,22 +202,32 @@ const TransferFromVsc = ({
             activeAccount.keys.activePubkey!,
           ),
         );
-        addToLoadingList('html_popup_confirm_transaction_operation');
+        addToLoadingList(
+          'html_popup_confirm_transaction_operation',
+          undefined,
+          undefined,
+          undefined,
+          true,
+        );
 
         try {
           let success;
-          const memo = `to=${form.receiver}`;
-
-          success = await TransferUtils.sendTransfer(
+          const { json, id } = VscUtils.getTransferJson(
+            {
+              username: activeAccount.name,
+              to: form.receiver,
+              amount: form.amount.toFixed(3),
+              currency: form.selectedCurrency,
+              memo: form.memo,
+            },
+            Config.vsc.BASE_JSON.net_id,
+          );
+          success = await CustomJsonUtils.send(
+            json,
             activeAccount.name!,
-            Config.vsc.ACCOUNT,
-            formattedAmount,
-            memo,
-            false,
-            0,
-            0,
             activeAccount.keys.active!,
-            options,
+            KeyType.ACTIVE,
+            id,
           );
 
           removeFromLoadingList('html_popup_transfer_fund_operation');
@@ -228,7 +245,7 @@ const TransferFromVsc = ({
             } else {
               const status = await VscUtils.waitForStatus(
                 success?.tx_id,
-                VscHistoryType.DEPOSIT,
+                VscHistoryType.TRANSFER,
                 200,
               );
               const message =
@@ -313,6 +330,14 @@ const TransferFromVsc = ({
                 />
               </div>
             </div>
+            <FormInputComponent
+              name="memo"
+              control={control}
+              dataTestId="input-memo-optional"
+              type={InputType.TEXT}
+              label="popup_html_memo_optional"
+              placeholder="popup_html_memo_optional"
+            />
           </div>
           <OperationButtonComponent
             dataTestId="send-transfer"
@@ -338,6 +363,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     phishing: state.hive.phishing,
     localAccounts: state.hive.accounts,
+    vscBalance: state.hive.vscBalance,
   };
 };
 

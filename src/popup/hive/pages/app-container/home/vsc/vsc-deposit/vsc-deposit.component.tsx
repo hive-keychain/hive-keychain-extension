@@ -318,7 +318,7 @@ const DepositToVsc = ({
             dataTestId="send-transfer"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleSubmit(handleClickOnSend)}
-            label={'popup_html_send_transfer'}
+            label={'popup_html_deposit'}
           />
         </FormContainer>
       </div>

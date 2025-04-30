@@ -20,17 +20,10 @@ export const vscTransfer = async (
   requestHandler: RequestsHandler,
   data: RequestVscTransfer & RequestId,
 ) => {
-  const JSON_ID = 'vsc.transfer';
-  const json = {
-    net_id: data.netId || Config.vsc.BASE_JSON.net_id,
-    from: data.username!.startsWith('hive:')
-      ? data.username
-      : `hive:${data.username}`,
-    to: data.to,
-    amount: data.amount,
-    asset: data.currency.toLowerCase(),
-    memo: data.memo,
-  };
+  const { json, id } = VscUtils.getTransferJson(
+    data,
+    Config.vsc.BASE_JSON.net_id,
+  );
   let key = requestHandler.data.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -47,7 +40,7 @@ export const vscTransfer = async (
           json,
           data.username!,
           KeyType.ACTIVE,
-          JSON_ID,
+          id,
         );
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
@@ -66,7 +59,7 @@ export const vscTransfer = async (
           data.username!,
           key!,
           KeyType.ACTIVE,
-          JSON_ID,
+          id,
         );
         break;
       }
