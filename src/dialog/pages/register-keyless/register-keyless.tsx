@@ -1,3 +1,4 @@
+import { RequestsHandler } from '@background/requests/request-handler';
 import { AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
@@ -11,6 +12,7 @@ import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.comp
 
 type RegisterKeylessProps = {
   command: DialogCommand;
+  requestHandler: RequestsHandler;
   data: KeychainRequest | KeylessRequest;
   tab: number;
   domain: string;
@@ -67,7 +69,7 @@ const RegisterKeyless = (props: Props) => {
 
   const registerKeyless = async () => {
     chrome.runtime.sendMessage({
-      command: BackgroundCommand.KEYLESS_KEYCHAIN,
+      command: BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER,
       value: {
         data,
         domain,

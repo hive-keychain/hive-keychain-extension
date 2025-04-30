@@ -1761,10 +1761,17 @@
     "message": "Register Keyless Keychain",
     "description": "When registering from request"
   },
-
+  "dialog_header_keyless_username": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
   "dialog_register_keyless_loading": {
     "message": "Registering to HiveAuth",
     "description": "When registering to keyless keychain"
+  },
+  "dialog_anonymous_keyless_content": {
+    "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
+    "description": "When registering from request"
   },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",

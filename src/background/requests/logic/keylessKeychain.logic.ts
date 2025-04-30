@@ -17,7 +17,12 @@ export const keylessKeychainRequest = async (
   //TODO: handle when authentication is expired -> if the request is not a signBuffer request,
   // then create a signBuffer request
   // out of the information from the actual request and proceed to authentication
-  if (request.type === KeychainRequestTypes.signBuffer) {
+
+  if (!request.username || request.username.trim() === '') {
+    console.log('keyless: anonymous keyless op');
+    handleAnonymousKeylessOp(requestHandler, tab, request, domain);
+  } else if (request.type === KeychainRequestTypes.signBuffer) {
+    console.log('keyless: sign buffer request');
     const keylessAuthData =
       await KeylessKeychainModule.checkKeylessRegistration(
         request,
@@ -54,4 +59,22 @@ export const keylessKeychainRequest = async (
     console.log('keyless: registered, proceed to sign');
     performKeylessOperation(requestHandler, tab, request, domain);
   }
+};
+
+const handleAnonymousKeylessOp = async (
+  requestHandler: RequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  const callback = async () => {
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANONYMOUS_KEYLESS_OP,
+      requestHandler,
+      data: request,
+      tab,
+      domain,
+    });
+  };
+  createPopup(callback, requestHandler);
 };

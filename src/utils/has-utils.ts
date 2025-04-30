@@ -1,4 +1,5 @@
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
 import {
   AUTH_ACK,
@@ -10,6 +11,7 @@ import {
   AUTH_REQ_DATA,
   AUTH_WAIT,
   CHALLENGE_ACK,
+  CHALLENGE_ACK_DATA,
   CHALLENGE_NACK,
   CHALLENGE_REQ,
   CHALLENGE_REQ_DATA,
@@ -507,6 +509,7 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -709,7 +712,7 @@ const handleChallengeAck = async (
   keylessAuthData: KeylessAuthData,
 ) => {
   try {
-    const challenge_ack_data: CHALLENGE_ACK =
+    const challenge_ack_data: CHALLENGE_ACK_DATA =
       typeof challenge_ack.data === 'string'
         ? JSON.parse(
             EncryptUtils.decryptNoIV(
@@ -854,26 +857,26 @@ const sendResponseToDapp = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  response: SIGN_ACK | CHALLENGE_ACK | CHALLENGE_NACK,
+  response: SIGN_ACK | CHALLENGE_ACK_DATA | CHALLENGE_NACK,
   error?: any,
 ) => {
-  const result = { ...response };
-  console.log('sendResponseToDapp result:', { result });
   // Determine if the operation was successful
   const success =
     !error && ('broadcast' in response ? response.broadcast === true : true);
 
   const message = await createMessage(
     error,
-    result,
+    'challenge' in response && response.challenge
+      ? response.challenge
+      : response,
     request,
     success
       ? await chrome.i18n.getMessage('bgd_ops_keyless_broadcast_success')
       : error?.message || 'Operation failed',
     error?.message || null,
+    'challenge' in response && response.challenge ? response.pubkey : null,
   );
 
-  console.log('sendResponseToDapp message:', { message });
   chrome.tabs.sendMessage(tab, message);
 };
 
@@ -883,7 +886,7 @@ const sendResponseToDapp = async (
  * @param unit The unit of the amount ('HP' or 'VESTS').
  * @returns The calculated vesting shares as a string with 6 decimals and ' VESTS' suffix (e.g., '123.456789 VESTS').
  */
-export const calculateVests = async (
+const calculateVests = async (
   amount: string,
   unit: string,
 ): Promise<string> => {

@@ -118,6 +118,14 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.KEYLESS_KEYCHAIN:
       KeylessKeychainModule.handleOperation(
+        await RequestsHandler.getFromLocalStorage(),
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
+      KeylessKeychainModule.register(
         backgroundMessage.value.data,
         backgroundMessage.value.domain,
         backgroundMessage.value.tab,
@@ -143,7 +151,7 @@ export const performKeylessOperation = async (
   request: KeychainRequest,
   domain: string,
 ) => {
-  KeylessKeychainModule.handleOperation(request, domain, tab);
+  KeylessKeychainModule.handleOperation(requestHandler, request, domain, tab);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

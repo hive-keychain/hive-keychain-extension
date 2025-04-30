@@ -1,3 +1,4 @@
+import { RequestsHandler } from '@background/requests/request-handler';
 import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
 import { AUTH_PAYLOAD, AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import {
@@ -11,6 +12,7 @@ import Config from 'src/config';
 import HASUtils from 'src/utils/has-utils';
 
 const handleOperation = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -18,7 +20,7 @@ const handleOperation = async (
   await HASUtils.connect();
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      register(request, domain, tab);
+      HASUtils.challengeRequest(request, domain, tab);
       break;
     case KeychainRequestTypes.encode:
       HASUtils.challengeRequest(request, domain, tab);
@@ -28,7 +30,12 @@ const handleOperation = async (
       break;
     default:
       console.log(JSON.stringify(request, null, 2));
-      const sign_wait = await HASUtils.signRequest(request, domain, tab);
+      const sign_wait = await HASUtils.signRequest(
+        requestHandler,
+        request,
+        domain,
+        tab,
+      );
       console.log(JSON.stringify(sign_wait, null, 2));
   }
 };
@@ -92,6 +99,13 @@ const showQRCode = (
   });
 };
 
+/**
+ * Check if the keyless auth data is registered and valid for the given username and domain
+ * @param request - The request
+ * @param domain - The domain
+ * @param tab - The tab
+ * @returns The keyless auth data if it is registered and valid, undefined otherwise
+ */
 const checkKeylessRegistration = async (
   request: KeychainRequest,
   domain: string,
@@ -111,6 +125,7 @@ const checkKeylessRegistration = async (
 };
 
 export const KeylessKeychainModule = {
+  register,
   handleOperation,
   checkKeylessRegistration,
 };
