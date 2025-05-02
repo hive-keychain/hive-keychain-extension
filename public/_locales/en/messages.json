@@ -4328,7 +4328,7 @@
     "description": "Transaction metadata"
   },
   "popup_html_proposal_vote": {
-    "message": "Keychain Proposal",
+    "message": "Support Keychain Development",
     "description": "Proposal vote"
   },
   "error_otp_not_verified": {
