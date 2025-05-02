@@ -4,18 +4,6 @@ import {
   RequestResponse,
 } from 'src/interfaces/keychain.interface';
 
-export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
-  const response = {
-    success: false,
-    error: 'ignored',
-    result: null,
-    message: 'User ignored this transaction',
-    data: prevReq,
-    request_id: prevReq.request_id,
-  };
-  sendResponse(response);
-};
-
 export const sendRequestToBackground = (
   req: KeychainRequest,
   chrome: typeof globalThis.chrome,

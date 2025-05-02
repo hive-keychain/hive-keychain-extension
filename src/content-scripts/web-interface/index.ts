@@ -5,7 +5,6 @@ import schemas, {
   commonRequestParams,
 } from 'src/content-scripts/web-interface/input-validation';
 import {
-  cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
   sendResponse,
@@ -53,9 +52,6 @@ document.addEventListener('swRequest_hive', (request: object) => {
   const { error, value } = validation;
   if (!error) {
     sendRequestToBackground(value, chrome);
-    if (prevReq) {
-      cancelPreviousRequest(prevReq);
-    }
   } else {
     sendIncompleteDataResponse(value!, error);
     req = prevReq;

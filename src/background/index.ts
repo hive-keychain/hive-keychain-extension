@@ -4,6 +4,7 @@ import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { MultisigModule } from '@background/multisig.module';
+import { cancelPreviousRequest } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
 import { RequestsHandler } from '@background/requests/request-handler';
@@ -62,8 +63,19 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
+      // const requestHandlers = await RequestsHandler.clearLocalStorage();
+
       const requestHandler = await RequestsHandler.getFromLocalStorage();
       if (requestHandler) {
+        if (requestHandler.data.request) {
+          if (requestHandler.data.isWaitingForConfirmation) {
+          } else {
+            chrome.tabs.sendMessage(requestHandler.data.tab!, {
+              command: DialogCommand.ANSWER_REQUEST,
+              msg: cancelPreviousRequest(requestHandler.data.request),
+            });
+          }
+        }
         requestHandler.closeWindow();
       }
       new RequestsHandler().sendRequest(

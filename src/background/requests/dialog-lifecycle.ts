@@ -1,6 +1,7 @@
 import { RequestsHandler } from '@background/requests/request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { KeychainRequest } from 'hive-keychain-commons';
 
 export const createPopup = (
   callback: () => void,
@@ -95,4 +96,16 @@ export const removeWindow = (windowId: number) => {
       chrome.windows.remove(windowId);
     }
   });
+};
+
+export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
+  const response = {
+    success: false,
+    error: 'ignored',
+    result: null,
+    message: 'User ignored this transaction',
+    data: prevReq,
+    request_id: prevReq.request_id,
+  };
+  return response;
 };
