@@ -6,7 +6,6 @@ import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import {
   RequestVscWithdrawal,
-  VscHistoryType,
   VscStatus,
   VscUtils,
 } from 'hive-keychain-commons';
@@ -69,12 +68,7 @@ export const vscWithdrawal = async (
     vscResult = {
       ...result,
       vscStatus: result
-        ? await VscUtils.waitForStatus(
-            result?.tx_id,
-            VscHistoryType.WITHDRAW,
-            10,
-            VscStatus.INCLUDED,
-          )
+        ? await VscUtils.waitForStatus(result?.tx_id, 10, VscStatus.INCLUDED)
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {

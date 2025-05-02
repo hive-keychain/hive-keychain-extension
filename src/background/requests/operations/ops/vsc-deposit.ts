@@ -4,12 +4,7 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
-import {
-  RequestVscDeposit,
-  VscHistoryType,
-  VscStatus,
-  VscUtils,
-} from 'hive-keychain-commons';
+import { RequestVscDeposit, VscStatus, VscUtils } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -72,12 +67,7 @@ export const vscDeposit = async (
     vscResult = {
       ...result,
       vscStatus: result
-        ? await VscUtils.waitForStatus(
-            result?.tx_id,
-            VscHistoryType.DEPOSIT,
-            10,
-            VscStatus.INCLUDED,
-          )
+        ? await VscUtils.waitForStatus(result?.tx_id, 10, VscStatus.INCLUDED)
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {

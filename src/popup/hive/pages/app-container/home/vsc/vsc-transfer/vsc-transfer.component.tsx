@@ -23,7 +23,6 @@ import { RootState } from '@popup/multichain/store';
 import {
   FormatUtils,
   LoadingState,
-  VscHistoryType,
   VscStatus,
   VscUtils,
 } from 'hive-keychain-commons';
@@ -244,11 +243,7 @@ const TransferFromVsc = ({
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else {
-              const status = await VscUtils.waitForStatus(
-                success?.tx_id,
-                VscHistoryType.TRANSFER,
-                200,
-              );
+              const status = await VscUtils.waitForStatus(success?.tx_id, 60);
               const message =
                 status === VscStatus.INCLUDED
                   ? 'bgd_ops_vsc_included'

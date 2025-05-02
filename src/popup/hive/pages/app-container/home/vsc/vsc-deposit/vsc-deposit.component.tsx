@@ -19,12 +19,7 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import {
-  FormatUtils,
-  VscHistoryType,
-  VscStatus,
-  VscUtils,
-} from 'hive-keychain-commons';
+import { FormatUtils, VscStatus, VscUtils } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -233,11 +228,7 @@ const DepositToVsc = ({
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else {
-              const status = await VscUtils.waitForStatus(
-                success?.tx_id,
-                VscHistoryType.DEPOSIT,
-                200,
-              );
+              const status = await VscUtils.waitForStatus(success?.tx_id, 60);
               const message =
                 status === VscStatus.INCLUDED
                   ? 'bgd_ops_vsc_included'

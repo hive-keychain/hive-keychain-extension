@@ -8,7 +8,7 @@ import {
 } from '@interfaces/keychain.interface';
 import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
-import { VscHistoryType, VscStatus, VscUtils } from 'hive-keychain-commons';
+import { VscStatus, VscUtils } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -71,10 +71,7 @@ export const vscCallContract = async (
     vscResult = {
       ...result,
       vscStatus: result
-        ? await VscUtils.waitForStatus(
-            result?.tx_id,
-            VscHistoryType.CONTRACT_CALL,
-          )
+        ? await VscUtils.waitForStatus(result?.tx_id)
         : VscStatus.UNCONFIRMED,
     };
   } catch (e) {
