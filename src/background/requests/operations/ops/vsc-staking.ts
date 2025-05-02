@@ -72,7 +72,8 @@ export const vscStaking = async (
         ? await VscUtils.waitForStatus(
             result?.tx_id,
             VscHistoryType.STAKING,
-            200,
+            10,
+            VscStatus.INCLUDED,
           )
         : VscStatus.UNCONFIRMED,
     };

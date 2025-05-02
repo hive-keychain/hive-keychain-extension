@@ -72,7 +72,8 @@ export const vscWithdrawal = async (
         ? await VscUtils.waitForStatus(
             result?.tx_id,
             VscHistoryType.WITHDRAW,
-            200,
+            10,
+            VscStatus.INCLUDED,
           )
         : VscStatus.UNCONFIRMED,
     };

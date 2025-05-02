@@ -72,7 +72,8 @@ export const vscTransfer = async (
         ? await VscUtils.waitForStatus(
             result?.tx_id,
             VscHistoryType.TRANSFER,
-            200,
+            10,
+            VscStatus.INCLUDED,
           )
         : VscStatus.UNCONFIRMED,
     };

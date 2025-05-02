@@ -75,7 +75,8 @@ export const vscDeposit = async (
         ? await VscUtils.waitForStatus(
             result?.tx_id,
             VscHistoryType.DEPOSIT,
-            200,
+            10,
+            VscStatus.INCLUDED,
           )
         : VscStatus.UNCONFIRMED,
     };
