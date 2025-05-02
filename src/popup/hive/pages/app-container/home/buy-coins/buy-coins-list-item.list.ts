@@ -1,5 +1,4 @@
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import Config from 'src/config';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 
 interface Exchange {
@@ -93,12 +92,12 @@ export const BuyCoinsListItem = (
     case BuyCoinType.BUY_HIVE:
       return {
         list: [
-          {
-            name: 'Transak',
-            image: SVGIcons.BUY_TRANSAK,
-            link: `https://global.transak.com?apiKey=${Config.transak.apiKey}&defaultCryptoCurrency=HIVE&exchangeScreenTitle=Buy%20HIVEs&isFeeCalculationHidden=true&walletAddress=${username}`,
-            description: 'html_popup_transak_description',
-          },
+          // {
+          //   name: 'Transak',
+          //   image: SVGIcons.BUY_TRANSAK,
+          //   link: `https://global.transak.com?apiKey=${Config.transak.apiKey}&defaultCryptoCurrency=HIVE&exchangeScreenTitle=Buy%20HIVEs&isFeeCalculationHidden=true&walletAddress=${username}`,
+          //   description: 'html_popup_transak_description',
+          // },
           // {
           //   name: 'Blocktrades',
           //   image: 'blocktrades.svg',
