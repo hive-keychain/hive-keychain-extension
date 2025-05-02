@@ -6,7 +6,8 @@ import {
 } from '@interfaces/evm-provider.interface';
 import {
   EvmAccount,
-  StoredEvmAccounts,
+  StoredEvmWalletAddress,
+  StoredSeed,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
@@ -18,11 +19,13 @@ import { EthersError, HDNodeWallet, ethers } from 'ethers';
 import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const INITIAL_PATH = "44'/60'/0'/0";
+
 const getWalletFromSeedPhrase = (seed: string) => {
   let wallet: HDNodeWallet | undefined, error;
   let errorParams: string[] = [];
   try {
-    wallet = HDNodeWallet.fromPhrase(seed, undefined, "44'/60'/0'/0");
+    wallet = HDNodeWallet.fromPhrase(seed, undefined, INITIAL_PATH);
   } catch (e) {
     const ethersError = e as EthersError;
     if (ethersError.shortMessage === 'invalid mnemonic length') {
@@ -53,7 +56,8 @@ const deriveWallets = async (
   let i = 0,
     consecutiveEmptyWallets = 0;
   while (1) {
-    const derivedWallet = wallet.deriveChild(i);
+    const derivedWallet: HDNodeWallet = wallet.deriveChild(i);
+
     const wei = await EthersUtils.getProvider(chain).getBalance(
       derivedWallet.address,
     );
@@ -78,6 +82,58 @@ const createWallet = () => {
   return ethers.Wallet.createRandom();
 };
 
+const hideOrShowAddress = async (
+  seedId: EvmAccount['seedId'],
+  mk: string,
+  addressId: number,
+  hide: boolean,
+) => {
+  const savedSeeds = await getAccountsFromLocalStorage(mk);
+
+  const seedIndex = savedSeeds.findIndex((seed) => seed.id === seedId);
+
+  const savedSeed = savedSeeds[seedIndex];
+
+  const addressIndex = savedSeed.accounts.findIndex(
+    (account) => account.id === addressId,
+  );
+
+  savedSeed.accounts[addressIndex].hide = hide;
+
+  encryptAccountsInLocalStorage(mk, savedSeeds);
+};
+
+const addAddressToSeed = async (
+  seedId: EvmAccount['seedId'],
+  mk: string,
+  addressNickname: string,
+) => {
+  const savedSeeds = await getAccountsFromLocalStorage(mk);
+
+  const seedIndex = savedSeeds.findIndex((account) => account.id === seedId);
+
+  const wallet = HDNodeWallet.fromPhrase(
+    savedSeeds[seedIndex].seed,
+    undefined,
+    INITIAL_PATH,
+  );
+
+  const savedSeed = savedSeeds[seedIndex];
+
+  const newAccountIndex =
+    savedSeed.accounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
+
+  const derivedWallet = wallet.deriveChild(newAccountIndex);
+
+  savedSeeds[seedIndex].accounts.push({
+    id: derivedWallet.index,
+    path: derivedWallet.path,
+    nickname: addressNickname,
+  } as StoredEvmWalletAddress);
+  encryptAccountsInLocalStorage(mk, savedSeeds);
+  return savedSeeds;
+};
+
 const addSeedAndAccounts = async (
   wallet: HDNodeWallet,
   accounts: EvmAccount[],
@@ -86,7 +142,7 @@ const addSeedAndAccounts = async (
   const previousAccounts = await getAccountsFromLocalStorage(mk);
   const id =
     previousAccounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
-  const evmAccountObject: StoredEvmAccounts = {
+  const newAccounts: StoredSeed = {
     seed: wallet.mnemonic!.phrase,
     id,
     accounts: accounts.map((derivedWallet) => ({
@@ -94,12 +150,14 @@ const addSeedAndAccounts = async (
       path: derivedWallet.path!,
     })),
   };
-  encryptAccountsInLocalStorage(mk, [...previousAccounts, evmAccountObject]);
+  const allAccounts = [...previousAccounts, newAccounts];
+  encryptAccountsInLocalStorage(mk, allAccounts);
+  return allAccounts;
 };
 
 const encryptAccountsInLocalStorage = (
   mk: string,
-  evmAccountObject: StoredEvmAccounts[],
+  evmAccountObject: StoredSeed[],
 ) => {
   const encryptedAccounts = EncryptUtils.encryptJson(
     { list: evmAccountObject },
@@ -116,15 +174,21 @@ const getAccountsFromLocalStorage = async (mk: string) => {
   const wallets = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
+
   if (!wallets) return [];
-  else
-    return (EncryptUtils.decryptToJsonWithoutMD5Check(wallets, mk).list ||
-      []) as StoredEvmAccounts[];
+  else {
+    const decryptedAccounts = (EncryptUtils.decryptToJsonWithoutMD5Check(
+      wallets,
+      mk,
+    ).list || []) as StoredSeed[];
+    console.log({ decryptedAccounts });
+    return decryptedAccounts;
+  }
 };
 
 const rebuildAccountsFromLocalStorage = async (mk: string) => {
   const seeds = await getAccountsFromLocalStorage(mk);
-  return seeds
+  const test = seeds
     .map((seed) =>
       seed.accounts.map((acc) => {
         const account: EvmAccount = {
@@ -137,6 +201,8 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
       }),
     )
     .flat();
+  console.log({ test });
+  return test;
 };
 
 const rebuildAccount = (account: EvmAccount) => {
@@ -325,7 +391,7 @@ export const EvmWalletUtils = {
   getWalletFromSeedPhrase,
   deriveWallets,
   createWallet,
-  saveAccounts: addSeedAndAccounts,
+  addSeedAndAccounts,
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
   isWalletAddress,
@@ -342,4 +408,6 @@ export const EvmWalletUtils = {
   getWalletPermissionFull,
   rebuildAccount,
   getAllLocalAddresses,
+  addAddressToSeed,
+  hideOrShowAddress,
 };

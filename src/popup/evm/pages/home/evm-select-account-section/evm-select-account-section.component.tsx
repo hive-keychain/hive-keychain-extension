@@ -45,9 +45,14 @@ const SelectAccountSection = ({
 
   useEffect(() => {
     setOptions(
-      accounts.map((account: EvmAccount) => {
-        return { label: account.wallet.address, value: account.wallet.address };
-      }),
+      accounts
+        .filter((account) => !account.hide)
+        .map((account: EvmAccount) => {
+          return {
+            label: account.wallet.address,
+            value: account.wallet.address,
+          };
+        }),
     );
     setSelectedAddress(activeAccount.wallet.address);
   }, [accounts, activeAccount]);

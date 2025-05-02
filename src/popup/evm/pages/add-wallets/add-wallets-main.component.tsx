@@ -8,6 +8,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
 
 const AddWalletMain = ({
   navigateTo,
@@ -16,18 +17,26 @@ const AddWalletMain = ({
   chain,
   resetChain,
   setChain,
+  resetOnBack,
 }: PropsFromRedux) => {
   useEffect(() => {
     init();
   }, []);
 
   const init = async () => {
-    setTitleContainerProperties({
+    let titleProperties = {
       title: 'popup_html_setup',
       isBackButtonEnabled: true,
-      onBackAdditional: () => resetChain(),
       isCloseButtonDisabled: true,
-    });
+    } as PageTitleProps;
+
+    if (resetOnBack) {
+      titleProperties = {
+        ...titleProperties,
+        onBackAdditional: () => resetChain(),
+      };
+    }
+    setTitleContainerProperties(titleProperties);
   };
 
   const handleCreateEvmWallet = (): void => {
@@ -121,6 +130,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain,
+    resetOnBack: state.navigation.stack[0]?.params?.resetOnBack,
   };
 };
 

@@ -3,7 +3,10 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
@@ -24,15 +27,16 @@ const EvmApp = ({
   loadingState,
   loading,
   navigateTo,
+  navigateToWithParams,
   setEvmAccounts,
   fetchPrices,
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   useEffect(() => {
     if (!accounts.length) {
-      navigateTo(Screen.EVM_ADD_WALLET_MAIN);
+      navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
     } else {
-      navigateTo(Screen.HOME_PAGE);
+      navigateTo(Screen.HOME_PAGE, true);
     }
   }, [accounts.length]);
 
@@ -96,6 +100,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   navigateTo,
+  navigateToWithParams,
   setEvmAccounts,
   fetchPrices,
 });

@@ -9,8 +9,11 @@ const filterSpamTokens = (tokens: NativeAndErc20Token[]) => {
       !token.tokenInfo.possibleSpam,
   );
 };
-const getDefaultAccountName = (account: EvmAccount) => {
-  return `${chrome.i18n.getMessage('dialog_account')} ${account.id + 1}`;
+const getAccountName = (account: EvmAccount) => {
+  if (account.nickname && account.nickname.length > 0) return account.nickname;
+  return `${chrome.i18n.getMessage('common_seed')} ${
+    account.seedNickname ?? account.seedId
+  } ${chrome.i18n.getMessage('dialog_account')} ${account.id + 1}`;
 };
 
-export const EvmAccountUtils = { filterSpamTokens, getDefaultAccountName };
+export const EvmAccountUtils = { filterSpamTokens, getAccountName };

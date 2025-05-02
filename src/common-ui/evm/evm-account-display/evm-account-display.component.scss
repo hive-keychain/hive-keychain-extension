@@ -1,6 +1,6 @@
 .evm-account-display {
   display: grid;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: 40px 1fr 20px;
   align-items: center;
   width: 100%;
   .evm-dapp-status-container {
@@ -8,7 +8,7 @@
   }
   .account-info {
     flex-direction: column;
-    margin-left: 30px;
+    margin-left: 20px;
 
     .top-line {
       width: 100%;
@@ -38,14 +38,32 @@
         flex-direction: row;
         display: flex;
         column-gap: 6px;
-      }
-      .copy-icon {
-        justify-content: flex-end;
-        cursor: pointer;
-        color: var(--main-font-color);
-        svg path {
-          stroke: var(--main-font-color);
+        &.full-address {
+          @include poppins400(11px);
         }
+      }
+    }
+  }
+  .action-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    .copy-icon {
+      visibility: hidden;
+      justify-content: flex-end;
+      cursor: pointer;
+      color: var(--main-font-color);
+      svg path {
+        stroke: var(--main-font-color);
+      }
+    }
+  }
+
+  &:hover {
+    .action-panel {
+      .copy-icon {
+        visibility: visible !important;
       }
     }
   }

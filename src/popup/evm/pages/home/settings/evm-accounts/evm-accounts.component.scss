@@ -1,8 +1,43 @@
 .evm-accounts-page {
   @include pageLayoutRowGap();
   padding: 16px;
-  .account-panel {
-    @include small-card();
-    margin: unset;
+  box-sizing: border-box;
+  .accounts-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    overflow: auto;
+    .account-panel {
+      @include small-card();
+      margin: unset;
+      &.hidden {
+        opacity: 0.6;
+      }
+    }
+  }
+
+  .seeds {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    column-gap: 8px;
+    .seeds-dropdown {
+      flex: 1;
+    }
+    .svg-icon {
+      height: 26px;
+      width: 26px;
+      svg {
+        height: 26px;
+        width: 26px;
+      }
+    }
+  }
+
+  .button-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
   }
 }

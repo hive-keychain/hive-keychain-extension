@@ -72,8 +72,8 @@ const CreateNewWalletVerification = ({
       wallet: derivedWallet,
       seedId: 0,
     };
-    await EvmWalletUtils.saveAccounts(wallet, [account], mk);
-    setEvmAccounts([account]);
+    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk);
+    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 
   const verifyWord = () => {

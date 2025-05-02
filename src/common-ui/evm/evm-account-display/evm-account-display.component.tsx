@@ -18,15 +18,19 @@ type Props = {
   editable?: boolean;
   copiable?: boolean;
   onCopy?: (account: EvmAccount) => void;
+  onHideOrShow?: (seedId: number, addressId: number, hide: boolean) => void;
+  fullAddress?: boolean;
 };
 
-const EvmAccountDisplay = ({
+export const EvmAccountDisplayComponent = ({
   account,
   active,
   status,
   editable,
   copiable,
+  fullAddress,
   onCopy,
+  onHideOrShow,
 }: Props) => {
   return (
     <div className="evm-account-display">
@@ -37,35 +41,41 @@ const EvmAccountDisplay = ({
       <div className="account-info">
         <div className="top-line">
           <div className="account-name">
-            {EvmAccountUtils.getDefaultAccountName(account)}
+            {EvmAccountUtils.getAccountName(account)}
           </div>
           {editable && <div className="edit-icon"></div>}
-          {editable && (
-            <SVGIcon
-              icon={!account.hide ? SVGIcons.INPUT_HIDE : SVGIcons.INPUT_SHOW}
-              className="hide-token"
-              onClick={() => {}}
-              tooltipMessage="html_popup_evm_hide_account"
-              tooltipPosition="left"
-            />
-          )}
         </div>
         <div className="bottom-line">
-          <div className="account-address">
-            {EvmFormatUtils.formatAddress(account.wallet.address)}
-            {copiable && (
-              <div
-                onClick={() => {
-                  if (onCopy) onCopy(account);
-                }}>
-                <SVGIcon className={'copy-icon'} icon={SVGIcons.SELECT_COPY} />
-              </div>
-            )}
+          <div
+            className={`account-address ${fullAddress ? 'full-address' : ''}`}>
+            {fullAddress
+              ? account.wallet.address
+              : EvmFormatUtils.formatAddress(account.wallet.address)}
           </div>
         </div>
+      </div>
+      <div className="action-panel">
+        {editable && (
+          <SVGIcon
+            icon={account.hide ? SVGIcons.INPUT_HIDE : SVGIcons.INPUT_SHOW}
+            className="hide-token"
+            onClick={() => {
+              if (onHideOrShow)
+                onHideOrShow(account.seedId, account.id, !account.hide);
+            }}
+            tooltipMessage="html_popup_evm_hide_account"
+            tooltipPosition="left"
+          />
+        )}
+        {copiable && (
+          <div
+            onClick={() => {
+              if (onCopy) onCopy(account);
+            }}>
+            <SVGIcon className={'copy-icon'} icon={SVGIcons.SELECT_COPY} />
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-export const EvmAccountDisplayComponent = EvmAccountDisplay;

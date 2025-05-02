@@ -5108,5 +5108,25 @@
   "evm_history_default_smart_contract_operation": {
     "message": "Broadcasted transaction",
     "description": "Generic smart contract operation history label"
+  },
+  "evm_add_wallet_address_button": {
+    "message": "Add wallet address",
+    "description": "Add wallet address button"
+  },
+  "evm_add_wallet_seed_button": {
+    "message": "Add seed",
+    "description": "Add seed button"
+  },
+  "evm_add_nickname_to_address_popup_title": {
+    "message": "Add nickname",
+    "description": "Add nickname to address title"
+  },
+  "evm_add_nickname_to_address_popup_caption": {
+    "message": "Add a nickname to your address to identify it easier",
+    "description": "Add nickname to address caption"
+  },
+  "evm_address_nickname": {
+    "message": "Nickname",
+    "description": "Nickname"
   }
 }

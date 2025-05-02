@@ -6,20 +6,20 @@ export type WalletWithBalance = {
   balance: number;
   selected: boolean;
 };
-export type StoredEvmAccounts = {
+export type StoredSeed = {
   seed: string;
   id: number;
   nickname?: string;
-  accounts: StoredEvmAccount[];
+  accounts: StoredEvmWalletAddress[];
 };
-export type StoredEvmAccount = {
+export type StoredEvmWalletAddress = {
   id: number;
   path: string;
   hide?: boolean;
   nickname?: string;
 };
 
-export type EvmAccount = StoredEvmAccount & {
+export type EvmAccount = StoredEvmWalletAddress & {
   wallet: HDNodeWallet;
   seedId: number;
   seedNickname?: string;

@@ -55,9 +55,9 @@ const ImportWalletConfirmation = ({
         wallet: derivedWallet.wallet,
         seedId: 0,
       }));
-      await EvmWalletUtils.saveAccounts(wallet, evmAccounts, mk);
-      setEvmAccounts(evmAccounts);
+      await EvmWalletUtils.addSeedAndAccounts(wallet, evmAccounts, mk);
       await ChainUtils.addChainToSetupChains(chain);
+      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
     }
   };
 
@@ -105,9 +105,10 @@ const ImportWalletConfirmation = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  console.log({ state });
   return {
-    walletsWithBalance: state.navigation.stack[0].params
-      .derivedWallets as WalletWithBalance[],
+    walletsWithBalance: state.navigation.stack[0]?.params
+      ?.derivedWallets as WalletWithBalance[],
     wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
     mk: state.mk,
     chain: state.chain,

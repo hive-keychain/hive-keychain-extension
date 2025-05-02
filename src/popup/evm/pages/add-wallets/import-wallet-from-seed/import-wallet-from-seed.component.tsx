@@ -37,6 +37,7 @@ const ImportWalletFromSeed = ({
     if (wallet) {
       setLoading(true);
       const derivedWallets = await EvmWalletUtils.deriveWallets(wallet, chain);
+      console.log({ derivedWallets });
       setLoading(false);
       removeFromLoadingList('html_popup_deriving_wallets');
       navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {

@@ -16,7 +16,7 @@ export interface CheckboxProps {
 }
 
 const handleClick = (props: CheckboxProps) => {
-  if (!props.disabled) {
+  if (props.disabled !== true) {
     props.onChange(!props.checked);
   }
 };
