@@ -1,13 +1,6 @@
+import { Exchange } from 'hive-keychain-commons';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
-
-interface Exchange {
-  name: string;
-  image: SVGIcons;
-  link: string;
-  username: string;
-  acceptedCoins: string[];
-}
 
 export const exchanges: Exchange[] = [
   {
