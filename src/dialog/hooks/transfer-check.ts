@@ -21,7 +21,7 @@ export const useTransferCheck = (
       if (accs.includes(data.to)) {
         warning = chrome.i18n.getMessage('popup_warning_phishing', [data.to]);
       } else {
-        warning = TransferUtils.getTransferWarning(
+        warning = TransferUtils.getTransferWarningLabel(
           data.to,
           data.type === 'transfer'
             ? CurrencyUtils.getCurrencyLabels(rpc.testnet)[

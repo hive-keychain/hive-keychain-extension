@@ -129,7 +129,7 @@ const DepositToVsc = ({
       await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
-        { addExchanges: true, token: watch('selectedCurrency').toUpperCase() },
+        { addExchanges: false, token: watch('selectedCurrency').toUpperCase() },
       );
     setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
@@ -167,7 +167,7 @@ const DepositToVsc = ({
       { label: 'popup_html_transfer_amount', value: stringifiedAmount },
     ];
 
-    let warningMessage = await TransferUtils.getTransferWarning(
+    let warningMessage = await TransferUtils.getTransferWarningLabel(
       form.receiver,
       currencyLabels[form.selectedCurrency],
       '',

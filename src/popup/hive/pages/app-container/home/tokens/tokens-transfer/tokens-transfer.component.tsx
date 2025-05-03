@@ -42,6 +42,7 @@ import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
+import PhishingUtils from 'src/utils/phishing.utils';
 
 interface TokenTransferForm {
   receiverUsername: string;
@@ -181,22 +182,19 @@ const TokensTransfer = ({
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
-    let warningMessage = await TransferUtils.getExchangeValidationWarning(
+    let warningMessage = await TransferUtils.getTransferWarningLabel(
       form.receiverUsername,
       form.symbol,
-      form.memo.length > 0,
+      form.memo,
+      await PhishingUtils.getPhishingAccounts(),
+      false,
     );
-
-    if (phishing.includes(form.receiverUsername)) {
-      warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        form.receiverUsername,
-      ]);
-    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
       message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
+      skipWarningTranslation: true,
       warningMessage: warningMessage,
       title: 'popup_html_transfer_tokens',
       formParams: getFormParams(),
