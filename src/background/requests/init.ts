@@ -17,7 +17,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
 import {
-  anonymous_requests,
+  anonymousRequests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
 import * as Logic from './logic';
@@ -88,7 +88,7 @@ export default async (
         rpc,
         account,
       );
-    } else if (anonymous_requests.includes(type) && !username) {
+    } else if (anonymousRequests.includes(type) && !username) {
       // if no username specified for anonymous requests
       Logic.anonymousRequests(
         requestHandler,
