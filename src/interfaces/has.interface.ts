@@ -19,7 +19,7 @@ export interface AUTH_REQ_DATA {
     description?: string;
     icon?: string;
   };
-  challenge: CHALLENGE_REQ_DATA;
+  challenge?: CHALLENGE_REQ_DATA;
   token?: string;
 }
 

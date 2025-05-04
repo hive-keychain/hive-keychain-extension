@@ -1,6 +1,8 @@
+import { KeylessKeychainModule } from '@background/keyless-keychain.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -14,30 +16,68 @@ type KeylessUsernameProps = {
   data: KeychainRequest;
   tab: number;
   domain: string;
-  auth_payload_uri?: AUTH_PAYLOAD_URI;
 };
 
 type Props = {
   data: KeylessUsernameProps;
 };
 const KeylessUsername = (props: Props) => {
+  const { requestHandler, data, domain, tab } = props.data;
   const [username, setUsername] = useState('');
 
-  const handleSubmit = () => {
-    // TODO: Implement submit logic
-    console.log('Submitting username:', username);
+  const handleSubmit = async () => {
+    data.username = username;
+    requestHandler.data.request = {
+      ...requestHandler.data.request!,
+      domain: domain,
+      username: username,
+    };
+    // check if username  is in keyauthdict and valid
+    const _keylessAuthData =
+      await KeylessKeychainModule.checkKeylessRegistration(data, domain, tab);
+    // if not, handle new registration
+
+    if (!_keylessAuthData) {
+      registerKeyless();
+    } else {
+      proceedToTransaction();
+    }
   };
 
-  const createSignBufferRequest = () => {
-    // const request: KeychainRequest = {
-    //   type: KeychainRequestTypes.signBuffer,
-    //   username,
-    //   domain: props.domain,
-    //   method: KeychainKeyTypes.active,
-    //   title: chrome.i18n.getMessage('dialog_header_keyless_username'),
-    //   message: chrome.i18n.getMessage('dialog_anonymous_keyless_content'),
-    // };
+  const proceedToTransaction = async () => {
+    requestHandler.data.isAnonymous = true;
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.KEYLESS_KEYCHAIN,
+      value: {
+        requestHandler,
+        data,
+        domain,
+        tab,
+      },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const message = await createMessage(
+      null,
+      requestHandler.data.request!,
+      data,
+      await chrome.i18n.getMessage('bgd_ops_sign_requested'),
+      null,
+      null,
+    );
+    chrome.runtime.sendMessage(message);
   };
+  const registerKeyless = async () => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER,
+      value: {
+        requestHandler,
+        data,
+        domain,
+        tab,
+      },
+    });
+  };
+
   return (
     <div className="keyless-username-page">
       <DialogHeader

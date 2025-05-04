@@ -18,6 +18,7 @@ import {
   CHALLENGE_WAIT,
   HAS_CMD,
   SIGN_ACK,
+  SIGN_NACK,
   SIGN_REQ,
   SIGN_REQ_DATA,
   SIGN_WAIT,
@@ -114,12 +115,15 @@ const authenticate = async (
   // Prepare authentication request data
   const auth_req_data: AUTH_REQ_DATA = {
     app: { name: keylessRequest.appName },
-    challenge: {
-      challenge: (keylessRequest.request as RequestSignBuffer).message,
-      key_type: (
-        (keylessRequest.request as RequestSignBuffer).method as string
-      ).toLowerCase(),
-    },
+    challenge:
+      keylessRequest.request.type === 'signBuffer'
+        ? {
+            challenge: (keylessRequest.request as RequestSignBuffer).message,
+            key_type: (
+              (keylessRequest.request as RequestSignBuffer).method as string
+            ).toLowerCase(),
+          }
+        : undefined,
   };
   // Note: the auth_req_data does not need to be converted to base64 before encryption as
   // it will be converted to base64 by the encryption.
@@ -180,6 +184,7 @@ const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOAD) => {
 };
 
 const listenToAuthAck = (
+  requestHandler: RequestsHandler,
   username: string,
   keylessRequest: KeylessRequest,
   tab: number,
@@ -198,7 +203,13 @@ const listenToAuthAck = (
       Logger.log('listenToAuthAck message:', { message });
       if (message.cmd === HAS_CMD.AUTH_ACK) {
         ws.removeEventListener('message', handleMessage);
-        handleAuthAck(username, keylessRequest, message as AUTH_ACK, tab)
+        handleAuthAck(
+          requestHandler,
+          username,
+          keylessRequest,
+          message as AUTH_ACK,
+          tab,
+        )
           .then(() => {})
           .catch((error) => {
             console.error('Failed to handle auth ack:', error);
@@ -226,6 +237,7 @@ const listenToAuthAck = (
 };
 
 const handleAuthAck = async (
+  requestHandler: RequestsHandler,
   username: string,
   keylessRequest: KeylessRequest,
   auth_ack: AUTH_ACK,
@@ -260,20 +272,79 @@ const handleAuthAck = async (
       token: keylessRequest.token,
     };
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
+    console.log('handleAuthAck auth_ack_data:', { auth_ack_data });
 
+    if (requestHandler.data.request?.type !== KeychainRequestTypes.signBuffer) {
+      // For non-signBuffer requests, send sign request and notify user
+      const sign_wait = await signRequest(
+        requestHandler.data.request!,
+        keylessRequest.appName,
+        tab,
+      );
+
+      // Create and send initial "request sent" message
+      message = await createMessage(
+        null,
+        requestHandler.data.request!,
+        requestHandler.data.request!,
+        await chrome.i18n.getMessage('bgd_ops_sign_requested'),
+        null,
+        null,
+      );
+      chrome.runtime.sendMessage(message);
+      chrome.tabs.sendMessage(tab, message);
+
+      // Wait for sign response and send success message
+      const signResponse = await new Promise<SIGN_ACK>((resolve) => {
+        const handleSignMessage = (event: MessageEvent) => {
+          const response = JSON.parse(event.data) as SIGN_ACK;
+          if (response.cmd === HAS_CMD.SIGN_ACK) {
+            ws.removeEventListener('message', handleSignMessage);
+            resolve(response);
+          }
+        };
+        ws.addEventListener('message', handleSignMessage);
+      });
+
+      // Send success message after sign response
+      message = await createMessage(
+        null,
+        signResponse,
+        requestHandler.data.request!,
+        await chrome.i18n.getMessage('bgd_ops_sign_success'),
+        null,
+        null,
+      );
+      chrome.runtime.sendMessage(message);
+      chrome.tabs.sendMessage(tab, message);
+    } else {
+      // For signBuffer requests, send success message with challenge data
+      message = await createMessage(
+        null,
+        auth_ack_data.challenge.challenge,
+        keylessRequest.request,
+        await chrome.i18n.getMessage('bgd_ops_sign_success'),
+        null,
+        auth_ack_data.challenge.pubkey,
+      );
+      chrome.runtime.sendMessage(message);
+      chrome.tabs.sendMessage(tab, message);
+    }
+  } catch (error: unknown) {
+    // Handle errors and send error message
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     message = await createMessage(
+      error,
       null,
-      auth_ack_data.challenge.challenge,
-      keylessRequest.request,
-      await chrome.i18n.getMessage('bgd_ops_sign_success'),
+      requestHandler.data.request!,
       null,
-      auth_ack_data.challenge.pubkey,
+      errorMessage,
+      null,
     );
-    chrome.tabs.sendMessage(tab, message);
-  } catch (error) {
-    throw new Error(`Failed to update keyless auth data: ${error}`);
-  } finally {
     chrome.runtime.sendMessage(message);
+    chrome.tabs.sendMessage(tab, message);
+    throw new Error(`Failed to update keyless auth data: ${errorMessage}`);
   }
 };
 
@@ -509,17 +580,16 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
-  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
-): Promise<SIGN_WAIT> => {
+): Promise<void> => {
   if (!request.username) {
     throw new Error('Username is required');
   }
 
   let op = null;
-
+  console.log('signRequest request:', { request });
   const keyType = getRequiredWifType(request);
   op = await getRequestOperation(request);
   op = sanitizeOperation(op);
@@ -543,31 +613,140 @@ const signRequest = async (
     token: keylessAuthData.token,
   };
   ws.send(JSON.stringify(sign_req));
-  return new Promise<SIGN_WAIT>((resolve, reject) => {
-    const signWaitHandler = async (event: MessageEvent) => {
-      const response = JSON.parse(event.data);
-      if (response.cmd === HAS_CMD.SIGN_WAIT) {
-        ws.removeEventListener('message', signWaitHandler);
-        try {
-          await handleSignWait(request, domain, tab, response);
-          resolve(response as SIGN_WAIT);
-        } catch (error) {
+
+  // Wait for the sign response and handle it through handleSignWait
+  const signWaitHandler = async (event: MessageEvent) => {
+    const response = JSON.parse(event.data) as SIGN_WAIT;
+    if (response.cmd === HAS_CMD.SIGN_WAIT) {
+      ws.removeEventListener('message', signWaitHandler);
+      await handleSignWait(request, domain, tab, response);
+    }
+  };
+
+  ws.addEventListener('message', signWaitHandler);
+
+  // Add timeout to prevent infinite waiting
+  setTimeout(() => {
+    ws.removeEventListener('message', signWaitHandler);
+    const error = new Error('Sign wait timeout');
+    const errorResponse: SIGN_ACK = {
+      cmd: HAS_CMD.SIGN_ACK,
+      uuid: '',
+      broadcast: false,
+      data: '',
+    };
+    sendResponseToDapp(request, domain, tab, errorResponse, error);
+  }, 30000); // 30 second timeout
+};
+
+const handleSignWait = async (
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  sign_wait: SIGN_WAIT,
+) => {
+  return new Promise<void>((resolve, reject) => {
+    const handleMessage = async (event: MessageEvent) => {
+      try {
+        const response = JSON.parse(event.data) as SIGN_ACK | SIGN_NACK;
+
+        if (
+          response.cmd === HAS_CMD.SIGN_ACK &&
+          response.uuid === sign_wait.uuid
+        ) {
+          // Remove the event listener since we got our response
+          ws.removeEventListener('message', handleMessage);
+
+          // Handle the successful sign ack
+          await sendResponseToDapp(request, domain, tab, response, false);
+
+          // Send success message to runtime
+          chrome.runtime.sendMessage({
+            command: DialogCommand.ANSWER_REQUEST,
+            msg: {
+              success: true,
+              message: await chrome.i18n.getMessage('bgd_ops_sign_success'),
+              result: response,
+            },
+          });
+          resolve();
+        } else if (
+          response.cmd === HAS_CMD.SIGN_NACK &&
+          response.uuid === sign_wait.uuid
+        ) {
+          // Remove the event listener since we got our response
+          ws.removeEventListener('message', handleMessage);
+
+          // Handle the failed sign ack
+          const errorResponse: SIGN_ACK = {
+            cmd: HAS_CMD.SIGN_ACK,
+            uuid: response.uuid,
+            broadcast: false,
+            data: response.data || '',
+          };
+          const error = new Error(response.data || 'Sign request was rejected');
+
+          // Send error message to both runtime and tab
+          await sendResponseToDapp(request, domain, tab, errorResponse, error);
+
+          // Send message to runtime
+          chrome.runtime.sendMessage({
+            command: DialogCommand.ANSWER_REQUEST,
+            msg: {
+              success: false,
+              message: error.message,
+              error: error.message,
+            },
+          });
           reject(error);
         }
+      } catch (error) {
+        console.error('Error processing sign message:', error);
+        reject(error);
       }
     };
 
-    ws.addEventListener('message', signWaitHandler);
+    // Add the event listener
+    ws.addEventListener('message', handleMessage);
 
-    // Add timeout to prevent infinite waiting
-    setTimeout(() => {
-      ws.removeEventListener('message', signWaitHandler);
-      reject(new Error('Sign wait timeout'));
-    }, 30000); // 30 second timeout
+    // Set up expiration timeout
+    const timeout = sign_wait.expire - Date.now();
+    if (timeout <= 0) {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Sign wait request has already expired'));
+      return;
+    }
+
+    const expirationTimer = setTimeout(() => {
+      ws.removeEventListener('message', handleMessage);
+      reject(new Error('Sign wait request expired'));
+    }, timeout);
+
+    // Clean up on promise resolution
+    const cleanup = () => {
+      clearTimeout(expirationTimer);
+      ws.removeEventListener('message', handleMessage);
+    };
+
+    // Ensure cleanup happens whether we resolve or reject
+    resolve = ((originalResolve) => {
+      return (...args) => {
+        cleanup();
+        return originalResolve(...args);
+      };
+    })(resolve);
+
+    reject = ((originalReject) => {
+      return (...args) => {
+        cleanup();
+        return originalReject(...args);
+      };
+    })(reject);
   });
 };
 
 const challengeRequest = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -601,6 +780,7 @@ const challengeRequest = async (
       if (response.cmd === HAS_CMD.CHALLENGE_WAIT) {
         ws.removeEventListener('message', challengeWaitHandler);
         await handleChallengeWait(
+          requestHandler,
           request,
           domain,
           tab,
@@ -628,6 +808,7 @@ const challengeRequest = async (
 };
 
 const handleChallengeWait = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -646,6 +827,7 @@ const handleChallengeWait = async (
             // Remove the event listener since we got our response
             ws.removeEventListener('message', handleMessage);
             await handleChallengeAck(
+              requestHandler,
               request,
               domain,
               tab,
@@ -657,7 +839,13 @@ const handleChallengeWait = async (
         } else if (challenge_ack.cmd === HAS_CMD.CHALLENGE_NACK) {
           // Remove the event listener since we got an error response
           ws.removeEventListener('message', handleMessage);
-          handleChallengeNack(request, domain, tab, challenge_ack);
+          await handleChallengeNack(
+            requestHandler,
+            request,
+            domain,
+            tab,
+            challenge_ack,
+          );
           reject(new Error('Challenge request failed'));
         }
       } catch (error) {
@@ -705,6 +893,7 @@ const handleChallengeWait = async (
 };
 
 const handleChallengeAck = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -722,24 +911,44 @@ const handleChallengeAck = async (
           )
         : challenge_ack.data;
     sendResponseToDapp(request, domain, tab, challenge_ack_data);
+
+    // Send message to runtime if request is anonymous
+    if (requestHandler.data.isAnonymous) {
+      chrome.runtime.sendMessage({
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          message: await chrome.i18n.getMessage('bgd_ops_challenge_success'),
+          result: challenge_ack_data,
+        },
+      });
+    }
   } catch (error) {
     console.error('Error processing challenge message:', error);
   }
 };
 
 const handleChallengeNack = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
   challenge_nack: CHALLENGE_NACK,
 ) => {
-  sendResponseToDapp(
-    request,
-    domain,
-    tab,
-    challenge_nack,
-    'Challenge request failed',
-  );
+  const error = new Error(challenge_nack.data || 'Challenge request failed');
+  sendResponseToDapp(request, domain, tab, challenge_nack, error);
+
+  // Send message to runtime if request is anonymous
+  if (requestHandler.data.isAnonymous) {
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: false,
+        message: error.message,
+        error: error.message,
+      },
+    });
+  }
 };
 
 const sanitizeOperation = (op: any) => {
@@ -769,95 +978,11 @@ const sanitizeOperation = (op: any) => {
   }
 };
 
-const handleSignWait = async (
-  request: KeychainRequest,
-  domain: string,
-  tab: number,
-  sign_wait: SIGN_WAIT,
-) => {
-  return new Promise<void>((resolve, reject) => {
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const response = JSON.parse(event.data);
-
-        if (
-          response.cmd === HAS_CMD.SIGN_ACK &&
-          response.uuid === sign_wait.uuid
-        ) {
-          // Remove the event listener since we got our response
-          ws.removeEventListener('message', handleMessage);
-
-          // Handle the successful sign ack
-          sendResponseToDapp(request, domain, tab, response, false)
-            .then(() => resolve())
-            .catch((error) => reject(error));
-        } else if (
-          response.cmd === HAS_CMD.SIGN_NACK &&
-          response.uuid === sign_wait.uuid
-        ) {
-          // Remove the event listener since we got our response
-          ws.removeEventListener('message', handleMessage);
-
-          // Handle the failed sign ack
-          sendResponseToDapp(
-            request,
-            domain,
-            tab,
-            response,
-            new Error('Sign request was rejected'),
-          )
-            .then(() => reject(new Error('Sign request was rejected')))
-            .catch((error) => reject(error));
-        }
-      } catch (error) {
-        console.error('Error processing sign message:', error);
-      }
-    };
-
-    // Add the event listener
-    ws.addEventListener('message', handleMessage);
-
-    // Set up expiration timeout
-    const timeout = sign_wait.expire - Date.now();
-    if (timeout <= 0) {
-      ws.removeEventListener('message', handleMessage);
-      reject(new Error('Sign wait request has already expired'));
-      return;
-    }
-
-    const expirationTimer = setTimeout(() => {
-      ws.removeEventListener('message', handleMessage);
-      reject(new Error('Sign wait request expired'));
-    }, timeout);
-
-    // Clean up on promise resolution
-    const cleanup = () => {
-      clearTimeout(expirationTimer);
-      ws.removeEventListener('message', handleMessage);
-    };
-
-    // Ensure cleanup happens whether we resolve or reject
-    resolve = ((originalResolve) => {
-      return (...args) => {
-        cleanup();
-        return originalResolve(...args);
-      };
-    })(resolve);
-
-    reject = ((originalReject) => {
-      return (...args) => {
-        cleanup();
-        return originalReject(...args);
-      };
-    })(reject);
-  });
-};
-
 const sendResponseToDapp = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  response: SIGN_ACK | CHALLENGE_ACK_DATA | CHALLENGE_NACK,
+  response: SIGN_ACK | SIGN_NACK | CHALLENGE_ACK_DATA | CHALLENGE_NACK,
   error?: any,
 ) => {
   // Determine if the operation was successful

@@ -34,6 +34,7 @@ type RequestData = {
   publicKey?: Key;
   windowId?: number;
   isMultisig?: boolean;
+  isAnonymous?: boolean;
 };
 export class RequestsHandler {
   data: RequestData;

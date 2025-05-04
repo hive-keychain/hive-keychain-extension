@@ -14,6 +14,10 @@ const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
       LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
       false,
     );
+    await LocalStorageUtils.removeFromLocalStorage(
+      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
+    );
+
     navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
   };
   return (

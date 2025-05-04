@@ -1448,6 +1448,9 @@
   "bgd_ops_sign_success": {
     "message": "Message signed successfully."
   },
+  "bgd_ops_sign_requested": {
+    "message": "Transaction has been requested. Please check your keychain mobile to sign it."
+  },
   "bgd_ops_sign_error": {
     "message": "Could not sign."
   },

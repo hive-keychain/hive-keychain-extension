@@ -118,7 +118,7 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.KEYLESS_KEYCHAIN:
       KeylessKeychainModule.handleOperation(
-        await RequestsHandler.getFromLocalStorage(),
+        backgroundMessage.value.requestHandler,
         backgroundMessage.value.data,
         backgroundMessage.value.domain,
         backgroundMessage.value.tab,
@@ -126,6 +126,7 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
       KeylessKeychainModule.register(
+        backgroundMessage.value.requestHandler,
         backgroundMessage.value.data,
         backgroundMessage.value.domain,
         backgroundMessage.value.tab,

@@ -18,74 +18,81 @@ const handleOperation = async (
   tab: number,
 ) => {
   await HASUtils.connect();
+
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      HASUtils.challengeRequest(request, domain, tab);
+      HASUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     case KeychainRequestTypes.encode:
-      HASUtils.challengeRequest(request, domain, tab);
+      HASUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     case KeychainRequestTypes.decode:
-      HASUtils.challengeRequest(request, domain, tab);
+      HASUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     default:
-      console.log(JSON.stringify(request, null, 2));
-      const sign_wait = await HASUtils.signRequest(
-        requestHandler,
-        request,
-        domain,
-        tab,
-      );
-      console.log(JSON.stringify(sign_wait, null, 2));
+      HASUtils.signRequest(request, domain, tab);
+    // Send initial "request sent" message
   }
 };
 
 const register = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
 ) => {
   await HASUtils.connect();
-  if (request.type === KeychainRequestTypes.signBuffer) {
-    if (!request.username) {
-      throw new Error('Username is required');
-    }
-    const username = request.username;
-    const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(
-      request,
-      domain,
-    );
-    if (keylessAuthData) {
-      const keylessRequest: KeylessRequest = {
-        ...keylessAuthData,
-        request: {
-          ...request,
-          key: (request as RequestSignBuffer).method.toLowerCase(),
-          message: (request as RequestSignBuffer).message.replace(/\\/g, ''),
-        },
-      };
+  if (!request.username) {
+    throw new Error('Username is required');
+  }
+  const username = request.username;
+  const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(
+    request,
+    domain,
+  );
+  if (keylessAuthData) {
+    const keylessRequest: KeylessRequest = {
+      ...keylessAuthData,
+      request: {
+        ...request,
+        ...(request.type === KeychainRequestTypes.signBuffer
+          ? {
+              key: (request as RequestSignBuffer).method.toLowerCase(),
+              message: (request as RequestSignBuffer).message.replace(
+                /\\/g,
+                '',
+              ),
+            }
+          : {}),
+      },
+    };
 
-      const auth_wait = await HASUtils.authenticate(keylessRequest);
-      keylessRequest.uuid = auth_wait.uuid;
-      keylessRequest.expire = auth_wait.expire;
-      await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
-        keylessRequest,
-        auth_wait,
-      );
-      const auth_payload: AUTH_PAYLOAD = {
-        account: username,
-        uuid: auth_wait.uuid,
-        key: keylessRequest.authKey,
-        host: Config.keyless.host,
-      };
-      const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
-        auth_payload,
-      );
-      showQRCode(keylessRequest, domain, auth_payload_uri);
-      await HASUtils.listenToAuthAck(username, keylessRequest, tab);
-    }
+    const auth_wait = await HASUtils.authenticate(keylessRequest);
+    keylessRequest.uuid = auth_wait.uuid;
+    keylessRequest.expire = auth_wait.expire;
+    await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
+      keylessRequest,
+      auth_wait,
+    );
+    const auth_payload: AUTH_PAYLOAD = {
+      account: username,
+      uuid: auth_wait.uuid,
+      key: keylessRequest.authKey,
+      host: Config.keyless.host,
+    };
+    const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
+      auth_payload,
+    );
+    showQRCode(keylessRequest, domain, auth_payload_uri);
+    await HASUtils.listenToAuthAck(
+      requestHandler,
+      username,
+      keylessRequest,
+      tab,
+    );
   }
 };
+
 const showQRCode = (
   request: KeychainRequest | KeylessRequest,
   domain: string,
