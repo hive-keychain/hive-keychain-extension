@@ -2,7 +2,7 @@ export * from './addAccountRequest.logic';
 export * from './addAccountToEmptyWallet.logic';
 export * from './anonymousRequests.logic';
 export * from './initializeWallet.logic';
-export * from './keylessKeychain.logic';
+export * from './keyless-keychain.logic';
 export * from './missingKey.logic';
 export * from './missingUser.logic';
 export * from './requestWithConfirmation.logic';
