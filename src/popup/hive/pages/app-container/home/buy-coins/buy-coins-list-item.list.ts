@@ -1,69 +1,6 @@
-import { Exchange } from 'hive-keychain-commons';
+import { Exchange, ExchangesUtils } from 'hive-keychain-commons';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
-
-export const exchanges: Exchange[] = [
-  {
-    name: 'Binance',
-    image: SVGIcons.BUY_BINANCE,
-    link: 'https://www.binance.com/en/trade/HIVE_BTC',
-    username: 'bdhivesteem',
-    acceptedCoins: ['HIVE'],
-  },
-  {
-    name: 'Upbit',
-    image: SVGIcons.BUY_UPBIT,
-    link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE',
-    username: 'user.dunamu',
-    acceptedCoins: ['HIVE', 'HBD'],
-  },
-  {
-    name: 'Gateio',
-    image: SVGIcons.BUY_GATEIO,
-    link: 'https://www.gate.io/trade/HIVE_USDT',
-    username: 'gateiodeposit',
-    acceptedCoins: ['HIVE'],
-  },
-  // { image: 'bkex.png', link: 'https://www.bkex.com/trade/HIVE_USDT' },
-  // {
-  //   image: 'bithumb.png',
-  //   link: 'https://en.bithumb.com/trade/order/HIVE_KRW',
-  // },
-  // {
-  //   name: 'Ionomy',
-  //   image: SVGIcons.BUY_IONOMY,
-  //   link: 'https://exchange.ionomy.com/en/markets/btc-hive',
-  //   username: 'ionomy',
-  //   acceptedCoins: ['HIVE', 'HBD'],
-  // },
-  {
-    name: 'Huobi',
-    image: SVGIcons.BUY_HUOBI,
-    link: 'https://www.huobi.com/en-us/exchange/hive_usdt/',
-    username: 'huobi-pro',
-    acceptedCoins: ['HIVE'],
-  },
-  {
-    name: 'Mexc',
-    image: SVGIcons.BUY_MEXC,
-    link: 'https://www.mexc.com/exchange/HIVE_USDT',
-    username: 'mxchive',
-    acceptedCoins: ['HIVE'],
-  },
-  // {
-  //   name: 'Probit',
-  //   image: NewIcons.PROBIT,
-  //   link: 'https://www.probit.com/app/exchange/HIVE-USDT',
-  //   username: 'probithive',
-  //   acceptedCoins: ['HIVE'],
-  // },
-  // {
-  //   image: 'bittrex.png',
-  //   link: 'https://global.bittrex.com/Market/Index?MarketName=BTC-HIVE',
-  //   username: 'bittrex',
-  //   acceptedCoins: ["HIVE", "HBD"]
-  // },
-];
 
 interface Platform {
   name: string;
@@ -98,7 +35,7 @@ export const BuyCoinsListItem = (
           //   description: 'html_popup_blocktrades_description',
           // },
         ],
-        exchanges: exchanges.filter((exchange) =>
+        exchanges: ExchangesUtils.getExchanges().filter((exchange) =>
           exchange.acceptedCoins?.includes('HIVE'),
         ),
       };
@@ -112,7 +49,7 @@ export const BuyCoinsListItem = (
           //   description: 'html_popup_blocktrades_description',
           // },
         ],
-        exchanges: exchanges.filter((exchange) =>
+        exchanges: ExchangesUtils.getExchanges().filter((exchange) =>
           exchange.acceptedCoins?.includes('HBD'),
         ),
       };
