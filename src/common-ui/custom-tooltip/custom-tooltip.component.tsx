@@ -39,6 +39,7 @@ export const CustomTooltip = ({
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
 
+  const [isHover, setIsHover] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [timeout, setTimeoutId] = useState<NodeJS.Timeout>();
   let [coordinates, setCoordinates] = useState<TooltipCoordinates>();
@@ -100,7 +101,7 @@ export const CustomTooltip = ({
 
     let timeoutId = setTimeout(
       () => {
-        setOpen(true);
+        if (isHover) setOpen(true);
       },
       delayShow ? delayShow : 250,
     );
@@ -113,12 +114,23 @@ export const CustomTooltip = ({
       setOpen(false);
     }, 250);
   };
+
+  const handleMouseEnter = () => {
+    setIsHover(true);
+    show();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHover(false);
+    hide();
+  };
+
   return (
     <div
       data-testid={dataTestId}
       className={`tooltip-container ${additionalClassName}`}
-      onMouseEnter={show}
-      onMouseLeave={hide}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       key={customKey?.toString()}>
       <div className="tooltip-anchor" ref={anchor}>
         {children}
