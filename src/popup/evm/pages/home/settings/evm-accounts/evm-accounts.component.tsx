@@ -1,5 +1,9 @@
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EditAccountParams,
+  EvmEditAccountPopup,
+} from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
@@ -17,12 +21,9 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-const EvmAccountsComponent = ({
+const EvmAccounts = ({
   accounts,
   mk,
   setTitleContainerProperties,
@@ -33,8 +34,7 @@ const EvmAccountsComponent = ({
   const [selectedSeed, setSelectedSeed] = useState<OptionItem>();
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
 
-  const [nickname, setNickname] = useState<string>('');
-  const [openPopupAddress, setOpenPopupAddress] = useState<boolean>(false);
+  const [editParams, setEditParams] = useState<EditAccountParams>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -42,6 +42,13 @@ const EvmAccountsComponent = ({
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
+  }, []);
+
+  useEffect(() => {
+    initializeOptions();
+  }, [accounts]);
+
+  const initializeOptions = () => {
     const options: OptionItem[] = [];
     for (const account of accounts) {
       if (!options.some((option) => option.value === account.seedId)) {
@@ -56,7 +63,7 @@ const EvmAccountsComponent = ({
 
     setSeedsOptions(options);
     setSelectedSeed(options[0]);
-  }, []);
+  };
 
   const onCopyAddress = (account: EvmAccount) => {
     navigator.clipboard.writeText(account.wallet.address);
@@ -64,22 +71,87 @@ const EvmAccountsComponent = ({
   };
 
   const handleAddAddressClick = () => {
-    setOpenPopupAddress(true);
+    setEditParams({
+      initialValue: '',
+      onSubmit: (newNickname: string) => handleConfirmAddAddress(newNickname),
+      onCancel: closePopup,
+      title: 'evm_add_nickname_to_address_popup_title',
+      caption: 'evm_add_nickname_to_address_popup_caption',
+    });
   };
 
-  const handleConfirmAddAddress = async () => {
-    setOpenPopupAddress(true);
-    await EvmWalletUtils.addAddressToSeed(selectedSeed?.value, mk, nickname);
+  const handleConfirmAddAddress = async (addressNickname: string) => {
+    await EvmWalletUtils.addAddressToSeed(
+      selectedSeed?.value,
+      mk,
+      addressNickname,
+    );
     setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
-  };
 
-  const handleCancelAddAddress = () => {
-    setOpenPopupAddress(false);
-    setNickname('');
+    setEditParams(undefined);
   };
 
   const handleAddSeedClick = () => {
     navigateTo(EvmScreen.EVM_ADD_WALLET_MAIN);
+  };
+
+  const handleEditSeedClick = () => {
+    if (!selectedSeed) return;
+    const seed = accounts.find(
+      (account) => account.seedId === selectedSeed.value,
+    );
+    if (!seed) return;
+
+    console.log(seed);
+
+    setEditParams({
+      initialValue: seed.seedNickname ?? '',
+      onSubmit: (newAddressNickname: string) =>
+        handleConfirmEditSeedClick(newAddressNickname),
+      onCancel: closePopup,
+      title: 'evm_edit_seed_nickname',
+    });
+  };
+
+  const handleConfirmEditSeedClick = async (seedNickname: string) => {
+    if (selectedSeed) {
+      await EvmWalletUtils.updateSeedNickname(
+        selectedSeed.value,
+        seedNickname,
+        mk,
+      );
+      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+      setEditParams(undefined);
+    }
+  };
+
+  const handleOnEditAddress = async (account: EvmAccount) => {
+    setEditParams({
+      initialValue: account.nickname ?? '',
+      onSubmit: (newAddressNickname: string) =>
+        saveNewAddressName(account.seedId, account.id, newAddressNickname),
+      onCancel: closePopup,
+      title: 'evm_edit_address_name',
+    });
+  };
+
+  const saveNewAddressName = async (
+    seedId: number,
+    addressId: number,
+    newAddressNickname: string,
+  ) => {
+    await EvmWalletUtils.updateAddressName(
+      seedId,
+      addressId,
+      newAddressNickname,
+      mk,
+    );
+    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    setEditParams(undefined);
+  };
+
+  const closePopup = () => {
+    setEditParams(undefined);
   };
 
   const handleHideOrShowAddress = async (
@@ -103,7 +175,11 @@ const EvmAccountsComponent = ({
             additionalClassname="seeds-dropdown"
           />
           <SVGIcon
-            icon={SVGIcons.GLOBAL_ADD_CIRCLE}
+            icon={SVGIcons.EVM_ACCOUNT_EDIT}
+            onClick={handleEditSeedClick}
+          />
+          <SVGIcon
+            icon={SVGIcons.EVM_ACCOUNT_ADD}
             onClick={handleAddSeedClick}
           />
         </div>
@@ -122,6 +198,7 @@ const EvmAccountsComponent = ({
                   copiable
                   onCopy={onCopyAddress}
                   onHideOrShow={handleHideOrShowAddress}
+                  onEdit={handleOnEditAddress}
                   fullAddress
                 />
               </div>
@@ -135,39 +212,7 @@ const EvmAccountsComponent = ({
           onClick={handleAddAddressClick}
         />
       </div>
-      {openPopupAddress && (
-        <PopupContainer className="address-nickname-popup">
-          <div className="popup-title">
-            {chrome.i18n.getMessage('evm_add_nickname_to_address_popup_title')}
-          </div>
-          <div className="caption">
-            {chrome.i18n.getMessage(
-              'evm_add_nickname_to_address_popup_caption',
-            )}
-          </div>
-          <InputComponent
-            value={nickname}
-            onChange={setNickname}
-            label="evm_address_nickname"
-            placeholder="evm_address_nickname"
-            type={InputType.TEXT}
-          />
-          <div className="popup-footer">
-            <ButtonComponent
-              label="dialog_cancel"
-              type={ButtonType.ALTERNATIVE}
-              onClick={handleCancelAddAddress}
-              height="small"
-            />
-            <ButtonComponent
-              type={ButtonType.IMPORTANT}
-              label="popup_html_confirm"
-              onClick={handleConfirmAddAddress}
-              height="small"
-            />
-          </div>
-        </PopupContainer>
-      )}
+      {editParams && <EvmEditAccountPopup editParams={editParams} />}
     </div>
   );
 };
@@ -187,4 +232,4 @@ const connector = connect(mapStateToProps, {
 
 type PropsType = ConnectedProps<typeof connector>;
 
-export default connector(EvmAccountsComponent);
+export const EvmAccountsComponent = connector(EvmAccounts);

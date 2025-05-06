@@ -23,7 +23,22 @@
     }
 
     //commons
-    .selected-account-name,
+    .selected-account-name {
+      @include poppins500(14px);
+      user-select: none;
+      color: var(--select-font-color);
+      display: flex;
+      flex-direction: column;
+      row-gap: 1px;
+
+      .seed-name,
+      .address {
+        opacity: 0.7;
+        font-size: 11px;
+        font-style: italic;
+        line-height: 0.7;
+      }
+    }
     .account-name {
       @include poppins500(14px);
       user-select: none;

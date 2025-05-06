@@ -35,6 +35,8 @@ const CreateNewWalletVerification = ({
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
 
+  const [nickname, setNickname] = useState<string>('');
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'html_popup_evm_create_wallet_verification_title',
@@ -72,7 +74,7 @@ const CreateNewWalletVerification = ({
       wallet: derivedWallet,
       seedId: 0,
     };
-    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk);
+    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
     setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 
@@ -105,6 +107,13 @@ const CreateNewWalletVerification = ({
             'html_popup_evm_create_wallet_verification_caption',
           )}
         </div>
+        <InputComponent
+          value={nickname}
+          onChange={setNickname}
+          type={InputType.TEXT}
+          label="evm_address_nickname"
+          placeholder="evm_address_nickname"
+        />
         <div className="mnemonic-container">
           <div className={`words-container`}>
             {hiddenWordIndexes.length &&

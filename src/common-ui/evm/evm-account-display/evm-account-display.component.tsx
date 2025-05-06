@@ -19,6 +19,7 @@ type Props = {
   copiable?: boolean;
   onCopy?: (account: EvmAccount) => void;
   onHideOrShow?: (seedId: number, addressId: number, hide: boolean) => void;
+  onEdit?: (account: EvmAccount) => void;
   fullAddress?: boolean;
 };
 
@@ -31,6 +32,7 @@ export const EvmAccountDisplayComponent = ({
   fullAddress,
   onCopy,
   onHideOrShow,
+  onEdit,
 }: Props) => {
   return (
     <div className="evm-account-display">
@@ -43,7 +45,15 @@ export const EvmAccountDisplayComponent = ({
           <div className="account-name">
             {EvmAccountUtils.getAccountName(account)}
           </div>
-          {editable && <div className="edit-icon"></div>}
+          {editable && (
+            <SVGIcon
+              className="edit-icon"
+              icon={SVGIcons.EVM_ACCOUNT_EDIT}
+              onClick={() => {
+                if (onEdit) onEdit(account);
+              }}
+            />
+          )}
         </div>
         <div className="bottom-line">
           <div
@@ -63,7 +73,11 @@ export const EvmAccountDisplayComponent = ({
               if (onHideOrShow)
                 onHideOrShow(account.seedId, account.id, !account.hide);
             }}
-            tooltipMessage="html_popup_evm_hide_account"
+            tooltipMessage={
+              account.hide
+                ? 'html_popup_evm_show_account'
+                : 'html_popup_evm_hide_account'
+            }
             tooltipPosition="left"
           />
         )}

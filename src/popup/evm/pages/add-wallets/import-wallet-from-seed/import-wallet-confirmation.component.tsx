@@ -16,6 +16,8 @@ import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
@@ -27,6 +29,9 @@ const ImportWalletConfirmation = ({
   chain,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
+
+  const [nickname, setNickname] = useState<string>('');
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'html_popup_evm_choose_account',
@@ -55,7 +60,12 @@ const ImportWalletConfirmation = ({
         wallet: derivedWallet.wallet,
         seedId: 0,
       }));
-      await EvmWalletUtils.addSeedAndAccounts(wallet, evmAccounts, mk);
+      await EvmWalletUtils.addSeedAndAccounts(
+        wallet,
+        evmAccounts,
+        mk,
+        nickname,
+      );
       await ChainUtils.addChainToSetupChains(chain);
       setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
     }
@@ -74,6 +84,13 @@ const ImportWalletConfirmation = ({
             ),
           }}></div>
         <Separator type="horizontal" />
+        <InputComponent
+          value={nickname}
+          onChange={setNickname}
+          type={InputType.TEXT}
+          label="evm_address_nickname"
+          placeholder="evm_address_nickname"
+        />
         {wallets.map((e, i) => {
           return (
             <CheckboxPanelComponent
@@ -105,7 +122,6 @@ const ImportWalletConfirmation = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log({ state });
   return {
     walletsWithBalance: state.navigation.stack[0]?.params
       ?.derivedWallets as WalletWithBalance[],

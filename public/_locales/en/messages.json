@@ -5118,15 +5118,23 @@
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
-    "message": "Add nickname",
+    "message": "Add name",
     "description": "Add nickname to address title"
   },
   "evm_add_nickname_to_address_popup_caption": {
-    "message": "Add a nickname to your address to identify it easier",
+    "message": "Add a name to your address to identify it easier",
     "description": "Add nickname to address caption"
   },
   "evm_address_nickname": {
     "message": "Nickname",
     "description": "Nickname"
+  },
+  "evm_edit_seed_nickname": {
+    "message": "Edit seed name",
+    "decription": "Edit see nickname"
+  },
+  "evm_edit_address_name": {
+    "message": "Edit address name",
+    "description": "Edit wallet address nickname"
   }
 }

@@ -27,6 +27,18 @@
         cursor: pointer;
         color: var(--main-font-color);
       }
+      .edit-icon {
+        display: none;
+        margin-top: -9px;
+        margin-right: 8px;
+        svg {
+          height: 20px;
+          width: 20px;
+          * {
+            stroke-width: 1.27;
+          }
+        }
+      }
     }
     .bottom-line {
       width: 100%;
@@ -65,6 +77,9 @@
       .copy-icon {
         visibility: visible !important;
       }
+    }
+    .edit-icon {
+      display: block !important;
     }
   }
 }

@@ -103,6 +103,27 @@ const hideOrShowAddress = async (
   encryptAccountsInLocalStorage(mk, savedSeeds);
 };
 
+const updateAddressName = async (
+  seedId: EvmAccount['seedId'],
+  addressId: number,
+  newName: string,
+  mk: string,
+) => {
+  const savedSeeds = await getAccountsFromLocalStorage(mk);
+
+  const seedIndex = savedSeeds.findIndex((seed) => seed.id === seedId);
+
+  const savedSeed = savedSeeds[seedIndex];
+
+  const addressIndex = savedSeed.accounts.findIndex(
+    (account) => account.id === addressId,
+  );
+
+  savedSeed.accounts[addressIndex].nickname = newName;
+
+  encryptAccountsInLocalStorage(mk, savedSeeds);
+};
+
 const addAddressToSeed = async (
   seedId: EvmAccount['seedId'],
   mk: string,
@@ -138,12 +159,14 @@ const addSeedAndAccounts = async (
   wallet: HDNodeWallet,
   accounts: EvmAccount[],
   mk: string,
+  nickname?: string,
 ) => {
   const previousAccounts = await getAccountsFromLocalStorage(mk);
   const id =
     previousAccounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
   const newAccounts: StoredSeed = {
     seed: wallet.mnemonic!.phrase,
+    nickname: nickname,
     id,
     accounts: accounts.map((derivedWallet) => ({
       id: derivedWallet.id,
@@ -153,6 +176,21 @@ const addSeedAndAccounts = async (
   const allAccounts = [...previousAccounts, newAccounts];
   encryptAccountsInLocalStorage(mk, allAccounts);
   return allAccounts;
+};
+
+const updateSeedNickname = async (
+  seedId: number,
+  newNickname: string,
+  mk: string,
+) => {
+  const savedSeeds = await getAccountsFromLocalStorage(mk);
+
+  const seedIndex = savedSeeds.findIndex((account) => account.id === seedId);
+
+  savedSeeds[seedIndex].nickname = newNickname;
+
+  encryptAccountsInLocalStorage(mk, savedSeeds);
+  return savedSeeds;
 };
 
 const encryptAccountsInLocalStorage = (
@@ -181,7 +219,6 @@ const getAccountsFromLocalStorage = async (mk: string) => {
       wallets,
       mk,
     ).list || []) as StoredSeed[];
-    console.log({ decryptedAccounts });
     return decryptedAccounts;
   }
 };
@@ -201,7 +238,6 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
       }),
     )
     .flat();
-  console.log({ test });
   return test;
 };
 
@@ -410,4 +446,6 @@ export const EvmWalletUtils = {
   getAllLocalAddresses,
   addAddressToSeed,
   hideOrShowAddress,
+  updateSeedNickname,
+  updateAddressName,
 };

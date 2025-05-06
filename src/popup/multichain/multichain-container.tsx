@@ -18,6 +18,8 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   }, []);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    console.log({ event }, event.key, event.ctrlKey);
+
     if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
       setTheme((previous) => {
         return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
@@ -25,6 +27,11 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
     }
     if (event.key === 'd' && event.ctrlKey) {
       handleDetachWindow();
+    }
+    if (event.ctrlKey && event.key === 'r') {
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+      alert('refresh');
     }
   }, []);
 

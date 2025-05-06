@@ -99,7 +99,11 @@ const SelectAccountSection = ({
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
-          {FormatUtils.shortenString(selectedAddress, 4)}
+          <div className="seed-name">ma seed</div>
+          <div className="address-name">Mon nom</div>
+          <div className="address">
+            {FormatUtils.shortenString(selectedAddress, 4)}
+          </div>
         </div>
       </div>
     );
