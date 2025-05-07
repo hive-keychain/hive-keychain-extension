@@ -284,19 +284,6 @@ const handleAuthAck = async (
         tab,
       );
 
-      // Create and send initial "request sent" message
-      message = await createMessage(
-        null,
-        requestHandler.data.request!,
-        requestHandler.data.request!,
-        await chrome.i18n.getMessage('bgd_ops_sign_requested'),
-        null,
-        null,
-      );
-      chrome.runtime.sendMessage(message);
-      chrome.tabs.sendMessage(tab, message);
-
-      // Wait for sign response and send success message
       const signResponse = await new Promise<SIGN_ACK>((resolve) => {
         const handleSignMessage = (event: MessageEvent) => {
           const response = JSON.parse(event.data) as SIGN_ACK;
