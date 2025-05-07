@@ -15,13 +15,14 @@ export const keylessKeychainRequest = async (
 ) => {
   console.log('keyless: request', request);
   if (!request.username || request.username.trim() === '') {
-    console.log('keyless: anonymous keyless op');
     createAnonymousKeylessOpPopup(requestHandler, tab, request, domain);
   } else if (request.type === KeychainRequestTypes.addAccount) {
-    console.log('keyless: add account request');
     createAddAccountPopup(requestHandler, tab, request, domain);
+  } else if (request.type === KeychainRequestTypes.swap) {
+    createUnsupportedOperationPopup(requestHandler, tab, request, domain);
+  } else if (request.type === KeychainRequestTypes.encodeWithKeys) {
+    createUnsupportedOperationPopup(requestHandler, tab, request, domain);
   } else {
-    console.log('keyless: registered, proceed to sign');
     const keylessAuthData =
       await KeylessKeychainModule.checkKeylessRegistration(
         request,
@@ -29,10 +30,8 @@ export const keylessKeychainRequest = async (
         tab,
       );
     if (!keylessAuthData) {
-      console.log('keyless: reauthentication or new registration');
       createRegisterKeylessKeychainPopup(requestHandler, tab, request, domain);
     } else {
-      console.log('keyless: proceed to sign');
       performKeylessOperation(requestHandler, tab, request, domain);
     }
   }
@@ -87,6 +86,32 @@ const createRegisterKeylessKeychainPopup = (
       data: request,
       tab,
       domain,
+    });
+  };
+  createPopup(callback, requestHandler);
+};
+
+const createUnsupportedOperationPopup = (
+  requestHandler: RequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  const callback = async () => {
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: false,
+        message: await chrome.i18n.getMessage(
+          'dialog_keyless_unsupported_operation',
+          [
+            request.type
+              .replace(/([A-Z])/g, ' $1')
+              .toLowerCase()
+              .replace(/^./, (str) => str.toUpperCase()),
+          ],
+        ),
+      },
     });
   };
   createPopup(callback, requestHandler);

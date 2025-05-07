@@ -29,6 +29,19 @@ const handleOperation = async (
     case KeychainRequestTypes.decode:
       HASUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
+    case KeychainRequestTypes.swap:
+    case KeychainRequestTypes.encodeWithKeys:
+      chrome.runtime.sendMessage({
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          message: await chrome.i18n.getMessage(
+            'dialog_keyless_unsupported_operation',
+            [request.type],
+          ),
+        },
+      });
+      break;
     default:
       HASUtils.signRequest(request, domain, tab);
     // Send initial "request sent" message

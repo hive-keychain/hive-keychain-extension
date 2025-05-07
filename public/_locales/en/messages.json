@@ -1776,6 +1776,10 @@
     "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
     "description": "When registering from request"
   },
+  "dialog_keyless_unsupported_operation": {
+    "message": "$1 is not supported by keyless keychain.",
+    "description": "When trying to perform an unsupported operation"
+  },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
