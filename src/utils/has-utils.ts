@@ -613,19 +613,6 @@ const signRequest = async (
   };
 
   ws.addEventListener('message', signWaitHandler);
-
-  // Add timeout to prevent infinite waiting
-  setTimeout(() => {
-    ws.removeEventListener('message', signWaitHandler);
-    const error = new Error('Sign wait timeout');
-    const errorResponse: SIGN_ACK = {
-      cmd: HAS_CMD.SIGN_ACK,
-      uuid: '',
-      broadcast: false,
-      data: '',
-    };
-    sendResponseToDapp(request, domain, tab, errorResponse, error);
-  }, 30000); // 30 second timeout
 };
 
 const handleSignWait = async (
