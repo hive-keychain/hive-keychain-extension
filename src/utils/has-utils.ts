@@ -987,7 +987,7 @@ const calculateVests = async (
     vests = Number(vests.toFixed(6));
     return vests.toString() + ' VESTS';
   } else {
-    return amount + ' VESTS';
+    return amount.includes('VESTS') ? amount : amount + ' VESTS';
   }
 };
 
