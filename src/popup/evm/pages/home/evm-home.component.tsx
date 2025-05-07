@@ -221,9 +221,8 @@ const Home = ({
               )} ${chain.mainToken}`,
             }}
           />
-          <div className="dapp-status-wrapper">
-            <EvmDappStatusComponent />
-          </div>
+
+          <EvmDappStatusComponent />
         </div>
         <EvmWalletInfoSectionComponent
           activeAccount={activeAccount}

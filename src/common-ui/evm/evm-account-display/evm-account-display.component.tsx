@@ -12,7 +12,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
-  active?: EvmActiveAccount;
+  activeAccount?: EvmActiveAccount;
   account: EvmAccount;
   status?: DappStatusEnum;
   editable?: boolean;
@@ -25,7 +25,7 @@ type Props = {
 
 export const EvmAccountDisplayComponent = ({
   account,
-  active,
+  activeAccount,
   status,
   editable,
   copiable,

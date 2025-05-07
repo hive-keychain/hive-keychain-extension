@@ -17,8 +17,9 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
-const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
+const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
   const [dapp, setDapp] = useState<chrome.tabs.Tab>();
   const [status, setStatus] = useState<DappStatusEnum>(
     DappStatusEnum.DISCONNECTED,
@@ -32,23 +33,29 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
 
   useEffect(() => {
     onAddressLoaded();
-  }, [active.address, dapp]);
+  }, [activeAccount.address, dapp]);
 
   const init = async () => {
     const [activeTab] = await chrome.tabs.query({
       active: true,
       currentWindow: true,
     });
-    setDapp(activeTab);
+    if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
   };
 
   const onAddressLoaded = async () => {
-    if (!dapp || !dapp.url || !active.address.length) return;
+    if (!dapp || !dapp.url || !activeAccount.address.length) {
+      Logger.error("Can't find domain");
+      return;
+    }
+
     const domain = FormatUtils.urlToDomain(dapp.url!);
     const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
     const sortedConnectedWallets = [
-      connectedWallets.find((e) => e === active.address.toLowerCase()),
-      ...connectedWallets.filter((e) => e !== active.address.toLowerCase()),
+      connectedWallets.find((e) => e === activeAccount.address.toLowerCase()),
+      ...connectedWallets.filter(
+        (e) => e !== activeAccount.address.toLowerCase(),
+      ),
     ].filter((e) => !!e);
 
     chrome.runtime.sendMessage({
@@ -60,7 +67,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
     } as BackgroundMessage);
 
     setConnectedWallets(connectedWallets);
-    if (connectedWallets.includes(active.address)) {
+    if (connectedWallets.includes(activeAccount.address)) {
       setStatus(DappStatusEnum.SELECTED);
     } else if (connectedWallets.length) {
       setStatus(DappStatusEnum.CONNECTED);
@@ -79,7 +86,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
   if (!dapp?.url) return null;
   else
     return (
-      <>
+      <div className="dapp-status-wrapper">
         <DappStatusComponent
           imageUrl={dapp?.favIconUrl}
           onClick={() => setShowDetail(true)}
@@ -112,9 +119,9 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
                 <div className="account-section-item">
                   <EvmAccountDisplayComponent
                     account={account}
-                    active={active}
+                    activeAccount={activeAccount}
                     status={
-                      account.wallet.address === active.address
+                      account.wallet.address === activeAccount.address
                         ? DappStatusEnum.SELECTED
                         : DappStatusEnum.CONNECTED
                     }
@@ -143,7 +150,7 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
                 <div className="account-section-item">
                   <EvmAccountDisplayComponent
                     account={account}
-                    active={active}
+                    activeAccount={activeAccount}
                     status={DappStatusEnum.DISCONNECTED}
                   />
                   <SVGIcon
@@ -176,13 +183,13 @@ const EvmDappStatus = ({ active, accounts }: PropsFromRedux) => {
             ) : null}
           </PopupContainer>
         )}
-      </>
+      </div>
     );
 };
 
 const connector = connect((state: RootState) => {
   return {
-    active: state.evm.activeAccount,
+    activeAccount: state.evm.activeAccount,
     accounts: state.evm.accounts,
   };
 });
