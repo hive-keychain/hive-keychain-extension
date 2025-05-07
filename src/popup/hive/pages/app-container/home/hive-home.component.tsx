@@ -415,7 +415,10 @@ const Home = ({
               onRefreshButtonClicked={refresh}
               actions={
                 <>
-                  {hasRewardToClaim && (
+                  {activeAccount.name && globalProperties.globals && (
+                    <NotificationsComponent />
+                  )}
+                  {hasRewardToClaim === false && (
                     <SVGIcon
                       icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
                       dataTestId="reward-claim-icon"
@@ -423,9 +426,6 @@ const Home = ({
                       onClick={() => handleClickOnClaim()}
                       hoverable
                     />
-                  )}
-                  {activeAccount.name && globalProperties.globals && (
-                    <NotificationsComponent />
                   )}
                 </>
               }

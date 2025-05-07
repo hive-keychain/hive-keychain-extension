@@ -1,12 +1,17 @@
 .top-bar {
   height: 74px;
-  padding: 8px 8px 0px 0px;
+  padding: 0px;
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   user-select: none;
-  column-gap: 8px;
+  column-gap: 16px;
   position: relative;
+
+  background: var(--card-background);
+  align-items: center;
+
+  box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
 
   .account-selector-panel {
     display: flex;
@@ -15,24 +20,21 @@
     align-items: center;
     justify-content: center;
     margin-top: 6px;
+    flex: 1;
   }
 
   .chain-selector {
-    margin-top: 12px;
   }
 
   .logo-container {
-    margin-top: 8px;
-    padding: 8px;
     background: var(--input-background);
-    border: 1px solid var(--input-border);
     border-radius: 50%;
     .logo {
-      height: 28px;
-      width: 28px;
+      height: 24px;
+      width: 24px;
       svg {
-        height: 28px;
-        width: 28px;
+        height: 24px;
+        width: 24px;
       }
       cursor: pointer;
 
@@ -44,7 +46,8 @@
 
   .top-bar-actions {
     display: flex;
-    column-gap: 12px;
+    flex-direction: column;
+    row-gap: 6px;
     .claim-button {
       height: 26px;
       width: 26px;
@@ -64,7 +67,11 @@
   .button {
     cursor: pointer;
     &.settings-button {
-      margin-top: 4px;
+      background: var(--menu-button-icon-background);
+      padding: 16px 16px 12px 8px;
+      border: 1px solid var(--menu-button-icon-border);
+      border-top-right-radius: 50%;
+      border-bottom-right-radius: 50%;
     }
   }
 

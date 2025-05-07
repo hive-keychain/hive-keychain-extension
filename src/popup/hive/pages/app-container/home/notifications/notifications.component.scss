@@ -2,6 +2,7 @@
   display: block;
   position: absolute;
   top: calc(100% + 16px);
+  left: 0;
   width: calc(100% - 32px);
   height: 0px;
   transition: height 0.25s ease-out;
@@ -111,7 +112,7 @@
 
   .notifications-count {
     position: absolute;
-    top: 14px;
+    top: -4px;
     right: -8px;
     height: 18px;
     width: 18px;

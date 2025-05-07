@@ -194,7 +194,11 @@ const Home = ({
         }}
         onRefreshButtonClicked={refreshAccountBalances}
         accountSelector={
-          <EvmSelectAccountSectionComponent background="white" isOnMain />
+          <EvmSelectAccountSectionComponent
+            background="white"
+            removeBorder
+            isOnMain
+          />
         }
       />
 

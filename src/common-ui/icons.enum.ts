@@ -85,7 +85,7 @@ export enum SVGIcons {
   KEYCHAIN_LOGO_ROUND_SMALL = 'keychain-round-logo-small',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',
 
-  MENU_BUTTON = 'top-bar/menu-button',
+  MENU_BUTTON = 'top-bar/menu-button2',
   MENU_ABOUT = 'menu/about',
 
   MENU_THEME_DARK = 'menu/theme/dark-theme',

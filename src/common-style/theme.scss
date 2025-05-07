@@ -5,6 +5,11 @@ $dark: (
   --background-color: $dark-background,
   --splashscreen-text-color: white,
   --separator-color: $blue-border,
+
+  //Menu
+  --menu-button-icon-color: $dark-blue,
+  --menu-button-icon-background: #fff,
+  --menu-button-icon-border: $light-grey-border,
   // Home page
   --home-account-value-color: white,
   // Resource section
@@ -35,6 +40,8 @@ $dark: (
   --action-button-color: #{$red},
   --action-button-background-color: $darker-blue,
   --action-button-border-color: #{$blue-border},
+  --topbar-shadow: $lighter-black-shadow,
+
   // Select
   --select-font-color: white,
   --select-icon-color: white,
@@ -106,6 +113,11 @@ $light: (
   --background-color: $light-background,
   --splashscreen-text-color: $dark-blue,
   --separator-color: $extra-light-grey,
+
+  //Menu
+  --menu-button-icon-color: $dark-blue,
+  --menu-button-icon-background: transparent,
+  --menu-button-icon-border: $light-grey-border,
   // Home page
   --home-account-value-color: $darker-grey,
   // Resource section
@@ -136,6 +148,7 @@ $light: (
   --action-button-color: #{$red},
   --action-button-background-color: white,
   --action-button-border-color: #{$lighter-grey-border},
+  --topbar-shadow: $white-shadow,
   // Select account section
   --select-font-color: $darker-grey,
   --select-icon-color: $darker-grey,

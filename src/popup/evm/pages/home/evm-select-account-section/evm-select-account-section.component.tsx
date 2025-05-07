@@ -23,6 +23,7 @@ interface Props {
   background?: 'white';
   fullSize?: boolean;
   isOnMain?: boolean;
+  removeBorder?: boolean;
 }
 
 const SelectAccountSection = ({
@@ -34,6 +35,7 @@ const SelectAccountSection = ({
   loadEvmActiveAccount,
   setInfoMessage,
   isOnMain = false,
+  removeBorder,
 }: PropsFromRedux & Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
 
@@ -187,7 +189,9 @@ const SelectAccountSection = ({
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
-            className={`select-account-select ${background ? background : ''} `}
+            className={`select-account-select ${background ? background : ''} ${
+              removeBorder ? 'remove-border' : ''
+            }`}
             dropdownHandleRenderer={customHandleRenderer}
             dropdownRenderer={customDropdownRenderer}
           />

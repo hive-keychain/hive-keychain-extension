@@ -44,10 +44,8 @@ export const TopBarComponent = ({
         />
       </div>
 
-      <div className="account-selector-panel">
-        {accountSelector}
-        <div className="top-bar-actions">{actions}</div>
-      </div>
+      {actions && <div className="top-bar-actions">{actions}</div>}
+      <div className="account-selector-panel">{accountSelector}</div>
       <ChainDropdownComponent />
     </div>
   );
