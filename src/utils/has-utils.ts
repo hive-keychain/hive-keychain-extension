@@ -274,6 +274,8 @@ const handleAuthAck = async (
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
     console.log('handleAuthAck auth_ack_data:', { auth_ack_data });
 
+    // Add a 1 second delay before proceeding
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     if (requestHandler.data.request?.type !== KeychainRequestTypes.signBuffer) {
       // For non-signBuffer requests, send sign request and notify user
       const sign_wait = await signRequest(
