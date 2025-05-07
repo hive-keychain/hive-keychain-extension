@@ -61,13 +61,12 @@ const setupWebSocketHandlers = (
   reject: (error: any) => void,
 ) => {
   ws.onopen = () => {
-    console.log('WebSocket connected');
     reconnectInterval = 1000; // Reset the reconnection delay
     resolve();
   };
 
   ws.onmessage = (event) => {
-    console.log('Message from server:', event.data);
+    // console.log('Message from server:', event.data);
   };
 
   ws.onclose = (event) => {
@@ -128,22 +127,18 @@ const authenticate = async (
   // Note: the auth_req_data does not need to be converted to base64 before encryption as
   // it will be converted to base64 by the encryption.
   const auth_req_data_string = JSON.stringify(auth_req_data);
-  console.log('auth_req_data_string:', { auth_req_data_string });
   const auth_req_data_encrypted = await EncryptUtils.encryptNoIV(
     auth_req_data_string,
     keylessRequest.authKey,
   );
-  console.log('auth_req_data_encrypted:', { auth_req_data_encrypted });
   const auth_req: AUTH_REQ = {
     cmd: HAS_CMD.AUTH_REQ,
     account: keylessRequest.request.username,
     data: auth_req_data_encrypted,
   };
-  console.log('auth_req:', { auth_req });
 
   // Send the authentication request
 
-  console.log('Sending authentication request:', { auth_req });
   ws.send(JSON.stringify(auth_req));
 
   // Return a promise that resolves with the AUTH_WAIT message
@@ -153,7 +148,6 @@ const authenticate = async (
 
       if (message.cmd === HAS_CMD.AUTH_WAIT) {
         // AUTH_WAIT received
-        console.log('AUTH_WAIT received:', { message });
         ws.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
       } else if (
@@ -161,7 +155,6 @@ const authenticate = async (
         message.cmd === 'auth_err'
       ) {
         // Authentication failed or error
-        console.log('AUTH_NACK received:', { message });
         ws.removeEventListener('message', handleMessage);
         reject(
           new Error(
@@ -197,36 +190,39 @@ const listenToAuthAck = (
     throw new Error('Username and keyless auth data are required');
   }
   // Start listening for messages immediately
-  const handleMessage = (event: MessageEvent) => {
+  const handleMessage = async (event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data);
       Logger.log('listenToAuthAck message:', { message });
       if (message.cmd === HAS_CMD.AUTH_ACK) {
         ws.removeEventListener('message', handleMessage);
-        handleAuthAck(
-          requestHandler,
-          username,
-          keylessRequest,
-          message as AUTH_ACK,
-          tab,
-        )
-          .then(() => {})
-          .catch((error) => {
-            console.error('Failed to handle auth ack:', error);
-          });
+        try {
+          await handleAuthAck(
+            requestHandler,
+            username,
+            keylessRequest,
+            message as AUTH_ACK,
+            tab,
+          );
+        } catch (error) {
+          Logger.error('Error handling auth ack:', error);
+          throw error;
+        }
       } else if (
         message.cmd === HAS_CMD.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
         ws.removeEventListener('message', handleMessage);
-        handleAuthNack(username, message as AUTH_NACK)
-          .then(() => {})
-          .catch((error) => {
-            console.error('Failed to handle auth nack:', error);
-          });
+        try {
+          await handleAuthNack(username, message as AUTH_NACK);
+        } catch (error) {
+          Logger.error('Error handling auth nack:', error);
+          throw error;
+        }
       }
     } catch (error) {
-      console.error('Failed to process message:', error);
+      Logger.error('Error processing message:', error);
+      throw error;
     }
   };
 
@@ -272,12 +268,10 @@ const handleAuthAck = async (
       token: keylessRequest.token,
     };
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
-    console.log('handleAuthAck auth_ack_data:', { auth_ack_data });
 
     // Add a 1 second delay before proceeding
     await new Promise((resolve) => setTimeout(resolve, 3000));
     if (requestHandler.data.request?.type !== KeychainRequestTypes.signBuffer) {
-      // For non-signBuffer requests, send sign request and notify user
       const sign_wait = await signRequest(
         requestHandler.data.request!,
         keylessRequest.appName,
@@ -295,7 +289,6 @@ const handleAuthAck = async (
         ws.addEventListener('message', handleSignMessage);
       });
 
-      // Send success message after sign response
       message = await createMessage(
         null,
         signResponse,
@@ -307,7 +300,6 @@ const handleAuthAck = async (
       chrome.runtime.sendMessage(message);
       chrome.tabs.sendMessage(tab, message);
     } else {
-      // For signBuffer requests, send success message with challenge data
       message = await createMessage(
         null,
         auth_ack_data.challenge.challenge,
@@ -320,7 +312,6 @@ const handleAuthAck = async (
       chrome.tabs.sendMessage(tab, message);
     }
   } catch (error: unknown) {
-    // Handle errors and send error message
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
     message = await createMessage(
@@ -578,11 +569,9 @@ const signRequest = async (
   }
 
   let op = null;
-  console.log('signRequest request:', { request });
   const keyType = getRequiredWifType(request);
   op = await getRequestOperation(request);
   op = sanitizeOperation(op);
-  console.log('signRequest op:', { op });
   const sign_req_data: SIGN_REQ_DATA = {
     key_type: keyType,
     ops: op,
@@ -677,7 +666,6 @@ const handleSignWait = async (
           reject(error);
         }
       } catch (error) {
-        console.error('Error processing sign message:', error);
         reject(error);
       }
     };
@@ -727,14 +715,12 @@ const challengeRequest = async (
   domain: string,
   tab: number,
 ) => {
-  console.log('challengeRequest request:', { request });
   const challenge_req_data: CHALLENGE_REQ_DATA = {
     key_type: getRequiredWifType(request).toLowerCase(),
     challenge: (request as RequestSignBuffer).message,
     decrypt: request.type === KeychainRequestTypes.decode,
     nonce: Date.now(),
   };
-  console.log('challenge_req_data:', { challenge_req_data });
   const { encryptedHiveAuthRequestData, keylessAuthData } =
     await KeylessKeychainUtils.encryptHiveAuthRequestData(
       request.username!,
@@ -747,7 +733,6 @@ const challengeRequest = async (
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  console.log('challenge_req:', { challenge_req });
   ws.send(JSON.stringify(challenge_req));
 
   return new Promise<CHALLENGE_WAIT>((resolve, reject) => {
@@ -797,7 +782,6 @@ const handleChallengeWait = async (
         const challenge_ack = JSON.parse(event.data) as
           | CHALLENGE_ACK
           | CHALLENGE_NACK;
-        console.log('challenge_ack.data:', { challenge_ack });
         if (challenge_ack.cmd === HAS_CMD.CHALLENGE_ACK) {
           if (challenge_wait.uuid === challenge_ack.uuid) {
             // Remove the event listener since we got our response
@@ -825,7 +809,7 @@ const handleChallengeWait = async (
           reject(new Error('Challenge request failed'));
         }
       } catch (error) {
-        console.error('Error processing challenge message:', error);
+        reject(error);
       }
     };
 
@@ -900,7 +884,7 @@ const handleChallengeAck = async (
       });
     }
   } catch (error) {
-    console.error('Error processing challenge message:', error);
+    throw error;
   }
 };
 
@@ -929,7 +913,6 @@ const handleChallengeNack = async (
 
 const sanitizeOperation = (op: any) => {
   try {
-    console.log('sanitizeOperation op:', { op });
     if (!op) {
       throw new Error('Invalid request type');
     }
