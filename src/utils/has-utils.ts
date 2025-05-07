@@ -983,11 +983,12 @@ const calculateVests = async (
     const totalVests = Number(
       (global.total_vesting_shares as string).split(' ')[0],
     );
-    let vests = (parseFloat(amount) * totalVests) / totalHive;
-    vests = Number(vests.toFixed(6));
-    return vests.toString() + ' VESTS';
+    const vests = (parseFloat(amount) * totalVests) / totalHive;
+    return vests.toFixed(6) + ' VESTS';
   } else {
-    return amount.includes('VESTS') ? amount : amount + ' VESTS';
+    const value = amount.includes('VESTS') ? amount : amount + ' VESTS';
+    const numericValue = parseFloat(value);
+    return numericValue.toFixed(6) + ' VESTS';
   }
 };
 
