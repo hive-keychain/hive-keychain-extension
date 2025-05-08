@@ -268,10 +268,26 @@ const handleAuthAck = async (
       token: keylessRequest.token,
     };
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
-
     // Add a 1 second delay before proceeding
     await new Promise((resolve) => setTimeout(resolve, 3000));
     if (requestHandler.data.request?.type !== KeychainRequestTypes.signBuffer) {
+      console.log('requestHandler', requestHandler);
+
+      if (
+        requestHandler.data.request?.type === KeychainRequestTypes.encode ||
+        requestHandler.data.request?.type === KeychainRequestTypes.decode
+      ) {
+        console.log('proceed to challengeRequest');
+        const challenge_wait = await challengeRequest(
+          requestHandler,
+          requestHandler.data.request!,
+          keylessRequest.appName,
+          tab,
+        );
+        return;
+      }
+      console.log('proceed to signRequest');
+
       const sign_wait = await signRequest(
         requestHandler.data.request!,
         keylessRequest.appName,
@@ -300,6 +316,8 @@ const handleAuthAck = async (
       chrome.runtime.sendMessage(message);
       chrome.tabs.sendMessage(tab, message);
     } else {
+      console.log('keylessRequest', keylessRequest);
+      console.log('auth_ack_data', auth_ack_data);
       message = await createMessage(
         null,
         auth_ack_data.challenge.challenge,
@@ -873,12 +891,19 @@ const handleChallengeAck = async (
     sendResponseToDapp(request, domain, tab, challenge_ack_data);
 
     // Send message to runtime if request is anonymous
-    if (requestHandler.data.isAnonymous) {
+    if (
+      requestHandler.data.isAnonymous ||
+      request.type === KeychainRequestTypes.encode ||
+      request.type === KeychainRequestTypes.decode
+    ) {
       chrome.runtime.sendMessage({
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
-          message: await chrome.i18n.getMessage('bgd_ops_challenge_success'),
+          message: await chrome.i18n.getMessage('bgd_ops_challenge_success', [
+            request.type.charAt(0).toUpperCase() +
+              request.type.slice(1).toLowerCase(),
+          ]),
           result: challenge_ack_data,
         },
       });

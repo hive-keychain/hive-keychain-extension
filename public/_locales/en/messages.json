@@ -1529,6 +1529,10 @@
   "bgd_ops_keyless_broadcast_error": {
     "message": "Keyless transaction failed to broadcast."
   },
+  "bgd_ops_challenge_success": {
+    "message": "$1 request has been processed successfully.",
+    "description": "Success message for encode/decode/sign operations."
+  },
   "popup_account_redeem": {
     "message": "You have Rewards ready to redeem in the amount of",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
