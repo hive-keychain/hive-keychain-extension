@@ -4,7 +4,7 @@
   "default_locale": "en",
   "version": "3.7.1",
   "permissions": ["storage", "idle", "alarms"],
-  "host_permissions": ["https://*/*"],
+  "host_permissions": ["https://*/*", "http://*/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "/assets/images/iconhive.png"
