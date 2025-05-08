@@ -167,7 +167,7 @@ export const WalletInfoSectionVscActions = (
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
       {
-        label: 'popup_html_savings',
+        label: 'popup_html_staking',
         icon: SVGIcons.WALLET_SAVINGS,
         nextScreen: Screen.VSC_STAKING_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },

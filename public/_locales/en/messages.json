@@ -1165,6 +1165,14 @@
     "message": "Balance",
     "description": "When website request a transfer"
   },
+  "dialog_vsc_balance": {
+    "message": "VSC Balance",
+    "description": "When website request a vsc operation"
+  },
+  "dialog_vsc_savings_balance": {
+    "message": "VSC Staking Balance",
+    "description": "When website request a vsc operation"
+  },
   "dialog_daily_pay": {
     "message": "Daily Pay",
     "description": "When website request a proposal creation"
@@ -1844,6 +1852,10 @@
   "popup_html_savings": {
     "message": "Savings",
     "description": "Saving page title"
+  },
+  "popup_html_staking": {
+    "message": "Staking",
+    "description": "Staking page title"
   },
   "popup_html_buy_intro": {
     "message": "Choose your favorite method and buy $1 fast and easily",

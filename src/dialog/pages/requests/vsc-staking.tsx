@@ -1,10 +1,11 @@
 import { RequestId, RequestVscStaking } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { FormatUtils } from 'hive-keychain-commons';
+import { FormatUtils, VscStakingOperation } from 'hive-keychain-commons';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import RequestVscBalance from 'src/dialog/components/request-vsc-balance/request-vsc-balance';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
@@ -31,6 +32,43 @@ const VscStaking = (props: Props) => {
     );
   };
 
+  const renderVscBalances = () => {
+    if (data.operation === VscStakingOperation.STAKING) {
+      return (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestVscBalance
+            username={anonymousProps.username}
+            amount={parseFloat(data.amount)}
+            currency={'hbd'}
+          />
+          {data.to === `hive:${anonymousProps.username}` && (
+            <>
+              <Separator type={'horizontal'} fullSize />
+              <RequestVscBalance
+                username={anonymousProps.username}
+                amount={parseFloat(data.amount)}
+                receiver
+                currency={'hbd_savings'}
+              />
+            </>
+          )}
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestVscBalance
+            username={anonymousProps.username}
+            amount={parseFloat(data.amount)}
+            currency={'hbd_savings'}
+          />
+        </>
+      );
+    }
+  };
+
   return (
     <Operation
       title={chrome.i18n.getMessage(
@@ -51,7 +89,7 @@ const VscStaking = (props: Props) => {
           data.amount,
         )} ${CurrencyUtils.getCurrencyLabel(data.currency, rpc.testnet)}`}
       />
-
+      {renderVscBalances()}
       {data.netId ? (
         <>
           <Separator type={'horizontal'} fullSize />

@@ -6,6 +6,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import RequestVscBalance from 'src/dialog/components/request-vsc-balance/request-vsc-balance';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
@@ -30,6 +31,24 @@ const VscDeposit = (props: Props) => {
     ) : (
       <></>
     );
+  };
+
+  const renderVscBalance = () => {
+    if (data.to && data.to !== `hive:${anonymousProps.username}`) {
+      return undefined;
+    } else {
+      return (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestVscBalance
+            username={anonymousProps.username}
+            amount={parseFloat(data.amount)}
+            receiver
+            currency={data.currency.toLowerCase() as 'hive' | 'hbd'}
+          />
+        </>
+      );
+    }
   };
 
   return (
@@ -63,6 +82,7 @@ const VscDeposit = (props: Props) => {
         amount={parseFloat(data.amount)}
         currency={data.currency}
       />
+      {renderVscBalance()}
     </Operation>
   );
 };

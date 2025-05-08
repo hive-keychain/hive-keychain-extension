@@ -5,6 +5,7 @@ import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import RequestVscBalance from 'src/dialog/components/request-vsc-balance/request-vsc-balance';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 
@@ -55,6 +56,12 @@ const VscTransfer = (props: Props) => {
           <RequestItem title="dialog_memo" content={data.memo} />
         </>
       ) : undefined}
+      <Separator type={'horizontal'} fullSize />
+      <RequestVscBalance
+        username={anonymousProps.username}
+        amount={parseFloat(data.amount)}
+        currency={data.currency.toLowerCase() as 'hive' | 'hbd'}
+      />
       {data.netId ? (
         <>
           <Separator type={'horizontal'} fullSize />

@@ -59,7 +59,7 @@
     "crypto-js": "4.1.1",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.8.3",
+    "hive-keychain-commons": "^1.8.4",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "hive-uri": "^0.2.5",
     "joi": "^17.13.3",
