@@ -232,6 +232,135 @@ const listenToAuthAck = (
   return Promise.resolve();
 };
 
+interface AuthAckError extends Error {
+  code: string;
+}
+
+class AuthAckError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'AuthAckError';
+  }
+}
+
+const validateAuthAckData = (
+  auth_ack: AUTH_ACK,
+  keylessRequest: KeylessRequest,
+): AUTH_ACK_DATA => {
+  if (!auth_ack?.data) {
+    throw new AuthAckError('Invalid auth acknowledgement data', 'INVALID_DATA');
+  }
+
+  const auth_ack_data: AUTH_ACK_DATA =
+    typeof auth_ack.data === 'string'
+      ? JSON.parse(
+          EncryptUtils.decryptNoIV(auth_ack.data, keylessRequest.authKey),
+        )
+      : auth_ack.data;
+
+  if (!auth_ack_data?.expire) {
+    throw new AuthAckError(
+      'Missing expiration in auth acknowledgement data',
+      'MISSING_EXPIRATION',
+    );
+  }
+
+  if (keylessRequest.uuid !== auth_ack.uuid) {
+    throw new AuthAckError(
+      'Invalid auth acknowledgement data',
+      'UUID_MISMATCH',
+    );
+  }
+
+  return auth_ack_data;
+};
+
+const updateKeylessRequestData = (
+  keylessRequest: KeylessRequest,
+  auth_ack_data: AUTH_ACK_DATA,
+): KeylessAuthData => {
+  keylessRequest.expire = auth_ack_data.expire;
+  keylessRequest.token = auth_ack_data.token;
+
+  return {
+    uuid: keylessRequest.uuid,
+    appName: keylessRequest.appName,
+    authKey: keylessRequest.authKey,
+    expire: keylessRequest.expire,
+    token: keylessRequest.token,
+  };
+};
+
+const handleSignBufferRequest = async (
+  keylessRequest: KeylessRequest,
+  auth_ack_data: AUTH_ACK_DATA,
+  tab: number,
+): Promise<void> => {
+  const message = await createMessage(
+    null,
+    auth_ack_data.challenge.challenge,
+    keylessRequest.request,
+    await chrome.i18n.getMessage('bgd_ops_sign_success'),
+    null,
+    auth_ack_data.challenge.pubkey,
+  );
+
+  await Promise.all([
+    chrome.runtime.sendMessage(message),
+    chrome.tabs.sendMessage(tab, message),
+  ]);
+};
+
+const handleSignRequest = async (
+  requestHandler: RequestsHandler,
+  keylessRequest: KeylessRequest,
+  tab: number,
+): Promise<void> => {
+  const sign_wait = await signRequest(
+    requestHandler.data.request!,
+    keylessRequest.appName,
+    tab,
+  );
+
+  const signResponse = await new Promise<SIGN_ACK>((resolve) => {
+    const handleSignMessage = (event: MessageEvent) => {
+      const response = JSON.parse(event.data) as SIGN_ACK;
+      if (response.cmd === HAS_CMD.SIGN_ACK) {
+        ws.removeEventListener('message', handleSignMessage);
+        resolve(response);
+      }
+    };
+    ws.addEventListener('message', handleSignMessage);
+  });
+
+  const message = await createMessage(
+    null,
+    signResponse,
+    requestHandler.data.request!,
+    await chrome.i18n.getMessage('bgd_ops_sign_success'),
+    null,
+    null,
+  );
+
+  await Promise.all([
+    chrome.runtime.sendMessage(message),
+    chrome.tabs.sendMessage(tab, message),
+  ]);
+};
+
+const handleEncodeDecodeRequest = async (
+  requestHandler: RequestsHandler,
+  keylessRequest: KeylessRequest,
+  tab: number,
+): Promise<void> => {
+  await challengeRequest(
+    requestHandler,
+    requestHandler.data.request!,
+    keylessRequest.appName,
+    tab,
+  );
+};
+
 const handleAuthAck = async (
   requestHandler: RequestsHandler,
   username: string,
@@ -239,100 +368,33 @@ const handleAuthAck = async (
   auth_ack: AUTH_ACK,
   tab: number,
 ): Promise<void> => {
-  let message = null;
   try {
-    if (!auth_ack?.data) {
-      throw new Error('Invalid auth acknowledgement data');
-    }
+    const auth_ack_data = validateAuthAckData(auth_ack, keylessRequest);
 
-    const auth_ack_data: AUTH_ACK_DATA =
-      typeof auth_ack.data === 'string'
-        ? JSON.parse(
-            EncryptUtils.decryptNoIV(auth_ack.data, keylessRequest.authKey),
-          )
-        : auth_ack.data;
-
-    if (!auth_ack_data?.expire) {
-      throw new Error('Missing expiration in auth acknowledgement data');
-    }
-    if (keylessRequest.uuid !== auth_ack.uuid) {
-      throw new Error('Invalid auth acknowledgement data');
-    }
-    keylessRequest.expire = auth_ack_data.expire;
-    keylessRequest.token = auth_ack_data.token;
-    const keylessAuthData = {
-      uuid: keylessRequest.uuid,
-      appName: keylessRequest.appName,
-      authKey: keylessRequest.authKey,
-      expire: keylessRequest.expire,
-      token: keylessRequest.token,
-    };
+    const keylessAuthData = updateKeylessRequestData(
+      keylessRequest,
+      auth_ack_data,
+    );
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
-    // Add a 1 second delay before proceeding
+
+    // Add delay before proceeding
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    if (requestHandler.data.request?.type !== KeychainRequestTypes.signBuffer) {
-      console.log('requestHandler', requestHandler);
 
-      if (
-        requestHandler.data.request?.type === KeychainRequestTypes.encode ||
-        requestHandler.data.request?.type === KeychainRequestTypes.decode
-      ) {
-        console.log('proceed to challengeRequest');
-        const challenge_wait = await challengeRequest(
-          requestHandler,
-          requestHandler.data.request!,
-          keylessRequest.appName,
-          tab,
-        );
-        return;
-      }
-      console.log('proceed to signRequest');
-
-      const sign_wait = await signRequest(
-        requestHandler.data.request!,
-        keylessRequest.appName,
-        tab,
-      );
-
-      const signResponse = await new Promise<SIGN_ACK>((resolve) => {
-        const handleSignMessage = (event: MessageEvent) => {
-          const response = JSON.parse(event.data) as SIGN_ACK;
-          if (response.cmd === HAS_CMD.SIGN_ACK) {
-            ws.removeEventListener('message', handleSignMessage);
-            resolve(response);
-          }
-        };
-        ws.addEventListener('message', handleSignMessage);
-      });
-
-      message = await createMessage(
-        null,
-        signResponse,
-        requestHandler.data.request!,
-        await chrome.i18n.getMessage('bgd_ops_sign_success'),
-        null,
-        null,
-      );
-      chrome.runtime.sendMessage(message);
-      chrome.tabs.sendMessage(tab, message);
+    // Handle different request types
+    if (requestHandler.data.request?.type === KeychainRequestTypes.signBuffer) {
+      await handleSignBufferRequest(keylessRequest, auth_ack_data, tab);
+    } else if (
+      requestHandler.data.request?.type === KeychainRequestTypes.encode ||
+      requestHandler.data.request?.type === KeychainRequestTypes.decode
+    ) {
+      await handleEncodeDecodeRequest(requestHandler, keylessRequest, tab);
     } else {
-      console.log('keylessRequest', keylessRequest);
-      console.log('auth_ack_data', auth_ack_data);
-      message = await createMessage(
-        null,
-        auth_ack_data.challenge.challenge,
-        keylessRequest.request,
-        await chrome.i18n.getMessage('bgd_ops_sign_success'),
-        null,
-        auth_ack_data.challenge.pubkey,
-      );
-      chrome.runtime.sendMessage(message);
-      chrome.tabs.sendMessage(tab, message);
+      await handleSignRequest(requestHandler, keylessRequest, tab);
     }
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
-    message = await createMessage(
+    const message = await createMessage(
       error,
       null,
       requestHandler.data.request!,
@@ -340,9 +402,16 @@ const handleAuthAck = async (
       errorMessage,
       null,
     );
-    chrome.runtime.sendMessage(message);
-    chrome.tabs.sendMessage(tab, message);
-    throw new Error(`Failed to update keyless auth data: ${errorMessage}`);
+
+    await Promise.all([
+      chrome.runtime.sendMessage(message),
+      chrome.tabs.sendMessage(tab, message),
+    ]);
+
+    throw new AuthAckError(
+      `Failed to update keyless auth data: ${errorMessage}`,
+      error instanceof AuthAckError ? error.code : 'UNKNOWN_ERROR',
+    );
   }
 };
 
