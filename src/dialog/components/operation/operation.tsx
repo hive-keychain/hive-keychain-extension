@@ -297,7 +297,7 @@ const Operation = ({
             ? twoFABots && Object.keys(twoFABots).length > 0
               ? 'multisig_transmitting_to_2fa'
               : 'multisig_transmitting_to_multisig'
-            : loadingCaption
+            : loadingCaption || 'bgd_ops_broadcasting'
         }
       />
     </div>

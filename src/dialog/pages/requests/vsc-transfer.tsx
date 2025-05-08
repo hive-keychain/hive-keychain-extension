@@ -38,7 +38,6 @@ const VscTransfer = (props: Props) => {
         data.currency,
       ])}
       {...anonymousProps}
-      loadingCaption="dialog_vsc_loading"
       {...props}>
       {renderUsername()}
       <RequestItem title="dialog_to" content={data.to} />

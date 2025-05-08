@@ -4,7 +4,7 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainKeyTypesLC, RequestId } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
-import { RequestVscDeposit, VscStatus, VscUtils } from 'hive-keychain-commons';
+import { RequestVscDeposit } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -22,7 +22,7 @@ export const vscDeposit = async (
       KeychainKeyTypesLC.active,
     ) as [string, string];
   }
-  let result, vscResult, err, err_message;
+  let result, err, err_message;
 
   try {
     const keyType = KeysUtils.getKeyType(key!);
@@ -64,12 +64,6 @@ export const vscDeposit = async (
       }
     }
     requestHandler.setIsWaitingForConfirmation(true);
-    vscResult = {
-      ...result,
-      vscStatus: result
-        ? await VscUtils.waitForStatus(result?.tx_id, 10, VscStatus.INCLUDED)
-        : VscStatus.UNCONFIRMED,
-    };
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
@@ -80,13 +74,9 @@ export const vscDeposit = async (
   } finally {
     const message = await createMessage(
       err,
-      vscResult,
+      result,
       data,
-      vscResult?.vscStatus === VscStatus.INCLUDED
-        ? await chrome.i18n.getMessage('bgd_ops_vsc_included')
-        : vscResult?.vscStatus === VscStatus.CONFIRMED
-        ? await chrome.i18n.getMessage('bgd_ops_vsc_confirmed')
-        : await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
+      await chrome.i18n.getMessage('bgd_ops_vsc_not_included'),
       err_message,
     );
 

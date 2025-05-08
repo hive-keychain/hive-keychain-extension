@@ -25,8 +25,11 @@ const RequestResponse = ({ data }: Props) => {
       [
         KeychainRequestTypes.vscCallContract,
         KeychainRequestTypes.vscDeposit,
+        KeychainRequestTypes.vscWithdrawal,
+        KeychainRequestTypes.vscTransfer,
+        KeychainRequestTypes.vscStaking,
       ].includes(data.msg.data.type)
-        ? 10000
+        ? 12000
         : 3000,
     );
   }

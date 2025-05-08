@@ -40,7 +40,6 @@ const VscStaking = (props: Props) => {
         `dialog_title_vsc_${data.operation.toLowerCase()}_header`,
         [data.currency],
       )}
-      loadingCaption="dialog_vsc_loading"
       {...anonymousProps}
       {...props}>
       {renderUsername()}

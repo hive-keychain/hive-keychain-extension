@@ -22,7 +22,6 @@ const getTransferWarningLabel = (
 ) => {
   const warning = TransferUtilsCommons.getTransferWarning(
     account,
-    exchanges,
     currency,
     memo,
     phisingAccounts,

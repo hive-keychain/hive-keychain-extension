@@ -1512,11 +1512,14 @@
   "bgd_ops_vsc_included": {
     "message": "This transaction has been included in VSC already, but has not yet been confirmed. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
   },
+  "bgd_ops_vsc_broadcast": {
+    "message": "This transaction has broadcast but has not been confirmed on VSC yet. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
+  },
   "bgd_ops_vsc_confirmed": {
     "message": "This transaction has been confirmed on VSC."
   },
   "bgd_ops_vsc_not_included": {
-    "message": "This transaction has not been included in VSC yet. You can follow its status on the requesting dApp or on Hive Keychain extension's VSC history page."
+    "message": "This transaction has not been included in VSC yet. You can follow its status on the requesting dApp or on the Keychain VSC history page."
   },
   "bgd_ops_witness_unvoted": {
     "message": "Successfully unvoted @$1 for witness."
@@ -1535,6 +1538,9 @@
   },
   "bgd_ops_error_broadcasting": {
     "message": "There was an error broadcasting this transaction, please try again."
+  },
+  "bgd_ops_broadcasting": {
+    "message": "Broadcasting..."
   },
   "bgd_ops_error": {
     "message": "There was an error broadcasting this transaction:"
