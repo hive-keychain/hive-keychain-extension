@@ -20,6 +20,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
+import { useDomainCheck } from 'src/dialog/hooks/domain-check';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
@@ -58,6 +59,7 @@ const Operation = ({
   const [loading, setLoading] = useState(false);
   const [useMultisig, setUseMultisig] = useState(false);
   const [twoFABots, setTwoFABots] = useState<{ [botName: string]: string }>({});
+  const domainHeader = useDomainCheck({ ...data, domain });
 
   useEffect(() => {
     if (data && (username || data.username)) checkForMultsig();
@@ -186,6 +188,11 @@ const Operation = ({
         }}>
         <div>
           <DialogHeader title={title} />
+          {domainHeader && (
+            <div className={`operation-header operation-red`}>
+              {domainHeader}
+            </div>
+          )}
           {header && (
             <div
               className={`operation-header ${

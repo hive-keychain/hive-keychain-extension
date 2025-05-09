@@ -469,7 +469,6 @@ const Home = ({
               additionalClass={showBottomBar ? undefined : 'down'}
               selectedToken={'hive'}
             />
-            <ProposalVotingSectionComponent />
           </>
         )}
 

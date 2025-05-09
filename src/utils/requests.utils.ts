@@ -11,6 +11,7 @@ export const anonymous_requests = [
   KeychainRequestTypes.custom,
   KeychainRequestTypes.signBuffer,
   KeychainRequestTypes.recurrentTransfer,
+  KeychainRequestTypes.updateProposalVote,
   KeychainRequestTypes.swap,
 ];
 

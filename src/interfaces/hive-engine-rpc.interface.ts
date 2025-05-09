@@ -6,13 +6,12 @@ export interface HiveEngineConfig {
 
 export const DefaultHiveEngineRpcs: HiveEngineConfig['rpc'][] = [
   'https://api.hive-engine.com/rpc',
-  'https://api2.hive-engine.com/rpc',
-  'https://ha.herpc.dtools.dev/',
   'https://herpc.dtools.dev',
-  'https://engine.rishipanthee.com',
+  'https://api.primersion.com',
+  'https://ha.herpc.dtools.dev',
+  'https://api2.hive-engine.com/rpc',
+  'https://he.atexoras.com:2083',
 ];
+
 export const DefaultAccountHistoryApis: HiveEngineConfig['accountHistoryApi'][] =
-  [
-    'https://accounts.hive-engine.com/accountHistory',
-    'https://enginehistory.rishipanthee.com',
-  ];
+  ['https://history.hive-engine.com', 'https://he.atexoras.com:8443'];

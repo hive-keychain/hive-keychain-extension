@@ -1,14 +1,14 @@
-import { Asset } from '@hiveio/dhive';
-import { Screen } from '@interfaces/screen.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
   ActionButton,
   HiveWalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
+import { Asset } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -106,9 +106,9 @@ const WalletInfoSectionItem = ({
   ) => {
     event.stopPropagation();
     if (tokenBalance) {
-      navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance });
+      navigateToWithParams(HiveScreen.TOKENS_HISTORY, { tokenBalance });
     } else {
-      navigateToWithParams(Screen.WALLET_HISTORY_PAGE, []);
+      navigateToWithParams(HiveScreen.WALLET_HISTORY_PAGE, []);
     }
   };
 
@@ -117,7 +117,7 @@ const WalletInfoSectionItem = ({
   };
 
   const goToTokenOutgoingDelegations = () => {
-    navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
+    navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.OUTGOING,
       tokenInfo: tokenInfo,
@@ -125,14 +125,14 @@ const WalletInfoSectionItem = ({
   };
 
   const goToTokenIncomingDelegations = () => {
-    navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
+    navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
       tokenInfo: tokenInfo,
     });
   };
   const goToPendingUnstakePage = () => {
-    navigateToWithParams(Screen.TOKENS_PENDING_UNSTAKE, {
+    navigateToWithParams(HiveScreen.TOKENS_PENDING_UNSTAKE, {
       tokenInfo: tokenInfo,
       pendingUnstaking: pendingUnstaking,
     });
@@ -233,14 +233,14 @@ const WalletInfoSectionItem = ({
                     tokenMarket,
                     hive,
                     [tokenInfo],
-                  ).toFixed(2)}{' '}
+                  ).toFixed(3)}{' '}
                   ($
                   {(
                     TokensUtils.getHiveEngineTokenPrice(
                       tokenBalance,
                       tokenMarket,
                     ) * hive?.usd!
-                  ).toFixed(2)}
+                  ).toFixed(3)}
                   /{chrome.i18n.getMessage('token').toLowerCase()})
                 </div>
                 <div></div>

@@ -1,4 +1,4 @@
-import { CustomJsonOperation } from '@hiveio/dhive';
+import type { CustomJsonOperation } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';

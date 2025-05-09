@@ -1,4 +1,4 @@
-import { CustomJsonOperation } from '@hiveio/dhive';
+import type { CustomJsonOperation } from '@hiveio/dhive';
 import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import Config from 'src/config';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';

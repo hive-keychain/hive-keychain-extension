@@ -8,6 +8,7 @@ import {
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -84,7 +85,13 @@ export const broadcastUpdateProposalVote = async (
   data: RequestUpdateProposalVote & RequestId,
   options?: TransactionOptions,
 ) => {
-  const key = requestHandler.data.key;
+  let key = requestHandler.data.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
   let result, err, err_message;
   try {
     switch (KeysUtils.getKeyType(key!)) {
@@ -93,7 +100,7 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
         );
         LedgerModule.signTransactionFromLedger({
@@ -112,7 +119,7 @@ export const broadcastUpdateProposalVote = async (
           typeof data.proposal_ids === 'string'
             ? JSON.parse(data.proposal_ids)
             : data.proposal_ids,
-          data.username,
+          data.username!,
           data.approve,
           key!,
           options,

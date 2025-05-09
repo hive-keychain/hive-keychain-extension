@@ -19,7 +19,9 @@
       "@background/*": ["./src/background/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@reference-data/*": ["./src/reference-data/*"],
-      "@api/*": ["src/popup/hive/api/*"],
+      "@api/*": ["src/api/*"],
+      "@dialog/*": ["src/dialog/*"],
+      "@common-ui/*": ["./src/common-ui/*"],
       "react": ["./node_modules/@types/react"]
     }
   },

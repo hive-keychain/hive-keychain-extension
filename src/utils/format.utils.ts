@@ -1,6 +1,7 @@
-import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
+import { Asset } from 'hive-keychain-commons';
 
 const withCommas = (
   nb: string | number,
@@ -22,10 +23,10 @@ const withCommas = (
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
   if (removeTrailingZeros) {
-    const validNumber = finalNumber.match(
-      /^0*([\d | ,]+(?:\.(?:(?!0+$)\d)+)?)/,
+    finalNumber = finalNumber.replace(
+      /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
+      '$1$2$3',
     );
-    if (validNumber) finalNumber = validNumber[0];
   }
   if (currency) {
     finalNumber = finalNumber + ' ' + currency;
@@ -50,6 +51,7 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
 const formatCurrencyValue = (
   value: string | Asset | number | bigint,
   digits = 3,
+  removeTrailingZeros = false,
 ) => {
   if (value === undefined || value === null) {
     return '...';
@@ -57,6 +59,7 @@ const formatCurrencyValue = (
   return withCommas(
     value.toString().replace('HBD', '').replace('HIVE', '').trim(),
     digits,
+    removeTrailingZeros,
   );
 };
 

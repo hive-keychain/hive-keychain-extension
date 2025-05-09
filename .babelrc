@@ -21,7 +21,9 @@
           "@background": "./src/background",
           "@interfaces": "./src/interfaces",
           "@reference-data": "./src/reference-data",
-          "@api": "./src/api"
+          "@api": "./src/api",
+          "@dialog": "./src/dialog",
+          "@common-ui": "./src/common-ui"
         },
         "extensions": [".js", ".json", ".ts", ".jsx"]
       }

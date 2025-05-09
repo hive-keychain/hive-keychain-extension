@@ -1,4 +1,4 @@
-import { ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 

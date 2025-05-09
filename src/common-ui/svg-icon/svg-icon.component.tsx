@@ -54,7 +54,9 @@ export const SVGIcon = ({
         data-testid={dataTestId}
         onMouseOver={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={($event) => handleClick($event)}
+        onClick={($event) => {
+          handleClick($event);
+        }}
         className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
           (hoverable && hovered) || forceHover ? 'hovered' : ''
         }`}

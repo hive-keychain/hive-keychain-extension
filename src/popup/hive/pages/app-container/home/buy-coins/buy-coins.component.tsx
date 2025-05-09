@@ -7,6 +7,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
@@ -63,7 +64,10 @@ const BuyCoins = ({
         {BuyCoinsListItem(selectedCurrency, activeAccountName).list.map(
           (item, index) => (
             <div className="card" key={`card-item-${index}`}>
-              <SVGIcon icon={item.image} onClick={() => goTo(item.link)} />
+              <SVGIcon
+                icon={item.image as SVGIcons}
+                onClick={() => goTo(item.link)}
+              />
               <span className="title">{item.name}</span>
               <span className="description">
                 {chrome.i18n.getMessage(item.description)}
@@ -90,7 +94,7 @@ const BuyCoins = ({
                 className="exchange-item"
                 key={`exchange-item-${index}`}
                 onClick={() => goTo(item.link)}>
-                <SVGIcon icon={item.image} />
+                <SVGIcon icon={`buy/${item.image}` as SVGIcons} />
               </div>
             ))}
           </div>

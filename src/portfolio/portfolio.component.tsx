@@ -1,4 +1,4 @@
-import { ExtendedAccount } from '@hiveio/dhive';
+import type { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Theme } from '@popup/theme.context';

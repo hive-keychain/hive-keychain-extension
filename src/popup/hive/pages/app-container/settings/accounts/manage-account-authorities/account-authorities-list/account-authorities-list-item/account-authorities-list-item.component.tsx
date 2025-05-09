@@ -1,4 +1,4 @@
-import { AuthorityType } from '@hiveio/dhive';
+import type { AuthorityType } from '@hiveio/dhive';
 import { TransactionOptions } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {

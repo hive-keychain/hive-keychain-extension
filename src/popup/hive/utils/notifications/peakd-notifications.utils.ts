@@ -1,4 +1,5 @@
-import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
+import { PeakDNotificationsApi } from '@api/peakd-notifications';
+import type { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -11,8 +12,8 @@ import {
   NotificationOperationName,
   NotificationType,
 } from '@interfaces/notifications.interface';
-import { PeakDNotificationsApi } from '@popup/hive/api/peakd-notifications';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -846,7 +847,7 @@ const getNotifications = async (
         if (username === payload.from_account) {
           message = 'notification_fill_power_down';
           messageParams = [
-            payload.from,
+            payload.to_account,
             FormatUtils.toFormattedHP(
               payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
@@ -855,12 +856,12 @@ const getNotifications = async (
         } else {
           message = 'notification_fill_power_down_other_account';
           messageParams = [
-            payload.from_account,
+            payload.to_account,
             FormatUtils.toFormattedHP(
               payload.withdrawn.toString().replace('VESTS', ''),
               globalProperties,
             ),
-            payload.to_account,
+            payload.from_account,
           ];
         }
         break;
