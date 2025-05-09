@@ -380,6 +380,16 @@ const handleAuthAck = async (
     // Add delay before proceeding
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
+    // Send success message for authentication
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: true,
+        message: 'Keyless Authentication Success',
+        closeOnTimeout: false,
+      },
+    });
+
     // Handle different request types
     if (requestHandler.data.request?.type === KeychainRequestTypes.signBuffer) {
       await handleSignBufferRequest(keylessRequest, auth_ack_data, tab);

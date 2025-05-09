@@ -9,11 +9,15 @@ type Props = {
 };
 
 type ResultMessage = {
-  msg: { message: string; success: boolean; data: KeychainRequest };
+  msg: {
+    message: string;
+    success: boolean;
+    data: KeychainRequest;
+    closeOnTimeout?: boolean;
+  };
 };
-
 const RequestResponse = ({ data }: Props) => {
-  if (data.msg.success) {
+  if (data.msg.success && (data.msg.closeOnTimeout ?? true)) {
     setTimeout(() => {
       window.close();
     }, 3000);
