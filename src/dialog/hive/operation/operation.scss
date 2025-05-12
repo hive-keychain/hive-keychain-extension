@@ -25,6 +25,9 @@
 
   .operation-header {
     padding: 0 12px 12px 12px;
+    &.operation-red {
+      color: $red;
+    }
   }
   .operation-body {
     display: flex;
@@ -38,7 +41,6 @@
       width: 100%;
       box-sizing: border-box;
       row-gap: 16px;
-      overflow: auto;
       padding: 16px 24px;
       color: var(--main-font-color);
       background: var(--card-background);

@@ -93,12 +93,14 @@ const checkRpcStatus = async (uri: string) => {
       return response;
     },
     (error) => {
-      throw new Error('RPC NOK' + uri);
+      throw new Error('RPC NOK ' + uri + ' ' + error);
     },
   );
   try {
     const result = await axios.get(
-      `${uri === 'DEFAULT' ? 'https://api.hive.blog' : uri}/health`,
+      ['DEFAULT', 'https://api.hive.blog'].includes(uri)
+        ? 'https://api.hive.blog'
+        : `${uri}/health`,
       {
         timeout: 10000,
       },

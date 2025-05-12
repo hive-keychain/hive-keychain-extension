@@ -1,4 +1,5 @@
-import {
+import { KeychainApi } from '@api/keychain';
+import type {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
@@ -13,7 +14,6 @@ import {
 } from '@interfaces/witness.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
-import { KeychainApi } from 'src/api/keychain';
 import Config from 'src/config';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';

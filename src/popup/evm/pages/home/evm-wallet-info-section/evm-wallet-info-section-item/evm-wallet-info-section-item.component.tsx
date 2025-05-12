@@ -1,4 +1,3 @@
-import { Asset } from '@hiveio/dhive';
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -18,10 +17,10 @@ interface EVMWalletSectionInfoItemProps {
   token: NativeAndErc20Token;
   icon: SVGIcons;
   addBackground?: boolean;
-  mainValue: string | Asset | number;
+  mainValue: string | number;
   mainValueLabel: string;
   mainValueSubLabel: string;
-  subValue?: string | Asset | number;
+  subValue?: string | number;
   subValueLabel?: string;
 }
 

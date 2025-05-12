@@ -1,8 +1,7 @@
 import { MultisigModule } from '@background/hive/modules/multisig.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import Hive from '@engrave/ledger-app-hive';
-import { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
-import { sleep } from '@hiveio/dhive/lib/utils';
+import type { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastResult,
@@ -118,6 +117,10 @@ const createSignAndBroadcastTransaction = async (
     method.toLowerCase() as KeychainKeyTypesLC,
   );
   if (isUsingMultisig) {
+    transaction = await hiveTransaction.create(
+      operations,
+      Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
+    );
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {
       throw new Error('html_popup_error_while_signing_transaction');
@@ -408,7 +411,7 @@ const useMultisig = async (
 };
 
 const getTransaction = async (txId: string) => {
-  await sleep(3000);
+  await AsyncUtils.sleep(3000);
   return HiveTxUtils.getData('condenser_api.get_transaction', [txId]);
 };
 

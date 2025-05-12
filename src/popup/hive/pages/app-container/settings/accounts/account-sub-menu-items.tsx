@@ -1,8 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
-import { store } from '@popup/multichain/store';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const AccountSubMenuItems: MenuItem[] = [
   {
@@ -28,12 +26,7 @@ const AccountSubMenuItems: MenuItem[] = [
   {
     label: 'popup_html_export',
     icon: SVGIcons.MENU_ACCOUNTS_EXPORT,
-    action: () => {
-      AccountUtils.downloadAccounts(
-        store.getState().hive.accounts,
-        store.getState().mk,
-      );
-    },
+    nextScreen: Screen.SETTINGS_EXPORT_ACCOUNTS,
   },
 ];
 

@@ -1,10 +1,10 @@
-import { DelegateVestingSharesOperation } from '@hiveio/dhive';
+import { KeychainApi } from '@api/keychain';
+import type { DelegateVestingSharesOperation } from '@hiveio/dhive';
 import {
   Delegator,
   PendingOutgoingUndelegation,
 } from '@interfaces/delegations.interface';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
-import { KeychainApi } from 'src/api/keychain';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getDelegators = async (name: string) => {

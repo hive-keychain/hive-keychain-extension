@@ -134,8 +134,8 @@ const TransferFunds = ({
     });
 
   let balances = {
-    hive: FormatUtils.toNumber(activeAccount.account.balance),
-    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance),
+    hive: FormatUtils.toNumber(activeAccount.account.balance as string),
+    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance as string),
     hp: 0,
   };
 
@@ -240,7 +240,7 @@ const TransferFunds = ({
       fields = [fields[0], fields[1]];
     }
 
-    let warningMessage = await TransferUtils.getTransferWarning(
+    let warningMessage = await TransferUtils.getTransferWarningLabel(
       form.receiverUsername,
       currencyLabels[form.selectedCurrency],
       form.memo,

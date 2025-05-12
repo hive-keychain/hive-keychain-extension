@@ -1,4 +1,4 @@
-import {
+import type {
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';

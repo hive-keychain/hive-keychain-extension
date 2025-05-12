@@ -140,13 +140,15 @@ const SavingsPage = ({
       fetchCurrentWithdrawingList();
     }
     const hbdSavings = FormatUtils.toNumber(
-      activeAccount.account.savings_hbd_balance,
+      activeAccount.account.savings_hbd_balance as string,
     );
     const hiveSavings = FormatUtils.toNumber(
-      activeAccount.account.savings_balance,
+      activeAccount.account.savings_balance as string,
     );
-    const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
-    const hive = FormatUtils.toNumber(activeAccount.account.balance);
+    const hbd = FormatUtils.toNumber(
+      activeAccount.account.hbd_balance as string,
+    );
+    const hive = FormatUtils.toNumber(activeAccount.account.balance as string);
 
     const liquidValue = watch('currency') === 'hive' ? hive : hbd;
     const savingsValue =

@@ -1,4 +1,3 @@
-import { Asset } from '@hiveio/dhive';
 import { Conversion } from '@interfaces/conversion.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
@@ -15,6 +14,7 @@ import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
+import { Asset } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';

@@ -1,4 +1,4 @@
-import {
+import type {
   CommentOperation,
   CommentOptionsOperation,
   VoteOperation,

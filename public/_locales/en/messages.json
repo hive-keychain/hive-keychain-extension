@@ -463,6 +463,14 @@
     "message": "Export",
     "description": "on import / export settings"
   },
+  "popup_html_export_as_encrypted_file": {
+    "message": "Export as an encrypted file",
+    "description": "on import / export settings"
+  },
+  "popup_html_exported_accounts_QR": {
+    "message": "Export Accounts by QR Code",
+    "description": "on account / export settings"
+  },
   "popup_html_export_permissions": {
     "message": "Export settings",
     "description": "on import / export settings"
@@ -511,8 +519,36 @@
     "message": "This QR Code contains all your private keys for this account and should only be used to import your keys to the Hive Keychain mobile App.",
     "description": "on manage accounts"
   },
+  "popup_html_qr_check1": {
+    "message": "I am not sharing my screen or planning to share a screenshot of this QR Code with anyone",
+    "description": "on settings accounts / export / qr"
+  },
+  "popup_html_qr_check2": {
+    "message": "I understand that sharing this QR Code with anyone may result in a loss of funds",
+    "description": "on settings accounts / export / qr"
+  },
+  "popup_html_qr_exported_set_disclaimer1": {
+    "message": "This QR Code contains all your private keys for this set of accounts, and should only be used to import your keys to the Hive Keychain mobile App.",
+    "description": "on settings accounts / export / qr"
+  },
+  "popup_html_qr_exported_check1": {
+    "message": "I am not sharing my screen or planning to share a screenshot of these QR Codes with anyone",
+    "description": "on settings accounts / export / qr"
+  },
+  "popup_html_qr_exported_check2": {
+    "message": "I understand that sharing these QR Codes with anyone may result in a loss of funds",
+    "description": "on settings accounts / export / qr"
+  },
+  "popup_html_qr_exported_show_button": {
+    "message": "Show QR Code",
+    "description": "on settings accounts / export / qr"
+  },
   "popup_html_qr_disclaimer2": {
     "message": "DO NOT share it with anyone!",
+    "description": "on manage accounts"
+  },
+  "popup_html_qr_disclaimer3": {
+    "message": "Use the left and right arrows to navigate through the accounts.",
     "description": "on manage accounts"
   },
   "popup_html_hide_qr": {
@@ -831,6 +867,14 @@
   "popup_html_manage_accounts_authorities": {
     "message": "Manage authorities",
     "description": "on settings page"
+  },
+  "popup_html_export_accounts": {
+    "message": "Export accounts",
+    "description": "on settings page accounts > export acc sub menu"
+  },
+  "popup_html_export_all_accounts_as_QR": {
+    "message": "Export all accounts by QR Code",
+    "description": "on settings page accounts > export acc sub menu"
   },
   "popup_html_manage_no_accounts_authorities": {
     "message": "No authority has been given to other accounts",
@@ -1601,6 +1645,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_phishing_domain": {
+    "message": "@$1 has been flagged as a malicious domain, check the spelling and make sure this is the dApp you want to use.",
+    "description": "When trying to transfer to a blacklisted account"
+  },
   "popup_warning_private_key_in_memo": {
     "message": "Sending a private key as memo is a huge security risk.",
     "description": "When trying to use memo with a private key"
@@ -1719,7 +1767,7 @@
     "description": "Saving page title"
   },
   "popup_html_buy_intro": {
-    "message": "Chose your favorite method and buy $1 fast and easily. Keychain do not take any additional fees on the transactions.",
+    "message": "Choose your favorite method and buy $1 fast and easily",
     "description": "When accessing the buy HIVE/HBD page"
   },
   "popup_html_buy_swap_title": {
@@ -4184,11 +4232,11 @@
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "@$1 received $2 as part of power down",
+    "message": "@$1 received $2 as part of a power down",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "@$1 received $2 as part of power down of @$3",
+    "message": "@$1 received $2 as part of a power down of @$3",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {
@@ -4789,7 +4837,7 @@
     "description": "Transaction metadata"
   },
   "popup_html_proposal_vote": {
-    "message": "Keychain Proposal",
+    "message": "Support Keychain Development",
     "description": "Proposal vote"
   },
   "error_otp_not_verified": {
@@ -5156,5 +5204,9 @@
   "evm_seeds_and_accounts": {
     "message": "Seeds & Accounts",
     "description": "sseds and account page"
+  },
+  "error_granularity": {
+    "message": "This operation isn't allowed under granularity rules",
+    "description": "Error message if granularity failed has been used already"
   }
 }

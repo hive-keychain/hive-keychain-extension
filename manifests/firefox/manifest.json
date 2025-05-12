@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "3.7.1",
+  "version": "3.9.4",
   "permissions": ["storage", "idle", "alarms"],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
   "browser_action": {
