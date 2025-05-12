@@ -51,6 +51,10 @@
     "message": "Seed",
     "description": "EVM blockchain seed"
   },
+  "common_seeds": {
+    "message": "Seeds",
+    "description": "EVM blockchain seeds"
+  },
   "common_experimental": {
     "message": "Experimental",
     "description": "experimental"
@@ -5113,6 +5117,10 @@
     "message": "Add wallet address",
     "description": "Add wallet address button"
   },
+  "evm_delete_seed_button": {
+    "message": "Delete",
+    "description": "Delete seed button"
+  },
   "evm_add_wallet_seed_button": {
     "message": "Add seed",
     "description": "Add seed button"
@@ -5130,11 +5138,23 @@
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
-    "message": "Edit seed name",
-    "decription": "Edit see nickname"
+    "message": "Edit name",
+    "decription": "Edit seed nickname"
   },
   "evm_edit_address_name": {
     "message": "Edit address name",
     "description": "Edit wallet address nickname"
+  },
+  "evm_import_seed": {
+    "message": "Import",
+    "description": "Import existing seed"
+  },
+  "evm_create_seed": {
+    "message": "Create",
+    "description": "Create seed"
+  },
+  "evm_seeds_and_accounts": {
+    "message": "Seeds & Accounts",
+    "description": "sseds and account page"
   }
 }

@@ -1,5 +1,7 @@
+import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
   EditAccountParams,
   EvmEditAccountPopup,
@@ -15,13 +17,12 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { ContextualMenuComponent } from 'src/common-ui/contextual-menu/contextual-menu.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 const EvmAccounts = ({
   accounts,
@@ -36,6 +37,8 @@ const EvmAccounts = ({
 
   const [editParams, setEditParams] = useState<EditAccountParams>();
 
+  const [menu, setMenu] = useState<ContextualMenu>();
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_accounts',
@@ -47,6 +50,23 @@ const EvmAccounts = ({
   useEffect(() => {
     initializeOptions();
   }, [accounts]);
+
+  useEffect(() => {
+    initializeMenu();
+  }, [selectedSeed]);
+
+  const initializeMenu = () => {
+    if (selectedSeed)
+      setMenu(
+        EvmAccountsContextualMenu({
+          activeSeedName: selectedSeed.label,
+          onEditClicked: handleEditSeedClick,
+          onDeleteClicked: handleDeleteSeedClick,
+          onCreateClicked: handleCreateSeedClick,
+          onImportClicked: handleImportSeedClick,
+        }),
+      );
+  };
 
   const initializeOptions = () => {
     const options: OptionItem[] = [];
@@ -91,8 +111,15 @@ const EvmAccounts = ({
     setEditParams(undefined);
   };
 
-  const handleAddSeedClick = () => {
-    navigateTo(EvmScreen.EVM_ADD_WALLET_MAIN);
+  const handleCreateSeedClick = () => {
+    navigateTo(EvmScreen.CREATE_EVM_WALLET);
+  };
+  const handleImportSeedClick = () => {
+    navigateTo(EvmScreen.IMPORT_EVM_WALLET);
+  };
+
+  const handleDeleteSeedClick = () => {
+    console.log('delete seed');
   };
 
   const handleEditSeedClick = () => {
@@ -174,14 +201,15 @@ const EvmAccounts = ({
             background="white"
             additionalClassname="seeds-dropdown"
           />
-          <SVGIcon
+          {/* <SVGIcon
             icon={SVGIcons.EVM_ACCOUNT_EDIT}
             onClick={handleEditSeedClick}
           />
           <SVGIcon
             icon={SVGIcons.EVM_ACCOUNT_ADD}
             onClick={handleAddSeedClick}
-          />
+          /> */}
+          {menu && <ContextualMenuComponent menu={menu} />}
         </div>
       )}
       <div className="accounts-panel">
@@ -211,6 +239,14 @@ const EvmAccounts = ({
           label="evm_add_wallet_address_button"
           onClick={handleAddAddressClick}
         />
+        {/* {accounts.length > 0 && (
+          <ButtonComponent
+            type={ButtonType.IMPORTANT}
+            height="small"
+            label="evm_delete_seed_button"
+            onClick={handleAddAddressClick}
+          />
+        )} */}
       </div>
       {editParams && <EvmEditAccountPopup editParams={editParams} />}
     </div>

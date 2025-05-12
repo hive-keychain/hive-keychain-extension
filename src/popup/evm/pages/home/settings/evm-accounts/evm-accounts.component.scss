@@ -37,7 +37,8 @@
 
   .button-panel {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    column-gap: 8px;
+    row-gap: 8px;
   }
 }

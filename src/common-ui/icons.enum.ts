@@ -22,6 +22,7 @@ export enum SVGIcons {
 
   EVM_ACCOUNT_ADD = 'evm-account/add-circle',
   EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
+  EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
 
   EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
   EVM_GAS_FEE_LOW = 'evm-gas-fee/gas-fee-low',
@@ -57,6 +58,7 @@ export enum SVGIcons {
   GLOBAL_CHECK = 'global/check',
   GLOBAL_TRIANGLE_ARROW = 'global/triangle-arrow',
   GLOBAL_EDIT = 'global/edit',
+  GLOBAL_MENU_DOTS = 'global/menu-dots',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',

@@ -1,0 +1,82 @@
+.contextual-menu {
+  position: relative;
+  .contextual-menu-container {
+    overflow: hidden;
+    @include small-card();
+    position: absolute;
+    flex-direction: column;
+    right: 8px;
+    top: 30px;
+    display: none;
+    margin: 0px;
+    z-index: 2;
+    padding: 12px;
+    min-width: 120px;
+    box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
+
+    .contextual-menu-section {
+      display: flex;
+      flex-direction: column;
+      row-gap: 4px;
+      margin-bottom: 4px;
+      width: 100%;
+      .section-title {
+        @include poppins400(13px);
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid var(--card-border);
+        line-height: 0.1em;
+        margin: 10px 0 10px;
+
+        span {
+          background: var(--card-background);
+          padding: 0 10px;
+        }
+      }
+      .section-items {
+        display: flex;
+        flex-direction: column;
+        row-gap: 4px;
+        .section-item {
+          display: flex;
+          column-gap: 4px;
+          cursor: pointer;
+          margin: 0px -12px;
+          padding: 2px 12px;
+          .section-item-icon {
+            @include icon-size(16px);
+          }
+          .label {
+            @include poppins300(12px);
+          }
+          &:hover {
+            background: $red;
+            .section-item-icon {
+              svg {
+                path,
+                rect {
+                  stroke: white;
+                }
+              }
+            }
+          }
+        }
+        margin-bottom: 4px;
+      }
+    }
+  }
+
+  .contextual-menu-overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  &.opened {
+    .contextual-menu-container {
+      display: flex !important;
+    }
+  }
+}
