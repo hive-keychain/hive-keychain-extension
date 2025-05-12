@@ -1,10 +1,15 @@
 .add-account-qr {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  display: grid;
+  grid-template-rows: 70px 1fr;
+  height: 100%;
   width: 100%;
-  background: white;
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
 
   h3 {
     margin: 0 0 16px 0;
@@ -21,5 +26,22 @@
     max-width: 300px;
     margin-bottom: 24px;
     line-height: 1.4;
+  }
+
+  .qr-code-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    margin-top: 20px;
+
+    .countdown-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
   }
 }

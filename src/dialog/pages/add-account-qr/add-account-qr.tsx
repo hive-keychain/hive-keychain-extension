@@ -19,6 +19,22 @@ const AddAccountQR = (props: Props) => {
   const { command, data, tab, domain } = props.data;
   const [keys, setKeys] = useState<LocalAccount>();
   const [qrCode, setQrCode] = useState<string>();
+  const [countdown, setCountdown] = useState(60);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.close();
+    }, 60000); // 60 seconds
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(countdownInterval);
+    };
+  }, []);
 
   useEffect(() => {
     if (data.type === 'addAccount') {
@@ -40,37 +56,19 @@ const AddAccountQR = (props: Props) => {
   }, [keys]);
 
   return (
-    <div
-      className="add-account-qr"
-      style={{
-        height: '100%',
-        display: 'grid',
-        gridTemplateRows: '70px 1fr',
-        width: '100%',
-      }}>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          width: '100%',
-        }}>
+    <div className="add-account-qr">
+      <div className="content-container">
         <h3>Export your keys!</h3>
         <div className="qr-code-disclaimer">
-          This QR Code contains all your private keys for this account and
-          should only be used to import your keys to the Hive Keychain mobile
-          App. DO NOT share it with anyone!
+          <p>
+            This QR Code contains all your private keys for this account and
+            should only be used to import your keys to the Hive Keychain mobile
+            App.
+          </p>
+          <br />
+          <strong>DO NOT share it with anyone!</strong>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            flex: 1,
-            marginTop: '20px',
-          }}>
+        <div className="qr-code-container">
           {qrCode && (
             <div>
               <QRCode
@@ -80,6 +78,9 @@ const AddAccountQR = (props: Props) => {
                 bgColor="#FFFFFF"
                 fgColor="#000000"
               />
+              <div className="countdown-text">
+                Dialog will close in {countdown} seconds
+              </div>
             </div>
           )}
         </div>
