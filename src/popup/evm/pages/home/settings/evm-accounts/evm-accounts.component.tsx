@@ -41,7 +41,7 @@ const EvmAccounts = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_accounts',
+      title: 'evm_seeds_and_accounts',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
