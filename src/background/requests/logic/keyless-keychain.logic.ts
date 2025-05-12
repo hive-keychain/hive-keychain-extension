@@ -8,6 +8,8 @@ import {
 } from '@interfaces/keychain.interface';
 import { KeylessAuthData } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { anonymousRequests } from 'src/utils/requests.utils';
+
 export const keylessKeychainRequest = async (
   requestHandler: RequestsHandler,
   tab: number,
@@ -19,7 +21,10 @@ export const keylessKeychainRequest = async (
     domain,
     tab,
   );
-  if (!request.username || request.username.trim() === '') {
+  if (
+    anonymousRequests.includes(request.type) &&
+    (!request.username || request.username.trim() === '')
+  ) {
     createAnonymousKeylessOpPopup(
       requestHandler,
       tab,

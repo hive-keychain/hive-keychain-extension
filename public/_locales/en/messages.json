@@ -1788,6 +1788,10 @@
     "message": "$1 is not supported by keyless keychain.",
     "description": "When trying to perform an unsupported operation"
   },
+  "dialog_keyless_username_required": {
+    "message": "Username is required",
+    "description": "When trying to perform an unsupported anonymous operation"
+  },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"

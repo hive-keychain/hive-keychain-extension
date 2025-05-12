@@ -55,7 +55,16 @@ const register = async (
 ) => {
   await HASUtils.connect();
   if (!request.username) {
-    throw new Error('Username is required');
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: false,
+        message: await chrome.i18n.getMessage(
+          'dialog_keyless_username_required',
+        ),
+      },
+    });
+    return;
   }
   const username = request.username;
   const keylessAuthData = await KeylessKeychainUtils.registerUserAndDapp(
