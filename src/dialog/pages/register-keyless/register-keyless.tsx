@@ -60,7 +60,6 @@ const RegisterKeyless = (props: Props) => {
           }
         }
       };
-      // Check expiration every second
       interval = setInterval(checkExpiration, 1000);
     }
 

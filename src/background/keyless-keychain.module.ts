@@ -43,8 +43,7 @@ const handleOperation = async (
       });
       break;
     default:
-      HASUtils.signRequest(requestHandler, request, domain, tab);
-    // Send initial "request sent" message
+      HASUtils.signRequest(request, domain, tab);
   }
 };
 

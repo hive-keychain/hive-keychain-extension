@@ -65,8 +65,8 @@ const setupWebSocketHandlers = (
   if (!ws) return;
 
   ws.onopen = () => {
-    reconnectInterval = 1000; // Reset the reconnection delay
-    connectionAttempts = 0; // Reset connection attempts on successful connection
+    reconnectInterval = 1000;
+    connectionAttempts = 0;
     resolve();
   };
 
@@ -78,7 +78,6 @@ const setupWebSocketHandlers = (
     connectionAttempts++;
 
     if (connectionAttempts >= MAX_CONNECTION_ATTEMPTS) {
-      // Send ANSWER_REQUEST message after 5 failed attempts
       chrome.runtime.sendMessage({
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
@@ -89,11 +88,11 @@ const setupWebSocketHandlers = (
           error: 'connection_failed',
         },
       });
-      return; // Stop trying to reconnect
+      return;
     }
 
-    setTimeout(connect, reconnectInterval); // Attempt to reconnect
-    reconnectInterval = Math.min(reconnectInterval * 2, 30000); // Exponential backoff, max 30 seconds
+    setTimeout(connect, reconnectInterval);
+    reconnectInterval = Math.min(reconnectInterval * 2, 30000);
   };
 
   ws.onerror = (error) => {
@@ -122,7 +121,6 @@ const sendMessage = (message: any) => {
 const authenticate = async (
   keylessRequest: KeylessRequest,
 ): Promise<AUTH_WAIT> => {
-  // Check if the request is not yet expired
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
     return {
       cmd: 'auth_wait',
@@ -132,12 +130,10 @@ const authenticate = async (
     } as AUTH_WAIT;
   }
 
-  // Validate username
   if (!keylessRequest.request.username) {
     throw new Error('Username is required');
   }
 
-  // Prepare authentication request data
   const auth_req_data: AUTH_REQ_DATA = {
     app: { name: keylessRequest.appName },
     challenge:
@@ -166,7 +162,6 @@ const authenticate = async (
   // Send the authentication request
   sendMessage(auth_req);
 
-  // Return a promise that resolves with the AUTH_WAIT message
   return new Promise<AUTH_WAIT>((resolve, reject) => {
     if (!ws) {
       reject(new Error('WebSocket is not connected'));
@@ -177,14 +172,12 @@ const authenticate = async (
       const message = JSON.parse(event.data);
 
       if (message.cmd === HAS_CMD.AUTH_WAIT) {
-        // AUTH_WAIT received
         ws?.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
       } else if (
         message.cmd === HAS_CMD.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
-        // Authentication failed or error
         ws?.removeEventListener('message', handleMessage);
         reject(
           new Error(
@@ -352,7 +345,6 @@ const handleSignRequest = async (
   tab: number,
 ): Promise<void> => {
   const sign_wait = await signRequest(
-    requestHandler,
     requestHandler.data.request!,
     keylessRequest.appName,
     tab,
@@ -696,7 +688,6 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
-  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -733,12 +724,11 @@ const signRequest = async (
   };
   sendMessage(sign_req);
 
-  // Wait for the sign response and handle it through handleSignWait
   const signWaitHandler = async (event: MessageEvent) => {
     const response = JSON.parse(event.data) as SIGN_WAIT;
     if (response.cmd === HAS_CMD.SIGN_WAIT) {
       ws?.removeEventListener('message', signWaitHandler);
-      await handleSignWait(request, domain, tab, response, keylessAuthData);
+      await handleSignWait(request, domain, tab, response);
     }
   };
 
@@ -750,7 +740,6 @@ const handleSignWait = async (
   domain: string,
   tab: number,
   sign_wait: SIGN_WAIT,
-  keylessAuthData: KeylessAuthData,
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     if (!ws) {
@@ -766,13 +755,10 @@ const handleSignWait = async (
           response.cmd === HAS_CMD.SIGN_ACK &&
           response.uuid === sign_wait.uuid
         ) {
-          // Remove the event listener since we got our response
           ws?.removeEventListener('message', handleMessage);
 
-          // Handle the successful sign ack
           await sendResponseToDapp(request, domain, tab, response, false);
 
-          // Send success message to runtime
           chrome.runtime.sendMessage({
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
@@ -786,10 +772,8 @@ const handleSignWait = async (
           response.cmd === HAS_CMD.SIGN_NACK &&
           response.uuid === sign_wait.uuid
         ) {
-          // Remove the event listener since we got our response
           ws?.removeEventListener('message', handleMessage);
 
-          // Handle the failed sign ack
           const errorResponse: SIGN_ACK = {
             cmd: HAS_CMD.SIGN_ACK,
             uuid: response.uuid,
@@ -798,10 +782,8 @@ const handleSignWait = async (
           };
           const error = new Error(response.data || 'Sign request was rejected');
 
-          // Send error message to both runtime and tab
           await sendResponseToDapp(request, domain, tab, errorResponse, error);
 
-          // Send message to runtime
           chrome.runtime.sendMessage({
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
@@ -817,10 +799,8 @@ const handleSignWait = async (
       }
     };
 
-    // Add the event listener
     ws.addEventListener('message', handleMessage);
 
-    // Set up expiration timeout
     const timeout = sign_wait.expire - Date.now();
     if (timeout <= 0) {
       ws.removeEventListener('message', handleMessage);
@@ -833,13 +813,11 @@ const handleSignWait = async (
       reject(new Error('Sign wait request expired'));
     }, timeout);
 
-    // Clean up on promise resolution
     const cleanup = () => {
       clearTimeout(expirationTimer);
       ws?.removeEventListener('message', handleMessage);
     };
 
-    // Ensure cleanup happens whether we resolve or reject
     resolve = ((originalResolve) => {
       return (...args) => {
         cleanup();
@@ -911,11 +889,10 @@ const challengeRequest = async (
 
     ws?.addEventListener('message', challengeWaitHandler);
 
-    // Add timeout to prevent infinite waiting
     setTimeout(() => {
       ws?.removeEventListener('message', challengeWaitHandler);
       reject(new Error('Challenge wait timeout'));
-    }, 30000); // 30 second timeout
+    }, 30000);
   });
 };
 

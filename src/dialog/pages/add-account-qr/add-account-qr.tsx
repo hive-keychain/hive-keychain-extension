@@ -21,7 +21,6 @@ const AddAccountQR = (props: Props) => {
   const [qrCode, setQrCode] = useState<string>();
 
   useEffect(() => {
-    console.log('addAccount', data);
     if (data.type === 'addAccount') {
       setKeys({
         name: data.username,
@@ -35,7 +34,6 @@ const AddAccountQR = (props: Props) => {
   }, [data]);
 
   useEffect(() => {
-    console.log('keys', keys);
     if (keys) {
       setQrCode(JSON.stringify(keys));
     }
