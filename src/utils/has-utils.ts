@@ -1111,7 +1111,7 @@ const handleChallengeAck = async (
 
     // Send message to runtime if request is anonymous
     if (
-      requestHandler.data.isAnonymous ||
+      requestHandler.data.isKeyless ||
       request.type === KeychainRequestTypes.encode ||
       request.type === KeychainRequestTypes.decode
     ) {
@@ -1143,7 +1143,7 @@ const handleChallengeNack = async (
   sendResponseToDapp(request, domain, tab, challenge_nack, error);
 
   // Send message to runtime if request is anonymous
-  if (requestHandler.data.isAnonymous) {
+  if (requestHandler.data.isKeyless) {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {

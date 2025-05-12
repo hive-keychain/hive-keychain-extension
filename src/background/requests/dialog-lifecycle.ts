@@ -59,12 +59,12 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
     confirmed,
     isMultisig,
     isWaitingForConfirmation,
-    isAnonymous,
+    isKeyless,
   } = requestHandler.data;
   if (id == windowId && !confirmed && tab) {
     if (
       (request?.type?.includes('vsc') && isWaitingForConfirmation) ||
-      (isAnonymous && isWaitingForConfirmation)
+      (isKeyless && isWaitingForConfirmation)
     ) {
       return;
     }
