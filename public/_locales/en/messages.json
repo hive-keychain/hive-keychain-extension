@@ -1449,7 +1449,7 @@
     "message": "Message signed successfully."
   },
   "bgd_ops_sign_requested": {
-    "message": "Transaction has been requested. Please check your keychain mobile to sign it."
+    "message": "Transaction has been requested. Please check your keychain mobile app to sign it."
   },
   "bgd_ops_sign_error": {
     "message": "Could not sign."
@@ -1775,6 +1775,10 @@
   "dialog_register_keyless_loading": {
     "message": "Registering to HiveAuth",
     "description": "When registering to keyless keychain"
+  },
+  "dialog_hiveauth_connection_failed": {
+    "message": "Failed to establish HiveAuth connection after 5 attempts",
+    "description": "When registering to keyless keychain via HiveAuth"
   },
   "dialog_anonymous_keyless_content": {
     "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",

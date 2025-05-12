@@ -35,6 +35,7 @@ type RequestData = {
   windowId?: number;
   isMultisig?: boolean;
   isWaitingForConfirmation: boolean;
+  isAnonymous?: boolean;
 };
 export class RequestsHandler {
   data: RequestData;
@@ -62,6 +63,10 @@ export class RequestsHandler {
 
   async setIsMultisig(isMultisig: boolean) {
     this.data.isMultisig = isMultisig;
+  }
+
+  async setIsAnonymous(isAnonymous: boolean) {
+    this.data.isAnonymous = isAnonymous;
   }
 
   async initializeParameters(

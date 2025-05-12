@@ -1,5 +1,4 @@
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
-import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -32,11 +31,8 @@ const KeylessUsername = (props: Props) => {
       domain: domain,
       username: username,
     };
-    // check if username  is in keyauthdict and valid
     const _keylessAuthData =
       await KeylessKeychainModule.checkKeylessRegistration(data, domain, tab);
-    // if not, handle new registration
-
     if (!_keylessAuthData) {
       registerKeyless();
     } else {
@@ -45,7 +41,6 @@ const KeylessUsername = (props: Props) => {
   };
 
   const proceedToTransaction = async () => {
-    requestHandler.data.isAnonymous = true;
     chrome.runtime.sendMessage({
       command: BackgroundCommand.KEYLESS_KEYCHAIN,
       value: {
@@ -55,16 +50,6 @@ const KeylessUsername = (props: Props) => {
         tab,
       },
     });
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    const message = await createMessage(
-      null,
-      requestHandler.data.request!,
-      data,
-      await chrome.i18n.getMessage('bgd_ops_sign_requested'),
-      null,
-      null,
-    );
-    chrome.runtime.sendMessage(message);
   };
   const registerKeyless = async () => {
     chrome.runtime.sendMessage({

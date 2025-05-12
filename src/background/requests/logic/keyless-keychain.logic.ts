@@ -6,6 +6,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { KeylessAuthData } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 export const keylessKeychainRequest = async (
   requestHandler: RequestsHandler,
@@ -13,9 +14,19 @@ export const keylessKeychainRequest = async (
   request: KeychainRequest,
   domain: string,
 ) => {
-  console.log('keyless: request', request);
+  const keylessAuthData = await KeylessKeychainModule.checkKeylessRegistration(
+    request,
+    domain,
+    tab,
+  );
   if (!request.username || request.username.trim() === '') {
-    createAnonymousKeylessOpPopup(requestHandler, tab, request, domain);
+    createAnonymousKeylessOpPopup(
+      requestHandler,
+      tab,
+      request,
+      domain,
+      keylessAuthData,
+    );
   } else if (request.type === KeychainRequestTypes.addAccount) {
     createAddAccountPopup(requestHandler, tab, request, domain);
   } else if (request.type === KeychainRequestTypes.swap) {
@@ -23,12 +34,6 @@ export const keylessKeychainRequest = async (
   } else if (request.type === KeychainRequestTypes.encodeWithKeys) {
     createUnsupportedOperationPopup(requestHandler, tab, request, domain);
   } else {
-    const keylessAuthData =
-      await KeylessKeychainModule.checkKeylessRegistration(
-        request,
-        domain,
-        tab,
-      );
     if (!keylessAuthData) {
       createRegisterKeylessKeychainPopup(requestHandler, tab, request, domain);
     } else {
@@ -42,7 +47,10 @@ const createAnonymousKeylessOpPopup = async (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  keylessAuthData: KeylessAuthData | undefined,
 ) => {
+  await requestHandler.setIsAnonymous(true);
+  await requestHandler.setIsWaitingForConfirmation(!keylessAuthData);
   const callback = async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANONYMOUS_KEYLESS_OP,

@@ -7,6 +7,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 
@@ -24,13 +25,16 @@ type Props = {
 };
 const RegisterKeyless = (props: Props) => {
   const { data, domain, auth_payload_uri, tab, requestHandler } = props.data;
+  const [authPayloadUri, setAuthPayloadUri] = useState<
+    AUTH_PAYLOAD_URI | undefined
+  >(auth_payload_uri);
   const [loadingOperations, setLoadingOperations] = useState<
     LoadingOperation[]
   >([{ name: '', done: false }]);
   const [expireSeconds, setExpireSeconds] = useState<number>(0);
   const [isExpired, setIsExpired] = useState<boolean>(false);
   useEffect(() => {
-    if (!auth_payload_uri) {
+    if (!authPayloadUri) {
       registerKeyless();
     }
   }, []);
@@ -68,15 +72,20 @@ const RegisterKeyless = (props: Props) => {
   }, [data]);
 
   const registerKeyless = async () => {
+    const value = {
+      requestHandler,
+      data,
+      domain,
+      tab,
+    };
     chrome.runtime.sendMessage({
       command: BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER,
-      value: {
-        requestHandler,
-        data,
-        domain,
-        tab,
-      },
+      value,
     });
+  };
+  const handleRequestNewUri = async () => {
+    setAuthPayloadUri(undefined);
+    registerKeyless();
   };
 
   return (
@@ -124,7 +133,14 @@ const RegisterKeyless = (props: Props) => {
                 color: '#666',
                 fontSize: '14px',
               }}>
-              <p>Keyless authentication request has expired</p>
+              <p>
+                Keyless authentication request has expired. Please try again.
+              </p>
+              <ButtonComponent
+                label="popup_html_submit"
+                onClick={handleRequestNewUri}
+                dataTestId="submit-button"
+              />
             </div>
           ) : (
             <>

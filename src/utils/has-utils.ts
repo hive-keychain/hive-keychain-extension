@@ -53,15 +53,20 @@ import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-globa
 import Logger from 'src/utils/logger.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
-let ws: WebSocket;
-let reconnectInterval = 1000; // Initial reconnection delay
+let ws: WebSocket | null = null;
+let reconnectInterval = 1000;
+let connectionAttempts = 0;
+const MAX_CONNECTION_ATTEMPTS = 5;
 
 const setupWebSocketHandlers = (
   resolve: () => void,
   reject: (error: any) => void,
 ) => {
+  if (!ws) return;
+
   ws.onopen = () => {
     reconnectInterval = 1000; // Reset the reconnection delay
+    connectionAttempts = 0; // Reset connection attempts on successful connection
     resolve();
   };
 
@@ -69,21 +74,35 @@ const setupWebSocketHandlers = (
     // console.log('Message from server:', event.data);
   };
 
-  ws.onclose = (event) => {
-    console.log('WebSocket disconnected', event);
+  ws.onclose = async (event) => {
+    connectionAttempts++;
+
+    if (connectionAttempts >= MAX_CONNECTION_ATTEMPTS) {
+      // Send ANSWER_REQUEST message after 5 failed attempts
+      chrome.runtime.sendMessage({
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          message: await chrome.i18n.getMessage(
+            'dialog_hiveauth_connection_failed',
+          ),
+          error: 'connection_failed',
+        },
+      });
+      return; // Stop trying to reconnect
+    }
+
     setTimeout(connect, reconnectInterval); // Attempt to reconnect
     reconnectInterval = Math.min(reconnectInterval * 2, 30000); // Exponential backoff, max 30 seconds
   };
 
   ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
     reject(error);
   };
 };
 
 const connect = (): Promise<void> => {
   if (ws && ws.readyState === WebSocket.OPEN) {
-    console.log('WebSocket is already connected');
     return Promise.resolve();
   }
 
@@ -91,6 +110,13 @@ const connect = (): Promise<void> => {
     ws = new WebSocket(Config.keyless.host);
     setupWebSocketHandlers(resolve, reject);
   });
+};
+
+const sendMessage = (message: any) => {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    throw new Error('WebSocket is not connected');
+  }
+  ws.send(JSON.stringify(message));
 };
 
 const authenticate = async (
@@ -138,24 +164,28 @@ const authenticate = async (
   };
 
   // Send the authentication request
-
-  ws.send(JSON.stringify(auth_req));
+  sendMessage(auth_req);
 
   // Return a promise that resolves with the AUTH_WAIT message
   return new Promise<AUTH_WAIT>((resolve, reject) => {
+    if (!ws) {
+      reject(new Error('WebSocket is not connected'));
+      return;
+    }
+
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
 
       if (message.cmd === HAS_CMD.AUTH_WAIT) {
         // AUTH_WAIT received
-        ws.removeEventListener('message', handleMessage);
+        ws?.removeEventListener('message', handleMessage);
         resolve(message as AUTH_WAIT);
       } else if (
         message.cmd === HAS_CMD.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
         // Authentication failed or error
-        ws.removeEventListener('message', handleMessage);
+        ws?.removeEventListener('message', handleMessage);
         reject(
           new Error(
             `Authentication failed: ${message.error || 'Unknown error'}`,
@@ -189,13 +219,18 @@ const listenToAuthAck = (
     );
     throw new Error('Username and keyless auth data are required');
   }
+
+  if (!ws) {
+    throw new Error('WebSocket is not connected');
+  }
+
   // Start listening for messages immediately
   const handleMessage = async (event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data);
       Logger.log('listenToAuthAck message:', { message });
       if (message.cmd === HAS_CMD.AUTH_ACK) {
-        ws.removeEventListener('message', handleMessage);
+        ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthAck(
             requestHandler,
@@ -212,7 +247,7 @@ const listenToAuthAck = (
         message.cmd === HAS_CMD.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
-        ws.removeEventListener('message', handleMessage);
+        ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthNack(username, message as AUTH_NACK);
         } catch (error) {
@@ -317,20 +352,25 @@ const handleSignRequest = async (
   tab: number,
 ): Promise<void> => {
   const sign_wait = await signRequest(
+    requestHandler,
     requestHandler.data.request!,
     keylessRequest.appName,
     tab,
   );
 
+  if (!ws) {
+    throw new Error('WebSocket is not connected');
+  }
+
   const signResponse = await new Promise<SIGN_ACK>((resolve) => {
     const handleSignMessage = (event: MessageEvent) => {
       const response = JSON.parse(event.data) as SIGN_ACK;
       if (response.cmd === HAS_CMD.SIGN_ACK) {
-        ws.removeEventListener('message', handleSignMessage);
+        ws?.removeEventListener('message', handleSignMessage);
         resolve(response);
       }
     };
-    ws.addEventListener('message', handleSignMessage);
+    ws?.addEventListener('message', handleSignMessage);
   });
 
   const message = await createMessage(
@@ -386,7 +426,6 @@ const handleAuthAck = async (
       msg: {
         success: true,
         message: 'Keyless Authentication Success',
-        closeOnTimeout: false,
       },
     });
 
@@ -657,12 +696,17 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
 ): Promise<void> => {
   if (!request.username) {
     throw new Error('Username is required');
+  }
+
+  if (!ws) {
+    throw new Error('WebSocket is not connected');
   }
 
   let op = null;
@@ -687,14 +731,14 @@ const signRequest = async (
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  ws.send(JSON.stringify(sign_req));
+  sendMessage(sign_req);
 
   // Wait for the sign response and handle it through handleSignWait
   const signWaitHandler = async (event: MessageEvent) => {
     const response = JSON.parse(event.data) as SIGN_WAIT;
     if (response.cmd === HAS_CMD.SIGN_WAIT) {
-      ws.removeEventListener('message', signWaitHandler);
-      await handleSignWait(request, domain, tab, response);
+      ws?.removeEventListener('message', signWaitHandler);
+      await handleSignWait(request, domain, tab, response, keylessAuthData);
     }
   };
 
@@ -706,8 +750,14 @@ const handleSignWait = async (
   domain: string,
   tab: number,
   sign_wait: SIGN_WAIT,
-) => {
+  keylessAuthData: KeylessAuthData,
+): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
+    if (!ws) {
+      reject(new Error('WebSocket is not connected'));
+      return;
+    }
+
     const handleMessage = async (event: MessageEvent) => {
       try {
         const response = JSON.parse(event.data) as SIGN_ACK | SIGN_NACK;
@@ -717,7 +767,7 @@ const handleSignWait = async (
           response.uuid === sign_wait.uuid
         ) {
           // Remove the event listener since we got our response
-          ws.removeEventListener('message', handleMessage);
+          ws?.removeEventListener('message', handleMessage);
 
           // Handle the successful sign ack
           await sendResponseToDapp(request, domain, tab, response, false);
@@ -737,7 +787,7 @@ const handleSignWait = async (
           response.uuid === sign_wait.uuid
         ) {
           // Remove the event listener since we got our response
-          ws.removeEventListener('message', handleMessage);
+          ws?.removeEventListener('message', handleMessage);
 
           // Handle the failed sign ack
           const errorResponse: SIGN_ACK = {
@@ -779,14 +829,14 @@ const handleSignWait = async (
     }
 
     const expirationTimer = setTimeout(() => {
-      ws.removeEventListener('message', handleMessage);
+      ws?.removeEventListener('message', handleMessage);
       reject(new Error('Sign wait request expired'));
     }, timeout);
 
     // Clean up on promise resolution
     const cleanup = () => {
       clearTimeout(expirationTimer);
-      ws.removeEventListener('message', handleMessage);
+      ws?.removeEventListener('message', handleMessage);
     };
 
     // Ensure cleanup happens whether we resolve or reject
@@ -812,6 +862,10 @@ const challengeRequest = async (
   domain: string,
   tab: number,
 ) => {
+  if (!ws) {
+    throw new Error('WebSocket is not connected');
+  }
+
   const challenge_req_data: CHALLENGE_REQ_DATA = {
     key_type: getRequiredWifType(request).toLowerCase(),
     challenge: (request as RequestSignBuffer).message,
@@ -830,13 +884,13 @@ const challengeRequest = async (
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  ws.send(JSON.stringify(challenge_req));
+  sendMessage(challenge_req);
 
   return new Promise<CHALLENGE_WAIT>((resolve, reject) => {
     const challengeWaitHandler = async (event: MessageEvent) => {
       const response = JSON.parse(event.data) as CHALLENGE_WAIT;
       if (response.cmd === HAS_CMD.CHALLENGE_WAIT) {
-        ws.removeEventListener('message', challengeWaitHandler);
+        ws?.removeEventListener('message', challengeWaitHandler);
         await handleChallengeWait(
           requestHandler,
           request,
@@ -850,16 +904,16 @@ const challengeRequest = async (
         response.cmd === HAS_CMD.CHALLENGE_NACK ||
         response.cmd === 'challenge_err'
       ) {
-        ws.removeEventListener('message', challengeWaitHandler);
+        ws?.removeEventListener('message', challengeWaitHandler);
         reject(new Error('Challenge request failed'));
       }
     };
 
-    ws.addEventListener('message', challengeWaitHandler);
+    ws?.addEventListener('message', challengeWaitHandler);
 
     // Add timeout to prevent infinite waiting
     setTimeout(() => {
-      ws.removeEventListener('message', challengeWaitHandler);
+      ws?.removeEventListener('message', challengeWaitHandler);
       reject(new Error('Challenge wait timeout'));
     }, 30000); // 30 second timeout
   });
@@ -872,8 +926,13 @@ const handleChallengeWait = async (
   tab: number,
   challenge_wait: CHALLENGE_WAIT,
   keylessAuthData: KeylessAuthData,
-) => {
+): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
+    if (!ws) {
+      reject(new Error('WebSocket is not connected'));
+      return;
+    }
+
     const handleMessage = async (event: MessageEvent) => {
       try {
         const challenge_ack = JSON.parse(event.data) as
@@ -882,7 +941,7 @@ const handleChallengeWait = async (
         if (challenge_ack.cmd === HAS_CMD.CHALLENGE_ACK) {
           if (challenge_wait.uuid === challenge_ack.uuid) {
             // Remove the event listener since we got our response
-            ws.removeEventListener('message', handleMessage);
+            ws?.removeEventListener('message', handleMessage);
             await handleChallengeAck(
               requestHandler,
               request,
@@ -895,7 +954,7 @@ const handleChallengeWait = async (
           }
         } else if (challenge_ack.cmd === HAS_CMD.CHALLENGE_NACK) {
           // Remove the event listener since we got an error response
-          ws.removeEventListener('message', handleMessage);
+          ws?.removeEventListener('message', handleMessage);
           await handleChallengeNack(
             requestHandler,
             request,
@@ -911,25 +970,25 @@ const handleChallengeWait = async (
     };
 
     // Add the event listener
-    ws.addEventListener('message', handleMessage);
+    ws?.addEventListener('message', handleMessage);
 
     // Set up expiration timeout
     const timeout = challenge_wait.expire - Date.now();
     if (timeout <= 0) {
-      ws.removeEventListener('message', handleMessage);
+      ws?.removeEventListener('message', handleMessage);
       reject(new Error('Challenge wait request has already expired'));
       return;
     }
 
     const expirationTimer = setTimeout(() => {
-      ws.removeEventListener('message', handleMessage);
+      ws?.removeEventListener('message', handleMessage);
       reject(new Error('Challenge wait request expired'));
     }, timeout);
 
     // Clean up on promise resolution
     const cleanup = () => {
       clearTimeout(expirationTimer);
-      ws.removeEventListener('message', handleMessage);
+      ws?.removeEventListener('message', handleMessage);
     };
 
     // Ensure cleanup happens whether we resolve or reject
@@ -947,72 +1006,6 @@ const handleChallengeWait = async (
       };
     })(reject);
   });
-};
-
-const handleChallengeAck = async (
-  requestHandler: RequestsHandler,
-  request: KeychainRequest,
-  domain: string,
-  tab: number,
-  challenge_ack: CHALLENGE_ACK,
-  keylessAuthData: KeylessAuthData,
-) => {
-  try {
-    const challenge_ack_data: CHALLENGE_ACK_DATA =
-      typeof challenge_ack.data === 'string'
-        ? JSON.parse(
-            EncryptUtils.decryptNoIV(
-              challenge_ack.data,
-              keylessAuthData.authKey,
-            ),
-          )
-        : challenge_ack.data;
-    sendResponseToDapp(request, domain, tab, challenge_ack_data);
-
-    // Send message to runtime if request is anonymous
-    if (
-      requestHandler.data.isAnonymous ||
-      request.type === KeychainRequestTypes.encode ||
-      request.type === KeychainRequestTypes.decode
-    ) {
-      chrome.runtime.sendMessage({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: true,
-          message: await chrome.i18n.getMessage('bgd_ops_challenge_success', [
-            request.type.charAt(0).toUpperCase() +
-              request.type.slice(1).toLowerCase(),
-          ]),
-          result: challenge_ack_data,
-        },
-      });
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-const handleChallengeNack = async (
-  requestHandler: RequestsHandler,
-  request: KeychainRequest,
-  domain: string,
-  tab: number,
-  challenge_nack: CHALLENGE_NACK,
-) => {
-  const error = new Error(challenge_nack.data || 'Challenge request failed');
-  sendResponseToDapp(request, domain, tab, challenge_nack, error);
-
-  // Send message to runtime if request is anonymous
-  if (requestHandler.data.isAnonymous) {
-    chrome.runtime.sendMessage({
-      command: DialogCommand.ANSWER_REQUEST,
-      msg: {
-        success: false,
-        message: error.message,
-        error: error.message,
-      },
-    });
-  }
 };
 
 const sanitizeOperation = (op: any) => {
@@ -1093,6 +1086,72 @@ const calculateVests = async (
     const value = amount.includes('VESTS') ? amount : amount + ' VESTS';
     const numericValue = parseFloat(value);
     return numericValue.toFixed(6) + ' VESTS';
+  }
+};
+
+const handleChallengeAck = async (
+  requestHandler: RequestsHandler,
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  challenge_ack: CHALLENGE_ACK,
+  keylessAuthData: KeylessAuthData,
+): Promise<void> => {
+  try {
+    const challenge_ack_data: CHALLENGE_ACK_DATA =
+      typeof challenge_ack.data === 'string'
+        ? JSON.parse(
+            EncryptUtils.decryptNoIV(
+              challenge_ack.data,
+              keylessAuthData.authKey,
+            ),
+          )
+        : challenge_ack.data;
+    sendResponseToDapp(request, domain, tab, challenge_ack_data);
+
+    // Send message to runtime if request is anonymous
+    if (
+      requestHandler.data.isAnonymous ||
+      request.type === KeychainRequestTypes.encode ||
+      request.type === KeychainRequestTypes.decode
+    ) {
+      chrome.runtime.sendMessage({
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          message: await chrome.i18n.getMessage('bgd_ops_challenge_success', [
+            request.type.charAt(0).toUpperCase() +
+              request.type.slice(1).toLowerCase(),
+          ]),
+          result: challenge_ack_data,
+        },
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const handleChallengeNack = async (
+  requestHandler: RequestsHandler,
+  request: KeychainRequest,
+  domain: string,
+  tab: number,
+  challenge_nack: CHALLENGE_NACK,
+) => {
+  const error = new Error(challenge_nack.data || 'Challenge request failed');
+  sendResponseToDapp(request, domain, tab, challenge_nack, error);
+
+  // Send message to runtime if request is anonymous
+  if (requestHandler.data.isAnonymous) {
+    chrome.runtime.sendMessage({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        success: false,
+        message: error.message,
+        error: error.message,
+      },
+    });
   }
 };
 
