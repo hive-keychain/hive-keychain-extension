@@ -16,7 +16,7 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 /**
- * Register user and dapp.
+ * Register user and dapp to local storage.
  * If the auth data already exists, and expired, it will be removed and a new one will be created.
  * Otherwise, the existing auth data will be returned.
  * @param request - The request object
@@ -31,33 +31,7 @@ const registerUserAndDapp = async (
     if (!request?.username) {
       throw new Error('Username is missing in the request.');
     }
-    //always generate new auth data
     return await generateKeylessAuthData(request.username, domain);
-
-    // NOTE:
-    // Basically, below code will always return the auth data when it exists and is not expired
-    // but if the user logged out, there is no way to know it because the auth data will not be removed from the local storage
-    // so we always generate new auth data
-
-    // const keylessAuthData = await getKeylessAuthDataByAppName(
-    //   request.username,
-    //   domain,
-    // );
-
-    // // generate new auth data when it does not exist or is expired
-    // if (!keylessAuthData || isKeylessAuthDataExpired(keylessAuthData)) {
-    //   return await generateKeylessAuthData(request.username, domain);
-    // }
-
-    // // return existing auth data when it exists and is not expired
-    // if (keylessAuthData && !isKeylessAuthDataExpired(keylessAuthData)) {
-    //   return keylessAuthData;
-    // }
-    // //store the keylessAuthData in the local storage
-    // await storeKeylessAuthData(request.username, keylessAuthData);
-
-    // // return existing auth data when it exists and is not expired
-    // return keylessAuthData;
   } catch (error: any) {
     throw new Error(`Error in registerUserAnd Dapp: ${error.message}`);
   }
