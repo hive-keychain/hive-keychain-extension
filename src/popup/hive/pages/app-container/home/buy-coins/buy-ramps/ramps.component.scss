@@ -21,7 +21,7 @@
         width: 20px !important;
         border-radius: unset !important;
       }
-      .fiat-token {
+      .start-token {
         display: flex;
         flex-direction: column;
 
@@ -32,6 +32,15 @@
           column-gap: 12px;
         }
       }
+    }
+    .error {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @include poppins500(16px);
+      color: var(--main-font-color);
+      text-align: center;
     }
   }
 
@@ -98,13 +107,17 @@
         }
       }
       .receive {
-        width: 100px;
-        text-align: right;
-      }
-      .chevron {
-        width: 20px;
-        svg {
-          width: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .receive-token {
+          padding-right: 12px;
+        }
+        .chevron {
+          width: 12px;
+          svg {
+            width: 12px;
+          }
         }
       }
     }

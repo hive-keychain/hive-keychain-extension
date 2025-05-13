@@ -6,6 +6,14 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+export enum OptionItemBadgeType {
+  BADGE_RED = 'badge-red',
+}
+export interface OptionItemBagde {
+  type: OptionItemBadgeType;
+  label: string;
+}
+
 export interface OptionItem<T = any> {
   label: string;
   value: T;
@@ -13,6 +21,7 @@ export interface OptionItem<T = any> {
   subLabel?: string;
   img?: string;
   imgBackup?: string;
+  bagde?: OptionItemBagde;
 }
 
 export interface CustomSelectProps<T> {
@@ -59,6 +68,11 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           <img className="left-image" src={itemProps.selectedItem.img} />
         )}
         <span>{itemProps.selectedItem.label}</span>
+        {itemProps.selectedItem.bagde && (
+          <div className={`${itemProps.selectedItem.bagde.type}`}>
+            {itemProps.selectedItem.bagde.label}
+          </div>
+        )}
       </div>
     );
   };
@@ -104,7 +118,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         )}
         {filteredOptions.map((option, index) => (
           <CustomSelectItemComponent
-            key={`option-${option.label}`}
+            key={`option-${option.label}-${index}`}
             isLast={props.options.length === index}
             item={option}
             isSelected={option.value === itemProps.selectedItem.value}

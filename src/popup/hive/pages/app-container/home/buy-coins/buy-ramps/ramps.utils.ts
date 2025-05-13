@@ -11,6 +11,7 @@ import {
 import CountriesUtils from '@popup/hive/utils/countries.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
+import Logger from 'src/utils/logger.utils';
 
 //TODO : Add minimum for each fiat
 const APP_CUSTOMIZATION = {
@@ -245,7 +246,7 @@ export class RampMerger {
     cryptoCurrency: string,
     network: string,
     name: string,
-  ): Promise<RampEstimationDisplay[]> => {
+  ): Promise<RampEstimationDisplay[] | undefined> => {
     const estimations = await Promise.all(
       this.providers.map(async (provider) => {
         return (
@@ -267,10 +268,14 @@ export class RampMerger {
             } as RampEstimationDisplay),
         );
       }),
-    );
+    ).catch((e) => {
+      Logger.log('Ramp error: ', { e });
+    });
     const cleanEstimations = estimations
-      .reduce((acc, val) => [...acc, ...val], [])
-      .sort((a, b) => b.estimation - a.estimation);
+      ? estimations
+          .reduce((acc, val) => [...acc, ...val], [])
+          .sort((a, b) => b.estimation - a.estimation)
+      : undefined;
     return cleanEstimations;
   };
 }

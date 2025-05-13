@@ -1,5 +1,6 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RampConfig } from '@interfaces/ramps.interface';
+import { SwapCryptosConfig } from '@interfaces/swap-cryptos.interface';
 
 const Config = {
   hiveEngine: {
@@ -63,6 +64,47 @@ const Config = {
         process.env.RAMP_DEV_API_KEY ||
         '8wr6k8t4tp4yg5rxgkdkp42qhgvjwfrvqm5zwtm8',
     } as RampConfig,
+  },
+  swapCryptos: {
+    autoRefreshPeriodSec: 30,
+    stealthex: {
+      //TODO add keychain data
+      urls: {
+        baseUrl: 'https://api.stealthex.io/api/v2/',
+        referalBaseUrl: 'https://stealthex.io/?ref=',
+        fullLinkToExchange: 'https://stealthex.io/exchange?id=',
+        routes: {
+          allCurrencies: 'fee/currency',
+          currencyPair: 'fee/pairs/',
+          minMaxAccepted: 'fee/range/',
+          estimation: 'fee/estimate/',
+          exchange: 'fee/exchange',
+        },
+      },
+      apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
+      headerKey: 'X-SX-API-KEY',
+      refId: 'ldJCcGZA9H',
+      partnerFeeAmount: 20,
+    } as SwapCryptosConfig,
+    simpleswap: {
+      //Note: this exchange set up its partner fee in: https://partners.simpleswap.io/webtools/api
+      // it seems it only accepts 5% as max value.
+      urls: {
+        baseUrl: 'https://api.simpleswap.io/',
+        referalBaseUrl: 'https://simpleswap.io/?ref=',
+        fullLinkToExchange: 'https://simpleswap.io/exchange?id=',
+        routes: {
+          allCurrencies: 'get_all_currencies',
+          currencyPair: 'get_pairs',
+          minMaxAccepted: 'get_ranges',
+          estimation: 'get_estimated',
+          exchange: 'create_exchange',
+        },
+      },
+      apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',
+      headerKey: '',
+      refId: 'a81a6051c500',
+    } as SwapCryptosConfig,
   },
   multisig: {
     baseURL:

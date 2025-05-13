@@ -9,21 +9,20 @@ import {
   RampProvider,
   TransakProvider,
 } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.utils';
-import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
+import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ComplexeCustomSelect,
-  OptionItem,
-} from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
+
+export const HIVE_OPTION_ITEM = {
+  label: 'HIVE',
+  subLabel: 'HIVE',
+  value: 'HIVE',
+  img: `/assets/images/wallet/hive-logo.svg`,
+} as OptionItem;
 
 const BuyRamps = ({
   username,
@@ -33,6 +32,7 @@ const BuyRamps = ({
   price: CurrencyPrices;
 }) => {
   const [ramps, setRamps] = useState<RampMerger>();
+  const [errorInApi, setErrorInApi] = useState<string>();
   const [currencies, setCurrencies] = useState<RampFiatCurrency[]>([]);
   const [fiat, setFiat] = useState<OptionItem<RampFiatCurrency>>();
   const [amount, setAmount] = useState('');
@@ -76,7 +76,13 @@ const BuyRamps = ({
         'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
       );
 
-      setEstimations(estimations);
+      if (estimations) {
+        setErrorInApi(undefined);
+        setEstimations(estimations);
+      } else {
+        setErrorInApi('buy_coins_swap_cryptos_error_api');
+      }
+
       if (shouldRefresh) refreshCountdown();
     }
   };
@@ -104,114 +110,29 @@ const BuyRamps = ({
   return (
     <div className="ramps">
       {currencies.length !== 0 && fiat ? (
-        <FormContainer>
-          <div className="form-fields">
-            <div className="fiat-token">
-              <div className="inputs">
-                <ComplexeCustomSelect
-                  //@ts-ignore
-                  selectedItem={fiat}
-                  options={currencies.map((e) => ({
-                    label: e.name,
-                    value: e,
-                    img: e.icon,
-                    subLabel: e.symbol,
-                  }))}
-                  setSelectedItem={setFiat}
-                  label="fiat"
-                  filterable
-                />
-                <InputComponent
-                  type={InputType.NUMBER}
-                  value={amount}
-                  onChange={setAmount}
-                  label="popup_html_transfer_amount"
-                  placeholder="popup_html_transfer_amount"
-                  min={0}
-                />
-              </div>
-            </div>
-            <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
-            <div className="end-token">
-              <div className="inputs">
-                <ComplexeCustomSelect
-                  selectedItem={{
-                    label: 'HIVE',
-                    value: 'HIVE',
-                    img: `/assets/images/wallet/hive-logo.svg`,
-                  }}
-                  options={[
-                    {
-                      label: 'HIVE',
-                      value: 'HIVE',
-                      img: `/assets/images/wallet/hive-logo.svg`,
-                    },
-                  ]}
-                  setSelectedItem={() => {}}
-                  label="token"
-                />
-              </div>
-            </div>
-            <div className="estimations">
-              <div className="quote-label-wrapper">
-                {estimations.length !== 0 && (
-                  <span className="quote-label">
-                    {chrome.i18n.getMessage('quotes')}
-                  </span>
-                )}
-                {!!countdown && (
-                  <span className="countdown">
-                    {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
-                  </span>
-                )}
-              </div>
-              <div className="quotes">
-                {estimations.map((estimation) => {
-                  const key =
-                    estimation.name +
-                    estimation.paymentMethod.method +
-                    estimation.fiat +
-                    estimation.amount +
-                    estimation.crypto;
-                  return (
-                    <div
-                      className="quote"
-                      key={key}
-                      onClick={() => {
-                        window.open(estimation.link, '__blank');
-                      }}>
-                      <SVGIcon icon={estimation.logo} />
-                      <span className="method">
-                        <SVGIcon
-                          key={key}
-                          icon={estimation.paymentMethod.icon}
-                          skipTooltipTranslation
-                          tooltipPosition="bottom"
-                          tooltipDelayShow={1000}
-                          tooltipMessage={estimation.paymentMethod.title}
-                        />
-                      </span>
-                      <div className="receive">
-                        <span>{estimation.estimation}</span>
-                        <span className="amount">
-                          {CurrencyPricesUtils.getTokenUSDPrice(
-                            estimation.estimation + '',
-                            'HIVE',
-                            price,
-                            [],
-                          )}
-                        </span>
-                      </div>
-                      <span className="chevron">
-                        <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </FormContainer>
+        <BuySwapCoinsEstimationComponent
+          startToken={fiat}
+          startTokenList={currencies.map((e) => ({
+            label: e.name,
+            value: e,
+            img: e.icon,
+            subLabel: e.symbol,
+          }))}
+          setStartToken={setFiat}
+          startTokenLabel="fiat"
+          amount={amount}
+          setAmount={setAmount}
+          inputAmountLabel="popup_html_transfer_amount"
+          inputPlaceHolder="popup_html_transfer_amount"
+          endToken={HIVE_OPTION_ITEM}
+          endTokenList={[HIVE_OPTION_ITEM]}
+          setEndToken={() => {}}
+          endTokenLabel="token"
+          estimations={estimations}
+          countdown={countdown}
+          price={price}
+          errorMessage={errorInApi}
+        />
       ) : (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />

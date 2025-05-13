@@ -47,6 +47,9 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           />
         )}
         <div className="item-label">{item.label}</div>
+        {item.bagde && (
+          <div className={`${item.bagde.type}`}>{item.bagde.label}</div>
+        )}
         {onDelete && canDelete && !isSelected && (
           <SVGIcon
             className="right-action-icon"

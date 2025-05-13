@@ -1,0 +1,204 @@
+.swap-cryptos {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+  overflow: hidden;
+  flex: 1;
+  flex-flow: column wrap;
+  height: 100%;
+
+  .form-container {
+    row-gap: 16px;
+    .form-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      row-gap: 6px;
+      .provider-icon-label {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        column-gap: 8px;
+        .adjust-exchange-amount {
+          width: 40%;
+        }
+        .amount-to-exchange {
+          @include poppins500(16px);
+          color: var(--main-font-color);
+        }
+        .svg-icon {
+          width: 80px;
+          svg {
+            width: 80px;
+            height: 40px;
+          }
+        }
+      }
+      .alert-message {
+        text-align: center;
+        @include poppins400(12px);
+        color: var(--main-font-color);
+        margin-bottom: 12px;
+      }
+      .exchange-tokens {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        @include poppins500(16px);
+        color: var(--main-font-color);
+        margin-bottom: 12px;
+        .token-label {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+      input::-webkit-input-placeholder {
+        font-size: 14px;
+      }
+      .left-image {
+        height: 20px !important;
+        width: 20px !important;
+        border-radius: unset !important;
+      }
+      .start-token {
+        display: flex;
+        flex-direction: column;
+
+        .inputs {
+          display: grid;
+          align-items: flex-end;
+          grid-template-columns: 2fr 1fr;
+          column-gap: 12px;
+        }
+      }
+      .end-token {
+        display: flex;
+        flex-direction: column;
+      }
+      .min-amount {
+        @include poppins500(12px);
+        color: var(--main-font-color);
+        text-align: right;
+        padding-right: 12px;
+        height: 20px;
+      }
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .button {
+        width: 40%;
+      }
+    }
+
+    .error {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @include poppins500(16px);
+      color: var(--main-font-color);
+      text-align: center;
+    }
+  }
+
+  .swap-icon {
+    align-self: center;
+    margin-top: 10px;
+    margin-bottom: -10px;
+    padding-right: 12px;
+    padding-bottom: 20px;
+  }
+
+  .quote-label-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    align-items: center;
+
+    .countdown {
+      width: auto;
+      font-size: 13px;
+      color: var(--main-font-color);
+    }
+
+    .quote-label {
+      @include input-label;
+      width: auto;
+      margin-bottom: 0;
+    }
+  }
+  .quotes {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    .quote {
+      border: solid 1px var(--card-border);
+      border-radius: 15px;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 3px 15px;
+      color: var(--main-font-color);
+      .amount {
+        display: flex;
+        flex-direction: column;
+      }
+      .svg-icon {
+        width: 100px;
+        svg {
+          width: 100px;
+          height: 60px;
+        }
+      }
+      .receive {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .buttons-container {
+          display: flex;
+          flex-direction: row;
+          column-gap: 8px;
+          .act-button {
+            width: 16px;
+            svg,
+            .svg-icon {
+              width: 16px;
+            }
+          }
+        }
+        .receive-token {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          padding-right: 12px;
+          text-align: center;
+          .estimation-span {
+            margin-left: 4px;
+          }
+          .icon-label {
+            display: flex;
+            flex-direction: row;
+            column-gap: 4px;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+        .chevron {
+          width: 12px;
+          height: 24px;
+          align-self: baseline;
+          svg {
+            width: 12px;
+          }
+        }
+      }
+    }
+  }
+}
