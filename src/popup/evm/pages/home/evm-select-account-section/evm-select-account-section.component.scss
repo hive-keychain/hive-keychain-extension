@@ -99,10 +99,10 @@
       }
       width: auto;
       border: 1px solid var(--select-border-color);
-      top: 36px;
+      top: 50px;
       background-color: var(--select-dropdown-bg-color);
       border-radius: 16px;
-      right: -1px;
+      // right: -1px;
       left: unset !important;
       .select-account-item {
         display: flex;

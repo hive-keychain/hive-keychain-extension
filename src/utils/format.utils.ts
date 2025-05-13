@@ -177,7 +177,9 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
 
 const shortenString = (string: string, length: number = 3) => {
   return string.length > length * 2
-    ? `${string.substring(length, 0)}...${string?.toString().slice(-length)}`
+    ? `${string.substring(length + 2, 0)}...${string
+        ?.toString()
+        .slice(-length)}`
     : string;
 };
 

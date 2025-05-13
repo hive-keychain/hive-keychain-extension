@@ -1,7 +1,8 @@
-import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import { EvmLocalAccountListItem } from '@interfaces/list-item.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
@@ -37,26 +38,29 @@ const SelectAccountSection = ({
   isOnMain = false,
   removeBorder,
 }: PropsFromRedux & Props) => {
-  const defaultOptions: LocalAccountListItem[] = [];
+  const defaultOptions: EvmLocalAccountListItem[] = [];
 
   const [isOpened, setIsOpened] = useState(false);
   const [options, setOptions] = useState(defaultOptions);
-  const [selectedAddress, setSelectedAddress] = useState(
-    activeAccount.wallet.address,
-  );
+  const [selectedAddress, setSelectedAddress] = useState<EvmAccount>();
 
   useEffect(() => {
-    setOptions(
-      accounts
+    if (activeAccount.isInitialized) {
+      const opts = accounts
         .filter((account) => !account.hide)
         .map((account: EvmAccount) => {
           return {
             label: account.wallet.address,
-            value: account.wallet.address,
+            value: account,
           };
-        }),
-    );
-    setSelectedAddress(activeAccount.wallet.address);
+        });
+
+      setOptions(opts);
+      const selectedOption = opts.find((opt) => {
+        return opt.value.wallet.address === activeAccount.wallet.address;
+      });
+      setSelectedAddress(selectedOption!.value);
+    }
   }, [accounts, activeAccount]);
 
   const handleItemClicked = (address: string) => {
@@ -75,13 +79,6 @@ const SelectAccountSection = ({
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
     setOptions(list);
-    // setAccounts(
-    //   AccountUtils.reorderAccounts(
-    //     accounts,
-    //     result.source.index,
-    //     result.destination.index,
-    //   ),
-    // );
   };
 
   const handleClickOnSelector = () => {
@@ -89,7 +86,7 @@ const SelectAccountSection = ({
   };
 
   const customLabelRender = (
-    selectProps: SelectRenderer<LocalAccountListItem>,
+    selectProps: SelectRenderer<EvmLocalAccountListItem>,
   ) => {
     return (
       <div
@@ -97,14 +94,18 @@ const SelectAccountSection = ({
         onClick={() => {
           handleClickOnSelector();
         }}>
-        <EvmAccountImage address={selectedAddress} />
+        <EvmAccountImage address={selectedAddress?.wallet.address} />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
-          <div className="seed-name">ma seed</div>
-          <div className="address-name">Mon nom</div>
+          <div className="seed-name">
+            {EvmAccountUtils.getSeedName(selectedAddress!)}
+          </div>
+          <div className="address-name">
+            {selectedAddress?.nickname ?? 'No name'}
+          </div>
           <div className="address">
-            {FormatUtils.shortenString(selectedAddress, 4)}
+            {FormatUtils.shortenString(selectedAddress?.wallet.address!, 4)}
           </div>
         </div>
       </div>
@@ -115,7 +116,7 @@ const SelectAccountSection = ({
     props,
     state,
     methods,
-  }: SelectRenderer<LocalAccountListItem>) => {
+  }: SelectRenderer<EvmLocalAccountListItem>) => {
     return (
       <SVGIcon
         className="custom-select-handle"
@@ -131,7 +132,7 @@ const SelectAccountSection = ({
     props: properties,
     state,
     methods,
-  }: SelectRenderer<LocalAccountListItem>) => {
+  }: SelectRenderer<EvmLocalAccountListItem>) => {
     return (
       <div className="custom-select-dropdown">
         <DragDropContext onDragEnd={onDragEnd}>
@@ -143,8 +144,8 @@ const SelectAccountSection = ({
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {properties.options.map((option, index) => (
                   <Draggable
-                    key={option.value}
-                    draggableId={option.value}
+                    key={option.value.wallet.address}
+                    draggableId={option.value.wallet.address}
                     isDragDisabled={!isOnMain}
                     index={index}>
                     {(provided) => (
@@ -153,13 +154,13 @@ const SelectAccountSection = ({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}>
                         <EvmSelectAccountSectionItemComponent
-                          key={`option-${option.value}`}
+                          key={`option-${option.value.wallet.address!}`}
                           isLast={options.length === index}
                           item={option}
-                          selectedAccount={selectedAddress}
-                          handleItemClicked={(value: any) =>
-                            handleItemClicked(value)
-                          }
+                          selectedAccount={selectedAddress?.wallet.address!}
+                          handleItemClicked={(
+                            value: EvmLocalAccountListItem['value']['wallet']['address'],
+                          ) => handleItemClicked(value)}
                           isOnMain={isOnMain}
                           dragHandle={provided.dragHandleProps}
                           closeDropdown={() => methods.dropDown('close')}

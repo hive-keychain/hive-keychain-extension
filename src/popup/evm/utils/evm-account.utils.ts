@@ -17,4 +17,15 @@ const getAccountName = (account: EvmAccount) => {
   } ${chrome.i18n.getMessage('dialog_account')} ${account.id + 1}`;
 };
 
-export const EvmAccountUtils = { filterSpamTokens, getAccountName };
+const getSeedName = (account: EvmAccount) => {
+  return (
+    account.seedNickname ??
+    `${chrome.i18n.getMessage('common_seed')} ${account.seedId}`
+  );
+};
+
+export const EvmAccountUtils = {
+  filterSpamTokens,
+  getAccountName,
+  getSeedName,
+};

@@ -1,4 +1,5 @@
-import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import { EvmLocalAccountListItem } from '@interfaces/list-item.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import React, { SyntheticEvent, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
@@ -9,9 +10,11 @@ import FormatUtils from 'src/utils/format.utils';
 
 interface AccountItemProps {
   isLast: boolean;
-  item: LocalAccountListItem;
+  item: EvmLocalAccountListItem;
   selectedAccount: string;
-  handleItemClicked: (value: LocalAccountListItem['value']) => void;
+  handleItemClicked: (
+    value: EvmLocalAccountListItem['value']['wallet']['address'],
+  ) => void;
   closeDropdown: () => void;
   setInfoMessage?: (key: string, params?: string[]) => void;
   dragHandle: DraggableProvidedDragHandleProps | null | undefined;
@@ -33,17 +36,17 @@ export const EvmSelectAccountSectionItemComponent = ({
   const copyUsernameToClipboard = async (event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    await navigator.clipboard.writeText(item.value);
+    await navigator.clipboard.writeText(item.value.wallet.address);
     closeDropdown();
     if (setInfoMessage) {
-      setInfoMessage('popup_html_text_copied', [item.value]);
+      setInfoMessage('popup_html_text_copied', [item.value.wallet.address]);
     }
   };
   const renderCheckedAccount = () => {
     if (isOnMain)
       return (
         <div className="icons-wrapper">
-          {selectedAccount === item.value && !hovered && (
+          {selectedAccount === item.value.wallet.address && !hovered && (
             <SVGIcon
               icon={SVGIcons.SELECT_ACTIVE}
               className="active-icon"
@@ -71,7 +74,7 @@ export const EvmSelectAccountSectionItemComponent = ({
           )}
         </div>
       );
-    else if (selectedAccount === item.value)
+    else if (selectedAccount === item.value.wallet.address)
       return (
         <SVGIcon
           icon={SVGIcons.SELECT_ACTIVE}
@@ -88,21 +91,31 @@ export const EvmSelectAccountSectionItemComponent = ({
       onMouseEnter={() => {
         setHovered(true);
       }}
-      onMouseLeave={() => setHovered(true)}>
+      onMouseLeave={() => setHovered(false)}>
       <div
         data-testid={`select-account-item-${item.value}`}
         className={`select-account-item ${
-          selectedAccount === item.value ? 'selected' : ''
+          selectedAccount === item.value.wallet.address ? 'selected' : ''
         }`}
         onClick={() => {
-          handleItemClicked(item.value);
+          handleItemClicked(item.value.wallet.address!);
           closeDropdown();
         }}>
         <EvmAccountImage address={item.label} />
-        <div className="account-name pipou">
-          {FormatUtils.shortenString(item.label, 4)}
-          {renderCheckedAccount()}
+        <div
+          className="selected-account-name"
+          data-testid="selected-account-name">
+          <div className="seed-name">
+            {EvmAccountUtils.getSeedName(item.value)}
+          </div>
+          <div className="address-name">
+            {item.value?.nickname ?? 'No name'}
+          </div>
+          <div className="address">
+            {FormatUtils.shortenString(item.value?.wallet.address!, 4)}
+          </div>
         </div>
+        {renderCheckedAccount()}
       </div>
       {!isLast && <div className="separator"></div>}
     </div>

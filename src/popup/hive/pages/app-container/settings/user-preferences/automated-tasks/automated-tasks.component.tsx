@@ -1,4 +1,7 @@
-import { LocalAccountListItem } from '@interfaces/list-item.interface';
+import {
+  EvmLocalAccountListItem,
+  LocalAccountListItem,
+} from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
@@ -231,7 +234,7 @@ const AutomatedTasks = ({
   };
 
   const customLabelRender = (
-    selectProps: SelectRenderer<LocalAccountListItem>,
+    selectProps: SelectRenderer<EvmLocalAccountListItem>,
   ) => {
     return (
       <div
