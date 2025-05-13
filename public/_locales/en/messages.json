@@ -5169,6 +5169,10 @@
     "message": "Delete",
     "description": "Delete seed button"
   },
+  "evm_delete_seed_confirmation_message": {
+    "message": "Are you sure you want to delete this seed ?",
+    "description": "Delete seed button"
+  },
   "evm_add_wallet_seed_button": {
     "message": "Add seed",
     "description": "Add seed button"

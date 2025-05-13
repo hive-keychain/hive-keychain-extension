@@ -17,4 +17,6 @@ export interface ContextualMenuSectionItem {
   icon: SVGIcons;
   nextPage?: MultichainScreen;
   onClick?: Function;
+  needsConfirmation?: boolean;
+  confirmationMessage?: string;
 }

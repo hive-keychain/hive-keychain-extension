@@ -118,18 +118,16 @@ const EvmAccounts = ({
     navigateTo(EvmScreen.IMPORT_EVM_WALLET);
   };
 
-  const handleDeleteSeedClick = () => {
-    console.log('delete seed');
+  const handleDeleteSeedClick = async () => {
+    const seed = getCurrentSeed();
+    if (!seed) return;
+    await EvmWalletUtils.deleteSeed(seed.seedId, mk);
+    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 
   const handleEditSeedClick = () => {
-    if (!selectedSeed) return;
-    const seed = accounts.find(
-      (account) => account.seedId === selectedSeed.value,
-    );
+    const seed = getCurrentSeed();
     if (!seed) return;
-
-    console.log(seed);
 
     setEditParams({
       initialValue: seed.seedNickname ?? '',
@@ -140,6 +138,13 @@ const EvmAccounts = ({
     });
   };
 
+  const getCurrentSeed = () => {
+    if (!selectedSeed) return;
+    const seed = accounts.find(
+      (account) => account.seedId === selectedSeed.value,
+    );
+    return seed;
+  };
   const handleConfirmEditSeedClick = async (seedNickname: string) => {
     if (selectedSeed) {
       await EvmWalletUtils.updateSeedNickname(
@@ -201,14 +206,6 @@ const EvmAccounts = ({
             background="white"
             additionalClassname="seeds-dropdown"
           />
-          {/* <SVGIcon
-            icon={SVGIcons.EVM_ACCOUNT_EDIT}
-            onClick={handleEditSeedClick}
-          />
-          <SVGIcon
-            icon={SVGIcons.EVM_ACCOUNT_ADD}
-            onClick={handleAddSeedClick}
-          /> */}
           {menu && <ContextualMenuComponent menu={menu} />}
         </div>
       )}
@@ -239,14 +236,6 @@ const EvmAccounts = ({
           label="evm_add_wallet_address_button"
           onClick={handleAddAddressClick}
         />
-        {/* {accounts.length > 0 && (
-          <ButtonComponent
-            type={ButtonType.IMPORTANT}
-            height="small"
-            label="evm_delete_seed_button"
-            onClick={handleAddAddressClick}
-          />
-        )} */}
       </div>
       {editParams && <EvmEditAccountPopup editParams={editParams} />}
     </div>

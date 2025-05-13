@@ -193,6 +193,13 @@ const updateSeedNickname = async (
   return savedSeeds;
 };
 
+const deleteSeed = async (seedId: number, mk: string) => {
+  let savedSeeds = await getAccountsFromLocalStorage(mk);
+  savedSeeds = savedSeeds.filter((seed) => seed.id !== seedId);
+  encryptAccountsInLocalStorage(mk, savedSeeds);
+  return savedSeeds;
+};
+
 const encryptAccountsInLocalStorage = (
   mk: string,
   evmAccountObject: StoredSeed[],
@@ -445,6 +452,7 @@ export const EvmWalletUtils = {
   rebuildAccount,
   getAllLocalAddresses,
   addAddressToSeed,
+  deleteSeed,
   hideOrShowAddress,
   updateSeedNickname,
   updateAddressName,

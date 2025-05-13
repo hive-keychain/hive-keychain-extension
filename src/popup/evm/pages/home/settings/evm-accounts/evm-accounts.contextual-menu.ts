@@ -31,6 +31,8 @@ export const EvmAccountsContextualMenu = ({
             icon: SVGIcons.EVM_ACCOUNT_DELETE,
             label: 'evm_delete_seed_button',
             onClick: onDeleteClicked,
+            needsConfirmation: true,
+            confirmationMessage: 'evm_delete_seed_confirmation_message',
           },
         ],
       },
