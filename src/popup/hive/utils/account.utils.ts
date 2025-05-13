@@ -7,12 +7,18 @@ import {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { AccountValueType } from '@popup/hive/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
+import {
+  Key,
+  Keys,
+  KeyType,
+  TransactionOptions,
+} from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -166,7 +172,7 @@ const addAuthorizedKey = async (
   if (!authorizedAccount || !localActiveAccount) return; // check error
 
   localActiveAccount.keys[keyType.toLowerCase() as keyof Keys] =
-    authorizedAccount.keys.active;
+    authorizedAccount.keys[keyType.toLowerCase() as keyof Keys];
   localActiveAccount.keys[
     `${keyType.toLowerCase()}Pubkey` as keyof Keys
   ] = `@${authorizedAccountName}`;
@@ -206,7 +212,6 @@ const addAuthorizedAccount = async (
   }
 
   const hiveAccounts = await AccountUtils.getAccount(username);
-
   if (!hiveAccounts || hiveAccounts.length === 0) {
     throw new KeychainError('popup_accounts_incorrect_user', []);
   }
@@ -223,7 +228,6 @@ const addAuthorizedAccount = async (
   const postingAuth = postingKeyInfo.account_auths.find(
     (accountAuth) => accountAuth[0] === authorizedAccount,
   );
-
   if (!activeAuth && !postingAuth) {
     throw new KeychainError('popup_accounts_no_auth', [
       authorizedAccount,
@@ -231,11 +235,11 @@ const addAuthorizedAccount = async (
     ]);
   }
 
-  if (activeAuth && activeAuth[1] >= activeKeyInfo.weight_threshold) {
+  if (activeAuth) {
     keys.active = localAuthorizedAccount.keys.active;
     keys.activePubkey = `@${authorizedAccount}`;
   }
-  if (postingAuth && postingAuth[1] >= postingKeyInfo.weight_threshold) {
+  if (postingAuth) {
     keys.posting = localAuthorizedAccount.keys.posting;
     keys.postingPubkey = `@${authorizedAccount}`;
   }
@@ -367,6 +371,8 @@ const getAccountValue = (
   tokensMarket: TokenMarket[],
   accountValueType: AccountValueType,
   tokens: Token[],
+  hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders,
+  hiddenTokensList: string[],
 ) => {
   if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
@@ -378,11 +384,15 @@ const getAccountValue = (
     prices,
     tokensMarket,
     tokens,
+    hiddenTokensList,
   );
   const layerTwoTokensTotalValue = userLayerTwoPortfolio.reduce(
     (acc, curr) => acc + curr.usdValue,
     0,
   );
+  const totalLockedValueInHiveMarket =
+    hiveMarketLockedOpenOrdersValues.hbd * prices.hive_dollar.usd +
+    hiveMarketLockedOpenOrdersValues.hive * prices.hive.usd;
   const dollarValue =
     (parseFloat(hbd_balance as string) +
       parseFloat(savings_hbd_balance as string)) *
@@ -391,7 +401,8 @@ const getAccountValue = (
       parseFloat(balance as string) +
       parseFloat(savings_balance as string)) *
       prices.hive.usd +
-    layerTwoTokensTotalValue;
+    layerTwoTokensTotalValue +
+    totalLockedValueInHiveMarket;
   const value =
     accountValueType === AccountValueType.DOLLARS
       ? dollarValue
@@ -503,7 +514,11 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
+const claimAccounts = async (
+  rc: RC,
+  activeAccount: ActiveAccount,
+  options?: TransactionOptions,
+) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
     activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
@@ -523,6 +538,8 @@ const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
         ] as ClaimAccountOperation,
       ],
       activeAccount.keys.active!,
+      false,
+      options,
     );
   } else Logger.info('Not enough RC% to claim account');
 };
@@ -534,6 +551,7 @@ const updateAccount = (
   memo: string,
   stringifiedMetadata: string,
   key: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -546,6 +564,8 @@ const updateAccount = (
       ),
     ],
     key!,
+    false,
+    options,
   );
 };
 

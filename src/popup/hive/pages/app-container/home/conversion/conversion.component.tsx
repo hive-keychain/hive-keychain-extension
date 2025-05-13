@@ -4,6 +4,7 @@ import {
   KeychainKeyTypes,
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -159,7 +160,7 @@ const Conversion = ({
       ],
       title: title,
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_conversion_operation');
         try {
           let success = await ConversionUtils.convert(
@@ -168,6 +169,7 @@ const Conversion = ({
             formattedValue,
             conversionType,
             activeAccount.keys.active!,
+            options,
           );
 
           if (success) {

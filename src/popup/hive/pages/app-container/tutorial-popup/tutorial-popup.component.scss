@@ -1,0 +1,29 @@
+.tutorial {
+  .popup-content {
+    height: 85%;
+    width: 90%;
+    justify-content: space-around;
+    row-gap: unset;
+  }
+  .sub-title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    padding: 0px 12px;
+  }
+
+  .svg-icon svg {
+    width: 250px;
+  }
+  .popup-footer {
+    flex: none !important;
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      .button {
+        width: 44%;
+      }
+    }
+  }
+}

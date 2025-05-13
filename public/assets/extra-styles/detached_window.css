@@ -1,0 +1,91 @@
+html,
+body {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+html {
+  background-image: url('assets/images/background/detached-popup-background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#root {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  .theme {
+    border: solid 1px var(--card-border-color);
+    border-radius: 8px;
+    width: 435px;
+    height: 600px;
+    color: var(--main-font-color);
+    padding: 0px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    font-size: 16px;
+    position: relative;
+    .App {
+      margin-left: unset !important;
+      .splashscreen {
+        width: 435px !important;
+        height: 600px !important;
+        position: relative !important;
+        .loading-animation-container {
+          width: unset !important;
+        }
+        .overlay {
+          border: solid 1px grey !important;
+          border-radius: 8px !important;
+          width: 435px !important;
+          height: 600px !important;
+          .top {
+            position: relative !important;
+          }
+          .bottom {
+            top: 0px;
+            position: absolute;
+            left: 0px;
+          }
+        }
+      }
+      .home-page-content {
+        border-radius: 0 0 8px 8px !important;
+      }
+      .custom-select-handle {
+        height: unset !important;
+      }
+      /* common-styles */
+      .select-account-section {
+        margin: 0px !important;
+      }
+      .fullsize {
+        width: 100% !important;
+      }
+      .automated-tasks-page {
+        .select-account-section {
+          margin: 0px !important;
+          width: 100% !important;
+        }
+      }
+      .favorite-accounts-page,
+      .export-transactions-page,
+      .settings-manage-account,
+      .settings-manage-account-authorities {
+        .select-account-section {
+          margin: 0px 20px !important;
+          width: calc(100% - 40px) !important;
+        }
+      }
+    }
+  }
+}
+
+@-moz-document url-prefix() {
+  div:not(.scrollable) {
+    scrollbar-width: none;
+  }
+}

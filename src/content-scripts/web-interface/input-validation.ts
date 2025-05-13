@@ -302,6 +302,8 @@ const swap = Joi.object({
   slippage: Joi.number().required(),
   rpc,
   steps: Joi.array(),
+  partnerUsername: Joi.string(),
+  partnerFee: Joi.number(),
 });
 
 const recurrentTransfer = Joi.object({

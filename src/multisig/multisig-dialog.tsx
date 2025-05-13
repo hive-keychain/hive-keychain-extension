@@ -24,6 +24,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import DialogError from 'src/dialog/pages/error';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -225,6 +226,17 @@ const MultisigDialog = () => {
               onClick={handleCloseClick}
             />
           </div>
+        );
+      }
+      case MultisigStep.NOTIFY_ERROR: {
+        const data = multisigData.data as any;
+
+        return (
+          <DialogError
+            data={{
+              msg: { display_msg: chrome.i18n.getMessage(data.message) },
+            }}
+          />
         );
       }
       case MultisigStep.UNLOCK_WALLET: {

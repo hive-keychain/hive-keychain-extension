@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 0px 24px;
-  position: fixed;
+  position: absolute;
   width: calc(100% - 32px);
   box-sizing: border-box;
   bottom: 0;
@@ -18,6 +18,16 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 500ms;
   z-index: 2;
+
+  &:has(+ .proposal-voting-section.opened) {
+    bottom: 61px;
+  }
+  &:has(+ .proposal-voting-section.closed) {
+    bottom: 31px;
+  }
+  &:has(+ .proposal-voting-section.hide) {
+    bottom: 0px;
+  }
   &.down {
     bottom: -90px;
   }

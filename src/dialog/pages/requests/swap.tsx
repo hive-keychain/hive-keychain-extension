@@ -52,6 +52,20 @@ const Swap = (props: Props) => {
     );
   };
 
+  const renderOptionalPartnerParams = () => {
+    return data.partnerUsername && data.partnerFee ? (
+      <>
+        <RequestItem
+          title="swap_partner_username"
+          content={`@${data.partnerUsername}`}
+        />
+        {/* <RequestItem title="swap_partner_fee" content={data.partnerFee + '%'} /> */}
+      </>
+    ) : (
+      <></>
+    );
+  };
+
   const onConfirmSwap = async () => {
     setForceLoading(true);
     chrome.runtime.sendMessage({
@@ -80,7 +94,7 @@ const Swap = (props: Props) => {
   else if (
     serverStatus.isMaintenanceOn ||
     serverStatus.isServerStopped ||
-    (swapConfig && data.slippage > swapConfig.slippage.min)
+    (swapConfig && data.slippage < swapConfig.slippage.min)
   ) {
     return (
       <DialogError
@@ -116,9 +130,11 @@ const Swap = (props: Props) => {
         {renderUsername()}
         <RequestItem
           title="dialog_swap"
-          content={`${data.amount} ${data.startToken} ==> ${data.steps[
-            data.steps.length - 1
-          ].estimate.toFixed(HiveUtils.isLayer1Token(data.endToken) ? 3 : 6)} ${
+          content={`${data.amount} ${data.startToken} ==> ${(
+            (data.steps[data.steps.length - 1].estimate *
+              (100 - (swapConfig?.fee.amount || 0) - (data.partnerFee || 0))) /
+            100
+          ).toFixed(HiveUtils.isLayer1Token(data.endToken) ? 3 : 6)} ${
             data.endToken
           }`}
         />
@@ -137,8 +153,9 @@ const Swap = (props: Props) => {
             hiveEngineConfig={hiveEngineConfig}
           />
         )}
+        {renderOptionalPartnerParams()}
+        {/* <CollaspsibleItem title= */}
         <RequestItem title="dialog_slippage" content={data.slippage + '%'} />
-        <RequestItem title="swap_fee" content={swapConfig?.fee.amount + '%'} />
       </Operation>
     );
 };

@@ -28,6 +28,12 @@ const UserPreferencesMenuItems = (
       nextScreen: Screen.SETTINGS_MULTISIG,
     },
     {
+      label: 'html_popup_settings_notifications',
+      icon: SVGIcons.MENU_USER_PREFERENCES_NOTIFICATIONS,
+      nextScreen: Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
+      experimental: true,
+    },
+    {
       label: 'popup_html_export_transactions',
       icon: SVGIcons.MENU_ACCOUNTS_EXPORT,
       nextScreen: Screen.SETTINGS_EXPORT_TRANSACTIONS,

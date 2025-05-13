@@ -6,6 +6,8 @@ import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { SignedTransaction } from '@hiveio/dhive';
+import { sleep } from '@hiveio/dhive/lib/utils';
+import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import {
   ConnectDisconnectMessage,
   MultisigAcceptRejectTxData,
@@ -31,17 +33,23 @@ import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { MultisigDialogCommand } from '@reference-data/dialog-message-key.enum';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 let socket: Socket;
 let shouldReconnectSocket: boolean = false;
 let connectedPublicKeys: SignerConnectMessage[] = [];
+const lockedRequests: number[] = [];
+
 const start = async () => {
   Logger.info(`Starting multisig`);
 
@@ -95,6 +103,8 @@ const setupRefreshConnections = () => {
         const accountMultisigConfig = multisigConfig[value.account];
         if (value.connect) {
           if (!socket.connected) socket.connect();
+          await sleep(1000);
+          connectSocket(multisigConfig);
           shouldReconnectSocket = true;
           connectToBackend(value.account, accountMultisigConfig);
         } else {
@@ -128,6 +138,55 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
+
+        if (!socket.connected) {
+          shouldReconnectSocket = true;
+          socket.connect();
+          connectSocket({});
+          await sleep(1000);
+        }
+        const config: MultisigConfig =
+          (await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.MULTISIG_CONFIG,
+          )) || {};
+        if (
+          !config[data.initiatorAccount.name]?.[
+            data.method?.toLowerCase() as 'posting' | 'active'
+          ].isEnabled
+        ) {
+          const config = {
+            isEnabled: true,
+            posting:
+              data.method.toLowerCase() === 'posting'
+                ? {
+                    isEnabled: true,
+                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
+                      data.key!,
+                    )!,
+                    message: signMessage(
+                      data.initiatorAccount.name!,
+                      data.key?.toString()!,
+                    ),
+                  }
+                : { isEnabled: false, message: '', publicKey: '' },
+            active:
+              data.method.toLowerCase() === 'active'
+                ? {
+                    isEnabled: true,
+                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
+                      data.key!,
+                    )!,
+                    message: signMessage(
+                      data.initiatorAccount.name!,
+                      data.key?.toString()!,
+                    ),
+                  }
+                : { isEnabled: false, message: '', publicKey: '' },
+          };
+          await connectToBackend(data.initiatorAccount.name, config);
+
+          await sleep(1000);
+        }
         requestSignatures(data, true);
       }
     },
@@ -146,7 +205,7 @@ const requestSignatures = async (
         message,
         withTimeout(
           async (message: string) => {
-            Logger.log(message);
+            Logger.log({ multisigRequestSignatureResponse: message });
             if (useRuntimeMessages) {
               chrome.runtime.sendMessage({
                 command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
@@ -157,8 +216,21 @@ const requestSignatures = async (
             } else {
               // resolve('multisig_transaction_sent_to_signers');
               // in this case try to wait for broadcast notification
-              const txId = await waitForBroadcastToBeDone();
-              resolve(txId);
+              try {
+                const { txId, id } = (await waitForBroadcastToBeDone()) as {
+                  txId: string;
+                  id: number;
+                };
+                if (!lockedRequests.includes(id)) {
+                  lockedRequests.push(id);
+                  resolve(txId);
+                }
+              } catch (err: any) {
+                chrome.runtime.sendMessage({
+                  command: DialogCommand.SEND_DIALOG_ERROR,
+                  msg: { display_msg: await chrome.i18n.getMessage(err) },
+                });
+              }
             }
           },
           () => {
@@ -183,6 +255,8 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
   socket.on('connect', () => {
+    Logger.info('Connected to socket');
+
     keepAlive();
     initAccountsConnections(multisigConfig);
   });
@@ -191,6 +265,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
   });
   socket.on('disconnect', (ev: any) => {
     Logger.info('Disconnected from socket');
+    socket.connect();
   });
 
   socket.on(
@@ -268,20 +343,39 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
   socket.on(
     SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
     async (signatureRequest: SignatureRequest, txId: string) => {
-      Logger.log(`signature request ${signatureRequest.id} was broadcasted`);
+      Logger.log(
+        `signature request ${signatureRequest.id} was broadcasted`,
+        txId,
+      );
       const transaction = await HiveTxUtils.getTransaction(txId);
       delete transaction.signatures;
-      openWindow({
-        multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
-        data: {
-          message: 'multisig_dialog_transaction_broadcasted',
-          success: true,
-          txId: txId,
-          transaction: transaction,
-        } as MultisigDisplayMessageData,
-      });
+      if (!lockedRequests.includes(signatureRequest.id)) {
+        lockedRequests.push(signatureRequest.id);
+        openWindow({
+          multisigStep: MultisigStep.NOTIFY_TRANSACTION_BROADCASTED,
+          data: {
+            message: 'multisig_dialog_transaction_broadcasted',
+            success: true,
+            txId: txId,
+            transaction: transaction,
+          } as MultisigDisplayMessageData,
+        });
+      }
     },
   );
+  socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, async (e) => {
+    await sleep(200);
+    if (!lockedRequests.includes(e.signatureRequest.id)) {
+      lockedRequests.push(e.signatureRequest.id);
+      openWindow({
+        multisigStep: MultisigStep.NOTIFY_ERROR,
+        data: {
+          message: e.error.message,
+          success: false,
+        } as MultisigDisplayMessageData,
+      });
+    }
+  });
 
   if (socket) {
     socket.connect();
@@ -335,7 +429,6 @@ const connectToBackend = async (
     SocketMessageCommand.SIGNER_CONNECT,
     signerConnectMessages,
     (signerConnectResponse: SignerConnectResponse) => {
-      //TODO: Add signing after the fact
       for (const signer of signerConnectMessages) {
         if (
           !(
@@ -357,7 +450,7 @@ const keepAlive = () => {
     } else {
       clearInterval(keepAliveIntervalId);
     }
-  }, 20 * 1000);
+  }, 10 * 1000);
 };
 
 const getRequestSignatureMessage = async (
@@ -365,13 +458,26 @@ const getRequestSignatureMessage = async (
 ): Promise<RequestSignatureMessage> => {
   return new Promise(async (resolve, reject) => {
     const potentialSigners = await MultisigUtils.getPotentialSigners(
-      data.initiatorAccount,
+      data.transactionAccount,
       data.key,
       data.method,
     );
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
+      const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
+      const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
+      let twoFACodes = {};
+      if (data.options?.metaData?.twoFACodes) {
+        twoFACodes = {
+          [usernames[0]]: await encodeMetadata(
+            data.options?.metaData?.twoFACodes[usernames[0]],
+            data.key!.toString(),
+            receiverPubKey,
+          ),
+        };
+      }
+
       signers.push({
         encryptedTransaction: await encodeTransaction(
           data.transaction,
@@ -380,6 +486,7 @@ const getRequestSignatureMessage = async (
         ),
         publicKey: receiverPubKey,
         weight: weight.toString(),
+        metaData: { ...metaData, twoFACodes: twoFACodes },
       });
     }
 
@@ -588,8 +695,16 @@ const encodeTransaction = async (
   );
 };
 
-const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
+const encodeMetadata = async (
+  metaData: any,
+  key: string,
+  receiverPublicKey: string,
+): Promise<string> => {
+  return await MultisigUtils.encodeMetadata(metaData, key, receiverPublicKey);
+};
 
+const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
+let multisigWindowId: number | undefined;
 const openWindow = (data: MultisigData): void => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -604,7 +719,9 @@ const openWindow = (data: MultisigData): void => {
     // Except on Firefox
     //@ts-ignore
     if (typeof InstallTrigger === undefined) win.focused = true;
+    if (multisigWindowId) chrome.windows.remove(multisigWindowId);
     chrome.windows.create(win, (window) => {
+      multisigWindowId = window?.id;
       waitUntilDialogIsReady(100, MultisigDialogCommand.READY_MULTISIG, () => {
         chrome.runtime.sendMessage({
           command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
@@ -643,15 +760,35 @@ const waitForBroadcastToBeDone = async () => {
       txId: string,
     ) => {
       socket.off(
+        SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+        notifyError,
+      );
+      socket.off(
         SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
         broadcastedListener,
       );
-      resolve(txId);
+      resolve({ txId, id: signatureRequest.id });
+    };
+
+    const notifyError = async (res: any) => {
+      socket.off(
+        SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+        notifyError,
+      );
+      socket.off(
+        SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+        broadcastedListener,
+      );
+      if (!lockedRequests.includes(res.signatureRequest.id)) {
+        lockedRequests.push(res.signatureRequest.id);
+        reject(res.error.message);
+      }
     };
     socket.on(
       SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
       broadcastedListener,
     );
+    socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, notifyError);
   });
 };
 
@@ -662,8 +799,36 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
+const signMessage = (message: string, privateKey: string) => {
+  let buf;
+  try {
+    const o = JSON.parse(message, (k, v) => {
+      if (
+        v !== null &&
+        typeof v === 'object' &&
+        'type' in v &&
+        v.type === 'Buffer' &&
+        'data' in v &&
+        Array.isArray(v.data)
+      ) {
+        return Buffer.from(v.data);
+      }
+      return v;
+    });
+    if (Buffer.isBuffer(o)) {
+      buf = o;
+    } else {
+      buf = message;
+    }
+  } catch (e) {
+    buf = message;
+  }
+  return signature.Signature.signBuffer(buf, privateKey).toHex();
+};
+
 export const MultisigModule = {
   start,
   processSignatureRequest,
   requestSignatures,
+  encodeMetadata,
 };

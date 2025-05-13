@@ -32,7 +32,6 @@ export const signBuffer = async (
     if (KeysUtils.isUsingLedger(key!)) {
       throw new KeychainError('sign_buffer_ledger_error');
     }
-
     signed = await signMessage(data.message, key!);
   } catch (err) {
     Logger.error(err);

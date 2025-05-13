@@ -32,7 +32,7 @@ const getPrices = async () => {
       LocalStorageKeyEnum.LAST_PRICE,
     );
   } finally {
-    return prices;
+    return prices ?? {};
   }
 };
 

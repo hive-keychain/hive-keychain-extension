@@ -4,7 +4,7 @@ import {
 } from '@hiveio/dhive';
 import { CollateralizedConversion } from '@interfaces/collaterelized-conversion.interface';
 import { Conversion } from '@interfaces/conversion.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
@@ -53,6 +53,7 @@ const convert = async (
   amount: string,
   conversionType: ConversionType,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   const requestId = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
   return ConversionUtils.sendConvert(
@@ -61,6 +62,7 @@ const convert = async (
     amount,
     conversionType,
     activeKey,
+    options,
   );
 };
 
@@ -71,6 +73,7 @@ const sendConvert = async (
   amount: string,
   conversionType: ConversionType,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [
@@ -82,6 +85,8 @@ const sendConvert = async (
       ),
     ],
     activeKey,
+    false,
+    options,
   );
 };
 

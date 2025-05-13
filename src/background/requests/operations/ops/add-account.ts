@@ -12,37 +12,61 @@ export const addAccount = async (
 ) => {
   const { username, keys } = data;
   let err = null;
-
+  const mk = await MkModule.getMk();
+  const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   const account = await AccountUtils.getExtendedAccount(username);
   if (account) {
-    const savedKeys: Keys = keys;
+    const savedKeys: Keys = { ...keys };
     if (keys.memo) savedKeys.memoPubkey = account.memo_key;
     if (keys.active) {
-      for (const active of account.active.key_auths) {
-        if (
-          KeysUtils.getPublicKeyFromPrivateKeyString(keys.active) ===
-          (active[0] as string)
-        )
-          savedKeys.activePubkey = active[0] as string;
+      if (!keys.active.startsWith('@')) {
+        for (const active of account.active.key_auths) {
+          if (
+            KeysUtils.getPublicKeyFromPrivateKeyString(keys.active) ===
+            (active[0] as string)
+          )
+            savedKeys.activePubkey = active[0] as string;
+        }
+      } else {
+        const authAccountKeys = await AccountUtils.addAuthorizedAccount(
+          username,
+          keys.active.replace('@', ''),
+          accounts,
+        );
+
+        if (authAccountKeys?.active) {
+          savedKeys.activePubkey = keys.active;
+          savedKeys.active = authAccountKeys.active;
+        }
       }
       if (!savedKeys.activePubkey) throw new Error('Invalid active key');
     }
     if (keys.posting) {
-      for (const posting of account.posting.key_auths) {
-        if (
-          KeysUtils.getPublicKeyFromPrivateKeyString(keys.posting) ===
-          (posting[0] as string)
-        )
-          savedKeys.postingPubkey = posting[0] as string;
+      if (!keys.posting.startsWith('@')) {
+        for (const posting of account.posting.key_auths) {
+          if (
+            KeysUtils.getPublicKeyFromPrivateKeyString(keys.posting) ===
+            (posting[0] as string)
+          )
+            savedKeys.postingPubkey = posting[0] as string;
+        }
+      } else {
+        const authAccountKeys = await AccountUtils.addAuthorizedAccount(
+          username,
+          keys.posting.replace('@', ''),
+          accounts,
+        );
+        if (authAccountKeys?.posting) {
+          savedKeys.posting = authAccountKeys.posting;
+          savedKeys.postingPubkey = keys.posting;
+        }
       }
       if (!savedKeys.postingPubkey) throw new Error('Invalid posting key');
     }
-    const mk = await MkModule.getMk();
     if (Object.keys(savedKeys).length && mk) {
       // addAccount
-      const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
       await AccountUtils.saveAccounts(
-        [...accounts, { name: username, keys }],
+        [...accounts, { name: username, keys: savedKeys }],
         mk,
       );
     } else {

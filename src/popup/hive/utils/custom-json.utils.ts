@@ -1,5 +1,5 @@
 import { CustomJsonOperation } from '@hiveio/dhive';
-import { Key, KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import Config from 'src/config';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
@@ -9,10 +9,13 @@ const send = async (
   key: Key,
   keyType: KeyType,
   mainnet?: string,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [CustomJsonUtils.getCustomJsonOperation(json, username, keyType, mainnet)],
     key,
+    false,
+    options,
   );
 };
 

@@ -12,7 +12,7 @@ import {
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
 } from '@interfaces/keychain.interface';
-import { PrivateKeyType } from '@interfaces/keys.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -22,6 +22,7 @@ import Logger from 'src/utils/logger.utils';
 export const broadcastAddAccountAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   const { username, authorizedUsername } = data;
@@ -86,6 +87,7 @@ export const broadcastAddAccountAuthority = async (
           userAccount.memo_key,
           userAccount.json_metadata,
           key!,
+          options,
         );
         break;
       }
@@ -116,6 +118,7 @@ export const broadcastAddAccountAuthority = async (
 export const broadcastRemoveAccountAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveAccountAuthority & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   const { username, authorizedUsername } = data;
@@ -172,6 +175,7 @@ export const broadcastRemoveAccountAuthority = async (
           userAccount.memo_key,
           userAccount.json_metadata,
           key!,
+          options,
         );
         break;
       }
@@ -201,6 +205,7 @@ export const broadcastRemoveAccountAuthority = async (
 export const broadcastAddKeyAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestAddKeyAuthority & RequestId,
+  options?: TransactionOptions,
 ) => {
   let result, err, err_message;
 
@@ -263,6 +268,7 @@ export const broadcastAddKeyAuthority = async (
           userAccount.memo_key,
           userAccount.json_metadata,
           key!,
+          options,
         );
         break;
       }
@@ -293,6 +299,7 @@ export const broadcastAddKeyAuthority = async (
 export const broadcastRemoveKeyAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveKeyAuthority & RequestId,
+  options?: TransactionOptions,
 ) => {
   let err, result, err_message;
   const { username, authorizedKey } = data;
@@ -351,6 +358,7 @@ export const broadcastRemoveKeyAuthority = async (
           userAccount.memo_key,
           userAccount.json_metadata,
           key!,
+          options,
         );
         break;
       }

@@ -2,7 +2,7 @@ import {
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const powerUp = async (
@@ -10,17 +10,27 @@ const powerUp = async (
   to: string,
   amount: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
     [getPowerUpOperation(from, to, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 
-const powerDown = async (username: string, amount: string, activeKey: Key) => {
+const powerDown = async (
+  username: string,
+  amount: string,
+  activeKey: Key,
+  options?: TransactionOptions,
+) => {
   return HiveTxUtils.sendOperation(
     [getPowerDownOperation(username, amount)],
     activeKey,
+    false,
+    options,
   );
 };
 

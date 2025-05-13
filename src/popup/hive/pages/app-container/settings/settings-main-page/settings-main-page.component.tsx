@@ -44,6 +44,7 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
           callback: toggleTheme,
           className: 'menu-toggle-theme',
         }}
+        showDetachWindowOption
         isCloseButtonDisabled
         menuItems={SettingsMenuItems(logout)}></MenuComponent>
       <WitnessVotingSectionComponent />

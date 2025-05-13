@@ -1,4 +1,6 @@
+import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -11,6 +13,8 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 
 export interface ConfirmationPageParams {
@@ -21,7 +25,7 @@ export interface ConfirmationPageParams {
   skipWarningTranslation?: boolean;
   title: string;
   skipTitleTranslation?: boolean;
-  afterConfirmAction: () => {};
+  afterConfirmAction: (options?: TransactionOptionsMetadata) => {};
   afterCancelAction?: () => {};
   formParams?: any;
   method: KeychainKeyTypes | null;
@@ -45,6 +49,9 @@ const ConfirmationPage = ({
 }: PropsType) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
+
+  const [twoFABots, setTwoFABots] = useState<{ [botName: string]: string }>({});
+
   useEffect(() => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
@@ -73,10 +80,24 @@ const ConfirmationPage = ({
           useMultisig = KeysUtils.isUsingMultisig(
             activeAccount.keys.active,
             activeAccount.account,
-            activeAccount.account,
+            activeAccount.keys.activePubkey?.startsWith('@')
+              ? activeAccount.keys.activePubkey.replace('@', '')
+              : activeAccount.account.name,
             method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
+          if (useMultisig) {
+            const accounts = await MultisigUtils.get2FAAccounts(
+              activeAccount.account,
+              method,
+            );
+
+            accounts.forEach((acc) =>
+              setTwoFABots((old) => {
+                return { ...old, [acc]: '' };
+              }),
+            );
+          }
         }
         break;
       }
@@ -85,10 +106,24 @@ const ConfirmationPage = ({
           useMultisig = KeysUtils.isUsingMultisig(
             activeAccount.keys.posting,
             activeAccount.account,
-            activeAccount.account,
+            activeAccount.keys.postingPubkey?.startsWith('@')
+              ? activeAccount.keys.postingPubkey.replace('@', '')
+              : activeAccount.account.name,
             method.toLowerCase() as KeychainKeyTypesLC,
           );
           setWillUseMultisig(useMultisig);
+
+          if (useMultisig) {
+            const accounts = await MultisigUtils.get2FAAccounts(
+              activeAccount.account,
+              method,
+            );
+            accounts.forEach((acc) =>
+              setTwoFABots((old) => {
+                return { ...old, [acc]: '' };
+              }),
+            );
+          }
         }
         break;
       }
@@ -96,11 +131,17 @@ const ConfirmationPage = ({
   };
 
   const handleClickOnConfirm = () => {
+    let metadata;
     // AnalyticsUtils.sendRequestEvent(title);
     if (willUseMultisig) {
-      addCaptionToLoading('multisig_transmitting_to_multisig');
+      addCaptionToLoading(
+        twoFABots && Object.keys(twoFABots).length > 0
+          ? 'multisig_transmitting_to_2fa'
+          : 'multisig_transmitting_to_multisig',
+      );
+      metadata = { twoFACodes: twoFABots };
     }
-    afterConfirmAction();
+    afterConfirmAction({ metaData: metadata });
   };
 
   const handleClickOnCancel = async () => {
@@ -114,7 +155,10 @@ const ConfirmationPage = ({
     <div
       className="confirmation-page"
       data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
-      <div className="confirmation-top">
+      <div
+        className={`confirmation-top ${
+          twoFABots && Object.keys(twoFABots).length > 0 ? 'twofa' : ''
+        }`}>
         <div
           className="introduction"
           dangerouslySetInnerHTML={{
@@ -156,6 +200,26 @@ const ConfirmationPage = ({
                   />
                 )}
               </React.Fragment>
+            ))}
+          </div>
+        )}
+        {twoFABots && Object.keys(twoFABots).length > 0 && (
+          <div className="two-fa-codes-panel">
+            {Object.entries(twoFABots).map(([botName, code]) => (
+              <InputComponent
+                key={`${botName}-2fa-code`}
+                type={InputType.TEXT}
+                value={code}
+                onChange={(value) => {
+                  setTwoFABots((old) => {
+                    return { ...old, [botName]: value };
+                  });
+                }}
+                label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+                  botName,
+                ])}
+                skipLabelTranslation
+              />
             ))}
           </div>
         )}

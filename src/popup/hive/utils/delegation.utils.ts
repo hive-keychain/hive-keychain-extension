@@ -4,7 +4,7 @@ import {
   Delegator,
   PendingOutgoingUndelegation,
 } from '@interfaces/delegations.interface';
-import { Key } from '@interfaces/keys.interface';
+import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
 const getDelegators = async (name: string) => {
@@ -57,10 +57,13 @@ const delegateVestingShares = async (
   delegatee: string,
   vestingShares: string,
   activeKey: Key,
+  options?: TransactionOptions,
 ) => {
   return await HiveTxUtils.sendOperation(
     [getDelegationOperation(delegatee, delegator, vestingShares)],
     activeKey,
+    false,
+    options,
   );
 };
 /* istanbul ignore next */

@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
@@ -32,6 +32,7 @@
     justify-content: center;
     padding: 24px;
     row-gap: 12px;
+    max-width: 500px;
     .title {
       text-align: center;
       @include dmSans700(20px);

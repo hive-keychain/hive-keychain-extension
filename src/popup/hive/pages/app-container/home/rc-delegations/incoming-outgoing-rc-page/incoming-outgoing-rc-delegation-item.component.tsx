@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { RcDelegationsUtils } from '@popup/hive/utils/rc-delegations.utils';
 import {
@@ -90,7 +91,7 @@ const RcIncomingOutgoingDelegationItem = ({
       ),
       fields: fields,
       title: 'popup_html_cancel_rc_delegation_title',
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList('html_popup_cancel_delegate_rc_operation');
         let success;
 
@@ -98,6 +99,7 @@ const RcIncomingOutgoingDelegationItem = ({
           rcDelegation.delegatee,
           activeAccount.name!,
           activeAccount.keys.posting!,
+          options,
         );
 
         removeFromLoadingList('html_popup_cancel_delegate_rc_operation');

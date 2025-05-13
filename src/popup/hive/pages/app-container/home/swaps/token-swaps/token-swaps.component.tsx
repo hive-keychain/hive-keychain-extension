@@ -1,4 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import { SwapConfig } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import { loadTokensMarket } from '@popup/hive/actions/token.actions';
@@ -356,7 +357,7 @@ const TokenSwaps = ({
       fields: fields,
       title: 'html_popup_swap_token_confirm_title',
       formParams: getFormParams(),
-      afterConfirmAction: async () => {
+      afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
           'html_popup_swap_sending_token_to_swap_account',
           KeysUtils.getKeyType(
@@ -376,6 +377,7 @@ const TokenSwaps = ({
             parseFloat(amount),
             activeAccount,
             swapConfig.account,
+            options,
           );
 
           removeFromLoadingList(

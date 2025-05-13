@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.3.2",
+  "version": "3.7.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -60,11 +60,12 @@
     "crypto-js": "4.1.1",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.2.3",
+    "hive-keychain-commons": "^1.2.6",
     "hive-tx": "github:hive-keychain/hive-tx-js",
-    "joi": "17.6.0",
+    "joi": "^17.13.3",
+    "keychain-sdk": "^0.7.0",
     "locate-path": "7.1.1",
-    "lodash": "^4.17.21",
+    "lodash": "4.17.21",
     "md5": "2.3.0",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
@@ -80,19 +81,19 @@
     "react-qr-code": "^2.0.7",
     "react-redux": "7.2.8",
     "react-responsive-carousel": "3.2.23",
-    "react-svg": "^16.1.22",
+    "react-svg": "16.1.22",
     "react-tabs": "3.2.3",
     "react-toastify": "8.2.0",
-    "redux": "^4.2.1",
+    "redux": "4.2.1",
     "redux-thunk": "2.4.1",
     "resolve-cwd": "3.0.0",
     "sass": "1.65.1",
     "scss-tokenizer": "0.4.3",
-    "socket.io-client": "^4.7.2",
+    "socket.io-client": "4.7.5",
     "sscjs": "0.0.9",
     "url-loader": "4.1.1",
     "valid-url": "1.0.9",
-    "websocket": "^1.0.34"
+    "websocket": "1.0.34"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.0",
@@ -138,6 +139,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
     "jest-chrome": "0.7.2",
+    "npm-force-resolutions": "0.0.10",
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
@@ -153,8 +155,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
-    "webpack-merge": "5.8.0",
-    "npm-force-resolutions": "0.0.10"
+    "webpack-merge": "5.8.0"
   },
   "resolutions": {
     "@types/react": "17.0.2",

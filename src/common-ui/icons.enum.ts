@@ -34,6 +34,7 @@ export enum SVGIcons {
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
+  GLOBAL_EXPAND_COLLAPSE = 'global/expand-collapse',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
@@ -92,13 +93,18 @@ export enum SVGIcons {
   MENU_GOVERNANCE = 'menu/governance',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',
-  MENU_SUPPORT = 'menu/support',
+  MENU_HELP = 'menu/help',
 
+  MENU_SUPPORT = 'menu/help/support',
+  MENU_TUTORIAL = 'menu/help/tutorial',
+
+  MENU_USER_PREFERENCES_DETACH_EXTENSION = 'menu/user-preferences/detach',
   MENU_USER_PREFERENCES = 'menu/user-preferences',
   MENU_USER_PREFERENCES_OPERATIONS = 'menu/user-preferences/operations',
   MENU_USER_PREFERENCES_AUTOMATED_TASKS = 'menu/user-preferences/automated-tasks',
   MENU_USER_PREFERENCES_FAVORITE_ACCOUNTS = 'menu/user-preferences/favorite-accounts',
   MENU_USER_PREFERENCES_THEME = 'menu/user-preferences/theme',
+  MENU_USER_PREFERENCES_NOTIFICATIONS = 'menu/user-preferences/notifications',
   MENU_USER_PREFERENCES_MULTISIG = 'menu/user-preferences/accounts-multisig',
 
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
@@ -113,6 +119,7 @@ export enum SVGIcons {
   MESSAGE_WARNING = 'message/warning',
   MESSAGE_SUCCESS = 'message/success',
 
+  NOTIFICATIONS_ADD = 'notifications/add',
   PORTOLIO = 'portfolio/portfolio',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
@@ -126,6 +133,7 @@ export enum SVGIcons {
   TOP_BAR_CLAIM_REWARDS_BTN = 'top-bar/claim-rewards-button',
   TOP_BAR_CLOSE_BTN = 'top-bar/close-button',
   TOP_BAR_KEYCHAIN_LOGO = 'top-bar/keychain-logo',
+  TOP_BAR_NOTIFICATION_BUTTON = 'top-bar/notification-button',
 
   SELECT_ARROW_DOWN = 'select/arrow-down',
   SELECT_ARROW_UP = 'select/arrow-up',

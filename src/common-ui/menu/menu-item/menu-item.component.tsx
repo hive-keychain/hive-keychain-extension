@@ -31,6 +31,11 @@ export const MenuItemComponent = ({
         </div>
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}
+        {menuItem.experimental && (
+          <div className="experimental">
+            {chrome.i18n.getMessage('common_experimental')}
+          </div>
+        )}
       </div>
       {!isLast && <Separator type={'horizontal'} />}
     </div>

@@ -522,8 +522,8 @@ const WalletHistory = ({
             <RotatingLogoComponent></RotatingLogoComponent>
           </div>
         )}
-        {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
+      {displayScrollToTop && <BackToTopButton element={walletItemList} />}
     </div>
   );
 };
