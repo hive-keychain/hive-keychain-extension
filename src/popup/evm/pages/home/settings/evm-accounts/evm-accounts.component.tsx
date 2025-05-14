@@ -121,7 +121,7 @@ const EvmAccounts = ({
   const handleDeleteSeedClick = async () => {
     const seed = getCurrentSeed();
     if (!seed) return;
-    await EvmWalletUtils.deleteSeed(seed.seedId, mk);
+    await EvmWalletUtils.deleteSeed(seed.seedId, accounts, mk);
     setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 

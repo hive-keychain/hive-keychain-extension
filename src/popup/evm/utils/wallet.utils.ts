@@ -4,6 +4,8 @@ import {
   EvmWalletDomainPermissions,
   EvmWalletPermissions,
 } from '@interfaces/evm-provider.interface';
+import { UserPendingTransactions } from '@popup/evm/interfaces/evm-tokens.interface';
+import { UserCanceledTransactions } from '@popup/evm/interfaces/evm-transactions.interface';
 import {
   EvmAccount,
   StoredEvmWalletAddress,
@@ -193,9 +195,63 @@ const updateSeedNickname = async (
   return savedSeeds;
 };
 
-const deleteSeed = async (seedId: number, mk: string) => {
+const deleteSeed = async (
+  seedId: number,
+  accounts: EvmAccount[],
+  mk: string,
+) => {
   let savedSeeds = await getAccountsFromLocalStorage(mk);
+
   savedSeeds = savedSeeds.filter((seed) => seed.id !== seedId);
+
+  const values = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+  ]);
+
+  let userPendingTransactions: UserPendingTransactions =
+    values[LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS];
+  let canceledTransactions: UserCanceledTransactions =
+    values[LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS];
+  let walletPermissions: EvmWalletPermissions =
+    values[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
+
+  for (const account of accounts.filter(
+    (account) => account.seedId === seedId,
+  )) {
+    if (userPendingTransactions)
+      delete userPendingTransactions[account.wallet.address];
+
+    if (canceledTransactions)
+      for (const chainId of Object.keys(canceledTransactions)) {
+        delete canceledTransactions[chainId][account.wallet.address];
+      }
+
+    if (walletPermissions)
+      for (const domain of Object.keys(walletPermissions)) {
+        for (const key of Object.keys(walletPermissions[domain])) {
+          walletPermissions[domain][key as EvmRequestPermission] =
+            walletPermissions[domain][key as EvmRequestPermission]!.filter(
+              (address) => address !== account.wallet.address,
+            );
+        }
+      }
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    userPendingTransactions,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    canceledTransactions,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    walletPermissions,
+  );
+
   encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
 };

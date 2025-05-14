@@ -35,14 +35,10 @@ export const loadEvmActiveAccount =
       chain,
     );
 
-    console.log({ allTokens });
-
     const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
       allTokens,
       chain,
     );
-
-    console.log({ allTokensInfo });
 
     let nativeAndErc20Tokens = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
