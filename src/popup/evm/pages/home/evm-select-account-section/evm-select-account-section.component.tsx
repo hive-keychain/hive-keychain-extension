@@ -45,7 +45,7 @@ const SelectAccountSection = ({
   const [selectedAddress, setSelectedAddress] = useState<EvmAccount>();
 
   useEffect(() => {
-    if (activeAccount.isInitialized) {
+    if (accounts && activeAccount.address) {
       const opts = accounts
         .filter((account) => !account.hide)
         .map((account: EvmAccount) => {
