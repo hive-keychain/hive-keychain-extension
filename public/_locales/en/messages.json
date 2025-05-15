@@ -5212,5 +5212,9 @@
   "error_granularity": {
     "message": "This operation isn't allowed under granularity rules",
     "description": "Error message if granularity failed has been used already"
+  },
+  "evm_seeds_already_in_keychain": {
+    "message": "This seed was already added in Keychain",
+    "description": "Seed already added in Keychain"
   }
 }

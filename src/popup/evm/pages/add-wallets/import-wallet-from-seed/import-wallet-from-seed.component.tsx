@@ -19,6 +19,7 @@ const ImportWalletFromSeed = ({
   setTitleContainerProperties,
   setErrorMessage,
   hasFinishedSignup,
+  accounts,
 }: PropsType) => {
   const [seed, setSeed] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -32,12 +33,24 @@ const ImportWalletFromSeed = ({
   }, []);
 
   const submitForm = async (): Promise<void> => {
+    if (
+      accounts.some(
+        (account) =>
+          account.wallet.mnemonic?.phrase.trim().toLowerCase() ===
+          seed.join(' ').trim().toLowerCase(),
+      )
+    ) {
+      setErrorMessage('evm_seeds_already_in_keychain');
+      return;
+    }
+
     const { wallet, error, errorParams } =
       EvmWalletUtils.getWalletFromSeedPhrase(seed.join(' '));
+
     if (wallet) {
       setLoading(true);
+
       const derivedWallets = await EvmWalletUtils.deriveWallets(wallet, chain);
-      console.log({ derivedWallets });
       setLoading(false);
       removeFromLoadingList('html_popup_deriving_wallets');
       navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
@@ -86,6 +99,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain as EvmChain,
+    accounts: state.evm.accounts,
   };
 };
 
