@@ -1,11 +1,11 @@
 import { Rpc } from '@interfaces/rpc.interface';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils, {
   BaseCurrencies,
 } from 'src/popup/hive/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   amount: number;

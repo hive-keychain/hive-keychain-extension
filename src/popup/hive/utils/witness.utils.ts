@@ -3,8 +3,6 @@ import type {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
-import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import {
   LastSigningKeys,
@@ -13,11 +11,15 @@ import {
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import {
+  CurrencyPrices,
+  FormatUtils,
+  GlobalProperties,
+} from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const WITNESS_DISABLED_KEY =

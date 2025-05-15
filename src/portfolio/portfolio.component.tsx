@@ -3,6 +3,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -10,7 +11,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioFilterComponent } from 'src/portfolio/portfolio-filter/portfolio-filter.component';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioTableComponent } from 'src/portfolio/portolfio-table/portfolio-table.component';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 

@@ -25,6 +25,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,7 +42,6 @@ import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface DelegationForm {

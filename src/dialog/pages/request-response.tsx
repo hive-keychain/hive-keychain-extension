@@ -1,4 +1,4 @@
-import { KeychainRequest } from 'hive-keychain-commons';
+import { KeychainRequest, KeychainRequestTypes } from 'hive-keychain-commons';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -9,14 +9,29 @@ type Props = {
 };
 
 type ResultMessage = {
-  msg: { message: string; success: boolean; data: KeychainRequest };
+  msg: {
+    message: string;
+    success: boolean;
+    data: KeychainRequest;
+  };
 };
 
 const RequestResponse = ({ data }: Props) => {
   if (data.msg.success) {
-    setTimeout(() => {
-      window.close();
-    }, 3000);
+    setTimeout(
+      () => {
+        window.close();
+      },
+      [
+        KeychainRequestTypes.vscCallContract,
+        KeychainRequestTypes.vscDeposit,
+        KeychainRequestTypes.vscWithdrawal,
+        KeychainRequestTypes.vscTransfer,
+        KeychainRequestTypes.vscStaking,
+      ].includes(data.msg.data.type)
+        ? 12000
+        : 3000,
+    );
   }
   return (
     <>

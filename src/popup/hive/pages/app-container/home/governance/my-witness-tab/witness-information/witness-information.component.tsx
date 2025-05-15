@@ -18,7 +18,11 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import {
+  FormatUtils,
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -35,7 +39,6 @@ import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import WitnessUtils, {
   WITNESS_DISABLED_KEY,
 } from 'src/popup/hive/utils/witness.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 interface WitnessInformationProps {
   witnessInfo: WitnessInfo;

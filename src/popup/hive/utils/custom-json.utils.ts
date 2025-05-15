@@ -8,11 +8,11 @@ const send = async (
   username: string,
   key: Key,
   keyType: KeyType,
-  mainnet?: string,
+  id?: string,
   options?: TransactionOptions,
 ) => {
   return HiveTxUtils.sendOperation(
-    [CustomJsonUtils.getCustomJsonOperation(json, username, keyType, mainnet)],
+    [CustomJsonUtils.getCustomJsonOperation(json, username, keyType, id)],
     key,
     false,
     options,
@@ -23,12 +23,12 @@ const getCustomJsonOperation = (
   json: any,
   username: string,
   keyType: KeyType,
-  mainnet?: string,
+  id?: string,
 ) => {
   return [
     'custom_json',
     {
-      id: mainnet ? mainnet : Config.hiveEngine.mainnet,
+      id: id ? id : Config.hiveEngine.mainnet,
       json: typeof json === 'string' ? json : JSON.stringify(json),
       required_auths: keyType === KeyType.ACTIVE ? [username] : [],
       required_posting_auths: keyType === KeyType.POSTING ? [username] : [],
@@ -40,10 +40,10 @@ const getCustomJsonTransaction = (
   json: any,
   username: string,
   keyType: KeyType,
-  mainnet: string,
+  id?: string,
 ) => {
   return HiveTxUtils.createTransaction([
-    CustomJsonUtils.getCustomJsonOperation(json, username, keyType, mainnet),
+    CustomJsonUtils.getCustomJsonOperation(json, username, keyType, id),
   ]);
 };
 

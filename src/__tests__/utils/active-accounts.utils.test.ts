@@ -1,7 +1,7 @@
 import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import FormatUtils from 'src/utils/format.utils';
+import { FormatUtils } from 'hive-keychain-commons';
 
 describe(' active-account.utils tests', () => {
   afterEach(() => {

@@ -16,7 +16,11 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import {
+  FormatUtils,
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -40,7 +44,6 @@ import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 interface DelegationForm {
   username: string;

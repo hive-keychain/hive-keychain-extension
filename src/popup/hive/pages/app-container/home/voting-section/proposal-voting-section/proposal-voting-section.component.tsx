@@ -15,6 +15,7 @@ import {
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -22,7 +23,6 @@ import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.compo
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import Config from 'src/config';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ProposalVotingSection = ({

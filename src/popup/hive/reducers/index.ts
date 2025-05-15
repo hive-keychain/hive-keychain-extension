@@ -1,5 +1,6 @@
 import { RpcSwitcherReducer } from '@popup/hive/reducers/rpc-switcher.reducer';
 import TokensPendingUnstakingReducer from '@popup/hive/reducers/tokens-pending-unstaking.reducer';
+import VscReducer from '@popup/hive/reducers/vsc.reducer';
 import { combineReducers } from 'redux';
 import { ActiveAccountReducer } from 'src/popup/hive/reducers/active-account.reducer';
 import { ActiveRpcReducer } from 'src/popup/hive/reducers/active-rpc.reducer';
@@ -35,6 +36,7 @@ const hiveReducers = combineReducers({
   appStatus: AppStatusReducer,
   rpcSwitcher: RpcSwitcherReducer,
   tokensPendingUnstaking: TokensPendingUnstakingReducer,
+  vscBalance: VscReducer,
 });
 
 export default hiveReducers;

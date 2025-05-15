@@ -2,6 +2,11 @@ import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosyst
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
+import { VscDepositComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-deposit/vsc-deposit.component';
+import { VscHistoryComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-history/vsc-history.component';
+import { VscStakingComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-staking/vsc-staking.component';
+import { VscTransferComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-transfer/vsc-transfer.component';
+import { VscWithdrawalComponent } from '@popup/hive/pages/app-container/home/vsc/vsc-withdraw/vsc-withdraw.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
@@ -184,6 +189,17 @@ const AppRouter = ({
         return <AnalyticsComponent />;
       case Screen.CHAINS:
         return <EcosystemComponent />;
+      // VSC
+      case Screen.VSC_DEPOSIT_PAGE:
+        return <VscDepositComponent />;
+      case Screen.VSC_WITHDRAW_PAGE:
+        return <VscWithdrawalComponent />;
+      case Screen.VSC_TRANSFER_PAGE:
+        return <VscTransferComponent />;
+      case Screen.VSC_STAKING_PAGE:
+        return <VscStakingComponent />;
+      case Screen.VSC_HISTORY_PAGE:
+        return <VscHistoryComponent />;
       default:
         return null;
     }

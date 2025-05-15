@@ -13,9 +13,8 @@ import {
   NotificationType,
 } from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, FormatUtils } from 'hive-keychain-commons';
 import moment from 'moment';
-import FormatUtils from 'src/utils/format.utils';
 
 const operationFieldList = [
   // {

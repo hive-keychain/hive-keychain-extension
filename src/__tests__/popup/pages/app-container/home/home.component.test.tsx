@@ -6,6 +6,7 @@ import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { FormatUtils } from 'hive-keychain-commons';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
@@ -23,7 +24,6 @@ import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
-import FormatUtils from 'src/utils/format.utils';
 
 describe('home.component tests:\n', () => {
   beforeEach(async () => {

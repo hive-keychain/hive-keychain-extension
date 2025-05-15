@@ -58,6 +58,15 @@ const Config = {
   tutorial: {
     baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
   },
+  vsc: {
+    ID: 'vsc.tx',
+    ACCOUNT: 'vsc.gateway',
+    BLOCK_EXPLORER: 'https://vsc.techcoderx.com',
+    API_URL: 'https://api.vsc.eco/api/v1/graphql',
+    BASE_JSON: {
+      net_id: 'vsc-mainnet',
+    },
+  },
 };
 
 export default Config;

@@ -6,24 +6,33 @@ import {
   loadTokensMarket,
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
+import { loadVscAccountBalance } from '@popup/hive/actions/vsc.actions';
+import {
+  WalletInfoSectionHiveActions,
+  WalletInfoSectionVscActions,
+} from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-actions';
+import { WalletInfoSectionHiveEngineItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-hive-engine-item.component';
 import { WalletInfoSectionItemComponent } from '@popup/hive/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, FormatUtils, LoadingState } from 'hive-keychain-commons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const WalletInfoSection = ({
@@ -40,6 +49,9 @@ const WalletInfoSection = ({
   loadUserTokens,
   loadTokens,
   loadPendingUnstaking,
+  loadVscAccountBalance,
+  navigateToWithParams,
+  vscAccountBalance,
 }: PropsFromRedux) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
@@ -49,6 +61,7 @@ const WalletInfoSection = ({
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
   const [tokenFilter, setTokenFilter] = useState('');
   const [showSearchHE, setShowSearchHE] = useState(false);
+  const [showHeTokens, setShowHeTokens] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const loadHiddenTokens = async () => {
@@ -64,6 +77,7 @@ const WalletInfoSection = ({
       loadHiddenTokens();
       loadTokens();
       loadTokensMarket();
+      loadVscAccountBalance(activeAccount.name!);
       loadUserTokens(activeAccount.name!);
       loadPendingUnstaking(activeAccount.name!);
       fetchConversionRequests(activeAccount.name!);
@@ -143,29 +157,39 @@ const WalletInfoSection = ({
     }
   }, [conversions]);
 
+  const handleHistoryClick = () => {
+    navigateToWithParams(Screen.WALLET_HISTORY_PAGE, []);
+  };
+
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
       <div className="wallet-info-section">
         <WalletInfoSectionItemComponent
           tokenSymbol="HIVE"
-          icon={SVGIcons.WALLET_HIVE_LOGO}
+          iconName={SVGIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
+          onHistoryClick={handleHistoryClick}
           mainValueLabel={currencyLabels.hive}
           subValue={activeAccount.account.savings_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          actionButtons={WalletInfoSectionHiveActions('HIVE')}
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HBD"
-          icon={SVGIcons.WALLET_HBD_LOGO}
+          iconName={SVGIcons.WALLET_HBD_LOGO}
           mainValue={activeAccount.account.hbd_balance}
           mainValueLabel={currencyLabels.hbd}
           subValue={activeAccount.account.savings_hbd_balance}
           subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          actionButtons={WalletInfoSectionHiveActions('HBD')}
+          onHistoryClick={handleHistoryClick}
         />
         <WalletInfoSectionItemComponent
           tokenSymbol="HP"
-          icon={SVGIcons.WALLET_HP_LOGO}
+          iconName={SVGIcons.WALLET_HP_LOGO}
+          actionButtons={WalletInfoSectionHiveActions('HP')}
+          onHistoryClick={handleHistoryClick}
           mainValue={FormatUtils.toHP(
             activeAccount.account.vesting_shares as string,
             globalProperties.globals,
@@ -179,11 +203,18 @@ const WalletInfoSection = ({
                 '.'
           }
         />
-        <div className="hive-engine-separator">
+
+        <div className="l2-separator">
           <span>
             <SVGIcon icon={SVGIcons.HIVE_ENGINE} className="no-pointer" />
           </span>
-          <div className="line" />
+          <div
+            className="line-wrapper pointer"
+            onClick={() => {
+              setShowHeTokens(!showHeTokens);
+            }}>
+            <div className="line" />
+          </div>
 
           <InputComponent
             classname={`token-searchbar ${showSearchHE ? '' : 'hide'}`}
@@ -220,18 +251,18 @@ const WalletInfoSection = ({
         </div>
         {allTokens?.length > 0 &&
           filteredTokenList &&
-          filteredTokenList.length > 0 && (
+          filteredTokenList.length > 0 &&
+          showHeTokens && (
             <>
               <FlatList
                 list={filteredTokenList}
                 renderItem={(token: TokenBalance) => (
-                  <WalletInfoSectionItemComponent
+                  <WalletInfoSectionHiveEngineItemComponent
                     key={`token-${token.symbol}`}
                     tokenSymbol={token.symbol}
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
                     tokenMarket={market}
-                    icon={SVGIcons.HIVE_ENGINE}
                     addBackground
                     mainValue={token.balance}
                     mainValueLabel={token.symbol}
@@ -244,11 +275,85 @@ const WalletInfoSection = ({
               />
             </>
           )}
-        {filteredTokenList && filteredTokenList.length === 0 && (
+        {filteredTokenList &&
+          filteredTokenList.length === 0 &&
+          showHeTokens && (
+            <div className="no-token">
+              <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+              <span className="text">
+                {chrome.i18n.getMessage('html_tokens_none_available')}
+              </span>
+            </div>
+          )}
+        {filteredTokenList && !showHeTokens && (
+          <div
+            className="hidden-tokens"
+            onClick={() => {
+              setShowHeTokens(true);
+            }}>
+            <span className="text">
+              {chrome.i18n.getMessage('html_tokens_x_available', [
+                filteredTokenList.length + '',
+              ])}
+            </span>
+          </div>
+        )}
+        <div className="l2-separator">
+          <span>
+            <a href="https://vsc.eco/" target="_blank">
+              <img src="assets/images/wallet/vsc.png" className="no-pointer" />
+            </a>
+          </span>
+          <div className="line-wrapper">
+            <div className="line" />
+          </div>
+          {/* <SVGIcon
+            icon={SVGIcons.WALLET_HISTORY_NO_BORDER}
+            onClick={() => {
+              navigateTo(Screen.VSC_HISTORY_PAGE);
+            }}
+          /> */}
+        </div>
+        {vscAccountBalance.state === LoadingState.LOADED && (
+          <>
+            <WalletInfoSectionItemComponent
+              key={`vsc-hive`}
+              tokenSymbol={currencyLabels.hive}
+              mainValue={(vscAccountBalance?.balance?.hive || 0) / 1000}
+              mainValueLabel={currencyLabels.hive}
+              iconName={SVGIcons.WALLET_HIVE_VSC_LOGO}
+              onHistoryClick={() => {
+                navigateTo(Screen.VSC_HISTORY_PAGE);
+              }}
+              actionButtons={WalletInfoSectionVscActions('HIVE')}
+            />
+            <WalletInfoSectionItemComponent
+              key={`vsc-hbd`}
+              tokenSymbol={currencyLabels.hbd}
+              mainValue={(vscAccountBalance?.balance?.hbd || 0) / 1000}
+              mainValueLabel={currencyLabels.hbd}
+              iconName={SVGIcons.WALLET_HBD_VSC_LOGO}
+              onHistoryClick={() => {
+                navigateTo(Screen.VSC_HISTORY_PAGE);
+              }}
+              subValue={(vscAccountBalance?.balance?.hbd_savings || 0) / 1000}
+              actionButtons={WalletInfoSectionVscActions('HBD')}
+              subValueLabel={chrome.i18n.getMessage(
+                'popup_html_wallet_savings',
+              )}
+            />
+          </>
+        )}
+        {vscAccountBalance.state === LoadingState.LOADING && (
+          <div className="rotating-logo-container">
+            <RotatingLogoComponent />
+          </div>
+        )}
+        {vscAccountBalance.state === LoadingState.FAILED && (
           <div className="no-token">
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <span className="text">
-              {chrome.i18n.getMessage('html_tokens_none_available')}
+              {chrome.i18n.getMessage('popup_html_vsc_unavailable')}
             </span>
           </div>
         )}
@@ -269,6 +374,7 @@ const mapStateToProps = (state: RootState) => {
     userTokens: state.hive.userTokens,
     market: state.hive.tokenMarket,
     allTokens: state.hive.tokens,
+    vscAccountBalance: state.hive.vscBalance,
   };
 };
 
@@ -279,6 +385,8 @@ const connector = connect(mapStateToProps, {
   loadTokens,
   navigateTo,
   loadPendingUnstaking,
+  loadVscAccountBalance,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

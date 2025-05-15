@@ -1,5 +1,5 @@
+import { FormatUtils } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 enum BlockchainErrorType {

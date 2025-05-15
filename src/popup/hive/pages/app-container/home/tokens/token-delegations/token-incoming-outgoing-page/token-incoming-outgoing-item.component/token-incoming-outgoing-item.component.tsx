@@ -13,7 +13,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
@@ -25,7 +25,6 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import FormatUtils from 'src/utils/format.utils';
 
 interface TokenIncomingOutgoingProps {
   delegationType: DelegationType;

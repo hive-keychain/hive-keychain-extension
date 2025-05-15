@@ -18,7 +18,7 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Asset } from 'hive-keychain-commons';
+import { Asset, FormatUtils } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,7 +38,6 @@ import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 interface ConversionForm {
   receiver: string;

@@ -34,15 +34,15 @@ type RequestData = {
   publicKey?: Key;
   windowId?: number;
   isMultisig?: boolean;
+  isWaitingForConfirmation: boolean;
 };
 export class RequestsHandler {
   data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
-
   defaultRpcConfig: any;
 
   constructor() {
-    this.data = { confirmed: false };
+    this.data = { confirmed: false, isWaitingForConfirmation: false };
     this.hiveEngineConfig = Config.hiveEngine;
     this.defaultRpcConfig = config;
   }
@@ -53,6 +53,11 @@ export class RequestsHandler {
 
   async setupHiveEngine() {
     this.hiveEngineConfig = await BgdHiveEngineConfigModule.getActiveConfig();
+  }
+
+  async setIsWaitingForConfirmation(isWaitingForConfirmation: boolean) {
+    this.data.isWaitingForConfirmation = isWaitingForConfirmation;
+    this.saveInLocalStorage();
   }
 
   async setIsMultisig(isMultisig: boolean) {
@@ -86,6 +91,7 @@ export class RequestsHandler {
       this.data = {
         confirmed: this.data.confirmed,
         windowId: this.data.windowId,
+        isWaitingForConfirmation: false,
       };
       this.saveInLocalStorage();
     }

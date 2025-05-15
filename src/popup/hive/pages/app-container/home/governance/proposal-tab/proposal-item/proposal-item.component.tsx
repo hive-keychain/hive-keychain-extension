@@ -17,7 +17,11 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import {
+  FormatUtils,
+  KeychainKeyTypes,
+  KeychainKeyTypesLC,
+} from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -27,7 +31,6 @@ import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.compo
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 interface ProposalItemProps {
   proposal: Proposal;

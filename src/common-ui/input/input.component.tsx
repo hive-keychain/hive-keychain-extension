@@ -131,8 +131,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             )}
           {!props.disabled &&
             ![InputType.PASSWORD, InputType.DATE].includes(props.type) &&
-            props.value &&
-            props.value.length > 0 && (
+            !!(props.value && props.value.length > 0) && (
               <SVGIcon
                 dataTestId="input-clear"
                 icon={SVGIcons.INPUT_CLEAR}

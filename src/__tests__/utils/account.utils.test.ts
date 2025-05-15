@@ -7,6 +7,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { KeyType, Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { FormatUtils } from 'hive-keychain-commons';
 import accounts, * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -14,7 +15,6 @@ import rcAccounts from 'src/__tests__/utils-for-testing/data/rc-accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import { KeychainError } from 'src/keychain-error';
-import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('account.utils tests:\n', () => {

@@ -1,5 +1,5 @@
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import { GlobalProperties } from 'hive-keychain-commons';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
 const GlobalPropertiesReducer = (

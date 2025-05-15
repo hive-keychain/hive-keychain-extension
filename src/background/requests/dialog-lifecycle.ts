@@ -51,9 +51,19 @@ export const createPopup = (
 /* istanbul ignore next */
 chrome.windows.onRemoved.addListener(async (id: number) => {
   const requestHandler = await RequestsHandler.getFromLocalStorage();
-  const { windowId, request, request_id, tab, confirmed, isMultisig } =
-    requestHandler.data;
+  const {
+    windowId,
+    request,
+    request_id,
+    tab,
+    confirmed,
+    isMultisig,
+    isWaitingForConfirmation,
+  } = requestHandler.data;
   if (id == windowId && !confirmed && tab) {
+    if (request?.type?.includes('vsc') && isWaitingForConfirmation) {
+      return;
+    }
     chrome.tabs.sendMessage(tab!, {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {

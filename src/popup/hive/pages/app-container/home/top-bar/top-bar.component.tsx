@@ -17,7 +17,7 @@ import {
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, KeychainKeyTypes } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -30,7 +30,6 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
 import { Screen } from 'src/reference-data/screen.enum';
 import { AsyncUtils } from 'src/utils/async.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 const TopBar = ({
   navigateTo,

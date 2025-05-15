@@ -6,6 +6,7 @@ export const addToLoadingList = (
   privateKeyType?: PrivateKeyType,
   operationParams?: string[],
   hideDots?: boolean,
+  closable?: boolean,
 ) => {
   return {
     type: MultichainActionType.ADD_TO_LOADING_LIST,
@@ -14,6 +15,7 @@ export const addToLoadingList = (
       operationParams: operationParams,
       privateKeyType: privateKeyType,
       hideDots: hideDots,
+      closable,
     },
   };
 };

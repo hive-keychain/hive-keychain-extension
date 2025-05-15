@@ -18,7 +18,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -30,7 +30,6 @@ import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegati
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import FormatUtils from 'src/utils/format.utils';
 
 interface IncomingOutgoingProps {
   delegationType: DelegationType;

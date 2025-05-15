@@ -20,11 +20,10 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
-import { HistoryFiltersUtils } from 'hive-keychain-commons';
+import { FormatUtils, HistoryFiltersUtils } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const NB_TRANSACTION_FETCHED = 1000;

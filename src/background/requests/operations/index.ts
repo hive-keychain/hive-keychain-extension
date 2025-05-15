@@ -33,6 +33,11 @@ import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastSwap } from '@background/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { vscCallContract } from '@background/requests/operations/ops/vsc-call-contract';
+import { vscDeposit } from '@background/requests/operations/ops/vsc-deposit';
+import { vscStaking } from '@background/requests/operations/ops/vsc-staking';
+import { vscTransfer } from '@background/requests/operations/ops/vsc-transfer';
+import { vscWithdrawal } from '@background/requests/operations/ops/vsc-withdrawal';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
@@ -159,6 +164,21 @@ export const performOperation = async (
         break;
       case KeychainRequestTypes.swap:
         message = await broadcastSwap(requestHandler, data, options);
+        break;
+      case KeychainRequestTypes.vscCallContract:
+        message = await vscCallContract(requestHandler, data);
+        break;
+      case KeychainRequestTypes.vscDeposit:
+        message = await vscDeposit(requestHandler, data);
+        break;
+      case KeychainRequestTypes.vscWithdrawal:
+        message = await vscWithdrawal(requestHandler, data);
+        break;
+      case KeychainRequestTypes.vscTransfer:
+        message = await vscTransfer(requestHandler, data);
+        break;
+      case KeychainRequestTypes.vscStaking:
+        message = await vscStaking(requestHandler, data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

@@ -11,9 +11,21 @@ type Props = {
   hide?: boolean;
 };
 const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
+  const [isClosed, setIsClosed] = React.useState(false);
+  const closable = operations?.find((o) => o.done === false)?.closable || false;
   return (
-    <div className={`loading-container ${hide ? 'hide' : ''}`}>
+    <div className={`loading-container ${hide || isClosed ? 'hide' : ''}`}>
+      {closable && (
+        <SVGIcon
+          icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+          className="close-loading"
+          onClick={() => {
+            setIsClosed(true);
+          }}
+        />
+      )}
       <div className="overlay"></div>
+
       <RotatingLogoComponent></RotatingLogoComponent>
       {caption && (
         <>

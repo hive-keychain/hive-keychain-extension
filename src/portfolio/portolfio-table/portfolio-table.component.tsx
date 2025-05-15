@@ -1,10 +1,10 @@
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import {
   PortfolioBalance,
   UserPortfolio,
 } from 'src/portfolio/portfolio.interface';
-import FormatUtils from 'src/utils/format.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 interface Props {

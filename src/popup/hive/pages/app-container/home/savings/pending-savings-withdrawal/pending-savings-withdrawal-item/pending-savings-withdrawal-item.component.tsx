@@ -13,7 +13,7 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -23,7 +23,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 import { Screen } from 'src/reference-data/screen.enum';
-import FormatUtils from 'src/utils/format.utils';
 
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;

@@ -7,6 +7,7 @@ export interface LoadingOperation {
   operationParams?: string[];
   hideDots?: boolean;
   done: boolean;
+  closable?: boolean;
 }
 
 export interface LoadingState {
@@ -19,6 +20,7 @@ export interface LoadingPayload {
   operation: string;
   operationParams?: string[];
   hideDots?: boolean;
+  closable?: boolean;
   privateKeyType?: PrivateKeyType;
 }
 
@@ -63,6 +65,7 @@ export const LoadingReducer = (
           name: loadingPayload!.operation!,
           operationParams: loadingPayload!.operationParams,
           hideDots: loadingPayload!.hideDots,
+          closable: loadingPayload!.closable,
           done: false,
         });
         if (

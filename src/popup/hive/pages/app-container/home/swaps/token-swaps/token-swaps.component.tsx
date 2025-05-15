@@ -23,7 +23,7 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
-import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
+import { FormatUtils, IStep, KeychainKeyTypes } from 'hive-keychain-commons';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -43,7 +43,6 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import ServiceUnavailablePage from 'src/common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 

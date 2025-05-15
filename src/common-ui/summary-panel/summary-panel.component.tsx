@@ -1,7 +1,7 @@
 import { RootState } from '@popup/multichain/store';
+import { FormatUtils } from 'hive-keychain-commons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import FormatUtils from 'src/utils/format.utils';
 
 interface PanelProps {
   top?: number | string;

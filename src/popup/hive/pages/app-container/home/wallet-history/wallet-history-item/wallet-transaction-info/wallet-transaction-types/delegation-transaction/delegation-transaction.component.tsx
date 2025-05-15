@@ -1,10 +1,10 @@
 import { Delegation } from '@interfaces/transaction.interface';
 import { RootState } from '@popup/multichain/store';
+import { FormatUtils } from 'hive-keychain-commons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
-import FormatUtils from 'src/utils/format.utils';
 
 interface DelegationTransactionProps {
   transaction: Delegation;
