@@ -250,7 +250,7 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   );
 
   const voteDifference =
-    (keychainProposal?.totalVotes - returnProposal?.totalVotes) |
+    keychainProposal?.totalVotes - returnProposal?.totalVotes ||
     Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
 
   return voteDifference < Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
