@@ -83,10 +83,13 @@ const getTokenBalances = async (
       getTokenBalance(walletAddress, chain, token),
     );
 
-  const result = (await Promise.all(balancesPromises)).filter(
-    (balance) => !!balance,
+  const result = await Promise.all(balancesPromises);
+  return result.filter(
+    (balance) =>
+      !!balance &&
+      (balance.balance > 0 ||
+        balance.tokenInfo.type === EVMSmartContractType.NATIVE),
   );
-  return result;
 };
 
 const filterTokensBasedOnSettings = async (
