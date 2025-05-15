@@ -14,7 +14,7 @@ const BuyCoins = ({
   activeAccountName,
   price,
 }: PropsFromRedux) => {
-  const [buyType, setBuyType] = useState(BuyCoinType.FIAT);
+  const [buyType, setBuyType] = useState(BuyCoinType.CRYPTO);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -48,10 +48,10 @@ const BuyCoins = ({
         onChange={changeSelectedCurrency}
         selectedValue={buyType}
         values={[
-          {
-            value: BuyCoinType.FIAT,
-            label: BuyCoinType.FIAT,
-          },
+          // {
+          //   value: BuyCoinType.FIAT,
+          //   label: BuyCoinType.FIAT,
+          // },
           {
             value: BuyCoinType.CRYPTO,
             label: BuyCoinType.CRYPTO,

@@ -70,20 +70,19 @@ const Config = {
     stealthex: {
       //TODO add keychain data
       urls: {
-        baseUrl: 'https://api.stealthex.io/api/v2/',
+        baseUrl: 'https://api.stealthex.io/v4/',
         referalBaseUrl: 'https://stealthex.io/?ref=',
         fullLinkToExchange: 'https://stealthex.io/exchange?id=',
         routes: {
-          allCurrencies: 'fee/currency',
-          currencyPair: 'fee/pairs/',
-          minMaxAccepted: 'fee/range/',
-          estimation: 'fee/estimate/',
+          allCurrencies: 'currencies',
+          minMaxAccepted: 'rates/range',
+          currencyPair: 'currencies/',
+          estimation: 'rates/estimated-amount',
           exchange: 'fee/exchange',
         },
       },
       apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
-      headerKey: 'X-SX-API-KEY',
-      refId: 'ldJCcGZA9H',
+      refId: 'gti0epcrc4c',
       partnerFeeAmount: 20,
     } as SwapCryptosConfig,
     simpleswap: {
@@ -96,14 +95,30 @@ const Config = {
         routes: {
           allCurrencies: 'get_all_currencies',
           currencyPair: 'get_pairs',
-          minMaxAccepted: 'get_ranges',
-          estimation: 'get_estimated',
+          minMaxAccepted: 'v3/ranges',
+          estimation: 'v3/estimates',
           exchange: 'create_exchange',
         },
       },
       apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',
-      headerKey: '',
-      refId: 'a81a6051c500',
+      refId: '87338fbedd5a',
+    } as SwapCryptosConfig,
+    letsExchange: {
+      //TODO add keychain data
+      urls: {
+        baseUrl: 'https://api.stealthex.io/v4/',
+        referalBaseUrl: 'https://stealthex.io/?ref=',
+        fullLinkToExchange: 'https://stealthex.io/exchange?id=',
+        routes: {
+          allCurrencies: 'currencies',
+          minMaxAccepted: 'rates/range',
+          currencyPair: 'currencies/',
+          estimation: 'rates/estimated-amount',
+          exchange: 'fee/exchange',
+        },
+      },
+      apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
+      refId: 'gesatTarQ0Gk86Nn',
     } as SwapCryptosConfig,
   },
   multisig: {

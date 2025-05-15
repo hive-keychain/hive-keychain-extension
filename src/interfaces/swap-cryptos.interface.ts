@@ -89,7 +89,7 @@ export interface SwapCryptosBaseProviderInterface {
     amount: string,
     from: string,
     to: string,
-  ) => Promise<SwapCryptosEstimationDisplay>;
+  ) => Promise<SwapCryptosEstimationDisplay | undefined>;
   getNewExchange: (formData: ExchangeOperationForm) => Promise<any>;
 }
 

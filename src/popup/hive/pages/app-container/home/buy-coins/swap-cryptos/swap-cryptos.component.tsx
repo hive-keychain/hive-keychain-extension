@@ -4,12 +4,13 @@ import {
 } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
+
+import { SwapCryptosStepTwoComponent } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-step-two-component/swap-cryptos-step-two-component';
 import {
   SimpleSwapProvider,
   StealthexProvider,
   SwapCryptosMerger,
-} from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos.utils';
-import { SwapCryptosStepTwoComponent } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-step-two-component/swap-cryptos-step-two-component';
+} from '@popup/hive/utils/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
@@ -170,8 +171,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
 
   const init = async () => {
     const newSwapCryptos = new SwapCryptosMerger([
-      new StealthexProvider(true),
-      new SimpleSwapProvider(true),
+      new StealthexProvider(),
+      new SimpleSwapProvider(),
     ]);
     setSetswapCryptos(newSwapCryptos);
     newSwapCryptos
@@ -187,6 +188,9 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             return { ...i, label: i.label.toUpperCase() };
           }),
         );
+      })
+      .catch((error) => {
+        setErrorInApi('buy_coins_swap_cryptos_error_api');
       })
       .finally(() => {
         setLoading(false);
@@ -226,7 +230,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           ? HIVE_OPTION_ITEM
           : pairedCurrencyOptionsList.find(
               (i) => i.subLabel! === lastCryptoEstimation.to,
-            )!;
+            ) || pairedCurrencyOptionsList[0];
       tempEndTokenOptionItemList =
         lastCryptoEstimation.to === HIVE_OPTION_ITEM.subLabel!
           ? [HIVE_OPTION_ITEM]
@@ -358,7 +362,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     setEstimations([]);
     setAmount('');
   };
-
   return (
     <div className="swap-cryptos">
       {loading && (

@@ -3,9 +3,9 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { SwapCryptos } from '@interfaces/swap-cryptos.interface';
-import { SwapCryptosMerger } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos.utils';
 import { ExchangeOperationForm } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.component';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import { SwapCryptosMerger } from '@popup/hive/utils/swap-cryptos.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,

@@ -16,107 +16,168 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
 
+export interface SwapCryptoListItem {
+  name: string;
+  symbol: string;
+  network: string;
+  precision: number;
+  exchanges: SwapCryptos[];
+}
 export class StealthexProvider
   extends SwapCryptosBaseProvider
   implements SwapCryptosBaseProviderInterface
 {
-  constructor(logInfo?: boolean) {
+  pairedCurrencyOptionsList: OptionItem<SwapCryptoListItem>[] = [];
+  constructor() {
     super(Config.swapCryptos.stealthex);
     this.name = SwapCryptos.STEALTHEX;
     this.logo = SVGIcons.SWAP_CRYPTOS_STEALTHEX;
-    this.logInfo = logInfo;
   }
   name: string;
   logo: SVGIcons;
-  logInfo?: boolean;
   buildUrl = (route: string) => {
     const baseUrl = this.urls.baseUrl;
     return `${baseUrl}${route}`;
   };
   getPairedCurrencyOptionItemList = async (symbol: string) => {
-    let pairedCurrencyOptionsList: OptionItem[] = [];
+    let pairedCurrencyOptionsList: OptionItem<SwapCryptoListItem>[] = [];
     let requestHeaders: GenericObjectKeypair = {};
-    requestHeaders[`${this.headerKey}`] = this.apiKey;
+    requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
 
     const currenciesRoute = this.urls.routes.allCurrencies;
-    if (this.logInfo) {
-      Logger.log('currenciesRoute', {
-        currenciesRoute,
-        requestHeaders,
-        buildUrl: this.buildUrl('-'),
-      });
-    }
+    const currencyPairRoute = this.urls.routes.currencyPair;
 
-    const pairedCurrencyRoute = `${this.urls.routes.currencyPair}${symbol}`;
-    if (this.logInfo) {
-      Logger.log('pairedCurrencyRoute', { pairedCurrencyRoute });
-    }
-
-    const [allCurrencies, pairedCurrencyList] = await Promise.all([
-      axios.get(this.buildUrl(currenciesRoute), {
-        headers: requestHeaders,
-      }),
-      axios.get(this.buildUrl(pairedCurrencyRoute), {
-        headers: requestHeaders,
-      }),
-    ]);
-
-    allCurrencies.data.map((x: any) => {
-      if (pairedCurrencyList.data.includes(x.symbol)) {
-        const bagde = x.network
-          ? {
-              type: OptionItemBadgeType.BADGE_RED,
-              label: x.network,
-            }
-          : undefined;
-        pairedCurrencyOptionsList.push({
-          label: x.name,
-          subLabel: x.symbol,
-          img: x.image,
-          value: { ...x, exchanges: [SwapCryptos.STEALTHEX] },
-          bagde,
-        });
+    // Fetch all currencies by iterating offset in batches of 4 (parallel)
+    let allCurrenciesData: any[] = [];
+    let offset = 0;
+    let hasMore = true;
+    const batchSize = 10;
+    while (hasMore) {
+      const requests = [];
+      for (let i = 0; i < batchSize; i++) {
+        requests.push(
+          axios.get(this.buildUrl(currenciesRoute), {
+            headers: requestHeaders,
+            params: { limit: 250, offset: offset + i * 250 },
+          }),
+        );
       }
+      const responses = await Promise.all(requests);
+      let anyBatchLessThan250 = false;
+      for (const response of responses) {
+        const batch = response.data;
+        allCurrenciesData = allCurrenciesData.concat(batch);
+        if (!batch || batch.length < 250) {
+          anyBatchLessThan250 = true;
+        }
+      }
+      if (anyBatchLessThan250) {
+        hasMore = false;
+      } else {
+        offset += batchSize * 250;
+      }
+    }
+    const pairedCurrencyList = await axios.get(
+      this.buildUrl(currencyPairRoute + `${symbol}/mainnet`),
+      {
+        headers: requestHeaders,
+        params: {
+          include_available_routes: true,
+        },
+      },
+    );
+
+    pairedCurrencyList.data.available_routes.map((currency: any) => {
+      const bagde = currency.network
+        ? {
+            type: OptionItemBadgeType.BADGE_RED,
+            label: currency.network,
+          }
+        : undefined;
+      const thisCurrency = allCurrenciesData.find(
+        (c: any) =>
+          c.symbol === currency.symbol && c.network === currency.network,
+      );
+      if (!thisCurrency) return; // skip if not found
+      pairedCurrencyOptionsList.push({
+        label: thisCurrency.name,
+        subLabel: thisCurrency.symbol,
+        img: thisCurrency.icon_url,
+        value: {
+          name: thisCurrency.name,
+          symbol: thisCurrency.symbol,
+          network: thisCurrency.network,
+          precision: thisCurrency.precision,
+          exchanges: [SwapCryptos.STEALTHEX],
+        },
+        bagde,
+      });
     });
+    this.pairedCurrencyOptionsList = pairedCurrencyOptionsList;
     return pairedCurrencyOptionsList;
+  };
+
+  getRouteParams = (from: string, to: string, otherParams?: any) => {
+    const hiveObj = { symbol: 'hive', network: 'mainnet' };
+    const isFromHive = from.toLowerCase() === hiveObj.symbol;
+    const other = this.pairedCurrencyOptionsList.find(
+      (c) => c.value.symbol === (isFromHive ? to : from),
+    )!;
+    const params = {
+      route: isFromHive
+        ? {
+            from: hiveObj,
+            to: { symbol: other.value.symbol, network: other.value.network },
+          }
+        : {
+            from: { symbol: other.value.symbol, network: other.value.network },
+            to: hiveObj,
+          },
+      estimation: 'direct',
+      rate: 'floating',
+      ...otherParams,
+    };
+    return params;
   };
   getMinMaxAmountAccepted = async (from: string, to: string) => {
     let requestHeaders: GenericObjectKeypair = {};
-    requestHeaders[`${this.headerKey}`] = this.apiKey;
+    requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
 
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
-    const minMaxRoute = `${this.urls.routes.minMaxAccepted}${from}/${to}?partner_fee=${this.partnerFeeAmount}`;
-    if (this.logInfo) {
-      Logger.log('minMaxRoute', { minMaxRoute, requestHeaders });
-    }
+    const minMaxRoute = `${this.urls.routes.minMaxAccepted}`;
     const response = (
-      await axios.get(this.buildUrl(minMaxRoute), { headers: requestHeaders })
+      await axios.post(
+        this.buildUrl(minMaxRoute),
+        this.getRouteParams(from, to),
+        {
+          headers: requestHeaders,
+        },
+      )
     ).data;
     return response.min_amount;
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
     let requestHeaders: GenericObjectKeypair = {};
-    requestHeaders[`${this.headerKey}`] = this.apiKey;
+    requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
 
-    const requestConfig = {
-      headers: requestHeaders,
-      params: {
+    const requestData = {
+      ...this.getRouteParams(from, to, {
         amount: parseFloat(amount),
-        partner_fee: Config.swapCryptos.stealthex.partnerFeeAmount ?? 0,
-      },
+        additional_fee_percent:
+          Config.swapCryptos.stealthex.partnerFeeAmount ?? 0,
+      }),
     };
 
-    const estimationRoute = `${this.urls.routes.estimation}${from}/${to}`;
+    const estimationRoute = `${this.urls.routes.estimation}`;
     const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${
       Config.swapCryptos.stealthex.refId
     }&amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}`;
-    if (this.logInfo) {
-      Logger.log('estimationRoute', { estimationRoute, requestConfig, link });
-    }
 
     const estimation = (
-      await axios.get(this.buildUrl(estimationRoute), requestConfig)
+      await axios.post(this.buildUrl(estimationRoute), requestData, {
+        headers: requestHeaders,
+      })
     ).data;
 
     return {
@@ -152,14 +213,6 @@ export class StealthexProvider
     };
     const exchangeRoute = this.urls.routes.exchange;
     const finalUrl = this.buildUrl(exchangeRoute) + `?api_key=${this.apiKey}`;
-    if (this.logInfo) {
-      Logger.log('getNewExchange', {
-        exchangeRoute,
-        requestConfig,
-        data,
-        finalUrl,
-      });
-    }
     const exchangeResult = await axios.post(finalUrl, data, requestConfig);
     return {
       id: exchangeResult.data.id,
@@ -172,79 +225,102 @@ export class SimpleSwapProvider
   extends SwapCryptosBaseProvider
   implements SwapCryptosBaseProviderInterface
 {
-  constructor(logInfo?: boolean) {
+  constructor() {
     super(Config.swapCryptos.simpleswap);
     this.name = SwapCryptos.SIMPLESWAP;
     this.logo = SVGIcons.SWAP_CRYPTOS_SIMPLESWAP;
-    this.logInfo = logInfo;
   }
+  pairedCurrencyOptionsList: OptionItem<SwapCryptoListItem>[] = [];
   name: string;
   logo: SVGIcons;
-  logInfo?: boolean;
   buildUrl = (route: string) => {
     const baseUrl = this.urls.baseUrl;
     return `${baseUrl}${route}`;
   };
   getPairedCurrencyOptionItemList = async (symbol: string) => {
-    let pairedCurrencyOptionsList: OptionItem[] = [];
+    let pairedCurrencyOptionsList: OptionItem<SwapCryptoListItem>[] = [];
     const currenciesRoute = `${this.urls.routes.allCurrencies}?api_key=${this.apiKey}`;
-    if (this.logInfo) {
-      Logger.log('currenciesRoute', {
-        currenciesRoute,
-        buildUrl: this.buildUrl('-'),
-      });
-    }
     const pairedCurrencyRoute = `${this.urls.routes.currencyPair}?api_key=${this.apiKey}&fixed=false&symbol=${symbol}`;
-    if (this.logInfo) {
-      Logger.log('pairedCurrencyRoute', { pairedCurrencyRoute });
-    }
     const [allCurrencies, pairedCurrencyList] = await Promise.all([
       axios.get(this.buildUrl(currenciesRoute)),
       axios.get(this.buildUrl(pairedCurrencyRoute)),
     ]);
 
-    allCurrencies.data.map((x: any) => {
-      if (pairedCurrencyList.data.includes(x.symbol)) {
-        const bagde = x.network
+    allCurrencies.data.map((currency: any) => {
+      if (pairedCurrencyList.data.includes(currency.symbol)) {
+        const bagde = currency.network
           ? {
               type: OptionItemBadgeType.BADGE_RED,
-              label: x.network,
+              label: currency.network,
             }
           : undefined;
         pairedCurrencyOptionsList.push({
-          label: x.name.split(' ')[0],
-          subLabel: x.symbol,
-          img: x.image,
-          value: { ...x, exchanges: [SwapCryptos.SIMPLESWAP] },
+          label: currency.name.split(' ')[0],
+          subLabel: currency.symbol,
+          img: currency.image,
+          value: {
+            name: currency.name,
+            symbol: currency.symbol,
+            network: currency.network,
+            precision: currency.precision,
+            exchanges: [SwapCryptos.SIMPLESWAP],
+          },
           bagde,
         });
       }
     });
+    this.pairedCurrencyOptionsList = pairedCurrencyOptionsList;
     return pairedCurrencyOptionsList;
+  };
+
+  getTickersAndNetworks = (from: string, to: string) => {
+    const fromHive = from.toLowerCase() === 'hive';
+    const otherCurrency = this.pairedCurrencyOptionsList.find(
+      (c) => c.value.symbol === (fromHive ? to : from),
+    );
+    return {
+      tickerFrom: fromHive ? 'hive' : otherCurrency?.value.symbol,
+      networkFrom: fromHive ? 'hive' : otherCurrency?.value.network,
+      tickerTo: !fromHive ? 'hive' : otherCurrency?.value.symbol,
+      networkTo: !fromHive ? 'hive' : otherCurrency?.value.network,
+    };
   };
   getMinMaxAmountAccepted = async (from: string, to: string) => {
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
-    const minMaxRoute = `${this.urls.routes.minMaxAccepted}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}`;
-    if (this.logInfo) {
-      Logger.log('minMaxRoute', { minMaxRoute });
-    }
-    const response = (await axios.get(this.buildUrl(minMaxRoute))).data;
-    return response.min;
+    const minMaxRoute = `${this.urls.routes.minMaxAccepted}`;
+    const response = (
+      await axios.get(this.buildUrl(minMaxRoute), {
+        params: {
+          api_key: this.apiKey,
+          fixed: false,
+          ...this.getTickersAndNetworks(from, to),
+        },
+      })
+    ).data;
+    return response.result.min;
   };
   /**
    * Note: For simpleswap fee is set in the website, specifically: https://partners.simpleswap.io/webtools/api
    */
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
-    const estimationRoute = `${this.urls.routes.estimation}?api_key=${this.apiKey}&fixed=false&currency_from=${from}&currency_to=${to}&amount=${amount}`;
+    if (from === 'HIVE') return;
+    const estimationRoute = this.urls.routes.estimation;
     const link = `${this.urls.referalBaseUrl}${
       this.refId
     }&from=${from.toLowerCase()}&to=${to.toLowerCase()}&amount=${amount}`;
-    if (this.logInfo) {
-      Logger.log('estimationRoute', { estimationRoute, link });
-    }
-    const estimation = (await axios.get(this.buildUrl(estimationRoute))).data;
-
+    const estimation = (
+      await axios.get(`https://simpleswap.io/api/v4/estimates`, {
+        params: {
+          // api_key: this.apiKey,
+          fixed: false,
+          ...this.getTickersAndNetworks(from, to),
+          amount,
+          reverse: false,
+        },
+      })
+    ).data;
+    if (+amount > +estimation.result.max) return;
     return {
       swapCrypto: SwapCryptos.SIMPLESWAP,
       link: link,
@@ -254,7 +330,7 @@ export class SimpleSwapProvider
       from: from,
       to: to,
       amount: parseFloat(amount),
-      estimation: estimation,
+      estimation: parseFloat(estimation.result.estimate),
     } as SwapCryptosEstimationDisplay;
   };
   getNewExchange = async (formData: ExchangeOperationForm) => {
@@ -276,14 +352,6 @@ export class SimpleSwapProvider
     };
     const exchangeRoute = this.urls.routes.exchange;
     const finalUrl = this.buildUrl(exchangeRoute) + `?api_key=${this.apiKey}`;
-    if (this.logInfo) {
-      Logger.log('getNewExchange', {
-        exchangeRoute,
-        requestConfig,
-        data,
-        finalUrl,
-      });
-    }
     const exchangeResult = await axios.post(finalUrl, data, requestConfig);
     return {
       id: exchangeResult.data.id,
@@ -326,7 +394,6 @@ export class SwapCryptosMerger {
         Logger.log('Error getting exchange currencies', { provider, error });
       }
     }
-
     return providersCurrencyOptionsList;
   };
   getMinMaxAccepted = async (
@@ -374,6 +441,7 @@ export class SwapCryptosMerger {
           from,
           to,
         );
+        if (!estimation) continue;
         providerEstimationList.push({
           provider: provider.name as SwapCryptos,
           estimation: estimation,
