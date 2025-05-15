@@ -1,5 +1,6 @@
-import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
+import type { ExtendedAccount, Price } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
+import { Asset } from 'hive-keychain-commons';
 import {
   GlobalProperties,
   RewardFund,

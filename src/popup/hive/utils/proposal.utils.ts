@@ -1,5 +1,4 @@
-import {
-  Asset,
+import type {
   CreateProposalOperation,
   DynamicGlobalProperties,
   RemoveProposalOperation,
@@ -7,6 +6,7 @@ import {
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
+import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -250,7 +250,8 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   );
 
   const voteDifference =
-    keychainProposal.totalVotes - returnProposal.totalVotes;
+    keychainProposal?.totalVotes - returnProposal?.totalVotes ||
+    Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
 
   return voteDifference < Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
 };

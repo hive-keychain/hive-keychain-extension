@@ -1,4 +1,4 @@
-import { BuyCoinType } from '@popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
+import { BuyPageType } from '@popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import BuyExchanges from '@popup/hive/pages/app-container/home/buy-coins/buy-exchanges/buy-exchanges.component';
 import BuyRamps from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { SwapCryptosComponent } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.component';
@@ -14,7 +14,7 @@ const BuyCoins = ({
   activeAccountName,
   price,
 }: PropsFromRedux) => {
-  const [buyType, setBuyType] = useState(BuyCoinType.CRYPTO);
+  const [buyType, setBuyType] = useState(BuyPageType.CRYPTO);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -23,17 +23,17 @@ const BuyCoins = ({
     });
   }, []);
 
-  const changeSelectedCurrency = (selectedValue: BuyCoinType) => {
+  const changeSelectedCurrency = (selectedValue: BuyPageType) => {
     setBuyType(selectedValue);
   };
 
   const renderPage = () => {
     switch (buyType) {
-      case BuyCoinType.EXCHANGES:
+      case BuyPageType.EXCHANGES:
         return <BuyExchanges />;
-      case BuyCoinType.FIAT:
+      case BuyPageType.FIAT:
         return <BuyRamps username={activeAccountName} price={price} />;
-      case BuyCoinType.CRYPTO:
+      case BuyPageType.CRYPTO:
         return <SwapCryptosComponent />;
       default:
         return null;
@@ -53,12 +53,12 @@ const BuyCoins = ({
           //   label: BuyCoinType.FIAT,
           // },
           {
-            value: BuyCoinType.CRYPTO,
-            label: BuyCoinType.CRYPTO,
+            value: BuyPageType.CRYPTO,
+            label: BuyPageType.CRYPTO,
           },
           {
-            value: BuyCoinType.EXCHANGES,
-            label: BuyCoinType.EXCHANGES,
+            value: BuyPageType.EXCHANGES,
+            label: BuyPageType.EXCHANGES,
           },
         ]}
       />

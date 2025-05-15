@@ -5,8 +5,7 @@ import {
 import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
-import { SignedTransaction } from '@hiveio/dhive';
-import { sleep } from '@hiveio/dhive/lib/utils';
+import type { SignedTransaction } from '@hiveio/dhive';
 import { TransactionOptionsMetadata } from '@interfaces/keys.interface';
 import {
   ConnectDisconnectMessage,
@@ -41,6 +40,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
 import Config from 'src/config';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
@@ -103,7 +103,7 @@ const setupRefreshConnections = () => {
         const accountMultisigConfig = multisigConfig[value.account];
         if (value.connect) {
           if (!socket.connected) socket.connect();
-          await sleep(1000);
+          await AsyncUtils.sleep(1000);
           connectSocket(multisigConfig);
           shouldReconnectSocket = true;
           connectToBackend(value.account, accountMultisigConfig);
@@ -138,59 +138,60 @@ const setupPopupListener = () => {
         BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
-
-        if (!socket.connected) {
-          shouldReconnectSocket = true;
-          socket.connect();
-          connectSocket({});
-          await sleep(1000);
-        }
-        const config: MultisigConfig =
-          (await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.MULTISIG_CONFIG,
-          )) || {};
-        if (
-          !config[data.initiatorAccount.name]?.[
-            data.method?.toLowerCase() as 'posting' | 'active'
-          ].isEnabled
-        ) {
-          const config = {
-            isEnabled: true,
-            posting:
-              data.method.toLowerCase() === 'posting'
-                ? {
-                    isEnabled: true,
-                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
-                      data.key!,
-                    )!,
-                    message: signMessage(
-                      data.initiatorAccount.name!,
-                      data.key?.toString()!,
-                    ),
-                  }
-                : { isEnabled: false, message: '', publicKey: '' },
-            active:
-              data.method.toLowerCase() === 'active'
-                ? {
-                    isEnabled: true,
-                    publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(
-                      data.key!,
-                    )!,
-                    message: signMessage(
-                      data.initiatorAccount.name!,
-                      data.key?.toString()!,
-                    ),
-                  }
-                : { isEnabled: false, message: '', publicKey: '' },
-          };
-          await connectToBackend(data.initiatorAccount.name, config);
-
-          await sleep(1000);
-        }
+        await createConnectionIfNeeded(data);
         requestSignatures(data, true);
       }
     },
   );
+};
+
+// When the socket has not been initialized because multisig is not enabled for any account
+// this allows to create a connection on the go to wait for a multisig response
+const createConnectionIfNeeded = async (data: MultisigRequestSignatures) => {
+  if (!socket.connected) {
+    shouldReconnectSocket = true;
+    socket.connect();
+    connectSocket({});
+    await AsyncUtils.sleep(1000);
+  }
+  const config: MultisigConfig =
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.MULTISIG_CONFIG,
+    )) || {};
+  if (
+    !config[data.initiatorAccount.name]?.[
+      data.method?.toLowerCase() as 'posting' | 'active'
+    ].isEnabled
+  ) {
+    const config = {
+      isEnabled: true,
+      posting:
+        data.method.toLowerCase() === 'posting'
+          ? {
+              isEnabled: true,
+              publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(data.key!)!,
+              message: signMessage(
+                data.initiatorAccount.name!,
+                data.key?.toString()!,
+              ),
+            }
+          : { isEnabled: false, message: '', publicKey: '' },
+      active:
+        data.method.toLowerCase() === 'active'
+          ? {
+              isEnabled: true,
+              publicKey: KeysUtils.getPublicKeyFromPrivateKeyString(data.key!)!,
+              message: signMessage(
+                data.initiatorAccount.name!,
+                data.key?.toString()!,
+              ),
+            }
+          : { isEnabled: false, message: '', publicKey: '' },
+    };
+    await connectToBackend(data.initiatorAccount.name, config);
+
+    await AsyncUtils.sleep(1000);
+  }
 };
 
 const requestSignatures = async (
@@ -198,6 +199,7 @@ const requestSignatures = async (
   useRuntimeMessages?: boolean,
 ) => {
   return new Promise(async (resolve, reject) => {
+    await createConnectionIfNeeded(data);
     const message = await getRequestSignatureMessage(data);
     try {
       socket.volatile.emit(
@@ -230,6 +232,7 @@ const requestSignatures = async (
                   command: DialogCommand.SEND_DIALOG_ERROR,
                   msg: { display_msg: await chrome.i18n.getMessage(err) },
                 });
+                resolve({ error: { message: err } });
               }
             }
           },
@@ -254,6 +257,17 @@ const initAccountsConnections = async (multisigConfig: MultisigConfig) => {
 };
 
 const connectSocket = (multisigConfig: MultisigConfig) => {
+  socket.removeAllListeners(SocketMessageCommand.REQUEST_SIGN_TRANSACTION);
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_BROADCASTED_NOTIFICATION,
+  );
+  socket.removeAllListeners(
+    SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION,
+  );
+  socket.removeAllListeners('connect');
+  socket.removeAllListeners('error');
+  socket.removeAllListeners('disconnect');
+
   socket.on('connect', () => {
     Logger.info('Connected to socket');
 
@@ -267,17 +281,20 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     Logger.info('Disconnected from socket');
     socket.connect();
   });
-
   socket.on(
     SocketMessageCommand.REQUEST_SIGN_TRANSACTION,
     async (signatureRequest: SignatureRequest) => {
-      const signer = signatureRequest.signers.find((signer: Signer) => {
-        return signer.publicKey === signatureRequest.targetedPublicKey;
-      });
+      const signerIndex = signatureRequest.signers.findIndex(
+        (signer: Signer) => {
+          return signer.publicKey === signatureRequest.targetedPublicKey;
+        },
+      );
 
-      if (!signer) {
+      if (signerIndex === -1) {
         return;
       }
+      const signer = signatureRequest.signers[signerIndex];
+      await AsyncUtils.sleep(800 * (signerIndex + 2));
 
       const signedTransaction = await MultisigModule.processSignatureRequest(
         signatureRequest,
@@ -364,7 +381,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
     },
   );
   socket.on(SocketMessageCommand.TRANSACTION_ERROR_NOTIFICATION, async (e) => {
-    await sleep(200);
+    await AsyncUtils.sleep(200);
     if (!lockedRequests.includes(e.signatureRequest.id)) {
       lockedRequests.push(e.signatureRequest.id);
       openWindow({
@@ -465,7 +482,7 @@ const getRequestSignatureMessage = async (
 
     const signers: RequestSignatureSigner[] = [];
     for (const [receiverPubKey, weight] of potentialSigners) {
-      const metaData: TransactionOptionsMetadata = data.options.metaData ?? {};
+      const metaData: TransactionOptionsMetadata = data.options?.metaData ?? {};
       const usernames = await KeysUtils.getKeyReferences([receiverPubKey]);
       let twoFACodes = {};
       if (data.options?.metaData?.twoFACodes) {
@@ -703,8 +720,6 @@ const encodeMetadata = async (
   return await MultisigUtils.encodeMetadata(metaData, key, receiverPublicKey);
 };
 
-const notifyTransactionBroadcasted = (signatureRequest: SignatureRequest) => {};
-let multisigWindowId: number | undefined;
 const openWindow = (data: MultisigData): void => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -719,9 +734,7 @@ const openWindow = (data: MultisigData): void => {
     // Except on Firefox
     //@ts-ignore
     if (typeof InstallTrigger === undefined) win.focused = true;
-    if (multisigWindowId) chrome.windows.remove(multisigWindowId);
     chrome.windows.create(win, (window) => {
-      multisigWindowId = window?.id;
       waitUntilDialogIsReady(100, MultisigDialogCommand.READY_MULTISIG, () => {
         chrome.runtime.sendMessage({
           command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,

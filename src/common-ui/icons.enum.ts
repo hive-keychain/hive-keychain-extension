@@ -73,6 +73,7 @@ export enum SVGIcons {
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
   MENU_ACCOUNTS_EXPORT = 'menu/accounts/export',
+  MENU_EXPORT_ACCOUNTS_QR = 'menu/accounts/qr_code',
   MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
   MENU_ACCOUNTS_MANAGE_AUTHORITIES = 'menu/accounts/manage-authorities',
 

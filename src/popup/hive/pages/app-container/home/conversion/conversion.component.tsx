@@ -1,4 +1,3 @@
-import { Asset } from '@hiveio/dhive';
 import { joiResolver } from '@hookform/resolvers/joi';
 import {
   KeychainKeyTypes,
@@ -19,6 +18,7 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { Asset } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,7 +31,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { Conversion } from 'src/interfaces/conversion.interface';
+import { Conversion as ConversionInterface } from 'src/interfaces/conversion.interface';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
@@ -86,9 +86,9 @@ const Conversion = ({
 
   const [available, setAvailable] = useState<string | number>('...');
   const [totalPending, setTotalPending] = useState<number>(0);
-  const [pendingConversions, setPendingConversions] = useState<Conversion[]>(
-    [],
-  );
+  const [pendingConversions, setPendingConversions] = useState<
+    ConversionInterface[]
+  >([]);
 
   useEffect(() => {
     setTitleContainerProperties({ title: title, isBackButtonEnabled: true });
@@ -97,8 +97,12 @@ const Conversion = ({
   useEffect(() => {
     fetchConversionRequests(activeAccount.name!);
 
-    const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
-    const hbdBalance = FormatUtils.toNumber(activeAccount.account.hbd_balance);
+    const hiveBalance = FormatUtils.toNumber(
+      activeAccount.account.balance as string,
+    );
+    const hbdBalance = FormatUtils.toNumber(
+      activeAccount.account.hbd_balance as string,
+    );
 
     setAvailable(
       conversionType === ConversionType.CONVERT_HIVE_TO_HBD
@@ -108,7 +112,7 @@ const Conversion = ({
   }, [activeAccount]);
 
   useEffect(() => {
-    const conv: Conversion[] = conversions.filter((conversion) => {
+    const conv: ConversionInterface[] = conversions.filter((conversion) => {
       return (
         (conversionType === ConversionType.CONVERT_HIVE_TO_HBD &&
           conversion.collaterized) ||
@@ -285,7 +289,7 @@ const mapStateToProps = (state: RootState) => {
     ),
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
-    conversions: state.hive.conversions as Conversion[],
+    conversions: state.hive.conversions as ConversionInterface[],
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

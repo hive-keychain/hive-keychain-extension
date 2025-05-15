@@ -241,7 +241,6 @@ const Home = ({
             <ActionsSectionComponent
               additionalClass={showBottomBar ? undefined : 'down'}
             />
-            <ProposalVotingSectionComponent />
           </>
         )}
 

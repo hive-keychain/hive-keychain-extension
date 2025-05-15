@@ -10,6 +10,7 @@ type Props = {
   currency: string;
   username: string;
   hiveEngineConfig: HiveEngineConfig;
+  precision?: number;
 };
 
 const RequestTokenBalance = ({
@@ -17,6 +18,7 @@ const RequestTokenBalance = ({
   amount,
   currency,
   hiveEngineConfig,
+  precision,
 }: Props) => {
   const [balance, setBalance] = useState('');
   const [newBalance, setNewBalance] = useState('');
@@ -33,17 +35,19 @@ const RequestTokenBalance = ({
         setBalance(
           `${FormatUtils.formatCurrencyValue(
             bal,
-            token.precision,
+            precision,
+            true,
           )} ${currency}`,
         );
         setNewBalance(
           `${FormatUtils.formatCurrencyValue(
             newBal,
-            token.precision,
+            precision,
+            true,
           )} ${currency}`,
         );
       });
-  }, [username]);
+  }, [username, precision]);
 
   return (
     <RequestItem

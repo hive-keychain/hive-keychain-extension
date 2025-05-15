@@ -24,7 +24,7 @@ const Config = {
   analytics: {
     frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
   },
-  KEYCHAIN_PROPOSAL: 306,
+  KEYCHAIN_PROPOSAL: 341,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {
@@ -36,6 +36,7 @@ const Config = {
   },
   transactions: {
     expirationTimeInMinutes: 10,
+    multisigExpirationTimeInMinutes: 60,
   },
   swaps: {
     autoRefreshPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),

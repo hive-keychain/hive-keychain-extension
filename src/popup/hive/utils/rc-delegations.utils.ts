@@ -1,7 +1,7 @@
-import { Asset } from '@hiveio/dhive';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
+import { Asset } from 'hive-keychain-commons';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 

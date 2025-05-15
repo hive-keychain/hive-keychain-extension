@@ -1,45 +1,59 @@
-import {
+import type {
   RecurrentTransferOperation,
   Transaction,
   TransferOperation,
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
-import { exchanges } from '@popup/hive/pages/app-container/home/buy-coins/buy-exchanges/buy-exchanges-list-item.list';
-import { getPrivateKeysMemoValidationWarning } from 'hive-keychain-commons';
+import {
+  ExchangesUtils,
+  TransferUtils as TransferUtilsCommons,
+  TransferWarning,
+} from 'hive-keychain-commons';
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
-const getTransferWarning = (
+const getTransferWarningLabel = (
   account: string,
   currency: string,
   memo: any,
   phisingAccounts: any,
   isRecurrent?: boolean,
 ) => {
-  const exchangeWarning = getExchangeValidationWarning(
+  const warning = TransferUtilsCommons.getTransferWarning(
     account,
     currency,
-    memo.length > 0,
+    memo,
+    phisingAccounts,
     isRecurrent,
   );
-  if (exchangeWarning) return exchangeWarning;
-
-  const privateKeyInMemoWarning = getPrivateKeysMemoValidationWarning(memo);
-  if (privateKeyInMemoWarning)
-    return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
-
-  if (phisingAccounts.includes(account)) {
-    return chrome.i18n.getMessage('popup_warning_phishing', [account]);
+  switch (warning) {
+    case TransferWarning.PHISHING:
+      return chrome.i18n.getMessage('popup_warning_phishing', [account]);
+    case TransferWarning.EXCHANGE_MEMO:
+      return chrome.i18n.getMessage('popup_warning_exchange_memo');
+    case TransferWarning.EXCHANGE_RECURRENT:
+      return chrome.i18n.getMessage(
+        'popup_html_transfer_recurrent_exchange_warning',
+      );
+    case TransferWarning.EXCHANGE_DEPOSIT:
+      return chrome.i18n.getMessage('popup_warning_exchange_deposit', [
+        currency,
+      ]);
+    case TransferWarning.PRIVATE_KEY_IN_MEMO:
+      return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+    default:
+      return;
   }
-
-  return;
 };
-
 const getTransferFromToSavingsValidationWarning = (
   account: string,
   operation: SavingOperationType,
 ) => {
-  if (exchanges.map((exchange) => exchange.username).includes(account)) {
+  if (
+    ExchangesUtils.getExchanges()
+      .map((exchange) => exchange.username)
+      .includes(account)
+  ) {
     if (operation === SavingOperationType.DEPOSIT) {
       return chrome.i18n.getMessage(
         'popup_html_transfer_to_saving_to_exchange_error',
@@ -50,31 +64,6 @@ const getTransferFromToSavingsValidationWarning = (
       );
     }
   }
-};
-
-const getExchangeValidationWarning = (
-  account: string,
-  currency: string,
-  hasMemo: boolean,
-  isRecurrent?: boolean,
-) => {
-  const exchange = exchanges.find((exchange) => exchange.username === account);
-  if (!exchange) return;
-  if (!exchange.acceptedCoins.includes(currency)) {
-    return chrome.i18n.getMessage('popup_warning_exchange_deposit', [currency]);
-  }
-  if (!hasMemo) return chrome.i18n.getMessage('popup_warning_exchange_memo');
-  if (isRecurrent)
-    return chrome.i18n.getMessage(
-      'popup_html_transfer_recurrent_exchange_warning',
-    );
-  // if (exchange.account === 'bittrex') {
-  //   const info = await CurrencyPricesUtils.getBittrexCurrency(currency);
-  //   if (info && !info.IsActive) {
-  //     return chrome.i18n.getMessage('popup_warning_exchange_wallet');
-  //   }
-  // }
-  return;
 };
 
 const sendTransfer = (
@@ -181,13 +170,12 @@ const getTransferTransaction = (
 };
 
 const TransferUtils = {
-  getExchangeValidationWarning,
   getTransferFromToSavingsValidationWarning,
   sendTransfer,
   getTransferOperation,
   getRecurrentTransferOperation,
   getTransferTransaction,
-  getTransferWarning,
+  getTransferWarningLabel,
 };
 
 export default TransferUtils;

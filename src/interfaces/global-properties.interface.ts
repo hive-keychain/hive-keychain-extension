@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties, Price } from '@hiveio/dhive';
+import type { DynamicGlobalProperties, Price } from '@hiveio/dhive';
 
 export interface RewardFund {
   author_reward_curve: string;

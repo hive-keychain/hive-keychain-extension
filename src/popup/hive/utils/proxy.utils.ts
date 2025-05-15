@@ -1,4 +1,7 @@
-import { AccountWitnessProxyOperation, ExtendedAccount } from '@hiveio/dhive';
+import type {
+  AccountWitnessProxyOperation,
+  ExtendedAccount,
+} from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';

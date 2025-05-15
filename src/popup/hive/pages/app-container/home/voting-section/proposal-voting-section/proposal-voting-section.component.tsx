@@ -17,14 +17,9 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -76,6 +71,8 @@ const ProposalVotingSection = ({
   };
 
   const handleVoteForProposalClicked = async () => {
+    setForcedClosed(true);
+
     const twoFaAccounts = await MultisigUtils.get2FAAccounts(
       activeAccount.account,
       KeychainKeyTypes.active,
@@ -120,13 +117,6 @@ const ProposalVotingSection = ({
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');
     }
-    setForcedClosed(true);
-  };
-
-  const handleReadClicked = () => {
-    chrome.tabs.create({
-      url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
-    });
   };
 
   const handleClose = async (event: any) => {
@@ -142,7 +132,6 @@ const ProposalVotingSection = ({
     if (!localSkipped[activeAccount.name!]) {
       localSkipped[activeAccount.name!] = [];
     }
-
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.PROPOSAL_SKIPPED,
       {
@@ -158,20 +147,40 @@ const ProposalVotingSection = ({
   return (
     <PopupContainer className="proposal-voting-section">
       <div className="popup-title">
-        <SVGIcon icon={SVGIcons.TOP_BAR_CLOSE_BTN} onClick={handleClose} />
         {chrome.i18n.getMessage('popup_html_proposal_vote')}
       </div>
+      <img
+        className="popup-icon"
+        src={
+          'https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/stoodkev/23wXG62TYT2yVFnmLB3hwg9hsL9jmEHYow667J1bVk1ebowRwEnNu3ckaHxHohcatE5v8.png'
+        }
+      />
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_proposal_request')}
+        <div>
+          Hive Keychain is developed thanks to our community support through the
+          Decentralized Hive Fund.
+        </div>
+        <br />
+        <div>
+          We need your help to continue our work on Hive Keychain Apps and
+          extensions. Please consider supporting our DHF proposal with your
+          vote.
+        </div>
+        <br />
+        <div>
+          Read more{' '}
+          <a
+            href={`https://peakd.com/proposals/${Config.KEYCHAIN_PROPOSAL}`}
+            target="_blank">
+            here
+          </a>
+          .
+        </div>
       </div>
       <div className="popup-footer">
-        <ButtonComponent
-          type={ButtonType.ALTERNATIVE}
-          dataTestId="button-read-proposal"
-          onClick={handleReadClicked}
-          label={'html_popup_read'}
-          height="small"
-        />
+        <div className="text-button" onClick={handleClose}>
+          I won't support
+        </div>
         <OperationButtonComponent
           dataTestId="vote-key-chain-proposal"
           requiredKey={KeychainKeyTypesLC.active}

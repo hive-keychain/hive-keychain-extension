@@ -19,6 +19,7 @@
     &.wallet-filter-button {
       @include small-card;
       padding: 6px 16px;
+      margin: 0px;
       @include icon-size(18px);
     }
   }

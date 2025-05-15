@@ -11,7 +11,7 @@ if (process.env.IS_FIREFOX) {
   }
 }
 
-import {
+import type {
   AccountCreateOperation,
   AccountCreateWithDelegationOperation,
   AccountUpdate2Operation,
@@ -394,7 +394,12 @@ const get2FAAccounts = async (
   );
   const botNames = [];
   for (const extendedAccount of extendedAccounts) {
-    const metadata = JSON.parse(extendedAccount.json_metadata);
+    let metadata;
+    try {
+      metadata = JSON.parse(extendedAccount['json_metadata']);
+    } catch (e) {
+      continue;
+    }
     if (metadata.isMultisigBot) {
       botNames.push(extendedAccount.name);
     }
