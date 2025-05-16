@@ -19,6 +19,8 @@ import { HDNodeWallet } from 'ethers';
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
   async (dispatch, getState) => {
+    console.log('Loading new active account', wallet.address);
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {

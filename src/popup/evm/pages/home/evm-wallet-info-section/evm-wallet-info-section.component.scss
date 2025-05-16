@@ -27,6 +27,13 @@
     }
   }
 
+  .empty-history-panel {
+    @include no-data-panel();
+    z-index: 2;
+    border: unset;
+    flex: 1;
+  }
+
   .wallet-background {
     background: var(--wallet-card-background);
     grid-area: only;

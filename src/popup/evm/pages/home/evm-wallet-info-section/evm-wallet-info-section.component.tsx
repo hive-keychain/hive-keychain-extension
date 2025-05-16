@@ -49,6 +49,7 @@ const WalletInfoSection = ({
   }, [activeAccount.isInitialized]);
 
   const loadHistory = async () => {
+    console.log('starting load history');
     setLoadingHistory(true);
     setHistory(
       await EvmTokensHistoryUtils.fetchHistory(

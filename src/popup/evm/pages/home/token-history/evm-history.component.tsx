@@ -1,3 +1,4 @@
+import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -27,7 +28,7 @@ export const EvmHistoryComponent = ({
     <>
       {history && (
         <>
-          {history && history.events.length > 0 && (
+          {history && (
             <FlatList
               ref={historyItemList}
               list={history.events}
@@ -76,6 +77,7 @@ export const EvmHistoryComponent = ({
               <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
             </div>
           )}
+          {loading && <RotatingLogoComponent />}
         </>
       )}
     </>

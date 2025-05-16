@@ -415,13 +415,19 @@ const getTokenListForWalletAddress = async (
   }
 };
 
-const getMetadataFromBackend = (
+const getMetadataFromBackend = async (
   addresses: string[],
   chain: EvmChain,
 ): Promise<EvmSmartContractInfo[]> => {
-  return KeychainApi.get(
-    `evm/smart-contracts-info/${chain.chainId}/${addresses?.join(',')}`,
-  );
+  try {
+    const result = await KeychainApi.get(
+      `evm/smart-contracts-info/${chain.chainId}/${addresses?.join(',')}`,
+    );
+    return result ?? [];
+  } catch (err) {
+    Logger.error('Error while fetching metadata', err);
+    return [] as EvmSmartContractInfo[];
+  }
 };
 
 const getTokenInfo = async (
