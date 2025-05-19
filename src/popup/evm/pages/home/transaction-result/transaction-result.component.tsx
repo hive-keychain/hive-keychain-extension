@@ -281,8 +281,6 @@ const EvmTransactionResult = ({
           <GasFeePanel
             chain={chain}
             tokenInfo={tokenInfo}
-            // receiverAddress={receiverAddress}
-            // amount={amount}
             wallet={localAccounts[0].wallet}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}

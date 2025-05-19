@@ -18,7 +18,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   }, []);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    console.log({ event }, event.key, event.ctrlKey);
+    // console.log({ event }, event.key, event.ctrlKey);
 
     if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
       setTheme((previous) => {

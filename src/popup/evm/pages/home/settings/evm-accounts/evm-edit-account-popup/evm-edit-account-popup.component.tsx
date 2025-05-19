@@ -23,8 +23,6 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
 
   const [value, setValue] = useState(initialValue);
 
-  console.log(editParams);
-
   return (
     <PopupContainer className="seed-nickname-popup">
       <div className="popup-title">{chrome.i18n.getMessage(title)}</div>

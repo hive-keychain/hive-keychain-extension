@@ -1,9 +1,20 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
-import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import {
+  EvmTokenTransferInHistoryItem,
+  EvmTokenTransferOutHistoryItem,
+  EvmUserHistory,
+  EvmUserHistoryItem,
+  EvmUserHistoryItemType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
 import React, { useRef, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -14,15 +25,61 @@ interface Props {
   onClickOnLoadMore: () => void;
 }
 
-export const EvmHistoryComponent = ({
+export const EvmHistory = ({
   history,
   chain,
   loading,
   onClickOnLoadMore,
-}: Props) => {
+  navigateToWithParams,
+}: PropsFromRedux) => {
   const historyItemList = useRef<HTMLDivElement>(null);
 
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+
+  const goToDetailsPage = async (
+    transactionHash: string,
+    historyItem: EvmUserHistoryItem,
+  ) => {
+    const transactionResponse = await EthersUtils.getProvider(
+      chain,
+    ).getTransaction(transactionHash);
+
+    console.log({ transactionResponse, historyItem });
+
+    switch (historyItem.type) {
+      case EvmUserHistoryItemType.TRANSFER_IN: {
+        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+          transactionResponse: transactionResponse,
+          // tokenInfo: historyItem..tokenInfo,
+          receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
+          amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
+          isCanceled: historyItem.isCanceled,
+        });
+        break;
+      }
+      case EvmUserHistoryItemType.TRANSFER_OUT: {
+        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+          transactionResponse: transactionResponse,
+          // token: token.tokenInfo,
+          receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
+          amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+          isCanceled: historyItem.isCanceled,
+        });
+        break;
+      }
+      default: {
+        console.log('no nav set up');
+        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+          transactionResponse: transactionResponse,
+          // token: token.tokenInfo,
+          // receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
+          // amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+          isCanceled: historyItem.isCanceled,
+        });
+        break;
+      }
+    }
+  };
 
   return (
     <>
@@ -37,10 +94,10 @@ export const EvmHistoryComponent = ({
                   key={event.transactionHash}
                   historyItem={event}
                   chain={chain}
-                  goToDetailsPage={
-                    () => console.log(event)
-                    //   goToDetailsPage(event.transactionHash, event)
-                  }
+                  goToDetailsPage={() => {
+                    console.log(event);
+                    goToDetailsPage(event.transactionHash, event);
+                  }}
                 />
               )}
               renderOnScroll
@@ -83,3 +140,14 @@ export const EvmHistoryComponent = ({
     </>
   );
 };
+
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const connector = connect(mapStateToProps, {
+  navigateToWithParams,
+});
+type PropsFromRedux = ConnectedProps<typeof connector> & Props;
+
+export const EvmHistoryComponent = connector(EvmHistory);

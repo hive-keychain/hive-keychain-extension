@@ -312,6 +312,7 @@ const getLabel = async (
         ]);
       }
       default: {
+        console.log(decodedData, metadata, tokenMetadata);
         return chrome.i18n.getMessage(
           'evm_history_operation_generic_smart_contract_messages',
           [decodedData.operationName, name],
