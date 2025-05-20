@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "3.9.5",
+  "version": "3.9.6",
   "permissions": ["storage", "idle", "alarms"],
   "host_permissions": ["https://*/*"],
   "action": {
