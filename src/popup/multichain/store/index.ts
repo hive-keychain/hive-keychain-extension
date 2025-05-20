@@ -4,17 +4,12 @@ import reducers from '@popup/multichain/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
-// import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-// const composeEnhancers = composeWithDevTools({
-//   realtime: true,
-//   port: 8000,
-// });
 /* istanbul ignore next */
 const store = createStore(
   reducers,
