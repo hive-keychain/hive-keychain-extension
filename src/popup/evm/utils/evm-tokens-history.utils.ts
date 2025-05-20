@@ -32,6 +32,8 @@ const fetchHistory = async (
   chain: EvmChain,
   history?: EvmUserHistory,
 ) => {
+  const start = Date.now();
+
   const RESULTS_PER_PAGE = 100;
 
   if (!history) {
@@ -56,6 +58,8 @@ const fetchHistory = async (
     RESULTS_PER_PAGE,
   );
 
+  console.log('End fetch', (Date.now() - start) / 1000);
+
   if (response.result.length !== RESULTS_PER_PAGE) history.fullyFetch = true;
 
   events = [...events, ...response.result];
@@ -65,6 +69,7 @@ const fetchHistory = async (
       .map((event) => event.contractAddress),
   );
 
+  console.log('----- Get metadata from backend -----');
   const metadata = await EvmTokensUtils.getMetadataFromBackend(
     ArrayUtils.inAButNotB(
       allSmartContractsAddresses,
@@ -82,9 +87,14 @@ const fetchHistory = async (
     ),
     chain,
   );
+  console.log(
+    '-----End Get metadata from backend -----',
+    (Date.now() - start) / 1000,
+  );
 
   const tokenMetadata = [...allTokensMetadata, ...metadata];
 
+  console.log('start parsing');
   // console.log({ metadata, allTokensMetadata });
   for (const event of events) {
     let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
@@ -182,6 +192,7 @@ const fetchHistory = async (
     //     );
     //   }
   }
+  console.log('end parsing', (Date.now() - start) / 1000);
   console.log({ history });
   return history;
 };
