@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.9.4",
+  "version": "3.9.6",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -49,7 +49,7 @@
   "dependencies": {
     "@engrave/ledger-app-hive": "3.5.6",
     "@ethersproject/abi": "^5.7.0",
-    "@hiveio/hive-js": "2.0.4",
+    "@hiveio/hive-js": "^2.0.8",
     "@hookform/resolvers": "3.1.1",
     "@ledgerhq/hw-transport": "6.28.8",
     "@ledgerhq/hw-transport-webusb": "^6.27.19",
@@ -59,14 +59,14 @@
     "@types/crypto-js": "4.1.1",
     "@types/sanitize-html": "^2.13.0",
     "@types/yargs": "17.0.11",
-    "axios": "0.28.0",
-    "crypto-js": "4.1.1",
+    "axios": "^1.9.0",
+    "crypto-js": "4.2",
     "decimal.js": "10.4.3",
     "eth-method-registry": "^4.0.0",
     "ethers": "^6.11.1",
     "evm-proxy-detection": "^2.0.1",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.8.2",
+    "hive-keychain-commons": "^1.9.0",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "hive-uri": "^0.2.5",
     "joi": "^17.13.3",
@@ -100,7 +100,7 @@
     "sass": "1.65.1",
     "scss-tokenizer": "0.4.3",
     "socket.io-client": "4.7.5",
-    "sscjs": "0.0.9",
+    "sscjs": "github:hive-keychain/sscjs",
     "url-loader": "4.1.1",
     "valid-url": "1.0.9",
     "websocket": "1.0.34"
@@ -118,7 +118,7 @@
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "14.4.3",
     "@types/chrome": "^0.0.243",
-    "@types/crypto-js": "4.1.1",
+    "@types/crypto-js": "4.2",
     "@types/gtag.js": "0.0.12",
     "@types/jest": "27.5.2",
     "@types/lodash.debounce": "^4.0.7",
@@ -130,7 +130,6 @@
     "@types/react-dom": "17.0.2",
     "@types/react-tabs": "2.3.4",
     "@types/redux-mock-store": "1.0.3",
-    "@types/remote-redux-devtools": "0.5.5",
     "@types/sinon-chrome": "2.2.11",
     "@types/websocket": "^1.0.10",
     "@types/yargs": "17.0.11",
@@ -154,7 +153,6 @@
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
-    "remote-redux-devtools": "0.5.16",
     "sass-loader": "13.0.2",
     "sinon-chrome": "3.0.1",
     "style-loader": "3.3.1",
@@ -170,7 +168,8 @@
   },
   "resolutions": {
     "@types/react": "17.0.2",
-    "@types/react-dom": "17.0.2"
+    "@types/react-dom": "17.0.2",
+    "ws": "8.17.1"
   },
   "overrides": {
     "sass-graph": {

@@ -32,6 +32,7 @@ import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 let rpc: string | undefined = '';
@@ -128,6 +129,7 @@ const HiveApp = ({
 
     let accountsFromStorage: LocalAccount[] = [];
     if (storedAccounts && mk) {
+      await AsyncUtils.sleep(500);
       accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(mk);
       setAccounts(accountsFromStorage);
     }
