@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests/request-handler';
-import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import { AUTH_PAYLOAD, AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
 import {
   KeychainRequest,
@@ -88,23 +88,21 @@ const register = async (
       },
     };
 
-    const auth_wait = await HASUtils.authenticate(keylessRequest);
-    keylessRequest.uuid = auth_wait.uuid;
-    keylessRequest.expire = auth_wait.expire;
+    const authWait = await HASUtils.authenticate(keylessRequest);
+    keylessRequest.uuid = authWait.uuid;
+    keylessRequest.expire = authWait.expire;
     await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
       keylessRequest,
-      auth_wait,
+      authWait,
     );
-    const auth_payload: AUTH_PAYLOAD = {
+    const authPayload: AUTH_PAYLOAD = {
       account: username,
-      uuid: auth_wait.uuid,
+      uuid: authWait.uuid,
       key: keylessRequest.authKey,
       host: Config.keyless.host,
     };
-    const auth_payload_uri = await HASUtils.generateAuthPayloadURI(
-      auth_payload,
-    );
-    showQRCode(keylessRequest, domain, auth_payload_uri);
+    const authPayloadUri = await HASUtils.generateAuthPayloadURI(authPayload);
+    showQRCode(keylessRequest, domain, authPayloadUri);
     await HASUtils.listenToAuthAck(
       requestHandler,
       username,
@@ -113,17 +111,16 @@ const register = async (
     );
   }
 };
-
 const showQRCode = (
   request: KeychainRequest | KeylessRequest,
   domain: string,
-  auth_payload_uri: AUTH_PAYLOAD_URI,
+  authPayloadUri: AUTH_PAYLOAD_URI,
 ) => {
   chrome.runtime.sendMessage({
     command: DialogCommand.REGISTER_KEYLESS_KEYCHAIN,
     data: request,
     domain,
-    auth_payload_uri,
+    authPayloadUri,
   });
 };
 

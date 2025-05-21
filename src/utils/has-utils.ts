@@ -1,6 +1,6 @@
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import KeylessKeychainUtils from '@background/utils/keylessKeychain.utils';
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import {
   AUTH_ACK,
   AUTH_ACK_DATA,

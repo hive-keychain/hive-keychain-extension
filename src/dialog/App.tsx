@@ -4,7 +4,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import AddAccountQR from 'src/dialog/pages/add-account-qr/add-account-qr';
 import DialogError from 'src/dialog/pages/error';
-import KeylessUsername from 'src/dialog/pages/keyless-username/keyless-username';
+import { KeylessUsernameComponent } from 'src/dialog/pages/keyless-username/keyless-username';
 import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
 import Register from 'src/dialog/pages/register/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
@@ -83,7 +83,7 @@ const App = () => {
       case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
         return <RegisterKeylessComponent data={data} />;
       case DialogCommand.ANONYMOUS_KEYLESS_OP:
-        return <KeylessUsername data={data} />;
+        return <KeylessUsernameComponent data={data} />;
       case DialogCommand.ADD_ACCOUNT:
         return <AddAccountQR data={data} />;
       default:

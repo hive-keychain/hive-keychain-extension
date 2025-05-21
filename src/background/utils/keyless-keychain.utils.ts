@@ -87,7 +87,12 @@ const generateKeylessAuthData = async (
   }
 };
 
-const generateSecureHexKey = (length = 32) => {
+/**
+ * Generate a secure hex key
+ * @param length - The length of the key
+ * @returns The secure hex key
+ */
+const generateSecureHexKey = (length: number = 32) => {
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
   return Array.from(array)
@@ -299,7 +304,7 @@ const encryptHiveAuthRequestData = async (
   return { encryptedHiveAuthRequestData, keylessAuthData };
 };
 
-const KeylessKeychainUtils = {
+export const KeylessKeychainUtils = {
   registerUserAndDapp,
   getKeylessAuthDataByUUID,
   getKeylessAuthDataByAppName,
@@ -310,5 +315,3 @@ const KeylessKeychainUtils = {
   isKeylessAuthDataRegistered,
   encryptHiveAuthRequestData,
 };
-
-export default KeylessKeychainUtils;

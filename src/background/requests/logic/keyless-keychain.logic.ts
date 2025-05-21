@@ -18,10 +18,10 @@ export const keylessKeychainRequest = async (
 ) => {
   const keylessAuthData =
     await KeylessKeychainModule.getKeylessRegistrationInfo(
-    request,
-    domain,
-    tab,
-  );
+      request,
+      domain,
+      tab,
+    );
   if (
     anonymousRequests.includes(request.type) &&
     (!request.username || request.username.trim() === '')
