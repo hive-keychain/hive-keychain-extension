@@ -9,17 +9,18 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 
-type KeylessUsernameProps = {
+interface KeylessUsernameProps {
   command: DialogCommand;
   requestHandler: RequestsHandler;
   data: KeychainRequest;
   tab: number;
   domain: string;
-};
+}
 
-type Props = {
+interface Props {
   data: KeylessUsernameProps;
-};
+}
+
 const KeylessUsername = (props: Props) => {
   const { requestHandler, data, domain, tab } = props.data;
   const [username, setUsername] = useState('');
@@ -69,11 +70,9 @@ const KeylessUsername = (props: Props) => {
         title={chrome.i18n.getMessage('dialog_header_keyless_username')}
       />
       <div className="content">
-        <div
-          className="caption"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('dialog_anonymous_keyless_content'),
-          }}></div>
+        <div className="caption">
+          {chrome.i18n.getMessage('dialog_anonymous_keyless_content')}
+        </div>
       </div>
       <div className="inputs-panel">
         <InputComponent
@@ -95,4 +94,4 @@ const KeylessUsername = (props: Props) => {
   );
 };
 
-export default KeylessUsername;
+export const KeylessUsernameComponent = KeylessUsername;

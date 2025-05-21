@@ -26,4 +26,26 @@
     margin-top: auto;
     padding-bottom: 24px;
   }
+
+  .qr-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    position: relative;
+
+    .qr-code {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .expire-seconds {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      // margin-top: 5px;
+    }
+  }
 }

@@ -7,7 +7,6 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
-import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 
@@ -17,17 +16,21 @@ type RegisterKeylessProps = {
   data: KeychainRequest | KeylessRequest;
   tab: number;
   domain: string;
-  auth_payload_uri?: AUTH_PAYLOAD_URI;
+  authPayloadUri?: AUTH_PAYLOAD_URI;
 };
 
 type Props = {
   data: RegisterKeylessProps;
 };
 const RegisterKeyless = (props: Props) => {
-  const { data, domain, auth_payload_uri, tab, requestHandler } = props.data;
-  const [authPayloadUri, setAuthPayloadUri] = useState<
-    AUTH_PAYLOAD_URI | undefined
-  >(auth_payload_uri);
+  const {
+    data,
+    domain,
+    authPayloadUri,
+    tab,
+    requestHandler: initialRequestHandler,
+  } = props.data;
+  const [requestHandler] = useState<RequestsHandler>(initialRequestHandler);
   const [loadingOperations, setLoadingOperations] = useState<
     LoadingOperation[]
   >([{ name: '', done: false }]);
@@ -73,7 +76,7 @@ const RegisterKeyless = (props: Props) => {
   const registerKeyless = async () => {
     const value = {
       requestHandler,
-      data,
+      data: 'request' in data ? data.request : data,
       domain,
       tab,
     };
@@ -81,10 +84,6 @@ const RegisterKeyless = (props: Props) => {
       command: BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER,
       value,
     });
-  };
-  const handleRequestNewUri = async () => {
-    setAuthPayloadUri(undefined);
-    registerKeyless();
   };
 
   return (
@@ -106,59 +105,23 @@ const RegisterKeyless = (props: Props) => {
             __html: chrome.i18n.getMessage('popup_html_keyless_keychain_setup'),
           }}></div>
       </div>
-      {auth_payload_uri && auth_payload_uri !== '' ? (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            height: '100%',
-          }}>
-          {isExpired ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                textAlign: 'center',
-                color: '#666',
-                fontSize: '14px',
-              }}>
+      {authPayloadUri && authPayloadUri !== '' ? (
+        <div className="qr-container">
+          {!isExpired ? (
+            <div className="qr-code">
+              <QRCode value={authPayloadUri as string} />
+            </div>
+          ) : (
+            <div>
               <p>
                 Keyless authentication request has expired. Please try again.
               </p>
-              <ButtonComponent
-                label="popup_html_submit"
-                onClick={handleRequestNewUri}
-                dataTestId="submit-button"
-              />
             </div>
-          ) : (
-            <>
-              <div style={{ marginBottom: '10px' }}>
-                <QRCode value={auth_payload_uri as string} />
-              </div>
-              {expireSeconds > 0 && !isExpired && (
-                <div
-                  className="expire-seconds"
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '14px',
-                    color: '#666',
-                    marginTop: '10px',
-                  }}>
-                  Expiring in {expireSeconds} seconds
-                </div>
-              )}
-            </>
+          )}
+          {expireSeconds > 0 && !isExpired && (
+            <div className="expire-seconds">
+              Expiring in {expireSeconds} seconds
+            </div>
           )}
         </div>
       ) : (
