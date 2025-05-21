@@ -134,7 +134,7 @@ const showQRCode = (
  * @param tab - The tab
  * @returns The keyless auth data if it is registered and valid, undefined otherwise
  */
-const checkKeylessRegistration = async (
+const getKeylessRegistrationInfo = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -155,5 +155,5 @@ const checkKeylessRegistration = async (
 export const KeylessKeychainModule = {
   register,
   handleOperation,
-  checkKeylessRegistration,
+  getKeylessRegistrationInfo,
 };

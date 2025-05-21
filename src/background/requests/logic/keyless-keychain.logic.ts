@@ -16,7 +16,8 @@ export const keylessKeychainRequest = async (
   request: KeychainRequest,
   domain: string,
 ) => {
-  const keylessAuthData = await KeylessKeychainModule.checkKeylessRegistration(
+  const keylessAuthData =
+    await KeylessKeychainModule.getKeylessRegistrationInfo(
     request,
     domain,
     tab,

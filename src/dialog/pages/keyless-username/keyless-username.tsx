@@ -31,9 +31,9 @@ const KeylessUsername = (props: Props) => {
       domain: domain,
       username: username,
     };
-    const _keylessAuthData =
-      await KeylessKeychainModule.checkKeylessRegistration(data, domain, tab);
-    if (!_keylessAuthData) {
+    const keylessAuthData =
+      await KeylessKeychainModule.getKeylessRegistrationInfo(data, domain, tab);
+    if (!keylessAuthData) {
       registerKeyless();
     } else {
       proceedToTransaction();
