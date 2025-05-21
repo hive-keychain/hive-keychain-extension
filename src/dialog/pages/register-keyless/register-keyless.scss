@@ -1,7 +1,6 @@
 .register-keyless-dialog {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: 70px 1fr;
   height: 100%;
   padding: 0 24px;
 

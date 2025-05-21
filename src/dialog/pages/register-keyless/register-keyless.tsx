@@ -89,12 +89,7 @@ const RegisterKeyless = (props: Props) => {
   return (
     <div
       data-testid={`${DialogCommand.REGISTER_KEYLESS_KEYCHAIN}-dialog`}
-      className="register-keyless-dialog"
-      style={{
-        height: '100%',
-        display: 'grid',
-        gridTemplateRows: '70px 1fr',
-      }}>
+      className="register-keyless-dialog">
       <DialogHeader
         title={chrome.i18n.getMessage('dialog_register_keyless_title')}
       />
