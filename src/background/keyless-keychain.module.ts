@@ -1,6 +1,6 @@
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
-import { AUTH_PAYLOAD, AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
+import { AuthPayload, AuthPayloadUri } from '@interfaces/has.interface';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -95,7 +95,7 @@ const register = async (
       keylessRequest,
       authWait,
     );
-    const authPayload: AUTH_PAYLOAD = {
+    const authPayload: AuthPayload = {
       account: username,
       uuid: authWait.uuid,
       key: keylessRequest.authKey,
@@ -114,7 +114,7 @@ const register = async (
 const showQRCode = (
   request: KeychainRequest | KeylessRequest,
   domain: string,
-  authPayloadUri: AUTH_PAYLOAD_URI,
+  authPayloadUri: AuthPayloadUri,
 ) => {
   chrome.runtime.sendMessage({
     command: DialogCommand.REGISTER_KEYLESS_KEYCHAIN,

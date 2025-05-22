@@ -2,26 +2,26 @@ import { createMessage } from '@background/requests/operations/operations.utils'
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import {
-  AUTH_ACK,
-  AUTH_ACK_DATA,
-  AUTH_NACK,
-  AUTH_PAYLOAD,
-  AUTH_PAYLOAD_URI,
-  AUTH_REQ,
-  AUTH_REQ_DATA,
-  AUTH_WAIT,
-  CHALLENGE_ACK,
-  CHALLENGE_ACK_DATA,
-  CHALLENGE_NACK,
-  CHALLENGE_REQ,
-  CHALLENGE_REQ_DATA,
-  CHALLENGE_WAIT,
-  HAS_CMD,
-  SIGN_ACK,
-  SIGN_NACK,
-  SIGN_REQ,
-  SIGN_REQ_DATA,
-  SIGN_WAIT,
+  AuthAck,
+  AuthAckData,
+  AuthNack,
+  AuthPayload,
+  AuthPayloadUri,
+  AuthReq,
+  AuthReqData,
+  AuthWait,
+  ChallengeAck,
+  ChallengeAckData,
+  ChallengeNack,
+  ChallengeReq,
+  ChallengeReqData,
+  ChallengeWait,
+  HasCmd,
+  SignAck,
+  SignNack,
+  SignReq,
+  SignReqData,
+  SignWait,
 } from '@interfaces/has.interface';
 import {
   KeychainRequest,
@@ -120,21 +120,21 @@ const sendMessage = (message: any) => {
 
 const authenticate = async (
   keylessRequest: KeylessRequest,
-): Promise<AUTH_WAIT> => {
+): Promise<AuthWait> => {
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
     return {
       cmd: 'auth_wait',
       uuid: keylessRequest.uuid,
       expire: keylessRequest.expire,
       account: keylessRequest.request.username,
-    } as AUTH_WAIT;
+    } as AuthWait;
   }
 
   if (!keylessRequest.request.username) {
     throw new Error('Username is required');
   }
 
-  const auth_req_data: AUTH_REQ_DATA = {
+  const authReqData: AuthReqData = {
     app: { name: keylessRequest.appName },
     challenge:
       keylessRequest.request.type === 'signBuffer'
@@ -146,23 +146,23 @@ const authenticate = async (
           }
         : undefined,
   };
-  // Note: the auth_req_data does not need to be converted to base64 before encryption as
+  // Note: the authReqData does not need to be converted to base64 before encryption as
   // it will be converted to base64 by the encryption.
-  const auth_req_data_string = JSON.stringify(auth_req_data);
-  const auth_req_data_encrypted = await EncryptUtils.encryptNoIV(
-    auth_req_data_string,
+  const authReqDataString = JSON.stringify(authReqData);
+  const authReqDataEncrypted = await EncryptUtils.encryptNoIV(
+    authReqDataString,
     keylessRequest.authKey,
   );
-  const auth_req: AUTH_REQ = {
-    cmd: HAS_CMD.AUTH_REQ,
+  const authReq: AuthReq = {
+    cmd: HasCmd.AUTH_REQ,
     account: keylessRequest.request.username,
-    data: auth_req_data_encrypted,
+    data: authReqDataEncrypted,
   };
 
   // Send the authentication request
-  sendMessage(auth_req);
+  sendMessage(authReq);
 
-  return new Promise<AUTH_WAIT>((resolve, reject) => {
+  return new Promise<AuthWait>((resolve, reject) => {
     if (!ws) {
       reject(new Error('WebSocket is not connected'));
       return;
@@ -171,11 +171,11 @@ const authenticate = async (
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
 
-      if (message.cmd === HAS_CMD.AUTH_WAIT) {
+      if (message.cmd === HasCmd.AUTH_WAIT) {
         ws?.removeEventListener('message', handleMessage);
-        resolve(message as AUTH_WAIT);
+        resolve(message as AuthWait);
       } else if (
-        message.cmd === HAS_CMD.AUTH_NACK ||
+        message.cmd === HasCmd.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
         ws?.removeEventListener('message', handleMessage);
@@ -191,12 +191,12 @@ const authenticate = async (
   });
 };
 
-const generateAuthPayloadURI = async (auth_payload: AUTH_PAYLOAD) => {
-  const auth_payload_base64 = Buffer.from(
-    JSON.stringify(auth_payload),
-  ).toString('base64');
-  const auth_payload_uri = `has://auth_req/${auth_payload_base64}`;
-  return auth_payload_uri as AUTH_PAYLOAD_URI;
+const generateAuthPayloadURI = async (authPayload: AuthPayload) => {
+  const authPayloadBase64 = Buffer.from(JSON.stringify(authPayload)).toString(
+    'base64',
+  );
+  const authPayloadUri = `has://auth_req/${authPayloadBase64}`;
+  return authPayloadUri as AuthPayloadUri;
 };
 
 const listenToAuthAck = (
@@ -222,14 +222,14 @@ const listenToAuthAck = (
     try {
       const message = JSON.parse(event.data);
       Logger.log('listenToAuthAck message:', { message });
-      if (message.cmd === HAS_CMD.AUTH_ACK) {
+      if (message.cmd === HasCmd.AUTH_ACK) {
         ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthAck(
             requestHandler,
             username,
             keylessRequest,
-            message as AUTH_ACK,
+            message as AuthAck,
             tab,
           );
         } catch (error) {
@@ -237,12 +237,12 @@ const listenToAuthAck = (
           throw error;
         }
       } else if (
-        message.cmd === HAS_CMD.AUTH_NACK ||
+        message.cmd === HasCmd.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
         ws?.removeEventListener('message', handleMessage);
         try {
-          await handleAuthNack(username, message as AUTH_NACK);
+          await handleAuthNack(username, message as AuthNack);
         } catch (error) {
           Logger.error('Error handling auth nack:', error);
           throw error;
@@ -272,43 +272,43 @@ class AuthAckError extends Error {
 }
 
 const validateAuthAckData = (
-  auth_ack: AUTH_ACK,
+  authAck: AuthAck,
   keylessRequest: KeylessRequest,
-): AUTH_ACK_DATA => {
-  if (!auth_ack?.data) {
+): AuthAckData => {
+  if (!authAck?.data) {
     throw new AuthAckError('Invalid auth acknowledgement data', 'INVALID_DATA');
   }
 
-  const auth_ack_data: AUTH_ACK_DATA =
-    typeof auth_ack.data === 'string'
+  const authAckData: AuthAckData =
+    typeof authAck.data === 'string'
       ? JSON.parse(
-          EncryptUtils.decryptNoIV(auth_ack.data, keylessRequest.authKey),
+          EncryptUtils.decryptNoIV(authAck.data, keylessRequest.authKey),
         )
-      : auth_ack.data;
+      : authAck.data;
 
-  if (!auth_ack_data?.expire) {
+  if (!authAckData?.expire) {
     throw new AuthAckError(
       'Missing expiration in auth acknowledgement data',
       'MISSING_EXPIRATION',
     );
   }
 
-  if (keylessRequest.uuid !== auth_ack.uuid) {
+  if (keylessRequest.uuid !== authAck.uuid) {
     throw new AuthAckError(
       'Invalid auth acknowledgement data',
       'UUID_MISMATCH',
     );
   }
 
-  return auth_ack_data;
+  return authAckData;
 };
 
 const updateKeylessRequestData = (
   keylessRequest: KeylessRequest,
-  auth_ack_data: AUTH_ACK_DATA,
+  authAckData: AuthAckData,
 ): KeylessAuthData => {
-  keylessRequest.expire = auth_ack_data.expire;
-  keylessRequest.token = auth_ack_data.token;
+  keylessRequest.expire = authAckData.expire;
+  keylessRequest.token = authAckData.token;
 
   return {
     uuid: keylessRequest.uuid,
@@ -321,16 +321,16 @@ const updateKeylessRequestData = (
 
 const handleSignBufferRequest = async (
   keylessRequest: KeylessRequest,
-  auth_ack_data: AUTH_ACK_DATA,
+  authAckData: AuthAckData,
   tab: number,
 ): Promise<void> => {
   const message = await createMessage(
     null,
-    auth_ack_data.challenge.challenge,
+    authAckData.challenge.challenge,
     keylessRequest.request,
     await chrome.i18n.getMessage('bgd_ops_sign_success'),
     null,
-    auth_ack_data.challenge.pubkey,
+    authAckData.challenge.pubkey,
   );
 
   await Promise.all([
@@ -344,7 +344,7 @@ const handleSignRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  const sign_wait = await signRequest(
+  const signWait = await signRequest(
     requestHandler.data.request!,
     keylessRequest.appName,
     tab,
@@ -354,10 +354,10 @@ const handleSignRequest = async (
     throw new Error('WebSocket is not connected');
   }
 
-  const signResponse = await new Promise<SIGN_ACK>((resolve) => {
+  const signResponse = await new Promise<SignAck>((resolve) => {
     const handleSignMessage = (event: MessageEvent) => {
-      const response = JSON.parse(event.data) as SIGN_ACK;
-      if (response.cmd === HAS_CMD.SIGN_ACK) {
+      const response = JSON.parse(event.data) as SignAck;
+      if (response.cmd === HasCmd.SIGN_ACK) {
         ws?.removeEventListener('message', handleSignMessage);
         resolve(response);
       }
@@ -397,15 +397,15 @@ const handleAuthAck = async (
   requestHandler: RequestsHandler,
   username: string,
   keylessRequest: KeylessRequest,
-  auth_ack: AUTH_ACK,
+  authAck: AuthAck,
   tab: number,
 ): Promise<void> => {
   try {
-    const auth_ack_data = validateAuthAckData(auth_ack, keylessRequest);
+    const authAckData = validateAuthAckData(authAck, keylessRequest);
 
     const keylessAuthData = updateKeylessRequestData(
       keylessRequest,
-      auth_ack_data,
+      authAckData,
     );
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
 
@@ -423,7 +423,7 @@ const handleAuthAck = async (
 
     // Handle different request types
     if (requestHandler.data.request?.type === KeychainRequestTypes.signBuffer) {
-      await handleSignBufferRequest(keylessRequest, auth_ack_data, tab);
+      await handleSignBufferRequest(keylessRequest, authAckData, tab);
     } else if (
       requestHandler.data.request?.type === KeychainRequestTypes.encode ||
       requestHandler.data.request?.type === KeychainRequestTypes.decode
@@ -456,8 +456,8 @@ const handleAuthAck = async (
   }
 };
 
-const handleAuthNack = async (username: string, auth_nack: AUTH_NACK) => {
-  await KeylessKeychainUtils.removeKeylessAuthData(username, auth_nack.uuid);
+const handleAuthNack = async (username: string, authNack: AuthNack) => {
+  await KeylessKeychainUtils.removeKeylessAuthData(username, authNack.uuid);
   chrome.runtime.sendMessage({
     command: DialogCommand.ANSWER_REQUEST,
     msg: {
@@ -704,7 +704,7 @@ const signRequest = async (
   const keyType = getRequiredWifType(request);
   op = await getRequestOperation(request);
   op = sanitizeOperation(op);
-  const sign_req_data: SIGN_REQ_DATA = {
+  const signReqData: SignReqData = {
     key_type: keyType,
     ops: op,
     broadcast: true,
@@ -714,19 +714,19 @@ const signRequest = async (
     await KeylessKeychainUtils.encryptHiveAuthRequestData(
       request.username,
       domain,
-      sign_req_data,
+      signReqData,
     );
-  const sign_req: SIGN_REQ = {
-    cmd: HAS_CMD.SIGN_REQ,
+  const signReq: SignReq = {
+    cmd: HasCmd.SIGN_REQ,
     account: request.username,
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  sendMessage(sign_req);
+  sendMessage(signReq);
 
   const signWaitHandler = async (event: MessageEvent) => {
-    const response = JSON.parse(event.data) as SIGN_WAIT;
-    if (response.cmd === HAS_CMD.SIGN_WAIT) {
+    const response = JSON.parse(event.data) as SignWait;
+    if (response.cmd === HasCmd.SIGN_WAIT) {
       ws?.removeEventListener('message', signWaitHandler);
       await handleSignWait(request, domain, tab, response);
     }
@@ -739,7 +739,7 @@ const handleSignWait = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  sign_wait: SIGN_WAIT,
+  signWait: SignWait,
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     if (!ws) {
@@ -749,11 +749,11 @@ const handleSignWait = async (
 
     const handleMessage = async (event: MessageEvent) => {
       try {
-        const response = JSON.parse(event.data) as SIGN_ACK | SIGN_NACK;
+        const response = JSON.parse(event.data) as SignAck | SignNack;
 
         if (
-          response.cmd === HAS_CMD.SIGN_ACK &&
-          response.uuid === sign_wait.uuid
+          response.cmd === HasCmd.SIGN_ACK &&
+          response.uuid === signWait.uuid
         ) {
           ws?.removeEventListener('message', handleMessage);
 
@@ -769,13 +769,13 @@ const handleSignWait = async (
           });
           resolve();
         } else if (
-          response.cmd === HAS_CMD.SIGN_NACK &&
-          response.uuid === sign_wait.uuid
+          response.cmd === HasCmd.SIGN_NACK &&
+          response.uuid === signWait.uuid
         ) {
           ws?.removeEventListener('message', handleMessage);
 
-          const errorResponse: SIGN_ACK = {
-            cmd: HAS_CMD.SIGN_ACK,
+          const errorResponse: SignAck = {
+            cmd: HasCmd.SIGN_ACK,
             uuid: response.uuid,
             broadcast: false,
             data: response.data || '',
@@ -801,7 +801,7 @@ const handleSignWait = async (
 
     ws.addEventListener('message', handleMessage);
 
-    const timeout = sign_wait.expire - Date.now();
+    const timeout = signWait.expire - Date.now();
     if (timeout <= 0) {
       ws.removeEventListener('message', handleMessage);
       reject(new Error('Sign wait request has already expired'));
@@ -844,7 +844,7 @@ const challengeRequest = async (
     throw new Error('WebSocket is not connected');
   }
 
-  const challenge_req_data: CHALLENGE_REQ_DATA = {
+  const challengeReqData: ChallengeReqData = {
     key_type: getRequiredWifType(request).toLowerCase(),
     challenge: (request as RequestSignBuffer).message,
     decrypt: request.type === KeychainRequestTypes.decode,
@@ -854,20 +854,20 @@ const challengeRequest = async (
     await KeylessKeychainUtils.encryptHiveAuthRequestData(
       request.username!,
       domain,
-      challenge_req_data,
+      challengeReqData,
     );
-  const challenge_req: CHALLENGE_REQ = {
-    cmd: HAS_CMD.CHALLENGE_REQ,
+  const challengeReq: ChallengeReq = {
+    cmd: HasCmd.CHALLENGE_REQ,
     account: request.username!,
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  sendMessage(challenge_req);
+  sendMessage(challengeReq);
 
-  return new Promise<CHALLENGE_WAIT>((resolve, reject) => {
+  return new Promise<ChallengeWait>((resolve, reject) => {
     const challengeWaitHandler = async (event: MessageEvent) => {
-      const response = JSON.parse(event.data) as CHALLENGE_WAIT;
-      if (response.cmd === HAS_CMD.CHALLENGE_WAIT) {
+      const response = JSON.parse(event.data) as ChallengeWait;
+      if (response.cmd === HasCmd.CHALLENGE_WAIT) {
         ws?.removeEventListener('message', challengeWaitHandler);
         await handleChallengeWait(
           requestHandler,
@@ -877,9 +877,9 @@ const challengeRequest = async (
           response,
           keylessAuthData,
         );
-        resolve(response as CHALLENGE_WAIT);
+        resolve(response as ChallengeWait);
       } else if (
-        response.cmd === HAS_CMD.CHALLENGE_NACK ||
+        response.cmd === HasCmd.CHALLENGE_NACK ||
         response.cmd === 'challenge_err'
       ) {
         ws?.removeEventListener('message', challengeWaitHandler);
@@ -901,7 +901,7 @@ const handleChallengeWait = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  challenge_wait: CHALLENGE_WAIT,
+  challengeWait: ChallengeWait,
   keylessAuthData: KeylessAuthData,
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
@@ -912,11 +912,11 @@ const handleChallengeWait = async (
 
     const handleMessage = async (event: MessageEvent) => {
       try {
-        const challenge_ack = JSON.parse(event.data) as
-          | CHALLENGE_ACK
-          | CHALLENGE_NACK;
-        if (challenge_ack.cmd === HAS_CMD.CHALLENGE_ACK) {
-          if (challenge_wait.uuid === challenge_ack.uuid) {
+        const challengeAck = JSON.parse(event.data) as
+          | ChallengeAck
+          | ChallengeNack;
+        if (challengeAck.cmd === HasCmd.CHALLENGE_ACK) {
+          if (challengeWait.uuid === challengeAck.uuid) {
             // Remove the event listener since we got our response
             ws?.removeEventListener('message', handleMessage);
             await handleChallengeAck(
@@ -924,12 +924,12 @@ const handleChallengeWait = async (
               request,
               domain,
               tab,
-              challenge_ack,
+              challengeAck,
               keylessAuthData,
             );
             resolve();
           }
-        } else if (challenge_ack.cmd === HAS_CMD.CHALLENGE_NACK) {
+        } else if (challengeAck.cmd === HasCmd.CHALLENGE_NACK) {
           // Remove the event listener since we got an error response
           ws?.removeEventListener('message', handleMessage);
           await handleChallengeNack(
@@ -937,7 +937,7 @@ const handleChallengeWait = async (
             request,
             domain,
             tab,
-            challenge_ack,
+            challengeAck,
           );
           reject(new Error('Challenge request failed'));
         }
@@ -950,7 +950,7 @@ const handleChallengeWait = async (
     ws?.addEventListener('message', handleMessage);
 
     // Set up expiration timeout
-    const timeout = challenge_wait.expire - Date.now();
+    const timeout = challengeWait.expire - Date.now();
     if (timeout <= 0) {
       ws?.removeEventListener('message', handleMessage);
       reject(new Error('Challenge wait request has already expired'));
@@ -1015,7 +1015,7 @@ const sendResponseToDapp = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  response: SIGN_ACK | SIGN_NACK | CHALLENGE_ACK_DATA | CHALLENGE_NACK,
+  response: SignAck | SignNack | ChallengeAckData | ChallengeNack,
   error?: any,
 ) => {
   // Determine if the operation was successful
@@ -1071,20 +1071,20 @@ const handleChallengeAck = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  challenge_ack: CHALLENGE_ACK,
+  challengeAck: ChallengeAck,
   keylessAuthData: KeylessAuthData,
 ): Promise<void> => {
   try {
-    const challenge_ack_data: CHALLENGE_ACK_DATA =
-      typeof challenge_ack.data === 'string'
+    const challengeAckData: ChallengeAckData =
+      typeof challengeAck.data === 'string'
         ? JSON.parse(
             EncryptUtils.decryptNoIV(
-              challenge_ack.data,
+              challengeAck.data,
               keylessAuthData.authKey,
             ),
           )
-        : challenge_ack.data;
-    sendResponseToDapp(request, domain, tab, challenge_ack_data);
+        : challengeAck.data;
+    sendResponseToDapp(request, domain, tab, challengeAckData);
 
     // Send message to runtime if request is anonymous
     if (
@@ -1100,7 +1100,7 @@ const handleChallengeAck = async (
             request.type.charAt(0).toUpperCase() +
               request.type.slice(1).toLowerCase(),
           ]),
-          result: challenge_ack_data,
+          result: challengeAckData,
         },
       });
     }
@@ -1114,10 +1114,10 @@ const handleChallengeNack = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
-  challenge_nack: CHALLENGE_NACK,
+  challengeNack: ChallengeNack,
 ) => {
-  const error = new Error(challenge_nack.data || 'Challenge request failed');
-  sendResponseToDapp(request, domain, tab, challenge_nack, error);
+  const error = new Error(challengeNack.data || 'Challenge request failed');
+  sendResponseToDapp(request, domain, tab, challengeNack, error);
 
   // Send message to runtime if request is anonymous
   if (requestHandler.data.isKeyless) {

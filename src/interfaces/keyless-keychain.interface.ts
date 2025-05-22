@@ -1,7 +1,4 @@
-import {
-  AUTH_PAYLOAD_URI,
-  CHALLENGE_REQ_DATA,
-} from '@interfaces/has.interface';
+import { AuthPayloadUri, ChallengeReqData } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export interface KeylessAuthData {
@@ -9,7 +6,7 @@ export interface KeylessAuthData {
   authKey: string;
   uuid?: string;
   expire?: number;
-  challenge?: CHALLENGE_REQ_DATA;
+  challenge?: ChallengeReqData;
   token?: string;
 }
 
@@ -22,5 +19,5 @@ export interface KeylessRequest extends KeylessAuthData {
 }
 
 export interface KeylessKeychainState {
-  auth_payload_uri: AUTH_PAYLOAD_URI;
+  auth_payload_uri: AuthPayloadUri;
 }

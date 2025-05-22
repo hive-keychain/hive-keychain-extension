@@ -1,9 +1,10 @@
 import MkModule from '@background/mk.module';
 import {
-  AUTH_WAIT,
-  CHALLENGE_REQ_DATA,
-  SIGN_REQ_DATA,
+  AuthWait,
+  ChallengeReqData,
+  SignReqData,
 } from '@interfaces/has.interface';
+
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import {
   KeylessAuthData,
@@ -39,7 +40,7 @@ const registerUserAndDapp = async (
 
 const updateAuthenticatedKeylessAuthData = async (
   keylessRequest: KeylessRequest,
-  authWait: AUTH_WAIT,
+  authWait: AuthWait,
 ) => {
   try {
     if (!keylessRequest.request.username) {
@@ -292,7 +293,7 @@ const removeKeylessAuthData = async (username: string, uuid: string) => {
 const encryptHiveAuthRequestData = async (
   username: string,
   domain: string,
-  signRequestData: SIGN_REQ_DATA | CHALLENGE_REQ_DATA,
+  signRequestData: SignReqData | ChallengeReqData,
 ) => {
   const keylessAuthData = await getKeylessAuthDataByAppName(username, domain);
   if (!keylessAuthData) throw new Error('Keyless auth data not found');

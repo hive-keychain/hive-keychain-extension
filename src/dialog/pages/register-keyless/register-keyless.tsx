@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests/request-handler';
-import { AUTH_PAYLOAD_URI } from '@interfaces/has.interface';
+import { AuthPayloadUri } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { LoadingOperation } from '@popup/multichain/reducers/loading.reducer';
@@ -16,7 +16,7 @@ type RegisterKeylessProps = {
   data: KeychainRequest | KeylessRequest;
   tab: number;
   domain: string;
-  authPayloadUri?: AUTH_PAYLOAD_URI;
+  authPayloadUri?: AuthPayloadUri;
 };
 
 type Props = {
