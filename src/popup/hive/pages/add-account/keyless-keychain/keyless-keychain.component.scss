@@ -14,9 +14,7 @@
 
   .caption {
     @include caption();
-    font-size: a {
-      color: $red;
-    }
+    font-size: 14px;
   }
 
   .button-container {
