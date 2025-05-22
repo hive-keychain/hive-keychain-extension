@@ -1,4 +1,4 @@
-import { AuthPayloadUri, ChallengeReqData } from '@interfaces/has.interface';
+import { ChallengeReqData } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export interface KeylessAuthData {
