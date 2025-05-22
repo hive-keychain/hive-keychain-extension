@@ -23,22 +23,15 @@ const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
   return (
     <div
       data-testid={`${Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN}-page`}
-      className="keyless-keychain-page"
-      style={{
-        height: '100%',
-        display: 'grid',
-        gridTemplateRows: '70px 1fr',
-      }}>
+      className="keyless-keychain-page">
       <PageTitleComponent
         title={'popup_html_keyless_keychain'}
         isBackButtonEnabled={false}
         isCloseButtonDisabled={true}></PageTitleComponent>
       <div className="content">
-        <div
-          className="caption"
-          dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('popup_html_keyless_keychain_setup'),
-          }}></div>
+        <div className="caption">
+          {chrome.i18n.getMessage('popup_html_keyless_keychain_setup')}
+        </div>
       </div>
 
       <div className="button-container">
