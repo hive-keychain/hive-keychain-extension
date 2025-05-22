@@ -1132,7 +1132,7 @@ const handleChallengeNack = async (
   }
 };
 
-const HASUtils = {
+const HiveAuthUtils = {
   authenticate,
   connect,
   generateAuthPayloadURI,
@@ -1141,4 +1141,4 @@ const HASUtils = {
   challengeRequest,
 };
 
-export default HASUtils;
+export default HiveAuthUtils;

@@ -9,7 +9,7 @@ import {
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Config from 'src/config';
-import HASUtils from 'src/utils/has-utils';
+import HiveAuthUtils from 'src/utils/HiveAuthUtils';
 
 const handleOperation = async (
   requestHandler: RequestsHandler,
@@ -17,17 +17,17 @@ const handleOperation = async (
   domain: string,
   tab: number,
 ) => {
-  await HASUtils.connect();
+  await HiveAuthUtils.connect();
 
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      HASUtils.challengeRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     case KeychainRequestTypes.encode:
-      HASUtils.challengeRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     case KeychainRequestTypes.decode:
-      HASUtils.challengeRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
       break;
     case KeychainRequestTypes.swap:
     case KeychainRequestTypes.encodeWithKeys:
@@ -43,7 +43,7 @@ const handleOperation = async (
       });
       break;
     default:
-      HASUtils.signRequest(request, domain, tab);
+      HiveAuthUtils.signRequest(request, domain, tab);
   }
 };
 
@@ -53,7 +53,7 @@ const register = async (
   domain: string,
   tab: number,
 ) => {
-  await HASUtils.connect();
+  await HiveAuthUtils.connect();
   if (!request.username) {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANSWER_REQUEST,
@@ -88,7 +88,7 @@ const register = async (
       },
     };
 
-    const authWait = await HASUtils.authenticate(keylessRequest);
+    const authWait = await HiveAuthUtils.authenticate(keylessRequest);
     keylessRequest.uuid = authWait.uuid;
     keylessRequest.expire = authWait.expire;
     await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(
@@ -101,9 +101,11 @@ const register = async (
       key: keylessRequest.authKey,
       host: Config.keyless.host,
     };
-    const authPayloadUri = await HASUtils.generateAuthPayloadURI(authPayload);
+    const authPayloadUri = await HiveAuthUtils.generateAuthPayloadURI(
+      authPayload,
+    );
     showQRCode(keylessRequest, domain, authPayloadUri);
-    await HASUtils.listenToAuthAck(
+    await HiveAuthUtils.listenToAuthAck(
       requestHandler,
       username,
       keylessRequest,
