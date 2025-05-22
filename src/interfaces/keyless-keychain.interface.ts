@@ -17,7 +17,3 @@ export interface KeylessAuthDataUserDictionary {
 export interface KeylessRequest extends KeylessAuthData {
   request: KeychainRequest;
 }
-
-export interface KeylessKeychainState {
-  auth_payload_uri: AuthPayloadUri;
-}
