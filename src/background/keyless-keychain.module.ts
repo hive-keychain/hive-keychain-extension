@@ -9,7 +9,7 @@ import {
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Config from 'src/config';
-import HiveAuthUtils from 'src/utils/HiveAuthUtils';
+import HiveAuthUtils from 'src/utils/hive-auth.utils';
 
 const handleOperation = async (
   requestHandler: RequestsHandler,
