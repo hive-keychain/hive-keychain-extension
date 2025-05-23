@@ -150,7 +150,6 @@ const ConfirmationPage = ({
     }
     goBack();
   };
-
   return (
     <div
       className="confirmation-page"

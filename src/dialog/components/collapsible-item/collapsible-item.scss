@@ -3,13 +3,47 @@ pre {
   white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
   white-space: -pre-wrap; /* Opera 4-6 */
   white-space: -o-pre-wrap; /* Opera 7 */
-  word-wrap: break-word;
+  word-wrap: anywhere;
 }
-
 .collapsible-title {
   display: flex;
   justify-content: space-between;
   width: 100%;
   flex-direction: row;
   cursor: pointer;
+}
+
+.field.collapsible {
+  flex-direction: column;
+  position: relative;
+
+  .operation-item-content {
+    pre {
+      user-select: none !important;
+      margin: 0;
+    }
+  }
+  .svg-icon {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 0;
+    right: 0;
+    justify-content: flex-end;
+    cursor: pointer;
+
+    div {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+  &:hover {
+    .svg-icon:not(.checked) {
+      svg {
+        path {
+          stroke: $red;
+        }
+      }
+    }
+  }
 }

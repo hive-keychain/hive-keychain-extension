@@ -11,7 +11,7 @@ import {
 } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { ExchangesUtils } from 'hive-keychain-commons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface AutocompleteListOption {
@@ -19,7 +19,7 @@ export interface AutocompleteListOption {
   addSwaps?: boolean;
   token?: string;
 }
-
+const exchanges = ExchangesUtils.getExchanges();
 const getAutocompleteList = async (
   username: string,
   localAccounts: LocalAccount[],

@@ -33,7 +33,6 @@ const UpdateProposalVote = (props: Props) => {
       {...props}
       {...anonymousProps}>
       {renderUsername()}
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_proposal_ids"

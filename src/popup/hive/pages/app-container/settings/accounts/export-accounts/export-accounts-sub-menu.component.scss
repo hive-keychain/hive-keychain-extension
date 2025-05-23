@@ -1,0 +1,10 @@
+.settings-export-accounts-submenu {
+  @include pageLayoutRowGap();
+  row-gap: 16px;
+  justify-content: flex-start;
+  overflow-y: auto;
+
+  .text {
+    @include caption();
+  }
+}

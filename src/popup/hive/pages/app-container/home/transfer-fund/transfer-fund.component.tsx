@@ -241,7 +241,7 @@ const TransferFunds = ({
       fields = [fields[0], fields[1]];
     }
 
-    let warningMessage = await TransferUtils.getTransferWarning(
+    let warningMessage = await TransferUtils.getTransferWarningLabel(
       form.receiverUsername,
       currencyLabels[form.selectedCurrency],
       form.memo,

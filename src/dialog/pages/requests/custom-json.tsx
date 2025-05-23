@@ -44,7 +44,6 @@ const CustomJson = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <CollaspsibleItem
         title="dialog_data_toggle"
-        preContent={data.id}
         content={JSON.stringify(
           typeof data.json === 'string' ? JSON.parse(data.json) : data.json,
           undefined,

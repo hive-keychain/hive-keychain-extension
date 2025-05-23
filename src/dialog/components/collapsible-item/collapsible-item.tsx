@@ -5,12 +5,12 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 type Props = {
   title: string;
   content: string;
-  preContent?: string;
   pre?: boolean; // set pre to true if we are showing a pretty printed json
 };
 
-const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
+const CollaspsibleItem = ({ title, content, pre }: Props) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [copied, setCopied] = useState(false);
   return (
     <>
       <div
@@ -25,13 +25,27 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>
-      <div className={collapsed ? 'hide' : 'field'}>
+      <div className={collapsed ? 'hide' : 'field collapsible'}>
+        {copied ? (
+          <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} className="checked" />
+        ) : (
+          <SVGIcon
+            icon={SVGIcons.SELECT_COPY}
+            onClick={async () => {
+              await navigator.clipboard.writeText(content);
+              setCopied(true);
+              setTimeout(() => {
+                setCopied(false);
+              }, 3000);
+            }}
+          />
+        )}
         {pre ? (
-          <div className="operation_item_content">
+          <div className="operation-item-content">
             <pre>{content}</pre>
           </div>
         ) : (
-          <div className="operation_item_content">{content}</div>
+          <div className="operation-item-content">{content}</div>
         )}
       </div>
     </>
