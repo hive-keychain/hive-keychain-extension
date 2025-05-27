@@ -101,11 +101,15 @@ const signMessage = async (privateKey: string, message: string) => {
   });
 };
 
-const signV4 = async (privateKey: string, message: any) => {
+const signData = async (
+  privateKey: string,
+  message: any,
+  version: SignTypedDataVersion,
+) => {
   return signTypedData({
     privateKey: Buffer.from(privateKey.substring(2), 'hex'),
     data: JSON.parse(message),
-    version: SignTypedDataVersion.V4,
+    version,
   });
 };
 
@@ -173,7 +177,7 @@ export const EvmRequestsUtils = {
   getTransactionReceipt,
   call,
   signMessage,
-  signV4,
+  signData,
   personalRecover,
   getEncryptionKey,
   decryptMessage,

@@ -145,7 +145,8 @@ export const RequestConfirmation = ({ data }: Props) => {
           />
         );
       }
-
+      case EvmRequestMethod.ETH_SIGN_DATA:
+      case EvmRequestMethod.ETH_SIGN_DATA_3:
       case EvmRequestMethod.ETH_SIGN_DATA_4: {
         return (
           <SignTypedData

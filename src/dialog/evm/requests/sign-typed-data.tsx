@@ -1,3 +1,4 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
   TransactionConfirmationField,
@@ -42,12 +43,16 @@ interface SignTypedDataMessage {
 export const SignTypedData = (props: Props) => {
   const { accounts, data, request } = props;
 
+  const MESSAGE_INDEX =
+    request.method === EvmRequestMethod.ETH_SIGN_DATA ? 0 : 1;
+  const TARGET_INDEX =
+    request.method === EvmRequestMethod.ETH_SIGN_DATA ? 1 : 0;
   const [message, setMessage] = useState<SignTypedDataMessage>(
-    typeof request.params[1] === 'string'
-      ? JSON.parse(request.params[1])
-      : request.params[1],
+    typeof request.params[MESSAGE_INDEX] === 'string'
+      ? JSON.parse(request.params[MESSAGE_INDEX])
+      : request.params[MESSAGE_INDEX],
   );
-  const [target, setTarget] = useState<string>(request.params[0]);
+  const [target, setTarget] = useState<string>(request.params[TARGET_INDEX]);
 
   const transactionHook = useTransactionHook(data, request);
 
@@ -129,7 +134,6 @@ export const SignTypedData = (props: Props) => {
     } as TransactionConfirmationField);
 
     const baseType = message.types[message.primaryType];
-
     try {
       parseTypes(baseType, message.message, otherFields, 0);
       transactionConfirmationFields.otherFields = [
