@@ -5,11 +5,12 @@ import { decryptMessage } from '@background/evm/requests/operations/ops/decrypt-
 import { getEncryptionKey } from '@background/evm/requests/operations/ops/get-encryption-key';
 import { personalSign } from '@background/evm/requests/operations/ops/personal-sign';
 import { sendEvmTransaction } from '@background/evm/requests/operations/ops/send-transaction';
-import { signV4 } from '@background/evm/requests/operations/ops/sign-v4';
+import { signData } from '@background/evm/requests/operations/ops/sign-data';
 import {
   EvmRequest,
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
+import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -28,7 +29,29 @@ export const performEvmOperation = async (
   try {
     switch (request.method) {
       case EvmRequestMethod.ETH_SIGN_DATA_4: {
-        message = await signV4(requestHandler, request);
+        message = await signData(
+          requestHandler,
+          request,
+          SignTypedDataVersion.V4,
+        );
+        result = message?.msg.result;
+        break;
+      }
+      case EvmRequestMethod.ETH_SIGN_DATA_3: {
+        message = await signData(
+          requestHandler,
+          request,
+          SignTypedDataVersion.V3,
+        );
+        result = message?.msg.result;
+        break;
+      }
+      case EvmRequestMethod.ETH_SIGN_DATA: {
+        message = await signData(
+          requestHandler,
+          request,
+          SignTypedDataVersion.V1,
+        );
         result = message?.msg.result;
         break;
       }

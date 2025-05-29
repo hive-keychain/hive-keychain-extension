@@ -105,6 +105,8 @@ export const EvmRestrictedMethods = [
 ];
 
 export const EvmNeedPermissionMethods = [
+  EvmRequestMethod.ETH_SIGN_DATA,
+  EvmRequestMethod.ETH_SIGN_DATA_3,
   EvmRequestMethod.ETH_SIGN_DATA_4,
   EvmRequestMethod.PERSONAL_SIGN,
   EvmRequestMethod.ETH_SIGN,
@@ -117,6 +119,8 @@ export const EvmMethodPermissionMap: {
 } = {
   [EvmRequestMethod.GET_ACCOUNTS]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.REQUEST_ACCOUNTS]: EvmRequestPermission.ETH_ACCOUNTS,
+  [EvmRequestMethod.ETH_SIGN_DATA]: EvmRequestPermission.ETH_ACCOUNTS,
+  [EvmRequestMethod.ETH_SIGN_DATA_3]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.ETH_SIGN_DATA_4]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.PERSONAL_SIGN]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.ETH_SIGN]: EvmRequestPermission.ETH_ACCOUNTS,
