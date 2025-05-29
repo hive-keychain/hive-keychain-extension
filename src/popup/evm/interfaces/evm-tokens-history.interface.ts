@@ -14,6 +14,7 @@ export interface EvmLocalHistory {
 }
 
 export interface EvmUserHistoryItem {
+  pageTitle: string;
   type: EvmUserHistoryItemType;
   blockNumber: number;
   transactionHash: string;
@@ -24,6 +25,7 @@ export interface EvmUserHistoryItem {
   details?: string;
   cancelDetails?: CanceledTransactionData;
   isCanceled?: boolean;
+  receiverAddress?: string;
 }
 
 export interface EvmTokenTransferInHistoryItem extends EvmUserHistoryItem {

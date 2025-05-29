@@ -1,10 +1,7 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import {
-  EvmTokenTransferInHistoryItem,
-  EvmTokenTransferOutHistoryItem,
   EvmUserHistory,
   EvmUserHistoryItem,
-  EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -46,39 +43,44 @@ export const EvmHistory = ({
 
     console.log({ transactionResponse, historyItem });
 
-    switch (historyItem.type) {
-      case EvmUserHistoryItemType.TRANSFER_IN: {
-        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-          transactionResponse: transactionResponse,
-          // tokenInfo: historyItem..tokenInfo,
-          receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
-          amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
-          isCanceled: historyItem.isCanceled,
-        });
-        break;
-      }
-      case EvmUserHistoryItemType.TRANSFER_OUT: {
-        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-          transactionResponse: transactionResponse,
-          // token: token.tokenInfo,
-          receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
-          amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
-          isCanceled: historyItem.isCanceled,
-        });
-        break;
-      }
-      default: {
-        console.log('no nav set up');
-        navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-          transactionResponse: transactionResponse,
-          // token: token.tokenInfo,
-          // receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
-          // amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
-          isCanceled: historyItem.isCanceled,
-        });
-        break;
-      }
-    }
+    // const genericParams = {
+    //   transactionResponse: transactionResponse,
+    //   // tokenInfo: historyItem..tokenInfo,
+    //   isCanceled: historyItem.isCanceled,
+    //   pageTitle: historyItem.pageTitle,
+    // };
+
+    navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+      transactionResponse: transactionResponse,
+      ...historyItem,
+    });
+
+    // switch (historyItem.type) {
+    //   case EvmUserHistoryItemType.TRANSFER_IN: {
+    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+    //       ...genericParams,
+    //       receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
+    //       amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
+    //     });
+    //     break;
+    //   }
+    //   case EvmUserHistoryItemType.TRANSFER_OUT: {
+    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+    //       ...genericParams,
+    //       receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
+    //       amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
+    //     });
+    //     break;
+    //   }
+    //   default: {
+    //     console.log('no nav set up');
+    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+    //       ...genericParams,
+    //       receiverAddress: historyItem.receiverAddress
+    //     });
+    //     break;
+    //   }
+    // }
   };
 
   return (

@@ -5113,6 +5113,10 @@
     "message": "You created the $1 smart contract",
     "description": "Evm smart contract creation"
   },
+  "evm_history_smart_contract_creation": {
+    "message": "Smart Contract creation",
+    "description": "Evm smart contract creation"
+  },
   "evm_history_operation_safe_transfer_from_erc721_in": {
     "message": "You received $1#$2 from $3",
     "description": ""
@@ -5216,5 +5220,25 @@
   "evm_seeds_already_in_keychain": {
     "message": "This seed was already added in Keychain",
     "description": "Seed already added in Keychain"
+  },
+  "evm_transfer": {
+    "message": "Transfer",
+    "description": "Evm transfer"
+  },
+  "evm_mint_batch": {
+    "message": "Mint Batch",
+    "description": "Evm mint batch"
+  },
+  "evm_approval": {
+    "message": "Approval",
+    "description": "Evm approval"
+  },
+  "evm_mint": {
+    "message": "Mint",
+    "description": "Evm mint"
+  },
+  "evm_broadcast": {
+    "message": "Broadcast",
+    "description": "Evm generic broadcast"
   }
 }

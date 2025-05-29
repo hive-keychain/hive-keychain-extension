@@ -49,9 +49,11 @@ const fetchHistory = async (
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
 
   let events: any[] = [];
-  let response;
+  let mainHistoryResponse;
+  let tokensHistoryResponse;
+  let nftHistoryResponse;
   Logger.info(`Fetching  page ${history.lastPage}`);
-  response = await EtherscanApi.getHistory(
+  mainHistoryResponse = await EtherscanApi.getHistory(
     walletAddress,
     chain,
     history.lastPage,
@@ -60,9 +62,10 @@ const fetchHistory = async (
 
   console.log('End fetch', (Date.now() - start) / 1000);
 
-  if (response.result.length !== RESULTS_PER_PAGE) history.fullyFetch = true;
+  if (mainHistoryResponse.result.length !== RESULTS_PER_PAGE)
+    history.fullyFetch = true;
 
-  events = [...events, ...response.result];
+  events = [...events, ...mainHistoryResponse.result];
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
       .filter((event) => event.contractAddress.length > 0)
@@ -97,6 +100,7 @@ const fetchHistory = async (
   console.log('start parsing');
   // console.log({ metadata, allTokensMetadata });
   for (const event of events) {
+    console.log(event);
     let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
     console.log('---------------------');
     // parse event
@@ -112,6 +116,9 @@ const fetchHistory = async (
       historyItem.label = chrome.i18n.getMessage(
         'evm_history_smart_contract_creation_message',
         [EvmFormatUtils.formatAddress(event.contractAddress)],
+      );
+      historyItem.pageTitle = chrome.i18n.getMessage(
+        'evm_history_smart_contract_creation',
       );
     } else if (
       (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
@@ -152,6 +159,7 @@ const fetchHistory = async (
             ),
           ],
         ),
+        pageTitle: 'popup_html_transfer_funds',
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
       // Smart contract (parse transaction)
@@ -161,49 +169,49 @@ const fetchHistory = async (
         chain,
       );
 
+      console.log('ici', { decodedData, event });
+
       historyItem = {
         ...historyItem,
         type: EvmUserHistoryItemType.SMART_CONTRACT,
       };
 
-      historyItem.label = await getLabel(
+      const specificData = await getSpecificData(
         chain,
         event.to.toLowerCase(),
+        event.from.toLowerCase(),
         walletAddress.toLowerCase(),
         decodedData,
         tokenMetadata,
       );
+
+      historyItem.label = specificData.label;
+      historyItem.pageTitle = specificData.pageTitle;
+      historyItem.receiverAddress = specificData.receiverAddress;
     }
     history.events.push(historyItem);
-    // if (event.contractAddress.length === 0) {
-    //   console.log(history.events[history.events.length - 1]);
-    // } else {
-    //   const tokenMetaData = allTokensMetadata.find(
-    //     (metadata) =>
-    //       metadata.type !== EVMSmartContractType.NATIVE &&
-    //       metadata.address === event.contractAddress,
-    //   );
-    //   if (tokenMetaData) {
-    //     console.log(tokenMetaData, event);
-    //     // const method =
-    //   } else {
-    //     historyItem.label = chrome.i18n.getMessage(
-    //       'evm_history_generic_message',
-    //     );
-    //   }
   }
   console.log('end parsing', (Date.now() - start) / 1000);
   console.log({ history });
   return history;
 };
 
-const getLabel = async (
+const fetchAllTokenTx = async () => {
+  return [];
+};
+
+const fetchAllNftTx = async () => {
+  return [];
+};
+
+const getSpecificData = async (
   chain: EvmChain,
   contractAddress: string,
+  broadcaster: string,
   walletAddress: string,
   decodedData: EvmTransactionDecodedData | undefined,
   metadata: EvmSmartContractInfo[],
-) => {
+): Promise<{ label: string; pageTitle: string; receiverAddress?: string }> => {
   const tokenMetadata = metadata.find(
     (md) =>
       md.type !== EVMSmartContractType.NATIVE && md.address === contractAddress,
@@ -238,101 +246,145 @@ const getLabel = async (
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
-        const from = EvmFormatUtils.formatAddress(decodedData.inputs[0].value);
-        const to = EvmFormatUtils.formatAddress(decodedData.inputs[1].value);
+        const from = decodedData.inputs[0].value.toLowerCase();
+        const to = decodedData.inputs[1].value.toLowerCase();
+        const formattedFrom = EvmFormatUtils.formatAddress(from);
+        const formattedTo = EvmFormatUtils.formatAddress(to);
 
         if (decodedData.inputs.length === 5) {
-          if (decodedData.inputs[0].value.toLowerCase() === walletAddress)
-            return chrome.i18n.getMessage(
-              'evm_history_operation_safe_transfer_from_erc1155_in',
-              [
-                decodedData.inputs[3].value,
-                name,
-                decodedData.inputs[2].value,
-                from,
-              ],
-            );
+          if (to === walletAddress)
+            return {
+              label: chrome.i18n.getMessage(
+                'evm_history_operation_safe_transfer_from_erc1155_in',
+                [
+                  decodedData.inputs[3].value,
+                  name,
+                  decodedData.inputs[2].value,
+                  formattedFrom,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              receiverAddress: walletAddress,
+            };
           else {
-            return chrome.i18n.getMessage(
-              'evm_history_operation_safe_transfer_from_erc1155_out',
-              [
-                decodedData.inputs[3].value,
-                name,
-                decodedData.inputs[2].value,
-                to,
-              ],
-            );
+            return {
+              label: chrome.i18n.getMessage(
+                'evm_history_operation_safe_transfer_from_erc1155_out',
+                [
+                  decodedData.inputs[3].value,
+                  name,
+                  decodedData.inputs[2].value,
+                  formattedTo,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              receiverAddress: formattedFrom,
+            };
           }
         } else if (decodedData.inputs.length === 3) {
-          if (decodedData.inputs[0].value.toLowerCase() === walletAddress)
-            return chrome.i18n.getMessage(
-              'evm_history_operation_safe_transfer_from_erc721_in',
-              [name, decodedData.inputs[2].value, from],
-            );
+          if (to === walletAddress)
+            return {
+              label: chrome.i18n.getMessage(
+                'evm_history_operation_safe_transfer_from_erc721_in',
+                [name, decodedData.inputs[2].value, formattedFrom],
+              ),
+              pageTitle: 'evm_transfer',
+              receiverAddress: formattedTo,
+            };
           else {
-            return chrome.i18n.getMessage(
-              'evm_history_operation_safe_transfer_from_erc721_out',
-              [name, decodedData.inputs[2].value, to],
-            );
+            return {
+              label: chrome.i18n.getMessage(
+                'evm_history_operation_safe_transfer_from_erc721_out',
+                [name, decodedData.inputs[2].value, formattedTo],
+              ),
+              pageTitle: 'evm_transfer',
+              receiverAddress: formattedFrom,
+            };
           }
         }
       }
       case 'transfer': {
-        return chrome.i18n.getMessage(
-          decodedData.inputs[0].value.toLowerCase() === walletAddress
-            ? 'evm_history_operation_transfer_in'
-            : 'evm_history_operation_transfer_out',
-          [
-            Number(decodedData.inputs[1].value) / 1000000,
-            symbol,
-            EvmFormatUtils.formatAddress(decodedData.inputs[0].value),
-          ],
-        );
+        const to = decodedData.inputs[0].value.toLowerCase();
+        const formattedTo = EvmFormatUtils.formatAddress(to);
+
+        const isTransferIn = to === walletAddress;
+
+        return {
+          label: chrome.i18n.getMessage(
+            isTransferIn
+              ? 'evm_history_operation_transfer_in'
+              : 'evm_history_operation_transfer_out',
+            [
+              Number(decodedData.inputs[1].value) / 1000000,
+              symbol,
+              isTransferIn
+                ? EvmFormatUtils.formatAddress(broadcaster)
+                : formattedTo,
+            ],
+          ),
+          pageTitle: 'evm_transfer',
+          receiverAddress: formattedTo,
+        };
       }
       case 'mintBatch': {
-        return chrome.i18n.getMessage('evm_history_operation_mint_batch', [
-          decodedData.inputs[1].value.length,
-          name,
-        ]);
+        return {
+          label: chrome.i18n.getMessage('evm_history_operation_mint_batch', [
+            decodedData.inputs[1].value.length,
+            name,
+          ]),
+          pageTitle: 'evm_mint_batch',
+        };
       }
       case 'approve': {
+        const to = EvmFormatUtils.formatAddress(decodedData.inputs[0].value);
         if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
-          return chrome.i18n.getMessage(
-            'evm_history_operation_approve_out_erc20',
-            [
-              EvmFormatUtils.formatAddress(decodedData.inputs[0].value),
-              decodedData.inputs[1].value / 1000000,
-              symbol,
-            ],
-          );
+          return {
+            label: chrome.i18n.getMessage(
+              'evm_history_operation_approve_out_erc20',
+              [to, decodedData.inputs[1].value / 1000000, symbol],
+            ),
+            pageTitle: 'evm_approval',
+            receiverAddress: to,
+          };
         } else if (tokenMetadata?.type === EVMSmartContractType.ERC721) {
-          return chrome.i18n.getMessage(
-            'evm_history_operation_approve_out_erc721',
-            [
-              EvmFormatUtils.formatAddress(decodedData.inputs[0].value),
-              name,
-              decodedData.inputs[1].value,
-            ],
-          );
+          return {
+            label: chrome.i18n.getMessage(
+              'evm_history_operation_approve_out_erc721',
+              [to, name, decodedData.inputs[1].value],
+            ),
+            pageTitle: 'evm_approval',
+            receiverAddress: to,
+          };
         }
       }
       case 'mintNFTs': {
-        return chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
-          name,
-          decodedData.inputs[0].value,
-        ]);
+        return {
+          label: chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
+            name,
+            decodedData.inputs[0].value,
+          ]),
+          pageTitle: 'evm_mint',
+        };
       }
       default: {
         console.log(decodedData, metadata, tokenMetadata);
-        return chrome.i18n.getMessage(
-          'evm_history_operation_generic_smart_contract_messages',
-          [decodedData.operationName, name],
-        );
+        return {
+          label: chrome.i18n.getMessage(
+            'evm_history_operation_generic_smart_contract_messages',
+            [decodedData.operationName, name],
+          ),
+          pageTitle: 'evm_broadcast',
+        };
       }
     }
   }
 
-  return chrome.i18n.getMessage('evm_history_default_smart_contract_operation');
+  return {
+    label: chrome.i18n.getMessage(
+      'evm_history_default_smart_contract_operation',
+    ),
+    pageTitle: 'evm_history_default_smart_contract_operation',
+  };
 };
 
 // const fetchHistory = async (

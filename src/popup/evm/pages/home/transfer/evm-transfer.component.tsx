@@ -228,7 +228,7 @@ const EvmTransfer = ({
       tokenInfo: form.selectedToken.tokenInfo,
       receiverAddress: form.receiverAddress,
       amount: form.amount,
-      wallet: localAccounts[0].wallet,
+      wallet: activeAccount.wallet,
       transactionData: transactionData,
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('html_popup_transfer_fund_operation');
@@ -238,7 +238,7 @@ const EvmTransfer = ({
             form.selectedToken.tokenInfo,
             form.receiverAddress,
             form.amount,
-            localAccounts[0].wallet,
+            activeAccount.wallet,
             gasFee,
           );
 
@@ -249,6 +249,7 @@ const EvmTransfer = ({
             receiverAddress: form.receiverAddress,
             amount: form.amount,
             gasFee: gasFee,
+            pageTitle: 'popup_html_transfer_funds',
           });
           setSuccessMessage('popup_html_evm_transfer_successful');
         } catch (err) {

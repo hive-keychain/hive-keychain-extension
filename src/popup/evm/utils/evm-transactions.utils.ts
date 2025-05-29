@@ -91,7 +91,7 @@ const transfer = async (
   } else {
     transactionRequest = {
       to: receiverAddress,
-      value: amount * 1000000000000000000,
+      value: ethers.parseEther(amount.toString()),
       from: connectedWallet.address,
       nonce: nonce ?? (await connectedWallet.getNonce()),
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),

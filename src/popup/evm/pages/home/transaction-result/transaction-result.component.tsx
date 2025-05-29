@@ -33,6 +33,7 @@ const EvmTransactionResult = ({
   gasFee,
   localAccounts,
   isCanceled,
+  pageTitle,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
@@ -48,7 +49,7 @@ const EvmTransactionResult = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_transfer_funds',
+      title: pageTitle,
       isBackButtonEnabled: true,
     });
     getTransactionStatus();
@@ -296,16 +297,20 @@ const EvmTransactionResult = ({
       )}
       {txResult && (
         <div className="transaction-info">
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_from"
-            value={EvmFormatUtils.formatAddress(txResult.from!)}
-            valueOnClickAction={() => openWallet(txResult.from)}
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_to"
-            value={EvmFormatUtils.formatAddress(receiverAddress)}
-            valueOnClickAction={() => openWallet(receiverAddress)}
-          />
+          {txResult.from && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_from"
+              value={EvmFormatUtils.formatAddress(txResult.from!)}
+              valueOnClickAction={() => openWallet(txResult.from)}
+            />
+          )}
+          {receiverAddress && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_to"
+              value={EvmFormatUtils.formatAddress(receiverAddress)}
+              valueOnClickAction={() => openWallet(receiverAddress)}
+            />
+          )}
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
             value={txResult.blockNumber!}
@@ -359,6 +364,7 @@ const mapStateToProps = (state: RootState) => {
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
+    pageTitle: state.navigation.stack[0].params.pageTitle,
   };
 };
 
