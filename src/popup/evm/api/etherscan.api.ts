@@ -15,29 +15,36 @@ const getErc721TokenTransactions = async (
   walletAddress: string,
   chain: EvmChain,
   page: number,
-  limit: number,
+  offset: number,
 ) => {
   const response = await get(`
-    ${chain.blockExplorerApi?.url}/api?module=account&action=tokennfttx&address=${walletAddress}&page=${page}&offset=${limit}&sort=asc
+    ${chain.blockExplorerApi?.url}/api?module=account&action=tokennfttx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
     `);
   return response.result ?? [];
 };
 
-const getTokenTx = (walletAddress: string, chain: EvmChain, offset: number) => {
-  return get(
-    `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&startblock=0&endblock=99999999&offset=${offset}&sort=asc`,
-  );
-};
-
-const getHistory = (
+const getTokenTx = async (
   walletAddress: string,
   chain: EvmChain,
   page: number,
   offset: number,
 ) => {
-  return get(
+  const response = await get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc`,
+  );
+  return response.result ?? [];
+};
+
+const getHistory = async (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number,
+  offset: number,
+) => {
+  const response = await get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&sort=desc&page=${page}&offset=${offset}`,
   );
+  return response.result ?? [];
 };
 
 const getAbi = async (chain: EvmChain, address: string) => {

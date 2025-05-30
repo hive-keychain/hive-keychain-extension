@@ -381,6 +381,7 @@ const getTokenListForWalletAddress = async (
         let response = await EtherscanApi.getTokenTx(
           walletAddress,
           chain,
+          0,
           offset,
         );
         result = response.result;

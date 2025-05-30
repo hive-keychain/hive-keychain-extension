@@ -22,10 +22,12 @@ import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { ArrayUtils } from 'src/utils/array.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
 const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
+const RESULTS_PER_PAGE = 100;
 
 const fetchHistory = async (
   walletAddress: string,
@@ -33,8 +35,6 @@ const fetchHistory = async (
   history?: EvmUserHistory,
 ) => {
   const start = Date.now();
-
-  const RESULTS_PER_PAGE = 100;
 
   if (!history) {
     history = {
@@ -49,23 +49,86 @@ const fetchHistory = async (
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
 
   let events: any[] = [];
-  let mainHistoryResponse;
-  let tokensHistoryResponse;
-  let nftHistoryResponse;
   Logger.info(`Fetching  page ${history.lastPage}`);
-  mainHistoryResponse = await EtherscanApi.getHistory(
-    walletAddress,
-    chain,
-    history.lastPage,
-    RESULTS_PER_PAGE,
-  );
 
-  console.log('End fetch', (Date.now() - start) / 1000);
+  let [
+    mainHistoryResponse,
+    tokensHistoryResponse,
+    nftsHistoryReponse,
+    internalTxHistoryResponse,
+  ] = await Promise.all([
+    fetchMainHistory(walletAddress, chain, history),
+    fetchAllTokensTx(walletAddress, chain, 0),
+    fetchAllNftsTx(walletAddress, chain, 0),
+    fetchAllInternalTx(walletAddress, chain, 0),
+  ]);
 
-  if (mainHistoryResponse.result.length !== RESULTS_PER_PAGE)
+  console.log({
+    mainHistoryResponse,
+    tokensHistoryResponse,
+    nftsHistoryReponse,
+    internalTxHistoryResponse,
+  });
+
+  if (
+    mainHistoryResponse.length !== RESULTS_PER_PAGE &&
+    tokensHistoryResponse.length !== RESULTS_PER_PAGE &&
+    nftsHistoryReponse.length !== RESULTS_PER_PAGE &&
+    internalTxHistoryResponse.length !== RESULTS_PER_PAGE
+  ) {
     history.fullyFetch = true;
+  }
 
-  events = [...events, ...mainHistoryResponse.result];
+  const lastestDate =
+    mainHistoryResponse[mainHistoryResponse.length - 1].timeStamp;
+
+  let allDataSync = false;
+
+  let nextPage = 1;
+  do {
+    const promises: any = {};
+    if (
+      tokensHistoryResponse.length > 0 &&
+      tokensHistoryResponse[tokensHistoryResponse.length - 1].timeStamp >
+        lastestDate &&
+      tokensHistoryResponse.length === RESULTS_PER_PAGE
+    ) {
+      promises['tokens'] = fetchAllTokensTx(walletAddress, chain, nextPage);
+    }
+    if (
+      nftsHistoryReponse.length > 0 &&
+      nftsHistoryReponse[nftsHistoryReponse.length - 1].timeStamp >
+        lastestDate &&
+      nftsHistoryReponse.length === RESULTS_PER_PAGE
+    ) {
+      promises['nfts'] = fetchAllNftsTx(walletAddress, chain, nextPage);
+    }
+    if (
+      internalTxHistoryResponse.length > 0 &&
+      internalTxHistoryResponse[internalTxHistoryResponse.length - 1]
+        .timeStamp > lastestDate &&
+      tokensHistoryResponse.length === RESULTS_PER_PAGE
+    ) {
+      promises['internal'] = fetchAllInternalTx(walletAddress, chain, nextPage);
+    }
+
+    console.log(promises);
+
+    const promisesResult = await AsyncUtils.promiseAllWithKeys(promises);
+
+    nextPage++;
+    console.log(promisesResult);
+
+    allDataSync = Object.keys(promises).length > 0 ? false : true;
+  } while (allDataSync === false);
+
+  console.log(`First page of main history ends on ${lastestDate}`);
+
+  // console.log('End fetch', (Date.now() - start) / 1000);
+
+  // merge all three lists
+
+  events = [...events, ...mainHistoryResponse];
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
       .filter((event) => event.contractAddress.length > 0)
@@ -196,12 +259,78 @@ const fetchHistory = async (
   return history;
 };
 
-const fetchAllTokenTx = async () => {
-  return [];
+// TODO change return
+const fetchMainHistory = (
+  walletAddress: string,
+  chain: EvmChain,
+  history: EvmUserHistory,
+): Promise<any[]> => {
+  return new Promise(async (resolve, reject) => {
+    const start = Date.now();
+    let mainHistoryResponse;
+    Logger.info(`Fetching  page ${history.lastPage}`);
+    mainHistoryResponse = await EtherscanApi.getHistory(
+      walletAddress,
+      chain,
+      history.lastPage,
+      RESULTS_PER_PAGE,
+    );
+
+    console.log('End fetch main history', (Date.now() - start) / 1000);
+    resolve(mainHistoryResponse);
+  });
 };
 
-const fetchAllNftTx = async () => {
-  return [];
+const fetchAllTokensTx = (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number = 0,
+): Promise<any[]> => {
+  return new Promise(async (resolve, reject) => {
+    const start = Date.now();
+    let tokensHistory;
+    Logger.info(`Fetching Tokens history page ${page}`);
+    tokensHistory = await EtherscanApi.getTokenTx(
+      walletAddress,
+      chain,
+      page,
+      RESULTS_PER_PAGE,
+    );
+
+    console.log('End fetch Tokens history', (Date.now() - start) / 1000);
+    resolve(tokensHistory);
+  });
+};
+
+const fetchAllNftsTx = (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number = 0,
+): Promise<any> => {
+  return new Promise(async (resolve, reject) => {
+    const start = Date.now();
+    let ntfsHistory;
+    Logger.info(`Fetching NFT history page ${page}`);
+    ntfsHistory = await EtherscanApi.getErc721TokenTransactions(
+      walletAddress,
+      chain,
+      page,
+      RESULTS_PER_PAGE,
+    );
+
+    console.log('End fetch NFT history', (Date.now() - start) / 1000);
+    resolve(ntfsHistory);
+  });
+};
+
+const fetchAllInternalTx = (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number = 0,
+): Promise<any[]> => {
+  return new Promise((resolve, reject) => {
+    resolve([]);
+  });
 };
 
 const getSpecificData = async (
