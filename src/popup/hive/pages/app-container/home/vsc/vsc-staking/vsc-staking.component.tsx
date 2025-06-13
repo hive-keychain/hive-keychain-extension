@@ -99,7 +99,7 @@ const StakeOnVsc = ({
   });
 
   const [balance, setBalance] = useState<string | number>('...');
-
+  const [pendingHbdUnstaking, setPendingHbdUnstaking] =  useState(0);
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
     useState<AutoCompleteValues>({
       categories: [],
@@ -123,6 +123,9 @@ const StakeOnVsc = ({
             : 'hbd'
         ] / 1000,
       );
+      const pendingHbd = parseFloat((vscBalance.balance.pending_hbd_unstaking/1000).toFixed(3))
+      console.log({pendingHbd})
+      setPendingHbdUnstaking(pendingHbd);
     }
   }, [watch('operation')]);
 
@@ -291,7 +294,16 @@ const StakeOnVsc = ({
           unit={currencyLabels[watch('selectedCurrency')]}
           label="popup_html_balance"
         />
-
+        <div
+          className="pending-savings-panel"
+          onClick={()=>{}}>
+          <div className="pending-savings-text">
+            {chrome.i18n.getMessage('popup_html_pending_savings_withdrawal', [
+              FormatUtils.formatCurrencyValue(pendingHbdUnstaking, 3),
+              currencyLabels[watch('selectedCurrency')],
+            ])}
+          </div>
+        </div>
         <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
           <div className="form-fields">
             <ComplexeCustomSelect

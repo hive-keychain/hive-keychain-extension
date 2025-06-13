@@ -1,4 +1,7 @@
 .vsc-staking-page {
+  .pending-savings-panel {
+    @include pending-panel;
+  }
   @include pageLayoutRowGap;
   row-gap: 10px;
   @include background-top-0-percent();
