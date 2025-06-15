@@ -8,7 +8,12 @@ import type {
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
-import { CurrencyPrices, FormatUtils, isWif } from 'hive-keychain-commons';
+import {
+  CurrencyPrices,
+  FormatUtils,
+  isWif,
+  VscAccountBalance,
+} from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
@@ -378,6 +383,7 @@ const getAccountValue = (
   tokens: Token[],
   hiveMarketLockedOpenOrdersValues: HiveInternalMarketLockedInOrders,
   hiddenTokensList: string[],
+  vscBalance: VscAccountBalance,
 ) => {
   if (accountValueType === AccountValueType.HIDDEN) return '⁎ ⁎ ⁎';
   if (!prices.hive_dollar?.usd || !prices.hive?.usd) return 0;
@@ -407,7 +413,11 @@ const getAccountValue = (
       parseFloat(savings_balance as string)) *
       prices.hive.usd +
     layerTwoTokensTotalValue +
-    totalLockedValueInHiveMarket;
+    totalLockedValueInHiveMarket +
+    (vscBalance?.hive / 1000) * prices.hive.usd +
+    (vscBalance?.hbd / 1000) * prices.hive_dollar.usd +
+    (vscBalance?.hbd_savings / 1000) * prices.hive_dollar.usd +
+    (vscBalance?.pending_hbd_unstaking / 1000) * prices.hive_dollar.usd;
   const value =
     accountValueType === AccountValueType.DOLLARS
       ? dollarValue
