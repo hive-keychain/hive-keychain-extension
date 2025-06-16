@@ -131,12 +131,7 @@ export const ConnectAccounts = (props: Props) => {
               onChange={() => toggleAccount(account.wallet.address)}
               checked={accountsToConnect[account.wallet.address]}>
               <EvmAccountDisplayComponent
-                account={
-                  {
-                    id: account.id,
-                    wallet: { address: account.wallet.address },
-                  } as EvmAccount
-                }
+                account={account}
                 status={getStatus(account)}
               />
             </CheckboxPanelComponent>
