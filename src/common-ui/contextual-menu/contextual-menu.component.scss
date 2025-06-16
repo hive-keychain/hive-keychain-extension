@@ -21,7 +21,7 @@
       margin-bottom: 4px;
       width: 100%;
       .section-title {
-        @include poppins400(13px);
+        @include poppins400(14px);
         width: 100%;
         text-align: center;
         border-bottom: 1px solid var(--card-border);
@@ -47,10 +47,11 @@
             @include icon-size(16px);
           }
           .label {
-            @include poppins300(12px);
+            @include poppins300(13px);
           }
           &:hover {
             background: $red;
+            color: white;
             .section-item-icon {
               svg {
                 path,
