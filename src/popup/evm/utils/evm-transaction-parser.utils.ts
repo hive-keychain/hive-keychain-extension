@@ -23,6 +23,7 @@ import { MethodRegistry } from 'eth-method-registry';
 import { ethers } from 'ethers';
 import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
+import Logger from 'src/utils/logger.utils';
 
 export enum EvmInputDisplayType {
   BYTES = 'bytes',
@@ -316,7 +317,7 @@ const getDomainWarnings = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
-  if (verifyTransactionInformation.domain.isBlacklisted) {
+  if (verifyTransactionInformation?.domain?.isBlacklisted) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.HIGH,
@@ -432,15 +433,22 @@ const verifyTransactionInformation = async (
     url += `&contract=${contract}`;
   }
 
-  const result = await KeychainApi.get(url);
-  if (proxy) {
-    if (!result.contract) {
-      result.contract = { proxy: '' };
+  try {
+    let result = await KeychainApi.get(url);
+    if (proxy) {
+      if (!result.contract) {
+        result.contract = { proxy: '' };
+      }
+      result.contract.proxy = proxy;
     }
-    result.contract.proxy = proxy;
-  }
 
-  return result;
+    return result;
+  } catch (err) {
+    Logger.error('Error while fetchingm transaction information', err);
+    return {
+      unableToReach: true,
+    } as EvmTransactionVerificationInformation;
+  }
 };
 
 const getSmartContractProxy = async (

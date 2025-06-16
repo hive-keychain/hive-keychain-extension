@@ -62,6 +62,10 @@ export const PersonalSign = (props: Props) => {
     transactionConfirmationFields.otherFields.push(
       await transactionHook.getDomainWarnings(transactionInfo),
     );
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
+
     transactionHook.setFields(transactionConfirmationFields);
   };
 
@@ -83,6 +87,6 @@ export const PersonalSign = (props: Props) => {
           />
         </Card>
       }
-      warningHook={transactionHook}></EvmOperation>
+      transactionHook={transactionHook}></EvmOperation>
   );
 };

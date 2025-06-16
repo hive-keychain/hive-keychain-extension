@@ -188,6 +188,10 @@ export const SendTransaction = (props: Props) => {
                 proxy,
               );
 
+            transactionHook.setUnableToReachBackend(
+              !!(transactionInfo && transactionInfo.unableToReach),
+            );
+
             transactionConfirmationFields.otherFields.push(
               await transactionHook.getDomainWarnings(transactionInfo),
             );
@@ -356,6 +360,10 @@ export const SendTransaction = (props: Props) => {
                 proxy,
               );
 
+            transactionHook.setUnableToReachBackend(
+              !!(transactionInfo && transactionInfo.unableToReach),
+            );
+
             transactionConfirmationFields.otherFields.push(
               await transactionHook.getDomainWarnings(transactionInfo),
             );
@@ -463,6 +471,9 @@ export const SendTransaction = (props: Props) => {
               usedAccount.wallet.address,
               proxy,
             );
+          transactionHook.setUnableToReachBackend(
+            !!(transactionInfo && transactionInfo.unableToReach),
+          );
 
           transactionConfirmationFields.otherFields.push(
             await transactionHook.getDomainWarnings(transactionInfo),
@@ -482,6 +493,10 @@ export const SendTransaction = (props: Props) => {
             params.to,
             usedAccount.wallet.address,
           );
+
+        transactionHook.setUnableToReachBackend(
+          !!(transactionInfo && transactionInfo.unableToReach),
+        );
 
         transactionConfirmationFields.otherFields.push(
           await transactionHook.getDomainWarnings(transactionInfo),
@@ -637,7 +652,7 @@ export const SendTransaction = (props: Props) => {
             </>
           }
           onConfirm={transactionHook.handleOnConfirmClick}
-          warningHook={transactionHook}
+          transactionHook={transactionHook}
         />
       )}
       <LoadingComponent hide={!transactionHook.loading} />

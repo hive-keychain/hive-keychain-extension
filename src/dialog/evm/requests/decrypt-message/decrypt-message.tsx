@@ -41,6 +41,10 @@ export const DecryptMessage = (props: Props) => {
     transactionConfirmationFields.otherFields.push(
       await warningHook.getDomainWarnings(transactionInfo),
     );
+    warningHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
+
     warningHook.setFields(transactionConfirmationFields);
   };
 
@@ -92,6 +96,6 @@ export const DecryptMessage = (props: Props) => {
           </div>
         </>
       }
-      warningHook={warningHook}></EvmOperation>
+      transactionHook={warningHook}></EvmOperation>
   );
 };

@@ -87,6 +87,7 @@ export interface TransactionConfirmationFields {
 }
 
 export interface EvmTransactionVerificationInformation {
+  unableToReach?: boolean;
   contract: {
     hasBeenUsedBefore: boolean;
     isBlacklisted: boolean;

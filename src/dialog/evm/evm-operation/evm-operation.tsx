@@ -1,3 +1,5 @@
+import { SVGIcons } from '@common-ui/icons.enum';
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
@@ -22,7 +24,7 @@ type Props = {
   caption?: string;
   fields?: any;
   bottomPanel?: any;
-  warningHook?: useTransactionHook;
+  transactionHook?: useTransactionHook;
 };
 
 export const EvmOperation = ({
@@ -36,14 +38,14 @@ export const EvmOperation = ({
   caption,
   fields,
   bottomPanel,
-  warningHook,
+  transactionHook,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const genericOnConfirm = () => {
-    if (warningHook && warningHook.hasWarning()) {
-      warningHook.setWarningsPopupOpened(true);
+    if (transactionHook && transactionHook.hasWarning()) {
+      transactionHook.setWarningsPopupOpened(true);
       return;
     } else {
       setLoading(true);
@@ -88,6 +90,18 @@ export const EvmOperation = ({
               {header}
             </div>
           )}
+
+          {transactionHook?.unableToReachBackend && (
+            <div className="unable-to-reach-panel">
+              <SVGIcon icon={SVGIcons.GLOBAL_WARNING} />{' '}
+              <span className="text">
+                {chrome.i18n.getMessage(
+                  'evm_unable_to_reach_verify_transaction',
+                )}
+              </span>
+            </div>
+          )}
+
           {caption && <DialogCaption text={caption} />}
 
           {fields && (
@@ -116,7 +130,7 @@ export const EvmOperation = ({
           </div>
         )}
         {/* add button to cancel request and block dapp */}
-        {warningHook?.shouldDisplayBlockButton && (
+        {transactionHook?.shouldDisplayBlockButton && (
           <ButtonComponent
             label="evm_too_many_transaction_button"
             type={ButtonType.ALTERNATIVE}
@@ -128,7 +142,9 @@ export const EvmOperation = ({
         <LoadingComponent hide={!loading} />
       </div>
 
-      {warningHook && <ConfirmationPopup transactionHook={warningHook} />}
+      {transactionHook && (
+        <ConfirmationPopup transactionHook={transactionHook} />
+      )}
     </>
   );
 };

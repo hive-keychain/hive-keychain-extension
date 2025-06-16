@@ -73,6 +73,9 @@ export const SignTypedData = (props: Props) => {
     transactionConfirmationFields.otherFields.push(
       await transactionHook.getDomainWarnings(transactionInfo),
     );
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
 
     if (message.domain.chainId)
       transactionConfirmationFields.otherFields.push({
@@ -256,6 +259,6 @@ export const SignTypedData = (props: Props) => {
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
-      warningHook={transactionHook}></EvmOperation>
+      transactionHook={transactionHook}></EvmOperation>
   );
 };

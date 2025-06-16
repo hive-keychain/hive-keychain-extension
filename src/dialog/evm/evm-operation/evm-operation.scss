@@ -21,6 +21,21 @@
     //   margin-bottom: 8px;
     // }
 
+    .unable-to-reach-panel {
+      @include small-card;
+      display: flex;
+      margin: unset;
+      margin-bottom: 8px;
+      .svg-icon {
+        @include icon-size(30px);
+        --warning-color: #{$red};
+      }
+      .text {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+      }
+    }
+
     .operation-header {
       padding: 0 12px 12px 12px;
     }

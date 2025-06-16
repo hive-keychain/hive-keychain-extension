@@ -33,6 +33,10 @@ export const GetEncryptionKey = (props: Props) => {
     transactionConfirmationFields.otherFields.push(
       await warningHook.getDomainWarnings(transactionInfo),
     );
+    warningHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
+
     warningHook.setFields(transactionConfirmationFields);
   };
 
@@ -46,6 +50,6 @@ export const GetEncryptionKey = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_evm_get_encryption_key', [
         data.dappInfo.domain,
       ])}
-      warningHook={warningHook}></EvmOperation>
+      transactionHook={warningHook}></EvmOperation>
   );
 };

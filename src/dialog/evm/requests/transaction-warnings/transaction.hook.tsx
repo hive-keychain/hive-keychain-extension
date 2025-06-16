@@ -58,6 +58,8 @@ export const useTransactionHook = (
   const [shouldDisplayBlockButton, setShouldDisplayBlockButton] =
     useState<boolean>();
 
+  const [unableToReachBackend, setUnableToReachBackend] = useState(false);
+
   useEffect(() => {
     initDuplicateRequestWarningField();
     initShouldDiplayBlockButton();
@@ -367,6 +369,8 @@ export const useTransactionHook = (
     setConfirmationPageFields,
     duplicatedTransactionField,
     shouldDisplayBlockButton,
+    unableToReachBackend,
+    setUnableToReachBackend,
   };
 };
 

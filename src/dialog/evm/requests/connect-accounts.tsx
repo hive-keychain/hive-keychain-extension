@@ -139,7 +139,7 @@ export const ConnectAccounts = (props: Props) => {
             </CheckboxPanelComponent>
           ))
         }
-        warningHook={warningHook}></EvmOperation>
+        transactionHook={warningHook}></EvmOperation>
     </>
   );
 };
