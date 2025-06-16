@@ -52,6 +52,9 @@ export const ConnectAccounts = (props: Props) => {
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
+    warningHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
     transactionConfirmationFields.otherFields.push(
       await warningHook.getDomainWarnings(transactionInfo),
     );
