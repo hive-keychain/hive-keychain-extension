@@ -20,6 +20,11 @@ export const checkRequestHash = async (request: EvmRequest, domain: string) => {
   };
   const hash = ObjectHash.MD5(requestWithoutRequestId);
 
+  console.log({ request });
+  const REQUEST_TO_CHECK = ['eth_sendTransaction'];
+
+  if (!REQUEST_TO_CHECK.includes(request.method)) return;
+
   let lastHashes: LastHashes = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_LAST_HASH,
   );
