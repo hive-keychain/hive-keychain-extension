@@ -43,44 +43,10 @@ export const EvmHistory = ({
 
     console.log({ transactionResponse, historyItem });
 
-    // const genericParams = {
-    //   transactionResponse: transactionResponse,
-    //   // tokenInfo: historyItem..tokenInfo,
-    //   isCanceled: historyItem.isCanceled,
-    //   pageTitle: historyItem.pageTitle,
-    // };
-
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: transactionResponse,
       ...historyItem,
     });
-
-    // switch (historyItem.type) {
-    //   case EvmUserHistoryItemType.TRANSFER_IN: {
-    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-    //       ...genericParams,
-    //       receiverAddress: (historyItem as EvmTokenTransferInHistoryItem).from,
-    //       amount: (historyItem as EvmTokenTransferInHistoryItem).amount,
-    //     });
-    //     break;
-    //   }
-    //   case EvmUserHistoryItemType.TRANSFER_OUT: {
-    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-    //       ...genericParams,
-    //       receiverAddress: (historyItem as EvmTokenTransferOutHistoryItem).to,
-    //       amount: (historyItem as EvmTokenTransferOutHistoryItem).amount,
-    //     });
-    //     break;
-    //   }
-    //   default: {
-    //     console.log('no nav set up');
-    //     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-    //       ...genericParams,
-    //       receiverAddress: historyItem.receiverAddress
-    //     });
-    //     break;
-    //   }
-    // }
   };
 
   return (

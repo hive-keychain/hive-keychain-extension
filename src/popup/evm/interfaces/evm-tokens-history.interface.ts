@@ -26,6 +26,21 @@ export interface EvmUserHistoryItem {
   cancelDetails?: CanceledTransactionData;
   isCanceled?: boolean;
   receiverAddress?: string;
+
+  detailFields?: EvmUserHistoryItemDetail[];
+}
+
+export interface EvmUserHistoryItemDetail {
+  label: string;
+  value: string;
+  type: EvmUserHistoryItemDetailType;
+}
+
+export enum EvmUserHistoryItemDetailType {
+  BASE = 'BASE',
+  IMAGE = 'IMAGE',
+  ADDRESS = 'ADDRESS',
+  TOKEN_AMOUNT = 'TOKEN_AMOUNT',
 }
 
 export interface EvmTokenTransferInHistoryItem extends EvmUserHistoryItem {

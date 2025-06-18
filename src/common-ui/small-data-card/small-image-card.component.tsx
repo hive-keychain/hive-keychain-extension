@@ -1,22 +1,20 @@
 import React from 'react';
 
-interface SmallDataCardProps {
-  label: string;
-  skipLabelTranslation?: boolean;
-  value: any;
+interface SmallImageCardProps {
+  name?: string;
+  value: string;
   valueOnClickAction?: (...params: any[]) => any;
   extraInfo?: string;
   extraInfoAdditionalClass?: string;
 }
 
-export const SmallDataCardComponent = ({
-  label,
-  skipLabelTranslation,
+export const SmallImageCardComponent = ({
+  name,
   value,
   valueOnClickAction,
   extraInfo,
   extraInfoAdditionalClass,
-}: SmallDataCardProps) => {
+}: SmallImageCardProps) => {
   const handleOnValueClick = () => {
     if (valueOnClickAction) {
       valueOnClickAction();
@@ -25,14 +23,12 @@ export const SmallDataCardComponent = ({
 
   return (
     <div className="small-data-card">
-      <div className="label">
-        {skipLabelTranslation ? label : chrome.i18n.getMessage(label)}
-      </div>
       <div
         className={`value ${valueOnClickAction ? 'clickable' : ''}`}
         onClick={handleOnValueClick}>
-        {value}
+        <img className="image" src={value} />
       </div>
+      {name && <div className="label">{name}</div>}
       {extraInfo && (
         <div className={`extra-info ${extraInfoAdditionalClass ?? ''}`}>
           {extraInfo}

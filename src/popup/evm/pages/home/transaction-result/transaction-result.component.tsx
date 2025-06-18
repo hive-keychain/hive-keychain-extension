@@ -1,9 +1,16 @@
+import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
+import { SmallImageCardComponent } from '@common-ui/small-data-card/small-image-card.component';
+import {
+  EvmUserHistoryItemDetail,
+  EvmUserHistoryItemDetailType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -34,6 +41,7 @@ const EvmTransactionResult = ({
   localAccounts,
   isCanceled,
   pageTitle,
+  detailFields,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
@@ -52,6 +60,7 @@ const EvmTransactionResult = ({
       title: pageTitle,
       isBackButtonEnabled: true,
     });
+    console.log(tokenInfo);
     getTransactionStatus();
   }, []);
 
@@ -297,20 +306,63 @@ const EvmTransactionResult = ({
       )}
       {txResult && (
         <div className="transaction-info">
-          {txResult.from && (
+          {detailFields &&
+            detailFields.map(
+              (detail: EvmUserHistoryItemDetail, index: number) => (
+                <React.Fragment key={`card-${index}`}>
+                  {detail.type === EvmUserHistoryItemDetailType.BASE && (
+                    <SmallDataCardComponent
+                      label={detail.label}
+                      value={detail.value}
+                    />
+                  )}
+                  {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
+                    <SmallImageCardComponent
+                      value={detail.value}
+                      name={detail.label}
+                    />
+                  )}
+                  {detail.type === EvmUserHistoryItemDetailType.ADDRESS && (
+                    <SmallDataCardComponent
+                      label={detail.label}
+                      value={
+                        <EvmAddressComponent
+                          address={detail.value}
+                          chainId={chain.chainId}
+                        />
+                      }
+                      valueOnClickAction={() => openWallet(detail.value)}
+                    />
+                  )}
+                  {detail.type ===
+                    EvmUserHistoryItemDetailType.TOKEN_AMOUNT && (
+                    <SmallDataCardComponent
+                      label={detail.label}
+                      value={
+                        <div className="value-content-horizontal">
+                          {tokenInfo && <EvmTokenLogo tokenInfo={tokenInfo} />}
+                          {detail.value}
+                        </div>
+                      }
+                    />
+                  )}
+                </React.Fragment>
+              ),
+            )}
+          {/* {txResult.from && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_from"
               value={EvmFormatUtils.formatAddress(txResult.from!)}
               valueOnClickAction={() => openWallet(txResult.from)}
             />
-          )}
-          {receiverAddress && (
+          )} */}
+          {/* {receiverAddress && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_to"
               value={EvmFormatUtils.formatAddress(receiverAddress)}
               valueOnClickAction={() => openWallet(receiverAddress)}
             />
-          )}
+          )} */}
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
             value={txResult.blockNumber!}
@@ -352,6 +404,7 @@ const EvmTransactionResult = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  console.log(state);
   return {
     activeAccount: state.evm.activeAccount,
     transactionResponse: state.navigation.stack[0].params
@@ -365,6 +418,7 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
     pageTitle: state.navigation.stack[0].params.pageTitle,
+    detailFields: state.navigation.stack[0].params.detailFields,
   };
 };
 

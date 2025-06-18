@@ -1,8 +1,7 @@
+import { EvmAccountInfo } from '@common-ui/evm/evm-account-display/evm-account-info.component';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
-import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import React from 'react';
 import {
   DappStatusComponent,
@@ -40,30 +39,12 @@ export const EvmAccountDisplayComponent = ({
         svg={EvmAddressesUtils.getIdenticonFromAddress(account.wallet.address)}
         status={status}
       />
-      <div className="account-info">
-        <div className="top-line">
-          <div className="account-name">
-            {EvmAccountUtils.getAccountName(account)}
-          </div>
-          {editable && (
-            <SVGIcon
-              className="edit-icon"
-              icon={SVGIcons.EVM_ACCOUNT_EDIT}
-              onClick={() => {
-                if (onEdit) onEdit(account);
-              }}
-            />
-          )}
-        </div>
-        <div className="bottom-line">
-          <div
-            className={`account-address ${fullAddress ? 'full-address' : ''}`}>
-            {fullAddress
-              ? account.wallet.address
-              : EvmFormatUtils.formatAddress(account.wallet.address)}
-          </div>
-        </div>
-      </div>
+      <EvmAccountInfo
+        account={account}
+        editable={editable}
+        fullAddress={fullAddress}
+        onEdit={onEdit}
+      />
       <div className="action-panel">
         {editable && (
           <SVGIcon

@@ -5,14 +5,23 @@
   margin: unset;
   align-items: flex-start;
 
+  .image {
+    width: 100%;
+  }
+
   .label {
     color: var(--main-font-color);
     @include poppins600(14px);
   }
 
   .value {
-    @include poppins500(12px);
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    @include poppins300(13px);
+    font-style: italic;
     color: var(--main-font-color);
+    width: 100%;
     &.clickable {
       display: flex;
       flex-direction: row;

@@ -5,6 +5,8 @@ import {
   EvmTokenTransferOutHistoryItem,
   EvmUserHistory,
   EvmUserHistoryItem,
+  EvmUserHistoryItemDetail,
+  EvmUserHistoryItemDetailType,
   EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
@@ -196,7 +198,27 @@ const fetchHistory = async (
         Number(event.value) / 1000000000,
       ).toString();
 
-      // const test = formatUnits(Number(event.value) / 1000, 'ether');
+      const details: EvmUserHistoryItemDetail[] = [];
+      details.push({
+        label: 'popup_html_evm_transaction_info_from',
+        value: event.from,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+      details.push({
+        label: 'popup_html_evm_transaction_info_to',
+        value: event.to,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+      details.push({
+        label: 'popup_html_transfer_amount',
+        value: `${amount.toString()} ${mainToken!.symbol.toString()}`,
+        type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+      });
+      details.push({
+        label: 'evm_nft_token_type',
+        value: 'Native',
+        type: EvmUserHistoryItemDetailType.BASE,
+      });
 
       historyItem = {
         ...historyItem,
@@ -222,7 +244,9 @@ const fetchHistory = async (
             ),
           ],
         ),
+        detailFields: details,
         pageTitle: 'popup_html_transfer_funds',
+        tokenInfo: mainToken,
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
       // Smart contract (parse transaction)
