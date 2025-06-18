@@ -12,6 +12,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BlockTag } from 'ethers';
+import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (rpcUrl?: string) => {
   const activeChain = await EvmChainUtils.getLastEvmChain();
@@ -149,17 +150,25 @@ const resolveEns = async (ensAddress: string) => {
 };
 
 const lookupEns = async (address: string) => {
-  const provider = await instanciateProvider();
-  return await provider.lookupAddress(address);
+  try {
+    const provider = await instanciateProvider();
+    return await provider.lookupAddress(address);
+  } catch (err) {
+    return null;
+  }
 };
 
 const getResolveData = async (ensAddress: string) => {
-  const ensResolver = await getEnsResolver(ensAddress);
-  if (ensResolver) {
-    return {
-      address: await ensResolver.getAddress(),
-      avatar: await ensResolver.getAvatar(),
-    };
+  try {
+    const ensResolver = await getEnsResolver(ensAddress);
+    if (ensResolver) {
+      return {
+        address: await ensResolver.getAddress(),
+        avatar: await ensResolver.getAvatar(),
+      };
+    }
+  } catch (err) {
+    Logger.warn(`Cannot resolve address ${ensAddress}`);
   }
   return null;
 };

@@ -173,6 +173,13 @@ const fetchHistory = async (
     if (event.contractAddress.length > 0) {
       // contract creation
 
+      const details: EvmUserHistoryItemDetail[] = [];
+      details.push({
+        label: 'evm_created_smart_contract',
+        value: event.contractAddress,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+
       historyItem = {
         ...historyItem,
         type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
@@ -182,9 +189,8 @@ const fetchHistory = async (
         'evm_history_smart_contract_creation_message',
         [EvmFormatUtils.formatAddress(event.contractAddress)],
       );
-      historyItem.pageTitle = chrome.i18n.getMessage(
-        'evm_history_smart_contract_creation',
-      );
+      historyItem.pageTitle = 'evm_history_smart_contract_creation';
+      historyItem.detailFields = details;
     } else if (
       (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
       EvmAddressType.WALLET_ADDRESS
@@ -258,6 +264,8 @@ const fetchHistory = async (
 
       console.log('ici', { decodedData, event });
 
+      const details: EvmUserHistoryItemDetail[] = [];
+
       historyItem = {
         ...historyItem,
         type: EvmUserHistoryItemType.SMART_CONTRACT,
@@ -275,6 +283,7 @@ const fetchHistory = async (
       historyItem.label = specificData.label;
       historyItem.pageTitle = specificData.pageTitle;
       historyItem.receiverAddress = specificData.receiverAddress;
+      historyItem.detailFields = details;
     }
     history.events.push(historyItem);
   }

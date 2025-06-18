@@ -67,11 +67,13 @@ const EvmTransactionResult = ({
   const getTransactionStatus = async () => {
     try {
       const transactionReceipt = await transactionResponse.wait();
+      console.log({ transactionReceipt });
       if (transactionReceipt) {
         const transactionResult = await EthersUtils.getProvider(
           chain,
         ).getTransaction(transactionReceipt.hash);
         setTxReceipt(transactionReceipt);
+        console.log({ transactionResult });
         if (transactionResult) setTxResult(transactionResult);
       }
     } catch (err) {

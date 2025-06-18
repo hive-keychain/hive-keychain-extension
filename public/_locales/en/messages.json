@@ -5244,5 +5244,9 @@
   "evm_unable_to_reach_verify_transaction": {
     "message": "Transaction verification is unavailable at the moment, proceed with caution",
     "description": "Error message if backend not available while fetch verify transaction info"
+  },
+  "evm_created_smart_contract": {
+    "message": "Created smart contract",
+    "description": "Created smart contract label"
   }
 }
