@@ -110,6 +110,7 @@ export const EvmHistory = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  console.log('evm history', state);
   return {};
 };
 

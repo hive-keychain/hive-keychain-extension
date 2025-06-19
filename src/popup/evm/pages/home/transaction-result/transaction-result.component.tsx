@@ -212,7 +212,8 @@ const EvmTransactionResult = ({
   };
 
   const openTransaction = (tx: string) => {
-    chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${tx}` });
+    navigator.clipboard.writeText(tx!.toString());
+    // chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${tx}` });
   };
 
   const confirmNewFee = () => {
@@ -239,7 +240,7 @@ const EvmTransactionResult = ({
             className={`transaction-status`}
           />
           <div className="amount-row">
-            {tokenInfo && (
+            {!txResult && !waitingForTx && tokenInfo && (
               <div className="amount">
                 {amount
                   ? FormatUtils.withCommas(
@@ -365,6 +366,10 @@ const EvmTransactionResult = ({
               valueOnClickAction={() => openWallet(receiverAddress)}
             />
           )} */}
+          <SmallDataCardComponent
+            label="evm_nft_token_type"
+            value={tokenInfo ? tokenInfo.type : 'unknown'}
+          />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
             value={txResult.blockNumber!}

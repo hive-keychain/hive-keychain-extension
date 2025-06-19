@@ -1,3 +1,4 @@
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { CanceledTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 
 export interface EvmUsersHistory {
@@ -28,6 +29,7 @@ export interface EvmUserHistoryItem {
   receiverAddress?: string;
 
   detailFields?: EvmUserHistoryItemDetail[];
+  tokenInfo?: EvmSmartContractInfo;
 }
 
 export interface EvmUserHistoryItemDetail {

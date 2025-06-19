@@ -5113,6 +5113,10 @@
     "message": "You created the $1 smart contract",
     "description": "Evm smart contract creation"
   },
+  "evm_history_smart_contract": {
+    "message": "Smart Contract",
+    "description": "Evm smart contract"
+  },
   "evm_history_smart_contract_creation": {
     "message": "Smart Contract creation",
     "description": "Evm smart contract creation"
