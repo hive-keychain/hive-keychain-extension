@@ -265,6 +265,7 @@ const fetchHistory = async (
         walletAddress.toLowerCase(),
         decodedData,
         tokenMetadata,
+        event,
       );
 
       historyItem.label = specificData.label;
@@ -368,6 +369,7 @@ const getSpecificData = async (
   walletAddress: string,
   decodedData: EvmTransactionDecodedData | undefined,
   metadata: EvmSmartContractInfo[],
+  event: EvmUserHistoryItem,
 ): Promise<EvmHistoryItemSpecificData> => {
   const details: EvmUserHistoryItemDetail[] = [];
 
@@ -408,10 +410,17 @@ const getSpecificData = async (
       symbol = 'NO symbol 2';
     }
   }
-  console.log(decodedData, metadata, tokenMetadata);
+  // console.log(decodedData?.operationName, decodedData, metadata, tokenMetadata);
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
+        console.log(
+          decodedData?.operationName,
+          decodedData,
+          tokenMetadata,
+          event,
+        );
+
         const from = decodedData.inputs[0].value.toLowerCase();
         const to = decodedData.inputs[1].value.toLowerCase();
         const formattedFrom = EvmFormatUtils.formatAddress(from);
@@ -432,6 +441,13 @@ const getSpecificData = async (
               pageTitle: 'evm_transfer',
               receiverAddress: walletAddress,
               detailFields: [
+                {
+                  label: `${decodedData.inputs[3].value} ${name}#${Number(
+                    decodedData.inputs[2].value,
+                  )}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
                 {
                   label: 'popup_html_evm_transaction_info_from',
                   value: from,
@@ -459,6 +475,13 @@ const getSpecificData = async (
               receiverAddress: formattedFrom,
               detailFields: [
                 {
+                  label: `${decodedData.inputs[3].value} ${name}#${Number(
+                    decodedData.inputs[2].value,
+                  )}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
                   label: 'popup_html_evm_transaction_info_from',
                   value: from,
                   type: EvmUserHistoryItemDetailType.ADDRESS,
@@ -482,6 +505,11 @@ const getSpecificData = async (
               receiverAddress: formattedTo,
               detailFields: [
                 {
+                  label: `${name}#${Number(decodedData.inputs[2].value)}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
                   label: 'popup_html_evm_transaction_info_from',
                   value: from,
                   type: EvmUserHistoryItemDetailType.ADDRESS,
@@ -503,6 +531,11 @@ const getSpecificData = async (
               receiverAddress: formattedFrom,
               detailFields: [
                 {
+                  label: `${name}#${Number(decodedData.inputs[2].value)}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
                   label: 'popup_html_evm_transaction_info_from',
                   value: from,
                   type: EvmUserHistoryItemDetailType.ADDRESS,
@@ -519,6 +552,12 @@ const getSpecificData = async (
         break;
       }
       case 'transfer': {
+        console.log(
+          decodedData?.operationName,
+          decodedData,
+          tokenMetadata,
+          event,
+        );
         const to = decodedData.inputs[0].value.toLowerCase();
         const formattedTo = EvmFormatUtils.formatAddress(to);
 
@@ -560,42 +599,97 @@ const getSpecificData = async (
         };
         break;
       }
+      case 'approve': {
+        const to = decodedData.inputs[0].value;
+        const formattedTo = EvmFormatUtils.formatAddress(
+          decodedData.inputs[0].value,
+        );
+        const amount = Number(decodedData.inputs[1].value) / 1000000;
+        if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
+          result = {
+            label: chrome.i18n.getMessage(
+              'evm_history_operation_approve_out_erc20',
+              [formattedTo, amount, symbol],
+            ),
+            pageTitle: 'evm_approval',
+            receiverAddress: formattedTo,
+            detailFields: [
+              {
+                label: 'popup_html_transfer_amount',
+                value: `${amount.toString()} ${symbol}`,
+                type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_from',
+                value: broadcaster,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_to',
+                value: to,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+            ],
+          };
+        } else if (tokenMetadata?.type === EVMSmartContractType.ERC721) {
+          result = {
+            label: chrome.i18n.getMessage(
+              'evm_history_operation_approve_out_erc721',
+              [formattedTo, name, decodedData.inputs[1].value],
+            ),
+            pageTitle: 'evm_approval',
+            receiverAddress: formattedTo,
+            detailFields: [
+              {
+                label: `${name}#${Number(decodedData.inputs[1].value)}`,
+                value: decodedData.inputs[1].value,
+                type: EvmUserHistoryItemDetailType.IMAGE,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_from',
+                value: broadcaster,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_to',
+                value: to,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+            ],
+          };
+        }
+        break;
+      }
       case 'mintBatch': {
+        const details = [];
+        for (let i = 0; i < decodedData.inputs[1].value.length; i++) {
+          details.push({
+            label: `${decodedData.inputs[2].value[i]} ${name}#${Number(
+              decodedData.inputs[1].value[i],
+            )}`,
+            value: decodedData.inputs[1].value[i],
+            type: EvmUserHistoryItemDetailType.IMAGE,
+          });
+        }
+
         result = {
           label: chrome.i18n.getMessage('evm_history_operation_mint_batch', [
             decodedData.inputs[1].value.length,
             name,
           ]),
           pageTitle: 'evm_mint_batch',
-          detailFields: [],
+          detailFields: [
+            ...details,
+            {
+              label: 'popup_html_evm_transaction_info_from',
+              value: broadcaster,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+          ],
         };
         break;
       }
-      case 'approve': {
-        const to = EvmFormatUtils.formatAddress(decodedData.inputs[0].value);
-        if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
-          result = {
-            label: chrome.i18n.getMessage(
-              'evm_history_operation_approve_out_erc20',
-              [to, decodedData.inputs[1].value / 1000000, symbol],
-            ),
-            pageTitle: 'evm_approval',
-            receiverAddress: to,
-            detailFields: [],
-          };
-        } else if (tokenMetadata?.type === EVMSmartContractType.ERC721) {
-          result = {
-            label: chrome.i18n.getMessage(
-              'evm_history_operation_approve_out_erc721',
-              [to, name, decodedData.inputs[1].value],
-            ),
-            pageTitle: 'evm_approval',
-            receiverAddress: to,
-            detailFields: [],
-          };
-        }
-        break;
-      }
+
       case 'mintNFTs': {
         result = {
           label: chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
@@ -603,7 +697,13 @@ const getSpecificData = async (
             decodedData.inputs[0].value,
           ]),
           pageTitle: 'evm_mint',
-          detailFields: [],
+          detailFields: [
+            {
+              label: `${name}#${Number(decodedData.inputs[0].value)}`,
+              value: decodedData.inputs[0].value,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            },
+          ],
         };
         break;
       }

@@ -43,6 +43,7 @@
   .transaction-info {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-auto-rows: 75px;
     gap: 12px;
     margin: 12px;
   }

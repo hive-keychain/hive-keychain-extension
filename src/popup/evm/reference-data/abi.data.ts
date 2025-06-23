@@ -1431,3 +1431,8 @@ export const AbiList: EvmAbi[] = [
     ],
   },
 ];
+
+export const getAbiFromType = (type: EVMSmartContractType) => {
+  const abi = AbiList.find((a) => a.type === type);
+  return abi?.abi;
+};

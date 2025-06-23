@@ -47,8 +47,13 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
           setFullAddress(foundAddress);
         }
       } else {
-        setLabel(await EvmAddressesUtils.getAddressLabel(address, chainId));
-        setFormattedAddress(EvmFormatUtils.formatAddress(address));
+        let label = await EvmAddressesUtils.getAddressLabel(address, chainId);
+
+        if (!label || label.length === 0)
+          label = EvmFormatUtils.formatAddress(address);
+
+        setLabel(label);
+        setFormattedAddress(label);
       }
     }
   };

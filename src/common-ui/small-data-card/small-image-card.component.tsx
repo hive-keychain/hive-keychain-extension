@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SmallImageCardProps {
   name?: string;
-  value: string;
+  value: string | Promise<string>;
   valueOnClickAction?: (...params: any[]) => any;
   extraInfo?: string;
   extraInfoAdditionalClass?: string;
@@ -15,6 +15,20 @@ export const SmallImageCardComponent = ({
   extraInfo,
   extraInfoAdditionalClass,
 }: SmallImageCardProps) => {
+  const [image, setImage] = useState<string>();
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    if (typeof value === 'string') {
+      setImage(value);
+    } else if (typeof value === 'object') {
+      setImage(await value);
+    }
+  };
+
   const handleOnValueClick = () => {
     if (valueOnClickAction) {
       valueOnClickAction();
@@ -22,11 +36,11 @@ export const SmallImageCardComponent = ({
   };
 
   return (
-    <div className="small-data-card">
+    <div className="small-data-card image">
       <div
         className={`value ${valueOnClickAction ? 'clickable' : ''}`}
         onClick={handleOnValueClick}>
-        <img className="image" src={value} />
+        {image && <img className="image" src={image} />}
       </div>
       {name && <div className="label">{name}</div>}
       {extraInfo && (

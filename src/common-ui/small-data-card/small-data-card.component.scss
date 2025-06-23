@@ -34,4 +34,8 @@
       @include icon-size(13px);
     }
   }
+  &.image {
+    grid-row: span 3;
+    justify-content: space-between;
+  }
 }

@@ -12,13 +12,21 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { TransactionReceipt, TransactionResponse, ethers } from 'ethers';
+import {
+  HDNodeWallet,
+  TransactionReceipt,
+  TransactionResponse,
+  Wallet,
+  ethers,
+} from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -32,6 +40,7 @@ import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 const EvmTransactionResult = ({
+  activeAccount,
   chain,
   transactionResponse,
   tokenInfo,
@@ -94,7 +103,7 @@ const EvmTransactionResult = ({
       transactionResponse,
       chain,
       gasFee,
-      localAccounts[0].wallet,
+      activeAccount.wallet,
       amount,
       tokenInfo,
       receiverAddress,
@@ -125,7 +134,7 @@ const EvmTransactionResult = ({
       tokenInfo,
       receiverAddress,
       amount,
-      localAccounts[0].wallet,
+      activeAccount.wallet,
       increasedGasFee,
       transactionResponse.nonce,
     );
@@ -231,6 +240,31 @@ const EvmTransactionResult = ({
     setGasPanelOpened(false);
   };
 
+  const getImage = async (value: string) => {
+    const url = `https://placehold.co/600x400`;
+
+    const connectedWallet = new Wallet(
+      HDNodeWallet.fromPhrase(
+        activeAccount?.wallet.mnemonic?.phrase!,
+      ).signingKey,
+      EthersUtils.getProvider(chain),
+    );
+
+    const contract = new ethers.Contract(
+      (tokenInfo as any).address,
+      getAbiFromType(tokenInfo.type)!,
+      connectedWallet,
+    );
+
+    const test = await EvmNFTUtils.getMetadataFromTokenId(
+      tokenInfo.type,
+      Number(value).toString(),
+      contract,
+    );
+
+    return test.metadata.image;
+  };
+
   return (
     <div className="evm-transaction-result">
       <div className="tx-card">
@@ -316,12 +350,12 @@ const EvmTransactionResult = ({
                   {detail.type === EvmUserHistoryItemDetailType.BASE && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={detail.value}
+                      value={detail.value!}
                     />
                   )}
                   {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
                     <SmallImageCardComponent
-                      value={detail.value}
+                      value={getImage(detail.value!)}
                       name={detail.label}
                     />
                   )}
@@ -330,11 +364,11 @@ const EvmTransactionResult = ({
                       label={detail.label}
                       value={
                         <EvmAddressComponent
-                          address={detail.value}
+                          address={detail.value!}
                           chainId={chain.chainId}
                         />
                       }
-                      valueOnClickAction={() => openWallet(detail.value)}
+                      valueOnClickAction={() => openWallet(detail.value!)}
                     />
                   )}
                   {detail.type ===
