@@ -56,7 +56,7 @@ export default async (
   ) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);
-  } else if (!items.accounts && !mk) {
+  } else if (!items.accounts && !mk && !items.KEYLESS_KEYCHAIN_ENABLED) {
     // Wallet not initialized for adding first account
     Logic.addAccountToEmptyWallet(requestHandler, tab!, request, domain);
   } else if (!mk) {
