@@ -60,6 +60,9 @@ const RegisterKeyless = (props: Props) => {
               clearInterval(interval);
               interval = null;
             }
+            setTimeout(() => {
+              window.close();
+            }, 3000);
           }
         }
       };

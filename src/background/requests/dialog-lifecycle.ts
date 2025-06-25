@@ -62,10 +62,7 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
     isKeyless,
   } = requestHandler.data;
   if (id == windowId && !confirmed && tab) {
-    if (
-      (request?.type?.includes('vsc') && isWaitingForConfirmation) ||
-      (isKeyless && isWaitingForConfirmation)
-    ) {
+    if (request?.type?.includes('vsc') && isWaitingForConfirmation) {
       return;
     }
     chrome.tabs.sendMessage(tab!, {
