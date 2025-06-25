@@ -67,6 +67,9 @@ const setupWebSocketHandlers = (
   ws.onopen = () => {
     reconnectInterval = 1000;
     connectionAttempts = 0;
+    setInterval(() => {
+      ws?.send('ping');
+    }, 10000);
     resolve();
   };
 
