@@ -10,7 +10,6 @@ const filterSpamTokens = (tokens: NativeAndErc20Token[]) => {
   );
 };
 const getAccountName = (account: EvmAccount) => {
-  console.log(account);
   if (account.nickname && account.nickname.length > 0) return account.nickname;
   return `${
     account.seedNickname ??

@@ -53,57 +53,66 @@ export const EvmTokenHistoryItemComponent = ({
   };
 
   return (
-    <div className="wallet-history-item" onClick={goToDetailsPage}>
-      <div className="wallet-transaction-info">
-        <div
-          data-testid="transaction-expandable-area"
-          className={`transaction ${
-            expandableContent ? 'has-expandable-content' : ''
-          }`}
-          key={historyItem.transactionHash}
-          onClick={toggleExpandableContent}>
-          <div className="information-panel">
-            <SVGIcon
-              className="operation-icon"
-              icon={getIcon()}
-              onClick={goToBlockchainExplorer}
-            />
-            <div className="right-panel">
-              <div className="detail">{historyItem.label}</div>
-              <CustomTooltip
-                dataTestId="scustom-tool-tip"
-                additionalClassName="history-tooltip"
-                message={moment(historyItem.timestamp).format(
-                  'YYYY/MM/DD , hh:mm:ss a',
+    <>
+      <div className="wallet-history-item" onClick={goToDetailsPage}>
+        <div className="wallet-transaction-info">
+          <div
+            data-testid="transaction-expandable-area"
+            className={`transaction ${
+              expandableContent ? 'has-expandable-content' : ''
+            }`}
+            key={historyItem.transactionHash}
+            onClick={toggleExpandableContent}>
+            <div className="information-panel">
+              <SVGIcon
+                className="operation-icon"
+                icon={getIcon()}
+                onClick={goToBlockchainExplorer}
+              />
+              <div className="right-panel">
+                <div className="detail">{historyItem.label}</div>
+                <CustomTooltip
+                  dataTestId="scustom-tool-tip"
+                  additionalClassName="history-tooltip"
+                  message={moment(historyItem.timestamp).format(
+                    'YYYY/MM/DD , hh:mm:ss a',
+                  )}
+                  skipTranslation
+                  color="grey">
+                  <div className="date">
+                    {moment(historyItem.timestamp).format('L')}
+                  </div>
+                </CustomTooltip>
+                {expandableContent && (
+                  <SVGIcon
+                    icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                    className={`expand-collapse ${
+                      isExpandablePanelOpened ? 'open' : 'closed'
+                    }`}
+                  />
                 )}
-                skipTranslation
-                color="grey">
-                <div className="date">
-                  {moment(historyItem.timestamp).format('L')}
-                </div>
-              </CustomTooltip>
-              {expandableContent && (
-                <SVGIcon
-                  icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
-                  className={`expand-collapse ${
-                    isExpandablePanelOpened ? 'open' : 'closed'
-                  }`}
-                />
-              )}
+              </div>
             </div>
+            {expandableContent && isExpandablePanelOpened && (
+              <div
+                className={
+                  isExpandablePanelOpened
+                    ? 'expandable-panel opened'
+                    : 'expandable-panel closed'
+                }>
+                {expandableContent}
+              </div>
+            )}
           </div>
-          {expandableContent && isExpandablePanelOpened && (
-            <div
-              className={
-                isExpandablePanelOpened
-                  ? 'expandable-panel opened'
-                  : 'expandable-panel closed'
-              }>
-              {expandableContent}
-            </div>
-          )}
         </div>
       </div>
-    </div>
+      <div
+        style={{ color: 'black', fontSize: '12px', zIndex: 4 }}
+        onClick={() =>
+          navigator.clipboard.writeText(historyItem.transactionHash)
+        }>
+        {historyItem.transactionHash}
+      </div>
+    </>
   );
 };

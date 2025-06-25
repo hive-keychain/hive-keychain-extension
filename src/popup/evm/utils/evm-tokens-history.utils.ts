@@ -31,7 +31,11 @@ const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
 const RESULTS_PER_PAGE = 100;
 
-const fetchHistory = async (
+let cachedData: any[] = [];
+
+const fullFetchedLists: string[] = [];
+
+const fetchHistory2 = async (
   walletAddress: string,
   chain: EvmChain,
   history?: EvmUserHistory,
@@ -45,6 +49,221 @@ const fetchHistory = async (
       fullyFetch: false,
     } as EvmUserHistory;
   }
+  let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
+
+  let promisesResult: { [key: string]: any[] } = {};
+  promisesResult = await AsyncUtils.promiseAllWithKeys({
+    main: fetchMainHistory(walletAddress, chain, history.lastPage),
+    tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
+    nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
+    internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
+  });
+
+  console.log({ promisesResult });
+
+  // Find latest date among full list
+  let latestDate = 0;
+
+  for (const listKey of Object.keys(promisesResult)) {
+    if (promisesResult[listKey].length === RESULTS_PER_PAGE) {
+      const localLatest =
+        promisesResult[listKey][promisesResult[listKey].length - 1].timeStamp;
+      if (!latestDate || localLatest > latestDate) latestDate = localLatest;
+    }
+  }
+
+  console.log({ latestDate });
+
+  let events = [];
+  // Merge lists without duplicates
+
+  let eventsHashes: string[] = [];
+  for (const listKey of Object.keys(promisesResult)) {
+    for (const event of promisesResult[listKey]) {
+      if (!eventsHashes.includes(event.hash)) {
+        if (event.timeStamp >= latestDate) {
+          events.push(event);
+          eventsHashes.push(event.hash);
+        } else {
+          cachedData.push(event);
+        }
+      }
+    }
+  }
+
+  events = events.sort((a, b) => b.timeStamp - a.timeStamp);
+  console.log({ events, eventsHashes });
+
+  const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
+    events
+      .filter((event) => event.contractAddress.length > 0)
+      .map((event) => event.contractAddress),
+  );
+  console.log({ allSmartContractsAddresses });
+
+  console.log('----- Get metadata from backend -----');
+  const metadata = await EvmTokensUtils.getMetadataFromBackend(
+    ArrayUtils.inAButNotB(
+      allSmartContractsAddresses,
+      allTokensMetadata
+        .filter((metadata) => metadata.type !== EVMSmartContractType.NATIVE)
+        .map(
+          (metadata) =>
+            (
+              metadata as
+                | EvmSmartContractInfoErc1155
+                | EvmSmartContractInfoErc721
+                | EvmSmartContractInfoErc20
+            ).address,
+        ),
+    ),
+    chain,
+  );
+  console.log(
+    '-----End Get metadata from backend -----',
+    (Date.now() - start) / 1000,
+  );
+
+  const tokenMetadata = [...allTokensMetadata, ...metadata];
+
+  console.log('start parsing');
+  // console.log({ metadata, allTokensMetadata });
+  for (const event of events) {
+    let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
+    // parse event
+
+    if (event.contractAddress.length > 0) {
+      // contract creation
+
+      const details: EvmUserHistoryItemDetail[] = [];
+      details.push({
+        label: 'evm_created_smart_contract',
+        value: event.contractAddress,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+
+      historyItem = {
+        ...historyItem,
+        type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
+      };
+
+      historyItem.label = chrome.i18n.getMessage(
+        'evm_history_smart_contract_creation_message',
+        [EvmFormatUtils.formatAddress(event.contractAddress)],
+      );
+      historyItem.pageTitle = 'evm_history_smart_contract_creation';
+      historyItem.detailFields = details;
+    } else if (
+      (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
+      EvmAddressType.WALLET_ADDRESS
+    ) {
+      // Normal transaction
+      const mainToken = allTokensMetadata.find(
+        (t) => t.type === EVMSmartContractType.NATIVE,
+      );
+      // native event
+      const amount = EvmFormatUtils.etherToGwei(
+        Number(event.value) / 1000000000,
+      ).toString();
+
+      const details: EvmUserHistoryItemDetail[] = [];
+      details.push({
+        label: 'popup_html_evm_transaction_info_from',
+        value: event.from,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+      details.push({
+        label: 'popup_html_evm_transaction_info_to',
+        value: event.to,
+        type: EvmUserHistoryItemDetailType.ADDRESS,
+      });
+      details.push({
+        label: 'popup_html_transfer_amount',
+        value: `${amount.toString()} ${mainToken!.symbol.toString()}`,
+        type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+      });
+
+      historyItem = {
+        ...historyItem,
+        type:
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? EvmUserHistoryItemType.TRANSFER_OUT
+            : EvmUserHistoryItemType.TRANSFER_IN,
+        from: event.from,
+        to: event.to,
+        amount: amount,
+        isCanceled: Number(event.value) === 0,
+        label: chrome.i18n.getMessage(
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? 'popup_html_evm_history_transfer_out'
+            : 'popup_html_evm_history_transfer_in',
+          [
+            amount,
+            mainToken!.symbol,
+            EvmFormatUtils.formatAddress(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? event.to
+                : event.from,
+            ),
+          ],
+        ),
+        detailFields: details,
+        pageTitle: 'popup_html_transfer_funds',
+        tokenInfo: mainToken,
+      } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
+    } else {
+      // Smart contract (parse transaction)
+
+      const decodedData = await EvmTransactionParserUtils.parseData(
+        event.input,
+        chain,
+      );
+
+      historyItem = {
+        ...historyItem,
+        type: EvmUserHistoryItemType.SMART_CONTRACT,
+      };
+
+      const specificData = await getSpecificData(
+        chain,
+        event.to.toLowerCase(),
+        event.from.toLowerCase(),
+        walletAddress.toLowerCase(),
+        decodedData,
+        tokenMetadata,
+        event,
+      );
+
+      historyItem.label = specificData.label;
+      historyItem.pageTitle = specificData.pageTitle;
+      historyItem.receiverAddress = specificData.receiverAddress;
+      historyItem.detailFields = specificData.detailFields;
+      historyItem.tokenInfo = specificData.tokenInfo;
+    }
+    history.events.push(historyItem);
+  }
+  console.log('end parsing', (Date.now() - start) / 1000);
+  console.log({ history });
+  return history;
+};
+
+const fetchHistory = async (
+  walletAddress: string,
+  chain: EvmChain,
+  history?: EvmUserHistory,
+) => {
+  const start = Date.now();
+
+  if (!history) {
+    history = {
+      lastPage: 0,
+      lastPageTokens: 0,
+      lastPageNfts: 0,
+      lastPageInternals: 0,
+      events: [],
+      fullyFetch: false,
+    } as EvmUserHistory;
+  }
 
   history.lastPage = history.lastPage + 1;
 
@@ -53,82 +272,131 @@ const fetchHistory = async (
   let events: any[] = [];
   Logger.info(`Fetching  page ${history.lastPage}`);
 
-  let [
-    mainHistoryResponse,
-    tokensHistoryResponse,
-    nftsHistoryReponse,
-    internalTxHistoryResponse,
-  ] = await Promise.all([
-    fetchMainHistory(walletAddress, chain, history),
-    fetchAllTokensTx(walletAddress, chain, 0),
-    fetchAllNftsTx(walletAddress, chain, 0),
-    fetchAllInternalTx(walletAddress, chain, 0),
-  ]);
-
-  console.log({
-    mainHistoryResponse,
-    tokensHistoryResponse,
-    nftsHistoryReponse,
-    internalTxHistoryResponse,
+  let promisesResult: { [key: string]: any[] } = {};
+  promisesResult = await AsyncUtils.promiseAllWithKeys({
+    main: fetchMainHistory(walletAddress, chain, history.lastPage),
+    tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
+    nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
+    internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
   });
 
+  console.log(promisesResult);
+
+  const latestDate =
+    promisesResult['main'][promisesResult['main'].length - 1].timeStamp;
+
+  for (const listKey of Object.keys(promisesResult)) {
+    console.log(listKey);
+    cachedData[listKey as any] = promisesResult[listKey].filter(
+      (result: any) => result.timeStamp < latestDate,
+    );
+    events = [
+      ...events,
+      ...promisesResult[listKey].filter(
+        (event: any) =>
+          event.timeStamp >= latestDate &&
+          !events.map((event) => event.hash).includes(event.hash),
+      ),
+    ];
+  }
+
+  console.log(events, cachedData);
+
   if (
-    mainHistoryResponse.length !== RESULTS_PER_PAGE &&
-    tokensHistoryResponse.length !== RESULTS_PER_PAGE &&
-    nftsHistoryReponse.length !== RESULTS_PER_PAGE &&
-    internalTxHistoryResponse.length !== RESULTS_PER_PAGE
+    promisesResult['main'].length !== RESULTS_PER_PAGE &&
+    promisesResult['tokens'].length !== RESULTS_PER_PAGE &&
+    promisesResult['nfts'].length !== RESULTS_PER_PAGE &&
+    promisesResult['internals'].length !== RESULTS_PER_PAGE
   ) {
     history.fullyFetch = true;
   }
 
-  const lastestDate =
-    mainHistoryResponse[mainHistoryResponse.length - 1].timeStamp;
-
   let allDataSync = false;
 
-  let nextPage = 1;
-  do {
-    const promises: any = {};
-    if (
-      tokensHistoryResponse.length > 0 &&
-      tokensHistoryResponse[tokensHistoryResponse.length - 1].timeStamp >
-        lastestDate &&
-      tokensHistoryResponse.length === RESULTS_PER_PAGE
-    ) {
-      promises['tokens'] = fetchAllTokensTx(walletAddress, chain, nextPage);
-    }
-    if (
-      nftsHistoryReponse.length > 0 &&
-      nftsHistoryReponse[nftsHistoryReponse.length - 1].timeStamp >
-        lastestDate &&
-      nftsHistoryReponse.length === RESULTS_PER_PAGE
-    ) {
-      promises['nfts'] = fetchAllNftsTx(walletAddress, chain, nextPage);
-    }
-    if (
-      internalTxHistoryResponse.length > 0 &&
-      internalTxHistoryResponse[internalTxHistoryResponse.length - 1]
-        .timeStamp > lastestDate &&
-      tokensHistoryResponse.length === RESULTS_PER_PAGE
-    ) {
-      promises['internal'] = fetchAllInternalTx(walletAddress, chain, nextPage);
-    }
+  // do {
+  //   const promises: any = {};
+  //   if (
+  //     promisesResult['tokens'].length > 0 &&
+  //     promisesResult['tokens'][promisesResult['tokens'].length - 1].timeStamp >
+  //       latestDate &&
+  //     promisesResult['tokens'].length === RESULTS_PER_PAGE
+  //   ) {
+  //     history.lastPageTokens += 1;
+  //     promises['tokens'] = fetchAllTokensTx(
+  //       walletAddress,
+  //       chain,
+  //       history.lastPageTokens,
+  //     );
+  //     console.log('added promise for tokens');
+  //   } else {
+  //     console.log('no need to fetch tokens');
+  //   }
 
-    const promisesResult = await AsyncUtils.promiseAllWithKeys(promises);
+  //   if (
+  //     promisesResult['nfts'].length > 0 &&
+  //     promisesResult['nfts'][promisesResult['nfts'].length - 1].timeStamp >
+  //       latestDate &&
+  //     promisesResult['nfts'].length === RESULTS_PER_PAGE
+  //   ) {
+  //     history.lastPageNfts += 1;
+  //     promises['nfts'] = fetchAllNftsTx(
+  //       walletAddress,
+  //       chain,
+  //       history.lastPageNfts,
+  //     );
+  //     console.log('added promise for nfts');
+  //   } else {
+  //     console.log('no need to fetch nfts');
+  //   }
+  //   if (
+  //     promisesResult['internals'].length > 0 &&
+  //     promisesResult['internals'][promisesResult['internals'].length - 1]
+  //       .timeStamp > latestDate &&
+  //     promisesResult['internals'].length === RESULTS_PER_PAGE
+  //   ) {
+  //     history.lastPageInternals += 1;
+  //     promises['internals'] = fetchAllInternalTx(
+  //       walletAddress,
+  //       chain,
+  //       history.lastPageInternals,
+  //     );
+  //     console.log('added promise for internals');
+  //   } else {
+  //     console.log('no need to fetch internals');
+  //   }
 
-    nextPage++;
-    // console.log(promisesResult);
+  //   console.log({ promises });
 
-    allDataSync = Object.keys(promises).length > 0 ? false : true;
-  } while (allDataSync === false);
+  //   promisesResult = await AsyncUtils.promiseAllWithKeys(promises);
 
-  console.log(`First page of main history ends on ${lastestDate}`);
+  //   console.log(promisesResult);
+
+  //   // Filter all transactions
+  //   for (const listKey of Object.keys(promisesResult)) {
+  //     console.log(listKey);
+  //     cachedData[listKey as any] = promisesResult[listKey].filter(
+  //       (result: any) => result.timeStamp < latestDate
+  //     );
+  //     events = [
+  //       ...events,
+  //       ...promisesResult[listKey].filter(
+  //         (event: any) => event.timeStamp >= latestDate,
+  //       ),
+  //     ];
+  //   }
+  //   console.log(events, cachedData);
+  //   // console.log(promisesResult);
+
+  //   allDataSync = Object.keys(promises).length > 0 ? false : true;
+  // } while (allDataSync === false);
+
+  console.log(`First page of main history ends on ${latestDate}`);
 
   // console.log('End fetch', (Date.now() - start) / 1000);
 
   // merge all three lists
 
-  events = [...events, ...mainHistoryResponse];
+  // events = [...events, ...mainHistoryResponse];
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
       .filter((event) => event.contractAddress.length > 0)
@@ -284,16 +552,16 @@ const fetchHistory = async (
 const fetchMainHistory = (
   walletAddress: string,
   chain: EvmChain,
-  history: EvmUserHistory,
+  page: number,
 ): Promise<any[]> => {
   return new Promise(async (resolve, reject) => {
     const start = Date.now();
     let mainHistoryResponse;
-    Logger.info(`Fetching  page ${history.lastPage}`);
+    Logger.info(`Fetching  page ${page}`);
     mainHistoryResponse = await EtherscanApi.getHistory(
       walletAddress,
       chain,
-      history.lastPage,
+      page,
       RESULTS_PER_PAGE,
     );
 
@@ -414,12 +682,12 @@ const getSpecificData = async (
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
-        console.log(
-          decodedData?.operationName,
-          decodedData,
-          tokenMetadata,
-          event,
-        );
+        // console.log(
+        //   decodedData?.operationName,
+        //   decodedData,
+        //   tokenMetadata,
+        //   event,
+        // );
 
         const from = decodedData.inputs[0].value.toLowerCase();
         const to = decodedData.inputs[1].value.toLowerCase();
@@ -552,12 +820,12 @@ const getSpecificData = async (
         break;
       }
       case 'transfer': {
-        console.log(
-          decodedData?.operationName,
-          decodedData,
-          tokenMetadata,
-          event,
-        );
+        // console.log(
+        //   decodedData?.operationName,
+        //   decodedData,
+        //   tokenMetadata,
+        //   event,
+        // );
         const to = decodedData.inputs[0].value.toLowerCase();
         const formattedTo = EvmFormatUtils.formatAddress(to);
 
@@ -1211,4 +1479,5 @@ export const EvmTokensHistoryUtils = {
   // loadMore,
   // fetchFullMainTokenHistory,
   fetchHistory,
+  fetchHistory2,
 };
