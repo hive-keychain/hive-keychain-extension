@@ -113,14 +113,14 @@ const RegisterKeyless = (props: Props) => {
             </div>
           ) : (
             <div>
-              <p>
-                Keyless authentication request has expired. Please try again.
-              </p>
+              <p>{chrome.i18n.getMessage('dialog_keyless_expired')}</p>
             </div>
           )}
           {expireSeconds > 0 && !isExpired && (
             <div className="expire-seconds">
-              Expiring in {expireSeconds} seconds
+              {chrome.i18n.getMessage('dialog_keyless_expire_in', [
+                expireSeconds + '',
+              ])}
             </div>
           )}
         </div>

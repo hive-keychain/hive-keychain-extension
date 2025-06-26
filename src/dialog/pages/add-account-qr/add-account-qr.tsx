@@ -19,22 +19,6 @@ const AddAccountQR = (props: Props) => {
   const { command, data, tab, domain } = props.data;
   const [keys, setKeys] = useState<LocalAccount>();
   const [qrCode, setQrCode] = useState<string>();
-  const [countdown, setCountdown] = useState(60);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      window.close();
-    }, 60000); // 60 seconds
-
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(countdownInterval);
-    };
-  }, []);
 
   useEffect(() => {
     if (data.type === 'addAccount') {
@@ -58,15 +42,11 @@ const AddAccountQR = (props: Props) => {
   return (
     <div className="add-account-qr">
       <div className="content-container">
-        <h3>Export your keys!</h3>
+        <h3>{chrome.i18n.getMessage('popup_html_qr_title')}</h3>
         <div className="qr-code-disclaimer">
-          <p>
-            This QR Code contains all your private keys for this account and
-            should only be used to import your keys to the Hive Keychain mobile
-            App.
-          </p>
+          <p>{chrome.i18n.getMessage('popup_html_qr_disclaimer1')}</p>
           <br />
-          <strong>DO NOT share it with anyone!</strong>
+          <strong>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</strong>
         </div>
         <div className="qr-code-container">
           {qrCode && (
@@ -78,9 +58,6 @@ const AddAccountQR = (props: Props) => {
                 bgColor="#FFFFFF"
                 fgColor="#000000"
               />
-              <div className="countdown-text">
-                Dialog will close in {countdown} seconds
-              </div>
             </div>
           )}
         </div>

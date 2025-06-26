@@ -226,13 +226,14 @@ const listenToAuthAck = (
       const message = JSON.parse(event.data);
       Logger.log('listenToAuthAck message:', { message });
       if (message.cmd === HasCmd.AUTH_ACK) {
+        if (message.uuid !== keylessRequest.uuid) return;
         ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthAck(
             requestHandler,
             username,
             keylessRequest,
-            message as AuthAck,
+            message,
             tab,
           );
         } catch (error) {
@@ -404,12 +405,13 @@ const handleAuthAck = async (
   tab: number,
 ): Promise<void> => {
   try {
+    if (authAck.uuid !== keylessRequest.uuid) return;
     const authAckData = validateAuthAckData(authAck, keylessRequest);
-
     const keylessAuthData = updateKeylessRequestData(
       keylessRequest,
       authAckData,
     );
+
     await KeylessKeychainUtils.storeKeylessAuthData(username, keylessAuthData);
 
     // Add delay before proceeding

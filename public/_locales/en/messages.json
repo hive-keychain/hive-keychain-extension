@@ -1844,6 +1844,14 @@
     "message": "Username is required",
     "description": "When trying to perform an unsupported anonymous operation"
   },
+  "dialog_keyless_expired": {
+    "message": "Keyless authentication request has expired. Please try again.",
+    "description": "When keyless tx expires"
+  },
+  "dialog_keyless_expire_in": {
+    "message": "Expiring in $1 seconds",
+    "description": "When keyless tx hasnt expired yet"
+  },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
