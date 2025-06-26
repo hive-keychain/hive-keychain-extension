@@ -29,7 +29,7 @@ import Logger from 'src/utils/logger.utils';
 
 const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
-const RESULTS_PER_PAGE = 10;
+const RESULTS_PER_PAGE = 1000;
 
 let cachedData: any[] = [];
 
@@ -52,14 +52,28 @@ const fetchHistory = async (
     history.lastPage += 1;
   }
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
-
+  // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
-    main: fetchMainHistory(walletAddress, chain, history.lastPage),
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
     nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
     internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
+    main: fetchMainHistory(walletAddress, chain, history.lastPage),
   });
+
+  const test = ['tokens', 'nfts', 'main'];
+  for (const key of test) {
+    const list = promisesResult[key];
+
+    for (const i of promisesResult['internals']) {
+      const tx = list.find((t) => t.hash === i.transactionHash);
+      if (tx && i) {
+        console.log(tx, i);
+      }
+    }
+  }
+
+  console.log({ promisesResult });
 
   // Find latest date among full list
   let latestDate = 0;
@@ -77,7 +91,7 @@ const fetchHistory = async (
 
   let events = [];
   // Merge lists without duplicates
-
+  let duplicates = 0;
   let eventsHashes: string[] = [];
   for (const listKey of Object.keys(promisesResult)) {
     for (const event of promisesResult[listKey]) {
@@ -88,9 +102,11 @@ const fetchHistory = async (
         } else {
           cachedData.push(event);
         }
-      }
+      } else duplicates++;
     }
   }
+
+  console.log(`${duplicates} duplicates`);
 
   const tmpCachedData = [];
   for (const data of cachedData) {
@@ -140,7 +156,7 @@ const fetchHistory = async (
 
   console.log('start parsing');
   for (const event of events) {
-    console.log(event.hash, event);
+    // console.log(event.hash, event);
     if (event.txreceipt_status === '0') {
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
       continue;
@@ -281,7 +297,7 @@ const fetchHistory = async (
 const fetchMainHistory = (
   walletAddress: string,
   chain: EvmChain,
-  page: number,
+  page: number = 1,
 ): Promise<any[]> => {
   return new Promise(async (resolve, reject) => {
     const start = Date.now();
@@ -302,7 +318,7 @@ const fetchMainHistory = (
 const fetchAllTokensTx = (
   walletAddress: string,
   chain: EvmChain,
-  page: number = 0,
+  page: number = 1,
 ): Promise<any[]> => {
   return new Promise(async (resolve, reject) => {
     const start = Date.now();
@@ -323,7 +339,7 @@ const fetchAllTokensTx = (
 const fetchAllNftsTx = (
   walletAddress: string,
   chain: EvmChain,
-  page: number = 0,
+  page: number = 1,
 ): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const start = Date.now();
@@ -344,10 +360,22 @@ const fetchAllNftsTx = (
 const fetchAllInternalTx = (
   walletAddress: string,
   chain: EvmChain,
-  page: number = 0,
+  page: number = 1,
 ): Promise<any[]> => {
-  return new Promise((resolve, reject) => {
-    resolve([]);
+  return new Promise(async (resolve, reject) => {
+    const start = Date.now();
+    let internalsHistory;
+    Logger.info(`Fetching internals history page ${page}`);
+    internalsHistory = await EtherscanApi.getInternalsTx(
+      walletAddress,
+      chain,
+      page,
+      RESULTS_PER_PAGE,
+    );
+
+    console.log('End fetch internals history', (Date.now() - start) / 1000);
+    console.log({ internalsHistory });
+    resolve(internalsHistory);
   });
 };
 

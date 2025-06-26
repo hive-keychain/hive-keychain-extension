@@ -23,6 +23,18 @@ const getErc721TokenTransactions = async (
   return response.result ?? [];
 };
 
+const getInternalsTx = async (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number,
+  offset: number,
+) => {
+  const response = await get(`
+    ${chain.blockExplorerApi?.url}/api?module=account&action=txlistinternal&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
+    `);
+  return response.result ?? [];
+};
+
 const getTokenTx = async (
   walletAddress: string,
   chain: EvmChain,
@@ -65,6 +77,7 @@ export const EtherscanApi = {
   get,
   getTokenTx,
   getHistory,
+  getInternalsTx,
   getAbi,
   discoverTokens,
   getErc721TokenTransactions,
