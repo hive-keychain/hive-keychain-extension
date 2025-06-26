@@ -100,7 +100,9 @@ const RegisterKeyless = (props: Props) => {
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('popup_html_keyless_keychain_setup'),
+            __html: chrome.i18n.getMessage(
+              'popup_html_keyless_keychain_register',
+            ),
           }}></div>
       </div>
       {authPayloadUri && authPayloadUri !== '' ? (

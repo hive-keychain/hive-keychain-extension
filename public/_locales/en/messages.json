@@ -228,7 +228,11 @@
     "description": "Keyless keychain"
   },
   "popup_html_keyless_keychain_setup": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp and scan the QR code with your mobile device to connect to HiveAuth Hive DApp to get started.",
+    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp with Keychain and scan the QR code to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_register": {
+    "message": "Keychain is in keyless mode and will use HiveAuth to authenticate you. \n Scan this QR code with your mobile device to get started.",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_setup_qr": {
