@@ -10,6 +10,10 @@ export interface KeylessAuthData {
   token?: string;
 }
 
+export interface NamedKeylessAuthData extends KeylessAuthData {
+  username: string;
+}
+
 export interface KeylessAuthDataUserDictionary {
   [username: string]: KeylessAuthData[];
 }

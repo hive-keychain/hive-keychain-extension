@@ -239,6 +239,10 @@
     "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
     "description": "When setting up keyless keychain"
   },
+  "popup_html_keyless_sessions": {
+    "message": "Sessions",
+    "description": "When setting up keyless keychain"
+  },
   "popup_html_keyless_keychain_leave_button": {
     "message": "Leave Keyless Mode",
     "description": "when keyless keychain is enabled"
