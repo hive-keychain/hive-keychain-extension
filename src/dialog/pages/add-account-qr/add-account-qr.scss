@@ -1,0 +1,47 @@
+.add-account-qr {
+  display: grid;
+  grid-template-rows: 70px 1fr;
+  height: 100%;
+  width: 100%;
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  h3 {
+    margin: 0 0 16px 0;
+    text-align: center;
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .qr-code-disclaimer {
+    text-align: center;
+    font-size: 14px;
+    color: #000;
+    max-width: 300px;
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+
+  .qr-code-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    margin-top: 20px;
+
+    .countdown-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+  }
+}

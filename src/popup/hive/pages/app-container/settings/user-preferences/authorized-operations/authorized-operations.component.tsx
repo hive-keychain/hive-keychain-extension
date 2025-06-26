@@ -5,11 +5,11 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ActionCardComponent } from 'src/common-ui/action-card/action-card.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 
@@ -119,27 +119,20 @@ const AuthorizedOperations = ({
             Object.keys(filterWebSites[website]).map((operation) => {
               return (
                 websites[website][operation] && (
-                  <div
-                    data-testid={'whitelisted-operation-item'}
-                    className="operation"
-                    key={operation}>
-                    <div className="left-panel">
-                      <div className="website">{website}</div>
-                      <div className="operation-name">
-                        {chrome.i18n.getMessage(
-                          `popup_${operation
-                            .split(/(?=[A-Z])/)
-                            .join('_')
-                            .toLowerCase()}`,
-                        )}
-                      </div>
-                    </div>
-                    <SVGIcon
-                      dataTestId={`icon-delete-authorized-${operation}-${website}`}
-                      onClick={() => handleEraseButtonClick(website, operation)}
-                      icon={SVGIcons.GLOBAL_DELETE}
-                      className="operation-action"></SVGIcon>
-                  </div>
+                  <ActionCardComponent
+                    title={website}
+                    key={operation}
+                    icon={SVGIcons.GLOBAL_DELETE}
+                    subtitle={chrome.i18n.getMessage(
+                      `popup_${operation
+                        .split(/(?=[A-Z])/)
+                        .join('_')
+                        .toLowerCase()}`,
+                    )}
+                    onClickIcon={() =>
+                      handleEraseButtonClick(website, operation)
+                    }
+                  />
                 )
               );
             }),

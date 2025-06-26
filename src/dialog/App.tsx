@@ -2,7 +2,10 @@ import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
+import AddAccountQR from 'src/dialog/pages/add-account-qr/add-account-qr';
 import DialogError from 'src/dialog/pages/error';
+import { KeylessUsernameComponent } from 'src/dialog/pages/keyless-username/keyless-username';
+import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
 import Register from 'src/dialog/pages/register/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
@@ -77,6 +80,12 @@ const App = () => {
         return <RequestResponse data={data} />;
       case DialogCommand.SIGN_WITH_LEDGER:
         return <SignTransaction data={data} />;
+      case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
+        return <RegisterKeylessComponent data={data} />;
+      case DialogCommand.ANONYMOUS_KEYLESS_OP:
+        return <KeylessUsernameComponent data={data} />;
+      case DialogCommand.ADD_ACCOUNT:
+        return <AddAccountQR data={data} />;
       default:
         return null;
     }
