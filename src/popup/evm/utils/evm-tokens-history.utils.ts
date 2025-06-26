@@ -63,34 +63,22 @@ const fetchHistory = async (
     internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
   });
 
-  console.log(
-    promisesResult['main'].map((r) => `${r.timeStamp} - ${r.hash}`),
-    promisesResult['tokens'].map((r) => `${r.timeStamp} - ${r.hash}`),
-    promisesResult['nfts'].map((r) => `${r.timeStamp} - ${r.hash}`),
-    promisesResult['internals'].map((r) => `${r.timeStamp} - ${r.hash}`),
-  );
+  // console.log(
+  //   promisesResult['main'].map((r) => `${r.timeStamp} - ${r.hash}`),
+  //   promisesResult['tokens'].map((r) => `${r.timeStamp} - ${r.hash}`),
+  //   promisesResult['nfts'].map((r) => `${r.timeStamp} - ${r.hash}`),
+  //   promisesResult['internals'].map((r) => `${r.timeStamp} - ${r.hash}`),
+  // );
 
   console.log({ promisesResult });
 
   // Find latest date among full list
   let latestDate = 0;
 
-  for (const listKey of Object.keys(promisesResult)) {
-    const test: number[] = promisesResult[listKey].map((r) =>
-      Number(r.timeStamp),
-    );
-    console.log(
-      listKey,
-      promisesResult[listKey].length,
-      Math.min(...test),
-      promisesResult[listKey].length === RESULTS_PER_PAGE
-        ? 'relevant'
-        : 'irrelevant',
-    );
-  }
-
+  let fetchFinished = true;
   for (const listKey of Object.keys(promisesResult)) {
     if (promisesResult[listKey].length === RESULTS_PER_PAGE) {
+      fetchFinished = false;
       const localLatest = Number(
         promisesResult[listKey][promisesResult[listKey].length - 1].timeStamp,
       );
@@ -306,7 +294,7 @@ const fetchHistory = async (
   console.log({ history });
 
   console.log({ events, cachedData });
-
+  history.fullyFetch = fetchFinished;
   return history;
 };
 
