@@ -6,6 +6,7 @@ import {
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 
@@ -23,9 +24,9 @@ const EncodeMemo = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_title_encode')}
       {...props}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_receiver" content={`@${data.receiver}`} />
+      <UsernameWithAvatar title="dialog_receiver" username={data.receiver} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem title="dialog_key" content={data.method} />
       <Separator type={'horizontal'} fullSize />
