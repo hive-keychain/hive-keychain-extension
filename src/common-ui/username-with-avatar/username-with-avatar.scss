@@ -1,6 +1,7 @@
 .username-with-avatar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   user-select: none;
   transition: all 0.2s ease;
 
@@ -9,6 +10,17 @@
     border: 1px solid var(--card-border);
     background: var(--card-background);
     border-radius: 66px;
+  }
+
+  .title {
+    @include poppins500(15px);
+    color: var(--main-font-color);
+    margin-right: 12px;
+  }
+
+  .avatar-username-container {
+    display: flex;
+    align-items: center;
   }
 
   .user-avatar {
