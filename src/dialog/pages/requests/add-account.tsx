@@ -2,9 +2,9 @@ import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import Operation from 'src/dialog/components/operation/operation';
-import RequestItem from 'src/dialog/components/request-item/request-item';
 
 type Props = {
   data: RequestAddAccount & RequestId;
@@ -20,7 +20,7 @@ const AddAccount = (props: Props) => {
       title={chrome.i18n.getMessage('popup_html_add_account')}
       {...props}
       canWhitelist>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <UsernameWithAvatar username={data.username} />
       <Separator type={'horizontal'} fullSize />
       <CollaspsibleItem
         title="dialog_keys"
