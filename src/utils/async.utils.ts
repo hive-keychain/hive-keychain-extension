@@ -18,7 +18,6 @@ const promiseAllWithKeys = async (promiseHashMap: {
   const promises = Object.values(promiseHashMap);
 
   const values = await Promise.all(promises);
-  console.log({ values });
 
   const result: any = {};
 

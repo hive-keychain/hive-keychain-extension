@@ -40,8 +40,6 @@ const fetchHistory = async (
   chain: EvmChain,
   history?: EvmUserHistory,
 ) => {
-  console.log({ history });
-
   const start = Date.now();
 
   if (!history) {
@@ -63,15 +61,6 @@ const fetchHistory = async (
     internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
   });
 
-  // console.log(
-  //   promisesResult['main'].map((r) => `${r.timeStamp} - ${r.hash}`),
-  //   promisesResult['tokens'].map((r) => `${r.timeStamp} - ${r.hash}`),
-  //   promisesResult['nfts'].map((r) => `${r.timeStamp} - ${r.hash}`),
-  //   promisesResult['internals'].map((r) => `${r.timeStamp} - ${r.hash}`),
-  // );
-
-  console.log({ promisesResult });
-
   // Find latest date among full list
   let latestDate = 0;
 
@@ -85,8 +74,6 @@ const fetchHistory = async (
       if (!latestDate || localLatest > latestDate) latestDate = localLatest;
     }
   }
-
-  console.log({ latestDate });
 
   let events = [];
   // Merge lists without duplicates
@@ -119,19 +106,12 @@ const fetchHistory = async (
   cachedData = tmpCachedData;
 
   events = events.sort((a, b) => b.timeStamp - a.timeStamp);
-  console.log({
-    events,
-    eventsHashes,
-    wihtoutDuplicates: [...new Set(events.map((e) => e.hash))],
-    failed: events.filter((e) => e.txreceipt_status === '0'),
-  });
 
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
       .filter((event) => event.contractAddress.length > 0)
       .map((event) => event.contractAddress),
   );
-  console.log({ allSmartContractsAddresses });
 
   console.log('----- Get metadata from backend -----');
   const metadata = await EvmTokensUtils.getMetadataFromBackend(
@@ -159,7 +139,6 @@ const fetchHistory = async (
   const tokenMetadata = [...allTokensMetadata, ...metadata];
 
   console.log('start parsing');
-  // console.log({ metadata, allTokensMetadata });
   for (const event of events) {
     console.log(event.hash, event);
     if (event.txreceipt_status === '0') {
@@ -398,7 +377,6 @@ const getSpecificData = async (
     pageTitle: 'evm_history_default_smart_contract_operation',
     detailFields: details,
   };
-  console.log({ metadata, contractAddress });
   const tokenMetadata = metadata.find(
     (md) =>
       md.type !== EVMSmartContractType.NATIVE &&

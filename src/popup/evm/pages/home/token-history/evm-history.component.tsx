@@ -41,8 +41,6 @@ export const EvmHistory = ({
       chain,
     ).getTransaction(transactionHash);
 
-    console.log({ transactionResponse, historyItem });
-
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: transactionResponse,
       ...historyItem,
@@ -63,7 +61,6 @@ export const EvmHistory = ({
                   historyItem={event}
                   chain={chain}
                   goToDetailsPage={() => {
-                    console.log(event);
                     goToDetailsPage(event.transactionHash, event);
                   }}
                 />
@@ -110,7 +107,6 @@ export const EvmHistory = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log('evm history', state);
   return {};
 };
 

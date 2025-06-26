@@ -69,7 +69,6 @@ const EvmTransactionResult = ({
       title: pageTitle,
       isBackButtonEnabled: true,
     });
-    console.log(tokenInfo);
     getTransactionStatus();
   }, []);
 
@@ -445,7 +444,6 @@ const EvmTransactionResult = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state);
   return {
     activeAccount: state.evm.activeAccount,
     transactionResponse: state.navigation.stack[0].params
