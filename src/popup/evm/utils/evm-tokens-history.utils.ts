@@ -29,25 +29,29 @@ import Logger from 'src/utils/logger.utils';
 
 const MIN_NEW_TRANSACTION = 1;
 const LIMIT = 20000;
-const RESULTS_PER_PAGE = 100;
+const RESULTS_PER_PAGE = 10;
 
 let cachedData: any[] = [];
 
 const fullFetchedLists: string[] = [];
 
-const fetchHistory2 = async (
+const fetchHistory = async (
   walletAddress: string,
   chain: EvmChain,
   history?: EvmUserHistory,
 ) => {
+  console.log({ history });
+
   const start = Date.now();
 
   if (!history) {
     history = {
-      lastPage: 0,
+      lastPage: 1,
       events: [],
       fullyFetch: false,
     } as EvmUserHistory;
+  } else {
+    history.lastPage += 1;
   }
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
 
@@ -59,15 +63,37 @@ const fetchHistory2 = async (
     internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
   });
 
+  console.log(
+    promisesResult['main'].map((r) => `${r.timeStamp} - ${r.hash}`),
+    promisesResult['tokens'].map((r) => `${r.timeStamp} - ${r.hash}`),
+    promisesResult['nfts'].map((r) => `${r.timeStamp} - ${r.hash}`),
+    promisesResult['internals'].map((r) => `${r.timeStamp} - ${r.hash}`),
+  );
+
   console.log({ promisesResult });
 
   // Find latest date among full list
   let latestDate = 0;
 
   for (const listKey of Object.keys(promisesResult)) {
+    const test: number[] = promisesResult[listKey].map((r) =>
+      Number(r.timeStamp),
+    );
+    console.log(
+      listKey,
+      promisesResult[listKey].length,
+      Math.min(...test),
+      promisesResult[listKey].length === RESULTS_PER_PAGE
+        ? 'relevant'
+        : 'irrelevant',
+    );
+  }
+
+  for (const listKey of Object.keys(promisesResult)) {
     if (promisesResult[listKey].length === RESULTS_PER_PAGE) {
-      const localLatest =
-        promisesResult[listKey][promisesResult[listKey].length - 1].timeStamp;
+      const localLatest = Number(
+        promisesResult[listKey][promisesResult[listKey].length - 1].timeStamp,
+      );
       if (!latestDate || localLatest > latestDate) latestDate = localLatest;
     }
   }
@@ -81,7 +107,7 @@ const fetchHistory2 = async (
   for (const listKey of Object.keys(promisesResult)) {
     for (const event of promisesResult[listKey]) {
       if (!eventsHashes.includes(event.hash)) {
-        if (event.timeStamp >= latestDate) {
+        if (Number(event.timeStamp) >= latestDate) {
           events.push(event);
           eventsHashes.push(event.hash);
         } else {
@@ -91,8 +117,26 @@ const fetchHistory2 = async (
     }
   }
 
+  const tmpCachedData = [];
+  for (const data of cachedData) {
+    if (!eventsHashes.includes(data.hash)) {
+      if (data.timeStamp >= latestDate) {
+        events.push(data);
+        eventsHashes.push(data.hash);
+      } else {
+        tmpCachedData.push(data);
+      }
+    }
+  }
+  cachedData = tmpCachedData;
+
   events = events.sort((a, b) => b.timeStamp - a.timeStamp);
-  console.log({ events, eventsHashes });
+  console.log({
+    events,
+    eventsHashes,
+    wihtoutDuplicates: [...new Set(events.map((e) => e.hash))],
+    failed: events.filter((e) => e.txreceipt_status === '0'),
+  });
 
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
@@ -129,10 +173,18 @@ const fetchHistory2 = async (
   console.log('start parsing');
   // console.log({ metadata, allTokensMetadata });
   for (const event of events) {
+    console.log(event.hash, event);
+    if (event.txreceipt_status === '0') {
+      Logger.warn(`Transaction ${event.hash} ignored because failed`);
+      continue;
+    }
     let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
     // parse event
 
-    if (event.contractAddress.length > 0) {
+    if (
+      event.contractAddress.length > 0 &&
+      (!event.to || event.to.length === 0)
+    ) {
       // contract creation
 
       const details: EvmUserHistoryItemDetail[] = [];
@@ -153,6 +205,40 @@ const fetchHistory2 = async (
       );
       historyItem.pageTitle = 'evm_history_smart_contract_creation';
       historyItem.detailFields = details;
+    } else if (
+      event.to &&
+      event.to.length > 0 &&
+      event.input.replace('0x', '').length > 0
+    ) {
+      // Smart contract (parse transaction)
+
+      const decodedData = await EvmTransactionParserUtils.parseData(
+        event.input,
+        chain,
+      );
+
+      historyItem = {
+        ...historyItem,
+        type: EvmUserHistoryItemType.SMART_CONTRACT,
+      };
+
+      const specificData = await getSpecificData(
+        chain,
+        event.contractAddress.length > 0
+          ? event.contractAddress.toLowerCase()
+          : event.to.toLowerCase(),
+        event.from.toLowerCase(),
+        walletAddress.toLowerCase(),
+        decodedData,
+        tokenMetadata,
+        event,
+      );
+
+      historyItem.label = specificData.label;
+      historyItem.pageTitle = specificData.pageTitle;
+      historyItem.receiverAddress = specificData.receiverAddress;
+      historyItem.detailFields = specificData.detailFields;
+      historyItem.tokenInfo = specificData.tokenInfo;
     } else if (
       (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
       EvmAddressType.WALLET_ADDRESS
@@ -212,339 +298,15 @@ const fetchHistory2 = async (
         tokenInfo: mainToken,
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
-      // Smart contract (parse transaction)
-
-      const decodedData = await EvmTransactionParserUtils.parseData(
-        event.input,
-        chain,
-      );
-
-      historyItem = {
-        ...historyItem,
-        type: EvmUserHistoryItemType.SMART_CONTRACT,
-      };
-
-      const specificData = await getSpecificData(
-        chain,
-        event.to.toLowerCase(),
-        event.from.toLowerCase(),
-        walletAddress.toLowerCase(),
-        decodedData,
-        tokenMetadata,
-        event,
-      );
-
-      historyItem.label = specificData.label;
-      historyItem.pageTitle = specificData.pageTitle;
-      historyItem.receiverAddress = specificData.receiverAddress;
-      historyItem.detailFields = specificData.detailFields;
-      historyItem.tokenInfo = specificData.tokenInfo;
+      Logger.error(`${event.hash} match no condition`);
     }
     history.events.push(historyItem);
   }
   console.log('end parsing', (Date.now() - start) / 1000);
   console.log({ history });
-  return history;
-};
 
-const fetchHistory = async (
-  walletAddress: string,
-  chain: EvmChain,
-  history?: EvmUserHistory,
-) => {
-  const start = Date.now();
+  console.log({ events, cachedData });
 
-  if (!history) {
-    history = {
-      lastPage: 0,
-      lastPageTokens: 0,
-      lastPageNfts: 0,
-      lastPageInternals: 0,
-      events: [],
-      fullyFetch: false,
-    } as EvmUserHistory;
-  }
-
-  history.lastPage = history.lastPage + 1;
-
-  let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
-
-  let events: any[] = [];
-  Logger.info(`Fetching  page ${history.lastPage}`);
-
-  let promisesResult: { [key: string]: any[] } = {};
-  promisesResult = await AsyncUtils.promiseAllWithKeys({
-    main: fetchMainHistory(walletAddress, chain, history.lastPage),
-    tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
-    nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
-    internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
-  });
-
-  console.log(promisesResult);
-
-  const latestDate =
-    promisesResult['main'][promisesResult['main'].length - 1].timeStamp;
-
-  for (const listKey of Object.keys(promisesResult)) {
-    console.log(listKey);
-    cachedData[listKey as any] = promisesResult[listKey].filter(
-      (result: any) => result.timeStamp < latestDate,
-    );
-    events = [
-      ...events,
-      ...promisesResult[listKey].filter(
-        (event: any) =>
-          event.timeStamp >= latestDate &&
-          !events.map((event) => event.hash).includes(event.hash),
-      ),
-    ];
-  }
-
-  console.log(events, cachedData);
-
-  if (
-    promisesResult['main'].length !== RESULTS_PER_PAGE &&
-    promisesResult['tokens'].length !== RESULTS_PER_PAGE &&
-    promisesResult['nfts'].length !== RESULTS_PER_PAGE &&
-    promisesResult['internals'].length !== RESULTS_PER_PAGE
-  ) {
-    history.fullyFetch = true;
-  }
-
-  let allDataSync = false;
-
-  // do {
-  //   const promises: any = {};
-  //   if (
-  //     promisesResult['tokens'].length > 0 &&
-  //     promisesResult['tokens'][promisesResult['tokens'].length - 1].timeStamp >
-  //       latestDate &&
-  //     promisesResult['tokens'].length === RESULTS_PER_PAGE
-  //   ) {
-  //     history.lastPageTokens += 1;
-  //     promises['tokens'] = fetchAllTokensTx(
-  //       walletAddress,
-  //       chain,
-  //       history.lastPageTokens,
-  //     );
-  //     console.log('added promise for tokens');
-  //   } else {
-  //     console.log('no need to fetch tokens');
-  //   }
-
-  //   if (
-  //     promisesResult['nfts'].length > 0 &&
-  //     promisesResult['nfts'][promisesResult['nfts'].length - 1].timeStamp >
-  //       latestDate &&
-  //     promisesResult['nfts'].length === RESULTS_PER_PAGE
-  //   ) {
-  //     history.lastPageNfts += 1;
-  //     promises['nfts'] = fetchAllNftsTx(
-  //       walletAddress,
-  //       chain,
-  //       history.lastPageNfts,
-  //     );
-  //     console.log('added promise for nfts');
-  //   } else {
-  //     console.log('no need to fetch nfts');
-  //   }
-  //   if (
-  //     promisesResult['internals'].length > 0 &&
-  //     promisesResult['internals'][promisesResult['internals'].length - 1]
-  //       .timeStamp > latestDate &&
-  //     promisesResult['internals'].length === RESULTS_PER_PAGE
-  //   ) {
-  //     history.lastPageInternals += 1;
-  //     promises['internals'] = fetchAllInternalTx(
-  //       walletAddress,
-  //       chain,
-  //       history.lastPageInternals,
-  //     );
-  //     console.log('added promise for internals');
-  //   } else {
-  //     console.log('no need to fetch internals');
-  //   }
-
-  //   console.log({ promises });
-
-  //   promisesResult = await AsyncUtils.promiseAllWithKeys(promises);
-
-  //   console.log(promisesResult);
-
-  //   // Filter all transactions
-  //   for (const listKey of Object.keys(promisesResult)) {
-  //     console.log(listKey);
-  //     cachedData[listKey as any] = promisesResult[listKey].filter(
-  //       (result: any) => result.timeStamp < latestDate
-  //     );
-  //     events = [
-  //       ...events,
-  //       ...promisesResult[listKey].filter(
-  //         (event: any) => event.timeStamp >= latestDate,
-  //       ),
-  //     ];
-  //   }
-  //   console.log(events, cachedData);
-  //   // console.log(promisesResult);
-
-  //   allDataSync = Object.keys(promises).length > 0 ? false : true;
-  // } while (allDataSync === false);
-
-  console.log(`First page of main history ends on ${latestDate}`);
-
-  // console.log('End fetch', (Date.now() - start) / 1000);
-
-  // merge all three lists
-
-  // events = [...events, ...mainHistoryResponse];
-  const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
-    events
-      .filter((event) => event.contractAddress.length > 0)
-      .map((event) => event.contractAddress),
-  );
-
-  console.log('----- Get metadata from backend -----');
-  const metadata = await EvmTokensUtils.getMetadataFromBackend(
-    ArrayUtils.inAButNotB(
-      allSmartContractsAddresses,
-      allTokensMetadata
-        .filter((metadata) => metadata.type !== EVMSmartContractType.NATIVE)
-        .map(
-          (metadata) =>
-            (
-              metadata as
-                | EvmSmartContractInfoErc1155
-                | EvmSmartContractInfoErc721
-                | EvmSmartContractInfoErc20
-            ).address,
-        ),
-    ),
-    chain,
-  );
-  console.log(
-    '-----End Get metadata from backend -----',
-    (Date.now() - start) / 1000,
-  );
-
-  const tokenMetadata = [...allTokensMetadata, ...metadata];
-
-  console.log('start parsing');
-  // console.log({ metadata, allTokensMetadata });
-  for (const event of events) {
-    let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
-    // parse event
-
-    if (event.contractAddress.length > 0) {
-      // contract creation
-
-      const details: EvmUserHistoryItemDetail[] = [];
-      details.push({
-        label: 'evm_created_smart_contract',
-        value: event.contractAddress,
-        type: EvmUserHistoryItemDetailType.ADDRESS,
-      });
-
-      historyItem = {
-        ...historyItem,
-        type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
-      };
-
-      historyItem.label = chrome.i18n.getMessage(
-        'evm_history_smart_contract_creation_message',
-        [EvmFormatUtils.formatAddress(event.contractAddress)],
-      );
-      historyItem.pageTitle = 'evm_history_smart_contract_creation';
-      historyItem.detailFields = details;
-    } else if (
-      (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
-      EvmAddressType.WALLET_ADDRESS
-    ) {
-      // Normal transaction
-      const mainToken = allTokensMetadata.find(
-        (t) => t.type === EVMSmartContractType.NATIVE,
-      );
-      // native event
-      const amount = EvmFormatUtils.etherToGwei(
-        Number(event.value) / 1000000000,
-      ).toString();
-
-      const details: EvmUserHistoryItemDetail[] = [];
-      details.push({
-        label: 'popup_html_evm_transaction_info_from',
-        value: event.from,
-        type: EvmUserHistoryItemDetailType.ADDRESS,
-      });
-      details.push({
-        label: 'popup_html_evm_transaction_info_to',
-        value: event.to,
-        type: EvmUserHistoryItemDetailType.ADDRESS,
-      });
-      details.push({
-        label: 'popup_html_transfer_amount',
-        value: `${amount.toString()} ${mainToken!.symbol.toString()}`,
-        type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-      });
-
-      historyItem = {
-        ...historyItem,
-        type:
-          event.from.toLowerCase() === walletAddress.toLowerCase()
-            ? EvmUserHistoryItemType.TRANSFER_OUT
-            : EvmUserHistoryItemType.TRANSFER_IN,
-        from: event.from,
-        to: event.to,
-        amount: amount,
-        isCanceled: Number(event.value) === 0,
-        label: chrome.i18n.getMessage(
-          event.from.toLowerCase() === walletAddress.toLowerCase()
-            ? 'popup_html_evm_history_transfer_out'
-            : 'popup_html_evm_history_transfer_in',
-          [
-            amount,
-            mainToken!.symbol,
-            EvmFormatUtils.formatAddress(
-              event.from.toLowerCase() === walletAddress.toLowerCase()
-                ? event.to
-                : event.from,
-            ),
-          ],
-        ),
-        detailFields: details,
-        pageTitle: 'popup_html_transfer_funds',
-        tokenInfo: mainToken,
-      } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
-    } else {
-      // Smart contract (parse transaction)
-
-      const decodedData = await EvmTransactionParserUtils.parseData(
-        event.input,
-        chain,
-      );
-
-      historyItem = {
-        ...historyItem,
-        type: EvmUserHistoryItemType.SMART_CONTRACT,
-      };
-
-      const specificData = await getSpecificData(
-        chain,
-        event.to.toLowerCase(),
-        event.from.toLowerCase(),
-        walletAddress.toLowerCase(),
-        decodedData,
-        tokenMetadata,
-        event,
-      );
-
-      historyItem.label = specificData.label;
-      historyItem.pageTitle = specificData.pageTitle;
-      historyItem.receiverAddress = specificData.receiverAddress;
-      historyItem.detailFields = specificData.detailFields;
-      historyItem.tokenInfo = specificData.tokenInfo;
-    }
-    history.events.push(historyItem);
-  }
-  console.log('end parsing', (Date.now() - start) / 1000);
   return history;
 };
 
@@ -648,9 +410,11 @@ const getSpecificData = async (
     pageTitle: 'evm_history_default_smart_contract_operation',
     detailFields: details,
   };
+  console.log({ metadata, contractAddress });
   const tokenMetadata = metadata.find(
     (md) =>
-      md.type !== EVMSmartContractType.NATIVE && md.address === contractAddress,
+      md.type !== EVMSmartContractType.NATIVE &&
+      md.address.toLowerCase() === contractAddress.toLowerCase(),
   );
 
   let name;
@@ -999,387 +763,6 @@ const getSpecificData = async (
   return result;
 };
 
-// const fetchHistory = async (
-//   tokenInfo: EvmSmartContractInfo,
-//   chain: EvmChain,
-//   walletAddress: string,
-//   walletSigningKey: SigningKey,
-//   firstBlock: number,
-//   lastBlock: number,
-// ): Promise<EvmTokenHistory> => {
-//   Logger.info(`Fetching from ${firstBlock} to ${lastBlock}`);
-//   if (tokenInfo.type === EVMSmartContractType.NATIVE) {
-//     let response;
-//     const events = [];
-//     let page = 1;
-//     do {
-//       response = await EtherscanApi.getHistory(
-//         walletAddress,
-//         chain,
-//         page,
-//         0,
-//         firstBlock,
-//         lastBlock,
-//       );
-//       console.log(response);
-//       page++;
-//       for (const e of response.result) {
-//         const isTransferIn = e.to.toLowerCase() === walletAddress.toLowerCase();
-
-//         const addressType = await EvmAddressesUtils.getAddressType(
-//           isTransferIn ? e.from : e.to,
-//           chain,
-//         );
-
-//         if (addressType === EvmAddressType.SMART_CONTRACT) {
-//           continue;
-//         }
-
-//         const event: EvmTokenTransferInHistoryItem = {
-//           ...getCommonHistoryItem(e),
-//           type: EvmTokenHistoryItemType.TRANSFER_IN,
-//           from: e.from,
-//           to: e.to,
-//           amount: Number(e.value)
-//             ? EvmTokensUtils.formatEtherValue(e.value)
-//             : '0',
-//           timestamp: e.timeStamp * 1000,
-//           label: '',
-//           isCanceled: Number(e.value) === 0,
-//         };
-
-//         event.transactionHash = e.hash;
-
-//         event.label = chrome.i18n.getMessage(
-//           event.from.toLowerCase() === walletAddress.toLowerCase()
-//             ? 'popup_html_evm_history_transfer_out'
-//             : 'popup_html_evm_history_transfer_in',
-//           [
-//             event.amount,
-//             tokenInfo.symbol,
-//             EvmFormatUtils.formatAddress(
-//               event.from.toLowerCase() === walletAddress.toLowerCase()
-//                 ? event.to
-//                 : event.from,
-//             ),
-//           ],
-//         );
-//         events.push(event);
-//       }
-//     } while (response.result.length > 0);
-
-//     return { events: events, lastBlock: lastBlock, firstBlock: firstBlock };
-//   } else {
-//     const provider = EthersUtils.getProvider(chain);
-//     const connectedWallet = new Wallet(walletSigningKey, provider);
-//     const contract = new ethers.Contract(
-//       tokenInfo.address!,
-//       Erc20Abi,
-//       connectedWallet,
-//     );
-
-//     const transferInFilter = contract.filters.Transfer(null, walletAddress);
-//     const transferOutFilter = contract.filters.Transfer(walletAddress, null);
-//     let eventsIn: any[];
-//     let eventsOut: any[];
-//     const finalEvents: EvmTokenHistoryItem[] = [];
-//     try {
-//       eventsIn = await contract.queryFilter(
-//         transferInFilter,
-//         firstBlock,
-//         lastBlock,
-//       );
-//       for (const e of eventsIn) {
-//         //   console.log([
-//         //     await provider.lookupAddress(e.args[0]),
-//         //     await provider.lookupAddress(e.args[1]),
-//         //   ]);
-//         const block = await e.getBlock();
-//         const event: EvmTokenTransferInHistoryItem = {
-//           ...getCommonHistoryItem(e),
-//           type: EvmTokenHistoryItemType.TRANSFER_IN,
-//           from: e.args[0],
-//           to: e.args[1],
-//           amount: EvmTokensUtils.formatTokenValue(
-//             e.args[2],
-//             (tokenInfo as EvmSmartContractInfoErc20).decimals,
-//           ),
-//           timestamp: block.timestamp * 1000,
-//           label: '',
-//         };
-//         event.label = chrome.i18n.getMessage(
-//           'popup_html_evm_history_transfer_in',
-//           [
-//             event.amount,
-//             tokenInfo.symbol,
-//             EvmFormatUtils.formatAddress(event.from),
-//           ],
-//         );
-//         finalEvents.push(event);
-//       }
-//     } catch (err) {
-//       Logger.error('Error while parsing transfer in', err);
-//     }
-
-//     try {
-//       eventsOut = await contract.queryFilter(
-//         transferOutFilter,
-//         firstBlock,
-//         lastBlock,
-//       );
-//       for (const e of eventsOut) {
-//         const block = await e.getBlock();
-//         const event: EvmTokenTransferOutHistoryItem = {
-//           ...getCommonHistoryItem(e),
-//           type: EvmTokenHistoryItemType.TRANSFER_OUT,
-//           from: e.args[0],
-//           to: e.args[1],
-//           amount: EvmTokensUtils.formatTokenValue(
-//             e.args[2],
-//             (tokenInfo as EvmSmartContractInfoErc20).decimals,
-//           ),
-//           timestamp: block.timestamp * 1000,
-//           label: '',
-//         };
-//         event.label = chrome.i18n.getMessage(
-//           'popup_html_evm_history_transfer_out',
-//           [
-//             event.amount,
-//             tokenInfo.symbol,
-//             EvmFormatUtils.formatAddress(event.to),
-//           ],
-//         );
-//         finalEvents.push(event);
-//       }
-//     } catch (err) {
-//       Logger.error('Error while parsing transfer out', err);
-//     }
-
-//     const events = finalEvents.sort((a, b) => a.timestamp - b.timestamp);
-
-//     Logger.info(
-//       `Fetching from ${firstBlock} to ${firstBlock - LIMIT}: found ${
-//         finalEvents.length
-//       }`,
-//     );
-
-//     return {
-//       events: events,
-//       lastBlock: firstBlock,
-//       firstBlock: firstBlock - LIMIT,
-//     };
-//   }
-// };
-
-// const loadHistory = async (
-//   token: NativeAndErc20Token,
-//   chain: EvmChain,
-//   walletAddress: string,
-//   walletSigningKey: SigningKey,
-//   sendFeedback?: (progression: {
-//     nbBlocks: number;
-//     totalBlocks: number;
-//   }) => void,
-// ): Promise<EvmTokenHistory> => {
-//   const localHistory = await getSavedHistory(
-//     chain.chainId,
-//     walletAddress,
-//     token.tokenInfo,
-//   );
-
-//   const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(chain);
-//   const mainTokenHistory = await getSavedHistory(
-//     chain.chainId,
-//     walletAddress,
-//     mainTokenInfo,
-//   );
-
-//   const canceledTransactions =
-//     await EvmTransactionsUtils.getAllCanceledTransactions(chain, walletAddress);
-
-//   const provider = EthersUtils.getProvider(chain);
-//   const currentBlockchainBlockNumber = await provider.getBlockNumber();
-//   let firstBlock;
-//   let lastBlock;
-
-//   const history: EvmTokenHistory = {
-//     events: localHistory ? localHistory.events : [],
-//     firstBlock: -1,
-//     lastBlock: -1,
-//   };
-//   if (localHistory) {
-//     firstBlock = localHistory.lastBlock + 1;
-//     lastBlock = firstBlock + LIMIT;
-
-//     history.firstBlock = localHistory.firstBlock;
-//     history.lastBlock = currentBlockchainBlockNumber;
-//     do {
-//       const h = await fetchHistory(
-//         token.tokenInfo,
-//         chain,
-//         walletAddress,
-//         walletSigningKey,
-//         firstBlock,
-//         lastBlock,
-//       );
-//       history.events = [...history.events, ...h.events];
-
-//       firstBlock = lastBlock + 1;
-//       lastBlock = firstBlock + LIMIT;
-
-//       history.events = history.events.sort(
-//         (a, b) => Number(b.timestamp) - Number(a.timestamp),
-//       );
-
-//       await saveLocalHistory(
-//         { ...history },
-//         walletAddress,
-//         token.tokenInfo,
-//         chain,
-//       );
-//     } while (lastBlock < currentBlockchainBlockNumber);
-//   } else {
-//     firstBlock = currentBlockchainBlockNumber - LIMIT;
-//     lastBlock = currentBlockchainBlockNumber;
-//     history.lastBlock = currentBlockchainBlockNumber;
-//     do {
-//       const h = await fetchHistory(
-//         token.tokenInfo,
-//         chain,
-//         walletAddress,
-//         walletSigningKey,
-//         token.tokenInfo.type === EVMSmartContractType.NATIVE ? 0 : firstBlock,
-//         lastBlock,
-//       );
-//       history.events = [...history.events, ...h.events];
-//       history.firstBlock = h.firstBlock;
-//       lastBlock = firstBlock - 1;
-//       firstBlock = lastBlock - LIMIT;
-
-//       history.events = history.events.sort(
-//         (a, b) => Number(b.timestamp) - Number(a.timestamp),
-//       );
-
-//       await saveLocalHistory(
-//         { ...history },
-//         walletAddress,
-//         token.tokenInfo,
-//         chain,
-//       );
-//     } while (
-//       history.events.length < MIN_NEW_TRANSACTION &&
-//       history.lastBlock > 0
-//     );
-//   }
-
-//   const finalHistory: EvmTokenHistory = {
-//     events: [],
-//     firstBlock: history.firstBlock,
-//     lastBlock: history.lastBlock,
-//   };
-//   for (const historyItem of history.events) {
-//     const canceledTransaction = canceledTransactions.find(
-//       (transaction) => transaction.nonce === historyItem.nonce,
-//     );
-//     if (token.tokenInfo.type === EVMSmartContractType.NATIVE) {
-//       if (historyItem.isCanceled) {
-//         historyItem.label = chrome.i18n.getMessage(
-//           'popup_html_evm_history_transaction_canceled',
-//         );
-//         historyItem.cancelDetails = canceledTransaction;
-//       }
-//     }
-//     finalHistory.events.push(historyItem);
-//   }
-
-//   if (token.tokenInfo.type === EVMSmartContractType.ERC20) {
-//     const tokenCanceledTransactions = canceledTransactions.filter(
-//       (tx) =>
-//         tx.tokenInfo.coingeckoId === token.tokenInfo.coingeckoId &&
-//         tx.tokenInfo.symbol === token.tokenInfo.symbol,
-//     );
-//     for (const localTxCanceled of tokenCanceledTransactions) {
-//       if (
-//         history.events
-//           .map((event) => event.nonce)
-//           .includes(localTxCanceled.nonce)
-//       ) {
-//         continue;
-//       }
-
-//       const canceledTx = mainTokenHistory?.events.find(
-//         (tx) => tx.nonce === localTxCanceled.nonce,
-//       );
-
-//       if (canceledTx) {
-//         finalHistory.events.push({
-//           ...canceledTx,
-//           label: chrome.i18n.getMessage(
-//             'popup_html_evm_history_transaction_canceled_transfer_out_details',
-//             [
-//               localTxCanceled.amount.toString(),
-//               localTxCanceled.tokenInfo.symbol,
-//               EvmFormatUtils.formatAddress(localTxCanceled.to),
-//             ],
-//           ),
-//           amount: localTxCanceled.amount,
-//           isCanceled: true,
-//         } as EvmTokenHistoryItem);
-//       } else {
-//         //delete tx from canceled tx
-//       }
-//     }
-
-//     finalHistory.events = finalHistory.events.sort(
-//       (a, b) => Number(b.timestamp) - Number(a.timestamp),
-//     );
-//   }
-
-//   return finalHistory;
-// };
-
-// const loadMore = async (
-//   chain: EvmChain,
-//   walletAddress: string,
-//   walletSigningKey: SigningKey,
-//   history: EvmUserHistory,
-//   sendFeedback?: (progression: {
-//     nbBlocks: number;
-//     totalBlocks: number;
-//   }) => void,
-// ) => {
-//   const initialBlock = history.firstBlock;
-//   let blockChecked = 0;
-
-//   let firstBlock = history.firstBlock - 1 - LIMIT;
-//   let lastBlock = history.firstBlock - 1;
-//   let h: EvmUserHistory;
-//   do {
-//     h = await fetchHistory(
-//       token.tokenInfo,
-//       chain,
-//       walletAddress,
-//       walletSigningKey,
-//       firstBlock,
-//       lastBlock,
-//     );
-//     history.events = [...history.events, ...h.events];
-//     history.firstBlock = h.firstBlock;
-//     lastBlock = firstBlock - 1;
-//     firstBlock = lastBlock - LIMIT;
-//     blockChecked += LIMIT;
-//     if (sendFeedback)
-//       sendFeedback({ totalBlocks: initialBlock, nbBlocks: blockChecked });
-//   } while (h.events.length < MIN_NEW_TRANSACTION && history.firstBlock > 0);
-
-//   history.events = history.events.sort(
-//     (a, b) => Number(b.timestamp) - Number(a.timestamp),
-//   );
-
-//   await saveLocalHistory({ ...history }, walletAddress, token.tokenInfo, chain);
-//   return history;
-// };
-
 const getCommonHistoryItem = (e: any) => {
   return {
     blockNumber: e.blockNumber,
@@ -1390,87 +773,6 @@ const getCommonHistoryItem = (e: any) => {
   };
 };
 
-// const getSavedHistory = async (
-//   chain: string,
-//   walletAddress: string,
-// ): Promise<EvmUserHistory | undefined> => {
-//   let localHistory: EvmLocalHistory =
-//     await LocalStorageUtils.getValueFromLocalStorage(
-//       LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
-//     );
-//   let chainHistory;
-//   let userHistory;
-
-//   if (localHistory) {
-//     chainHistory = localHistory[chain];
-//     if (chainHistory) {
-//       userHistory = chainHistory[walletAddress];
-//     }
-//   }
-//   return userHistory;
-// };
-
-// const saveLocalHistory = async (
-//   history: EvmUserHistory,
-//   walletAddress: string,
-//   chain: EvmChain,
-// ) => {
-//   let localHistory: EvmLocalHistory =
-//     await LocalStorageUtils.getValueFromLocalStorage(
-//       LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
-//     );
-
-//   if (!localHistory) {
-//     localHistory = {};
-//   }
-//   if (!localHistory[chain.chainId]) {
-//     localHistory[chain.chainId] = {};
-//   }
-//   localHistory[chain.chainId][walletAddress] = history;
-//   await LocalStorageUtils.saveValueInLocalStorage(
-//     LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
-//     localHistory,
-//   );
-// };
-
-// const fetchFullMainTokenHistory = async (
-//   chain: EvmChain,
-//   tokenInfo: EvmSmartContractInfo,
-//   walletAddress: string,
-//   walletSigningKey: SigningKey,
-// ) => {
-//   const localHistory = await getSavedHistory(
-//     chain.chainId,
-//     walletAddress,
-//     tokenInfo,
-//   );
-
-//   const firstBlock = localHistory ? localHistory.lastBlock : 0;
-
-//   const provider = EthersUtils.getProvider(chain);
-//   const currentBlockchainBlockNumber = await provider.getBlockNumber();
-//   const history = await fetchHistory(
-//     tokenInfo,
-//     chain,
-//     walletAddress,
-//     walletSigningKey,
-//     firstBlock,
-//     currentBlockchainBlockNumber,
-//   );
-
-//   let newLocalHistory;
-//   if (localHistory) {
-//     newLocalHistory = {
-//       firstBlock: 0,
-//       lastBlock: history.lastBlock,
-//       events: [...history.events, ...localHistory.events],
-//     };
-//   } else {
-//     newLocalHistory = history;
-//   }
-//   await saveLocalHistory(newLocalHistory, walletAddress, tokenInfo, chain);
-// };
-
 export const EvmTokensHistoryUtils = {
   // fetchHistory,
   // getSavedHistory,
@@ -1479,5 +781,4 @@ export const EvmTokensHistoryUtils = {
   // loadMore,
   // fetchFullMainTokenHistory,
   fetchHistory,
-  fetchHistory2,
 };

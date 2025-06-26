@@ -57,7 +57,7 @@ export const EvmHistory = ({
             <FlatList
               ref={historyItemList}
               list={history.events}
-              renderItem={(event: any) => (
+              renderItem={(event: any, index: number) => (
                 <EvmTokenHistoryItemComponent
                   key={event.transactionHash}
                   historyItem={event}

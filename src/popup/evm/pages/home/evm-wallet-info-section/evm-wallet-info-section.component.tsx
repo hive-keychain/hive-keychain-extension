@@ -52,7 +52,7 @@ const WalletInfoSection = ({
     console.log('starting load history');
     setLoadingHistory(true);
     setHistory(
-      await EvmTokensHistoryUtils.fetchHistory2(
+      await EvmTokensHistoryUtils.fetchHistory(
         activeAccount.address,
         chain,
         history,
