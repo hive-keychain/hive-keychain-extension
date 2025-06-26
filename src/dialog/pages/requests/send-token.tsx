@@ -4,6 +4,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import React, { useEffect, useState } from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import RequestTokenBalance from 'src/dialog/components/request-token-balance/request-token-balance';
@@ -45,9 +46,9 @@ const SendToken = (props: Props) => {
       {...props}
       header={header}
       redHeader>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_to" content={`@${data.to}`} />
+      <UsernameWithAvatar title="dialog_to" username={data.to} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
