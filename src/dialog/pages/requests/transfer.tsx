@@ -2,6 +2,7 @@ import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
@@ -34,9 +35,9 @@ const Transfer = (props: Props) => {
   }
 
   const renderUsername = () => {
-    return !accounts ? (
+    return !accounts && data.username ? (
       <>
-        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <UsernameWithAvatar title={'dialog_account'} username={data.username} />
         <Separator type={'horizontal'} fullSize />
       </>
     ) : (
@@ -52,7 +53,7 @@ const Transfer = (props: Props) => {
       {...anonymousProps}
       {...props}>
       {renderUsername()}
-      <RequestItem title="dialog_to" content={`@${data.to}`} />
+      <UsernameWithAvatar title="dialog_to" username={data.to} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_amount"
