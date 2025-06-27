@@ -1,13 +1,12 @@
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
-import { ISwap, SwapStatus } from 'hive-keychain-commons';
+import { FormatUtils, ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';
 import { default as React, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   swap: ISwap;

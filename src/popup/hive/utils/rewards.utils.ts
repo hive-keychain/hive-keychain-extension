@@ -2,8 +2,8 @@ import type { Asset, ClaimRewardBalanceOperation } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { FormatUtils } from 'hive-keychain-commons';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 const claimRewards = async (
   username: string,

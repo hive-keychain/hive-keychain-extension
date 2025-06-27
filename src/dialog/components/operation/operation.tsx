@@ -26,7 +26,7 @@ import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
   title: string;
-  children: JSX.Element[];
+  children: (JSX.Element | undefined)[];
   onConfirm?: () => void;
   data: KeychainRequest;
   domain: string;
@@ -38,10 +38,12 @@ type Props = {
   username?: string;
   setUsername?: (username: string) => void;
   redHeader?: boolean;
+  loadingCaption?: string;
 };
 
 const Operation = ({
   title,
+  loadingCaption,
   children,
   onConfirm,
   domain,
@@ -295,7 +297,7 @@ const Operation = ({
             ? twoFABots && Object.keys(twoFABots).length > 0
               ? 'multisig_transmitting_to_2fa'
               : 'multisig_transmitting_to_multisig'
-            : undefined
+            : loadingCaption || 'bgd_ops_broadcasting'
         }
       />
     </div>

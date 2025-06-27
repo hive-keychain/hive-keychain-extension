@@ -16,6 +16,7 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
+import { FormatUtils } from 'hive-keychain-commons';
 import { PrivateKey } from 'hive-tx';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -24,7 +25,6 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
-import FormatUtils from 'src/utils/format.utils';
 
 const SUBSTRING_LENGTH = 15;
 const CreateAccountStepTwo = ({

@@ -1035,6 +1035,200 @@ var hive_keychain = {
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
+  /**
+   * Request a VSC contract call
+   * @example
+   * // Let's make a test call to a VSC contract
+   *
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestVscCallContract('keychain',
+   *    'vs41q9c3ygynfp6kl86qnlaswuwvam748s5lvugns5schg4hte5vhusnx7sg5u8falrt',
+   *    'testJSON', {
+   *      hello: "World",
+   *    },'Posting', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} contractId Smart contract ID
+   * @param {String} action Contract action
+   * @param {Object} payload Contract payload
+   * @param {String} method Type of key. Can be 'Posting' or 'Active'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+  
+   */
+  requestVscCallContract: function (
+    username,
+    contractId,
+    action,
+    payload,
+    method,
+    callback,
+    rpc,
+  ) {
+    const request = {
+      type: 'vscCallContract',
+      username,
+      contractId,
+      action,
+      payload,
+      method,
+      rpc,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
+  /**
+   * Requests a VSC Deposit
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscDeposit(username, amount.toFixed(3),'HIVE',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} from Hive account to perform the request
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [to=null] Hive or EVM Address
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscDeposit: function (from, amount, currency, callback, to, rpc) {
+    var request = {
+      type: 'vscDeposit',
+      username: from,
+      to,
+      amount,
+      currency,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
+  /**
+   * Requests a VSC Withdrawal
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscWithdrawal(username,username, amount.toFixed(3),'HIVE','withdrawing...',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} from Hive account to perform the request
+   * @param {String} to Hive Address
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {String} memo Withdrawal memo
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [netId=vsc-mainnet] Override user's VSC net
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscWithdrawal: function (
+    from,
+    to,
+    amount,
+    currency,
+    memo,
+    callback,
+    netId,
+    rpc,
+  ) {
+    var request = {
+      type: 'vscWithdrawal',
+      username: from,
+      to,
+      amount,
+      currency,
+      memo,
+      netId,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
+  /**
+   * Requests a VSC Transfer
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscTransfer(username,username2, amount.toFixed(3),'HIVE','hi!',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} from Hive account to perform the request
+   * @param {String} to Hive Address
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {String} memo Transfer memo
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [netId=vsc-mainnet] Override user's VSC net
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscTransfer: function (
+    from,
+    to,
+    amount,
+    currency,
+    memo,
+    callback,
+    netId,
+    rpc,
+  ) {
+    var request = {
+      type: 'vscTransfer',
+      username: from,
+      to,
+      amount,
+      currency,
+      memo,
+      netId,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+
+  /**
+   * Requests a VSC Staking / Unstaking operation
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVscStaking(username,username2, amount.toFixed(3),'HIVE','hi!',(response) => {
+   *   console.log(response)
+   * });
+   *
+   * @param {String} from Hive account to perform the request
+   * @param {String} to Hive Address
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} currency Only accepts 'HBD' for the moment
+   * @param {String} operation 'STAKING' or 'UNSTAKING'
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [netId=vsc-mainnet] Override user's VSC net
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestVscStaking: function (
+    from,
+    to,
+    amount,
+    currency,
+    operation,
+    callback,
+    netId,
+    rpc,
+  ) {
+    var request = {
+      type: 'vscStaking',
+      username: from,
+      to,
+      amount,
+      currency,
+      operation,
+      netId,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
   // Send the customEvent
   dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;

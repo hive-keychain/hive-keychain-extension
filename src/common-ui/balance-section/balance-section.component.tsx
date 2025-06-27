@@ -1,5 +1,5 @@
+import { FormatUtils } from 'hive-keychain-commons';
 import React from 'react';
-import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   value: number | string;

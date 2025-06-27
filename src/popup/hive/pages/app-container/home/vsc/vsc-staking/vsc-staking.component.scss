@@ -1,0 +1,25 @@
+.vsc-staking-page {
+  .pending-savings-panel {
+    @include pending-panel;
+  }
+  @include pageLayoutRowGap;
+  row-gap: 10px;
+  @include background-top-0-percent();
+  .caption {
+    @include caption();
+  }
+  .value-panel {
+    display: flex;
+    column-gap: 8px;
+    justify-content: center;
+    .currency-fake-input {
+      width: 100px;
+      input {
+        text-transform: uppercase;
+      }
+    }
+    .value-input-panel {
+      flex: 1;
+    }
+  }
+}

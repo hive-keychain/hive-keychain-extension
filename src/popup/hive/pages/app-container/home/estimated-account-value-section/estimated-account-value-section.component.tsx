@@ -3,6 +3,7 @@ import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.
 import { RootState } from '@popup/multichain/store';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VscAccountBalance, VscUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
@@ -28,11 +29,30 @@ const EstimatedAccountValueSection = ({
     hiveMarketLockedOpenOrdersValues,
     setHiveMarketLockedOpenOrdersValues,
   ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
-
+  const [vscBalance, setVscBalance] = useState<VscAccountBalance>({
+    account: '',
+    block_height: 0,
+    hbd_avg: 0,
+    hbd_claim: 0,
+    hbd_savings: 0,
+    hive: 0,
+    hive_consensus: 0,
+    hbd: 0,
+    hbd_modify: 0,
+    pending_hbd_unstaking: 0,
+  });
   useEffect(() => {
     init();
     loadHiddenTokensList();
+    loadVscBalance();
   }, []);
+
+  const loadVscBalance = async () => {
+    if (activeAccount.name) {
+      const balance = await VscUtils.getAccountBalance(activeAccount.name);
+      setVscBalance(balance);
+    }
+  };
 
   const loadHiddenTokensList = async () => {
     const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
@@ -82,6 +102,7 @@ const EstimatedAccountValueSection = ({
           tokens,
           hiveMarketLockedOpenOrdersValues,
           hiddenTokensList,
+          vscBalance,
         ),
       );
     }
@@ -94,6 +115,7 @@ const EstimatedAccountValueSection = ({
     accountValueType,
     hiveMarketLockedOpenOrdersValues,
     hiddenTokensList,
+    vscBalance,
   ]);
 
   const openPortfolio = async () => {

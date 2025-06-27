@@ -1,5 +1,4 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import {
@@ -8,6 +7,7 @@ import {
   TokenBalance,
   TokenMarket,
 } from '@interfaces/tokens.interface';
+import { Currency } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';

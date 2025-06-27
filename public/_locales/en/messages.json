@@ -655,6 +655,10 @@
     "message": "Please confirm your transfer.<br>This cannot be undone.",
     "description": "On transfer confirmation page"
   },
+  "popup_html_vsc_deposit_confirm_text": {
+    "message": "Please confirm that you want to deposit these funds to VSC.",
+    "description": "On transfer confirmation page"
+  },
   "popup_html_transfer_confirm_cancel_recurrent": {
     "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
     "description": "On transfer confirmation page"
@@ -1072,6 +1076,18 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
+  "dialog_contract_id": {
+    "message": "Contract ID",
+    "description": "When website request a vsc call"
+  },
+  "dialog_action": {
+    "message": "Action",
+    "description": "When website request a vsc call"
+  },
+  "dialog_payload": {
+    "message": "Payload",
+    "description": "When website request a vsc call"
+  },
 
   "dialog_slippage": {
     "message": "Slippage",
@@ -1125,6 +1141,18 @@
     "message": "To",
     "description": "When website request a transfer"
   },
+  "dialog_netId": {
+    "message": "Net ID",
+    "description": "When website request a transfer"
+  },
+  "dialog_vsc_loading": {
+    "message": "Waiting for VSC confirmation. You can close this window if you want.",
+    "description": "When website request a vsc tx and it is waiting for confirmation"
+  },
+  "dialog_evm_address": {
+    "message": "EVM Address",
+    "description": "When website request a vsc deposit"
+  },
   "dialog_tx": {
     "message": "Transaction",
     "description": "When website request signing a tx"
@@ -1136,6 +1164,14 @@
   "dialog_balance": {
     "message": "Balance",
     "description": "When website request a transfer"
+  },
+  "dialog_vsc_balance": {
+    "message": "VSC Balance",
+    "description": "When website request a vsc operation"
+  },
+  "dialog_vsc_savings_balance": {
+    "message": "VSC Staking Balance",
+    "description": "When website request a vsc operation"
   },
   "dialog_daily_pay": {
     "message": "Daily Pay",
@@ -1239,6 +1275,54 @@
   },
   "dialog_title_custom": {
     "message": "Custom Transaction",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_call_contract": {
+    "message": "VSC Contract Call",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit": {
+    "message": "VSC Deposit",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_deposit_header": {
+    "message": "Send $1 tokens to your EVM address on VSC. A transfer will be made to @vsc.gateway.",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_hive_deposit_header": {
+    "message": "Send $1 tokens to a Hive address on VSC. A transfer will be made to @vsc.gateway.",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_withdrawal": {
+    "message": "VSC Withdrawal",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_withdrawal_header": {
+    "message": "Withdraw $1 tokens from VSC to a Hive account.",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_staking": {
+    "message": "VSC Staking",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_staking_header": {
+    "message": "Stake $1 tokens. Unstaking them will take 3.5 days.",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_unstaking": {
+    "message": "VSC Unstaking",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_unstaking_header": {
+    "message": "Start unstaking $1 tokens. This will take 3.5 days.",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_transfer": {
+    "message": "VSC Transfer",
+    "description": "Website request title"
+  },
+  "dialog_title_vsc_transfer_header": {
+    "message": "Transfer $1 tokens on the VSC Network.",
     "description": "Website request title"
   },
   "dialog_title_decode": {
@@ -1433,6 +1517,18 @@
   "bgd_ops_witness_voted": {
     "message": "Successfully voted @$1 for witness."
   },
+  "bgd_ops_vsc_included": {
+    "message": "This transaction has been included in VSC already, but has not yet been confirmed. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
+  },
+  "bgd_ops_vsc_broadcast": {
+    "message": "This transaction has broadcast but has not been confirmed on VSC yet. This might take some time. You can follow the transaction status on the requesting dApp or on Hive Keychain extension's VSC history page."
+  },
+  "bgd_ops_vsc_confirmed": {
+    "message": "This transaction has been confirmed on VSC."
+  },
+  "bgd_ops_vsc_not_included": {
+    "message": "This transaction has not been included in VSC yet. You can follow its status on the requesting dApp or on the Keychain VSC history page."
+  },
   "bgd_ops_witness_unvoted": {
     "message": "Successfully unvoted @$1 for witness."
   },
@@ -1450,6 +1546,9 @@
   },
   "bgd_ops_error_broadcasting": {
     "message": "There was an error broadcasting this transaction, please try again."
+  },
+  "bgd_ops_broadcasting": {
+    "message": "Broadcasting..."
   },
   "bgd_ops_error": {
     "message": "There was an error broadcasting this transaction:"
@@ -1629,6 +1728,10 @@
     "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
+  "popup_warning_exchange_vsc": {
+    "message": "Most exchanges don't accept VSC transfers. If you proceed, your funds may be lost.",
+    "description": "When trying to transfer to an exchange account on VSC"
+  },
   "popup_warning_phishing_domain": {
     "message": "@$1 has been flagged as a malicious domain, check the spelling and make sure this is the dApp you want to use.",
     "description": "When trying to transfer to a blacklisted account"
@@ -1749,6 +1852,10 @@
   "popup_html_savings": {
     "message": "Savings",
     "description": "Saving page title"
+  },
+  "popup_html_staking": {
+    "message": "Staking",
+    "description": "Staking page title"
   },
   "popup_html_buy_intro": {
     "message": "Choose your favorite method and buy $1 fast and easily",
@@ -2242,6 +2349,10 @@
   "html_popup_delete_account_operation": {
     "message": "Deleting account",
     "description": "delete account operation"
+  },
+  "html_popup_vsc_withdraw_operation": {
+    "message": "Withdrawing from VSC",
+    "description": "withdrawing from vsc on main popup"
   },
   "html_popup_transfer_fund_operation": {
     "message": "Transferring funds",
@@ -3959,6 +4070,10 @@
     "message": "You don't have any Hive Engine token. You can buy some through our swap feature.",
     "description": "When no token available"
   },
+  "html_tokens_x_available": {
+    "message": "Click here to show $1 Hive Engine tokens.",
+    "description": "When no token available"
+  },
   "html_tokens_issuer": {
     "message": "Issuer",
     "description": "Token issuer"
@@ -4326,6 +4441,74 @@
   "popup_html_pref_export_transactions_loading_caption": {
     "message": "$1%",
     "description": "Caption for download data"
+  },
+  "popup_html_vsc_history": {
+    "message": "VSC History",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_call": {
+    "message": "Called '$1' on contract $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_unavailable": {
+    "message": "VSC is currently unavailable.",
+    "description": "Main page"
+  },
+  "popup_html_vsc_info_deposit": {
+    "message": "Deposited $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_deposit_from": {
+    "message": "$1 deposited $2 $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_withdraw": {
+    "message": "Withdrew $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_withdraw_to": {
+    "message": "Withdrew $1 $2 to $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_transfer_to": {
+    "message": "Sent $1 $2 to $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_transfer_from": {
+    "message": "Received $1 $2 from $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake": {
+    "message": "Staked $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake_to": {
+    "message": "Staked $1 $2 for $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_stake_from": {
+    "message": "$1 staked $2 $3 ",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake": {
+    "message": "Unstaked $1 $2",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake_to": {
+    "message": "Unstaked $1 $2 for $3",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_info_unstake_from": {
+    "message": "$1 unstaked $2 $3 ",
+    "description": "Upon clicking on VSC History"
+  },
+  "popup_html_vsc_full_history": {
+    "message": "You can check your full history on",
+    "description": "Upon clicking on VSC History, end of sentence is a link saying 'the block explorer'"
+  },
+  "popup_html_vsc_full_history_block_explorer": {
+    "message": "the VSC block explorer.",
+    "description": "Upon clicking on VSC History, this is the end of the sentence above."
   },
   "popup_html_transaction_metadata": {
     "message": "Transaction metadata",

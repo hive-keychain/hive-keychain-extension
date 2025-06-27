@@ -36,6 +36,7 @@ const RequestItem = ({
   title,
   content,
   xsFont,
+  red,
   type = RequestItemType.STRING,
 }: Props) => {
   return (
@@ -43,7 +44,8 @@ const RequestItem = ({
       <React.Fragment key={title}>
         <div className="field">
           <div className="label">{chrome.i18n.getMessage(title)}</div>
-          <div className={`value ${xsFont ? 'xs-font' : ''}`}>
+          <div
+            className={`value ${xsFont ? 'xs-font' : ''} ${red ? 'red' : ''}`}>
             {renderContent(content, type)}
           </div>
         </div>

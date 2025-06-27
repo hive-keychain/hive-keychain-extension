@@ -8,8 +8,13 @@ import { BaseCurrencies } from '@popup/hive/utils/currency.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Asset, IStep, ISwap, SwapStatus } from 'hive-keychain-commons';
-import FormatUtils from 'src/utils/format.utils';
+import {
+  Asset,
+  FormatUtils,
+  IStep,
+  ISwap,
+  SwapStatus,
+} from 'hive-keychain-commons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 

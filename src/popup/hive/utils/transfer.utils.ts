@@ -18,6 +18,7 @@ const getTransferWarningLabel = (
   memo: any,
   phisingAccounts: any,
   isRecurrent?: boolean,
+  isOnVsc?: boolean,
 ) => {
   const warning = TransferUtilsCommons.getTransferWarning(
     account,
@@ -25,6 +26,7 @@ const getTransferWarningLabel = (
     memo,
     phisingAccounts,
     isRecurrent,
+    isOnVsc,
   );
   switch (warning) {
     case TransferWarning.PHISHING:
@@ -41,6 +43,8 @@ const getTransferWarningLabel = (
       ]);
     case TransferWarning.PRIVATE_KEY_IN_MEMO:
       return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+    case TransferWarning.EXCHANGE_VSC:
+      return chrome.i18n.getMessage('popup_warning_exchange_vsc');
     default:
       return;
   }

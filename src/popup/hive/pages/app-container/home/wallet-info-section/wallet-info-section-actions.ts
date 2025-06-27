@@ -13,10 +13,8 @@ export interface ActionButton {
   nextScreenParams?: any;
 }
 
-export const WalletInfoSectionActions = (
+export const WalletInfoSectionHiveActions = (
   tokenSymbol: string,
-  tokenInfo?: Token,
-  tokenBalance?: TokenBalance,
 ): ActionButton[] => {
   if (tokenSymbol === 'HBD') {
     return [
@@ -70,7 +68,7 @@ export const WalletInfoSectionActions = (
         nextScreenParams: { selectedCurrency: 'hive' },
       },
     ];
-  } else if (tokenSymbol === 'HP') {
+  } else {
     return [
       {
         label: 'popup_html_delegate_short',
@@ -89,52 +87,114 @@ export const WalletInfoSectionActions = (
         nextScreenParams: { powerType: PowerType.POWER_DOWN },
       },
     ];
-  } else {
-    const actions: ActionButton[] = [];
+  }
+};
+export const WalletInfoSectionHiveEngineActions = (
+  tokenInfo?: Token,
+  tokenBalance?: TokenBalance,
+): ActionButton[] => {
+  const actions: ActionButton[] = [];
+  actions.push({
+    label: 'popup_html_send_transfer',
+    nextScreen: Screen.TOKENS_TRANSFER,
+    nextScreenParams: {
+      tokenBalance,
+      tokenInfo,
+    },
+    icon: SVGIcons.WALLET_SEND,
+  });
+  if (tokenInfo?.stakingEnabled) {
     actions.push({
-      label: 'popup_html_send_transfer',
-      nextScreen: Screen.TOKENS_TRANSFER,
+      label: 'popup_html_token_stake',
+      nextScreen: Screen.TOKENS_OPERATION,
       nextScreenParams: {
         tokenBalance,
-        tokenInfo,
+        operationType: TokenOperationType.STAKE,
+        tokenInfo: tokenInfo,
       },
-      icon: SVGIcons.WALLET_SEND,
+      icon: SVGIcons.WALLET_TOKEN_STAKE,
     });
-    if (tokenInfo?.stakingEnabled) {
-      actions.push({
-        label: 'popup_html_token_stake',
-        nextScreen: Screen.TOKENS_OPERATION,
-        nextScreenParams: {
-          tokenBalance,
-          operationType: TokenOperationType.STAKE,
-          tokenInfo: tokenInfo,
-        },
-        icon: SVGIcons.WALLET_TOKEN_STAKE,
-      });
-      actions.push({
-        label: 'popup_html_token_unstake',
-        nextScreen: Screen.TOKENS_OPERATION,
-        nextScreenParams: {
-          tokenBalance,
-          operationType: TokenOperationType.UNSTAKE,
-          tokenInfo: tokenInfo,
-        },
-        icon: SVGIcons.WALLET_TOKEN_UNSTAKE,
-      });
-    }
-    if (tokenInfo?.delegationEnabled) {
-      actions.push({
-        label: 'popup_html_token_delegate',
-        nextScreen: Screen.TOKENS_OPERATION,
-        nextScreenParams: {
-          tokenBalance,
-          operationType: TokenOperationType.DELEGATE,
-          tokenInfo: tokenInfo,
-        },
-        icon: SVGIcons.WALLET_TOKEN_DELEGATIONS,
-      });
-    }
+    actions.push({
+      label: 'popup_html_token_unstake',
+      nextScreen: Screen.TOKENS_OPERATION,
+      nextScreenParams: {
+        tokenBalance,
+        operationType: TokenOperationType.UNSTAKE,
+        tokenInfo: tokenInfo,
+      },
+      icon: SVGIcons.WALLET_TOKEN_UNSTAKE,
+    });
+  }
+  if (tokenInfo?.delegationEnabled) {
+    actions.push({
+      label: 'popup_html_token_delegate',
+      nextScreen: Screen.TOKENS_OPERATION,
+      nextScreenParams: {
+        tokenBalance,
+        operationType: TokenOperationType.DELEGATE,
+        tokenInfo: tokenInfo,
+      },
+      icon: SVGIcons.WALLET_TOKEN_DELEGATIONS,
+    });
+  }
 
-    return actions;
+  return actions;
+};
+
+export const WalletInfoSectionVscActions = (
+  tokenSymbol: string,
+): ActionButton[] => {
+  if (tokenSymbol === 'HBD') {
+    return [
+      {
+        label: 'popup_html_deposit',
+        icon: SVGIcons.WALLET_POWER_UP,
+        nextScreen: Screen.VSC_DEPOSIT_PAGE,
+        nextScreenParams: { selectedCurrency: 'hbd' },
+      },
+      {
+        label: 'popup_html_withdraw',
+        icon: SVGIcons.WALLET_POWER_DOWN,
+        nextScreen: Screen.VSC_WITHDRAW_PAGE,
+        nextScreenParams: {
+          selectedCurrency: 'hbd',
+        },
+      },
+      {
+        label: 'popup_html_send',
+        icon: SVGIcons.WALLET_SEND,
+        nextScreen: Screen.VSC_TRANSFER_PAGE,
+        nextScreenParams: { selectedCurrency: 'hbd' },
+      },
+      {
+        label: 'popup_html_staking',
+        icon: SVGIcons.WALLET_SAVINGS,
+        nextScreen: Screen.VSC_STAKING_PAGE,
+        nextScreenParams: { selectedCurrency: 'hbd' },
+      },
+    ];
+  } else {
+    return [
+      {
+        label: 'popup_html_deposit',
+        icon: SVGIcons.WALLET_POWER_UP,
+        nextScreen: Screen.VSC_DEPOSIT_PAGE,
+        nextScreenParams: { selectedCurrency: 'hive' },
+      },
+      {
+        label: 'popup_html_withdraw',
+        icon: SVGIcons.WALLET_POWER_DOWN,
+        nextScreen: Screen.VSC_WITHDRAW_PAGE,
+        nextScreenParams: {
+          selectedCurrency: 'hive',
+        },
+      },
+      {
+        label: 'popup_html_send',
+        icon: SVGIcons.WALLET_SEND,
+        nextScreen: Screen.VSC_TRANSFER_PAGE,
+        nextScreenParams: { selectedCurrency: 'hive' },
+      },
+    ];
   }
 };

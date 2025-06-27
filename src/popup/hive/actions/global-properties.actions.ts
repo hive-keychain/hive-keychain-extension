@@ -1,5 +1,5 @@
 import { ActionPayload, AppThunk } from '@popup/multichain/actions/interfaces';
-import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import { GlobalProperties } from 'hive-keychain-commons';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import { AppStatus } from 'src/popup/hive/reducers/app-status.reducer';
 import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';

@@ -2,13 +2,13 @@ import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import RequestTokenBalance from 'src/dialog/components/request-token-balance/request-token-balance';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
-import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
   data: RequestSendToken & RequestId;

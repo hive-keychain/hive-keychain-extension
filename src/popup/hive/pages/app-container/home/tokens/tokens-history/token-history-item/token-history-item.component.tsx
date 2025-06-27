@@ -230,13 +230,16 @@ const TokenHistoryItem = ({
             )}
           </div>
         </div>
-        <div
-          data-testid={`${dataTestId}-memo-panel-${transaction._id}`}
-          className={
-            isMemoOpened ? 'expandable-panel opened' : 'expandable-panel closed'
-          }>
-          {getMemo()}
-        </div>
+        {getMemo() && isMemoOpened && (
+          <div
+            className={
+              isMemoOpened
+                ? 'expandable-panel opened'
+                : 'expandable-panel closed'
+            }>
+            {getMemo()}
+          </div>
+        )}
       </div>
     </div>
   ) : null;

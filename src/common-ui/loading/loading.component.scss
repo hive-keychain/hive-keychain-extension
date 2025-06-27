@@ -16,6 +16,21 @@
     background: $dark-blue;
     opacity: 0.8;
   }
+  .close-loading {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    cursor: pointer;
+    z-index: 2;
+    svg {
+      width: 16px;
+      height: 16px;
+      path {
+        stroke: white;
+        stroke-width: 1.8;
+      }
+    }
+  }
   .loading-text {
     font-size: 20px;
     margin-top: 16px;
