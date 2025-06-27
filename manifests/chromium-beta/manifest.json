@@ -2,7 +2,7 @@
   "name": "Hive Keychain Beta",
   "description": "Hive Keychain Beta (don't forget to switch back to production version)",
   "default_locale": "en",
-  "version": "3.10.5",
+  "version": "3.9.7",
   "permissions": ["storage", "idle", "alarms"],
   "host_permissions": ["https://*/*"],
   "action": {

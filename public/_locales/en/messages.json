@@ -3120,6 +3120,10 @@
     "message": "You need to accept the terms and condition before creating account",
     "description": "Create account payment message"
   },
+  "html_popup_create_account_need_copy": {
+    "message": "Make sure you have copied your keys before creating the account",
+    "description": "Create account payment message"
+  },
   "html_popup_create_account_successful": {
     "message": "Your account has been successfully created and added to your Keychain",
     "description": "Create account successful message"
