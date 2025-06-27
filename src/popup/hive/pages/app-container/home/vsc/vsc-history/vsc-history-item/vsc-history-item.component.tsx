@@ -28,7 +28,7 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
   const getIcon = () => {
     switch (transaction.type) {
       case VscHistoryType.CONTRACT_CALL:
-        return SVGIcons.VSC_CALL;
+        return SVGIcons.WALLET_SEND;
       case VscHistoryType.TRANSFER:
         return SVGIcons.WALLET_SEND;
       case VscHistoryType.DEPOSIT:
@@ -85,7 +85,7 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
           return chrome.i18n.getMessage('popup_html_vsc_info_withdraw_to', [
             FormatUtils.withCommas(transaction.amount + '', 3),
             transaction.asset.toUpperCase(),
-            VscUtils.getFormattedAddress(transaction.to)!,
+            `@${transaction.to}`,
           ]);
         }
       case VscHistoryType.TRANSFER:
@@ -152,7 +152,8 @@ const VscHistoryItem = ({ transaction, username }: Props) => {
       </CustomTooltip>
     );
   };
-
+  if (transaction.status === VscStatus.FAILED && transaction.from !== username)
+    return null;
   return (
     <div className="vsc-history-item">
       <div className="vsc-transaction-info">
