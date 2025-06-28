@@ -31,7 +31,11 @@ const AmountWithLogo = ({
     />
   );
 
-  const amountElement = <span className="amount">{`${amount} ${symbol}`}</span>;
+  const amountElement = (
+    <span className="amount">
+      {typeof amount === 'string' ? amount.split(' ')[0] : amount} {symbol}
+    </span>
+  );
 
   return (
     <div
