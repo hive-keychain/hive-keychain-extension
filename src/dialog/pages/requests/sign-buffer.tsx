@@ -6,6 +6,7 @@ import {
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
@@ -22,9 +23,9 @@ const SignBuffer = (props: Props) => {
   const { data, domain, accounts } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
   const renderUsername = () => {
-    return !accounts ? (
+    return !accounts && data.username ? (
       <>
-        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <UsernameWithAvatar title={'dialog_account'} username={data.username} />
         <Separator type={'horizontal'} fullSize />
       </>
     ) : (

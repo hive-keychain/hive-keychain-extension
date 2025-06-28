@@ -3213,8 +3213,8 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "Necesitas añadir tu llave activa a Keychain para reclamar cuentas",
-    "description": "automated tasks => need active key claim accounts"
+    "message": "Necesitas añadir tu llave de publicación a Keychain para reclamar recompensas",
+    "description": "automated tasks => need posting key to claim rewards"
   },
   "popup_html_cant_automatically_claim_ledger": {
     "message": "No puede reclamar automáticamente porque su llave está guardada en Ledger",

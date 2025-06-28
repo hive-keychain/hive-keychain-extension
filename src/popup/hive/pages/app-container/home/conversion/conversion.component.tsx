@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -159,8 +160,18 @@ const Conversion = ({
           : 'popup_html_confirm_hive_to_hbd_conversion',
       ),
       fields: [
-        { label: 'popup_html_value', value: stringifiedAmount },
-        { label: 'popup_html_username', value: `@${activeAccount.name!}` },
+        {
+          label: 'popup_html_value',
+          value: stringifiedAmount,
+          tag: ConfirmationPageFieldTag.AMOUNT,
+          tokenSymbol: form.currency,
+        },
+        {
+          label: 'popup_html_username',
+          value: `@${activeAccount.name!}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          avatarPosition: 'right',
+        },
       ],
       title: title,
       formParams: getFormParams(),

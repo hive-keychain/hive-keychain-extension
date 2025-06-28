@@ -1,0 +1,126 @@
+.operation-select-username {
+  .label {
+    @include input-label;
+  }
+
+  .select-container {
+    position: relative;
+    width: 100%;
+
+    .selected-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 6px;
+      padding-left: 12px;
+      box-sizing: border-box;
+      width: 100%;
+      font-size: $input-font-size;
+      @include poppins500(15px);
+      user-select: none;
+      color: var(--main-font-color);
+      border: 1px solid var(--card-border);
+      background: var(--card-background);
+      min-width: 120px;
+      height: 52px;
+      border-radius: 66px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .user-avatar {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        margin-right: 8px;
+        object-fit: cover;
+      }
+
+      .username {
+        flex: 1;
+        color: var(--main-font-color);
+      }
+
+      .dropdown-arrow {
+        width: 24px;
+        height: 10px;
+        color: var(--main-font-color);
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .dropdown-options {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background-color: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      max-height: 210px;
+      overflow-y: auto;
+      z-index: 1000;
+      @include radius-bound-dropdown-scrollbar;
+      @include poppins500(14px);
+
+      .option-item {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+        padding: 10px 6px;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        position: relative;
+
+        &:hover {
+          background-color: $red;
+          color: white;
+
+          .username {
+            color: white;
+          }
+
+          .active-icon {
+            color: white;
+          }
+        }
+
+        &.selected {
+          background-color: var(--card-background);
+
+          &:hover {
+            background-color: $red;
+            color: white;
+
+            .username {
+              color: white;
+            }
+
+            .active-icon {
+              color: white;
+            }
+          }
+        }
+
+        .user-avatar {
+          height: 40px;
+          width: 40px;
+          border-radius: 50%;
+          margin-left: 10px;
+          object-fit: cover;
+        }
+
+        .username {
+          flex: 1;
+          color: var(--main-font-color);
+        }
+
+        .active-icon {
+          width: 20px;
+          height: 20px;
+          color: $red;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}

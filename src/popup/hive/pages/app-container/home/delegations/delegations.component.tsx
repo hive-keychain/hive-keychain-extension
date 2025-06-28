@@ -22,13 +22,13 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import {
   loadDelegatees,
   loadDelegators,
@@ -232,9 +232,24 @@ const Delegations = ({
         `@${form.username}`,
       ]),
       fields: [
-        { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${form.username}` },
-        { label: 'popup_html_value', value: stringifiedAmount },
+        {
+          label: 'popup_html_transfer_from',
+          value: `@${activeAccount.name!}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          avatarPosition: 'right',
+        },
+        {
+          label: 'popup_html_transfer_to',
+          value: `@${form.username}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          avatarPosition: 'right',
+        },
+        {
+          label: 'popup_html_value',
+          value: stringifiedAmount,
+          tag: ConfirmationPageFieldTag.AMOUNT,
+          tokenSymbol: currencyLabels.hp,
+        },
       ],
       title: 'popup_html_delegation',
       formParams: getFormParams(),
@@ -281,8 +296,18 @@ const Delegations = ({
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [
-        { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${form.username}` },
+        {
+          label: 'popup_html_transfer_from',
+          value: `@${activeAccount.name!}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          iconPosition: 'left',
+        },
+        {
+          label: 'popup_html_transfer_to',
+          value: `@${form.username}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          iconPosition: 'left',
+        },
       ],
       title: 'popup_html_cancel_delegation',
       formParams: getFormParams(),
