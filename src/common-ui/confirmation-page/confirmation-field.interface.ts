@@ -6,6 +6,7 @@ export interface ConfirmationPageFields {
   valueClassName?: string;
   tag?: ConfirmationPageFieldTag;
   tokenSymbol?: string;
+  iconPosition?: 'left' | 'right';
 }
 
 export enum ConfirmationPageFieldTag {

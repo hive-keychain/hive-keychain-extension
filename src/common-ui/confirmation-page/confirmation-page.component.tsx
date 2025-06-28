@@ -175,7 +175,7 @@ const ConfirmationPage = ({
           <UsernameWithAvatar
             className={`value ${field.valueClassName ?? ''}`}
             username={field.value}
-            avatarPosition="right"
+            avatarPosition={field.iconPosition ?? 'right'}
           />
         );
       case ConfirmationPageFieldTag.AMOUNT:
@@ -185,7 +185,7 @@ const ConfirmationPage = ({
               amount={field.value}
               symbol={field.tokenSymbol}
               icon={getIcon(field)}
-              iconPosition="right"
+              iconPosition={field.iconPosition ?? 'right'}
             />
           </div>
         );
