@@ -36,6 +36,63 @@
     color: var(--main-font-color);
   }
 
+  // Avatar position variants
+  &.avatar-position-right {
+    .user-avatar {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+  }
+
+  // Size variants
+  &.size-small {
+    .user-avatar {
+      height: 24px;
+      width: 24px;
+      margin-right: 6px;
+    }
+
+    .username {
+      @include poppins500(12px);
+    }
+
+    .title {
+      @include poppins500(12px);
+      margin-right: 8px;
+    }
+
+    &.avatar-position-right {
+      .user-avatar {
+        margin-right: 0;
+        margin-left: 6px;
+      }
+    }
+  }
+
+  &.size-large {
+    .user-avatar {
+      height: 48px;
+      width: 48px;
+      margin-right: 10px;
+    }
+
+    .username {
+      @include poppins500(18px);
+    }
+
+    .title {
+      @include poppins500(18px);
+      margin-right: 16px;
+    }
+
+    &.avatar-position-right {
+      .user-avatar {
+        margin-right: 0;
+        margin-left: 10px;
+      }
+    }
+  }
+
   // Hover effects
   &:hover {
     &.with-border {
