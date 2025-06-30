@@ -5162,11 +5162,15 @@
     "description": "Mint single nft history item"
   },
   "evm_history_operation_generic_smart_contract_messages": {
-    "message": "$1 in contract $2",
+    "message": "Broadcasted operation $1 on contract $2 ($3)",
     "description": "Generic smart contract operation history label"
   },
-  "evm_history_default_smart_contract_operation": {
-    "message": "Broadcasted transaction",
+  "evm_history_default_out_smart_contract_operation": {
+    "message": "You broadcasted a transaction",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_in_smart_contract_operation": {
+    "message": "You were included in a broadcasted transaction",
     "description": "Generic smart contract operation history label"
   },
   "evm_add_wallet_address_button": {

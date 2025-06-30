@@ -27,13 +27,9 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
-const MIN_NEW_TRANSACTION = 1;
-const LIMIT = 20000;
 const RESULTS_PER_PAGE = 1000;
 
 let cachedData: any[] = [];
-
-const fullFetchedLists: string[] = [];
 
 const fetchHistory = async (
   walletAddress: string,
@@ -53,6 +49,7 @@ const fetchHistory = async (
   }
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
   // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
@@ -61,17 +58,20 @@ const fetchHistory = async (
     main: fetchMainHistory(walletAddress, chain, history.lastPage),
   });
 
-  const test = ['tokens', 'nfts', 'main'];
-  for (const key of test) {
-    const list = promisesResult[key];
+  promisesResult['internals'] = [];
 
-    for (const i of promisesResult['internals']) {
-      const tx = list.find((t) => t.hash === i.transactionHash);
-      if (tx && i) {
-        console.log(tx, i);
-      }
-    }
-  }
+  // TODO delete when finish
+  // const test = ['tokens', 'nfts', 'main'];
+  // for (const key of test) {
+  //   const list = promisesResult[key];
+
+  //   for (const i of promisesResult['internals']) {
+  //     const tx = list.find((t) => t.hash === i.transactionHash);
+  //     if (tx && i) {
+  //       console.log(tx, i);
+  //     }
+  //   }
+  // }
 
   console.log({ promisesResult });
 
@@ -157,13 +157,24 @@ const fetchHistory = async (
   console.log('start parsing');
   for (const event of events) {
     // console.log(event.hash, event);
+    if (
+      event.hash ===
+      '0x7db1bdc3eb9f17951423e10321ef848879e0d046edd99bbc99ffff81771d601e'
+    ) {
+      console.log('----------------------');
+      console.log(
+        event,
+        tokenMetadata.find((t) => (t as any).address === event.to),
+      );
+      console.log('----------------------');
+    }
+
     if (event.txreceipt_status === '0') {
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
       continue;
     }
     let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
     // parse event
-
     if (
       event.contractAddress.length > 0 &&
       (!event.to || event.to.length === 0)
@@ -194,34 +205,38 @@ const fetchHistory = async (
       event.input.replace('0x', '').length > 0
     ) {
       // Smart contract (parse transaction)
+      try {
+        const decodedData = await EvmTransactionParserUtils.parseData(
+          event.input,
+          chain,
+        );
 
-      const decodedData = await EvmTransactionParserUtils.parseData(
-        event.input,
-        chain,
-      );
+        historyItem = {
+          ...historyItem,
+          type: EvmUserHistoryItemType.SMART_CONTRACT,
+        };
 
-      historyItem = {
-        ...historyItem,
-        type: EvmUserHistoryItemType.SMART_CONTRACT,
-      };
+        const specificData = await getSpecificData(
+          chain,
+          event.contractAddress.length > 0
+            ? event.contractAddress.toLowerCase()
+            : event.to.toLowerCase(),
+          event.from.toLowerCase(),
+          walletAddress.toLowerCase(),
+          decodedData,
+          tokenMetadata,
+          event,
+        );
 
-      const specificData = await getSpecificData(
-        chain,
-        event.contractAddress.length > 0
-          ? event.contractAddress.toLowerCase()
-          : event.to.toLowerCase(),
-        event.from.toLowerCase(),
-        walletAddress.toLowerCase(),
-        decodedData,
-        tokenMetadata,
-        event,
-      );
-
-      historyItem.label = specificData.label;
-      historyItem.pageTitle = specificData.pageTitle;
-      historyItem.receiverAddress = specificData.receiverAddress;
-      historyItem.detailFields = specificData.detailFields;
-      historyItem.tokenInfo = specificData.tokenInfo;
+        historyItem.label = specificData.label;
+        historyItem.pageTitle = specificData.pageTitle;
+        historyItem.receiverAddress = specificData.receiverAddress;
+        historyItem.detailFields = specificData.detailFields;
+        historyItem.tokenInfo = specificData.tokenInfo;
+      } catch (err) {
+        console.log(err);
+        continue;
+      }
     } else if (
       (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
       EvmAddressType.WALLET_ADDRESS
@@ -282,6 +297,14 @@ const fetchHistory = async (
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
       Logger.error(`${event.hash} match no condition`);
+      console.log(historyItem);
+      const defaultLabel =
+        event.from.toLowerCase() === walletAddress.toLowerCase()
+          ? 'evm_history_default_out_smart_contract_operation'
+          : 'evm_history_default_in_smart_contract_operation';
+
+      historyItem.label = chrome.i18n.getMessage(defaultLabel);
+      historyItem.pageTitle = defaultLabel;
     }
     history.events.push(historyItem);
   }
@@ -394,15 +417,18 @@ const getSpecificData = async (
   walletAddress: string,
   decodedData: EvmTransactionDecodedData | undefined,
   metadata: EvmSmartContractInfo[],
-  event: EvmUserHistoryItem,
+  event: any,
 ): Promise<EvmHistoryItemSpecificData> => {
   const details: EvmUserHistoryItemDetail[] = [];
 
+  const defaultLabel =
+    broadcaster.toLowerCase() === walletAddress.toLowerCase()
+      ? 'evm_history_default_out_smart_contract_operation'
+      : 'evm_history_default_in_smart_contract_operation';
+
   let result: EvmHistoryItemSpecificData = {
-    label: chrome.i18n.getMessage(
-      'evm_history_default_smart_contract_operation',
-    ),
-    pageTitle: 'evm_history_default_smart_contract_operation',
+    label: chrome.i18n.getMessage(defaultLabel),
+    pageTitle: defaultLabel,
     detailFields: details,
   };
   const tokenMetadata = metadata.find(
@@ -436,7 +462,8 @@ const getSpecificData = async (
       symbol = 'NO symbol 2';
     }
   }
-  // console.log(decodedData?.operationName, decodedData, metadata, tokenMetadata);
+
+  console.log(event, decodedData?.operationName, decodedData, tokenMetadata);
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
@@ -625,6 +652,44 @@ const getSpecificData = async (
         };
         break;
       }
+      case 'transferFrom': {
+        const from = decodedData.inputs[0].value.toLowerCase();
+        const formattedFrom = EvmFormatUtils.formatAddress(from);
+        const to = decodedData.inputs[1].value.toLowerCase();
+        const formattedTo = EvmFormatUtils.formatAddress(to);
+
+        const isTransferIn = to === walletAddress;
+        const amount = Number(decodedData.inputs[2].value) / 1000000;
+
+        result = {
+          label: chrome.i18n.getMessage(
+            isTransferIn
+              ? 'evm_history_operation_transfer_in'
+              : 'evm_history_operation_transfer_out',
+            [amount, symbol, isTransferIn ? formattedFrom : formattedTo],
+          ),
+          pageTitle: 'evm_transfer',
+          receiverAddress: formattedTo,
+          detailFields: [
+            {
+              label: 'popup_html_transfer_amount',
+              value: `${amount.toString()} ${symbol}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_from',
+              value: from,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_to',
+              value: to,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+          ],
+        };
+        break;
+      }
       case 'approve': {
         const to = decodedData.inputs[0].value;
         const formattedTo = EvmFormatUtils.formatAddress(
@@ -737,7 +802,11 @@ const getSpecificData = async (
         result = {
           label: chrome.i18n.getMessage(
             'evm_history_operation_generic_smart_contract_messages',
-            [decodedData.operationName, name],
+            [
+              decodedData.operationName,
+              name,
+              EvmFormatUtils.formatAddress(contractAddress),
+            ],
           ),
           pageTitle: 'evm_broadcast',
           detailFields: [],
@@ -764,6 +833,7 @@ const getCommonHistoryItem = (e: any) => {
     transactionIndex: e.transactionIndex,
     nonce: Number(e.nonce),
     timestamp: e.timeStamp * 1000,
+    type: EvmUserHistoryItemType.BASE_TRANSACTION,
   };
 };
 

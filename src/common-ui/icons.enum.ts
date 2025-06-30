@@ -33,6 +33,7 @@ export enum SVGIcons {
 
   EVM_SMART_CONTRACT = 'evm-history/smart-contract',
   EVM_SMART_CONTRACT_CREATION = 'evm-history/smart-contract-creation',
+  EVM_BASE_TRANSACTION = 'evm-history/base-transaction',
 
   EVM_TRANSACTION_STATUS_PROCESSING = 'evm-tx-status/processing',
   EVM_TRANSACTION_STATUS_FINISHED = 'evm-tx-status/finished',

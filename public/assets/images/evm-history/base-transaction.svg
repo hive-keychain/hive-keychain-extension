@@ -1,0 +1,6 @@
+<svg width="24" height="24" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#E31337" stroke-width="14">
+  <!-- Top diamond -->
+  <polygon points="128,0 242,186 128,256 14,186" />
+  <!-- Bottom diamond -->
+  <polygon points="128,256 242,186 128,417 14,186" />
+</svg>

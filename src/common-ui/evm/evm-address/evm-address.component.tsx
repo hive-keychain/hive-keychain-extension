@@ -25,7 +25,6 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
 
   const initComponent = async () => {
     const isAddress = ethers.isAddress(address);
-
     if (isAddress === false) {
       const resolveData = await EvmRequestsUtils.getResolveData(address);
 
@@ -38,17 +37,15 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
     } else {
       const ensFound = await EvmRequestsUtils.lookupEns(address);
       if (ensFound) {
-        const resolveData = await EvmRequestsUtils.getResolveData(address);
-
+        const resolveData = await EvmRequestsUtils.getResolveData(ensFound);
         const foundAddress = resolveData?.address;
         setAvatar(resolveData?.avatar);
-        setLabel(address);
+        setLabel(ensFound);
         if (foundAddress) {
           setFullAddress(foundAddress);
         }
       } else {
         let label = await EvmAddressesUtils.getAddressLabel(address, chainId);
-
         if (!label || label.length === 0)
           label = EvmFormatUtils.formatAddress(address);
 

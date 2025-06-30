@@ -45,17 +45,17 @@ const WalletInfoSection = ({
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
-    if (activeAccount.isInitialized) loadHistory();
+    if (activeAccount.isInitialized) loadHistory(true);
   }, [activeAccount.isInitialized]);
 
-  const loadHistory = async () => {
+  const loadHistory = async (reset?: boolean) => {
     console.log('starting load history');
     setLoadingHistory(true);
     setHistory(
       await EvmTokensHistoryUtils.fetchHistory(
         activeAccount.address,
         chain,
-        history,
+        reset ? undefined : history,
       ),
     );
 

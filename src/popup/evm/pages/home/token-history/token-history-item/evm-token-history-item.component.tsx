@@ -40,8 +40,10 @@ export const EvmTokenHistoryItemComponent = ({
         return SVGIcons.EVM_SMART_CONTRACT_CREATION;
       case EvmUserHistoryItemType.SMART_CONTRACT:
         return SVGIcons.EVM_SMART_CONTRACT;
+      case EvmUserHistoryItemType.BASE_TRANSACTION:
+        return SVGIcons.EVM_BASE_TRANSACTION;
       default:
-        return SVGIcons.WALLET_HIVE_LOGO;
+        return SVGIcons.EVM_BASE_TRANSACTION;
     }
   };
 
