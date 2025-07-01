@@ -48,8 +48,11 @@ const fetchHistory = async (
     history.lastPage += 1;
   }
   let allTokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
+
+  // TODO remove
+
   // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
-  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
+  // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
@@ -250,6 +253,13 @@ const fetchHistory = async (
         Number(event.value) / 1000000000,
       ).toString();
 
+      const addressDetails = await EvmAddressesUtils.getAddressDetails(
+        event.from.toLowerCase() === walletAddress.toLowerCase()
+          ? event.to
+          : event.from,
+        chain.chainId,
+      );
+
       const details: EvmUserHistoryItemDetail[] = [];
       details.push({
         label: 'popup_html_evm_transaction_info_from',
@@ -284,11 +294,7 @@ const fetchHistory = async (
           [
             amount,
             mainToken!.symbol,
-            EvmFormatUtils.formatAddress(
-              event.from.toLowerCase() === walletAddress.toLowerCase()
-                ? event.to
-                : event.from,
-            ),
+            addressDetails.label ?? addressDetails.formattedAddress,
           ],
         ),
         detailFields: details,
@@ -308,7 +314,7 @@ const fetchHistory = async (
     }
     history.events.push(historyItem);
   }
-  console.log('end parsing', (Date.now() - start) / 1000);
+  Logger.info('End parsing ' + (Date.now() - start) / 1000);
   console.log({ history });
 
   console.log({ events, cachedData });
@@ -333,7 +339,7 @@ const fetchMainHistory = (
       RESULTS_PER_PAGE,
     );
 
-    console.log('End fetch main history', (Date.now() - start) / 1000);
+    Logger.info('End fetch main history : ' + (Date.now() - start) / 1000);
     resolve(mainHistoryResponse);
   });
 };
@@ -354,7 +360,7 @@ const fetchAllTokensTx = (
       RESULTS_PER_PAGE,
     );
 
-    console.log('End fetch Tokens history', (Date.now() - start) / 1000);
+    Logger.info('End fetch Tokens history ' + (Date.now() - start) / 1000);
     resolve(tokensHistory);
   });
 };
@@ -375,7 +381,7 @@ const fetchAllNftsTx = (
       RESULTS_PER_PAGE,
     );
 
-    console.log('End fetch NFT history', (Date.now() - start) / 1000);
+    Logger.info('End fetch NFT history ' + (Date.now() - start) / 1000);
     resolve(ntfsHistory);
   });
 };
@@ -396,8 +402,7 @@ const fetchAllInternalTx = (
       RESULTS_PER_PAGE,
     );
 
-    console.log('End fetch internals history', (Date.now() - start) / 1000);
-    console.log({ internalsHistory });
+    Logger.info('End fetch internals history ' + (Date.now() - start) / 1000);
     resolve(internalsHistory);
   });
 };
@@ -467,17 +472,17 @@ const getSpecificData = async (
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
-        // console.log(
-        //   decodedData?.operationName,
-        //   decodedData,
-        //   tokenMetadata,
-        //   event,
-        // );
-
         const from = decodedData.inputs[0].value.toLowerCase();
         const to = decodedData.inputs[1].value.toLowerCase();
-        const formattedFrom = EvmFormatUtils.formatAddress(from);
-        const formattedTo = EvmFormatUtils.formatAddress(to);
+
+        const fromDetails = await EvmAddressesUtils.getAddressDetails(
+          from,
+          chain.chainId,
+        );
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
 
         if (decodedData.inputs.length === 5) {
           if (to === walletAddress)
@@ -488,7 +493,7 @@ const getSpecificData = async (
                   decodedData.inputs[3].value,
                   name,
                   decodedData.inputs[2].value,
-                  formattedFrom,
+                  fromDetails.label ?? fromDetails.formattedAddress,
                 ],
               ),
               pageTitle: 'evm_transfer',
@@ -521,11 +526,11 @@ const getSpecificData = async (
                   decodedData.inputs[3].value,
                   name,
                   decodedData.inputs[2].value,
-                  formattedTo,
+                  toDetails.label ?? toDetails.formattedAddress,
+                  ,
                 ],
               ),
               pageTitle: 'evm_transfer',
-              receiverAddress: formattedFrom,
               detailFields: [
                 {
                   label: `${decodedData.inputs[3].value} ${name}#${Number(
@@ -552,10 +557,13 @@ const getSpecificData = async (
             result = {
               label: chrome.i18n.getMessage(
                 'evm_history_operation_safe_transfer_from_erc721_in',
-                [name, decodedData.inputs[2].value, formattedFrom],
+                [
+                  name,
+                  decodedData.inputs[2].value,
+                  fromDetails.label ?? fromDetails.formattedAddress,
+                ],
               ),
               pageTitle: 'evm_transfer',
-              receiverAddress: formattedTo,
               detailFields: [
                 {
                   label: `${name}#${Number(decodedData.inputs[2].value)}`,
@@ -578,10 +586,13 @@ const getSpecificData = async (
             result = {
               label: chrome.i18n.getMessage(
                 'evm_history_operation_safe_transfer_from_erc721_out',
-                [name, decodedData.inputs[2].value, formattedTo],
+                [
+                  name,
+                  decodedData.inputs[2].value,
+                  toDetails.label ?? toDetails.formattedAddress,
+                ],
               ),
               pageTitle: 'evm_transfer',
-              receiverAddress: formattedFrom,
               detailFields: [
                 {
                   label: `${name}#${Number(decodedData.inputs[2].value)}`,
@@ -612,10 +623,18 @@ const getSpecificData = async (
         //   event,
         // );
         const to = decodedData.inputs[0].value.toLowerCase();
-        const formattedTo = EvmFormatUtils.formatAddress(to);
 
         const isTransferIn = to === walletAddress;
         const amount = Number(decodedData.inputs[1].value) / 1000000;
+
+        const broadcasterDetails = await EvmAddressesUtils.getAddressDetails(
+          broadcaster,
+          chain.chainId,
+        );
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
 
         result = {
           label: chrome.i18n.getMessage(
@@ -626,12 +645,12 @@ const getSpecificData = async (
               amount,
               symbol,
               isTransferIn
-                ? EvmFormatUtils.formatAddress(broadcaster)
-                : formattedTo,
+                ? broadcasterDetails.label ??
+                  broadcasterDetails.formattedAddress
+                : toDetails.label ?? toDetails.formattedAddress,
             ],
           ),
           pageTitle: 'evm_transfer',
-          receiverAddress: formattedTo,
           detailFields: [
             {
               label: 'popup_html_transfer_amount',
@@ -654,9 +673,16 @@ const getSpecificData = async (
       }
       case 'transferFrom': {
         const from = decodedData.inputs[0].value.toLowerCase();
-        const formattedFrom = EvmFormatUtils.formatAddress(from);
         const to = decodedData.inputs[1].value.toLowerCase();
-        const formattedTo = EvmFormatUtils.formatAddress(to);
+
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
+        const fromDetails = await EvmAddressesUtils.getAddressDetails(
+          from,
+          chain.chainId,
+        );
 
         const isTransferIn = to === walletAddress;
         const amount = Number(decodedData.inputs[2].value) / 1000000;
@@ -666,10 +692,15 @@ const getSpecificData = async (
             isTransferIn
               ? 'evm_history_operation_transfer_in'
               : 'evm_history_operation_transfer_out',
-            [amount, symbol, isTransferIn ? formattedFrom : formattedTo],
+            [
+              amount,
+              symbol,
+              isTransferIn
+                ? fromDetails.label ?? fromDetails.formattedAddress
+                : toDetails.label ?? toDetails.formattedAddress,
+            ],
           ),
           pageTitle: 'evm_transfer',
-          receiverAddress: formattedTo,
           detailFields: [
             {
               label: 'popup_html_transfer_amount',
@@ -692,18 +723,20 @@ const getSpecificData = async (
       }
       case 'approve': {
         const to = decodedData.inputs[0].value;
-        const formattedTo = EvmFormatUtils.formatAddress(
-          decodedData.inputs[0].value,
+
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
         );
+
         const amount = Number(decodedData.inputs[1].value) / 1000000;
         if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
           result = {
             label: chrome.i18n.getMessage(
               'evm_history_operation_approve_out_erc20',
-              [formattedTo, amount, symbol],
+              [toDetails.label ?? toDetails.formattedAddress, amount, symbol],
             ),
             pageTitle: 'evm_approval',
-            receiverAddress: formattedTo,
             detailFields: [
               {
                 label: 'popup_html_transfer_amount',
@@ -726,10 +759,13 @@ const getSpecificData = async (
           result = {
             label: chrome.i18n.getMessage(
               'evm_history_operation_approve_out_erc721',
-              [formattedTo, name, decodedData.inputs[1].value],
+              [
+                toDetails.label ?? toDetails.formattedAddress,
+                name,
+                decodedData.inputs[1].value,
+              ],
             ),
             pageTitle: 'evm_approval',
-            receiverAddress: formattedTo,
             detailFields: [
               {
                 label: `${name}#${Number(decodedData.inputs[1].value)}`,

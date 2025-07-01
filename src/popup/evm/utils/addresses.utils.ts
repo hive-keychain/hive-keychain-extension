@@ -3,11 +3,63 @@ import {
   EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { ethers } from 'ethers';
 import { identicon } from 'minidenticons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+export interface EvmAddressDetail {
+  label?: string;
+  fullAddress: string;
+  formattedAddress: string;
+  avatar?: string | null;
+}
+
+const getAddressDetails = async (
+  address: string,
+  chainId: string,
+): Promise<EvmAddressDetail> => {
+  const details: EvmAddressDetail = {
+    fullAddress: '',
+    formattedAddress: '',
+  };
+
+  const isAddress = ethers.isAddress(address);
+  if (isAddress === false) {
+    const resolveData = await EvmRequestsUtils.getResolveData(address);
+
+    const foundAddress = resolveData?.address;
+    details.avatar = resolveData?.avatar;
+    details.label = address;
+    if (foundAddress) {
+      details.fullAddress = foundAddress;
+    }
+  } else {
+    const ensFound = await EvmRequestsUtils.lookupEns(address);
+    if (ensFound) {
+      const resolveData = await EvmRequestsUtils.getResolveData(ensFound);
+      const foundAddress = resolveData?.address;
+      details.avatar = resolveData?.avatar;
+      details.label = ensFound;
+      if (foundAddress) {
+        details.fullAddress = foundAddress;
+      }
+    } else {
+      let label = await EvmAddressesUtils.getAddressLabel(address, chainId);
+      if (!label || label.length === 0)
+        label = EvmFormatUtils.formatAddress(address);
+
+      details.label = label;
+      details.formattedAddress = label;
+    }
+  }
+
+  return details;
+};
 
 const getAddressType = async (address: string, chain: EvmChain) => {
   let savedAddresses = await LocalStorageUtils.getValueFromLocalStorage(
@@ -224,4 +276,5 @@ export const EvmAddressesUtils = {
   isWhitelisted,
   getAddressLabel,
   isPotentialSpoofing,
+  getAddressDetails,
 };

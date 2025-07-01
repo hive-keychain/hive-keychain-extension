@@ -101,5 +101,6 @@
   .wallet-history-item {
     z-index: 2;
     width: calc(100% - 64px);
+    cursor: pointer;
   }
 }
