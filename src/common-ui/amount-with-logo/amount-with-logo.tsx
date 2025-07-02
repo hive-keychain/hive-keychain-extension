@@ -1,4 +1,5 @@
-import React from 'react';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
+import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 
@@ -49,6 +50,10 @@ const AmountWithLogo = ({
       src={`/assets/images/icons/${icon}.svg`}
       useDefaultSVG={icon}
     />
+  ) : isLoading ? (
+    <div className="amount-logo loading-placeholder" />
+  ) : (
+    <PreloadedImage className="amount-logo" src={tokenIcon || ''} />
   );
 
   const amountElement = (
