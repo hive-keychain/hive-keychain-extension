@@ -16,9 +16,13 @@ const getLastEvmChain = async () => {
 };
 
 const getEthChainId = () => {
+  return getEthChain()?.chainId;
+};
+
+const getEthChain = (): EvmChain => {
   return ChainUtils.getDefaultChains().find(
     (chain) => chain.name === 'Ethereum',
-  )?.chainId;
+  ) as EvmChain;
 };
 
 const saveLastUsedChain = (chain: EvmChain) => {
@@ -30,6 +34,7 @@ const saveLastUsedChain = (chain: EvmChain) => {
 
 export const EvmChainUtils = {
   getLastEvmChainId,
+  getEthChain,
   getEthChainId,
   getLastEvmChain,
   saveLastUsedChain,
