@@ -16,7 +16,7 @@ const UsernameWithAvatar = ({
   showBorder = false,
   className = '',
   size = 'medium',
-  avatarPosition = 'left',
+  avatarPosition = 'right',
 }: Props) => {
   const formattedUsername = username.startsWith('@')
     ? username.slice(1).trim()
