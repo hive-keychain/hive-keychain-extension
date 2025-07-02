@@ -13,7 +13,7 @@
   }
 
   .title {
-    @include poppins500(15px);
+    @include poppins500(14px);
     color: var(--main-font-color);
     margin-right: 12px;
   }
@@ -32,7 +32,7 @@
   }
 
   .username {
-    @include poppins500(14px);
+    @include poppins400(14px);
     color: var(--main-font-color);
   }
 
