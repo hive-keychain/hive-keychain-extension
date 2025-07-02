@@ -1085,6 +1085,14 @@
     "message": "Swap",
     "description": "When website requests a swap"
   },
+  "dialog_from_amount": {
+    "message": "From",
+    "description": "When website requests a swap"
+  },
+  "dialog_to_amount": {
+    "message": "To",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
