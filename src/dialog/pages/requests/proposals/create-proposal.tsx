@@ -3,7 +3,10 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import CurrencyUtils from '@popup/hive/utils/currency.utils';
 import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
@@ -17,7 +20,7 @@ type Props = {
 };
 
 const CreateProposal = (props: Props) => {
-  const { data } = props;
+  const { data, rpc } = props;
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_create_proposal')}
@@ -35,7 +38,13 @@ const CreateProposal = (props: Props) => {
         content={`${data.start.split('T')[0]} - ${data.end.split('T')[0]}`}
       />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_daily_pay" content={data.daily_pay} />
+      <AmountWithLogo
+        title="dialog_daily_pay"
+        amount={data.daily_pay}
+        symbol={CurrencyUtils.getCurrencyLabel('HBD', rpc.testnet)}
+        icon={SVGIcons.WALLET_HBD_LOGO}
+        iconPosition="right"
+      />
     </Operation>
   );
 };
