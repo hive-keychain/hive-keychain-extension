@@ -12,6 +12,7 @@ type Props = {
   size?: 'small' | 'medium' | 'large';
   logoSize?: 'small' | 'medium' | 'large';
   iconPosition?: 'left' | 'right';
+  title?: string;
 };
 
 const AmountWithLogo = ({
@@ -23,6 +24,7 @@ const AmountWithLogo = ({
   size = 'medium',
   logoSize = 'medium',
   iconPosition = 'left',
+  title,
 }: Props) => {
   const [tokenIcon, setTokenIcon] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,6 +69,7 @@ const AmountWithLogo = ({
       className={`amount-with-logo ${
         showBorder ? 'with-border' : ''
       } size-${size} icon-position-${iconPosition} ${className}`}>
+      {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
       <div className="amount-logo-container">
         {iconPosition === 'left' ? (
           <>
