@@ -5,6 +5,8 @@ import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
@@ -129,15 +131,32 @@ const Swap = (props: Props) => {
         onConfirm={onConfirmSwap}
         {...anonymousProps}>
         {renderUsername()}
-        <RequestItem
-          title="dialog_swap"
-          content={`${data.amount} ${data.startToken} ==> ${(
+
+        <AmountWithLogo
+          title="dialog_from_amount"
+          amount={data.amount}
+          symbol={data.startToken}
+          iconPosition="right"
+          icon={
+            data.startToken === 'HIVE'
+              ? SVGIcons.WALLET_HIVE_LOGO
+              : SVGIcons.WALLET_HBD_LOGO
+          }
+        />
+        <AmountWithLogo
+          title="dialog_to_amount"
+          amount={(
             (data.steps[data.steps.length - 1].estimate *
               (100 - (swapConfig?.fee.amount || 0) - (data.partnerFee || 0))) /
             100
-          ).toFixed(HiveUtils.isLayer1Token(data.endToken) ? 3 : 6)} ${
-            data.endToken
-          }`}
+          ).toFixed(HiveUtils.isLayer1Token(data.endToken) ? 3 : 6)}
+          symbol={data.endToken}
+          icon={
+            data.endToken === 'HIVE'
+              ? SVGIcons.WALLET_HIVE_LOGO
+              : SVGIcons.WALLET_HBD_LOGO
+          }
+          iconPosition="right"
         />
         {HiveUtils.isLayer1Token(data.startToken) ? (
           <RequestBalance
