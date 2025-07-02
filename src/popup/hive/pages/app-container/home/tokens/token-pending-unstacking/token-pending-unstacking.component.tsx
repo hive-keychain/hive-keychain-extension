@@ -21,7 +21,11 @@ import Decimal from 'decimal.js';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldTag,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -64,12 +68,15 @@ const TokenPendingUnstake = ({
   }, []);
 
   const cancelUnstake = (pendingUnstake: PendingUnstaking) => {
-    const fields = [
+    const fields: ConfirmationPageFields[] = [
       {
         label: 'popup_html_amount',
         value: `${FormatUtils.formatCurrencyValue(
           pendingUnstake.quantityLeft,
         )} ${pendingUnstake.symbol}`,
+        tag: ConfirmationPageFieldTag.AMOUNT,
+        tokenSymbol: pendingUnstake.symbol,
+        iconPosition: 'right',
       },
     ];
 
