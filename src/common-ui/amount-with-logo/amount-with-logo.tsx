@@ -23,7 +23,27 @@ const AmountWithLogo = ({
   logoSize = 'medium',
   iconPosition = 'left',
 }: Props) => {
-  const iconElement = icon && (
+  const [tokenIcon, setTokenIcon] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!icon && symbol) {
+      setIsLoading(true);
+      TokensUtils.getTokenIcon(symbol)
+        .then((iconUrl) => {
+          setTokenIcon(iconUrl);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setTokenIcon(null);
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+    }
+  }, [icon, symbol]);
+
+  const iconElement = icon ? (
     <PreloadedImage
       className="amount-logo"
       src={`/assets/images/icons/${icon}.svg`}

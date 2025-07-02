@@ -422,6 +422,21 @@ const getTokenInfo = async (symbol: string): Promise<Token> => {
   })[0];
 };
 
+const getTokenIcon = async (symbol: string) => {
+  return (
+    await HiveEngineUtils.get<any[]>({
+      contract: 'tokens',
+      table: 'tokens',
+      query: { symbol: symbol },
+      limit: 1000,
+      offset: 0,
+      indexes: [],
+    })
+  ).map((t: any) => {
+    return JSON.parse(t.metadata).icon;
+  })[0];
+};
+
 const getPendingUnstakes = async (
   account: string,
 ): Promise<PendingUnstaking[]> => {
@@ -493,6 +508,7 @@ const TokensUtils = {
   getPendingUnstakes,
   cancelUnstakeToken,
   getCancelUnstakeTokenOperation,
+  getTokenIcon,
 };
 
 export default TokensUtils;
