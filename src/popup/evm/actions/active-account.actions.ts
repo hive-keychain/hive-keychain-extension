@@ -5,12 +5,14 @@ import {
   EvmErc721Token,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
+import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
   EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc721,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -28,6 +30,7 @@ export const loadEvmActiveAccount =
         nativeAndErc20Tokens: [] as NativeAndErc20Token[],
         wallet: wallet,
         nfts: [] as (EvmErc721Token | EvmErc1155Token)[],
+        history: {} as EvmUserHistory,
         isInitialized: false,
       } as EvmActiveAccount,
     });
@@ -68,6 +71,11 @@ export const loadEvmActiveAccount =
       chain,
     );
 
+    const history = await EvmTokensHistoryUtils.fetchHistory(
+      wallet.address,
+      chain,
+    );
+
     await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
 
     dispatch({
@@ -77,7 +85,22 @@ export const loadEvmActiveAccount =
         nativeAndErc20Tokens: nativeAndErc20Tokens,
         nfts: [...erc721Tokens, ...erc1155Tokens],
         wallet: wallet,
+        history: history,
         isInitialized: true,
       } as EvmActiveAccount,
     });
   };
+
+export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
+  dispatch({
+    type: EvmActionType.SET_ACTIVE_ACCOUNT,
+    payload: {
+      ...getState().evm.activeAccount,
+      history: await EvmTokensHistoryUtils.fetchHistory(
+        getState().evm.activeAccount.wallet.address,
+        getState().chain,
+        getState().evm.activeAccount.history,
+      ),
+    } as EvmActiveAccount,
+  });
+};

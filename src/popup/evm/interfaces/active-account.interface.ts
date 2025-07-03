@@ -1,4 +1,5 @@
 import { EvmNFTMetadata } from '@popup/evm/interfaces/evm-ntf.interface';
+import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
   EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc20,
@@ -12,6 +13,7 @@ export interface EvmActiveAccount {
   nativeAndErc20Tokens: NativeAndErc20Token[];
   nfts: (EvmErc721Token | EvmErc1155Token)[];
   wallet: HDNodeWallet;
+  history: EvmUserHistory;
   isInitialized: boolean;
 }
 

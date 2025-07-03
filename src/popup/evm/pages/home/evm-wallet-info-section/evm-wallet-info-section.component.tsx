@@ -8,20 +8,21 @@ import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-
 import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
+  history?: EvmUserHistory;
   prices: EvmPrices;
   chain: EvmChain;
   onClickOnNftPreview: (
     params: EvmErc721Token | EvmErc721Token[],
     screen: EvmScreen,
   ) => void;
+  loadEvmHistory: Function;
 }
 
 enum EvmDisplayedPage {
@@ -35,31 +36,30 @@ const WalletInfoSection = ({
   prices,
   chain,
   onClickOnNftPreview,
+  loadEvmHistory,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     EvmDisplayedPage.TOKENS,
   );
 
-  const [history, setHistory] = useState<EvmUserHistory>();
+  // const [history, setHistory] = useState<EvmUserHistory>();
 
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
-  useEffect(() => {
-    if (activeAccount.isInitialized) loadHistory(true);
-  }, [activeAccount.isInitialized]);
+  // useEffect(() => {
+  //   if (activeAccount.isInitialized && !history) loadHistory(true);
+  // }, [activeAccount.isInitialized]);
 
   const loadHistory = async (reset?: boolean) => {
     console.log('starting load history');
-    setLoadingHistory(true);
-    setHistory(
-      await EvmTokensHistoryUtils.fetchHistory(
-        activeAccount.address,
-        chain,
-        reset ? undefined : history,
-      ),
-    );
-
-    setLoadingHistory(false);
+    // setLoadingHistory(true);
+    // await EvmTokensHistoryUtils.fetchHistory(
+    //   activeAccount.address,
+    //   chain,
+    //   reset ? undefined : history,
+    // ),
+    loadEvmHistory();
+    // setLoadingHistory(false);
   };
 
   const getDisplayedSection = () => {
@@ -84,7 +84,7 @@ const WalletInfoSection = ({
         return (
           <EvmHistoryComponent
             chain={chain}
-            history={history}
+            history={activeAccount.history}
             onClickOnLoadMore={loadHistory}
             loading={loadingHistory}
           />

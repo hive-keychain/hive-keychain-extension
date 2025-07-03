@@ -1,5 +1,8 @@
 import { Screen } from '@interfaces/screen.interface';
-import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import {
+  loadEvmActiveAccount,
+  loadEvmHistory,
+} from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
@@ -51,6 +54,7 @@ const Home = ({
   resetTitleContainerProperties,
   fetchPrices,
   navigateToWithParams,
+  loadEvmHistory,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -63,11 +67,15 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
+    console.log('loading evm home');
   }, []);
 
   useEffect(() => {
-    if (!activeAccount.isInitialized) loadActiveAccount(chain);
-  }, [chain]);
+    if (!activeAccount.isInitialized) {
+      console.log('load because not initialized');
+      loadActiveAccount(chain);
+    }
+  }, [chain.chainId]);
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
@@ -129,6 +137,7 @@ const Home = ({
   };
 
   const refreshAccountBalances = async () => {
+    console.log('refresh account balance from home page');
     loadEvmActiveAccount(chain, activeAccount.wallet);
   };
 
@@ -229,6 +238,7 @@ const Home = ({
           prices={prices}
           onClickOnNftPreview={handleClickOnNftCollection}
           chain={chain}
+          loadEvmHistory={loadEvmHistory}
         />
       </div>
       <ActionsSectionComponent
@@ -259,6 +269,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   fetchPrices,
   navigateToWithParams,
+  loadEvmHistory,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

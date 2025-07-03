@@ -27,7 +27,7 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
-const RESULTS_PER_PAGE = 1000;
+const RESULTS_PER_PAGE = 100;
 
 let cachedData: any[] = [];
 
@@ -160,17 +160,17 @@ const fetchHistory = async (
   console.log('start parsing');
   for (const event of events) {
     // console.log(event.hash, event);
-    if (
-      event.hash ===
-      '0x7db1bdc3eb9f17951423e10321ef848879e0d046edd99bbc99ffff81771d601e'
-    ) {
-      console.log('----------------------');
-      console.log(
-        event,
-        tokenMetadata.find((t) => (t as any).address === event.to),
-      );
-      console.log('----------------------');
-    }
+    // if (
+    //   event.hash ===
+    //   '0x7db1bdc3eb9f17951423e10321ef848879e0d046edd99bbc99ffff81771d601e'
+    // ) {
+    //   console.log('----------------------');
+    //   console.log(
+    //     event,
+    //     tokenMetadata.find((t) => (t as any).address === event.to),
+    //   );
+    //   console.log('----------------------');
+    // }
 
     if (event.txreceipt_status === '0') {
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
@@ -303,7 +303,7 @@ const fetchHistory = async (
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
       Logger.error(`${event.hash} match no condition`);
-      console.log(historyItem);
+      // console.log(historyItem);
       const defaultLabel =
         event.from.toLowerCase() === walletAddress.toLowerCase()
           ? 'evm_history_default_out_smart_contract_operation'
@@ -315,9 +315,9 @@ const fetchHistory = async (
     history.events.push(historyItem);
   }
   Logger.info('End parsing ' + (Date.now() - start) / 1000);
-  console.log({ history });
+  // console.log({ history });
 
-  console.log({ events, cachedData });
+  // console.log({ events, cachedData });
   history.fullyFetch = fetchFinished;
   return history;
 };
@@ -468,7 +468,7 @@ const getSpecificData = async (
     }
   }
 
-  console.log(event, decodedData?.operationName, decodedData, tokenMetadata);
+  // console.log(event, decodedData?.operationName, decodedData, tokenMetadata);
   if (decodedData) {
     switch (decodedData.operationName) {
       case 'safeTransferFrom': {
