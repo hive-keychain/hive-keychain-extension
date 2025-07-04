@@ -23,6 +23,8 @@ export const loadEvmActiveAccount =
   async (dispatch, getState) => {
     console.log('Loading new active account', wallet.address);
 
+    await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
@@ -45,38 +47,33 @@ export const loadEvmActiveAccount =
       chain,
     );
 
-    let nativeAndErc20Tokens = await EvmTokensUtils.getTokenBalances(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-      chain,
-      allTokensInfo.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
-    );
-
-    let erc721Tokens = await EvmTokensUtils.getErc721Tokens(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-      chain,
-      allTokensInfo.filter(
-        (token) => token.type === EVMSmartContractType.ERC721,
-      ) as EvmSmartContractInfoErc721[],
-    );
-
-    let erc1155Tokens = await EvmTokensUtils.getErc1155Tokens(
-      allTokens,
-      allTokensInfo.filter(
-        (token) => token.type === EVMSmartContractType.ERC1155,
-      ) as EvmSmartContractInfoErc1155[],
-      chain,
-    );
-
-    const history = await EvmTokensHistoryUtils.fetchHistory(
-      wallet.address,
-      chain,
-    );
-
-    await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
+    const [nativeAndErc20Tokens, erc721Tokens, erc1155Tokens, history] =
+      await Promise.all([
+        EvmTokensUtils.getTokenBalances(
+          process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+          chain,
+          allTokensInfo.filter(
+            (token) =>
+              token.type === EVMSmartContractType.ERC20 ||
+              token.type === EVMSmartContractType.NATIVE,
+          ),
+        ),
+        EvmTokensUtils.getErc721Tokens(
+          process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+          chain,
+          allTokensInfo.filter(
+            (token) => token.type === EVMSmartContractType.ERC721,
+          ) as EvmSmartContractInfoErc721[],
+        ),
+        EvmTokensUtils.getErc1155Tokens(
+          allTokens,
+          allTokensInfo.filter(
+            (token) => token.type === EVMSmartContractType.ERC1155,
+          ) as EvmSmartContractInfoErc1155[],
+          chain,
+        ),
+        EvmTokensHistoryUtils.fetchHistory(wallet.address, chain),
+      ]);
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,

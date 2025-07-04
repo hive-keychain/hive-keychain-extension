@@ -136,7 +136,7 @@ const Home = ({
     }
   };
 
-  const refreshAccountBalances = async () => {
+  const refresh = async () => {
     console.log('refresh account balance from home page');
     loadEvmActiveAccount(chain, activeAccount.wallet);
   };
@@ -201,7 +201,7 @@ const Home = ({
           navigateTo(EvmScreen.EVM_SETTINGS);
           return;
         }}
-        onRefreshButtonClicked={refreshAccountBalances}
+        onRefreshButtonClicked={refresh}
         accountSelector={
           <EvmSelectAccountSectionComponent
             background="white"
