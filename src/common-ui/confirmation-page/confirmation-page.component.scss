@@ -58,6 +58,10 @@
           text-align: right;
           user-select: text;
           @include poppins400(14px);
+          min-height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           &.xs-font {
             font-size: 11px;
           }

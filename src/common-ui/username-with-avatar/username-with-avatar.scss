@@ -21,6 +21,7 @@
   .avatar-username-container {
     display: flex;
     align-items: center;
+    min-height: 32px;
   }
 
   .user-avatar {
@@ -46,6 +47,10 @@
 
   // Size variants
   &.size-small {
+    .avatar-username-container {
+      min-height: 24px;
+    }
+
     .user-avatar {
       height: 24px;
       width: 24px;
@@ -70,6 +75,10 @@
   }
 
   &.size-large {
+    .avatar-username-container {
+      min-height: 48px;
+    }
+
     .user-avatar {
       height: 48px;
       width: 48px;

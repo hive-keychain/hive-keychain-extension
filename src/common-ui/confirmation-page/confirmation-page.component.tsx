@@ -172,15 +172,16 @@ const ConfirmationPage = ({
     switch (field.tag) {
       case ConfirmationPageFieldTag.USERNAME:
         return (
-          <UsernameWithAvatar
-            className={`value ${field.valueClassName ?? ''}`}
-            username={field.value}
-            avatarPosition={field.iconPosition ?? 'right'}
-          />
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            <UsernameWithAvatar
+              username={field.value}
+              avatarPosition={field.iconPosition ?? 'right'}
+            />
+          </div>
         );
       case ConfirmationPageFieldTag.AMOUNT:
         return (
-          <div>
+          <div className={`value ${field.valueClassName ?? ''}`}>
             <AmountWithLogo
               amount={field.value}
               symbol={field.tokenSymbol}
