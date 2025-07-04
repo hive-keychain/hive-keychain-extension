@@ -1085,6 +1085,14 @@
     "message": "Swap",
     "description": "When website requests a swap"
   },
+  "dialog_from_amount": {
+    "message": "From",
+    "description": "When website requests a swap"
+  },
+  "dialog_to_amount": {
+    "message": "To",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -3427,8 +3435,8 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "You need to add your active key to Keychain to claim accounts",
-    "description": "automated tasks => need active key claim accounts"
+    "message": "You need to add your posting key to Keychain to claim rewards",
+    "description": "automated tasks => need posting key claim rewards"
   },
   "popup_html_cant_automatically_claim_ledger": {
     "message": "You can't automatically claim because your key is saved on Ledger",

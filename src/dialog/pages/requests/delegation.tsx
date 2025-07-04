@@ -1,9 +1,11 @@
 import { RequestDelegation, RequestId } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
-import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -19,9 +21,10 @@ type Props = {
 const Delegation = (props: Props) => {
   const { data, accounts, rpc } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
+  const currencyLabel = CurrencyUtils.getCurrencyLabel(data.unit, rpc.testnet);
   const renderUsername = () => {
-    return !accounts ? (
-      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    return !accounts && data.username ? (
+      <UsernameWithAvatar title={'dialog_account'} username={data.username} />
     ) : (
       <></>
     );
@@ -33,13 +36,18 @@ const Delegation = (props: Props) => {
       {...anonymousProps}>
       {renderUsername()}
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_delegatee" content={`@${data.delegatee}`} />
+      <UsernameWithAvatar title="dialog_delegatee" username={data.delegatee} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem
+      <AmountWithLogo
         title="dialog_amount"
-        content={`${FormatUtils.formatCurrencyValue(
-          data.amount,
-        )} ${CurrencyUtils.getCurrencyLabel(data.unit, rpc.testnet)}`}
+        amount={FormatUtils.formatCurrencyValue(data.amount)}
+        symbol={currencyLabel}
+        iconPosition="right"
+        icon={
+          currencyLabel === 'HIVE'
+            ? SVGIcons.WALLET_HIVE_LOGO
+            : SVGIcons.WALLET_HBD_LOGO
+        }
       />
     </Operation>
   );

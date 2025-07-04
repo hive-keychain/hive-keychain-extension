@@ -1,0 +1,138 @@
+.amount-with-logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: all 0.2s ease;
+
+  &.with-border {
+    padding: 6px 12px;
+    border: 1px solid var(--card-border);
+    background: var(--card-background);
+    border-radius: 66px;
+  }
+
+  .title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    margin-right: 12px;
+  }
+  .amount-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+  }
+
+  .amount-logo {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+
+    &.loading-placeholder {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading-shimmer 1.5s infinite;
+      border: 1px solid var(--card-border);
+    }
+  }
+
+  .amount {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+
+  // Icon position variants
+  &.icon-position-right {
+    .amount-logo {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+  }
+
+  // Size variants
+  &.size-small {
+    .amount-logo-container {
+      min-height: 24px;
+    }
+    
+    .amount-logo {
+      height: 24px;
+      width: 24px;
+      margin-right: 6px;
+
+      &.loading-placeholder {
+        height: 24px;
+        width: 24px;
+      }
+    }
+
+    .amount {
+      @include poppins500(12px);
+    }
+
+    .title {
+      @include poppins500(12px);
+      margin-right: 8px;
+    }
+
+    &.icon-position-right {
+      .amount-logo {
+        margin-right: 0;
+        margin-left: 6px;
+      }
+    }
+  }
+
+  &.size-large {
+    .amount-logo-container {
+      min-height: 48px;
+    }
+    
+    .amount-logo {
+      height: 48px;
+      width: 48px;
+      margin-right: 10px;
+
+      &.loading-placeholder {
+        height: 48px;
+        width: 48px;
+      }
+    }
+
+    .amount {
+      @include poppins500(18px);
+    }
+
+    .title {
+      @include poppins500(18px);
+      margin-right: 16px;
+    }
+
+    &.icon-position-right {
+      .amount-logo {
+        margin-right: 0;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  // Hover effects
+  &:hover {
+    &.with-border {
+      border-color: var(--card-border-hover);
+      background: var(--card-background-hover);
+    }
+  }
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
