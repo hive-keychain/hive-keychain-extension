@@ -56,6 +56,9 @@
         }
         .label {
           @include poppins500(14px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .value {
           @include poppins400(14px);
@@ -63,6 +66,10 @@
           max-width: 70%;
           text-align: right;
           user-select: text;
+          min-height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           ul {
             margin: 0;
           }

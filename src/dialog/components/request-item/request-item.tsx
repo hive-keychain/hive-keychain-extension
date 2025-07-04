@@ -16,7 +16,7 @@ type Props = {
 const renderContent = (content: any, type: RequestItemType) => {
   switch (type) {
     case RequestItemType.STRING:
-      return content;
+      return <span>{content}</span>;
     case RequestItemType.LIST:
       return (
         <ul>

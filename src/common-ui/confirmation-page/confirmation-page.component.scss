@@ -52,6 +52,9 @@
         justify-content: space-between;
         .label {
           @include poppins500(14px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .value {
           max-width: 70%;
