@@ -1,4 +1,5 @@
-.load-more-panel {
+.load-more-panel.history-load-more {
+  width: calc(100% - 92px);
   @include small-card;
   height: 62px;
   display: flex;

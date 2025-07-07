@@ -91,7 +91,7 @@ export const EvmHistory = ({
           )}
           {!loading && !history.fullyFetch && (
             <div
-              className="load-more-panel"
+              className="load-more-panel history-load-more"
               onClick={() => onClickOnLoadMore()}>
               <span className="label">
                 {chrome.i18n.getMessage('popup_html_load_more')}

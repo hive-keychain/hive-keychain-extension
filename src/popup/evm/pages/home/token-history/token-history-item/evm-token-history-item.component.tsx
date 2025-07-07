@@ -108,13 +108,13 @@ export const EvmTokenHistoryItemComponent = ({
           </div>
         </div>
       </div>
-      <div
+      {/* <div
         style={{ color: 'black', fontSize: '12px', zIndex: 4 }}
         onClick={() =>
           navigator.clipboard.writeText(historyItem.transactionHash)
         }>
         {historyItem.transactionHash}
-      </div>
+      </div> */}
     </>
   );
 };

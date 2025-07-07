@@ -1,5 +1,6 @@
 import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmSettings } from '@popup/evm/interfaces/evm-settings.interface';
 import {
   EvmTokenTransferInHistoryItem,
   EvmTokenTransferOutHistoryItem,
@@ -18,6 +19,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionDecodedData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
@@ -52,7 +54,7 @@ const fetchHistory = async (
   // TODO remove
 
   // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
-  // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
+  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
@@ -132,6 +134,8 @@ const fetchHistory = async (
       .map((event) => event.contractAddress),
   );
 
+  console.log({ allSmartContractsAddresses });
+
   console.log('----- Get metadata from backend -----');
   const metadata = await EvmTokensUtils.getMetadataFromBackend(
     ArrayUtils.inAButNotB(
@@ -150,12 +154,15 @@ const fetchHistory = async (
     ),
     chain,
   );
+  console.log({ metadata });
   console.log(
     '-----End Get metadata from backend -----',
     (Date.now() - start) / 1000,
   );
 
   const tokenMetadata = [...allTokensMetadata, ...metadata];
+
+  const evmSettings = await EvmSettingsUtils.getSettings();
 
   console.log('start parsing');
   for (const event of events) {
@@ -229,6 +236,7 @@ const fetchHistory = async (
           decodedData,
           tokenMetadata,
           event,
+          evmSettings,
         );
 
         historyItem.label = specificData.label;
@@ -423,6 +431,7 @@ const getSpecificData = async (
   decodedData: EvmTransactionDecodedData | undefined,
   metadata: EvmSmartContractInfo[],
   event: any,
+  evmSettings: EvmSettings,
 ): Promise<EvmHistoryItemSpecificData> => {
   const details: EvmUserHistoryItemDetail[] = [];
 
@@ -441,11 +450,24 @@ const getSpecificData = async (
       md.type !== EVMSmartContractType.NATIVE &&
       md.address.toLowerCase() === contractAddress.toLowerCase(),
   );
+  console.log(tokenMetadata);
 
   let name;
   let symbol;
 
   if (tokenMetadata) {
+    if (
+      tokenMetadata.type !== EVMSmartContractType.NATIVE &&
+      ((tokenMetadata.possibleSpam &&
+        !evmSettings.smartContracts.displayPossibleSpam) ||
+        (!tokenMetadata.verifiedContract &&
+          !evmSettings.smartContracts.displayNonVerifiedContracts))
+    ) {
+      throw new Error(
+        'non displayed because of settings' + JSON.stringify(tokenMetadata),
+      );
+    }
+
     name = tokenMetadata.name ?? tokenMetadata.symbol;
     symbol = tokenMetadata.symbol;
   } else {

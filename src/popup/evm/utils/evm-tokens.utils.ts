@@ -420,11 +420,13 @@ const getMetadataFromBackend = async (
   addresses: string[],
   chain: EvmChain,
 ): Promise<EvmSmartContractInfo[]> => {
+  console.log(addresses);
   if (addresses.length === 0) return [];
   try {
     const result = await KeychainApi.get(
       `evm/smart-contracts-info/${chain.chainId}/${addresses?.join(',')}`,
     );
+    console.log(result);
     return result ?? [];
   } catch (err) {
     Logger.error('Error while fetching metadata', err);

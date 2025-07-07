@@ -59,7 +59,11 @@ const getHistory = async (
   return response.result ?? [];
 };
 
+let i = 0;
+
 const getAbi = async (chain: EvmChain, address: string) => {
+  i++;
+  console.log(i);
   const res = await get(
     `${chain.blockExplorerApi?.url}/api?module=contract&action=getabi&address=${address}`,
   );
