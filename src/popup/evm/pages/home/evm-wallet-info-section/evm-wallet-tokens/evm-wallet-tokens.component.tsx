@@ -1,3 +1,4 @@
+import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import {
   EvmActiveAccount,
   NativeAndErc20Token,
@@ -23,7 +24,7 @@ export const EvmWalletTokensComponent = ({ prices, activeAccount }: Props) => {
   const init = async () => {
     const tokens: NativeAndErc20Token[] =
       (await EvmTokensUtils.filterTokensBasedOnSettings(
-        activeAccount.nativeAndErc20Tokens,
+        activeAccount.nativeAndErc20Tokens.value,
       )) as NativeAndErc20Token[];
     const sortedTokens = EvmTokensUtils.sortTokens(tokens, prices);
 
@@ -32,15 +33,17 @@ export const EvmWalletTokensComponent = ({ prices, activeAccount }: Props) => {
 
   return (
     <>
-      {displayedTokens.map((token, index) => (
-        <EVMWalletInfoSectionItemComponent
-          key={`${token.tokenInfo.name}-${index}`}
-          token={token}
-          mainValueLabel={token.tokenInfo.symbol}
-          mainValue={token.formattedBalance}
-          mainValueSubLabel={token.tokenInfo.name}
-        />
-      ))}
+      {!activeAccount.nativeAndErc20Tokens.loading &&
+        displayedTokens.map((token, index) => (
+          <EVMWalletInfoSectionItemComponent
+            key={`${token.tokenInfo.name}-${index}`}
+            token={token}
+            mainValueLabel={token.tokenInfo.symbol}
+            mainValue={token.formattedBalance}
+            mainValueSubLabel={token.tokenInfo.name}
+          />
+        ))}
+      {activeAccount.nativeAndErc20Tokens.loading && <RotatingLogoComponent />}
     </>
   );
 };

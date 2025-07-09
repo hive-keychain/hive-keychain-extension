@@ -29,7 +29,7 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
-const RESULTS_PER_PAGE = 100;
+const RESULTS_PER_PAGE = 20;
 
 let cachedData: any[] = [];
 
@@ -53,8 +53,8 @@ const fetchHistory = async (
 
   // TODO remove
 
-  // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
-  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
+  walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+  // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
@@ -245,7 +245,7 @@ const fetchHistory = async (
         historyItem.detailFields = specificData.detailFields;
         historyItem.tokenInfo = specificData.tokenInfo;
       } catch (err) {
-        console.log(err);
+        // Logger.warn(err as string);
         continue;
       }
     } else if (
@@ -423,6 +423,8 @@ interface EvmHistoryItemSpecificData {
   tokenInfo?: EvmSmartContractInfo;
 }
 
+let spamCount = 0;
+
 const getSpecificData = async (
   chain: EvmChain,
   contractAddress: string,
@@ -450,7 +452,7 @@ const getSpecificData = async (
       md.type !== EVMSmartContractType.NATIVE &&
       md.address.toLowerCase() === contractAddress.toLowerCase(),
   );
-  console.log(tokenMetadata);
+  // console.log(tokenMetadata);
 
   let name;
   let symbol;
@@ -463,6 +465,8 @@ const getSpecificData = async (
         (!tokenMetadata.verifiedContract &&
           !evmSettings.smartContracts.displayNonVerifiedContracts))
     ) {
+      console.log('spam' + spamCount);
+      spamCount++;
       throw new Error(
         'non displayed because of settings' + JSON.stringify(tokenMetadata),
       );

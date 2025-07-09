@@ -5256,5 +5256,9 @@
   "evm_created_smart_contract": {
     "message": "Created smart contract",
     "description": "Created smart contract label"
+  },
+  "evm_no_nfts_found": {
+    "message": "No NFTs found",
+    "description": "No nft"
   }
 }

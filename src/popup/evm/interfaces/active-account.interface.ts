@@ -10,10 +10,19 @@ import { HDNodeWallet } from 'ethers';
 
 export interface EvmActiveAccount {
   address: string;
-  nativeAndErc20Tokens: NativeAndErc20Token[];
-  nfts: (EvmErc721Token | EvmErc1155Token)[];
+  nativeAndErc20Tokens: {
+    value: NativeAndErc20Token[];
+    loading: boolean;
+  };
+  nfts: {
+    value: (EvmErc721Token | EvmErc1155Token)[];
+    loading: boolean;
+  };
+  history: {
+    value: EvmUserHistory;
+    loading: boolean;
+  };
   wallet: HDNodeWallet;
-  history: EvmUserHistory;
   isInitialized: boolean;
 }
 

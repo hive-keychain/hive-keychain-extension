@@ -7,17 +7,31 @@ import { HDNodeWallet } from 'ethers';
 export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
-    nativeAndErc20Tokens: [],
-    nfts: [],
     wallet: {} as HDNodeWallet,
-    history: {} as EvmUserHistory,
+    nativeAndErc20Tokens: {
+      value: [],
+      loading: true,
+    },
+    nfts: {
+      value: [],
+      loading: true,
+    },
+    history: {
+      value: {} as EvmUserHistory,
+      loading: true,
+    },
+
     isInitialized: false,
   },
-  { type, payload }: ActionPayload<EvmActiveAccount>,
+  { type, payload }: ActionPayload<Partial<EvmActiveAccount>>,
 ): EvmActiveAccount => {
   switch (type) {
     case EvmActionType.SET_ACTIVE_ACCOUNT:
-      return payload!;
+    case EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY:
+    case EvmActionType.SET_ACTIVE_ACCOUNT_NFT:
+    case EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS:
+      console.log({ type, newState: { ...state, ...payload } });
+      return { ...state, ...payload };
     default:
       return state;
   }

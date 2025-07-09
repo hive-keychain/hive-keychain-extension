@@ -4,4 +4,9 @@
   flex-direction: column;
   row-gap: 12px;
   width: 100%;
+
+  .no-nfts-found {
+    @include no-data-panel();
+    flex: 1;
+  }
 }

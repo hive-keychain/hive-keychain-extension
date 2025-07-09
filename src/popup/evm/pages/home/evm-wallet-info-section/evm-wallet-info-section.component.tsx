@@ -10,7 +10,6 @@ import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useState } from 'react';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
 interface EvmWalletInfoSectionProps {
@@ -42,24 +41,9 @@ const WalletInfoSection = ({
     EvmDisplayedPage.TOKENS,
   );
 
-  // const [history, setHistory] = useState<EvmUserHistory>();
-
-  const [loadingHistory, setLoadingHistory] = useState(false);
-
-  // useEffect(() => {
-  //   if (activeAccount.isInitialized && !history) loadHistory(true);
-  // }, [activeAccount.isInitialized]);
-
   const loadHistory = async (reset?: boolean) => {
     console.log('starting load history');
-    // setLoadingHistory(true);
-    // await EvmTokensHistoryUtils.fetchHistory(
-    //   activeAccount.address,
-    //   chain,
-    //   reset ? undefined : history,
-    // ),
     loadEvmHistory();
-    // setLoadingHistory(false);
   };
 
   const getDisplayedSection = () => {
@@ -84,9 +68,9 @@ const WalletInfoSection = ({
         return (
           <EvmHistoryComponent
             chain={chain}
-            history={activeAccount.history}
+            history={activeAccount.history.value}
             onClickOnLoadMore={loadHistory}
-            loading={loadingHistory}
+            loading={activeAccount.history.loading}
           />
         );
       }
@@ -121,7 +105,6 @@ const WalletInfoSection = ({
             {getDisplayedSection()}
           </>
         )}
-        {!activeAccount.isInitialized && <RotatingLogoComponent />}
       </div>
     </div>
   );

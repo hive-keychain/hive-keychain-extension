@@ -1,3 +1,4 @@
+import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import {
   EvmActiveAccount,
   EvmErc721Token,
@@ -24,35 +25,36 @@ export const EvmWalletNftGalleryComponent = ({
   const [other, setOther] = useState<EvmErc721Token[]>([]);
 
   useEffect(() => {
+    console.log(activeAccount.nfts.value);
     const otherTokens = [];
-    for (const token of activeAccount.nfts) {
+    for (const token of activeAccount.nfts.value) {
       if (token.collection.length === 1) {
         otherTokens.push(token);
       }
     }
-    console.log({ otherTokens });
     setOther(otherTokens);
   }, []);
 
   return (
     <div className="nft-gallery">
-      {activeAccount.nfts
-        .filter((token) => token.collection.length > 1)
-        .sort((tokenA, tokenB) =>
-          tokenA.tokenInfo.name > tokenB.tokenInfo.name ? 1 : -1,
-        )
-        .map((token, index) => (
-          <React.Fragment key={index}>
-            <EvmWalletNftPreviewComponent
-              token={token}
-              onClick={() =>
-                onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
-              }
-            />
-          </React.Fragment>
-        ))}
+      {!activeAccount.nfts.loading &&
+        activeAccount.nfts.value
+          .filter((token) => token.collection.length > 1)
+          .sort((tokenA, tokenB) =>
+            tokenA.tokenInfo.name > tokenB.tokenInfo.name ? 1 : -1,
+          )
+          .map((token, index) => (
+            <React.Fragment key={index}>
+              <EvmWalletNftPreviewComponent
+                token={token}
+                onClick={() =>
+                  onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
+                }
+              />
+            </React.Fragment>
+          ))}
 
-      {other.length > 0 && (
+      {!activeAccount.nfts.loading && other.length > 0 && (
         <div
           className="nft-collection-preview-card"
           onClick={() =>
@@ -82,6 +84,15 @@ export const EvmWalletNftGalleryComponent = ({
             </div>
             <SVGIcon className="go-to-icon" icon={SVGIcons.GLOBAL_ARROW} />
           </div>
+        </div>
+      )}
+      {activeAccount.nfts.loading && <RotatingLogoComponent />}
+      {activeAccount.nfts.value.length === 0 && (
+        <div className="no-nfts-found">
+          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+          <span className="text">
+            {chrome.i18n.getMessage('evm_no_nfts_found')}
+          </span>
         </div>
       )}
     </div>

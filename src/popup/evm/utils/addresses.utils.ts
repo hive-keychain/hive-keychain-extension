@@ -13,7 +13,6 @@ import { identicon } from 'minidenticons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 // const ENS_EXPIRATION_TIME = 60000;
-const ENS_EXPIRATION_TIME = 86400000;
 
 export interface SavedEns {
   ens?: string;
@@ -54,7 +53,7 @@ const addEnsToLocalStorage = async (newEns: SavedEns) => {
   const savedEns = await getSavedEnsFromStorage();
   savedEns.push({
     ...newEns,
-    expirationDate: Date.now() + ENS_EXPIRATION_TIME,
+    expirationDate: Date.now() + Number(process.env.EVM_DATA_EXPIRATION_TIME),
   });
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ENS,

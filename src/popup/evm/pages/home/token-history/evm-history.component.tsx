@@ -50,58 +50,54 @@ export const EvmHistory = ({
   return (
     <>
       {history && (
-        <>
-          {history && (
-            <FlatList
-              ref={historyItemList}
-              list={history.events}
-              renderItem={(event: any, index: number) => (
-                <EvmTokenHistoryItemComponent
-                  key={event.transactionHash}
-                  historyItem={event}
-                  chain={chain}
-                  goToDetailsPage={() => {
-                    goToDetailsPage(event.transactionHash, event);
-                  }}
-                />
-              )}
-              renderOnScroll
-              renderWhenEmpty={() => {
-                if (!loading) {
-                  return (
-                    <div className="empty-history-panel">
-                      <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-                      <div className="text">
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty',
-                          )}
-                        </div>
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty_try_clear_filter',
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
+        <FlatList
+          ref={historyItemList}
+          list={history.events}
+          renderItem={(event: any, index: number) => (
+            <EvmTokenHistoryItemComponent
+              key={event.transactionHash}
+              historyItem={event}
+              chain={chain}
+              goToDetailsPage={() => {
+                goToDetailsPage(event.transactionHash, event);
               }}
             />
           )}
-          {!loading && !history.fullyFetch && (
-            <div
-              className="load-more-panel history-load-more"
-              onClick={() => onClickOnLoadMore()}>
-              <span className="label">
-                {chrome.i18n.getMessage('popup_html_load_more')}
-              </span>
-              <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
-            </div>
-          )}
-          {loading && <RotatingLogoComponent />}
-        </>
+          renderOnScroll
+          renderWhenEmpty={() => {
+            if (!loading) {
+              return (
+                <div className="empty-history-panel">
+                  <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+                  <div className="text">
+                    <div>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty',
+                      )}
+                    </div>
+                    <div>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty_try_clear_filter',
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+          }}
+        />
       )}
+      {!loading && history && !history.fullyFetch && (
+        <div
+          className="load-more-panel history-load-more"
+          onClick={() => onClickOnLoadMore()}>
+          <span className="label">
+            {chrome.i18n.getMessage('popup_html_load_more')}
+          </span>
+          <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
+        </div>
+      )}
+      {loading && <RotatingLogoComponent />}
     </>
   );
 };

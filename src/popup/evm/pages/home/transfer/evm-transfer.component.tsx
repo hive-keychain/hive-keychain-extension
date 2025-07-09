@@ -126,7 +126,7 @@ const EvmTransfer = ({
     setTokenOptions(
       (
         await EvmTokensUtils.filterTokensBasedOnSettings(
-          activeAccount.nativeAndErc20Tokens,
+          activeAccount.nativeAndErc20Tokens.value,
         )
       ).map((tokenBalance, index) => {
         return {

@@ -2,13 +2,14 @@
 
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BaseApi } from 'src/api/base';
+import Logger from 'src/utils/logger.utils';
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
-  const response = await get(`
+  const result = await get(`
     ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
   `);
 
-  return response.result ?? [];
+  return result ?? [];
 };
 
 const getErc721TokenTransactions = async (
@@ -17,10 +18,10 @@ const getErc721TokenTransactions = async (
   page: number,
   offset: number,
 ) => {
-  const response = await get(`
+  const result = await get(`
     ${chain.blockExplorerApi?.url}/api?module=account&action=tokennfttx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
     `);
-  return response.result ?? [];
+  return result ?? [];
 };
 
 const getInternalsTx = async (
@@ -29,10 +30,10 @@ const getInternalsTx = async (
   page: number,
   offset: number,
 ) => {
-  const response = await get(`
+  const result = await get(`
     ${chain.blockExplorerApi?.url}/api?module=account&action=txlistinternal&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
     `);
-  return response.result ?? [];
+  return result ?? [];
 };
 
 const getTokenTx = async (
@@ -41,10 +42,10 @@ const getTokenTx = async (
   page: number,
   offset: number,
 ) => {
-  const response = await get(
+  const result = await get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc`,
   );
-  return response.result ?? [];
+  return result ?? [];
 };
 
 const getHistory = async (
@@ -53,10 +54,10 @@ const getHistory = async (
   page: number,
   offset: number,
 ) => {
-  const response = await get(
+  const result = await get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&sort=desc&page=${page}&offset=${offset}`,
   );
-  return response.result ?? [];
+  return result ?? [];
 };
 
 let i = 0;
@@ -64,17 +65,24 @@ let i = 0;
 const getAbi = async (chain: EvmChain, address: string) => {
   i++;
   console.log(i);
-  const res = await get(
+  const result = await get(
     `${chain.blockExplorerApi?.url}/api?module=contract&action=getabi&address=${address}`,
   );
-  if (res.status === '1') {
-    return res.result;
-  }
-  return null;
+  return result;
 };
 
 const get = async (url: string): Promise<any> => {
-  return await BaseApi.get(url);
+  try {
+    const res = await BaseApi.get(url);
+    if (res && res.status === '1') {
+      return res.result;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    Logger.error(err);
+    return null;
+  }
 };
 
 export const EtherscanApi = {

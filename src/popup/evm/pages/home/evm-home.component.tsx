@@ -88,10 +88,12 @@ const Home = ({
     if (
       !ArrayUtils.includesAll(
         Object.keys(prices),
-        activeAccount.nativeAndErc20Tokens.map((b) => b.tokenInfo.symbol),
+        activeAccount.nativeAndErc20Tokens.value.map((b) => b.tokenInfo.symbol),
       )
     ) {
-      fetchPrices(activeAccount.nativeAndErc20Tokens.map((t) => t.tokenInfo));
+      fetchPrices(
+        activeAccount.nativeAndErc20Tokens.value.map((t) => t.tokenInfo),
+      );
     }
   }, [activeAccount.nativeAndErc20Tokens]);
 
@@ -217,13 +219,13 @@ const Home = ({
             accountValues={{
               [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
                 EvmTokensUtils.getTotalBalanceInUsd(
-                  activeAccount.nativeAndErc20Tokens,
+                  activeAccount.nativeAndErc20Tokens.value,
                   prices,
                 ),
               )}`,
               [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
                 EvmTokensUtils.getTotalBalanceInMainToken(
-                  activeAccount.nativeAndErc20Tokens,
+                  activeAccount.nativeAndErc20Tokens.value,
                   chain,
                   prices,
                 ),
