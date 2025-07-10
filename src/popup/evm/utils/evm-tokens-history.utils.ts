@@ -53,7 +53,7 @@ const fetchHistory = async (
 
   // TODO remove
 
-  walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+  // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
   // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
