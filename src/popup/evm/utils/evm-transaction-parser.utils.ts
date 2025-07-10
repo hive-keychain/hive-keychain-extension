@@ -511,6 +511,7 @@ const parseData = async (
   const foundSignature = await EvmDataParser.getMethodFromSignature(
     functionNameInHex,
   );
+  console.log({ foundSignature });
 
   if (foundSignature) {
     let registry;
@@ -547,9 +548,13 @@ const parseData = async (
     } catch (e) {
       const name = foundSignature.split('(')[0];
       const inputs = parseSignature(foundSignature);
-
       const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
-      const values = Interface.getAbiCoder().decode(inputs, valueData) as any[];
+
+      let values: any;
+      values = Interface.getAbiCoder().decode(
+        inputs,
+        valueData.toString(),
+      ) as any[];
       const params = inputs.map((input, index) =>
         decodeParam(input, index, values),
       );
@@ -612,7 +617,6 @@ function parseSignature(signature: string): any[] {
 function createInput(typeString: string, nested: string[]): any[] {
   return typeString.split(',').map((value) => {
     const parts = value.split('#');
-
     const nestedIndex = parts.length > 1 ? parseInt(parts[0], 10) : undefined;
     const type = nestedIndex === undefined ? value : `tuple${parts[1] ?? ''}`;
 

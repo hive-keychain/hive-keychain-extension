@@ -42,7 +42,6 @@ const WalletInfoSection = ({
   );
 
   const loadHistory = async (reset?: boolean) => {
-    console.log('starting load history');
     loadEvmHistory();
   };
 

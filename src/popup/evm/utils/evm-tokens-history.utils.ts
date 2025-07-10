@@ -78,8 +78,6 @@ const fetchHistory = async (
   //   }
   // }
 
-  console.log({ promisesResult });
-
   // Find latest date among full list
   let latestDate = 0;
 
@@ -98,20 +96,6 @@ const fetchHistory = async (
   // Merge lists without duplicates
   let duplicates = 0;
   let eventsHashes: string[] = [];
-  for (const listKey of Object.keys(promisesResult)) {
-    for (const event of promisesResult[listKey]) {
-      if (!eventsHashes.includes(event.hash)) {
-        if (Number(event.timeStamp) >= latestDate) {
-          events.push(event);
-          eventsHashes.push(event.hash);
-        } else {
-          cachedData.push(event);
-        }
-      } else duplicates++;
-    }
-  }
-
-  console.log(`${duplicates} duplicates`);
 
   const tmpCachedData = [];
   for (const data of cachedData) {
@@ -126,6 +110,23 @@ const fetchHistory = async (
   }
   cachedData = tmpCachedData;
 
+  for (const listKey of Object.keys(promisesResult)) {
+    for (const event of promisesResult[listKey]) {
+      if (!eventsHashes.includes(event.hash ?? event.transactionHash)) {
+        if (Number(event.timeStamp) >= latestDate) {
+          events.push(event);
+          eventsHashes.push(event.hash ?? event.transactionHash);
+        } else {
+          cachedData.push(event);
+        }
+      } else {
+        duplicates++;
+      }
+    }
+  }
+
+  console.log(`${duplicates} duplicates`);
+
   events = events.sort((a, b) => b.timeStamp - a.timeStamp);
 
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
@@ -133,8 +134,6 @@ const fetchHistory = async (
       .filter((event) => event.contractAddress.length > 0)
       .map((event) => event.contractAddress),
   );
-
-  console.log({ allSmartContractsAddresses });
 
   console.log('----- Get metadata from backend -----');
   const metadata = await EvmTokensUtils.getMetadataFromBackend(
@@ -154,7 +153,6 @@ const fetchHistory = async (
     ),
     chain,
   );
-  console.log({ metadata });
   console.log(
     '-----End Get metadata from backend -----',
     (Date.now() - start) / 1000,
@@ -166,19 +164,6 @@ const fetchHistory = async (
 
   console.log('start parsing');
   for (const event of events) {
-    // console.log(event.hash, event);
-    // if (
-    //   event.hash ===
-    //   '0x7db1bdc3eb9f17951423e10321ef848879e0d046edd99bbc99ffff81771d601e'
-    // ) {
-    //   console.log('----------------------');
-    //   console.log(
-    //     event,
-    //     tokenMetadata.find((t) => (t as any).address === event.to),
-    //   );
-    //   console.log('----------------------');
-    // }
-
     if (event.txreceipt_status === '0') {
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
       continue;
@@ -214,17 +199,18 @@ const fetchHistory = async (
       event.to.length > 0 &&
       event.input.replace('0x', '').length > 0
     ) {
+      let decodedData;
       // Smart contract (parse transaction)
       try {
-        const decodedData = await EvmTransactionParserUtils.parseData(
-          event.input,
-          chain,
-        );
-
         historyItem = {
           ...historyItem,
           type: EvmUserHistoryItemType.SMART_CONTRACT,
         };
+
+        decodedData = await EvmTransactionParserUtils.parseData(
+          event.input,
+          chain,
+        );
 
         const specificData = await getSpecificData(
           chain,
@@ -239,14 +225,23 @@ const fetchHistory = async (
           evmSettings,
         );
 
+        if (!specificData) return;
+
         historyItem.label = specificData.label;
         historyItem.pageTitle = specificData.pageTitle;
         historyItem.receiverAddress = specificData.receiverAddress;
         historyItem.detailFields = specificData.detailFields;
         historyItem.tokenInfo = specificData.tokenInfo;
       } catch (err) {
-        // Logger.warn(err as string);
-        continue;
+        Logger.error(err as string);
+        const defaultLabel =
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? 'evm_history_default_out_smart_contract_operation'
+            : 'evm_history_default_in_smart_contract_operation';
+
+        historyItem.label = chrome.i18n.getMessage(defaultLabel);
+        historyItem.pageTitle = defaultLabel;
+        // history.events.push(historyItem);
       }
     } else if (
       (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
@@ -311,7 +306,6 @@ const fetchHistory = async (
       } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
     } else {
       Logger.error(`${event.hash} match no condition`);
-      // console.log(historyItem);
       const defaultLabel =
         event.from.toLowerCase() === walletAddress.toLowerCase()
           ? 'evm_history_default_out_smart_contract_operation'
@@ -323,9 +317,6 @@ const fetchHistory = async (
     history.events.push(historyItem);
   }
   Logger.info('End parsing ' + (Date.now() - start) / 1000);
-  // console.log({ history });
-
-  // console.log({ events, cachedData });
   history.fullyFetch = fetchFinished;
   return history;
 };
@@ -423,8 +414,6 @@ interface EvmHistoryItemSpecificData {
   tokenInfo?: EvmSmartContractInfo;
 }
 
-let spamCount = 0;
-
 const getSpecificData = async (
   chain: EvmChain,
   contractAddress: string,
@@ -452,7 +441,6 @@ const getSpecificData = async (
       md.type !== EVMSmartContractType.NATIVE &&
       md.address.toLowerCase() === contractAddress.toLowerCase(),
   );
-  // console.log(tokenMetadata);
 
   let name;
   let symbol;
@@ -465,11 +453,7 @@ const getSpecificData = async (
         (!tokenMetadata.verifiedContract &&
           !evmSettings.smartContracts.displayNonVerifiedContracts))
     ) {
-      console.log('spam' + spamCount);
-      spamCount++;
-      throw new Error(
-        'non displayed because of settings' + JSON.stringify(tokenMetadata),
-      );
+      Logger.info('non displayed because of settings');
     }
 
     name = tokenMetadata.name ?? tokenMetadata.symbol;

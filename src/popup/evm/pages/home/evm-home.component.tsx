@@ -67,12 +67,10 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
-    console.log('loading evm home');
   }, []);
 
   useEffect(() => {
     if (!activeAccount.isInitialized) {
-      console.log('load because not initialized');
       loadActiveAccount(chain);
     }
   }, [chain.chainId]);
