@@ -436,7 +436,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "When enabled, this feature will open a Keychain pop when you click on supported links.",
+    "message": "When enabled, this feature will open a Keychain popup when you click on supported links.",
     "description": "on keychainify settings"
   },
   "popup_html_import": {
