@@ -77,14 +77,14 @@ export const SignTypedData = (props: Props) => {
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
-    if (message.domain.chainId)
+    if (message.domain?.chainId)
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.STRING,
         name: 'evm_chain_id',
         value: formatValue(message.domain.chainId, EvmInputDisplayType.STRING),
       });
 
-    if (message.domain.verifyingContract)
+    if (message.domain?.verifyingContract)
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.CONTRACT_ADDRESS,
         name: 'dialog_evm_sign_request_interacting_with',
@@ -94,14 +94,14 @@ export const SignTypedData = (props: Props) => {
         ),
       });
 
-    if (message.domain.name)
+    if (message.domain?.name)
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.STRING,
         name: 'evm_domain_name',
         value: formatValue(message.domain.name, EvmInputDisplayType.STRING),
       });
 
-    if (message.domain.version)
+    if (message.domain?.version)
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.STRING,
         name: 'evm_domain_version',
@@ -136,13 +136,21 @@ export const SignTypedData = (props: Props) => {
       value: message.primaryType,
     } as TransactionConfirmationField);
 
-    const baseType = message.types[message.primaryType];
     try {
-      parseTypes(baseType, message.message, otherFields, 0);
-      transactionConfirmationFields.otherFields = [
-        ...transactionConfirmationFields.otherFields,
-        ...otherFields,
-      ];
+      const baseType = message.types[message.primaryType];
+      if (baseType) {
+        parseTypes(baseType, message.message, otherFields, 0);
+        transactionConfirmationFields.otherFields = [
+          ...transactionConfirmationFields.otherFields,
+          ...otherFields,
+        ];
+      } else {
+        transactionConfirmationFields.otherFields.push({
+          type: EvmInputDisplayType.LONG_TEXT,
+          name: 'evm_raw_data',
+          value: JSON.stringify(message),
+        });
+      }
     } catch (e) {
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.LONG_TEXT,

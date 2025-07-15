@@ -29,7 +29,8 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
-const RESULTS_PER_PAGE = 20;
+// const RESULTS_PER_PAGE = 20;
+const RESULTS_PER_PAGE = 1000;
 
 let cachedData: any[] = [];
 
@@ -54,7 +55,7 @@ const fetchHistory = async (
   // TODO remove
 
   // walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
-  // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
+  walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
   let promisesResult: { [key: string]: any[] } = {};
   promisesResult = await AsyncUtils.promiseAllWithKeys({
     tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
@@ -164,6 +165,7 @@ const fetchHistory = async (
 
   console.log('start parsing');
   for (const event of events) {
+    console.log('------------------');
     if (event.txreceipt_status === '0') {
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
       continue;
@@ -206,6 +208,23 @@ const fetchHistory = async (
           ...historyItem,
           type: EvmUserHistoryItemType.SMART_CONTRACT,
         };
+
+        console.log({ event });
+
+        console.log(
+          metadata.find(
+            (md) =>
+              md.type !== EVMSmartContractType.NATIVE &&
+              md.address.toLowerCase() === event.to.toLowerCase(),
+          ),
+        );
+        console.log(
+          metadata.find(
+            (md) =>
+              md.type !== EVMSmartContractType.NATIVE &&
+              md.address.toLowerCase() === event.contractAddress.toLowerCase(),
+          ),
+        );
 
         decodedData = await EvmTransactionParserUtils.parseData(
           event.input,
@@ -316,6 +335,7 @@ const fetchHistory = async (
     }
     history.events.push(historyItem);
   }
+  console.log('------------------');
   Logger.info('End parsing ' + (Date.now() - start) / 1000);
   history.fullyFetch = fetchFinished;
   return history;
@@ -441,6 +461,8 @@ const getSpecificData = async (
       md.type !== EVMSmartContractType.NATIVE &&
       md.address.toLowerCase() === contractAddress.toLowerCase(),
   );
+
+  console.log({ tokenMetadata });
 
   let name;
   let symbol;

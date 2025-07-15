@@ -20,9 +20,11 @@ export const signData = async (
       request.params[TARGET_INDEX].toLowerCase()
     );
   });
-  const message = EvmRequestMethod.ETH_SIGN_DATA
-    ? JSON.stringify(request.params[0])
-    : request.params[1];
+
+  const message =
+    request.method === EvmRequestMethod.ETH_SIGN_DATA
+      ? JSON.stringify(request.params[0])
+      : request.params[1];
   if (account) {
     try {
       const res = await EvmRequestsUtils.signData(

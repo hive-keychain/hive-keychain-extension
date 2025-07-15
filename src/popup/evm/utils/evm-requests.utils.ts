@@ -107,11 +107,17 @@ const signData = async (
   message: any,
   version: SignTypedDataVersion,
 ) => {
-  return signTypedData({
-    privateKey: Buffer.from(privateKey.substring(2), 'hex'),
-    data: JSON.parse(message),
-    version,
-  });
+  console.log({ privateKey, message, version });
+  try {
+    return signTypedData({
+      privateKey: Buffer.from(privateKey.substring(2), 'hex'),
+      data: JSON.parse(message),
+      version,
+    });
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 const personalRecover = async (digest: string, signature: string) => {
