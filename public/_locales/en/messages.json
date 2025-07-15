@@ -1298,7 +1298,7 @@
     "description": "Website request title"
   },
   "dialog_title_proxy": {
-    "message": "Chose Proxy",
+    "message": "Choose Proxy",
     "description": "Website request title"
   },
   "dialog_title_token": {
@@ -3050,11 +3050,11 @@
     "description": "Governance expiration renewal popup"
   },
   "html_popup_wrong_key_title": {
-    "message": "Wrong key$1 found",
+    "message": "Wrong key(s) found",
     "description": "Wrong key popup"
   },
   "html_popup_wrong_key_introduction": {
-    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "message": "Some wrong key(s) were found on your account @$1. Would you like to update them right now?",
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renewal_introduction": {
@@ -3427,7 +3427,7 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "You need to add your active key to Keychain to claim accounts",
+    "message": "You need to add your posting key to Keychain to claim rewards",
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_cant_automatically_claim_ledger": {
