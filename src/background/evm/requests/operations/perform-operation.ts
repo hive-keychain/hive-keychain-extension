@@ -76,6 +76,7 @@ export const performEvmOperation = async (
         break;
       }
     }
+
     chrome.tabs.sendMessage(tab, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: { requestId: request.request_id, result: result },
@@ -92,5 +93,7 @@ export const performEvmOperation = async (
       etherJSError.message,
       [],
     );
+  } finally {
+    chrome.runtime.sendMessage(message);
   }
 };
