@@ -4,7 +4,9 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 export interface GasFeeEstimationBase {
   type: EvmTransactionType;
   estimatedFee: number;
+  estimatedFeeUSD: number;
   maxFee: number;
+  maxFeeUSD: number;
   estimatedMaxDuration: number;
   gasLimit: number;
   deactivated?: boolean;

@@ -7,6 +7,7 @@ import {
   FullGasFeeEstimation,
   GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
@@ -24,6 +25,7 @@ const estimate = async (
   chain: EvmChain,
   wallet: HDNodeWallet,
   type: EvmTransactionType,
+  evmPrices: EvmPrices,
   gasLimit?: number,
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
@@ -41,6 +43,8 @@ const estimate = async (
       ),
     );
   }
+
+  const price = evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0;
 
   const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
@@ -82,7 +86,9 @@ const estimate = async (
     suggested: {
       type: type,
       estimatedFee: low,
+      estimatedFeeUSD: low * price,
       maxFee: maxLow,
+      maxFeeUSD: maxLow * price,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
@@ -94,7 +100,9 @@ const estimate = async (
     low: {
       type: type,
       estimatedFee: low,
+      estimatedFeeUSD: low * price,
       maxFee: maxLow,
+      maxFeeUSD: maxLow * price,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
@@ -106,7 +114,9 @@ const estimate = async (
     medium: {
       type: type,
       estimatedFee: medium,
+      estimatedFeeUSD: medium * price,
       maxFee: maxMedium,
+      maxFeeUSD: maxMedium * price,
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.medium.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.medium.suggestedMaxFeePerGas),
@@ -118,7 +128,9 @@ const estimate = async (
     aggressive: {
       type: type,
       estimatedFee: aggressive,
+      estimatedFeeUSD: aggressive * price,
       maxFee: maxAggressive,
+      maxFeeUSD: maxAggressive * price,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
       priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
@@ -131,6 +143,8 @@ const estimate = async (
       type: type,
       estimatedFee: -1,
       maxFee: -1,
+      estimatedFeeUSD: 0,
+      maxFeeUSD: 0,
       estimatedMaxDuration: -1,
       priorityFee: -1,
       maxFeePerGas: -1,

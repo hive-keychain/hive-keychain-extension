@@ -87,12 +87,12 @@ export const loadEvmActiveAccount =
           payload: { nfts: { value: [...erc721, ...erc1155], loading: false } },
         });
       }),
-      EvmTokensHistoryUtils.fetchHistory(wallet.address, chain).then((res) => {
-        dispatch({
-          type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
-          payload: { history: { value: res, loading: false } },
-        });
-      }),
+      // EvmTokensHistoryUtils.fetchHistory(wallet.address, chain).then((res) => {
+      //   dispatch({
+      //     type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
+      //     payload: { history: { value: res, loading: false } },
+      //   });
+      // }),
     ]).then(() => {
       dispatch({
         type: EvmActionType.SET_ACTIVE_ACCOUNT,

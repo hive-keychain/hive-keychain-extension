@@ -57,6 +57,7 @@ const ConfirmationPage = ({
   wallet,
   selectedAccount,
   transactionData,
+  evmPrices,
   goBack,
   setTitleContainerProperties,
   setErrorMessage,
@@ -213,6 +214,7 @@ const ConfirmationPage = ({
             onSelectFee={setSelectedFee}
             transactionType={(chain as EvmChain).defaultTransactionType}
             transactionData={transactionData}
+            prices={evmPrices}
           />
         )}
       </div>
@@ -259,6 +261,7 @@ const mapStateToProps = (state: RootState) => {
     selectedAccount: state.evm.activeAccount,
     transactionData: state.navigation.stack[0].params
       .transactionData as ProviderTransactionData,
+    evmPrices: state.evm.prices,
   };
 };
 

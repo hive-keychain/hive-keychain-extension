@@ -13,8 +13,10 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmPricesUtils } from '@popup/evm/utils/evm-prices.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   EvmInputDisplayType,
@@ -65,6 +67,8 @@ export const SendTransaction = (props: Props) => {
   const [shouldDisplayBalanceChange, setShouldDisplayBalanceChange] =
     useState(false);
 
+  const [evmPrices, setEvmPrices] = useState<EvmPrices>();
+
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
 
@@ -83,6 +87,12 @@ export const SendTransaction = (props: Props) => {
 
     const lastChain = await EvmChainUtils.getLastEvmChain();
     setChain(lastChain as EvmChain);
+
+    const mainToken = await EvmTokensUtils.getMainTokenInfo(
+      (lastChain as EvmChain)!,
+    );
+    setEvmPrices(await EvmPricesUtils.fetchPrices([mainToken]));
+
     const params = request.params[0];
 
     const usedAccount = accounts.find(
@@ -125,8 +135,6 @@ export const SendTransaction = (props: Props) => {
           proxy ?? params.to,
         );
 
-        console.log({ abi });
-
         tData.abi = abi;
 
         tokenAddress = params.to;
@@ -146,8 +154,6 @@ export const SendTransaction = (props: Props) => {
               lastChain as EvmChain,
             );
           }
-
-          console.log({ abi });
 
           if (abi) {
             const contractType = EvmTokensUtils.getTokenType(abi);
@@ -263,10 +269,6 @@ export const SendTransaction = (props: Props) => {
                     input.type,
                     input.name,
                   );
-                console.log(
-                  { input, inputDisplayType },
-                  decodedTransactionData.args[index],
-                );
                 switch (inputDisplayType) {
                   case EvmInputDisplayType.WALLET_ADDRESS: {
                     const inputDisplay =
@@ -603,7 +605,7 @@ export const SendTransaction = (props: Props) => {
 
   return (
     <>
-      {transactionHook.fields && (
+      {transactionHook.fields && evmPrices && (
         <EvmOperation
           request={request}
           domain={data.dappInfo.domain}
@@ -647,6 +649,7 @@ export const SendTransaction = (props: Props) => {
                     onSelectFee={transactionHook.setSelectedFee}
                     transactionType={transactionData.type}
                     transactionData={transactionData}
+                    prices={evmPrices}
                   />
                 )}
             </>

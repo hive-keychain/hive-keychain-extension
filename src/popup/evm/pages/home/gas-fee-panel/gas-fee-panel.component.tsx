@@ -8,6 +8,8 @@ import {
   FullGasFeeEstimation,
   GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeePanelItem } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel-item.component';
+import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -35,6 +37,7 @@ interface GasFeePanelProps {
   multiplier?: number;
   transactionType: EvmTransactionType;
   transactionData?: ProviderTransactionData;
+  prices: EvmPrices;
 }
 
 export const GasFeePanel = ({
@@ -46,6 +49,7 @@ export const GasFeePanel = ({
   multiplier,
   transactionType,
   transactionData,
+  prices,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -99,6 +103,7 @@ export const GasFeePanel = ({
       chain,
       wallet,
       transactionType,
+      prices,
       undefined,
       transactionData,
     );
@@ -302,8 +307,17 @@ export const GasFeePanel = ({
                   )}
                 </div>
                 <div className="label gas-fee">
-                  {FormatUtils.formatCurrencyValue(selectedFee.estimatedFee, 8)}{' '}
-                  {chain.mainToken}
+                  <div>
+                    {FormatUtils.formatCurrencyValue(
+                      selectedFee.estimatedFee,
+                      8,
+                    )}{' '}
+                    {chain.mainToken}
+                  </div>
+                  <div className="label usd-value">
+                    {selectedFee.estimatedFeeUSD.toFixed(2)}
+                    {' USD'}
+                  </div>
                 </div>
               </div>
             )}
@@ -313,8 +327,19 @@ export const GasFeePanel = ({
                 {chrome.i18n.getMessage(getFeeLabel())}
               </div>
               <div className="label gas-fee">
-                {FormatUtils.formatCurrencyValue(selectedFee.maxFee, 8)}{' '}
-                {chain.mainToken}
+                <div className="label gas-fee">
+                  <div>
+                    {FormatUtils.formatCurrencyValue(
+                      selectedFee.estimatedFee,
+                      8,
+                    )}{' '}
+                    {chain.mainToken}
+                  </div>
+                  <div className="label usd-value">
+                    {selectedFee.estimatedFeeUSD.toFixed(2)}
+                    {' USD'}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="gas-fee-top-row">
@@ -354,108 +379,42 @@ export const GasFeePanel = ({
               {!isCustomFeePanelOpened && (
                 <>
                   {!feeEstimation.increased && (
-                    <div
-                      className="custom-fee-row low"
-                      onClick={() => selectGasFee(feeEstimation.low)}>
-                      <SVGIcon icon={SVGIcons.EVM_GAS_FEE_LOW} />
-                      <div className="label type">
-                        {chrome.i18n.getMessage(
-                          'popup_html_evm_custom_gas_fee_low',
-                        )}
-                      </div>
-                      <div className="label duration">
-                        {chrome.i18n.getMessage(
-                          'popup_html_evm_gas_fee_estimate_duration',
-                          [feeEstimation.low.estimatedMaxDuration.toString()],
-                        )}
-                      </div>
-                      <div className="label gas-fee">
-                        {FormatUtils.formatCurrencyValue(
-                          feeEstimation.low.maxFee,
-                          8,
-                        )}
-                      </div>
-                    </div>
+                    <GasFeePanelItem
+                      estimation={feeEstimation.low}
+                      additionalClass={'low'}
+                      onSelectGasFee={() => selectGasFee(feeEstimation.low)}
+                      label={'popup_html_evm_custom_gas_fee_low'}
+                    />
                   )}
 
                   {feeEstimation.increased && (
-                    <div
-                      className="custom-fee-row increased"
-                      onClick={() => selectGasFee(feeEstimation.increased!)}>
-                      <SVGIcon icon={SVGIcons.EVM_GAS_FEE_LOW} />
-                      <div className="label type">
-                        {chrome.i18n.getMessage(
-                          'popup_html_evm_custom_gas_fee_increased',
-                        )}
-                      </div>
-                      <div className="label duration">
-                        {chrome.i18n.getMessage(
-                          'popup_html_evm_gas_fee_estimate_duration',
-                          [
-                            feeEstimation.increased.estimatedMaxDuration.toString(),
-                          ],
-                        )}
-                      </div>
-                      <div className="label gas-fee">
-                        {FormatUtils.formatCurrencyValue(
-                          feeEstimation.increased.maxFee,
-                          8,
-                        )}
-                      </div>
-                    </div>
+                    <GasFeePanelItem
+                      estimation={feeEstimation.increased}
+                      additionalClass={'increased'}
+                      onSelectGasFee={() =>
+                        selectGasFee(feeEstimation.increased!)
+                      }
+                      label={'popup_html_evm_custom_gas_fee_increased'}
+                    />
                   )}
 
-                  <div
-                    className={`custom-fee-row medium ${
-                      feeEstimation.medium.deactivated ? 'deactivated' : ''
-                    }`}
-                    onClick={() => selectGasFee(feeEstimation.medium)}>
-                    <SVGIcon icon={SVGIcons.EVM_GAS_FEE_MEDIUM} />
-                    <div className="label type">
-                      {chrome.i18n.getMessage(
-                        'popup_html_evm_custom_gas_fee_medium',
-                      )}
-                    </div>
-                    <div className="label duration">
-                      {chrome.i18n.getMessage(
-                        'popup_html_evm_gas_fee_estimate_duration',
-                        [feeEstimation.medium.estimatedMaxDuration.toString()],
-                      )}
-                    </div>
-                    <div className="label gas-fee">
-                      {FormatUtils.formatCurrencyValue(
-                        feeEstimation.medium.maxFee,
-                        8,
-                      )}
-                    </div>
-                  </div>
-                  <div
-                    className={`custom-fee-row aggressive ${
-                      feeEstimation.aggressive.deactivated ? 'deactivated' : ''
-                    }`}
-                    onClick={() => selectGasFee(feeEstimation.aggressive)}>
-                    <SVGIcon icon={SVGIcons.EVM_GAS_FEE_HIGH} />
-                    <div className="label type">
-                      {chrome.i18n.getMessage(
-                        'popup_html_evm_custom_gas_fee_aggresive',
-                      )}
-                    </div>
-                    <div className="label duration">
-                      {chrome.i18n.getMessage(
-                        'popup_html_evm_gas_fee_estimate_duration',
-                        [
-                          feeEstimation.aggressive.estimatedMaxDuration.toString(),
-                        ],
-                      )}
-                    </div>
-                    <div className="label gas-fee">
-                      {FormatUtils.formatCurrencyValue(
-                        feeEstimation.aggressive.maxFee,
-                        8,
-                      )}
-                    </div>
-                  </div>
+                  <GasFeePanelItem
+                    estimation={feeEstimation.medium}
+                    additionalClass={'medium'}
+                    onSelectGasFee={() => selectGasFee(feeEstimation.medium)}
+                    label={'popup_html_evm_custom_gas_fee_medium'}
+                  />
+                  <GasFeePanelItem
+                    estimation={feeEstimation.aggressive}
+                    additionalClass={'aggressive'}
+                    onSelectGasFee={() =>
+                      selectGasFee(feeEstimation.aggressive)
+                    }
+                    label={'popup_html_evm_custom_gas_fee_aggressive'}
+                  />
+
                   <Separator type={'horizontal'} fullSize />
+
                   <div
                     className="custom-fee-row custom"
                     onClick={() => openCustomFeePanel()}>

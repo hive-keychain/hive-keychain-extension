@@ -51,6 +51,7 @@ const EvmTransactionResult = ({
   isCanceled,
   pageTitle,
   detailFields,
+  evmPrices,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
@@ -330,6 +331,7 @@ const EvmTransactionResult = ({
             selectedFee={increasedGasFee}
             multiplier={1.5}
             transactionType={chain.defaultTransactionType}
+            prices={evmPrices}
           />
           <ButtonComponent
             label="popup_html_confirm"
@@ -456,6 +458,7 @@ const mapStateToProps = (state: RootState) => {
     isCanceled: state.navigation.stack[0].params.isCanceled,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
+    evmPrices: state.evm.prices,
   };
 };
 

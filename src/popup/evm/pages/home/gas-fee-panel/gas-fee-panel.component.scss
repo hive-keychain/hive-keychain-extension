@@ -35,8 +35,15 @@
       .label {
         @include poppins400(14px);
         color: var(--main-font-color);
+        text-align: right;
         &.duration {
           color: $red;
+        }
+        &.usd-value {
+          font-style: italic;
+          opacity: 0.7;
+          font-size: 13px;
+          text-align: right;
         }
       }
     }
