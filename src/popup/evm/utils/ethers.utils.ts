@@ -2,8 +2,18 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, TransactionRequest } from 'ethers';
 
+let jsonRpcProvider: ethers.JsonRpcApiProvider;
+
 const getProvider = (chain: EvmChain, rpcUrl?: string) => {
-  return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpc[0].url);
+  if (!jsonRpcProvider) {
+    jsonRpcProvider = new ethers.JsonRpcProvider(
+      rpcUrl ?? chain.rpc[0].url,
+      undefined,
+      { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
+    );
+  }
+
+  return jsonRpcProvider;
 };
 
 const getGasLimit = async (

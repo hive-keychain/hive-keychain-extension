@@ -621,6 +621,7 @@ export const SendTransaction = (props: Props) => {
                 <Card className="balance-change-panel">
                   <div className="balance-change-title">
                     {chrome.i18n.getMessage('evm_balance_change_title')}
+                    {/* {()} */}
                   </div>
 
                   <div className="balance-panel">
