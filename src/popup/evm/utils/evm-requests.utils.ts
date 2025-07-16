@@ -10,13 +10,25 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { BlockTag } from 'ethers';
+import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
+import { BlockTag, ethers } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
   if (!chain) chain = (await EvmChainUtils.getLastEvmChain()) as EvmChain;
   const provider = await EthersUtils.getProvider(chain);
+  return provider;
+};
+
+const getEthProvider = () => {
+  const ethChain = defaultChainList.find(
+    (chain: Chain) => chain.chainId === '0x1',
+  );
+
+  const provider = new ethers.JsonRpcProvider(ethChain!.rpc[0].url, undefined, {
+    staticNetwork: ethers.Network.from(Number(ethChain!.chainId)),
+  });
   return provider;
 };
 
@@ -147,9 +159,9 @@ const getNonce = async (account: EvmAccount) => {
 };
 
 const getEnsResolver = async (ensAddress: string) => {
-  const provider = await instanciateProvider(EvmChainUtils.getEthChain());
-  return provider.getResolver(ensAddress);
+  return getEthProvider().getResolver(ensAddress);
 };
+
 const resolveEns = async (ensAddress: string) => {
   const ensResolver = await getEnsResolver(ensAddress);
   return ensResolver ? ensResolver.getAddress() : '';
@@ -157,7 +169,7 @@ const resolveEns = async (ensAddress: string) => {
 
 const lookupEns = async (address: string) => {
   try {
-    const provider = await instanciateProvider(EvmChainUtils.getEthChain());
+    const provider = getEthProvider();
     return await provider.lookupAddress(address);
   } catch (err) {
     return null;
