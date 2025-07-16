@@ -1,0 +1,34 @@
+.operation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 20px;
+  box-sizing: border-box;
+
+  .left-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+    .title {
+      @include poppins400(13px);
+      color: var(--main-font-color);
+    }
+    .subtitle {
+      @include poppins400(13px);
+      color: $light-grey;
+      padding-left: 10px;
+    }
+  }
+  .operation-action {
+    display: none;
+  }
+
+  &:hover {
+    .operation-action {
+      display: block;
+    }
+  }
+}

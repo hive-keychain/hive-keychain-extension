@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
+import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { MultisigModule } from '@background/multisig.module';
 import init from '@background/requests/init';
@@ -115,6 +116,22 @@ const chromeMessageHandler = async (
         JSON.parse(backgroundMessage.value),
       );
       break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN:
+      KeylessKeychainModule.handleOperation(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
+      KeylessKeychainModule.register(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
     case BackgroundCommand.PING:
       Logger.log('ping');
       break;
@@ -136,6 +153,15 @@ export const performOperationFromIndex = async (
   request: KeychainRequest,
 ) => {
   performOperation(requestHandler, request, tab!, request.domain, false);
+};
+
+export const performKeylessOperation = async (
+  requestHandler: RequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  KeylessKeychainModule.handleOperation(requestHandler, request, domain, tab);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
