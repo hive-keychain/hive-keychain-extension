@@ -161,16 +161,16 @@ const Conversion = ({
       ),
       fields: [
         {
-          label: 'popup_html_value',
-          value: stringifiedAmount,
-          tag: ConfirmationPageFieldTag.AMOUNT,
-          tokenSymbol: form.currency,
-        },
-        {
           label: 'popup_html_username',
           value: `@${activeAccount.name!}`,
           tag: ConfirmationPageFieldTag.USERNAME,
           avatarPosition: 'right',
+        },
+        {
+          label: 'popup_html_value',
+          value: stringifiedAmount,
+          tag: ConfirmationPageFieldTag.AMOUNT,
+          tokenSymbol: form.currency,
         },
       ],
       title: title,

@@ -262,17 +262,17 @@ const SavingsPage = ({
       skipTitleTranslation: true,
       fields: [
         {
+          label: 'popup_html_username',
+          value: `@${form.username}`,
+          tag: ConfirmationPageFieldTag.USERNAME,
+          iconPosition: 'right',
+        },
+        {
           label: 'popup_html_value',
           value: stringifiedAmount,
           tag: ConfirmationPageFieldTag.AMOUNT,
           tokenSymbol:
             currencyLabels[watch('currency') as keyof CurrencyLabels],
-          iconPosition: 'right',
-        },
-        {
-          label: 'popup_html_username',
-          value: `@${form.username}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
           iconPosition: 'right',
         },
       ],

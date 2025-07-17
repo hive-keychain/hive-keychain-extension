@@ -19,15 +19,16 @@ const UsernameWithAvatar = ({
   avatarPosition = 'right',
 }: Props) => {
   const formattedUsername = username.startsWith('@')
-    ? username.slice(1).trim()
-    : username.trim();
+    ? username.trim()
+    : `@${username.trim()}`;
 
   const avatarElement = (
     <PreloadedImage
       className="user-avatar"
-      src={`https://images.hive.blog/u/${formattedUsername}/avatar`}
+      src={`https://images.hive.blog/u/${formattedUsername.slice(1)}/avatar`}
       alt={'/assets/images/accounts.png'}
       placeholder={'/assets/images/accounts.png'}
+      addBackground
     />
   );
 

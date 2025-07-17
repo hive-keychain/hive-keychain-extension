@@ -422,7 +422,11 @@ const getTokenInfo = async (symbol: string): Promise<Token> => {
   })[0];
 };
 
-const getTokenIcon = async (symbol: string) => {
+const getTokenIcon = async (symbol: string, tokens?: Token[]) => {
+  if (tokens) {
+    const token = tokens.find((t) => t.symbol === symbol);
+    if (token) return token.metadata.icon;
+  }
   return (
     await HiveEngineUtils.get<any[]>({
       contract: 'tokens',

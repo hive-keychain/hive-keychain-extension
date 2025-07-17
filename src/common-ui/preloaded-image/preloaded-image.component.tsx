@@ -40,6 +40,26 @@ export const PreloadedImage = ({
   }, [src, mounted]);
 
   const preload = () => {
+    // Check if image is already cached/loaded
+    const existingImg = new Image();
+    existingImg.src = src;
+
+    if (existingImg.complete) {
+      // Image is already cached, use it directly
+      if (addBackground) {
+        if (symbol) {
+          setBackground(
+            ColorsUtils.getBackgroundColorFromBackend(symbol, theme),
+          );
+        } else {
+          setBackground(ColorsUtils.getBackgroundColorFromImage(existingImg));
+        }
+      }
+      setImage(existingImg);
+      return;
+    }
+
+    // Image not cached, proceed with normal preloading
     const img = new Image();
     img.src = src;
     img.onload = () => {

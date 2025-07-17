@@ -1,7 +1,9 @@
+import { Token } from '@interfaces/tokens.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import { ColorsUtils } from 'src/utils/colors.utils';
 
 type Props = {
   amount: string | number;
@@ -13,6 +15,7 @@ type Props = {
   logoSize?: 'small' | 'medium' | 'large';
   iconPosition?: 'left' | 'right';
   title?: string;
+  tokens?: Token[];
 };
 
 const AmountWithLogo = ({
@@ -25,6 +28,7 @@ const AmountWithLogo = ({
   logoSize = 'medium',
   iconPosition = 'left',
   title,
+  tokens,
 }: Props) => {
   const [tokenIcon, setTokenIcon] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,15 +36,17 @@ const AmountWithLogo = ({
   useEffect(() => {
     if (!icon && symbol) {
       setIsLoading(true);
-      TokensUtils.getTokenIcon(symbol)
-        .then((iconUrl) => {
-          setTokenIcon(iconUrl);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setTokenIcon(null);
-          setIsLoading(false);
-        });
+      ColorsUtils.downloadColors().then(() => {
+        TokensUtils.getTokenIcon(symbol, tokens)
+          .then((iconUrl) => {
+            setTokenIcon(iconUrl);
+            setIsLoading(false);
+          })
+          .catch(() => {
+            setTokenIcon(null);
+            setIsLoading(false);
+          });
+      });
     } else {
       setIsLoading(false);
     }
@@ -50,12 +56,19 @@ const AmountWithLogo = ({
     <PreloadedImage
       className="amount-logo"
       src={`/assets/images/icons/${icon}.svg`}
+      symbol={symbol}
+      addBackground
       useDefaultSVG={icon}
     />
   ) : isLoading ? (
     <div className="amount-logo loading-placeholder" />
   ) : (
-    <PreloadedImage className="amount-logo" src={tokenIcon || ''} />
+    <PreloadedImage
+      className="amount-logo"
+      symbol={symbol}
+      addBackground
+      src={tokenIcon || ''}
+    />
   );
 
   const amountElement = (

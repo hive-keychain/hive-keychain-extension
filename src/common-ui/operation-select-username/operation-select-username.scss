@@ -60,6 +60,7 @@
       z-index: 1000;
       @include radius-bound-dropdown-scrollbar;
       @include poppins500(14px);
+      overflow: scroll;
 
       .option-item {
         display: flex;

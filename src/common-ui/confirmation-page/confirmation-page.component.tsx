@@ -52,6 +52,7 @@ const ConfirmationPage = ({
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
+  tokens,
 }: PropsType) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
@@ -187,6 +188,7 @@ const ConfirmationPage = ({
               symbol={field.tokenSymbol}
               icon={getIcon(field)}
               iconPosition={field.iconPosition ?? 'right'}
+              tokens={tokens}
             />
           </div>
         );
@@ -310,6 +312,7 @@ const mapStateToProps = (state: RootState) => {
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
     method: state.navigation.stack[0].params.method as KeychainKeyTypes,
     activeAccount: state.hive.activeAccount,
+    tokens: state.hive.tokens,
   };
 };
 

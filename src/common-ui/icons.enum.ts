@@ -20,6 +20,7 @@ export enum SVGIcons {
   FAVORITE_ACCOUNTS_SAVE = 'favorite-accounts/save',
 
   GLOBAL_ARROW = 'global/arrow',
+  GLOBAL_ARROW_RIGHT = 'global/arrow-right',
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
