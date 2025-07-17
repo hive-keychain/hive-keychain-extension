@@ -1,9 +1,11 @@
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
-import RequestItem from 'src/dialog/components/request-item/request-item';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -16,6 +18,10 @@ type Props = {
 
 const Convert = (props: Props) => {
   const { data, rpc } = props;
+  const currencyLabel = CurrencyUtils.getCurrencyLabel(
+    data.collaterized ? 'HIVE' : 'HBD',
+    rpc.testnet,
+  );
   const unit = CurrencyUtils.getCurrencyLabel(
     data.collaterized ? 'HIVE' : 'HBD',
     rpc.testnet,
@@ -35,11 +41,18 @@ const Convert = (props: Props) => {
           : chrome.i18n.getMessage(`popup_html_convert_hbd_intro`)
       }
       {...props}>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem
+      <AmountWithLogo
         title="dialog_amount"
-        content={`${FormatUtils.formatCurrencyValue(data.amount)} ${unit}`}
+        amount={FormatUtils.formatCurrencyValue(data.amount)}
+        symbol={currencyLabel}
+        iconPosition="right"
+        icon={
+          currencyLabel === 'HIVE'
+            ? SVGIcons.WALLET_HIVE_LOGO
+            : SVGIcons.WALLET_HBD_LOGO
+        }
       />
     </Operation>
   );

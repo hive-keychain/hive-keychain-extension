@@ -5,6 +5,7 @@ import {
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
@@ -29,7 +30,7 @@ const CreateClaimedAccount = (props: Props) => {
     <Operation
       title={chrome.i18n.getMessage('dialog_title_create_account')}
       {...props}>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_new_account"

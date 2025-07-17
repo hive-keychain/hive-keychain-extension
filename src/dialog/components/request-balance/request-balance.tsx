@@ -1,6 +1,10 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
-import RequestItem from 'src/dialog/components/request-item/request-item';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import RequestItem, {
+  RequestItemType,
+} from 'src/dialog/components/request-item/request-item';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import CurrencyUtils, {
   BaseCurrencies,
@@ -48,12 +52,28 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
   return (
     <RequestItem
       title="dialog_balance"
+      type={
+        !balance.length ? RequestItemType.STRING : RequestItemType.REACT_NODE
+      }
       content={
-        balance.length
-          ? parseFloat(newBalance) < 0
-            ? chrome.i18n.getMessage('dialog_insufficient_balance')
-            : `${balance} => ${newBalance}`
-          : '...'
+        balance.length ? (
+          parseFloat(newBalance) < 0 ? (
+            <span className="insufficient-balance">
+              {chrome.i18n.getMessage('dialog_insufficient_balance')}
+            </span>
+          ) : (
+            <span className="balance-container">
+              {balance}
+              <SVGIcon
+                icon={SVGIcons.GLOBAL_ARROW_RIGHT}
+                className="right-arrow-icon"
+              />
+              {newBalance}
+            </span>
+          )
+        ) : (
+          '...'
+        )
       }
     />
   );

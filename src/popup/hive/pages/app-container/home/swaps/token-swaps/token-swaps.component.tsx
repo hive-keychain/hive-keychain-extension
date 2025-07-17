@@ -29,6 +29,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
@@ -355,10 +356,16 @@ const TokenSwaps = ({
         )} ${startToken?.value.symbol} => ${FormatUtils.withCommas(
           estimateValue!.toString(),
         )} ${endToken?.value.symbol}`,
+        tag: ConfirmationPageFieldTag.AMOUNT,
+        tokenSymbol: endToken?.value.symbol,
+        iconPosition: 'right',
       },
       {
         label: 'html_popup_swap_swap_slipperage',
         value: `${slippage}% (for each step)`,
+        tag: ConfirmationPageFieldTag.AMOUNT,
+        tokenSymbol: startToken?.value.symbol,
+        iconPosition: 'right',
       },
     ];
 

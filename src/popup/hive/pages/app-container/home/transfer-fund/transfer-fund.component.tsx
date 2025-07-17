@@ -22,10 +22,14 @@ import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldTag,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
@@ -210,10 +214,26 @@ const TransferFunds = ({
       memoField = chrome.i18n.getMessage('popup_empty');
     }
 
-    let fields = [
-      { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
-      { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
-      { label: 'popup_html_transfer_amount', value: stringifiedAmount },
+    let fields: ConfirmationPageFields[] = [
+      {
+        label: 'popup_html_transfer_from',
+        value: `@${activeAccount.name}`,
+        tag: ConfirmationPageFieldTag.USERNAME,
+        iconPosition: 'right',
+      },
+      {
+        label: 'popup_html_transfer_to',
+        value: `@${form.receiverUsername}`,
+        tag: ConfirmationPageFieldTag.USERNAME,
+        iconPosition: 'right',
+      },
+      {
+        label: 'popup_html_transfer_amount',
+        value: stringifiedAmount,
+        tag: ConfirmationPageFieldTag.AMOUNT,
+        tokenSymbol: currencyLabels[form.selectedCurrency],
+        iconPosition: 'right',
+      },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 

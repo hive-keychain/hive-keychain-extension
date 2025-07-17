@@ -2,8 +2,8 @@ import { RequestId, RequestProxy } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
-import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
 type Props = {
@@ -18,8 +18,8 @@ const Proxy = (props: Props) => {
   const { data, accounts } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
   const renderUsername = () => {
-    return !accounts ? (
-      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    return !accounts && data.username ? (
+      <UsernameWithAvatar title={'dialog_account'} username={data.username} />
     ) : (
       <></>
     );
@@ -33,14 +33,7 @@ const Proxy = (props: Props) => {
       {renderUsername()}
       <Separator type={'horizontal'} fullSize />
 
-      <RequestItem
-        title="popup_proxy"
-        content={
-          data.proxy.length
-            ? `@${data.proxy}`
-            : chrome.i18n.getMessage('popup_none')
-        }
-      />
+      <UsernameWithAvatar title="popup_proxy" username={data.proxy} />
     </Operation>
   );
 };

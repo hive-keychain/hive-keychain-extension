@@ -1,0 +1,112 @@
+.username-with-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: all 0.2s ease;
+
+  &.with-border {
+    padding: 6px 12px;
+    border: 1px solid var(--card-border);
+    background: var(--card-background);
+    border-radius: 66px;
+  }
+
+  .title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    margin-right: 12px;
+  }
+
+  .avatar-username-container {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  .user-avatar {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+  }
+
+  .username {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+
+  // Avatar position variants
+  &.avatar-position-right {
+    .user-avatar {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+  }
+
+  // Size variants
+  &.size-small {
+    .avatar-username-container {
+      min-height: 24px;
+    }
+
+    .user-avatar {
+      height: 24px;
+      width: 24px;
+      margin-right: 6px;
+    }
+
+    .username {
+      @include poppins500(12px);
+    }
+
+    .title {
+      @include poppins500(12px);
+      margin-right: 8px;
+    }
+
+    &.avatar-position-right {
+      .user-avatar {
+        margin-right: 0;
+        margin-left: 6px;
+      }
+    }
+  }
+
+  &.size-large {
+    .avatar-username-container {
+      min-height: 48px;
+    }
+
+    .user-avatar {
+      height: 48px;
+      width: 48px;
+      margin-right: 10px;
+    }
+
+    .username {
+      @include poppins500(18px);
+    }
+
+    .title {
+      @include poppins500(18px);
+      margin-right: 16px;
+    }
+
+    &.avatar-position-right {
+      .user-avatar {
+        margin-right: 0;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  // Hover effects
+  &:hover {
+    &.with-border {
+      border-color: var(--card-border-hover);
+      background: var(--card-background-hover);
+    }
+  }
+}

@@ -4,7 +4,10 @@ import {
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
@@ -23,6 +26,10 @@ const RecurrentTransfer = (props: Props) => {
   const { data, accounts, rpc } = props;
   const { memo } = data;
   const anonymousProps = useAnonymousRequest(data, accounts);
+  const currencyLabel = CurrencyUtils.getCurrencyLabel(
+    data.currency,
+    rpc.testnet,
+  );
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {
@@ -32,9 +39,9 @@ const RecurrentTransfer = (props: Props) => {
     memoField = chrome.i18n.getMessage('popup_empty');
   }
   const renderUsername = () => {
-    return !accounts ? (
+    return !accounts && data.username ? (
       <>
-        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <UsernameWithAvatar title={'dialog_account'} username={data.username} />
         <Separator type={'horizontal'} fullSize />
       </>
     ) : (
@@ -70,13 +77,18 @@ const RecurrentTransfer = (props: Props) => {
       {...anonymousProps}
       {...props}>
       {renderUsername()}
-      <RequestItem title="dialog_to" content={`@${data.to}`} />
+      <UsernameWithAvatar title="dialog_to" username={data.to} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem
+      <AmountWithLogo
         title="dialog_amount"
-        content={`${FormatUtils.formatCurrencyValue(
-          data.amount,
-        )} ${CurrencyUtils.getCurrencyLabel(data.currency, rpc.testnet)}`}
+        amount={FormatUtils.formatCurrencyValue(data.amount)}
+        symbol={currencyLabel}
+        iconPosition="right"
+        icon={
+          currencyLabel === 'HIVE'
+            ? SVGIcons.WALLET_HIVE_LOGO
+            : SVGIcons.WALLET_HBD_LOGO
+        }
       />
       <Separator type={'horizontal'} fullSize />
 
