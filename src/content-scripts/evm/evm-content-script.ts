@@ -25,7 +25,6 @@ document.addEventListener('requestEvm', async (request: any) => {
 });
 
 document.addEventListener('sendBackChainToBackground', (event: any) => {
-  console.log('la', event);
   sendEvmChainToBackground(event.detail, chrome);
 });
 

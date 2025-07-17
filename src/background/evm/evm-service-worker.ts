@@ -121,7 +121,6 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER: {
       // from content script to popup
-      console.log('evm service worker', { backgroundMessage });
       chrome.runtime.sendMessage({
         ...backgroundMessage,
       });

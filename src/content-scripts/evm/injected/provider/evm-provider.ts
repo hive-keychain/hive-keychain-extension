@@ -6,6 +6,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import EventEmitter from 'events';
 import { validateRequest } from 'src/content-scripts/evm/evm-request-validation';
+import Logger from 'src/utils/logger.utils';
 
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
@@ -91,7 +92,7 @@ export class EvmProvider extends EventEmitter {
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
               if (this._dappForcedChain) {
-                console.log('here we do nothing');
+                Logger.info('Skip change of chain');
                 return;
               }
               evmProvider.chainId = eventData.event.args;
