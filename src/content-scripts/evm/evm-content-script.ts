@@ -3,6 +3,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
   sendErrorToEvm,
   sendEventToEvm,
+  sendEvmChainToBackground,
   sendEvmRequestToBackground,
   sendResponseToEvm,
 } from 'src/content-scripts/hive/web-interface/response.logic';
@@ -21,6 +22,11 @@ const setupInjection = () => {
 
 document.addEventListener('requestEvm', async (request: any) => {
   sendEvmRequestToBackground(request.detail, chrome);
+});
+
+document.addEventListener('sendBackChainToBackground', (event: any) => {
+  console.log('la', event);
+  sendEvmChainToBackground(event.detail, chrome);
 });
 
 chrome.runtime.onMessage.addListener(

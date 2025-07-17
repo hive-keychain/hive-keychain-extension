@@ -96,7 +96,6 @@ export const EvmRestrictedMethods = [
   EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
   EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
   EvmRequestMethod.WALLET_REGISTER_ON_BOARDING,
-  EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
   EvmRequestMethod.WALLET_WATCH_ASSETS,
   EvmRequestMethod.WALLET_INVOKE_KEYRING,
   EvmRequestMethod.REQUEST_ACCOUNTS,
@@ -129,6 +128,7 @@ export const EvmMethodPermissionMap: {
 };
 
 export const EvmUnrestrictedMethods = [
+  EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
   EvmRequestMethod.WALLET_REVOKE_PERMISSION,
   EvmRequestMethod.GET_ACCOUNTS,
   EvmRequestMethod.GET_BLOCK_NUMBER,

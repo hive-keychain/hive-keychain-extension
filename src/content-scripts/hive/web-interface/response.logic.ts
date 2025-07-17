@@ -47,10 +47,19 @@ export const sendEvmRequestToBackground = async (
     dappInfo: {
       domain: window.location.hostname,
       protocol: window.location.protocol,
-      logo: (link as any).href,
+      logo: (link as any)?.href,
     },
     request_id: req.request_id,
   } as KeychainEvmRequestWrapper);
+};
+export const sendEvmChainToBackground = async (
+  chainId: string,
+  chrome: typeof globalThis.chrome,
+) => {
+  chrome.runtime.sendMessage({
+    command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
+    value: chainId,
+  });
 };
 
 export const sendIncompleteDataResponse = (

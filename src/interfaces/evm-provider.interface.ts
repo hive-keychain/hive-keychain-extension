@@ -29,6 +29,8 @@ export enum EvmEventName {
   INITIALIZED = '_initialized',
   ACCOUNT_CHANGED = 'accountsChanged',
   CHAIN_CHANGED = 'chainChanged',
+  GET_CHAIN = 'getChainFromProvider',
+  SEND_BACK_CHAIN_TO_BACKGROUND = 'sendBackChainToBackground',
 }
 
 export interface EvmDappInfo {

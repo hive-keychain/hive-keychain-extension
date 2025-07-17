@@ -1,6 +1,9 @@
 import { Interface } from '@ethersproject/abi';
 import * as Eth from '@metamask/ethjs';
-import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmSmartContractInfo,
+  EVMSmartContractType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionDecodedData,
   EvmTransactionDecodedDataInput,
@@ -46,11 +49,19 @@ const getDisplayInputType = (
   methodName: string,
   inputType: string,
   name: string,
+  tokenInfo?: EvmSmartContractInfo,
 ): EvmInputDisplayType => {
-  const tokenType = EvmTokensUtils.getTokenType(abi);
+  let tokenType;
+  if (tokenInfo) {
+    tokenType = tokenInfo.type;
+  } else {
+    tokenType = EvmTokensUtils.getTokenType(abi);
+  }
+  console.log({ methodName, inputType, name, tokenInfo });
   switch (tokenType) {
     case EVMSmartContractType.ERC20: {
       switch (methodName) {
+        case 'transferFrom':
         case 'transfer': {
           switch (name) {
             case 'amount':

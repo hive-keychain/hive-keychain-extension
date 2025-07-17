@@ -97,7 +97,6 @@ export const evmRequestWithoutConfirmation = async (
         );
       } catch (err) {
         const error = err as any;
-        console.log({ error });
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
@@ -115,7 +114,6 @@ export const evmRequestWithoutConfirmation = async (
         );
       } catch (err) {
         const error = err as any;
-        console.log({ error });
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {

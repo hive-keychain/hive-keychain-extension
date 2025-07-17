@@ -32,6 +32,8 @@ export enum BackgroundCommand {
   SEND_BACK_CONNECTED_WALLETS = 'sendBackConnectedWallets',
   ACCEPT_EVM_TRANSACTION = 'acceptEvmTransaction',
   REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
+  GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
+  SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',

@@ -268,6 +268,7 @@ export const SendTransaction = (props: Props) => {
                     decodedTransactionData.name,
                     input.type,
                     input.name,
+                    tokenInfo,
                   );
                 switch (inputDisplayType) {
                   case EvmInputDisplayType.WALLET_ADDRESS: {
@@ -308,6 +309,11 @@ export const SendTransaction = (props: Props) => {
                     break;
                   }
                   default:
+                    console.log({
+                      inputDisplayType,
+                      input,
+                      decodedTransactionData,
+                    });
                     value = 'default';
                 }
                 transactionConfirmationFields.otherFields.push({

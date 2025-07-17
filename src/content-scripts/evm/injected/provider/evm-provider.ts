@@ -26,6 +26,7 @@ export class EvmProvider extends EventEmitter {
   _isConnected = true;
   _initialized = true;
   _isUnlocked = true;
+  _dappForcedChain = false;
 
   constructor() {
     super();
@@ -41,18 +42,18 @@ export class EvmProvider extends EventEmitter {
   };
 
   initiateProviderInformation = async () => {
-    // const chainId = await this.processRequest({
-    //   method: EvmRequestMethod.GET_CHAIN,
-    //   params: [],
-    // });
-    // console.log(chainId);
-    // const accounts = await this.processRequest({
+    const chainId = (await this.processRequest({
+      method: EvmRequestMethod.GET_CHAIN,
+      params: [],
+    })) as string;
+    console.log(chainId);
+    // const accounts = (await this.processRequest({
     //   method: EvmRequestMethod.GET_ACCOUNTS,
     //   params: [],
-    // });
+    // })) as string[];
     // console.log(accounts);
     // this._accounts = accounts;
-    // this.chainId = chainId;
+    this.chainId = chainId;
     // console.log('accountsChanged', this._accounts);
     // this.emit('accountsChanged', []);
   };
@@ -67,7 +68,6 @@ export class EvmProvider extends EventEmitter {
       (event) => {
         // We only accept messages from ourselves
         if (event.source != window) return;
-
         if (event.data.type && event.data.type == 'evm_keychain_response') {
           const result = event.data.response.result;
           const requestId = event.data.response.requestId;
@@ -90,6 +90,10 @@ export class EvmProvider extends EventEmitter {
           const eventData = event.data;
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
+              if (this._dappForcedChain) {
+                console.log('here we do nothing');
+                return;
+              }
               evmProvider.chainId = eventData.event.args;
               break;
             }
@@ -105,6 +109,14 @@ export class EvmProvider extends EventEmitter {
                 );
               break;
             }
+            case EvmEventName.GET_CHAIN: {
+              this.dispatchCustomEvent(
+                EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
+                { chainId: this.chainId },
+                () => {},
+              );
+              return;
+            }
           }
           this.emit(eventData.event.eventType, eventData.event.args);
         }
@@ -119,6 +131,14 @@ export class EvmProvider extends EventEmitter {
       switch (args.method) {
         case EvmRequestMethod.GET_ACCOUNTS: {
           return this._accounts;
+        }
+        case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+          if (args.params && (args.params as any[])[0]) {
+            this._dappForcedChain = true;
+            this.chainId = (args.params as any[])[0];
+            this.emit('chainChanged', this.chainId);
+          }
+          return this.chainId;
         }
       }
 

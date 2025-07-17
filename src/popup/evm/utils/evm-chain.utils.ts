@@ -1,4 +1,5 @@
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -32,10 +33,18 @@ const saveLastUsedChain = (chain: EvmChain) => {
   );
 };
 
+const getChainPerId = (chainId: string): EvmChain => {
+  const chain = defaultChainList.find(
+    (chain) => chain.chainId === chainId,
+  ) as EvmChain;
+  return chain;
+};
+
 export const EvmChainUtils = {
   getLastEvmChainId,
   getEthChain,
   getEthChainId,
   getLastEvmChain,
   saveLastUsedChain,
+  getChainPerId,
 };

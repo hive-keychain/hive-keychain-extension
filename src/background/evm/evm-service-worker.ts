@@ -4,6 +4,7 @@ import { performEvmOperation } from '@background/evm/requests/operations/perform
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
+  EvmEventName,
   KeychainEvmRequestWrapper,
   ProviderRpcError,
   ProviderRpcErrorList,
@@ -103,6 +104,27 @@ const chromeMessageHandler = async (
         },
       });
       requestHandler.closeWindow();
+      break;
+    }
+    case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
+      // from background to content script
+      chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+          if (tab.id)
+            chrome.tabs.sendMessage(tab.id, {
+              command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+              value: { eventType: EvmEventName.GET_CHAIN },
+            });
+        }
+      });
+      break;
+    }
+    case BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER: {
+      // from content script to popup
+      console.log('evm service worker', { backgroundMessage });
+      chrome.runtime.sendMessage({
+        ...backgroundMessage,
+      });
       break;
     }
   }
