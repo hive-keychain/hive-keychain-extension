@@ -16,7 +16,7 @@ import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 import { ModalComponent } from 'src/common-ui/modal/modal.component';
@@ -40,6 +40,7 @@ const ChainRouter = ({
   resetMessage,
   modal,
 }: Props & PropsFromRedux) => {
+  const [keylessKeychainEnabled, setKeylessKeychainEnabled] = useState(false);
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
@@ -51,6 +52,11 @@ const ChainRouter = ({
         LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
         res,
       );
+    });
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
+    ).then((enabled) => {
+      setKeylessKeychainEnabled(enabled);
     });
   }, []);
 
@@ -91,7 +97,7 @@ const ChainRouter = ({
 
   const renderChain = () => {
     if (!mk || mk.length === 0) {
-      if (!hasFinishedSignup) {
+      if (!hasFinishedSignup && !keylessKeychainEnabled) {
         return <SignUpComponent />;
       } else {
         return <SignInRouterComponent />;
