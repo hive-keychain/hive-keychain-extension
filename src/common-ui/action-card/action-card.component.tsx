@@ -17,7 +17,10 @@ export const ActionCardComponent = ({
   onClickIcon,
 }: Props) => {
   return (
-    <div data-testid={'operation-item'} className="operation" key={key}>
+    <div
+      data-testid={'operation-item'}
+      className="action-card-operation"
+      key={key}>
       <div className="left-panel">
         <div className="title">{title}</div>
         <div className="subtitle">{subtitle}</div>
