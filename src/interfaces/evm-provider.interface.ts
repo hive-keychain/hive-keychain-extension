@@ -23,13 +23,15 @@ export interface EvmRequest {
   request_id: number;
   method: EvmRequestMethod;
   params: any[];
+  chainId?: string;
 }
 
 export enum EvmEventName {
+  REQUEST = 'evmRequest',
   INITIALIZED = '_initialized',
   ACCOUNT_CHANGED = 'accountsChanged',
   CHAIN_CHANGED = 'chainChanged',
-  GET_CHAIN = 'getChainFromProvider',
+  GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_TO_BACKGROUND = 'sendBackChainToBackground',
 }
 
@@ -77,6 +79,10 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
   chainDisconnected: {
     code: 4901,
     message: 'The Provider is not connected to the requested chain',
+  },
+  chainNotAdded: {
+    code: 4902,
+    message: "This chain hasn't been added to the wallet",
   },
   serverInvalidJSON: {
     code: -32700,

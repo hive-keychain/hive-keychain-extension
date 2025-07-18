@@ -110,10 +110,10 @@ export class EvmProvider extends EventEmitter {
                 );
               break;
             }
-            case EvmEventName.GET_CHAIN: {
+            case EvmEventName.GET_CHAIN_FROM_PROVIDER: {
               this.dispatchCustomEvent(
                 EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
-                { chainId: this.chainId },
+                { chainId: this._dappForcedChain ? this.chainId : null },
                 () => {},
               );
               return;
@@ -152,13 +152,17 @@ export class EvmProvider extends EventEmitter {
 
   processRequest = async (args: RequestArguments) => {
     return new Promise((resolve, reject) => {
-      this.dispatchCustomEvent('requestEvm', args, (response: any) => {
-        if (response.result !== null && response.result !== undefined) {
-          resolve(response.result);
-        } else {
-          reject(response.error);
-        }
-      });
+      this.dispatchCustomEvent(
+        EvmEventName.REQUEST,
+        { ...args, chainId: this.chainId },
+        (response: any) => {
+          if (response.result !== null && response.result !== undefined) {
+            resolve(response.result);
+          } else {
+            reject(response.error);
+          }
+        },
+      );
     });
   };
 

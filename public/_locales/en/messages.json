@@ -4996,6 +4996,10 @@
     "message": "Chain Id",
     "description": "evm chain id"
   },
+  "evm_chain": {
+    "message": "Chain",
+    "description": "evm chain"
+  },
   "evm_domain_name": {
     "message": "Name",
     "description": "evm domain name"

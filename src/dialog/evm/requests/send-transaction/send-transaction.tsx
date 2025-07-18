@@ -15,7 +15,6 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmPricesUtils } from '@popup/evm/utils/evm-prices.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
@@ -25,6 +24,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
@@ -52,6 +52,8 @@ interface BalanceInfo {
 
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
+
+  console.log({ data });
 
   const transactionHook = useTransactionHook(data, request);
 
@@ -85,11 +87,12 @@ export const SendTransaction = (props: Props) => {
   const init = async () => {
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
 
-    const lastChain = await EvmChainUtils.getLastEvmChain();
-    setChain(lastChain as EvmChain);
+    const chainTmp = await ChainUtils.getChain<EvmChain>(data.data.chainId!);
+
+    setChain(chainTmp as EvmChain);
 
     const mainToken = await EvmTokensUtils.getMainTokenInfo(
-      (lastChain as EvmChain)!,
+      (chainTmp as EvmChain)!,
     );
     setEvmPrices(await EvmPricesUtils.fetchPrices([mainToken]));
 
@@ -105,7 +108,7 @@ export const SendTransaction = (props: Props) => {
       wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
     });
 
-    const provider = EthersUtils.getProvider(lastChain as EvmChain);
+    const provider = EthersUtils.getProvider(chainTmp as EvmChain);
     const connectedWallet = new Wallet(
       HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
       provider,
@@ -122,16 +125,29 @@ export const SendTransaction = (props: Props) => {
 
     transactionConfirmationFields.otherFields = [];
 
+    if (chainTmp) {
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_chain',
+        value: (
+          <div className="value-content">
+            <EvmTokenLogo tokenInfo={mainToken} />
+            <div>{`${chainTmp.name} (${chainTmp.chainId})`}</div>
+          </div>
+        ),
+      });
+    }
+
     if (usedAccount) {
       // Case with data
       if (params.data) {
         const proxy = await EvmTransactionParserUtils.getSmartContractProxy(
           params.to,
-          lastChain as EvmChain,
+          chainTmp as EvmChain,
         );
 
         let abi = await EtherscanApi.getAbi(
-          lastChain! as EvmChain,
+          chainTmp! as EvmChain,
           proxy ?? params.to,
         );
 
@@ -142,7 +158,7 @@ export const SendTransaction = (props: Props) => {
         // Case of the execution of a smart contract
         if (params.to) {
           const usedToken = await EvmTokensUtils.getTokenInfo(
-            lastChain.chainId,
+            chainTmp.chainId,
             tokenAddress,
           );
 
@@ -151,7 +167,7 @@ export const SendTransaction = (props: Props) => {
           if (!abi) {
             abi = await EvmTransactionParserUtils.findAbiFromData(
               params.data,
-              lastChain as EvmChain,
+              chainTmp as EvmChain,
             );
           }
 
@@ -213,7 +229,7 @@ export const SendTransaction = (props: Props) => {
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                 params.to,
-                lastChain.chainId,
+                chainTmp.chainId,
                 transactionInfo,
               )),
             });
@@ -275,7 +291,7 @@ export const SendTransaction = (props: Props) => {
                     const inputDisplay =
                       await transactionHook.getWalletAddressInput(
                         decodedTransactionData.args[index],
-                        lastChain.chainId,
+                        chainTmp.chainId,
                         transactionInfo,
                       );
                     value = inputDisplay.value;
@@ -331,7 +347,7 @@ export const SendTransaction = (props: Props) => {
                     input.type,
                     input.name,
                     decodedTransactionData.args[index],
-                    lastChain.chainId,
+                    chainTmp.chainId,
                     transactionInfo,
                   ),
                 });
@@ -387,14 +403,14 @@ export const SendTransaction = (props: Props) => {
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                 params.to,
-                lastChain.chainId,
+                chainTmp.chainId,
                 transactionInfo,
               )),
             });
 
             const parsedData = await EvmTransactionParserUtils.parseData(
               params.data,
-              lastChain as EvmChain,
+              chainTmp as EvmChain,
             );
             if (parsedData?.inputs && parsedData?.operationName) {
               transactionConfirmationFields.operationName =
@@ -511,7 +527,7 @@ export const SendTransaction = (props: Props) => {
         );
 
         setTokenInfo(
-          await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
+          await EvmTokensUtils.getMainTokenInfo(chainTmp as EvmChain),
         );
 
         setShouldDisplayBalanceChange(true);
@@ -529,13 +545,13 @@ export const SendTransaction = (props: Props) => {
               .toNumber(),
             8,
             true,
-          )} ${(lastChain as EvmChain)?.mainToken}`,
+          )} ${(chainTmp as EvmChain)?.mainToken}`,
         };
 
         transactionConfirmationFields.otherFields.push(
           await transactionHook.getWalletAddressInput(
             params.to,
-            lastChain.chainId,
+            chainTmp.chainId,
             transactionInfo,
           ),
         );
@@ -548,7 +564,7 @@ export const SendTransaction = (props: Props) => {
         );
 
         setTokenInfo(
-          await EvmTokensUtils.getMainTokenInfo(lastChain as EvmChain),
+          await EvmTokensUtils.getMainTokenInfo(chainTmp as EvmChain),
         );
 
         tData.from = params.from;
@@ -557,7 +573,7 @@ export const SendTransaction = (props: Props) => {
       }
 
       tData.type =
-        params.type ?? (lastChain as EvmChain)?.defaultTransactionType;
+        params.type ?? (chainTmp as EvmChain)?.defaultTransactionType;
 
       switch (tData.type) {
         case EvmTransactionType.EIP_1559: {

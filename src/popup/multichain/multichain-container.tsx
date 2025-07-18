@@ -1,9 +1,9 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -56,31 +56,37 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       LocalStorageKeyEnum.ACTIVE_CHAIN,
     ]);
 
-    const chain: EvmChain = await new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({
-        command: BackgroundCommand.GET_CHAIN_FROM_PROVIDER,
-      } as BackgroundMessage);
+    const chainFromProvider: EvmChain | null = await new Promise(
+      (resolve, reject) => {
+        chrome.runtime.sendMessage({
+          command: BackgroundCommand.GET_CHAIN_FROM_PROVIDER,
+        } as BackgroundMessage);
 
-      const test = (message: BackgroundMessage) => {
-        if (
-          message.command === BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER
-        ) {
-          const chain: EvmChain = EvmChainUtils.getChainPerId(
-            message.value.chainId,
-          );
-          chrome.runtime.onMessage.removeListener(test);
-          resolve(chain as EvmChain);
-        }
-      };
+        const getChainCallback = async (message: BackgroundMessage) => {
+          if (
+            message.command === BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER
+          ) {
+            if (message.value.chainId) {
+              const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
+                message.value.chainId,
+              );
+              chrome.runtime.onMessage.removeListener(getChainCallback);
+              resolve(chain as EvmChain);
+            }
+            resolve(null);
+          }
+        };
 
-      chrome.runtime.onMessage.addListener(test);
-    });
+        chrome.runtime.onMessage.addListener(getChainCallback);
+      },
+    );
 
-    console.log(chain);
+    console.log(chainFromProvider);
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-    if (res.ACTIVE_CHAIN) {
-      setChain(chain);
+
+    if (chainFromProvider) {
+      setChain(chainFromProvider ?? res.ACTIVE_CHAIN);
     }
 
     setReady(true);

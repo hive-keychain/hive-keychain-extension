@@ -113,7 +113,7 @@ const chromeMessageHandler = async (
           if (tab.id)
             chrome.tabs.sendMessage(tab.id, {
               command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-              value: { eventType: EvmEventName.GET_CHAIN },
+              value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
             });
         }
       });

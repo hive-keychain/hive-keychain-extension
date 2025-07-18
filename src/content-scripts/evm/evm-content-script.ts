@@ -1,4 +1,5 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
   sendErrorToEvm,
@@ -20,13 +21,16 @@ const setupInjection = () => {
   }
 };
 
-document.addEventListener('requestEvm', async (request: any) => {
+document.addEventListener(EvmEventName.REQUEST, async (request: any) => {
   sendEvmRequestToBackground(request.detail, chrome);
 });
 
-document.addEventListener('sendBackChainToBackground', (event: any) => {
-  sendEvmChainToBackground(event.detail, chrome);
-});
+document.addEventListener(
+  EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
+  (event: any) => {
+    sendEvmChainToBackground(event.detail, chrome);
+  },
+);
 
 chrome.runtime.onMessage.addListener(
   (

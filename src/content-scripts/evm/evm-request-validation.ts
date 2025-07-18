@@ -8,6 +8,8 @@ import {
   getAllTransactionTypes,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { ethers } from 'ethers';
 
 export const validateRequest = (
@@ -69,6 +71,36 @@ export const validateRequest = (
           )}] (type: ${transactionParams.type})`,
         } as ProviderRpcError;
       }
+      break;
+    }
+    case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+      if (!params[0]) {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: `Invalid parameters. Missing chainId`,
+        } as ProviderRpcError;
+      }
+      if (typeof params[0] !== 'string') {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: `Invalid parameter. ChainId must be a string`,
+        } as ProviderRpcError;
+      }
+      if (!params[0].startsWith('0x')) {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: `Invalid parameter. ${params[0]} is not a valid chainId. It must be using hexadecimal format`,
+        } as ProviderRpcError;
+      }
+      if (
+        !defaultChainList.find((chain: Chain) => chain.chainId === params[0])
+      ) {
+        throw {
+          ...ProviderRpcErrorList.chainNotAdded,
+          message: `Invalid parameter. ${params[0]} hasn't been added to Keychain`,
+        } as ProviderRpcError;
+      }
+      break;
     }
   }
   return true;
