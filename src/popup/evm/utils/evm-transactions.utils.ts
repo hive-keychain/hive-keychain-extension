@@ -16,9 +16,9 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import {
   ethers,
@@ -83,7 +83,7 @@ const transfer = async (
       value: 0,
       data: data,
       from: connectedWallet.address,
-      nonce: nonce ?? (await connectedWallet.getNonce()),
+      nonce: nonce ?? (await connectedWallet.getNonce(chain.chainId)),
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
       chainId: chain.chainId,
       ...feeData,
@@ -93,7 +93,7 @@ const transfer = async (
       to: receiverAddress,
       value: ethers.parseEther(amount.toString()),
       from: connectedWallet.address,
-      nonce: nonce ?? (await connectedWallet.getNonce()),
+      nonce: nonce ?? (await connectedWallet.getNonce(chain.chainId)),
       gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
       chainId: chain.chainId,
       ...feeData,
@@ -313,7 +313,7 @@ const addCanceledTransaction = async (
 };
 
 const send = async (account: EvmAccount, request: any, gasFee: any) => {
-  const lastChain = await EvmChainUtils.getLastEvmChain();
+  const chain = await ChainUtils.getChain<EvmChain>(request.chainId);
 
   let feeData = {};
   if (gasFee)
@@ -340,18 +340,23 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
       }
     }
 
+  console.log({ request });
+  console.log({ chain });
+
   let transactionRequest: TransactionRequest;
   transactionRequest = {
-    value: 0,
+    value: request.params[0].value,
     data: request.params[0].data,
     to: request.params[0].to,
     from: account.wallet.address,
-    nonce: await EvmRequestsUtils.getNonce(account),
+    nonce: (await EvmRequestsUtils.getNonce(account, chain)) + 1,
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
-    chainId: lastChain.chainId,
+    chainId: chain.chainId,
     type: request.params[0].type,
     ...feeData,
   };
+
+  console.log({ transactionRequest });
 
   if (
     request.params[0].type &&
@@ -362,7 +367,7 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     }
   }
 
-  const provider = EthersUtils.getProvider(lastChain as EvmChain);
+  const provider = EthersUtils.getProvider(chain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
 
   const transactionResponse = await connectedWallet.sendTransaction(

@@ -5,15 +5,18 @@ import { ethers, HDNodeWallet, TransactionRequest } from 'ethers';
 let jsonRpcProvider: ethers.JsonRpcApiProvider;
 
 const getProvider = (chain: EvmChain, rpcUrl?: string) => {
-  if (!jsonRpcProvider) {
-    jsonRpcProvider = new ethers.JsonRpcProvider(
-      rpcUrl ?? chain.rpc[0].url,
-      undefined,
-      { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
-    );
-  }
+  // if (!jsonRpcProvider) {
+  //   jsonRpcProvider = new ethers.JsonRpcProvider(
+  //     rpcUrl ?? chain.rpc[0].url,
+  //     undefined,
+  //     { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
+  //   );
+  // }
 
-  return jsonRpcProvider;
+  // return jsonRpcProvider;
+  return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpc[0].url, undefined, {
+    staticNetwork: ethers.Network.from(Number(chain.chainId)),
+  });
 };
 
 const getGasLimit = async (

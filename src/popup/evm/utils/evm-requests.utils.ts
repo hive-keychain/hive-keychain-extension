@@ -153,8 +153,8 @@ const decryptMessage = (account: EvmAccount, message: string) => {
   });
 };
 
-const getNonce = async (account: EvmAccount) => {
-  const provider = await instanciateProvider();
+const getNonce = async (account: EvmAccount, chain: EvmChain) => {
+  const provider = await instanciateProvider(chain);
   return await provider.getTransactionCount(account.wallet.address);
 };
 

@@ -53,8 +53,6 @@ interface BalanceInfo {
 export const SendTransaction = (props: Props) => {
   const { accounts, data, request } = props;
 
-  console.log({ data });
-
   const transactionHook = useTransactionHook(data, request);
 
   const [caption, setCaption] = useState<string>();
@@ -234,6 +232,7 @@ export const SendTransaction = (props: Props) => {
               )),
             });
 
+            // TODO change here
             if (Number(decodedTransactionData?.value) > 0) {
               transactionConfirmationFields.mainTokenAmount = {
                 name: 'evm_main_token_amount',
@@ -305,13 +304,14 @@ export const SendTransaction = (props: Props) => {
                   }
 
                   case EvmInputDisplayType.BALANCE: {
-                    value = `${FormatUtils.withCommas(
-                      new Decimal(Number(decodedTransactionData.args[index]))
-                        .div(new Decimal(EvmFormatUtils.WEI))
-                        .toNumber(),
-                      (usedToken as EvmSmartContractInfoErc20).decimals,
-                      true,
-                    )}  ${usedToken?.symbol}`;
+                    // value = `${FormatUtils.withCommas(
+                    //   new Decimal(Number(decodedTransactionData.args[index]))
+                    //     .div(new Decimal(EvmFormatUtils.WEI))
+                    //     .toNumber(),
+                    //   (usedToken as EvmSmartContractInfoErc20).decimals,
+                    //   true,
+                    // )}  ${usedToken?.symbol}`;
+                    value = 'test';
                     break;
                   }
                   case EvmInputDisplayType.NUMBER: {
@@ -541,7 +541,7 @@ export const SendTransaction = (props: Props) => {
           type: EvmInputDisplayType.BALANCE,
           value: `${FormatUtils.withCommas(
             new Decimal(Number(params.value))
-              .div(new Decimal(EvmFormatUtils.GWEI))
+              .div(new Decimal(EvmFormatUtils.WEI))
               .toNumber(),
             8,
             true,
@@ -559,7 +559,7 @@ export const SendTransaction = (props: Props) => {
         setReceiver(params.to);
         setTransferAmount(
           new Decimal(Number(params?.value))
-            .div(new Decimal(EvmFormatUtils.GWEI))
+            .div(new Decimal(EvmFormatUtils.WEI))
             .toNumber(),
         );
 
@@ -643,7 +643,6 @@ export const SendTransaction = (props: Props) => {
                 <Card className="balance-change-panel">
                   <div className="balance-change-title">
                     {chrome.i18n.getMessage('evm_balance_change_title')}
-                    {/* {()} */}
                   </div>
 
                   <div className="balance-panel">
