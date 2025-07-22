@@ -70,64 +70,66 @@ const getAddressDetails = async (
     formattedAddress: '',
   };
 
-  const [localLabel, savedEnsDataFromAddress, savedEnsDataFromEns] =
-    await Promise.all([
-      EvmAddressesUtils.getAddressLabel(address, chainId),
-      EvmAddressesUtils.getEnsDataFromAddress(address),
-      EvmAddressesUtils.getEnsDataFromEns(address),
-    ]);
+  const localLabel = await EvmAddressesUtils.getAddressLabel(address, chainId);
 
   if (localLabel) {
     details.label = localLabel;
     details.fullAddress = address;
     details.formattedAddress = EvmFormatUtils.formatAddress(address);
-  } else if (savedEnsDataFromAddress && savedEnsDataFromAddress.ens) {
-    details.label = savedEnsDataFromAddress.ens;
-    details.fullAddress = address;
-    details.formattedAddress = EvmFormatUtils.formatAddress(address);
-    details.avatar = savedEnsDataFromAddress.avatar;
-  } else if (savedEnsDataFromEns) {
-    details.label = savedEnsDataFromEns.ens;
-    details.fullAddress = savedEnsDataFromEns.address;
-    details.formattedAddress = EvmFormatUtils.formatAddress(address);
-    details.avatar = savedEnsDataFromEns.avatar;
-  } else if (savedEnsDataFromAddress && !savedEnsDataFromAddress.ens) {
-    details.fullAddress = address;
-    details.formattedAddress = EvmFormatUtils.formatAddress(address);
-    details.label = details.formattedAddress;
   } else {
-    const isAddress = ethers.isAddress(address);
-    if (isAddress === false) {
-      const resolveData = await EvmRequestsUtils.getResolveData(address);
+    const [savedEnsDataFromAddress, savedEnsDataFromEns] = await Promise.all([
+      EvmAddressesUtils.getEnsDataFromAddress(address),
+      EvmAddressesUtils.getEnsDataFromEns(address),
+    ]);
 
-      const foundAddress = resolveData?.address;
-      details.avatar = resolveData?.avatar;
-      details.label = address;
-      if (foundAddress) {
-        details.fullAddress = foundAddress;
-      }
-    } else {
-      const ensFound = await EvmRequestsUtils.lookupEns(address);
-
+    if (savedEnsDataFromAddress && savedEnsDataFromAddress.ens) {
+      details.label = savedEnsDataFromAddress.ens;
       details.fullAddress = address;
       details.formattedAddress = EvmFormatUtils.formatAddress(address);
+      details.avatar = savedEnsDataFromAddress.avatar;
+    } else if (savedEnsDataFromEns) {
+      details.label = savedEnsDataFromEns.ens;
+      details.fullAddress = savedEnsDataFromEns.address;
+      details.formattedAddress = EvmFormatUtils.formatAddress(address);
+      details.avatar = savedEnsDataFromEns.avatar;
+    } else if (savedEnsDataFromAddress && !savedEnsDataFromAddress.ens) {
+      details.fullAddress = address;
+      details.formattedAddress = EvmFormatUtils.formatAddress(address);
+      details.label = details.formattedAddress;
+    } else {
+      const isAddress = ethers.isAddress(address);
+      if (isAddress === false) {
+        const resolveData = await EvmRequestsUtils.getResolveData(address);
 
-      const newEns: SavedEns = { address: address, ens: undefined };
-
-      if (ensFound) {
-        newEns.ens = ensFound;
-
-        const resolveData = await EvmRequestsUtils.getResolveData(ensFound);
-        details.label = ensFound;
-
-        if (resolveData && resolveData.address) {
-          newEns.avatar = resolveData.avatar ?? undefined;
-          details.avatar = resolveData?.avatar;
+        const foundAddress = resolveData?.address;
+        details.avatar = resolveData?.avatar;
+        details.label = address;
+        if (foundAddress) {
+          details.fullAddress = foundAddress;
         }
       } else {
-        details.label = details.formattedAddress;
+        const ensFound = await EvmRequestsUtils.lookupEns(address);
+
+        details.fullAddress = address;
+        details.formattedAddress = EvmFormatUtils.formatAddress(address);
+
+        const newEns: SavedEns = { address: address, ens: undefined };
+
+        if (ensFound) {
+          newEns.ens = ensFound;
+
+          const resolveData = await EvmRequestsUtils.getResolveData(ensFound);
+          details.label = ensFound;
+
+          if (resolveData && resolveData.address) {
+            newEns.avatar = resolveData.avatar ?? undefined;
+            details.avatar = resolveData?.avatar;
+          }
+        } else {
+          details.label = details.formattedAddress;
+        }
+        await addEnsToLocalStorage(newEns);
       }
-      await addEnsToLocalStorage(newEns);
     }
   }
 

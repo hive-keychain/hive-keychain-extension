@@ -1,4 +1,3 @@
-import { sleep } from '@hiveio/dhive/lib/utils';
 import {
   EvmAddressDetail,
   EvmAddressesUtils,
@@ -24,7 +23,7 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
   }, []);
 
   const initComponent = async () => {
-    await sleep(5000);
+    // await sleep(5000);
     setAddressDetail(
       await EvmAddressesUtils.getAddressDetails(address, chainId),
     );
