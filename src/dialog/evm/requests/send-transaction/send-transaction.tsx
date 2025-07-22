@@ -83,6 +83,9 @@ export const SendTransaction = (props: Props) => {
   }, [tokenInfo, selectedAccount, transferAmount]);
 
   const init = async () => {
+    // TODO uncomment when needed
+    // await sleep(4000);
+
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
 
     const chainTmp = await ChainUtils.getChain<EvmChain>(data.data.chainId!);

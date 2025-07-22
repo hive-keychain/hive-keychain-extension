@@ -381,6 +381,7 @@ export const GasFeePanel = ({
                   {!feeEstimation.increased && (
                     <GasFeePanelItem
                       estimation={feeEstimation.low}
+                      icon={SVGIcons.EVM_GAS_FEE_LOW}
                       additionalClass={'low'}
                       onSelectGasFee={() => selectGasFee(feeEstimation.low)}
                       label={'popup_html_evm_custom_gas_fee_low'}
@@ -390,6 +391,7 @@ export const GasFeePanel = ({
                   {feeEstimation.increased && (
                     <GasFeePanelItem
                       estimation={feeEstimation.increased}
+                      icon={SVGIcons.EVM_GAS_FEE_LOW}
                       additionalClass={'increased'}
                       onSelectGasFee={() =>
                         selectGasFee(feeEstimation.increased!)
@@ -400,12 +402,14 @@ export const GasFeePanel = ({
 
                   <GasFeePanelItem
                     estimation={feeEstimation.medium}
+                    icon={SVGIcons.EVM_GAS_FEE_MEDIUM}
                     additionalClass={'medium'}
                     onSelectGasFee={() => selectGasFee(feeEstimation.medium)}
                     label={'popup_html_evm_custom_gas_fee_medium'}
                   />
                   <GasFeePanelItem
                     estimation={feeEstimation.aggressive}
+                    icon={SVGIcons.EVM_GAS_FEE_HIGH}
                     additionalClass={'aggressive'}
                     onSelectGasFee={() =>
                       selectGasFee(feeEstimation.aggressive)

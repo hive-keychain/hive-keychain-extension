@@ -340,9 +340,6 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
       }
     }
 
-  console.log({ request });
-  console.log({ chain });
-
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: request.params[0].value,
@@ -355,8 +352,6 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     type: request.params[0].type,
     ...feeData,
   };
-
-  console.log({ transactionRequest });
 
   if (
     request.params[0].type &&

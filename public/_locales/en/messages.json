@@ -4580,7 +4580,7 @@
     "message": "Medium",
     "description": "Medium"
   },
-  "popup_html_evm_custom_gas_fee_aggresive": {
+  "popup_html_evm_custom_gas_fee_aggressive": {
     "message": "Aggressive",
     "description": "Aggressive"
   },
