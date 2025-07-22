@@ -346,7 +346,7 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     data: request.params[0].data,
     to: request.params[0].to,
     from: account.wallet.address,
-    nonce: (await EvmRequestsUtils.getNonce(account, chain)) + 1,
+    nonce: await EvmRequestsUtils.getNonce(account, chain),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
     type: request.params[0].type,
@@ -361,6 +361,8 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
       transactionRequest.accessList = request.params[0].accessList;
     }
   }
+
+  console.log({ transactionRequest });
 
   const provider = EthersUtils.getProvider(chain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);

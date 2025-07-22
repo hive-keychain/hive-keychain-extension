@@ -46,6 +46,23 @@ const estimate = async (
 
   const price = evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0;
 
+  console.log(Number(estimates.latestPriorityFeeRange[0]));
+
+  const lowPriorityFee = Math.max(
+    Number(estimates.low.suggestedMaxPriorityFeePerGas),
+    Number(estimates.latestPriorityFeeRange[0]),
+  );
+  const mediumPriorityFee = Math.max(
+    Number(estimates.medium.suggestedMaxPriorityFeePerGas),
+    Number(estimates.latestPriorityFeeRange[0]),
+  );
+  const aggressivePriorityFee = Math.max(
+    Number(estimates.high.suggestedMaxPriorityFeePerGas),
+    Number(estimates.latestPriorityFeeRange[0]),
+  );
+
+  console.log({ lowPriorityFee, mediumPriorityFee, aggressivePriorityFee });
+
   const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
@@ -60,23 +77,18 @@ const estimate = async (
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
-  const low = new Decimal(
-    Number(estimates.low.suggestedMaxPriorityFeePerGas) +
-      Number(estimates.estimatedBaseFee),
-  )
+  const low = new Decimal(lowPriorityFee + Number(estimates.estimatedBaseFee))
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
   const medium = new Decimal(
-    Number(estimates.medium.suggestedMaxPriorityFeePerGas) +
-      Number(estimates.estimatedBaseFee),
+    mediumPriorityFee + Number(estimates.estimatedBaseFee),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
     .toNumber();
   const aggressive = new Decimal(
-    Number(estimates.high.suggestedMaxPriorityFeePerGas) +
-      Number(estimates.estimatedBaseFee),
+    aggressivePriorityFee + Number(estimates.estimatedBaseFee),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
     .div(1000)
@@ -90,7 +102,7 @@ const estimate = async (
       maxFee: maxLow,
       maxFeeUSD: maxLow * price,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
-      priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
+      priorityFee: lowPriorityFee,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.low.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
@@ -104,7 +116,7 @@ const estimate = async (
       maxFee: maxLow,
       maxFeeUSD: maxLow * price,
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
-      priorityFee: estimates.low.suggestedMaxPriorityFeePerGas,
+      priorityFee: lowPriorityFee,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.low.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
@@ -118,7 +130,7 @@ const estimate = async (
       maxFee: maxMedium,
       maxFeeUSD: maxMedium * price,
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
-      priorityFee: estimates.medium.suggestedMaxPriorityFeePerGas,
+      priorityFee: mediumPriorityFee,
       maxFeePerGas: Number(estimates.medium.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.medium.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),
@@ -132,7 +144,7 @@ const estimate = async (
       maxFee: maxAggressive,
       maxFeeUSD: maxAggressive * price,
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
-      priorityFee: estimates.high.suggestedMaxPriorityFeePerGas,
+      priorityFee: aggressivePriorityFee,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
       gasPrice: Number(estimates.high.suggestedMaxFeePerGas),
       gasLimit: Number(gasLimit),

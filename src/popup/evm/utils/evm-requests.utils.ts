@@ -12,7 +12,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
-import { BlockTag, ethers } from 'ethers';
+import { BlockTag, ethers, Wallet } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -155,7 +155,13 @@ const decryptMessage = (account: EvmAccount, message: string) => {
 
 const getNonce = async (account: EvmAccount, chain: EvmChain) => {
   const provider = await instanciateProvider(chain);
-  return await provider.getTransactionCount(account.wallet.address);
+  const nonce = await new Wallet(
+    account.wallet.signingKey,
+    provider,
+  ).getNonce();
+  const nonce2 = await provider.getTransactionCount(account.wallet.address);
+  console.log({ nonce, nonce2 });
+  return nonce2;
 };
 
 const getEnsResolver = async (ensAddress: string) => {
