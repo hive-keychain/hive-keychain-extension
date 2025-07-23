@@ -81,6 +81,13 @@ const get = async (url: string): Promise<any> => {
   }
 };
 
+const getPendingTransactions = async (chain: EvmChain, address: string) => {
+  const result = await get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=pendingtxlist&address=${address}&page=1&offset=50`,
+  );
+  return result;
+};
+
 export const EtherscanApi = {
   get,
   getTokenTx,
@@ -89,4 +96,5 @@ export const EtherscanApi = {
   getAbi,
   discoverTokens,
   getErc721TokenTransactions,
+  getPendingTransactions,
 };

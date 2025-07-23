@@ -10,9 +10,10 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
-import { BlockTag, ethers, Wallet } from 'ethers';
+import { BlockTag, ethers } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -155,13 +156,14 @@ const decryptMessage = (account: EvmAccount, message: string) => {
 
 const getNonce = async (account: EvmAccount, chain: EvmChain) => {
   const provider = await instanciateProvider(chain);
-  const nonce = await new Wallet(
-    account.wallet.signingKey,
-    provider,
-  ).getNonce();
-  const nonce2 = await provider.getTransactionCount(account.wallet.address);
-  console.log({ nonce, nonce2 });
-  return nonce2;
+  const nonce = await provider.getTransactionCount(account.wallet.address);
+
+  const highestPendingNonce =
+    await EvmTransactionsUtils.getHighestNonceInPendingTransaction(
+      chain.chainId,
+      account.wallet.address,
+    );
+  return Math.max(nonce, highestPendingNonce + 1);
 };
 
 const getEnsResolver = async (ensAddress: string) => {

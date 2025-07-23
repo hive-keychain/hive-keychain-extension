@@ -46,12 +46,12 @@ const estimate = async (
 
   const price = evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0;
 
-  console.log(Number(estimates.latestPriorityFeeRange[0]));
-
-  const lowPriorityFee = Math.max(
-    Number(estimates.low.suggestedMaxPriorityFeePerGas),
-    Number(estimates.latestPriorityFeeRange[0]),
-  );
+  // TODO change
+  const lowPriorityFee = 0;
+  // const lowPriorityFee = Math.max(
+  //   Number(estimates.low.suggestedMaxPriorityFeePerGas),
+  //   Number(estimates.latestPriorityFeeRange[0]),
+  // );
   const mediumPriorityFee = Math.max(
     Number(estimates.medium.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),

@@ -205,15 +205,15 @@ const deleteSeed = async (
   savedSeeds = savedSeeds.filter((seed) => seed.id !== seedId);
 
   const values = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
-    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
     LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
   ]);
 
   let userPendingTransactions: UserPendingTransactions =
-    values[LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS];
+    values[LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS];
   let canceledTransactions: UserCanceledTransactions =
-    values[LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS];
+    values[LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS];
   let walletPermissions: EvmWalletPermissions =
     values[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
 
@@ -240,11 +240,11 @@ const deleteSeed = async (
   }
 
   await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     userPendingTransactions,
   );
   await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
     canceledTransactions,
   );
   await LocalStorageUtils.saveValueInLocalStorage(

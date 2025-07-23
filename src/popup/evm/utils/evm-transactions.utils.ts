@@ -1,8 +1,7 @@
 import {
+  EvmPendingTransaction,
   EvmSmartContractInfo,
   EVMSmartContractType,
-  PendingTransactionData,
-  UserPendingTransactions,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CanceledTransactionData,
@@ -104,14 +103,15 @@ const transfer = async (
     transactionRequest,
   );
 
-  await addPendingTransaction(
-    transactionResponse,
-    connectedWallet.address,
-    tokenInfo,
-    amount,
-    gasFee,
-    receiverAddress,
-  );
+  // TODO here add pending transaction
+  // await addPendingTransaction(
+  //   transactionResponse,
+  //   connectedWallet.address,
+  //   tokenInfo,
+  //   amount,
+  //   gasFee,
+  //   receiverAddress,
+  // );
 
   return transactionResponse;
 };
@@ -179,80 +179,165 @@ const cancel = async (
   );
 };
 
-const addPendingTransaction = async (
+// New functions
+
+const addPendingTransaction2 = async (
+  walletAddress: string,
   transactionResponse: TransactionResponse,
-  address: string,
-  tokenInfo: EvmSmartContractInfo,
-  amount: number,
-  gasFee: GasFeeEstimationBase,
-  receiverAddress: string,
 ) => {
-  let transactions: UserPendingTransactions =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
-    );
-  if (!transactions) {
-    transactions = {};
-  }
-  if (!transactions[address]) {
-    transactions[address] = [];
-  }
-  transactions[address].push({
-    transaction: transactionResponse,
-    amount,
-    tokenInfo,
-    gasFee,
-    receiverAddress,
+  let transactions = await getAllPendingTransactions();
+
+  transactions.push({
+    txResponseParams: transactionResponse.toJSON(),
+    walletAddress: walletAddress,
   });
 
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     transactions,
   );
 };
 
-const deleteFromPendingTransactions = async (
-  address: string,
-  nonce: number,
-) => {
-  const data = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+const deleteFromPendingTransactions2 = async (txHash: string) => {
+  let transactions = await getAllPendingTransactions();
+  transactions = transactions.filter(
+    (transaction: EvmPendingTransaction) =>
+      transaction.txResponseParams.hash.toLowerCase() !== txHash.toLowerCase(),
   );
-
-  data[address] = data[address].filter(
-    (pendingTransaction: PendingTransactionData) =>
-      pendingTransaction.transaction.nonce !== nonce,
-  );
-
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
-    data,
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+    transactions,
   );
 };
 
-const getPendingTransactions = async (
-  address: string,
-  tokenInfo: EvmSmartContractInfo,
-) => {
-  const data = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
-  );
+const getAllPendingTransactions = async () => {
+  let transactions: EvmPendingTransaction[] =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+    );
+  console.log(transactions);
+  return transactions ?? [];
+};
 
-  if (!data) return [];
-  if (!data[address]) return [];
-  return data[address].filter(
-    (pendingTransaction: PendingTransactionData) =>
-      pendingTransaction.tokenInfo.symbol === tokenInfo.symbol &&
-      pendingTransaction.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
+const getPendingTransactionsForWallet = async (walletAddress: string) => {
+  let transactions = await getAllPendingTransactions();
+  return transactions.filter(
+    (transaction) =>
+      transaction.walletAddress.toLowerCase() === walletAddress.toLowerCase(),
   );
 };
+
+const getPendingTransaction = async (txHash: string) => {
+  let transactions = await getAllPendingTransactions();
+  return transactions.find(
+    (transaction: EvmPendingTransaction) =>
+      transaction.txResponseParams.hash === txHash,
+  );
+};
+
+const getHighestNonceInPendingTransaction = async (
+  chainId: string,
+  walletAddress: string,
+) => {
+  const transactions = await getPendingTransactionsForWallet(walletAddress);
+  console.log('transaction in getHighest', transactions);
+  const walletTransactions = transactions.filter((pendingTx) => {
+    console.log(
+      Number(pendingTx.txResponseParams.chainId).toString(16),
+      chainId,
+    );
+    return (
+      `0x${Number(pendingTx.txResponseParams.chainId).toString(16)}` === chainId
+    );
+  });
+
+  console.log({ walletTransactions });
+
+  return walletTransactions.length > 0
+    ? Math.max(
+        ...walletTransactions.map(
+          (pendingTx) => pendingTx.txResponseParams.nonce,
+        ),
+      )
+    : 0;
+};
+
+// Old functions to replace
+// const addPendingTransaction = async (
+//   transactionResponse: TransactionResponse,
+//   address: string,
+//   tokenInfo: EvmSmartContractInfo,
+//   amount: number,
+//   gasFee: GasFeeEstimationBase,
+//   receiverAddress: string,
+// ) => {
+//   let transactions: UserPendingTransactions =
+//     await LocalStorageUtils.getValueFromLocalStorage(
+//       LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+//     );
+//   if (!transactions) {
+//     transactions = {};
+//   }
+//   if (!transactions[address]) {
+//     transactions[address] = [];
+//   }
+//   transactions[address].push({
+//     transaction: transactionResponse,
+//     amount,
+//     tokenInfo,
+//     gasFee,
+//     receiverAddress,
+//   });
+
+//   await LocalStorageUtils.saveValueInLocalStorage(
+//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+//     transactions,
+//   );
+// };
+
+// const deleteFromPendingTransactions = async (
+//   address: string,
+//   nonce: number,
+// ) => {
+//   const data = await LocalStorageUtils.getValueFromLocalStorage(
+//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+//   );
+
+//   data[address] = data[address].filter(
+//     (pendingTransaction: PendingTransactionData) =>
+//       pendingTransaction.transaction.nonce !== nonce,
+//   );
+
+//   await LocalStorageUtils.saveValueInLocalStorage(
+//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+//     data,
+//   );
+// };
+
+// const getPendingTransactions = async (
+//   address: string,
+//   tokenInfo: EvmSmartContractInfo,
+// ) => {
+//   const data = await LocalStorageUtils.getValueFromLocalStorage(
+//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+//   );
+
+//   if (!data) return [];
+//   if (!data[address]) return [];
+//   return data[address].filter(
+//     (pendingTransaction: PendingTransactionData) =>
+//       pendingTransaction.tokenInfo.symbol === tokenInfo.symbol &&
+//       pendingTransaction.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
+//   );
+// };
+
 const getCanceledTransactions = async (
   chain: EvmChain,
   address: string,
   tokenInfo: EvmSmartContractInfo,
 ): Promise<CanceledTransactionData[]> => {
   const data = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_PENDING_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
   );
 
   if (!data) return [];
@@ -270,7 +355,7 @@ const getAllCanceledTransactions = async (
   address: string,
 ): Promise<CanceledTransactionData[]> => {
   const data = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
   );
   if (!data) return [];
   if (!data[chain.chainId]) return [];
@@ -287,7 +372,7 @@ const addCanceledTransaction = async (
 ) => {
   let transactions: UserCanceledTransactions =
     await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+      LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
     );
   if (!transactions) {
     transactions = {};
@@ -307,7 +392,7 @@ const addCanceledTransaction = async (
   });
 
   LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_USER_CANCELED_TRANSACTIONS,
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
     transactions,
   );
 };
@@ -367,18 +452,27 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
   const provider = EthersUtils.getProvider(chain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
 
-  const transactionResponse = await connectedWallet.sendTransaction(
-    transactionRequest,
-  );
+  const transactionResponse: TransactionResponse =
+    await connectedWallet.sendTransaction(transactionRequest);
+
+  await addPendingTransaction2(connectedWallet.address, transactionResponse);
+
   return transactionResponse.hash;
 };
 
 export const EvmTransactionsUtils = {
   transfer,
   cancel,
-  getPendingTransactions,
-  addPendingTransaction,
-  deleteFromPendingTransactions,
+  // getPendingTransactions,
+  // addPendingTransaction,
+  // deleteFromPendingTransactions,
+  getHighestNonceInPendingTransaction,
+  getPendingTransaction,
+  getAllPendingTransactions,
+  getPendingTransactionsForWallet,
+  addPendingTransaction2,
+  deleteFromPendingTransactions2,
+  //
   getCanceledTransactions,
   addCanceledTransaction,
   getAllCanceledTransactions,

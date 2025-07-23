@@ -56,6 +56,11 @@ export type EvmSmartContractInfo =
   | EvmSmartContractInfoErc721
   | EvmSmartContractInfoErc1155;
 
+export interface EvmPendingTransaction {
+  txResponseParams: any;
+  walletAddress: string;
+}
+
 export interface UserPendingTransactions {
   [userAddress: string]: PendingTransactionData[];
 }

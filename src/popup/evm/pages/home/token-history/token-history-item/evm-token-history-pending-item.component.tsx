@@ -1,6 +1,5 @@
 import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
 import moment from 'moment';
@@ -40,10 +39,10 @@ export const EvmTokenHistoryPendingItemComponent = ({
     ).getTransaction(txResponse.hash);
 
     if (!transactionResult) {
-      await EvmTransactionsUtils.deleteFromPendingTransactions(
-        txResponse?.from,
-        pendingTransactionData.transaction.nonce,
-      );
+      // await EvmTransactionsUtils.deleteFromPendingTransactions(
+      //   txResponse?.from,
+      //   pendingTransactionData.transaction.nonce,
+      // );
       triggerRefreshHistory();
       return;
     }
@@ -51,10 +50,10 @@ export const EvmTokenHistoryPendingItemComponent = ({
     setTransactionResponse(txResponse);
     const transactionReceipt = await txResponse.wait();
     if (transactionReceipt) {
-      await EvmTransactionsUtils.deleteFromPendingTransactions(
-        transactionReceipt?.from,
-        pendingTransactionData.transaction.nonce,
-      );
+      // await EvmTransactionsUtils.deleteFromPendingTransactions(
+      //   transactionReceipt?.from,
+      //   pendingTransactionData.transaction.nonce,
+      // );
       triggerRefreshHistory();
     }
   };

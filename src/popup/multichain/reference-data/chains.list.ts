@@ -39,7 +39,6 @@ export const defaultChainList = [
     rpc: [
       // { url: 'https://tx-sentinel-ethereum-mainnet.api.cx.metamask.io/' },
       { url: 'https://ethereum-rpc.publicnode.com' },
-      { url: 'https://eth.drpc.org' },
     ],
   } as EvmChain,
   {
