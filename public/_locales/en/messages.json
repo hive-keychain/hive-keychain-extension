@@ -5264,5 +5264,13 @@
   "evm_no_nfts_found": {
     "message": "No NFTs found",
     "description": "No nft"
+  },
+  "evm_tx_completed_notification_message": {
+    "message": "Tx #$1 was completed",
+    "description": "Transaction completed message"
+  },
+  "evm_tx_completed_notification_title": {
+    "message": "Transaction completed",
+    "description": "Transaction completed title"
   }
 }

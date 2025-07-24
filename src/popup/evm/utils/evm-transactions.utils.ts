@@ -15,6 +15,7 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -180,6 +181,7 @@ const cancel = async (
 };
 
 // New functions
+// TODO delete useless functions after finish refactoring
 
 const addPendingTransaction2 = async (
   walletAddress: string,
@@ -196,6 +198,8 @@ const addPendingTransaction2 = async (
     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     transactions,
   );
+
+  EvmPendingTransactionsNotifications.waitForTransaction(transactionResponse);
 };
 
 const deleteFromPendingTransactions2 = async (txHash: string) => {
@@ -215,7 +219,6 @@ const getAllPendingTransactions = async () => {
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     );
-  console.log(transactions);
   return transactions ?? [];
 };
 
@@ -240,18 +243,11 @@ const getHighestNonceInPendingTransaction = async (
   walletAddress: string,
 ) => {
   const transactions = await getPendingTransactionsForWallet(walletAddress);
-  console.log('transaction in getHighest', transactions);
   const walletTransactions = transactions.filter((pendingTx) => {
-    console.log(
-      Number(pendingTx.txResponseParams.chainId).toString(16),
-      chainId,
-    );
     return (
       `0x${Number(pendingTx.txResponseParams.chainId).toString(16)}` === chainId
     );
   });
-
-  console.log({ walletTransactions });
 
   return walletTransactions.length > 0
     ? Math.max(
@@ -455,7 +451,7 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
   const transactionResponse: TransactionResponse =
     await connectedWallet.sendTransaction(transactionRequest);
 
-  await addPendingTransaction2(connectedWallet.address, transactionResponse);
+  addPendingTransaction2(connectedWallet.address, transactionResponse);
 
   return transactionResponse.hash;
 };
