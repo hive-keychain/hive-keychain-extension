@@ -15,22 +15,11 @@ const UsernameWithAvatar = ({
   title,
   showBorder = false,
   className = '',
-  size = 'medium',
   avatarPosition = 'right',
 }: Props) => {
   const formattedUsername = username.startsWith('@')
     ? username.trim()
     : `@${username.trim()}`;
-
-  const avatarElement = (
-    <PreloadedImage
-      className="user-avatar"
-      src={`https://images.hive.blog/u/${formattedUsername.slice(1)}/avatar`}
-      alt={'/assets/images/accounts.png'}
-      placeholder={'/assets/images/accounts.png'}
-      addBackground
-    />
-  );
 
   const usernameElement = <span className="username">{formattedUsername}</span>;
 
@@ -38,22 +27,34 @@ const UsernameWithAvatar = ({
     <div
       className={`username-with-avatar ${
         showBorder ? 'with-border' : ''
-      } size-${size} avatar-position-${avatarPosition} ${className}`}>
+      } avatar-position-${avatarPosition} ${className}`}>
       {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
       <div className="avatar-username-container">
         {avatarPosition === 'left' ? (
           <>
-            {avatarElement}
+            <UsernameAvatar username={formattedUsername.slice(1)} />
             {usernameElement}
           </>
         ) : (
           <>
             {usernameElement}
-            {avatarElement}
+            <UsernameAvatar username={formattedUsername.slice(1)} />
           </>
         )}
       </div>
     </div>
+  );
+};
+
+export const UsernameAvatar = ({ username }: { username: string }) => {
+  return (
+    <PreloadedImage
+      className="user-avatar"
+      src={`https://images.hive.blog/u/${username}/avatar`}
+      alt={'/assets/images/accounts.png'}
+      placeholder={'/assets/images/accounts.png'}
+      addBackground
+    />
   );
 };
 

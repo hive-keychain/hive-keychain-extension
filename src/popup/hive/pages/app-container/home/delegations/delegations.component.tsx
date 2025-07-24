@@ -399,6 +399,7 @@ const Delegations = ({
             placeholder="popup_html_username"
             label="popup_html_username"
             autocompleteValues={autocompleteTransferUsernames}
+            autocompletePrefix="@"
           />
 
           <div className="amount-panel">

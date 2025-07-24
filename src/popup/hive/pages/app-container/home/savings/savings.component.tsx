@@ -435,6 +435,7 @@ const SavingsPage = ({
             placeholder="popup_html_username"
             label="popup_html_username"
             autocompleteValues={autocompleteFavoriteUsers}
+            autocompletePrefix="@"
           />
 
           <div className="amount-panel">

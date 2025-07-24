@@ -29,7 +29,10 @@ import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFields, ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldTag,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -331,6 +334,7 @@ const TokensOperation = ({
               logo={SVGIcons.INPUT_AT}
               placeholder="popup_html_username"
               autocompleteValues={autocompleteFavoriteUsers}
+              autocompletePrefix="@"
             />
           )}
           <div className="value-panel">

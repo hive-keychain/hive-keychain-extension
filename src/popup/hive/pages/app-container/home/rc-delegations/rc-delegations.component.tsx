@@ -337,6 +337,7 @@ const RCDelegations = ({
             placeholder="popup_html_username"
             type={InputType.TEXT}
             autocompleteValues={autocompleteTransferUsernames}
+            autocompletePrefix="@"
           />
 
           <div className="amount-panel">

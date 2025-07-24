@@ -394,6 +394,7 @@ const PowerUpDown = ({
               placeholder="popup_html_receiver"
               label="popup_html_receiver"
               autocompleteValues={autocompleteFavoriteUsers}
+              autocompletePrefix="@"
             />
           )}
           <div className="amount-panel">
