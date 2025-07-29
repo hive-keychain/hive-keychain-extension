@@ -88,9 +88,9 @@ const EvmTransfer = ({
       receiverAddress: formParams.receiverAddress
         ? formParams.receiverUsername
         : '',
-      selectedToken: formParams.selectedToken
-        ? formParams.selectedToken
-        : navParams.selectedCurrency,
+      selectedToken: formParams?.selectedToken
+        ? formParams?.selectedToken
+        : navParams?.selectedCurrency,
       amount: formParams.amount ? formParams.amount : '',
     },
     resolver: (values, context, options) => {
@@ -119,18 +119,18 @@ const EvmTransfer = ({
   }, [activeAccount]);
 
   useEffect(() => {
-    setBalance(watch('selectedToken').balanceInteger);
+    if (watch('selectedToken'))
+      setBalance(watch('selectedToken').balanceInteger);
   }, [watch('selectedToken')]);
 
   const init = async () => {
+    const filteredTokens = (await EvmTokensUtils.filterTokensBasedOnSettings(
+      activeAccount.nativeAndErc20Tokens.value,
+    )) as NativeAndErc20Token[];
     setTokenOptions(
-      (
-        await EvmTokensUtils.filterTokensBasedOnSettings(
-          activeAccount.nativeAndErc20Tokens.value,
-        )
-      ).map((tokenBalance, index) => {
+      filteredTokens.map((tokenBalance, index) => {
         return {
-          label: tokenBalance.tokenInfo.symbol.toUpperCase(),
+          label: tokenBalance.tokenInfo.symbol,
           subLabel: tokenBalance.tokenInfo.name,
           value: tokenBalance,
           img: tokenBalance.tokenInfo.logo,
@@ -138,6 +138,14 @@ const EvmTransfer = ({
         };
       }),
     );
+    if (!watch('selectedToken')) {
+      setValue(
+        'selectedToken',
+        filteredTokens.find(
+          (t) => t.tokenInfo.type === EVMSmartContractType.NATIVE,
+        )!,
+      );
+    }
   };
 
   const handleClickOnSend = async (form: TransferForm) => {
@@ -294,69 +302,70 @@ const EvmTransfer = ({
 
   return (
     <>
-      <div
-        className="transfer-funds-page"
-        data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
-        <BalanceSectionComponent
-          value={balance}
-          unit={watch('selectedToken').tokenInfo.symbol}
-          label="popup_html_balance"
-        />
+      {watch('selectedToken') && (
+        <div
+          className="transfer-funds-page"
+          data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
+          <BalanceSectionComponent
+            value={balance}
+            unit={watch('selectedToken').tokenInfo.symbol}
+            label="popup_html_balance"
+          />
 
-        {tokenOptions && (
-          <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
-            <div className="form-fields">
-              <FormInputComponent
-                name="receiverAddress"
-                control={control}
-                dataTestId="input-address"
-                type={InputType.TEXT}
-                logo={SVGIcons.INPUT_AT}
-                placeholder="popup_html_address"
-                label="popup_html_username"
-              />
-              <div className="value-panel">
-                <ComplexeCustomSelect
-                  label="popup_html_currency"
-                  options={tokenOptions}
-                  selectedItem={
-                    {
-                      value: watch('selectedToken'),
-                      label:
-                        watch('selectedToken').tokenInfo.symbol.toUpperCase(),
-                      subLabel: watch('selectedToken').tokenInfo.name,
-                      img: watch('selectedToken').tokenInfo.logo,
-                    } as OptionItem
-                  }
-                  setSelectedItem={(item) => {
-                    setValue('selectedToken', item.value);
-                  }}
+          {tokenOptions && (
+            <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
+              <div className="form-fields">
+                <FormInputComponent
+                  name="receiverAddress"
+                  control={control}
+                  dataTestId="input-address"
+                  type={InputType.TEXT}
+                  logo={SVGIcons.INPUT_AT}
+                  placeholder="popup_html_address"
+                  label="popup_html_username"
                 />
-
-                <div className="value-input-panel">
-                  <FormInputComponent
-                    name="amount"
-                    control={control}
-                    dataTestId="amount-input"
-                    type={InputType.NUMBER}
-                    label="popup_html_transfer_amount"
-                    placeholder="0.000"
-                    skipPlaceholderTranslation
-                    min={0}
-                    rightActionClicked={setAmountToMaxValue}
-                    rightActionIcon={SVGIcons.INPUT_MAX}
+                <div className="value-panel">
+                  <ComplexeCustomSelect
+                    label="popup_html_currency"
+                    options={tokenOptions}
+                    selectedItem={
+                      {
+                        value: watch('selectedToken'),
+                        label: watch('selectedToken').tokenInfo.symbol,
+                        subLabel: watch('selectedToken').tokenInfo.name,
+                        img: watch('selectedToken').tokenInfo.logo,
+                      } as OptionItem
+                    }
+                    setSelectedItem={(item) => {
+                      setValue('selectedToken', item.value);
+                    }}
                   />
+
+                  <div className="value-input-panel">
+                    <FormInputComponent
+                      name="amount"
+                      control={control}
+                      dataTestId="amount-input"
+                      type={InputType.NUMBER}
+                      label="popup_html_transfer_amount"
+                      placeholder="0.000"
+                      skipPlaceholderTranslation
+                      min={0}
+                      rightActionClicked={setAmountToMaxValue}
+                      rightActionIcon={SVGIcons.INPUT_MAX}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <ButtonComponent
-              dataTestId="send-transfer"
-              onClick={handleSubmit(handleClickOnSend)}
-              label={'popup_html_send_transfer'}
-            />
-          </FormContainer>
-        )}
-      </div>
+              <ButtonComponent
+                dataTestId="send-transfer"
+                onClick={handleSubmit(handleClickOnSend)}
+                label={'popup_html_send_transfer'}
+              />
+            </FormContainer>
+          )}
+        </div>
+      )}
     </>
   );
 };

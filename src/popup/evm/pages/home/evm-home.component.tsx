@@ -275,7 +275,6 @@ const Home = ({
         />
       </div>
       <ActionsSectionComponent
-        selectedToken={chain.mainToken}
         additionalClass={showBottomBar ? undefined : 'down'}
       />
       <ProposalVotingSectionComponent />

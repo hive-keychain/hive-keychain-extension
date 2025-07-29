@@ -107,9 +107,9 @@ const TransferFunds = ({
       receiverUsername: formParams.receiverUsername
         ? formParams.receiverUsername
         : '',
-      selectedCurrency: formParams.selectedCurrency
-        ? formParams.selectedCurrency
-        : navParams.selectedCurrency,
+      selectedCurrency: formParams?.selectedCurrency
+        ? formParams?.selectedCurrency
+        : navParams?.selectedCurrency,
       amount: formParams.amount ? formParams.amount : '',
       memo: formParams.memo ? formParams.memo : '',
       encrypted: formParams.encrypted ? formParams.encrypted : false,
@@ -141,7 +141,6 @@ const TransferFunds = ({
 
   useEffect(() => {
     fetchPhishingAccounts();
-    loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
       title: 'popup_html_transfer_funds',
       isBackButtonEnabled: true,
@@ -149,7 +148,11 @@ const TransferFunds = ({
   }, []);
 
   useEffect(() => {
-    setBalance(balances[watch('selectedCurrency')]);
+    if (!watch('selectedCurrency')) setValue('selectedCurrency', 'hive');
+    else {
+      setBalance(balances[watch('selectedCurrency')]);
+      loadAutocompleteTransferUsernames();
+    }
   }, [watch('selectedCurrency')]);
 
   const options = [
