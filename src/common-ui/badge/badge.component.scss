@@ -1,19 +1,12 @@
 .badge {
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 11px;
-  color: white;
   &.experimental {
-    background: $dark-red;
+    @include badge($dark-red);
   }
+  &.pending,
   &.testnet {
-    background-color: $light-grey;
+    @include badge($light-grey);
   }
   &.mainnet {
-    background-color: $pale-red;
-  }
-  &.small {
-    line-height: normal;
-    font-size: 10px;
+    @include badge($pale-red);
   }
 }

@@ -104,15 +104,7 @@ const transfer = async (
     transactionRequest,
   );
 
-  // TODO here add pending transaction
-  // await addPendingTransaction(
-  //   transactionResponse,
-  //   connectedWallet.address,
-  //   tokenInfo,
-  //   amount,
-  //   gasFee,
-  //   receiverAddress,
-  // );
+  await addPendingTransaction(connectedWallet.address, transactionResponse);
 
   return transactionResponse;
 };
@@ -180,10 +172,7 @@ const cancel = async (
   );
 };
 
-// New functions
-// TODO delete useless functions after finish refactoring
-
-const addPendingTransaction2 = async (
+const addPendingTransaction = async (
   walletAddress: string,
   transactionResponse: TransactionResponse,
 ) => {
@@ -202,7 +191,7 @@ const addPendingTransaction2 = async (
   EvmPendingTransactionsNotifications.waitForTransaction(transactionResponse);
 };
 
-const deleteFromPendingTransactions2 = async (txHash: string) => {
+const deleteFromPendingTransactions = async (txHash: string) => {
   let transactions = await getAllPendingTransactions();
   transactions = transactions.filter(
     (transaction: EvmPendingTransaction) =>
@@ -257,75 +246,6 @@ const getHighestNonceInPendingTransaction = async (
       )
     : 0;
 };
-
-// Old functions to replace
-// const addPendingTransaction = async (
-//   transactionResponse: TransactionResponse,
-//   address: string,
-//   tokenInfo: EvmSmartContractInfo,
-//   amount: number,
-//   gasFee: GasFeeEstimationBase,
-//   receiverAddress: string,
-// ) => {
-//   let transactions: UserPendingTransactions =
-//     await LocalStorageUtils.getValueFromLocalStorage(
-//       LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-//     );
-//   if (!transactions) {
-//     transactions = {};
-//   }
-//   if (!transactions[address]) {
-//     transactions[address] = [];
-//   }
-//   transactions[address].push({
-//     transaction: transactionResponse,
-//     amount,
-//     tokenInfo,
-//     gasFee,
-//     receiverAddress,
-//   });
-
-//   await LocalStorageUtils.saveValueInLocalStorage(
-//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-//     transactions,
-//   );
-// };
-
-// const deleteFromPendingTransactions = async (
-//   address: string,
-//   nonce: number,
-// ) => {
-//   const data = await LocalStorageUtils.getValueFromLocalStorage(
-//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-//   );
-
-//   data[address] = data[address].filter(
-//     (pendingTransaction: PendingTransactionData) =>
-//       pendingTransaction.transaction.nonce !== nonce,
-//   );
-
-//   await LocalStorageUtils.saveValueInLocalStorage(
-//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-//     data,
-//   );
-// };
-
-// const getPendingTransactions = async (
-//   address: string,
-//   tokenInfo: EvmSmartContractInfo,
-// ) => {
-//   const data = await LocalStorageUtils.getValueFromLocalStorage(
-//     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-//   );
-
-//   if (!data) return [];
-//   if (!data[address]) return [];
-//   return data[address].filter(
-//     (pendingTransaction: PendingTransactionData) =>
-//       pendingTransaction.tokenInfo.symbol === tokenInfo.symbol &&
-//       pendingTransaction.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
-//   );
-// };
 
 const getCanceledTransactions = async (
   chain: EvmChain,
@@ -443,15 +363,13 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
     }
   }
 
-  console.log({ transactionRequest });
-
   const provider = EthersUtils.getProvider(chain as EvmChain);
   const connectedWallet = new Wallet(account.wallet.signingKey, provider);
 
   const transactionResponse: TransactionResponse =
     await connectedWallet.sendTransaction(transactionRequest);
 
-  addPendingTransaction2(connectedWallet.address, transactionResponse);
+  addPendingTransaction(connectedWallet.address, transactionResponse);
 
   return transactionResponse.hash;
 };
@@ -459,16 +377,12 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
 export const EvmTransactionsUtils = {
   transfer,
   cancel,
-  // getPendingTransactions,
-  // addPendingTransaction,
-  // deleteFromPendingTransactions,
   getHighestNonceInPendingTransaction,
   getPendingTransaction,
   getAllPendingTransactions,
   getPendingTransactionsForWallet,
-  addPendingTransaction2,
-  deleteFromPendingTransactions2,
-  //
+  addPendingTransaction,
+  deleteFromPendingTransactions,
   getCanceledTransactions,
   addCanceledTransaction,
   getAllCanceledTransactions,

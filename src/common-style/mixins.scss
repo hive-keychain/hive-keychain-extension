@@ -505,3 +505,20 @@
     overflow-y: scroll;
   }
 }
+
+@mixin badge($color) {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+
+  background: $color;
+  &.inverted {
+    border: 1px solid $color;
+    color: $color;
+    background: transparent;
+  }
+  &.small {
+    line-height: normal;
+    font-size: 10px;
+  }
+}

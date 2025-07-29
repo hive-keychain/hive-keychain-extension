@@ -81,13 +81,13 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       },
     );
 
-    console.log(chainFromProvider);
+    const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
+      res.ACTIVE_CHAIN,
+    );
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
 
-    if (chainFromProvider) {
-      setChain(chainFromProvider ?? res.ACTIVE_CHAIN);
-    }
+    setChain(chainFromProvider ?? chain);
 
     setReady(true);
 

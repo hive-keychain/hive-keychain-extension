@@ -57,7 +57,6 @@ const getDisplayInputType = (
   } else {
     tokenType = EvmTokensUtils.getTokenType(abi);
   }
-  console.log({ methodName, inputType, name, tokenInfo });
   switch (tokenType) {
     case EVMSmartContractType.ERC20: {
       switch (methodName) {
@@ -522,7 +521,6 @@ const parseData = async (
   const foundSignature = await EvmDataParser.getMethodFromSignature(
     functionNameInHex,
   );
-  console.log({ foundSignature });
 
   if (foundSignature) {
     let registry;

@@ -84,6 +84,7 @@ const EvmTransactionResult = ({
         if (transactionResult) setTxResult(transactionResult);
       }
     } catch (err) {
+      console.log(err);
       if (!isCanceling && !isTransactionSpeedingUp) {
         Logger.error(`Error while broadcasting`, err);
         // Display error message
@@ -239,8 +240,6 @@ const EvmTransactionResult = ({
   };
 
   const getImage = async (value: string) => {
-    const url = `https://placehold.co/600x400`;
-
     const connectedWallet = new Wallet(
       HDNodeWallet.fromPhrase(
         activeAccount?.wallet.mnemonic?.phrase!,
@@ -254,13 +253,13 @@ const EvmTransactionResult = ({
       connectedWallet,
     );
 
-    const test = await EvmNFTUtils.getMetadataFromTokenId(
+    const metadata = await EvmNFTUtils.getMetadataFromTokenId(
       tokenInfo.type,
       Number(value).toString(),
       contract,
     );
 
-    return test.metadata.image;
+    return metadata.metadata.image;
   };
 
   return (
@@ -385,20 +384,6 @@ const EvmTransactionResult = ({
                 </React.Fragment>
               ),
             )}
-          {/* {txResult.from && (
-            <SmallDataCardComponent
-              label="popup_html_evm_transaction_info_from"
-              value={EvmFormatUtils.formatAddress(txResult.from!)}
-              valueOnClickAction={() => openWallet(txResult.from)}
-            />
-          )} */}
-          {/* {receiverAddress && (
-            <SmallDataCardComponent
-              label="popup_html_evm_transaction_info_to"
-              value={EvmFormatUtils.formatAddress(receiverAddress)}
-              valueOnClickAction={() => openWallet(receiverAddress)}
-            />
-          )} */}
           <SmallDataCardComponent
             label="evm_nft_token_type"
             value={tokenInfo ? tokenInfo.type : 'unknown'}

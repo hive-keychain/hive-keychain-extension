@@ -30,6 +30,8 @@ export interface EvmUserHistoryItem {
 
   detailFields?: EvmUserHistoryItemDetail[];
   tokenInfo?: EvmSmartContractInfo;
+
+  isPending?: boolean;
 }
 
 export interface EvmUserHistoryItemDetail {

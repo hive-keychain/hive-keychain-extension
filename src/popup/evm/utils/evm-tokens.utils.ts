@@ -339,7 +339,12 @@ const getTokensFullDetails = async (
 
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
 
-  const newMetadata = [...chainTokenMetaData, ...tokensMetadata];
+  const newMetadata = [
+    ...chainTokenMetaData.filter(
+      (t: any) => t.type !== EVMSmartContractType.NATIVE,
+    ),
+    ...tokensMetadata,
+  ];
   if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
     const mainTokenMetadata = {
       type: EVMSmartContractType.NATIVE,

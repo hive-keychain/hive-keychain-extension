@@ -1,3 +1,4 @@
+import { Badge, BadgeType } from '@common-ui/badge/badge.component';
 import {
   EvmUserHistoryItem,
   EvmUserHistoryItemType,
@@ -73,18 +74,23 @@ export const EvmTokenHistoryItemComponent = ({
               />
               <div className="right-panel">
                 <div className="detail">{historyItem.label}</div>
-                <CustomTooltip
-                  dataTestId="scustom-tool-tip"
-                  additionalClassName="history-tooltip"
-                  message={moment(historyItem.timestamp).format(
-                    'YYYY/MM/DD , hh:mm:ss a',
-                  )}
-                  skipTranslation
-                  color="grey">
-                  <div className="date">
-                    {moment(historyItem.timestamp).format('L')}
-                  </div>
-                </CustomTooltip>
+                {!historyItem.isPending && (
+                  <CustomTooltip
+                    dataTestId="scustom-tool-tip"
+                    additionalClassName="history-tooltip"
+                    message={moment(historyItem.timestamp).format(
+                      'YYYY/MM/DD , hh:mm:ss a',
+                    )}
+                    skipTranslation
+                    color="grey">
+                    <div className="date">
+                      {moment(historyItem.timestamp).format('L')}
+                    </div>
+                  </CustomTooltip>
+                )}
+                {historyItem.isPending && (
+                  <Badge badgeType={BadgeType.PENDING} inverted />
+                )}
                 {expandableContent && (
                   <SVGIcon
                     icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}

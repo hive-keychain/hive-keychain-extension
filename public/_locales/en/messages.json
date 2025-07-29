@@ -39,6 +39,10 @@
     "message": "Wrong key. Please use memo key",
     "description": "while using wrong private key"
   },
+  "common_pending": {
+    "message": "Pending",
+    "description": "EVM transaction pending status"
+  },
   "common_testnet": {
     "message": "Testnet",
     "description": "EVM blockchain testnet"

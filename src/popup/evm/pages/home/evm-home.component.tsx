@@ -5,13 +5,16 @@ import {
 } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
+import { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import {
@@ -62,6 +65,8 @@ const Home = ({
 
   const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
+  const [pendingTransactionsItems, setPendingTransactionsItems] =
+    useState<EvmUserHistoryItem[]>();
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -102,7 +107,34 @@ const Home = ({
         accounts,
       );
       loadEvmActiveAccount(chain, wallet);
+      getPendingTransactions();
     }
+  };
+
+  const getPendingTransactions = async () => {
+    const pendingTransactions =
+      await EvmTransactionsUtils.getPendingTransactionsForWallet(
+        activeAccount.address,
+      );
+
+    const pendingTxItems = [];
+    const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
+    for (const pendingTx of pendingTransactions) {
+      const item = await EvmTokensHistoryParserUtils.parseEvent(
+        {
+          ...pendingTx.txResponseParams,
+          input: pendingTx.txResponseParams.data,
+        },
+        chain,
+        pendingTx.walletAddress.toLowerCase(),
+        tokensMetadata,
+      );
+      if (item) {
+        item.isPending = true;
+        pendingTxItems.push(item);
+      }
+    }
+    setPendingTransactionsItems(pendingTxItems);
   };
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
@@ -239,6 +271,7 @@ const Home = ({
           onClickOnNftPreview={handleClickOnNftCollection}
           chain={chain}
           loadEvmHistory={loadEvmHistory}
+          pendingTransactionsItems={pendingTransactionsItems}
         />
       </div>
       <ActionsSectionComponent
