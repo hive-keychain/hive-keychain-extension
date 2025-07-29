@@ -15,13 +15,13 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmPricesUtils } from '@popup/evm/utils/evm-prices.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';

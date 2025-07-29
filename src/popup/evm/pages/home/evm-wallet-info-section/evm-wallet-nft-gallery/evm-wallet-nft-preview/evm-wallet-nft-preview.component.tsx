@@ -2,7 +2,7 @@ import {
   EvmErc1155TokenCollectionItem,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';

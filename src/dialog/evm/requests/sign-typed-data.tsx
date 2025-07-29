@@ -6,11 +6,11 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';

@@ -9,8 +9,8 @@ import {
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';

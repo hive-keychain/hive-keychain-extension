@@ -10,7 +10,7 @@ import {
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanelItem } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel-item.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';

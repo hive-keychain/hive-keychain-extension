@@ -15,10 +15,11 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionDecodedData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
+import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 const parseEvent = async (
@@ -114,9 +115,8 @@ const parseEvent = async (
       (t) => t.type === EVMSmartContractType.NATIVE,
     );
     // native event
-    const amount = EvmFormatUtils.etherToGwei(
-      Number(event.value) / 1000000000,
-    ).toString();
+    const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
+    const amountS = FormatUtils.withCommas(amount, 18, true);
 
     const addressDetails = await EvmAddressesUtils.getAddressDetails(
       event.from.toLowerCase() === walletAddress.toLowerCase()
@@ -138,7 +138,7 @@ const parseEvent = async (
     });
     details.push({
       label: 'popup_html_transfer_amount',
-      value: `${amount.toString()} ${mainToken!.symbol.toString()}`,
+      value: `${amountS} ${mainToken!.symbol.toString()}`,
       type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
     });
 
@@ -157,7 +157,7 @@ const parseEvent = async (
           ? 'popup_html_evm_history_transfer_out'
           : 'popup_html_evm_history_transfer_in',
         [
-          amount,
+          amountS,
           mainToken!.symbol,
           addressDetails.label ?? addressDetails.formattedAddress,
         ],

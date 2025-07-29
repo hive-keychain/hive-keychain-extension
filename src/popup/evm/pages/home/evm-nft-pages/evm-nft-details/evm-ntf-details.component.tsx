@@ -3,7 +3,7 @@ import {
   EvmErc721Token,
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React, { BaseSyntheticEvent, useEffect } from 'react';
 import ButtonComponent, {
   ButtonType,

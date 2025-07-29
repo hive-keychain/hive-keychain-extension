@@ -2,7 +2,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
 
 interface Props {

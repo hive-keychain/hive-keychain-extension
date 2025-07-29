@@ -3,8 +3,8 @@ import {
   EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';

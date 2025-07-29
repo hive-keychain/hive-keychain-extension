@@ -14,8 +14,8 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/format.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';

@@ -15,6 +15,12 @@ const etherToGwei = (value: number | bigint) => {
   return value / GWEI;
 };
 
+const etherToWei = (value: number | bigint) => {
+  if (typeof value === 'bigint') value = Number(value);
+  if (!value || value.toString() === '') return 0;
+  return value / WEI;
+};
+
 const addHexPrefix = (str: string) => {
   if (typeof str !== 'string' || str.match(/^-?0x/u)) {
     return str;
@@ -35,6 +41,7 @@ export const EvmFormatUtils = {
   addHexPrefix,
   formatAddress,
   etherToGwei,
+  etherToWei,
   GWEI,
   WEI,
 };
