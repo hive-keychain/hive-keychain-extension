@@ -5,6 +5,11 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
+  EvmUserHistoryItem,
+  EvmUserHistoryItemDetail,
+  EvmUserHistoryItemDetailType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
+import {
   EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc20,
   EvmSmartContractInfoErc721,
@@ -15,10 +20,12 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -209,7 +216,10 @@ const EvmTransfer = ({
     let transactionData: ProviderTransactionData = {
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
-      to: form.receiverAddress,
+      to:
+        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
+          ? form.receiverAddress
+          : form.selectedToken.tokenInfo.address,
       data:
         form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? ''
@@ -221,7 +231,9 @@ const EvmTransfer = ({
             ),
       value:
         form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-          ? form.amount.toString(16)
+          ? EvmFormatUtils.addHexPrefix(
+              (form.amount * EvmFormatUtils.WEI).toString(16),
+            )
           : '0x0',
     };
     transactionData.from = activeAccount.address;
@@ -241,26 +253,34 @@ const EvmTransfer = ({
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
-          const transactionResult = await EvmTransactionsUtils.transfer(
-            chain,
-            form.selectedToken.tokenInfo,
-            form.receiverAddress,
-            form.amount,
-            activeAccount.wallet,
+          const transactionResponse = await EvmTransactionsUtils.send(
+            { wallet: activeAccount.wallet } as EvmAccount,
+            {
+              value: transactionData.value,
+              to: transactionData.to,
+              type: Number(EvmTransactionType.EIP_1559),
+              data: transactionData.data,
+            },
             gasFee,
+            chain.chainId,
           );
 
-          Logger.log(transactionResult);
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-            transactionResponse: transactionResult,
-            tokenInfo: form.selectedToken.tokenInfo,
-            receiverAddress: form.receiverAddress,
-            amount: form.amount,
-            gasFee: gasFee,
+            transactionResponse: transactionResponse,
+            historyItem: {
+              detailFields: [
+                {
+                  label: 'test',
+                  value: 'test',
+                  type: EvmUserHistoryItemDetailType.BASE,
+                } as EvmUserHistoryItemDetail,
+              ],
+            } as unknown as EvmUserHistoryItem,
             pageTitle: 'popup_html_transfer_funds',
           });
           setSuccessMessage('popup_html_evm_transfer_successful');
         } catch (err) {
+          console.log(err);
           Logger.error('Error during transfer', err);
           setErrorMessage('popup_html_transfer_failed');
         } finally {
