@@ -359,6 +359,7 @@ const EvmTransfer = ({
                     setSelectedItem={(item) => {
                       setValue('selectedToken', item.value);
                     }}
+                    generateImageIfNull
                   />
 
                   <div className="value-input-panel">

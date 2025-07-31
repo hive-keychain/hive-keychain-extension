@@ -32,6 +32,7 @@ export interface CustomSelectProps<T> {
   renderOnlyIcon?: boolean;
   rightActionIcon?: boolean;
   rightActionClicked?: () => void;
+  generateImageIfNull?: boolean;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -137,6 +138,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             closeDropdown={() => methods.dropDown('close')}
             onDelete={itemProps.onDelete}
             canDelete={option.canDelete}
+            generateImageIfNull={itemProps.generateImageIfNull}
           />
         ))}
         {itemProps.footer && itemProps.footer}
