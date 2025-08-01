@@ -16,7 +16,7 @@ const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
       ...category,
       values: category.values.filter(
         (autocompleteValue) =>
-          autocompleteValue.value.toLowerCase().includes(query) ||
+          autocompleteValue.label.toLowerCase().includes(query) ||
           autocompleteValue.subLabel?.toLowerCase().includes(query),
       ),
     };
@@ -28,7 +28,7 @@ const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
 const filterValuesList = (list: AutoCompleteValue[], query: string) => {
   const filteredList = list.filter(
     (item) =>
-      item.value.toLowerCase().includes(query) ||
+      item.label.toLowerCase().includes(query) ||
       item.subLabel?.toLowerCase().includes(query),
   );
   return filteredList;

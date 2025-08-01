@@ -1,8 +1,11 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import {
   EvmAddressType,
   EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -339,6 +342,44 @@ const isPotentialSpoofing = async (address: string) => {
   }
 };
 
+const getWhiteListAutocomplete = async (
+  chain: EvmChain,
+  localAccounts: EvmAccount[],
+) => {
+  const wallets = await getWalletAddresses(chain.chainId);
+
+  return {
+    categories: [
+      {
+        title: 'Wallets',
+        values: wallets.map((wallet) => {
+          return {
+            value: wallet.address,
+            label:
+              wallet.label?.length && wallet.label.length > 0
+                ? wallet.label
+                : EvmFormatUtils.formatAddress(wallet.address),
+            subLabel:
+              wallet.label?.length && wallet.label.length > 0
+                ? EvmFormatUtils.formatAddress(wallet.address)
+                : '',
+          };
+        }),
+      },
+      {
+        title: 'Local accounts',
+        values: localAccounts.map((localAccount) => {
+          return {
+            value: localAccount.wallet.address,
+            label: EvmAccountUtils.getAccountFullname(localAccount),
+            subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
+          };
+        }),
+      },
+    ],
+  } as AutoCompleteValues;
+};
+
 export const EvmAddressesUtils = {
   getAddressType,
   getIdenticonFromAddress,
@@ -355,4 +396,5 @@ export const EvmAddressesUtils = {
   addEnsToLocalStorage,
   getEnsDataFromAddress,
   getEnsDataFromEns,
+  getWhiteListAutocomplete,
 };

@@ -125,6 +125,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                         ? DappStatusEnum.SELECTED
                         : DappStatusEnum.CONNECTED
                     }
+                    fullName
                   />
                   <SVGIcon
                     icon={SVGIcons.GLOBAL_ERROR}
@@ -152,6 +153,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                     account={account}
                     activeAccount={activeAccount}
                     status={DappStatusEnum.DISCONNECTED}
+                    fullName
                   />
                   <SVGIcon
                     icon={SVGIcons.GLOBAL_ADD_CIRCLE}

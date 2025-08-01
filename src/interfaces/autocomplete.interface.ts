@@ -1,8 +1,9 @@
 export interface AutoCompleteValue {
-  value: string;
-  translateValue?: boolean;
+  label: string;
+  translateLabel?: boolean;
   subLabel?: string;
   translateSubLabel?: boolean;
+  value: string;
 }
 
 export interface AutoCompleteCategory {

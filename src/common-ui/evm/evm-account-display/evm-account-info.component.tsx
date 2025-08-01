@@ -8,6 +8,7 @@ import React from 'react';
 interface Props {
   account: EvmAccount;
   fullAddress?: boolean;
+  fullName?: boolean;
   editable?: boolean;
   onEdit?: (account: EvmAccount) => void;
 }
@@ -16,13 +17,16 @@ export const EvmAccountInfo = ({
   account,
   editable,
   fullAddress,
+  fullName,
   onEdit,
 }: Props) => {
   return (
     <div className="account-info">
       <div className="top-line">
         <div className="account-name">
-          {EvmAccountUtils.getAccountName(account)}
+          {fullName
+            ? EvmAccountUtils.getAccountFullname(account)
+            : EvmAccountUtils.getAccountName(account)}
         </div>
         {editable && (
           <SVGIcon

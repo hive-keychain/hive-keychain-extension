@@ -36,12 +36,13 @@ const getAutocompleteList = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        autoCompleteList.push({ value: fav });
+        autoCompleteList.push({ label: fav, value: fav });
     }
   }
   for (const localAccount of localAccounts) {
     if (localAccount.name !== username) {
       autoCompleteList.push({
+        label: localAccount.name,
         value: localAccount.name,
       });
     }
@@ -55,6 +56,7 @@ const getAutocompleteList = async (
       )
         autoCompleteList.push({
           value: exchange.username,
+          label: exchange.username,
           subLabel: exchange.name,
         });
     }
@@ -92,7 +94,7 @@ const saveFavoriteUser = async (
     !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
     favoriteUser[activeAccount.name!].push({
-      value: username,
+      label: username,
       subLabel: '',
     } as AutoCompleteValue);
   }
@@ -147,6 +149,7 @@ const getAutocompleteListByCategories = async (
     if (localAccount.name !== username) {
       favoriteLocalAccountsList.values.push({
         value: localAccount.name,
+        label: localAccount.name,
         subLabel: '',
       });
     }
@@ -160,6 +163,7 @@ const getAutocompleteListByCategories = async (
       )
         favoriteExchangesList.values.push({
           value: exchange.username,
+          label: exchange.username,
           subLabel: exchange.name,
         });
     }

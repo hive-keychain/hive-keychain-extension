@@ -14,7 +14,7 @@ import {
   EvmSmartContractInfo,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionDecodedData } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';

@@ -1,4 +1,4 @@
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import React from 'react';
 import sanitizeHtml from 'sanitize-html';
 

@@ -1,7 +1,7 @@
 import {
   EvmAddressDetail,
   EvmAddressesUtils,
-} from '@popup/evm/utils/addresses.utils';
+} from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';

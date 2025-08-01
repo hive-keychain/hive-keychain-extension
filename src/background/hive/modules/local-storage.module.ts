@@ -138,7 +138,7 @@ const checkAndUpdateLocalStorage = async () => {
               )) {
                 favoriteUserData[key] = value.map((account) => {
                   return {
-                    value: account,
+                    label: account,
                     subLabel: '',
                   } as AutoCompleteValue;
                 });

@@ -59,6 +59,7 @@ export type EvmSmartContractInfo =
 export interface EvmPendingTransaction {
   txResponseParams: any;
   walletAddress: string;
+  chainId: string;
 }
 
 export interface UserPendingTransactions {

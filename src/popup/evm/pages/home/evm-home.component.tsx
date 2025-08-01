@@ -115,7 +115,10 @@ const Home = ({
     const pendingTransactions =
       await EvmTransactionsUtils.getPendingTransactionsForWallet(
         activeAccount.address,
+        chain.chainId,
       );
+
+    console.log('getPendingTransaction', pendingTransactions);
 
     const pendingTxItems = [];
     const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);

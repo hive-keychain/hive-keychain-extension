@@ -1,4 +1,5 @@
 import { joiResolver } from '@hookform/resolvers/joi';
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   EvmActiveAccount,
@@ -25,6 +26,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -83,6 +85,7 @@ const EvmTransfer = ({
   activeAccount,
   chain,
   localAccounts,
+
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
@@ -111,6 +114,8 @@ const EvmTransfer = ({
 
   const [balance, setBalance] = useState<string | number>('...');
   const [tokenOptions, setTokenOptions] = useState<OptionItem[]>();
+  const [autocompleteValues, setAutocompleteValues] =
+    useState<AutoCompleteValues>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -153,6 +158,10 @@ const EvmTransfer = ({
         )!,
       );
     }
+
+    setAutocompleteValues(
+      await EvmAddressesUtils.getWhiteListAutocomplete(chain, localAccounts),
+    );
   };
 
   const handleClickOnSend = async (form: TransferForm) => {
@@ -343,6 +352,7 @@ const EvmTransfer = ({
                   logo={SVGIcons.INPUT_AT}
                   placeholder="popup_html_address"
                   label="popup_html_username"
+                  autocompleteValues={autocompleteValues}
                 />
                 <div className="value-panel">
                   <ComplexeCustomSelect
@@ -400,6 +410,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
+    mk: state.mk,
   };
 };
 

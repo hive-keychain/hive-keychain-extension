@@ -104,7 +104,11 @@ const transfer = async (
     transactionRequest,
   );
 
-  await addPendingTransaction(connectedWallet.address, transactionResponse);
+  await addPendingTransaction(
+    connectedWallet.address,
+    transactionResponse,
+    chain.chainId,
+  );
 
   return transactionResponse;
 };
@@ -175,12 +179,14 @@ const cancel = async (
 const addPendingTransaction = async (
   walletAddress: string,
   transactionResponse: TransactionResponse,
+  chainId: EvmChain['chainId'],
 ) => {
   let transactions = await getAllPendingTransactions();
 
   transactions.push({
     txResponseParams: transactionResponse.toJSON(),
     walletAddress: walletAddress,
+    chainId: chainId,
   });
 
   LocalStorageUtils.saveValueInLocalStorage(
@@ -211,19 +217,27 @@ const getAllPendingTransactions = async () => {
   return transactions ?? [];
 };
 
-const getPendingTransactionsForWallet = async (walletAddress: string) => {
+const getPendingTransactionsForWallet = async (
+  walletAddress: string,
+  chainId: EvmChain['chainId'],
+) => {
   let transactions = await getAllPendingTransactions();
   return transactions.filter(
     (transaction) =>
-      transaction.walletAddress.toLowerCase() === walletAddress.toLowerCase(),
+      transaction.walletAddress.toLowerCase() === walletAddress.toLowerCase() &&
+      transaction.chainId === chainId,
   );
 };
 
-const getPendingTransaction = async (txHash: string) => {
+const getPendingTransaction = async (
+  txHash: string,
+  chainId: EvmChain['chainId'],
+) => {
   let transactions = await getAllPendingTransactions();
   return transactions.find(
     (transaction: EvmPendingTransaction) =>
-      transaction.txResponseParams.hash === txHash,
+      transaction.txResponseParams.hash.toLowerCase() ===
+        txHash.toLowerCase() && transaction.chainId === chainId,
   );
 };
 
@@ -231,18 +245,13 @@ const getHighestNonceInPendingTransaction = async (
   chainId: string,
   walletAddress: string,
 ) => {
-  const transactions = await getPendingTransactionsForWallet(walletAddress);
-  const walletTransactions = transactions.filter((pendingTx) => {
-    return (
-      `0x${Number(pendingTx.txResponseParams.chainId).toString(16)}` === chainId
-    );
-  });
-
-  return walletTransactions.length > 0
+  const transactions = await getPendingTransactionsForWallet(
+    walletAddress,
+    chainId,
+  );
+  return transactions.length > 0
     ? Math.max(
-        ...walletTransactions.map(
-          (pendingTx) => pendingTx.txResponseParams.nonce,
-        ),
+        ...transactions.map((pendingTx) => pendingTx.txResponseParams.nonce),
       )
     : 0;
 };
@@ -313,8 +322,13 @@ const addCanceledTransaction = async (
   );
 };
 
-const send = async (account: EvmAccount, request: any, gasFee: any) => {
-  const chain = await ChainUtils.getChain<EvmChain>(request.chainId);
+const send = async (
+  account: EvmAccount,
+  request: Partial<TransactionRequest>,
+  gasFee: any,
+  chainId: string,
+) => {
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
 
   let feeData = {};
   if (gasFee)
@@ -343,23 +357,24 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
 
   let transactionRequest: TransactionRequest;
   transactionRequest = {
-    value: request.params[0].value,
-    data: request.params[0].data,
-    to: request.params[0].to,
+    value: request.value,
+    data: request.data,
+    to: request.to,
     from: account.wallet.address,
     nonce: await EvmRequestsUtils.getNonce(account, chain),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
-    type: request.params[0].type,
+    type: request.type,
     ...feeData,
   };
 
   if (
-    request.params[0].type &&
-    request.params[0].type === EvmTransactionType.EIP_155
+    request.type &&
+    (request.type as unknown as EvmTransactionType) ===
+      EvmTransactionType.EIP_155
   ) {
-    if (request.params[0].accessList) {
-      transactionRequest.accessList = request.params[0].accessList;
+    if (request.accessList) {
+      transactionRequest.accessList = request.accessList;
     }
   }
 
@@ -369,9 +384,13 @@ const send = async (account: EvmAccount, request: any, gasFee: any) => {
   const transactionResponse: TransactionResponse =
     await connectedWallet.sendTransaction(transactionRequest);
 
-  addPendingTransaction(connectedWallet.address, transactionResponse);
+  addPendingTransaction(
+    connectedWallet.address,
+    transactionResponse,
+    chain.chainId,
+  );
 
-  return transactionResponse.hash;
+  return transactionResponse;
 };
 
 export const EvmTransactionsUtils = {

@@ -67,14 +67,14 @@ const FavoriteAccountsItem = ({
         <div className="item-details">
           <img
             className="profile-picture"
-            src={`https://images.hive.blog/u/${favorite.value}/avatar`}
+            src={`https://images.hive.blog/u/${favorite.label}/avatar`}
             onError={(e: any) => {
               e.target.onError = null;
               e.target.src = '/assets/images/accounts.png';
             }}
           />
           <div className="names">
-            <div className="username">{favorite.value}</div>
+            <div className="username">{favorite.label}</div>
             <div className="label">
               {favorite.subLabel ? `${favorite.subLabel!}` : ''}
             </div>

@@ -3,7 +3,7 @@ import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -133,6 +133,7 @@ export const ConnectAccounts = (props: Props) => {
               <EvmAccountDisplayComponent
                 account={account}
                 status={getStatus(account)}
+                fullName
               />
             </CheckboxPanelComponent>
           ))

@@ -1,7 +1,7 @@
 import { EvmAccountInfo } from '@common-ui/evm/evm-account-display/evm-account-info.component';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/addresses.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import React from 'react';
 import {
   DappStatusComponent,
@@ -20,6 +20,7 @@ type Props = {
   onHideOrShow?: (seedId: number, addressId: number, hide: boolean) => void;
   onEdit?: (account: EvmAccount) => void;
   fullAddress?: boolean;
+  fullName?: boolean;
 };
 
 export const EvmAccountDisplayComponent = ({
@@ -29,6 +30,7 @@ export const EvmAccountDisplayComponent = ({
   editable,
   copiable,
   fullAddress,
+  fullName,
   onCopy,
   onHideOrShow,
   onEdit,
@@ -43,6 +45,7 @@ export const EvmAccountDisplayComponent = ({
         account={account}
         editable={editable}
         fullAddress={fullAddress}
+        fullName={fullName}
         onEdit={onEdit}
       />
       <div className="action-panel">
