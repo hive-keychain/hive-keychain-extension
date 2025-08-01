@@ -114,6 +114,7 @@ export const SignTypedData = (props: Props) => {
       target,
       lastChain.chainId,
       transactionInfo,
+      accounts,
     );
 
     transactionConfirmationFields.otherFields.push({

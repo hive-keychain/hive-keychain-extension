@@ -8,6 +8,7 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
@@ -280,6 +281,7 @@ export const useTransactionHook = (
     address: string,
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
+    localAccounts: EvmAccount[],
   ) => {
     return {
       name: 'evm_operation_to',
@@ -289,6 +291,7 @@ export const useTransactionHook = (
         address,
         chainId,
         transactionInfo,
+        localAccounts,
       ),
     };
   };

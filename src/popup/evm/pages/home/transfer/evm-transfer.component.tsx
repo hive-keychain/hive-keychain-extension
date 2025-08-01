@@ -205,6 +205,7 @@ const EvmTransfer = ({
           form.receiverAddress,
           chain.chainId,
           transactionInfo,
+          localAccounts,
         ),
       },
       {

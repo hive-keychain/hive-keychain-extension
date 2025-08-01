@@ -52,6 +52,7 @@ export const PersonalSign = (props: Props) => {
       target,
       lastChain.chainId,
       transactionInfo,
+      accounts,
     );
 
     transactionConfirmationFields.otherFields.push({

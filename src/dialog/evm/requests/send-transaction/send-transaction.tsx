@@ -74,6 +74,7 @@ export const SendTransaction = (props: Props) => {
 
   useEffect(() => {
     init();
+    console.log(accounts);
   }, []);
 
   useEffect(() => {
@@ -232,6 +233,7 @@ export const SendTransaction = (props: Props) => {
                 params.to,
                 chainTmp.chainId,
                 transactionInfo,
+                accounts,
               )),
             });
 
@@ -295,6 +297,7 @@ export const SendTransaction = (props: Props) => {
                         decodedTransactionData.args[index],
                         chainTmp.chainId,
                         transactionInfo,
+                        accounts,
                       );
                     value = inputDisplay.value;
                     break;
@@ -352,6 +355,7 @@ export const SendTransaction = (props: Props) => {
                     decodedTransactionData.args[index],
                     chainTmp.chainId,
                     transactionInfo,
+                    accounts,
                   ),
                 });
               }
@@ -408,6 +412,7 @@ export const SendTransaction = (props: Props) => {
                 params.to,
                 chainTmp.chainId,
                 transactionInfo,
+                accounts,
               )),
             });
 
@@ -556,6 +561,7 @@ export const SendTransaction = (props: Props) => {
             params.to,
             chainTmp.chainId,
             transactionInfo,
+            accounts,
           ),
         );
 

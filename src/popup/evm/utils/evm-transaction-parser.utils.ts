@@ -14,6 +14,7 @@ import {
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
@@ -221,6 +222,7 @@ const getFieldWarnings = async (
   value: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
+  localAccounts: EvmAccount[],
 ): Promise<EvmTransactionWarning[]> => {
   if (!abi) return [];
   const tokenType = EvmTokensUtils.getTokenType(abi);
@@ -234,6 +236,7 @@ const getFieldWarnings = async (
               value,
               chainId,
               verifyTransactionInformation,
+              localAccounts,
             );
           } else if (name === 'amount') {
           }
@@ -259,6 +262,7 @@ const getAllWarnings = async (
   domain: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
+  localAccounts: EvmAccount[],
 ) => {
   for (const field of fields.otherFields) {
     field.warnings = await getFieldWarnings(
@@ -269,6 +273,7 @@ const getAllWarnings = async (
       field.value,
       chainId,
       verifyTransactionInformation,
+      localAccounts,
     );
   }
   return fields;
@@ -343,6 +348,7 @@ const getAddressWarning = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
+  localAccounts: EvmAccount[],
 ) => {
   const warnings: EvmTransactionWarning[] = [];
   if (verifyTransactionInformation?.to?.isBlacklisted) {
@@ -353,7 +359,9 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
-  if (!(await EvmAddressesUtils.isWhitelisted(address, chainId))) {
+  if (
+    !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
+  ) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
@@ -398,6 +406,7 @@ const getSmartContractWarningAndInfo = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
+  localAccounts: EvmAccount[],
 ) => {
   const warningAndInfo: Partial<TransactionConfirmationField> = {
     warnings: [],
@@ -411,7 +420,9 @@ const getSmartContractWarningAndInfo = async (
     });
   }
 
-  if (!(await EvmAddressesUtils.isWhitelisted(address, chainId))) {
+  if (
+    !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
+  ) {
     warningAndInfo.warnings?.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,

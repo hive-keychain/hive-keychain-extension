@@ -276,10 +276,17 @@ const getDomainAddresses = async () => {
   return domains ?? [];
 };
 
-const isWhitelisted = async (address: string, chainId: string) => {
+const isWhitelisted = async (
+  address: string,
+  chainId: string,
+  localAccounts: EvmAccount[],
+) => {
   const whitelisted = await getWhitelistedAddresses(chainId);
 
   return (
+    localAccounts
+      .map((localAccount) => localAccount.wallet.address.toLowerCase())
+      .includes(address.toLowerCase()) ||
     whitelisted[EvmAddressType.SMART_CONTRACT]
       .map((item) => item.address.toLowerCase())
       .includes(address.toLowerCase()) ||
@@ -351,7 +358,8 @@ const getWhiteListAutocomplete = async (
   return {
     categories: [
       {
-        title: 'Wallets',
+        title: 'evm_wallets',
+        translateTitle: true,
         values: wallets.map((wallet) => {
           return {
             value: wallet.address,
@@ -367,7 +375,8 @@ const getWhiteListAutocomplete = async (
         }),
       },
       {
-        title: 'Local accounts',
+        title: 'local_accounts',
+        translateTitle: true,
         values: localAccounts.map((localAccount) => {
           return {
             value: localAccount.wallet.address,
