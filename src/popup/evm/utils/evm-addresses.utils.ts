@@ -355,24 +355,32 @@ const getWhiteListAutocomplete = async (
 ) => {
   const wallets = await getWalletAddresses(chain.chainId);
 
+  const localAddresses = localAccounts.map((localAccount) =>
+    localAccount.wallet.address.toLowerCase(),
+  );
+
   return {
     categories: [
       {
         title: 'evm_wallets',
         translateTitle: true,
-        values: wallets.map((wallet) => {
-          return {
-            value: wallet.address,
-            label:
-              wallet.label?.length && wallet.label.length > 0
-                ? wallet.label
-                : EvmFormatUtils.formatAddress(wallet.address),
-            subLabel:
-              wallet.label?.length && wallet.label.length > 0
-                ? EvmFormatUtils.formatAddress(wallet.address)
-                : '',
-          };
-        }),
+        values: wallets
+          .filter(
+            (wallet) => !localAddresses.includes(wallet.address.toLowerCase()),
+          )
+          .map((wallet) => {
+            return {
+              value: wallet.address,
+              label:
+                wallet.label?.length && wallet.label.length > 0
+                  ? wallet.label
+                  : EvmFormatUtils.formatAddress(wallet.address),
+              subLabel:
+                wallet.label?.length && wallet.label.length > 0
+                  ? EvmFormatUtils.formatAddress(wallet.address)
+                  : '',
+            };
+          }),
       },
       {
         title: 'local_accounts',
