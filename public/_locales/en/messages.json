@@ -5081,6 +5081,10 @@
     "message": "History",
     "description": "History tab"
   },
+  "evm_menu_contacts": {
+    "message": "Contacts",
+    "description": "Contact menu item"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"

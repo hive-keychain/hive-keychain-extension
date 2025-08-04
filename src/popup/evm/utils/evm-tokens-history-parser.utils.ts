@@ -29,7 +29,7 @@ const parseEvent = async (
   allTokensMetadata: EvmSmartContractInfo[],
   evmSettings?: EvmSettings,
 ) => {
-  console.log(event);
+  // console.log(event);
   let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
 
   // parse event

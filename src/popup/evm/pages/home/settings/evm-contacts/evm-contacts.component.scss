@@ -1,0 +1,28 @@
+@import './evm-edit-contact/evm-edit-contact.component.scss';
+.evm-contacts-page {
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    margin: 0 24px;
+
+    .chain-custom-select {
+      width: 100%;
+    }
+
+    .edit-contacts-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      width: 100%;
+
+      .right-action-logo {
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}

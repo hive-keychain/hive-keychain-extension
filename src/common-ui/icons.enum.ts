@@ -102,6 +102,8 @@ export enum SVGIcons {
   MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
   MENU_ACCOUNTS_MANAGE_AUTHORITIES = 'menu/accounts/manage-authorities',
 
+  MENU_CONTACTS = 'menu/contacts',
+
   MENU_ADVANCED_SETTINGS = 'menu/advanced-settings',
   MENU_ADVANCED_SETTINGS_ANALYTICS = 'menu/advanced-settings/analytics',
   MENU_ADVANCED_SETTINGS_AUTO_LOCK = 'menu/advanced-settings/auto-lock',

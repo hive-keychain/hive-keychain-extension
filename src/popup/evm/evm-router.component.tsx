@@ -10,6 +10,7 @@ import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
+import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
@@ -73,6 +74,8 @@ const EvmAppRouter = ({
         return <EvmAccountsComponent />;
       case EvmScreen.EVM_ADVANCED_SETTINGS:
         return <EvmAdvancedSettingsComponent />;
+      case EvmScreen.EVM_CONTACTS:
+        return <EvmContactsComponent />;
 
       default:
         return globalRouter(page);

@@ -414,4 +414,6 @@ export const EvmAddressesUtils = {
   getEnsDataFromAddress,
   getEnsDataFromEns,
   getWhiteListAutocomplete,
+  getWhitelistedAddresses,
+  saveWhitelistedAddresses,
 };

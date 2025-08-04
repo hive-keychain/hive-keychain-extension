@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 
@@ -7,12 +8,17 @@ export const EvmSettingsMenuItems = (logout: () => void): MenuItem[] => {
     {
       label: 'evm_seeds_and_accounts',
       icon: SVGIcons.MENU_ACCOUNTS,
-      nextScreen: Screen.EVM_ACCOUNTS_SETTINGS,
+      nextScreen: EvmScreen.EVM_ACCOUNTS_SETTINGS,
+    },
+    {
+      label: 'evm_menu_contacts',
+      icon: SVGIcons.MENU_CONTACTS,
+      nextScreen: EvmScreen.EVM_CONTACTS,
     },
     {
       label: 'evm_menu_advanced',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS,
-      nextScreen: Screen.EVM_ADVANCED_SETTINGS,
+      nextScreen: EvmScreen.EVM_ADVANCED_SETTINGS,
     },
     {
       label: 'popup_html_help',

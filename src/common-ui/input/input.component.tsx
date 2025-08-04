@@ -34,6 +34,7 @@ export interface InputProps {
   rightActionClicked?(): any;
   rightActionIcon?: SVGIcons;
   rightActionIconClassname?: string;
+  size?: 'small';
 }
 
 const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
@@ -58,13 +59,20 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
   };
 
   return (
-    <div className={`custom-input ${props.classname ?? ''}`}>
-      {props.label && (
+    <div
+      className={`custom-input ${props.classname ?? ''} ${
+        props.size ? props.size : ''
+      }`}>
+      {(props.label || props.hint) && (
         <div className="label">
-          {props.skipLabelTranslation
-            ? props.label
-            : chrome.i18n.getMessage(props.label)}{' '}
-          {props.required ? '*' : ''}
+          {props.label && (
+            <>
+              {props.skipLabelTranslation
+                ? props.label
+                : chrome.i18n.getMessage(props.label)}{' '}
+              {props.required ? '*' : ''}
+            </>
+          )}
           {props.hint && (
             <div className="hint">
               {props.skipHintTranslation
