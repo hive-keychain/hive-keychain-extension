@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.10.3",
+  "version": "3.10.4",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -20,8 +20,6 @@
     "crowdin:pull": "crowdin download",
     "crowdin:push": "crowdin upload sources",
     "doc": "documentation build public/hive_keychain.js -f md -c documentation/build/documentation.yml -o documentation/README.md",
-    "preinstall": "npm install --package-lock-only --ignore-scripts && npx npm-force-resolutions@0.0.10",
-    "postinstall": "patch-package",
     "test": "jest --verbose",
     "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
@@ -58,7 +56,7 @@
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.9.0",
+    "hive-keychain-commons": "^1.9.7",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "hive-uri": "^0.2.5",
     "joi": "^17.13.3",
@@ -153,11 +151,6 @@
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
     "webpack-merge": "5.8.0"
-  },
-  "resolutions": {
-    "@types/react": "17.0.2",
-    "@types/react-dom": "17.0.2",
-    "ws": "8.17.1"
   },
   "overrides": {
     "sass-graph": {
