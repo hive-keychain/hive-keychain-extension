@@ -1,6 +1,7 @@
 #!/bin/sh
 
 rm -rf _releases
+find . -name .DS_Store -delete
 
 echo "Compiling chromium..."
 resultChromium=`npm run build:chromium | grep -o "compiled with .* error[s]* in"`
