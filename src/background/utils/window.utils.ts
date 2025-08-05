@@ -1,4 +1,4 @@
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogReadyMessage } from '@background/multichain/background-message.interface';
 import {
   DialogCommand,
   MultisigDialogCommand,
@@ -7,7 +7,7 @@ import {
 /* istanbul ignore next */
 export const waitUntilDialogIsReady = async (
   ms: number,
-  command: DialogCommand | MultisigDialogCommand,
+  command: MultisigDialogCommand.READY_MULTISIG | DialogCommand.READY,
   callback: () => void,
   nb = 0,
 ) => {
@@ -21,7 +21,7 @@ export const waitUntilDialogIsReady = async (
 /* istanbul ignore next */
 const askIfReady = (
   ms: number,
-  command: DialogCommand | MultisigDialogCommand | BackgroundCommand,
+  command: MultisigDialogCommand.READY_MULTISIG | DialogCommand.READY,
 ) => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -30,10 +30,15 @@ const askIfReady = (
 
     chrome.runtime.sendMessage(
       {
-        command,
-      },
+        command: command,
+      } as DialogReadyMessage,
       (resp: any) => {
-        if (resp) resolve(resp);
+        var lastError = chrome.runtime.lastError;
+        if (lastError) {
+          resolve(false);
+          // console.log(lastError.message);
+          return;
+        } else if (resp) resolve(resp);
       },
     );
   });

@@ -12,7 +12,6 @@ const tabsSendMessage = async (
   try {
     const res = await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {
-    console.log('tabs send message', err);
     if (onFail) onFail();
   }
 };
@@ -24,7 +23,6 @@ const runtimeSendMessage = async (
   try {
     const res = await chrome.runtime.sendMessage(message);
   } catch (err) {
-    console.log('runtimeSendMessage', err);
     if (onFail) onFail();
   }
 };

@@ -98,6 +98,10 @@ export type ReturnLedgerSignatureMessage = {
   signature: string;
 };
 
+export type DialogReadyMessage = {
+  command: DialogCommand.READY;
+};
+
 export type DialogMessage =
   | BaseDialogMessage
   | ReturnLedgerSignatureMessage
