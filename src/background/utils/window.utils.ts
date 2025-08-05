@@ -1,3 +1,4 @@
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
   DialogCommand,
   MultisigDialogCommand,
@@ -20,17 +21,18 @@ export const waitUntilDialogIsReady = async (
 /* istanbul ignore next */
 const askIfReady = (
   ms: number,
-  command: DialogCommand | MultisigDialogCommand,
+  command: DialogCommand | MultisigDialogCommand | BackgroundCommand,
 ) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(false);
     }, ms);
+
     chrome.runtime.sendMessage(
       {
         command,
       },
-      (resp) => {
+      (resp: any) => {
         if (resp) resolve(resp);
       },
     );

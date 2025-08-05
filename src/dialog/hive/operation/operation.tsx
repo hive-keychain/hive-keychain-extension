@@ -21,6 +21,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
 import { useDomainCheck } from 'src/dialog/hooks/domain-check';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
@@ -163,7 +164,7 @@ const Operation = ({
     setLoading(true);
     const metadata = { twoFACodes: twoFABots };
     saveIsMultisig();
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
         data: data,

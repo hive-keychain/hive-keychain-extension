@@ -1,6 +1,7 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 function getMk() {
@@ -30,7 +31,7 @@ const login = async (mk: string) => {
 };
 
 async function sendBackMk() {
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_BACK_MK,
     value: await getMk(),
   });

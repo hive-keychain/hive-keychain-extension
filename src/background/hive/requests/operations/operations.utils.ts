@@ -1,3 +1,7 @@
+import {
+  AnswerDialogMessage,
+  DialogMessage,
+} from '@background/multichain/background-message.interface';
 import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -9,7 +13,7 @@ export const createMessage = async (
   success_message: string | null,
   fail_message?: string | null,
   publicKey?: Key,
-) => {
+): Promise<DialogMessage> => {
   let message;
   if (result?.isUsingMultisig && result?.tx_id?.length === 0) {
     message = await chrome.i18n.getMessage(
@@ -40,7 +44,7 @@ export const createEvmMessage = async (
   success_message: string | null,
   fail_message?: string | null,
   publicKey?: Key,
-) => {
+): Promise<AnswerDialogMessage> => {
   let message;
 
   message = !err ? success_message : fail_message;

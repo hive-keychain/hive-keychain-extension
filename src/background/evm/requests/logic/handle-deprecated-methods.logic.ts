@@ -8,6 +8,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const handleDeprecatedMethods = async (
@@ -26,10 +27,10 @@ export const handleDeprecatedMethods = async (
       result: ProviderRpcErrorList.unsupportedMethod,
     },
   };
-  chrome.tabs.sendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(tab, message);
 
   const callback = async () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_ERROR,
       msg: {
         display_msg: await chrome.i18n.getMessage(errorMessage, [

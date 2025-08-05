@@ -4,6 +4,7 @@ import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const addAccountRequest = (
   requestHandler: HiveRequestsHandler,
@@ -29,7 +30,7 @@ export const addAccountRequest = (
   } else {
     /* istanbul ignore next */
     const callback = () => {
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         data: request,
         domain,

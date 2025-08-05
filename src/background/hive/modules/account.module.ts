@@ -3,6 +3,7 @@ import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedAccounts = async (fileContent: string) => {
@@ -15,7 +16,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         mk,
       );
     } catch (e) {
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
         value: { feedback: { message: 'import_html_error' } },
       });
@@ -51,7 +52,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         account.keys.memo?.startsWith('#'),
     );
     const extensionId = (await chrome.management.getSelf()).id;
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: {
         accounts: newAccounts,

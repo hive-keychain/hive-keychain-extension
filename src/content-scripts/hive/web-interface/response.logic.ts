@@ -10,6 +10,7 @@ import {
   KeychainRequest,
   RequestResponse,
 } from 'src/interfaces/keychain.interface';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   const response = {
@@ -27,8 +28,8 @@ export const sendRequestToBackground = (
   req: KeychainRequest,
   chrome: typeof globalThis.chrome,
 ) => {
-  chrome.runtime.sendMessage({
-    command: 'sendRequest',
+  CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.SEND_REQUEST,
     request: req,
     domain: window.location.hostname,
     request_id: req.request_id,
@@ -41,7 +42,7 @@ export const sendEvmRequestToBackground = async (
 ) => {
   const link = document.querySelector("link[rel='icon']");
 
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: 'sendEvmRequest',
     request: req,
     dappInfo: {
@@ -56,7 +57,7 @@ export const sendEvmChainToBackground = async (
   chainId: string,
   chrome: typeof globalThis.chrome,
 ) => {
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
     value: chainId,
   });
@@ -82,13 +83,17 @@ export const sendResponse = (response: RequestResponse) => {
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
-    window.postMessage(
-      {
-        type: 'hive_keychain_response',
-        response,
-      },
-      window.location.origin,
-    );
+    try {
+      window.postMessage(
+        {
+          type: 'hive_keychain_response',
+          response,
+        },
+        window.location.origin,
+      );
+    } catch (err) {
+      console.log('send response', err);
+    }
   }
 };
 
@@ -96,13 +101,17 @@ export const sendResponseToEvm = (response: any) => {
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
-    window.postMessage(
-      {
-        type: 'evm_keychain_response',
-        response,
-      },
-      window.location.origin,
-    );
+    try {
+      window.postMessage(
+        {
+          type: 'evm_keychain_response',
+          response,
+        },
+        window.location.origin,
+      );
+    } catch (err) {
+      console.log('send response to evm', err);
+    }
   }
 };
 
@@ -110,28 +119,36 @@ export const sendErrorToEvm = (response: any) => {
   if (response.data?.redirect_uri) {
     window.location.href = response.data.redirect_uri;
   } else {
-    window.postMessage(
-      {
-        type: 'evm_keychain_error',
-        response,
-      },
-      window.location.origin,
-    );
+    try {
+      window.postMessage(
+        {
+          type: 'evm_keychain_error',
+          response,
+        },
+        window.location.origin,
+      );
+    } catch (err) {
+      console.log('senderrortoEvm', err);
+    }
   }
 };
 
 export const sendEventToEvm = (event: any) => {
-  window.postMessage(
-    {
-      type: 'evm_keychain_event',
-      event,
-    },
-    window.location.origin,
-  );
+  try {
+    window.postMessage(
+      {
+        type: 'evm_keychain_event',
+        event,
+      },
+      window.location.origin,
+    );
+  } catch (err) {
+    console.log('sendeventtoevm', err);
+  }
 };
 
 export const sendEvmEvent = (event: EvmEventName, args?: any) => {
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_EVM_EVENT,
     value: { eventType: event, args: args },
   } as BackgroundMessage);
@@ -141,7 +158,7 @@ export const sendEvmEventFromSW = (event: EvmEventName, args?: any) => {
   chrome.tabs.query({}, (tabs) => {
     for (const tab of tabs) {
       if (tab.id) {
-        chrome.tabs.sendMessage(tab.id, {
+        CommunicationUtils.tabsSendMessage(tab.id, {
           command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
           value: { eventType: event, args: args },
         } as BackgroundMessage);

@@ -40,6 +40,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
@@ -161,7 +162,7 @@ export const performHiveOperation = async (
         message = await broadcastSwap(requestHandler, data, options);
         break;
     }
-    chrome.tabs.sendMessage(tab, message);
+    if (message) CommunicationUtils.tabsSendMessage(tab, message);
   } catch (e) {
     Logger.error(e);
     sendErrors(
@@ -178,7 +179,7 @@ export const performHiveOperation = async (
       if (!!requestHandler.data.windowId) {
         removeWindow(requestHandler.data.windowId!);
       }
-    } else chrome.runtime.sendMessage(message);
+    } else if (message) CommunicationUtils.runtimeSendMessage(message);
     requestHandler.reset(false);
   }
 };

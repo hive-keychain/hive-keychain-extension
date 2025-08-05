@@ -41,6 +41,7 @@ import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { Socket, io } from 'socket.io-client';
 import Config from 'src/config';
 import { AsyncUtils } from 'src/utils/async.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
@@ -209,7 +210,7 @@ const requestSignatures = async (
           async (message: string) => {
             Logger.log({ multisigRequestSignatureResponse: message });
             if (useRuntimeMessages) {
-              chrome.runtime.sendMessage({
+              CommunicationUtils.runtimeSendMessage({
                 command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,
                 value: {
                   message: 'multisig_transaction_sent_to_signers',
@@ -228,7 +229,7 @@ const requestSignatures = async (
                   resolve(txId);
                 }
               } catch (err: any) {
-                chrome.runtime.sendMessage({
+                CommunicationUtils.runtimeSendMessage({
                   command: DialogCommand.SEND_DIALOG_ERROR,
                   msg: { display_msg: await chrome.i18n.getMessage(err) },
                 });
@@ -301,7 +302,7 @@ const connectSocket = (multisigConfig: MultisigConfig) => {
         signer,
       );
 
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: {
           multisigStep: MultisigStep.SIGN_TRANSACTION_FEEDBACK,
@@ -600,7 +601,7 @@ const unlockWallet = async (signer: Signer) => {
               resolve(backgroundMessage.value);
               chrome.runtime.onMessage.removeListener(onReceiveMK);
             } else {
-              chrome.runtime.sendMessage({
+              CommunicationUtils.runtimeSendMessage({
                 command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
                 value: {
                   multisigStep: MultisigStep.UNLOCK_WALLET,
@@ -609,7 +610,7 @@ const unlockWallet = async (signer: Signer) => {
               });
             }
           } catch (err) {
-            chrome.runtime.sendMessage({
+            CommunicationUtils.runtimeSendMessage({
               command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
               value: {
                 multisigStep: MultisigStep.UNLOCK_WALLET,
@@ -677,7 +678,7 @@ const requestSignTransactionFromUser = (
         } as MultisigAcceptRejectTxData,
       });
     } else {
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
         value: {
           multisigStep: MultisigStep.ACCEPT_REJECT_TRANSACTION,
@@ -736,7 +737,7 @@ const openWindow = (data: MultisigData): void => {
     if (typeof InstallTrigger === undefined) win.focused = true;
     chrome.windows.create(win, (window) => {
       waitUntilDialogIsReady(100, MultisigDialogCommand.READY_MULTISIG, () => {
-        chrome.runtime.sendMessage({
+        CommunicationUtils.runtimeSendMessage({
           command: MultisigDialogCommand.MULTISIG_SEND_DATA_TO_POPUP,
           value: data,
         } as MultisigDialogMessage);

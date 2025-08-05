@@ -16,6 +16,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import MkModule from './modules/mk.module';
@@ -86,7 +87,7 @@ const chromeMessageHandler = async (
             await HiveRequestsHandler.getFromLocalStorage(),
           );
         } else {
-          chrome.runtime.sendMessage({
+          CommunicationUtils.runtimeSendMessage({
             msg: { ...data.msg, wrongMk: true },
             command: DialogCommand.UNLOCK,
           });

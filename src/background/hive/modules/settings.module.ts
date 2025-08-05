@@ -6,6 +6,7 @@ import { Settings } from '@interfaces/settings.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ArrayUtils } from 'src/utils/array.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
@@ -203,13 +204,13 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
     }
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
       value: 'html_popup_import_settings_successful',
     });
   } catch (err) {
     Logger.error(err);
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
       value: 'html_popup_import_settings_error',
     });

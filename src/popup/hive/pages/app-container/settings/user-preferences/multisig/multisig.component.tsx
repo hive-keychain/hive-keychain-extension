@@ -17,6 +17,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const defaultConfig: MultisigAccountConfig = {
   isEnabled: false,
@@ -145,7 +146,7 @@ const Multisig = ({
   };
 
   const notifyBackground = (message: ConnectDisconnectMessage) => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS,
       value: message,
     } as BackgroundMessage);

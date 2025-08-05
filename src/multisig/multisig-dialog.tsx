@@ -27,6 +27,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import DialogError from 'src/dialog/multichain/error/error';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import BrowserUtils from 'src/utils/browser.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
@@ -112,7 +113,7 @@ const MultisigDialog = () => {
     accepted: boolean,
     multisigData: MultisigData,
   ) => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_ACCEPT_RESPONSE,
       value: { accepted, multisigData },
     } as BackgroundMessage);

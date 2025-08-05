@@ -18,6 +18,7 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const ChainDropdown = ({
   chain,
@@ -55,7 +56,7 @@ const ChainDropdown = ({
         break;
     }
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_EVENT,
       value: { eventType: EvmEventName.CHAIN_CHANGED, args: chain.chainId },
     } as BackgroundMessage);

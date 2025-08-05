@@ -16,6 +16,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -58,7 +59,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
       ),
     ].filter((e) => !!e);
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_EVENT,
       value: {
         eventType: EvmEventName.ACCOUNT_CHANGED,

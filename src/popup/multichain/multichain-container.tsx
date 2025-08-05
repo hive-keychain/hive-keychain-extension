@@ -9,6 +9,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
@@ -58,7 +59,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
 
     const chainFromProvider: EvmChain | null = await new Promise(
       (resolve, reject) => {
-        chrome.runtime.sendMessage({
+        CommunicationUtils.runtimeSendMessage({
           command: BackgroundCommand.GET_CHAIN_FROM_PROVIDER,
         } as BackgroundMessage);
 

@@ -28,6 +28,7 @@ import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -395,7 +396,7 @@ const useMultisig = async (
     };
     chrome.runtime.onMessage.addListener(handleResponseFromBackground);
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
       value: {
         transaction: transaction,

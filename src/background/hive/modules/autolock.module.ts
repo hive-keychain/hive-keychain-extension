@@ -1,6 +1,7 @@
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { Autolock, AutoLockType } from '../../../interfaces/autolock.interface';
@@ -42,7 +43,7 @@ chrome.idle.onStateChanged.addListener(async (state: any) => {
       }`,
     );
     MkModule.lock();
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.LOCK_APP,
     });
   }

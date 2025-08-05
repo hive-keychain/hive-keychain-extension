@@ -3,6 +3,7 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 // Send errors back to the content_script, it will forward it to website
 /* istanbul ignore next */
@@ -14,7 +15,7 @@ const sendErrors = (
   display_msg: string,
   request: KeychainRequest | EvmRequest,
 ) => {
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: DialogCommand.SEND_DIALOG_ERROR,
     msg: {
       success: false,

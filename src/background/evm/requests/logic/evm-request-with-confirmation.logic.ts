@@ -3,6 +3,7 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { createPopup } from '@background/multichain/dialog-lifecycle';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const evmRequestWithConfirmation = (
   requestHandler: EvmRequestHandler,
@@ -12,7 +13,7 @@ export const evmRequestWithConfirmation = (
 ) => {
   /* istanbul ignore next */
   const callback = () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_CONFIRM_EVM,
       data: request,
       dappInfo,

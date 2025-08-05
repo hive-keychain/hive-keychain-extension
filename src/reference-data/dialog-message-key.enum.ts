@@ -10,13 +10,22 @@ export enum DialogCommand {
   ANSWER_REQUEST = 'answerRequest',
   ANSWER_EVM_REQUEST = 'answerEvmRequest',
   READY = 'broadcastReady',
+
+  // Ledger messages
   SIGN_WITH_LEDGER = 'SIGN_WITH_LEDGER',
-  RETURN_SIGNATURE = 'RETURN_SIGNATURE',
-  RETURN_ERROR_SIGNING_TRANSACTION = 'RETURN_ERROR_SIGNING_TRANSACTION',
+  LEDGER_RETURN_SIGNATURE = 'LEDGER_RETURN_SIGNATURE',
+  LEDGER_RETURN_ERROR_SIGNING_TRANSACTION = 'LEDGER_RETURN_ERROR_SIGNING_TRANSACTION',
+
   PING = 'PING',
 }
 
 export enum MultisigDialogCommand {
   READY_MULTISIG = 'multisigReady',
   MULTISIG_SEND_DATA_TO_POPUP = 'MULTISIG_SEND_DATA_TO_POPUP',
+  PING = 'PING',
 }
+
+export type UnlockDialogCommand = Extract<
+  DialogCommand,
+  DialogCommand.UNLOCK | DialogCommand.UNLOCK_EVM
+>;

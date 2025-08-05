@@ -11,6 +11,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 type Props = {
   data: RegisterMessage;
@@ -45,7 +46,7 @@ const Register = ({ data }: Props) => {
     }
     if (password === password2) {
       if (isPasswordValid(password)) {
-        chrome.runtime.sendMessage({
+        CommunicationUtils.runtimeSendMessage({
           command: BackgroundCommand.REGISTER_FROM_DIALOG,
           value: {
             data: data.msg.data,

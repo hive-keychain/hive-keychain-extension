@@ -11,6 +11,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 const initializeServiceWorker = async () => {
@@ -41,7 +42,7 @@ const chromeMessageHandler = async (
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
           if (tab.id)
-            chrome.tabs.sendMessage(tab.id, {
+            CommunicationUtils.tabsSendMessage(tab.id, {
               ...backgroundMessage,
               command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
             });
@@ -63,7 +64,7 @@ const chromeMessageHandler = async (
             await EvmRequestHandler.getFromLocalStorage(),
           );
         } else {
-          chrome.runtime.sendMessage({
+          CommunicationUtils.runtimeSendMessage({
             ...data,
             msg: { ...data.msg, wrongMk: true },
             command: DialogCommand.UNLOCK_EVM,
@@ -75,7 +76,7 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      chrome.tabs.sendMessage(requestHandler.data.tab!, {
+      CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: backgroundMessage.value,
       });
@@ -96,7 +97,7 @@ const chromeMessageHandler = async (
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
       const { data, tab, domain } = backgroundMessage.value;
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      chrome.tabs.sendMessage(requestHandler.data.tab!, {
+      CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_ERROR,
         value: {
           requestId: requestHandler.data.request_id,
@@ -111,17 +112,19 @@ const chromeMessageHandler = async (
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
           if (tab.id) {
-            chrome.tabs
-              .sendMessage(tab.id, {
+            CommunicationUtils.tabsSendMessage(
+              tab.id,
+              {
                 command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
                 value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
-              })
-              .catch((err) =>
-                chrome.runtime.sendMessage({
+              },
+              () => {
+                CommunicationUtils.runtimeSendMessage({
                   command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
                   value: { chainId: null },
-                }),
-              );
+                });
+              },
+            );
           }
         }
       });
@@ -129,8 +132,7 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER: {
       // from content script to popup
-      console.log(backgroundMessage);
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         ...backgroundMessage,
       });
       break;

@@ -3,19 +3,20 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { createPopup } from '@background/multichain/dialog-lifecycle';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { UnlockDialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const unlockWallet = (
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
   request: KeychainRequest | EvmRequest,
   dappInfo: string | EvmDappInfo,
-  unlockCommand: DialogCommand,
+  unlockCommand: UnlockDialogCommand,
 ) => {
   /* istanbul ignore next */
   createPopup(async () => {
-    chrome.runtime.sendMessage({
-      command: unlockCommand,
+    CommunicationUtils.runtimeSendMessage({
+      command: unlockCommand as UnlockDialogCommand,
       msg: {
         success: false,
         error: 'locked',
@@ -24,6 +25,7 @@ export const unlockWallet = (
         message: await chrome.i18n.getMessage('bgd_auth_locked'),
         display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
       },
+      // @ts-ignore
       tab,
       dappInfo,
     });

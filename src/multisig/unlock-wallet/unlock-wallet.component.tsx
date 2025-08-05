@@ -7,6 +7,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 interface UnlockWalletProps {
   data: MultisigUnlockData;
@@ -16,7 +17,7 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
   const [password, setPassword] = useState('');
 
   const login = () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_UNLOCK_WALLET,
       value: password,
     } as BackgroundMessage);

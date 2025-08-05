@@ -11,6 +11,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 
 type Props = {
@@ -49,7 +50,7 @@ export const EvmOperation = ({
       return;
     } else {
       setLoading(true);
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
         value: {
           request: request,
@@ -62,7 +63,7 @@ export const EvmOperation = ({
   };
 
   const onClose = () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.REJECT_EVM_TRANSACTION,
       value: {
         request,

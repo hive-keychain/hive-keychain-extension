@@ -12,6 +12,7 @@ import RequestTokenBalance from 'src/dialog/components/request-token-balance/req
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import DialogError from 'src/dialog/multichain/error/error';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
 type Props = {
@@ -68,7 +69,7 @@ const Swap = (props: Props) => {
 
   const onConfirmSwap = async () => {
     setForceLoading(true);
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
         data: {

@@ -12,6 +12,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const performEvmOperation = async (
@@ -77,7 +78,7 @@ export const performEvmOperation = async (
       }
     }
 
-    chrome.tabs.sendMessage(tab, {
+    CommunicationUtils.tabsSendMessage(tab, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: { requestId: request.request_id, result: result },
     });
@@ -94,6 +95,6 @@ export const performEvmOperation = async (
       [],
     );
   } finally {
-    chrome.runtime.sendMessage(message);
+    if (message) CommunicationUtils.runtimeSendMessage(message);
   }
 };

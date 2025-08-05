@@ -7,6 +7,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const handleEvmError = async (
   requestHandler: EvmRequestHandler,
@@ -24,11 +25,11 @@ export const handleEvmError = async (
       error: { code: providerError.code, message: providerError.message },
     },
   };
-  chrome.tabs.sendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(tab, message);
 
   if (!hideDialog) {
     const callback = async () => {
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_ERROR,
         msg: {
           display_msg: await chrome.i18n.getMessage(

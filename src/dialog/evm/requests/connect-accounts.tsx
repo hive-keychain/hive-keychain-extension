@@ -15,6 +15,7 @@ import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 interface Props {
   request: EvmRequest;
@@ -91,7 +92,7 @@ export const ConnectAccounts = (props: Props) => {
         result = [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }];
       }
 
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
         value: {
           requestId: request.request_id,

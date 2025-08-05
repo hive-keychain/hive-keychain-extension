@@ -9,7 +9,11 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import {
+  BackgroundCommand,
+  SendBackImportCommand,
+} from 'src/reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
@@ -19,7 +23,7 @@ interface PropsType {
   text: string;
   command: BackgroundCommand;
   accept: string;
-  callBackCommand?: BackgroundCommand;
+  callBackCommand?: SendBackImportCommand;
 }
 
 const ImportFile = ({
@@ -55,7 +59,7 @@ const ImportFile = ({
     if (selectedFile) {
       const base64 = await FileUtils.toBase64(selectedFile);
       const fileData = atob(base64);
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: command,
         value: fileData,
       });

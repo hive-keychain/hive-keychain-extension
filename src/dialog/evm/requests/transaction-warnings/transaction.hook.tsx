@@ -20,6 +20,7 @@ import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confi
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
 
@@ -209,7 +210,7 @@ export const useTransactionHook = (
       setLoading(true);
 
       if (fields) {
-        chrome.runtime.sendMessage({
+        CommunicationUtils.runtimeSendMessage({
           command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
           value: {
             request: request,

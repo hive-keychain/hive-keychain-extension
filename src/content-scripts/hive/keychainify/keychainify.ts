@@ -6,6 +6,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import * as HiveUri from 'hive-uri';
 import { HiveUriTransaction } from 'src/content-scripts/keychainify/hive-uri.types';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 if (window.chrome) {
@@ -301,7 +302,7 @@ export default {
   dispatchRequest: function (tab: any, request: any) {
     const now = new Date().getTime();
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_REQUEST,
       request: request,
       domain: window.location.hostname,

@@ -50,3 +50,9 @@ export enum BackgroundCommand {
   MULTISIG_REQUEST_SIGNATURES_RESPONSE = 'MULTISIG_REQUEST_SIGNATURES_RESPONSE',
   MULTISIG_REFRESH_CONNECTIONS = 'MULTISIG_REFRESH_CONNECTIONS',
 }
+
+export type SendBackImportCommand = Extract<
+  BackgroundCommand,
+  | BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS
+  | BackgroundCommand.IMPORT_SETTINGS_CALLBACK
+>;

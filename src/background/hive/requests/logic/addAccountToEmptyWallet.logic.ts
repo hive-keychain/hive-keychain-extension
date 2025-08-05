@@ -2,6 +2,7 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { createPopup } from '@background/multichain/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const addAccountToEmptyWallet = (
   requestHandler: HiveRequestsHandler,
@@ -11,7 +12,7 @@ export const addAccountToEmptyWallet = (
 ) => {
   /* istanbul ignore next */
   createPopup(async () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.REGISTER,
       msg: {
         success: false,

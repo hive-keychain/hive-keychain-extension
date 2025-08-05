@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 type Props = {
@@ -33,7 +34,7 @@ const SignTransaction = (props: Props) => {
     ];
 
     setInterval(() => {
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.PING,
       });
     }, 5000);
@@ -73,8 +74,8 @@ const SignTransaction = (props: Props) => {
       }
 
       setLoadingOperations(operations);
-      chrome.runtime.sendMessage({
-        command: DialogCommand.RETURN_SIGNATURE,
+      CommunicationUtils.runtimeSendMessage({
+        command: DialogCommand.LEDGER_RETURN_SIGNATURE,
         signature: signature,
       });
     } catch (err: any) {
@@ -83,9 +84,9 @@ const SignTransaction = (props: Props) => {
       if (err instanceof KeychainError) {
         message = err.message;
       }
-      chrome.runtime.sendMessage({
-        command: DialogCommand.RETURN_ERROR_SIGNING_TRANSACTION,
-        message: message,
+      CommunicationUtils.runtimeSendMessage({
+        command: DialogCommand.LEDGER_RETURN_ERROR_SIGNING_TRANSACTION,
+        msg: message,
       });
     }
   };

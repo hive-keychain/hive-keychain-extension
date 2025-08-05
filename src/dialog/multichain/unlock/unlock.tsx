@@ -11,6 +11,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 type Props = {
   data: UnlockMessage;
@@ -48,7 +49,7 @@ export default ({ data, index }: Props) => {
 
   const login = () => {
     setLoading(true);
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.UNLOCK_FROM_DIALOG,
       value: {
         data,
