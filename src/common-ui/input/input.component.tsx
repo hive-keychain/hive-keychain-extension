@@ -58,6 +58,8 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
     setIsFocused(true);
   };
 
+  console.log(props.size);
+
   return (
     <div
       className={`custom-input ${props.classname ?? ''} ${

@@ -61,7 +61,11 @@
   margin-bottom: 4px;
   padding-left: 6px;
   align-items: baseline;
-  @include poppins600(14px);
+  @include poppins500($input-font-size);
+  @include hint;
+}
+
+@mixin hint {
   .hint {
     @include poppins300($input-font-size - 2px);
   }

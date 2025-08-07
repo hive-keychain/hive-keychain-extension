@@ -13,6 +13,7 @@ import {
 import { EvmEditContactComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact/evm-edit-contact.component';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
+import { openModal } from '@popup/multichain/actions/modal.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
@@ -30,6 +31,7 @@ const EvmContacts = ({
   setInfoMessage,
   navigateTo,
   setEvmAccounts,
+  openModal,
 }: PropsType) => {
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
   const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
@@ -72,25 +74,28 @@ const EvmContacts = ({
     initAddresses(newChain);
   };
 
-  const saveWhitelistedAddresses = (
-    newItem: EvmFavoriteAddress,
+  const saveWhitelistedAddresses = async (
+    updatedFavoriteAddress: EvmFavoriteAddress,
     type: EvmAddressType,
   ) => {
-    const newSavedAddresses: EvmWhitelistedAddresses = {
-      ...addresses,
-    } as EvmWhitelistedAddresses;
-    const index = newSavedAddresses[type]?.findIndex(
-      (address) => address.address === newItem.address,
+    await EvmAddressesUtils.updateAddress(
+      selectedChain.chainId,
+      updatedFavoriteAddress,
+      type,
     );
-    if (index) {
-      console.log({ newItem });
-      newSavedAddresses[type]![index] = newItem;
-      EvmAddressesUtils.saveWhitelistedAddresses(
-        selectedChain.chainId,
-        newSavedAddresses,
-      );
-      console.log(newSavedAddresses);
-    }
+    initAddresses(selectedChain);
+  };
+
+  const deleteWhitelistedAddresses = async (
+    deletedFavoriteAddress: EvmFavoriteAddress,
+    type: EvmAddressType,
+  ) => {
+    await EvmAddressesUtils.deleteAddress(
+      selectedChain.chainId,
+      deletedFavoriteAddress.id,
+      type,
+    );
+    initAddresses(selectedChain);
   };
 
   return (
@@ -115,18 +120,23 @@ const EvmContacts = ({
                 <>
                   <LabelComponent value="evm_wallets" />
                   {addresses[EvmAddressType.WALLET_ADDRESS].map(
-                    (savedAddress) => (
-                      <div className="contact-item">
-                        <EvmEditContactComponent
-                          favoriteAddress={savedAddress}
-                          onSaveClicked={(item) =>
-                            saveWhitelistedAddresses(
-                              item,
-                              EvmAddressType.WALLET_ADDRESS,
-                            )
-                          }
-                        />
-                      </div>
+                    (savedAddress, index) => (
+                      <EvmEditContactComponent
+                        key={`${savedAddress.address}-${index}`}
+                        favoriteAddress={savedAddress}
+                        onSaveClicked={(item) =>
+                          saveWhitelistedAddresses(
+                            item,
+                            EvmAddressType.WALLET_ADDRESS,
+                          )
+                        }
+                        onDeleteClicked={(item) =>
+                          deleteWhitelistedAddresses(
+                            item,
+                            EvmAddressType.WALLET_ADDRESS,
+                          )
+                        }
+                      />
                     ),
                   )}
                 </>
@@ -135,13 +145,19 @@ const EvmContacts = ({
               addresses[EvmAddressType.SMART_CONTRACT].length > 0 && (
                 <>
                   <LabelComponent value="evm_menu_advanced_smart_contracts" />
-
                   {addresses[EvmAddressType.SMART_CONTRACT].map(
-                    (savedAddress) => (
+                    (savedAddress, index) => (
                       <EvmEditContactComponent
+                        key={`${savedAddress.address}-${index}`}
                         favoriteAddress={savedAddress}
                         onSaveClicked={(item) =>
                           saveWhitelistedAddresses(
+                            item,
+                            EvmAddressType.SMART_CONTRACT,
+                          )
+                        }
+                        onDeleteClicked={(item) =>
+                          deleteWhitelistedAddresses(
                             item,
                             EvmAddressType.SMART_CONTRACT,
                           )
@@ -170,6 +186,7 @@ const connector = connect(mapStateToProps, {
   setInfoMessage,
   navigateTo,
   setEvmAccounts,
+  openModal,
 });
 
 type PropsType = ConnectedProps<typeof connector>;

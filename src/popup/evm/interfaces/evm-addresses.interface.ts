@@ -4,6 +4,7 @@ export enum EvmAddressType {
 }
 
 export interface EvmFavoriteAddress {
+  id: string;
   address: string;
   label?: string;
 }

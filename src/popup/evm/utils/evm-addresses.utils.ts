@@ -14,6 +14,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import { identicon } from 'minidenticons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { v4 } from 'uuid';
 
 // const ENS_EXPIRATION_TIME = 60000;
 
@@ -229,6 +230,7 @@ const saveContractAddress = async (
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
   whitelistedAddresses[EvmAddressType.SMART_CONTRACT].push({
+    id: v4(),
     address: contractAddress,
     label: label,
   });
@@ -241,6 +243,33 @@ const getContractAddresses = async (chainId: string) => {
   return whitelistedAddresses[EvmAddressType.SMART_CONTRACT];
 };
 
+const updateAddress = async (
+  chainId: string,
+  updatedFavorite: EvmFavoriteAddress,
+  addressType: EvmAddressType,
+) => {
+  const whitelistedAddresses = await getWhitelistedAddresses(chainId);
+  const addressItemIndex = whitelistedAddresses[addressType].findIndex(
+    (item) => item.id === updatedFavorite.id,
+  );
+  if (addressItemIndex !== -1) {
+    whitelistedAddresses[addressType][addressItemIndex] = updatedFavorite;
+  }
+  await saveWhitelistedAddresses(chainId, whitelistedAddresses);
+};
+
+const deleteAddress = async (
+  chainId: string,
+  id: string,
+  addressType: EvmAddressType,
+) => {
+  const whitelistedAddresses = await getWhitelistedAddresses(chainId);
+  whitelistedAddresses[addressType] = whitelistedAddresses[addressType].filter(
+    (item) => item.id !== id,
+  );
+  await saveWhitelistedAddresses(chainId, whitelistedAddresses);
+};
+
 const saveWalletAddress = async (
   walletAddress: string,
   chainId: string,
@@ -248,6 +277,7 @@ const saveWalletAddress = async (
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
   whitelistedAddresses[EvmAddressType.WALLET_ADDRESS].push({
+    id: v4(),
     address: walletAddress,
     label: label,
   });
@@ -416,4 +446,6 @@ export const EvmAddressesUtils = {
   getWhiteListAutocomplete,
   getWhitelistedAddresses,
   saveWhitelistedAddresses,
+  updateAddress,
+  deleteAddress,
 };

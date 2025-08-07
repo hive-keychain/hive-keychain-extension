@@ -25,18 +25,18 @@ const getMultipleValueFromLocalStorage = async (
 const saveValueInLocalStorage = (
   key: LocalStorageKeyEnum,
   value: any,
-): void => {
+): Promise<void> => {
   const storageValue: LocaleStorageObject = {};
   storageValue[key] = value;
-  chrome.storage.local.set(storageValue);
+  return chrome.storage.local.set(storageValue);
 };
 
 const clearLocalStorage = async () => {
-  chrome.storage.local.clear();
+  await chrome.storage.local.clear();
 };
 
 const removeFromLocalStorage = async (key: LocalStorageKeyEnum) => {
-  chrome.storage.local.remove(key);
+  await chrome.storage.local.remove(key);
 };
 
 const getValueFromSessionStorage = async (

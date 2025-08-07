@@ -29,11 +29,11 @@ $autoCompleteItemHeight: 30px;
         border-style: unset;
         border: none;
         background: var(--input-background);
-        @include poppins500($input-font-size);
+        @include poppins400($input-font-size);
         color: var(--main-font-color);
         &::placeholder {
           color: var(--placeholder-color);
-          @include poppins400(15px);
+          @include poppins400($input-font-size);
         }
 
         &:focus {
@@ -117,5 +117,16 @@ $autoCompleteItemHeight: 30px;
     @include poppins400(12px);
     color: $red;
     padding-left: 6px;
+  }
+  &.small {
+    .custom-input-content {
+      padding: 6px 12px;
+      input {
+        font-size: $input-font-size - 1px;
+        &::placeholder {
+          font-size: $input-font-size - 1px;
+        }
+      }
+    }
   }
 }

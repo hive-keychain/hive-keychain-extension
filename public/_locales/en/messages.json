@@ -5284,5 +5284,25 @@
   "evm_wallets": {
     "message": "Wallets",
     "description": "Evm wallets"
+  },
+  "evm_contact_no_label": {
+    "message": "No label",
+    "description": "Evm contact no label"
+  },
+  "evm_edit_contact_modal_title": {
+    "message": "Edit contact",
+    "description": "Evm edit contact modal title"
+  },
+  "evm_contact_address": {
+    "message": "Address",
+    "description": "Evm address"
+  },
+  "evm_contact_label": {
+    "message": "Label",
+    "description": "Evm label"
+  },
+  "evm_delete_contact_link": {
+    "message": "Delete contact",
+    "description": "Evm delete contact link"
   }
 }

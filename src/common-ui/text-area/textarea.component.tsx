@@ -28,6 +28,7 @@ export interface TextAreaProps {
   rows?: number;
   useChips?: boolean;
   maxChips?: number;
+  size?: 'small';
 }
 
 const TextArea = React.forwardRef((props: TextAreaProps, ref: any) => {
@@ -88,7 +89,10 @@ const TextArea = React.forwardRef((props: TextAreaProps, ref: any) => {
   };
 
   return (
-    <div className={`custom-input ${props.classname ?? ''}`}>
+    <div
+      className={`custom-input ${props.classname ?? ''} ${
+        props.size ? props.size : ''
+      }`}>
       {props.label && (
         <div className="label">
           {props.skipLabelTranslation
