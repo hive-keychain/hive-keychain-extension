@@ -1,7 +1,6 @@
 import { EvmAccountInfo } from '@common-ui/evm/evm-account-display/evm-account-info.component';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import React from 'react';
 import {
   DappStatusComponent,
@@ -37,10 +36,7 @@ export const EvmAccountDisplayComponent = ({
 }: Props) => {
   return (
     <div className="evm-account-display">
-      <DappStatusComponent
-        svg={EvmAddressesUtils.getIdenticonFromAddress(account.wallet.address)}
-        status={status}
-      />
+      <DappStatusComponent address={account.wallet.address} status={status} />
       <EvmAccountInfo
         account={account}
         editable={editable}

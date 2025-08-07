@@ -11,8 +11,8 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { generate } from '@victr/geopattern';
 import { ethers } from 'ethers';
-import { identicon } from 'minidenticons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { v4 } from 'uuid';
 
@@ -165,7 +165,8 @@ const getAddressType = async (address: string, chain: EvmChain) => {
 };
 
 const getIdenticonFromAddress = (address: string) => {
-  return identicon(address, 90, 50);
+  return generate(address, { generator: 'overlappingCircles' }).toDataUrl();
+  // return identicon(address, 90, 50);
 };
 
 const getAllWhitelistedAddresses = async (): Promise<string[]> => {

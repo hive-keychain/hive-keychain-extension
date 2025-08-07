@@ -24,10 +24,6 @@
           @include poppins400(18px);
           color: var(--main-font-color);
         }
-        img {
-          background-color: var(--background-color);
-          border-radius: 50%;
-        }
       }
       .account-section-title {
         @include poppins600(14px);
