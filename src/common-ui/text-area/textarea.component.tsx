@@ -85,7 +85,7 @@ export const TextAreaComponent = React.forwardRef(
         setChips(newChips);
         props.onChange(newChips);
       } else {
-        props.onChange(event.target.value);
+        props.onChange(pastedData);
       }
     };
 
