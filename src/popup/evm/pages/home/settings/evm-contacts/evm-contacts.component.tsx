@@ -10,6 +10,7 @@ import {
   EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmEditContactPopupComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact-popup/evm-edit-contact-popup.component';
 import { EvmEditContactComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact/evm-edit-contact.component';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
@@ -24,18 +25,19 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { v4 } from 'uuid';
 
-const EvmContacts = ({
-  chain,
-  setTitleContainerProperties,
-  setInfoMessage,
-  navigateTo,
-  setEvmAccounts,
-  openModal,
-}: PropsType) => {
+const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
   const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
   const [addresses, setAddresses] = useState<EvmWhitelistedAddresses>();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [newFavoriteAddress, setNewFavoriteAddress] =
+    useState<EvmFavoriteAddress>({
+      address: '',
+      label: '',
+      id: v4(),
+    });
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -59,12 +61,9 @@ const EvmContacts = ({
   };
 
   const initAddresses = async (newChain: EvmChain) => {
-    console.log('init addresses');
     const savedAddresses = await EvmAddressesUtils.getWhitelistedAddresses(
       newChain.chainId,
     );
-
-    console.log(savedAddresses);
 
     setAddresses(savedAddresses);
   };
@@ -74,7 +73,7 @@ const EvmContacts = ({
     initAddresses(newChain);
   };
 
-  const saveWhitelistedAddresses = async (
+  const updateWhitelistedAddresses = async (
     updatedFavoriteAddress: EvmFavoriteAddress,
     type: EvmAddressType,
   ) => {
@@ -84,6 +83,26 @@ const EvmContacts = ({
       type,
     );
     initAddresses(selectedChain);
+  };
+
+  const createNewFavoriteAddress = async (item: EvmFavoriteAddress) => {
+    await EvmAddressesUtils.saveWalletAddress(
+      selectedChain.chainId,
+      item.address,
+      item.label,
+      newFavoriteAddress.id,
+    );
+    resetNewFavoriteAddress();
+    initAddresses(selectedChain);
+  };
+
+  const resetNewFavoriteAddress = () => {
+    setNewFavoriteAddress({
+      address: '',
+      label: '',
+      id: v4(),
+    });
+    setIsPopupOpen(false);
   };
 
   const deleteWhitelistedAddresses = async (
@@ -113,6 +132,11 @@ const EvmContacts = ({
             additionalClassname="chain-custom-select"
           />
         )}
+
+        <div className="add-contact-link" onClick={() => setIsPopupOpen(true)}>
+          {chrome.i18n.getMessage('evm_add_contact_link')}
+        </div>
+
         {addresses && (
           <div className="edit-contacts-panel">
             {addresses[EvmAddressType.WALLET_ADDRESS] &&
@@ -125,7 +149,7 @@ const EvmContacts = ({
                         key={`${savedAddress.address}-${index}`}
                         favoriteAddress={savedAddress}
                         onSaveClicked={(item) =>
-                          saveWhitelistedAddresses(
+                          updateWhitelistedAddresses(
                             item,
                             EvmAddressType.WALLET_ADDRESS,
                           )
@@ -151,7 +175,7 @@ const EvmContacts = ({
                         key={`${savedAddress.address}-${index}`}
                         favoriteAddress={savedAddress}
                         onSaveClicked={(item) =>
-                          saveWhitelistedAddresses(
+                          updateWhitelistedAddresses(
                             item,
                             EvmAddressType.SMART_CONTRACT,
                           )
@@ -170,6 +194,14 @@ const EvmContacts = ({
           </div>
         )}
       </Card>
+      {isPopupOpen && (
+        <EvmEditContactPopupComponent
+          isNew={true}
+          favoriteAddress={newFavoriteAddress}
+          onSaveClicked={(item) => createNewFavoriteAddress(item)}
+          closePopup={() => resetNewFavoriteAddress()}
+        />
+      )}
     </div>
   );
 };

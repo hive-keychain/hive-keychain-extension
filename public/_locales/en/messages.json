@@ -5304,5 +5304,13 @@
   "evm_delete_contact_link": {
     "message": "Delete contact",
     "description": "Evm delete contact link"
+  },
+  "evm_add_contact_link": {
+    "message": "Add contact",
+    "description": "Evm add contact link"
+  },
+  "evm_contact_new_contact": {
+    "message": "New contact",
+    "description": "Evm new contact"
   }
 }

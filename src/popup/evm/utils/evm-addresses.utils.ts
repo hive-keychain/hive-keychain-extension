@@ -228,10 +228,11 @@ const saveContractAddress = async (
   contractAddress: string,
   chainId: string,
   label?: string,
+  id?: string,
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
   whitelistedAddresses[EvmAddressType.SMART_CONTRACT].push({
-    id: v4(),
+    id: id ?? v4(),
     address: contractAddress,
     label: label,
   });
@@ -272,13 +273,14 @@ const deleteAddress = async (
 };
 
 const saveWalletAddress = async (
-  walletAddress: string,
   chainId: string,
+  walletAddress: string,
   label?: string,
+  id?: string,
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
   whitelistedAddresses[EvmAddressType.WALLET_ADDRESS].push({
-    id: v4(),
+    id: id ?? v4(),
     address: walletAddress,
     label: label,
   });

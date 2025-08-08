@@ -1,12 +1,6 @@
-import ButtonComponent, {
-  ButtonType,
-} from '@common-ui/button/button.component';
 import { EvmAccountImage } from '@common-ui/evm/evm-account-image/evm-account-image.component';
-import { InputType } from '@common-ui/input/input-type.enum';
-import InputComponent from '@common-ui/input/input.component';
-import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
-import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
 import { EvmFavoriteAddress } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmEditContactPopupComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact-popup/evm-edit-contact-popup.component';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React, { useState } from 'react';
 
@@ -33,7 +27,7 @@ export const EvmEditContactComponent = ({
     });
     setIsPopupOpen(false);
   };
-  const cancel = async () => {
+  const closePopup = async () => {
     setIsPopupOpen(false);
     setContactLabel(favoriteAddress.label);
     setContactAddress(favoriteAddress.address);
@@ -67,50 +61,12 @@ export const EvmEditContactComponent = ({
       </div>
 
       {isPopupOpen && (
-        <PopupContainer onClickOutside={() => setIsPopupOpen(false)}>
-          <div className="edit-contact-popup">
-            <div className="top-row">
-              <div className="initial-contact-label">
-                <EvmAccountImage address={favoriteAddress.address} />
-                {favoriteAddress.label && favoriteAddress.label.length > 0
-                  ? favoriteAddress.label
-                  : chrome.i18n.getMessage('evm_contact_no_label')}
-              </div>
-              <div
-                className="delete-contact-link"
-                onClick={() => deleteContact()}>
-                {chrome.i18n.getMessage('evm_delete_contact_link')}
-              </div>
-            </div>
-
-            <InputComponent
-              label="evm_contact_label"
-              value={contactLabel}
-              type={InputType.TEXT}
-              onChange={setContactLabel}
-            />
-            <TextAreaComponent
-              label="evm_contact_address"
-              value={contactAddress}
-              onChange={setContactAddress}
-            />
-
-            <div className="action-buttons">
-              <ButtonComponent
-                type={ButtonType.IMPORTANT}
-                label={'popup_html_operation_button_save'}
-                onClick={() => save()}
-                height="small"
-              />
-              <ButtonComponent
-                type={ButtonType.ALTERNATIVE}
-                onClick={() => cancel()}
-                label={'popup_html_button_label_cancel'}
-                height="small"
-              />
-            </div>
-          </div>
-        </PopupContainer>
+        <EvmEditContactPopupComponent
+          favoriteAddress={favoriteAddress}
+          onSaveClicked={save}
+          onDeleteClicked={deleteContact}
+          closePopup={closePopup}
+        />
       )}
     </div>
   );

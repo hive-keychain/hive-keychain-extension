@@ -1,5 +1,9 @@
-@import './evm-edit-contact/evm-edit-contact.component.scss';
 .evm-contacts-page {
+  .add-contact-link {
+    @include link;
+    align-self: flex-end;
+  }
+
   .card-container {
     display: flex;
     flex-direction: column;

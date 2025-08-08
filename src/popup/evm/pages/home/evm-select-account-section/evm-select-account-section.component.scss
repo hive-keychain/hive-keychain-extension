@@ -48,10 +48,7 @@
       column-gap: 8px;
     }
     .user-picture {
-      height: 24px;
-      width: 24px;
-      background: white;
-      border-radius: 50%;
+      @include user-avatar-small;
     }
 
     .react-dropdown-select-content {
@@ -171,10 +168,7 @@
       margin-right: 10px;
     }
     .user-picture {
-      height: 24px;
-      width: 24px;
-      background: white;
-      border-radius: 50%;
+      @include user-avatar-small;
     }
     .react-dropdown-select-dropdown {
       top: 72px;

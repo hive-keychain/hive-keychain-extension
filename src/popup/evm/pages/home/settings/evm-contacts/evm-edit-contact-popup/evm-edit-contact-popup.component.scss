@@ -1,0 +1,33 @@
+.edit-contact-popup {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  row-gap: 12px;
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .initial-contact-label {
+      @include poppins500(16px);
+      color: var(--main-font-color);
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      .user-picture {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+      }
+    }
+    .delete-contact-link {
+      @include link;
+    }
+  }
+  .action-buttons {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: row;
+    column-gap: 8px;
+  }
+}
