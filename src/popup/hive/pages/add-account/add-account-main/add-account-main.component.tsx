@@ -121,12 +121,14 @@ const AddAccountMain = ({
             type={ButtonType.ALTERNATIVE}
           />
         )}
-        <ButtonComponent
-          dataTestId="keyless-keychain-setup-button"
-          label={'popup_html_setup_keyless_keychain'}
-          onClick={handleSetupKeylessKeychain}
-          type={ButtonType.ALTERNATIVE}
-        />
+        {accounts.length === 0 && (
+          <ButtonComponent
+            dataTestId="keyless-keychain-setup-button"
+            label={'popup_html_setup_keyless_keychain'}
+            onClick={handleSetupKeylessKeychain}
+            type={ButtonType.ALTERNATIVE}
+          />
+        )}
       </div>
     </div>
   );
