@@ -57,6 +57,7 @@ $autoCompleteItemHeight: 30px;
       &.has-left-logo > input {
         padding-left: 24px;
       }
+
       &.has-right-logo {
         input {
           padding-right: 60px !important;
@@ -92,6 +93,9 @@ $autoCompleteItemHeight: 30px;
       }
 
       &:hover {
+        input {
+          padding-right: 32px !important;
+        }
         .erase {
           display: block;
         }
