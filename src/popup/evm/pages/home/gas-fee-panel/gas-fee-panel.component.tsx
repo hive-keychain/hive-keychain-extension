@@ -54,6 +54,9 @@ export const GasFeePanel = ({
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
 
+  const [displayCustomWarning, setDisplayCustomWarning] =
+    useState<boolean>(false);
+
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
   const [customGasFeeForm, setCustomGasFeeForm] = useState<CustomGasFeeForm>({
@@ -107,6 +110,7 @@ export const GasFeePanel = ({
       undefined,
       transactionData,
     );
+    console.log('estimate', estimate);
     if (!!multiplier && selectedFee) {
       const increasedFee: GasFeeEstimationBase = {
         ...selectedFee,
@@ -141,20 +145,40 @@ export const GasFeePanel = ({
         }
       }
 
-      if (estimate.aggressive.estimatedFee < increasedFee.estimatedFee)
+      if (
+        estimate?.aggressive?.estimatedFee &&
+        estimate.aggressive.estimatedFee < increasedFee.estimatedFee
+      )
         estimate.aggressive.deactivated = true;
-      if (estimate.medium.estimatedFee < increasedFee.estimatedFee)
+      if (
+        estimate?.medium?.estimatedFee &&
+        estimate.medium.estimatedFee < increasedFee.estimatedFee
+      )
         estimate.medium.deactivated = true;
 
       onSelectFee(increasedFee);
       estimate.increased = increasedFee;
     } else {
-      if (estimate.suggestedByDApp) {
+      if (estimate?.suggestedByDApp) {
         onSelectFee(estimate.suggestedByDApp);
-      } else {
+      } else if (estimate.suggested) {
         onSelectFee(estimate.suggested);
+      } else {
+        // No suggested by dapp, no suggested, so we select the custom fee
+        onSelectFee(estimate.custom!);
       }
     }
+
+    if (
+      estimate.custom &&
+      !estimate.suggestedByDApp &&
+      !estimate.suggested &&
+      !chain.onlyCustomFee
+    ) {
+      // Backend data not available so we display a warning
+      setDisplayCustomWarning(true);
+    }
+
     setFeeEstimation(estimate);
   };
 
@@ -166,6 +190,10 @@ export const GasFeePanel = ({
     onSelectFee(gasFee);
     setIsAdvancedPanelOpen(false);
   };
+
+  useEffect(() => {
+    console.log({ selectedFee });
+  }, [selectedFee]);
 
   const updateCustomFee = (
     key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
@@ -190,7 +218,7 @@ export const GasFeePanel = ({
       case 'gasPrice': {
         newState.gasPriceInGwei = Number(value);
         newState.gasPriceValue = EvmFormatUtils.etherToGwei(
-          value * feeEstimation?.custom.gasPrice!,
+          value * feeEstimation?.custom?.gasPrice!,
         );
         break;
       }
@@ -222,13 +250,15 @@ export const GasFeePanel = ({
           customGasFeeForm.maxBaseFeeValue!,
           customGasFeeForm.priorityFeeValue!,
         ).toNumber();
-        customEstimatedFee = Decimal.add(
-          Decimal.div(
-            Number(feeEstimation?.extraInfo.baseFee.estimated!),
-            EvmFormatUtils.GWEI,
-          ),
-          customGasFeeForm.priorityFeeValue!,
-        ).toNumber();
+        if (feeEstimation?.extraInfo) {
+          customEstimatedFee = Decimal.add(
+            Decimal.div(
+              Number(feeEstimation?.extraInfo.baseFee.estimated!),
+              EvmFormatUtils.GWEI,
+            ),
+            customGasFeeForm.priorityFeeValue!,
+          ).toNumber();
+        } else customEstimatedFee = customMaxFee;
         break;
       }
       case EvmTransactionType.LEGACY: {
@@ -237,13 +267,23 @@ export const GasFeePanel = ({
       }
     }
 
-    let customDuration = 0;
-    if (!feeEstimation) return;
-    if (customMaxFee >= feeEstimation!.aggressive!.maxFee) {
+    console.log({ customMaxFee, customEstimatedFee, customGasFeeForm });
+
+    let customDuration = -1;
+    if (
+      feeEstimation?.aggressive?.maxFee &&
+      customMaxFee >= feeEstimation.aggressive.maxFee
+    ) {
       customDuration = feeEstimation.aggressive.estimatedMaxDuration;
-    } else if (customMaxFee >= feeEstimation!.medium!.maxFee) {
+    } else if (
+      feeEstimation?.medium?.maxFee &&
+      customMaxFee >= feeEstimation.medium.maxFee
+    ) {
       customDuration = feeEstimation.medium.estimatedMaxDuration;
-    } else {
+    } else if (
+      feeEstimation?.low?.maxFee &&
+      customMaxFee >= feeEstimation.low.maxFee
+    ) {
       customDuration = feeEstimation.low.estimatedMaxDuration;
     }
 
@@ -256,6 +296,10 @@ export const GasFeePanel = ({
       gasPrice: customGasFeeForm.gasPriceInGwei,
       maxFeePerGas: customGasFeeForm.maxBaseFeeInGwei,
       priorityFee: customGasFeeForm.priorityFeeInGwei,
+      estimatedFeeUSD:
+        customEstimatedFee * (prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+      maxFeeUSD:
+        customMaxFee * (prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
       name: 'popup_html_evm_custom_gas_fee_custom',
       icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
     } as GasFeeEstimationBase;
@@ -267,7 +311,7 @@ export const GasFeePanel = ({
     };
 
     setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
-    setCustomFeePanelOpened(false);
+    closeCustomFeePanel();
   };
 
   const getFeeLabel = () => {
@@ -281,12 +325,35 @@ export const GasFeePanel = ({
     }
   };
 
+  const handlePanelOnClick = () => {
+    setIsAdvancedPanelOpen(true);
+    if (
+      chain.onlyCustomFee ||
+      (feeEstimation &&
+        !feeEstimation.suggestedByDApp &&
+        !feeEstimation.suggested)
+    ) {
+      openCustomFeePanel();
+    }
+  };
+
+  const closeCustomFeePanel = () => {
+    setCustomFeePanelOpened(false);
+    console.log({ chain, feeEstimation });
+    if (
+      chain.onlyCustomFee ||
+      (feeEstimation &&
+        !feeEstimation.suggestedByDApp &&
+        !feeEstimation.suggested)
+    ) {
+      setIsAdvancedPanelOpen(false);
+    }
+  };
+
   return (
     <>
       {feeEstimation && selectedFee && (
-        <div
-          className="gas-fee-panel"
-          onClick={() => setIsAdvancedPanelOpen(true)}>
+        <div className="gas-fee-panel" onClick={() => handlePanelOnClick()}>
           <div className="title-row">
             <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
             <div className="title">
@@ -329,14 +396,11 @@ export const GasFeePanel = ({
               <div className="label gas-fee">
                 <div className="label gas-fee">
                   <div>
-                    {FormatUtils.formatCurrencyValue(
-                      selectedFee.estimatedFee,
-                      8,
-                    )}{' '}
+                    {FormatUtils.formatCurrencyValue(selectedFee.maxFee, 8)}{' '}
                     {chain.mainToken}
                   </div>
                   <div className="label usd-value">
-                    {selectedFee.estimatedFeeUSD.toFixed(2)}
+                    {selectedFee.maxFeeUSD.toFixed(2)}
                     {' USD'}
                   </div>
                 </div>
@@ -350,7 +414,9 @@ export const GasFeePanel = ({
               </div>
               <div className="label duration">
                 {chrome.i18n.getMessage(
-                  'popup_html_evm_gas_fee_estimate_duration',
+                  selectedFee.estimatedMaxDuration !== -1
+                    ? 'popup_html_evm_gas_fee_estimate_duration'
+                    : 'evm_fee_estimate_unknown_duration',
                   [selectedFee.estimatedMaxDuration.toString()],
                 )}
               </div>
@@ -378,12 +444,12 @@ export const GasFeePanel = ({
               <Separator fullSize type="horizontal" />
               {!isCustomFeePanelOpened && (
                 <>
-                  {!feeEstimation.increased && (
+                  {!feeEstimation.increased && feeEstimation.low && (
                     <GasFeePanelItem
                       estimation={feeEstimation.low}
                       icon={SVGIcons.EVM_GAS_FEE_LOW}
                       additionalClass={'low'}
-                      onSelectGasFee={() => selectGasFee(feeEstimation.low)}
+                      onSelectGasFee={() => selectGasFee(feeEstimation.low!)}
                       label={'popup_html_evm_custom_gas_fee_low'}
                     />
                   )}
@@ -400,22 +466,26 @@ export const GasFeePanel = ({
                     />
                   )}
 
-                  <GasFeePanelItem
-                    estimation={feeEstimation.medium}
-                    icon={SVGIcons.EVM_GAS_FEE_MEDIUM}
-                    additionalClass={'medium'}
-                    onSelectGasFee={() => selectGasFee(feeEstimation.medium)}
-                    label={'popup_html_evm_custom_gas_fee_medium'}
-                  />
-                  <GasFeePanelItem
-                    estimation={feeEstimation.aggressive}
-                    icon={SVGIcons.EVM_GAS_FEE_HIGH}
-                    additionalClass={'aggressive'}
-                    onSelectGasFee={() =>
-                      selectGasFee(feeEstimation.aggressive)
-                    }
-                    label={'popup_html_evm_custom_gas_fee_aggressive'}
-                  />
+                  {feeEstimation.medium && (
+                    <GasFeePanelItem
+                      estimation={feeEstimation.medium}
+                      icon={SVGIcons.EVM_GAS_FEE_MEDIUM}
+                      additionalClass={'medium'}
+                      onSelectGasFee={() => selectGasFee(feeEstimation.medium!)}
+                      label={'popup_html_evm_custom_gas_fee_medium'}
+                    />
+                  )}
+                  {feeEstimation.aggressive && (
+                    <GasFeePanelItem
+                      estimation={feeEstimation.aggressive}
+                      icon={SVGIcons.EVM_GAS_FEE_HIGH}
+                      additionalClass={'aggressive'}
+                      onSelectGasFee={() =>
+                        selectGasFee(feeEstimation.aggressive!)
+                      }
+                      label={'popup_html_evm_custom_gas_fee_aggressive'}
+                    />
+                  )}
 
                   <Separator type={'horizontal'} fullSize />
 
@@ -507,33 +577,41 @@ export const GasFeePanel = ({
                           } ${chain.mainToken}`}
                           skipHintTranslation
                         />
-                        <div className="data-panel">
-                          <div className="data-block">
-                            <span className="label">
-                              {chrome.i18n.getMessage(
-                                'popup_html_evm_custom_fee_current',
-                              )}
-                              {': '}
-                            </span>
-                            <span
-                              className={`value ${feeEstimation.extraInfo.trends.baseFee}`}>
-                              {feeEstimation.extraInfo.baseFee.estimated}
-                            </span>
+                        {feeEstimation.extraInfo && (
+                          <div className="data-panel">
+                            <div className="data-block">
+                              <span className="label">
+                                {chrome.i18n.getMessage(
+                                  'popup_html_evm_custom_fee_current',
+                                )}
+                                {': '}
+                              </span>
+                              <span
+                                className={`value ${feeEstimation.extraInfo.trends.baseFee}`}>
+                                {feeEstimation.extraInfo.baseFee.estimated}
+                              </span>
+                            </div>
+                            <div className="data-block">
+                              <span className="label">
+                                {chrome.i18n.getMessage(
+                                  'popup_html_evm_custom_fee_latest',
+                                )}
+                                {': '}
+                              </span>
+                              <span className={`value`}>
+                                {
+                                  feeEstimation.extraInfo.baseFee.baseFeeRange
+                                    .min
+                                }
+                                -
+                                {
+                                  feeEstimation.extraInfo.baseFee.baseFeeRange
+                                    .max
+                                }
+                              </span>
+                            </div>
                           </div>
-                          <div className="data-block">
-                            <span className="label">
-                              {chrome.i18n.getMessage(
-                                'popup_html_evm_custom_fee_latest',
-                              )}
-                              {': '}
-                            </span>
-                            <span className={`value`}>
-                              {feeEstimation.extraInfo.baseFee.baseFeeRange.min}
-                              -
-                              {feeEstimation.extraInfo.baseFee.baseFeeRange.max}
-                            </span>
-                          </div>
-                        </div>
+                        )}
                       </div>
 
                       <div className="priority-fee-panel">
@@ -552,33 +630,43 @@ export const GasFeePanel = ({
                           } ${chain.mainToken}`}
                           skipHintTranslation
                         />
-                        <div className="data-panel">
-                          <div className="data-block">
-                            <span className="label">
-                              {chrome.i18n.getMessage(
-                                'popup_html_evm_custom_fee_current',
-                              )}
-                              {': '}
-                            </span>
-                            <span
-                              className={`value ${feeEstimation.extraInfo.trends.priorityFee}`}>
-                              {feeEstimation.extraInfo.priorityFee.latest.min}-
-                              {feeEstimation.extraInfo.priorityFee.latest.max}
-                            </span>
+                        {feeEstimation.extraInfo && (
+                          <div className="data-panel">
+                            <div className="data-block">
+                              <span className="label">
+                                {chrome.i18n.getMessage(
+                                  'popup_html_evm_custom_fee_current',
+                                )}
+                                {': '}
+                              </span>
+                              <span
+                                className={`value ${feeEstimation.extraInfo.trends.priorityFee}`}>
+                                {feeEstimation.extraInfo.priorityFee.latest.min}
+                                -
+                                {feeEstimation.extraInfo.priorityFee.latest.max}
+                              </span>
+                            </div>
+                            <div className="data-block">
+                              <span className="label">
+                                {chrome.i18n.getMessage(
+                                  'popup_html_evm_custom_fee_latest',
+                                )}
+                                {': '}
+                              </span>
+                              <span className={`value`}>
+                                {
+                                  feeEstimation.extraInfo.priorityFee.history
+                                    .min
+                                }
+                                -
+                                {
+                                  feeEstimation.extraInfo.priorityFee.history
+                                    .max
+                                }
+                              </span>
+                            </div>
                           </div>
-                          <div className="data-block">
-                            <span className="label">
-                              {chrome.i18n.getMessage(
-                                'popup_html_evm_custom_fee_latest',
-                              )}
-                              {': '}
-                            </span>
-                            <span className={`value`}>
-                              {feeEstimation.extraInfo.priorityFee.history.min}-
-                              {feeEstimation.extraInfo.priorityFee.history.max}
-                            </span>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -614,7 +702,7 @@ export const GasFeePanel = ({
                       type={ButtonType.ALTERNATIVE}
                       height="small"
                       label="popup_html_button_label_cancel"
-                      onClick={() => setCustomFeePanelOpened(false)}
+                      onClick={() => closeCustomFeePanel()}
                     />
                     <ButtonComponent
                       height="small"

@@ -18,7 +18,8 @@ import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 const getGasFeeEstimations = async (chain: Chain) => {
-  return await KeychainApi.get(`evm/gasPriceEstimate/${chain.chainId}`);
+  const result = await KeychainApi.get(`evm/gasPriceEstimate/${chain.chainId}`);
+  return result;
 };
 
 const estimate = async (
@@ -29,7 +30,9 @@ const estimate = async (
   gasLimit?: number,
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
-  const estimates = await getGasFeeEstimations(chain);
+  let estimates;
+  estimates = await getGasFeeEstimations(chain);
+
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(
@@ -42,6 +45,25 @@ const estimate = async (
         transactionData?.to,
       ),
     );
+  }
+
+  if (!estimates) {
+    return {
+      custom: {
+        type: type,
+        estimatedFee: 0,
+        maxFee: 0,
+        estimatedFeeUSD: 0,
+        maxFeeUSD: 0,
+        estimatedMaxDuration: -1,
+        priorityFee: 0,
+        maxFeePerGas: 0,
+        gasPrice: 0,
+        gasLimit: Number(gasLimit),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+    };
   }
 
   const price = evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0;
@@ -58,8 +80,6 @@ const estimate = async (
     Number(estimates.high.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),
   );
-
-  console.log({ lowPriorityFee, mediumPriorityFee, aggressivePriorityFee });
 
   const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
@@ -223,7 +243,7 @@ const createDAppSuggestionFromTransactionData = async (
         EvmFormatUtils.GWEI,
       );
       estimatedFee = new Decimal(
-        Number(estimates.extraInfo.baseFee.estimated),
+        Number(estimates?.extraInfo?.baseFee.estimated),
       ).add(
         new Decimal(Number(transactionData.maxPriorityFeePerGas!)).div(
           EvmFormatUtils.GWEI,
@@ -258,12 +278,12 @@ const createDAppSuggestionFromTransactionData = async (
     .div(1000)
     .toNumber();
 
-  let estimatedMaxDuration = 0;
-  if (maxFee >= estimates!.aggressive!.maxFee) {
+  let estimatedMaxDuration = -1;
+  if (estimates?.aggressive?.maxFee && maxFee >= estimates.aggressive.maxFee) {
     estimatedMaxDuration = estimates.aggressive.estimatedMaxDuration;
-  } else if (maxFee >= estimates!.medium!.maxFee) {
+  } else if (estimates?.medium?.maxFee && maxFee >= estimates.medium.maxFee) {
     estimatedMaxDuration = estimates.medium.estimatedMaxDuration;
-  } else {
+  } else if (estimates?.low?.maxFee && maxFee >= estimates.low.maxFee) {
     estimatedMaxDuration = estimates.low.estimatedMaxDuration;
   }
 

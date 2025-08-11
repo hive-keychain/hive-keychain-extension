@@ -5312,5 +5312,9 @@
   "evm_contact_new_contact": {
     "message": "New contact",
     "description": "Evm new contact"
+  },
+  "evm_fee_estimate_unknown_duration": {
+    "message": "Unknown",
+    "description": "Unknown duration"
   }
 }

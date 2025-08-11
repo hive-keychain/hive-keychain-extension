@@ -46,6 +46,7 @@ export interface EvmChain extends Chain {
   providers?: EvmProviders;
   isEth?: boolean;
   defaultTransactionType: EvmTransactionType;
+  onlyCustomFee?: boolean;
 }
 
 export interface EvmProviders {}

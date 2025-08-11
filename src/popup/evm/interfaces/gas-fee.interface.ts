@@ -18,14 +18,14 @@ export interface GasFeeEstimationBase {
 }
 
 export interface FullGasFeeEstimation {
-  low: GasFeeEstimationBase;
-  medium: GasFeeEstimationBase;
-  aggressive: GasFeeEstimationBase;
-  suggested: GasFeeEstimationBase;
-  custom: GasFeeEstimationBase;
+  low?: GasFeeEstimationBase;
+  medium?: GasFeeEstimationBase;
+  aggressive?: GasFeeEstimationBase;
+  suggested?: GasFeeEstimationBase;
+  custom?: GasFeeEstimationBase;
   suggestedByDApp?: GasFeeEstimationBase;
   increased?: GasFeeEstimationBase;
-  extraInfo: GasFeeEstimationExtraInfo;
+  extraInfo?: GasFeeEstimationExtraInfo;
 }
 
 export interface GasFeeEstimationExtraInfo {
