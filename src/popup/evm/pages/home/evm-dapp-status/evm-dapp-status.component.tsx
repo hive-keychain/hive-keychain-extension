@@ -100,7 +100,9 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
             <div className="dapp-status-details-wrapper">
               <div className="popup-title">
                 <img src={dapp?.favIconUrl} />
-                <p>{FormatUtils.urlToDomain(dapp?.url!)}</p>
+                <div className="domain">
+                  {FormatUtils.urlToDomain(dapp?.url!)}
+                </div>
                 <SVGIcon
                   icon={SVGIcons.TOP_BAR_CLOSE_BTN}
                   onClick={() => setShowDetail(false)}

@@ -118,8 +118,6 @@ const Home = ({
         chain.chainId,
       );
 
-    console.log('getPendingTransaction', pendingTransactions);
-
     const pendingTxItems = [];
     const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
     for (const pendingTx of pendingTransactions) {
@@ -172,7 +170,6 @@ const Home = ({
   };
 
   const refresh = async () => {
-    console.log('refresh account balance from home page');
     loadEvmActiveAccount(chain, activeAccount.wallet);
   };
 

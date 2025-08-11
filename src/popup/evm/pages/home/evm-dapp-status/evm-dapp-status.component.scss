@@ -1,5 +1,4 @@
 .dapp-status-details {
-  cursor: default;
   padding: 20px;
   .popup-content {
     overflow-y: scroll;
@@ -16,13 +15,13 @@
         padding: 0px;
       }
       .popup-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
+        display: grid;
+        grid-template-columns: 36px 1fr 36px;
         width: 100%;
-        p {
+        .domain {
           @include poppins400(18px);
           color: var(--main-font-color);
+          text-align: center;
         }
       }
       .account-section-title {
