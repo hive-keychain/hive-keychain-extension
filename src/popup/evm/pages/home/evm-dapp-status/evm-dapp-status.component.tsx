@@ -78,12 +78,12 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
   };
 
   const connectedAccounts = accounts.filter((account) =>
-    connectedWallets.includes(account.wallet.address.toLowerCase()),
+    connectedWallets.includes(account.wallet.address),
   );
   const unconnectedAccounts = accounts.filter(
-    (account) =>
-      !connectedWallets.includes(account.wallet.address.toLowerCase()),
+    (account) => !connectedWallets.includes(account.wallet.address),
   );
+
   if (!dapp?.url) return null;
   else
     return (
