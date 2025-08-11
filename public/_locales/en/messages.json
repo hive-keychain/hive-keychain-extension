@@ -5316,5 +5316,13 @@
   "evm_fee_estimate_unknown_duration": {
     "message": "Unknown",
     "description": "Unknown duration"
+  },
+  "evm_gas_fee_warning_not_available": {
+    "message": "Gas fee estimation is not available",
+    "description": "Gas fee estimation not available"
+  },
+  "evm_gas_fee_warning_not_available_for_chain": {
+    "message": "Gas fee estimation is not available for this chain",
+    "description": "Gas fee estimation not available for chain"
   }
 }

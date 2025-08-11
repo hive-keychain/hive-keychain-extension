@@ -54,8 +54,7 @@ export const GasFeePanel = ({
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
 
-  const [displayCustomWarning, setDisplayCustomWarning] =
-    useState<boolean>(false);
+  const [customFeeWarning, setCustomFeeWarning] = useState<string>();
 
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
@@ -176,7 +175,9 @@ export const GasFeePanel = ({
       !chain.onlyCustomFee
     ) {
       // Backend data not available so we display a warning
-      setDisplayCustomWarning(true);
+      setCustomFeeWarning('evm_gas_fee_warning_not_available');
+    } else if (chain.onlyCustomFee) {
+      setCustomFeeWarning('evm_gas_fee_warning_not_available_for_chain');
     }
 
     setFeeEstimation(estimate);
@@ -365,6 +366,11 @@ export const GasFeePanel = ({
               icon={SVGIcons.EVM_GAS_FEE_DETAILS}
             />
           </div>
+          {customFeeWarning && (
+            <div className="gas-fee-warning">
+              {chrome.i18n.getMessage(customFeeWarning)}
+            </div>
+          )}
           <div className="details">
             {selectedFee.type !== EvmTransactionType.LEGACY && (
               <div className="gas-fee-top-row">

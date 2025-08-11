@@ -24,6 +24,12 @@
     }
   }
 
+  .gas-fee-warning {
+    @include poppins400(12px);
+    color: $red;
+    font-style: italic;
+  }
+
   .details {
     display: flex;
     flex-direction: column;
