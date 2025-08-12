@@ -40,21 +40,39 @@ export const TextAreaComponent = React.forwardRef(
 
     useEffect(() => {
       setMounted(true);
+      document.addEventListener('keydown', listenToBackspace);
       return function cleanup() {
         setMounted(false);
+        document.removeEventListener('keydown', listenToBackspace);
       };
     }, []);
 
-    const addChips = () => {
+    useEffect(() => {
+      props.onChange(chips);
+    }, [chips]);
+
+    const listenToBackspace = (event: KeyboardEvent) => {
       if (
-        chips.includes(localValue) ||
-        (props.maxChips && chips.length + 1 > props.maxChips)
-      )
-        return;
-      const newChips = [...chips, localValue];
-      setChips(newChips);
+        event.key === 'Backspace' &&
+        (event.target as HTMLTextAreaElement).value.length === 0
+      ) {
+        deleteLastChip();
+      }
+    };
+
+    const addChips = () => {
+      if (props.maxChips && chips.length + 1 > props.maxChips) return;
+
+      setChips((previousChips) => {
+        if (!previousChips.includes(localValue))
+          return [...previousChips, localValue];
+        return previousChips;
+      });
       setLocalValue('');
-      props.onChange(newChips);
+    };
+
+    const deleteLastChip = () => {
+      setChips((previousChips) => previousChips.slice(0, -1));
     };
 
     const deleteChip = (chip: string) => {
@@ -81,7 +99,7 @@ export const TextAreaComponent = React.forwardRef(
         .trim();
 
       if (props.useChips) {
-        const newChips = [...chips, ...pastedData.split(' ')];
+        const newChips = [...chips, ...pastedData.trim().split(' ')];
         setChips(newChips);
         props.onChange(newChips);
       } else {
@@ -146,8 +164,12 @@ export const TextAreaComponent = React.forwardRef(
                     : props.onChange(e.target.value)
                 }
                 onKeyPress={(e) => {
-                  if (e.key === ' ' && props.useChips) {
-                    addChips();
+                  if (props.useChips) {
+                    if (e.key === ' ') {
+                      addChips();
+                    } else if (e.key === 'Backspace') {
+                      deleteChip(chips[chips.length - 1]);
+                    }
                   }
                 }}
                 onFocus={() => handleOnFocus()}
