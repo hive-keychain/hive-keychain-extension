@@ -5318,11 +5318,11 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "Gas fee estimation is not available",
+    "message": "The gas fee estimation is currently unavailable",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "Gas fee estimation is not available for this chain",
+    "message": "The gas fee estimation is unavailable for this chain",
     "description": "Gas fee estimation not available for chain"
   }
 }

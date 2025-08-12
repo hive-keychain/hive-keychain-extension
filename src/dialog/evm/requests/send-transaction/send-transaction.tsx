@@ -27,7 +27,8 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import EventEmitter from 'events';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -72,9 +73,10 @@ export const SendTransaction = (props: Props) => {
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
 
+  const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
+
   useEffect(() => {
     init();
-    console.log(accounts);
   }, []);
 
   useEffect(() => {
@@ -634,6 +636,19 @@ export const SendTransaction = (props: Props) => {
     });
   };
 
+  const handleClickOnConfirm = () => {
+    if (
+      transactionHook.selectedFee?.maxFee === -1 ||
+      transactionHook.selectedFee?.estimatedFee === -1 ||
+      transactionHook.selectedFee?.gasLimit === -1 ||
+      transactionHook.selectedFee?.priorityFee === -1
+    ) {
+      // Force open gas fee panel
+      forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
+    }
+    transactionHook.handleOnConfirmClick();
+  };
+
   return (
     <>
       {transactionHook.fields && evmPrices && (
@@ -685,7 +700,7 @@ export const SendTransaction = (props: Props) => {
                 )}
             </>
           }
-          onConfirm={transactionHook.handleOnConfirmClick}
+          onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
         />
       )}

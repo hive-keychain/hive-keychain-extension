@@ -14,7 +14,8 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Decimal from 'decimal.js';
-import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import EventEmitter from 'events';
+import React, { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -65,11 +66,12 @@ const ConfirmationPage = ({
   const [hasField] = useState(fields && fields.length !== 0);
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
-
   const transactionHook = useTransactionHook(
     {} as EvmRequestMessage,
     {} as EvmRequest,
   );
+
+  const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
 
   useEffect(() => {
     initConfirmationPage();
@@ -97,6 +99,18 @@ const ConfirmationPage = ({
   };
 
   const handleClickOnConfirm = () => {
+    if (
+      hasGasFee &&
+      (selectedFee?.maxFee === -1 ||
+        selectedFee?.estimatedFee === -1 ||
+        selectedFee?.gasLimit === -1 ||
+        selectedFee?.priorityFee === -1)
+    ) {
+      forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
+
+      return;
+    }
+
     if (transactionHook && transactionHook.hasWarning()) {
       transactionHook.setWarningsPopupOpened(true);
       return;
@@ -215,6 +229,7 @@ const ConfirmationPage = ({
             transactionType={(chain as EvmChain).defaultTransactionType}
             transactionData={transactionData}
             prices={evmPrices}
+            forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
           />
         )}
       </div>
@@ -228,7 +243,7 @@ const ConfirmationPage = ({
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={($event: BaseSyntheticEvent) => {
-            $event.target.disabled = true;
+            console.log('handleClickOnConfirm');
             handleClickOnConfirm();
           }}
           type={ButtonType.IMPORTANT}></ButtonComponent>

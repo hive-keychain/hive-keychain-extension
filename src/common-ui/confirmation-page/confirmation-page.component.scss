@@ -96,6 +96,10 @@
           --triangle-arrow-color: #{$red};
           @include icon-size(24px);
         }
+
+        .balance-after {
+          text-align: right;
+        }
       }
     }
   }
