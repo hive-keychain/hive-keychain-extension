@@ -80,6 +80,12 @@ export const GasFeePanel = ({
   }, [transactionData]);
 
   useEffect(() => {
+    console.log({ customGasFeeForm });
+  }, [customGasFeeForm]);
+
+  useEffect(() => {
+    console.log(selectedFee);
+
     if (
       selectedFee &&
       selectedFee.name !== 'popup_html_evm_custom_gas_fee_custom'
@@ -106,6 +112,34 @@ export const GasFeePanel = ({
           Number(gasLimit) * maxBaseFeeInGwei,
         ),
       });
+    } else if (
+      selectedFee &&
+      selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
+    ) {
+      const gasLimit = selectedFee.gasLimit ?? 0;
+      const gasPriceInGwei = selectedFee.gasPrice
+        ? Number(selectedFee.gasPrice) / EvmFormatUtils.GWEI
+        : 0;
+      const priorityFeeInGwei = selectedFee.priorityFee
+        ? Number(selectedFee.priorityFee) / EvmFormatUtils.GWEI
+        : 0;
+      const maxBaseFeeInGwei = selectedFee.maxFeePerGas
+        ? Number(selectedFee.maxFeePerGas) / EvmFormatUtils.GWEI
+        : 0;
+
+      setCustomGasFeeForm((previousForm) => ({
+        ...previousForm,
+        gasLimit: selectedFee.gasLimit ?? 0,
+        priorityFeeInGwei: priorityFeeInGwei,
+        gasPriceInGwei: gasPriceInGwei,
+        maxBaseFeeInGwei: maxBaseFeeInGwei,
+        gasPriceValue:
+          (Number(gasLimit) * gasPriceInGwei) / EvmFormatUtils.GWEI,
+        priorityFeeValue:
+          (Number(gasLimit) * priorityFeeInGwei) / EvmFormatUtils.GWEI,
+        maxBaseFeeValue:
+          (Number(gasLimit) * maxBaseFeeInGwei) / EvmFormatUtils.GWEI,
+      }));
     }
   }, [selectedFee]);
 

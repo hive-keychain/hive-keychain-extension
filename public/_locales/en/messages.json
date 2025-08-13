@@ -4613,7 +4613,7 @@
     "description": "EVM history loading progress"
   },
   "popup_html_evm_gas_fee_form_base_fee": {
-    "message": "Max base fee (Gwei)",
+    "message": "Max base fee per gas (Gwei)",
     "description": "Max base fee evm transfer"
   },
   "popup_html_evm_gas_fee_form_gas_price": {
@@ -4621,7 +4621,7 @@
     "description": "Gas price evm transfer"
   },
   "popup_html_evm_gas_fee_form_priority_fee": {
-    "message": "Priority fee (Gwei)",
+    "message": "Priority fee per gas (Gwei)",
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {

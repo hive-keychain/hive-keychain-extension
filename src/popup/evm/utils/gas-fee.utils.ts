@@ -48,6 +48,11 @@ const estimate = async (
   }
 
   if (!estimates) {
+    const [maxPriorityFeePerGas, gasPrice] = await Promise.all([
+      EvmRequestsUtils.getMaxPriorityFeePerGas(),
+      EvmRequestsUtils.getGasPrice(),
+    ]);
+
     return {
       custom: {
         type: type,
@@ -56,9 +61,9 @@ const estimate = async (
         estimatedFeeUSD: -1,
         maxFeeUSD: -1,
         estimatedMaxDuration: -1,
-        priorityFee: -1,
-        maxFeePerGas: -1,
-        gasPrice: -1,
+        priorityFee: maxPriorityFeePerGas,
+        maxFeePerGas: gasPrice,
+        gasPrice: gasPrice,
         gasLimit: Number(gasLimit),
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
         name: 'popup_html_evm_custom_gas_fee_custom',
