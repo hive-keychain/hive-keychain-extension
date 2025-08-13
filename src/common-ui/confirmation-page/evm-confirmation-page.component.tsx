@@ -107,7 +107,6 @@ const ConfirmationPage = ({
         selectedFee?.priorityFee === -1)
     ) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
-
       return;
     }
 

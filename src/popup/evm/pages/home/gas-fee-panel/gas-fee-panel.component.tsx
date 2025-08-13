@@ -192,7 +192,6 @@ export const GasFeePanel = ({
   };
 
   const openCustomFeePanel = () => {
-    console.log('openCustomFeePanel');
     setCustomFeePanelOpened(true);
     setIsAdvancedPanelOpen(true);
   };
