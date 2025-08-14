@@ -288,7 +288,7 @@ const EvmTransfer = ({
             } as unknown as EvmUserHistoryItem,
             pageTitle: 'popup_html_transfer_funds',
           });
-          setSuccessMessage('popup_html_evm_transfer_successful');
+          setSuccessMessage('evm_transaction_broadcasted');
         } catch (err) {
           console.log(err);
           Logger.error('Error during transfer', err);

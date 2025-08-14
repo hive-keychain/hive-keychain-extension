@@ -179,9 +179,11 @@ const ConfirmationPage = ({
             {fields.map((field, index) => (
               <React.Fragment key={field.label}>
                 <div className="field">
-                  <div className="label">
-                    {chrome.i18n.getMessage(field.label)}
-                  </div>
+                  {field.label && (
+                    <div className="label">
+                      {chrome.i18n.getMessage(field.label)}
+                    </div>
+                  )}
                   <div className={`value ${field.valueClassName ?? ''}`}>
                     {field.value}
                   </div>

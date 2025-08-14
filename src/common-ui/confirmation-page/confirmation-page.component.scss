@@ -68,6 +68,15 @@
           &.xs-font {
             font-size: 11px;
           }
+          &.nft-image {
+            width: 100%;
+            max-width: unset;
+            display: flex;
+            justify-content: center;
+            img {
+              width: 50%;
+            }
+          }
         }
       }
     }

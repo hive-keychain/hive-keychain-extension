@@ -30,7 +30,7 @@ export interface HiveConfirmationPageParams extends ConfirmationPageParams {
 }
 
 export interface ConfirmationPageFields {
-  label: string;
+  label?: string;
   value: string | JSX.Element;
   labelParams?: string[];
   valueParams?: string[];

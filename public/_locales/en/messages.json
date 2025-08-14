@@ -5324,5 +5324,13 @@
   "evm_gas_fee_warning_not_available_for_chain": {
     "message": "The gas fee estimation is unavailable for this chain",
     "description": "Gas fee estimation not available for chain"
+  },
+  "evm_transaction_broadcasted": {
+    "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
+    "description": "Transaction broadcasted message"
+  },
+  "evm_collection_name": {
+    "message": "Collection name",
+    "description": "Collection name"
   }
 }
