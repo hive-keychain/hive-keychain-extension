@@ -363,9 +363,6 @@ const TokenSwaps = ({
       {
         label: 'html_popup_swap_swap_slipperage',
         value: `${slippage}% (for each step)`,
-        tag: ConfirmationPageFieldTag.AMOUNT,
-        tokenSymbol: startToken?.value.symbol,
-        iconPosition: 'right',
       },
     ];
 
