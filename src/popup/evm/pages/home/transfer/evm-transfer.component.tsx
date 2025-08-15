@@ -6,7 +6,6 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmUserHistoryItem,
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
@@ -246,7 +245,6 @@ const EvmTransfer = ({
             )
           : '0x0',
     };
-    transactionData.from = activeAccount.address;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
@@ -277,16 +275,25 @@ const EvmTransfer = ({
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
             transactionResponse: transactionResponse,
-            historyItem: {
-              detailFields: [
-                {
-                  label: 'test',
-                  value: 'test',
-                  type: EvmUserHistoryItemDetailType.BASE,
-                } as EvmUserHistoryItemDetail,
-              ],
-            } as unknown as EvmUserHistoryItem,
+            detailFields: [
+              {
+                label: 'popup_html_transfer_from',
+                value: activeAccount.address,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              } as EvmUserHistoryItemDetail,
+              {
+                label: 'popup_html_transfer_to',
+                value: form.receiverAddress,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              } as EvmUserHistoryItemDetail,
+              {
+                label: 'popup_html_transfer_amount',
+                value: form.amount.toString(),
+                type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+              } as EvmUserHistoryItemDetail,
+            ],
             pageTitle: 'popup_html_transfer_funds',
+            tokenInfo: form.selectedToken.tokenInfo,
           });
           setSuccessMessage('evm_transaction_broadcasted');
         } catch (err) {

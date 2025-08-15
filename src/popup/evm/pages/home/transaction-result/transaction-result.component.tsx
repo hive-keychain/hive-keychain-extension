@@ -253,6 +253,8 @@ const EvmTransactionResult = ({
       connectedWallet,
     );
 
+    console.log('tokenInfo', tokenInfo);
+
     const metadata = await EvmNFTUtils.getMetadataFromTokenId(
       tokenInfo.type,
       Number(value).toString(),

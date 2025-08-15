@@ -1,3 +1,4 @@
+import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
@@ -6,6 +7,10 @@ import {
   EvmActiveAccount,
   EvmErc1155TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmUserHistoryItemDetail,
+  EvmUserHistoryItemDetailType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
@@ -120,8 +125,6 @@ const EvmNftTransfer = ({
   };
 
   const handleClickOnSend = async (form: EvmNftTransferForm) => {
-    console.log('sending ', { form });
-
     // encode data
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation();
@@ -129,12 +132,8 @@ const EvmNftTransfer = ({
     let fields = [
       {
         label: '',
-        value: <img src={collectionItem.item.metadata.image} />,
+        value: form.nftId,
         valueClassName: 'nft-image',
-      },
-      {
-        label: 'evm_collection_name',
-        value: collectionItem.collection.tokenInfo.name,
       },
       {
         label: 'evm_operation_smart_contract_address',
@@ -142,7 +141,6 @@ const EvmNftTransfer = ({
           collectionItem.collection.tokenInfo.address,
         ),
       },
-
       {
         label: 'popup_html_transfer_from',
         value: (
@@ -200,7 +198,6 @@ const EvmNftTransfer = ({
       ),
       value: '0x0',
     };
-
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
@@ -213,8 +210,7 @@ const EvmNftTransfer = ({
       amount: form.amount,
       wallet: activeAccount.wallet,
       transactionData: transactionData,
-
-      afterConfirmation: async (gasFee: GasFeeEstimationBase) => {
+      afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('evm_nft_transfer');
         try {
           const transactionResponse = await EvmTransactionsUtils.send(
@@ -232,6 +228,33 @@ const EvmNftTransfer = ({
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
             transactionResponse: transactionResponse,
             pageTitle: 'evm_nft_transfer',
+            detailFields: [
+              {
+                value: form.nftId,
+                type: EvmUserHistoryItemDetailType.IMAGE,
+              },
+              {
+                label: 'popup_html_transfer_from',
+                value: activeAccount.address,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              } as EvmUserHistoryItemDetail,
+              {
+                label: 'popup_html_transfer_to',
+                value: form.receiverAddress,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              } as EvmUserHistoryItemDetail,
+              {
+                label: 'evm_nft_token_id',
+                value: form.nftId,
+                type: EvmUserHistoryItemDetailType.BASE,
+              } as EvmUserHistoryItemDetail,
+              {
+                label: 'popup_html_transfer_amount',
+                value: form.amount.toString(),
+                type: EvmUserHistoryItemDetailType.BASE,
+              } as EvmUserHistoryItemDetail,
+            ],
+            tokenInfo: form.selectedToken,
           });
           setSuccessMessage('evm_transaction_broadcasted');
         } catch (error) {
@@ -242,7 +265,7 @@ const EvmNftTransfer = ({
           removeFromLoadingList('evm_nft_transfer');
         }
       },
-    });
+    } as EVMConfirmationPageParams);
   };
 
   const encodeTransferData = (
