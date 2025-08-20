@@ -1,4 +1,3 @@
-import { AnalyticsModule } from '@background/analytics.module';
 import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
@@ -125,8 +124,6 @@ export class RequestsHandler {
     if (msg.request.rpc)
       this.data.rpc = { uri: msg.request.rpc, testnet: false };
     init(msg.request, this.data.tab, msg.domain, this);
-
-    AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
