@@ -18,7 +18,7 @@ export const sendEvmTransaction = async (
   if (account) {
     let res;
     res = await EvmTransactionsUtils.send(
-      account,
+      account.wallet,
       request.params[0],
       extraData.gasFee,
       request.chainId!,

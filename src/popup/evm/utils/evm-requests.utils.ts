@@ -13,7 +13,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
-import { BlockTag, ethers } from 'ethers';
+import { BlockTag, ethers, HDNodeWallet } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -158,14 +158,14 @@ const decryptMessage = (account: EvmAccount, message: string) => {
   });
 };
 
-const getNonce = async (account: EvmAccount, chain: EvmChain) => {
+const getNonce = async (wallet: HDNodeWallet, chain: EvmChain) => {
   const provider = await instanciateProvider(chain);
-  const nonce = await provider.getTransactionCount(account.wallet.address);
+  const nonce = await provider.getTransactionCount(wallet.address);
 
   const highestPendingNonce =
     await EvmTransactionsUtils.getHighestNonceInPendingTransaction(
       chain.chainId,
-      account.wallet.address,
+      wallet.address,
     );
   return Math.max(nonce, highestPendingNonce + 1);
 };

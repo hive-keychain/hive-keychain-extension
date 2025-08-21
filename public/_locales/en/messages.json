@@ -5332,5 +5332,17 @@
   "evm_collection_name": {
     "message": "Collection name",
     "description": "Collection name"
+  },
+  "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
+    "message": "Max fee must be higher than priority fee",
+    "description": "Priority fee is higher than max fee"
+  },
+  "evm_transaction_result_error_message_underpriced": {
+    "message": "Fee is too low, please increase it",
+    "description": "Transaction result error message underpriced"
+  },
+  "evm_transaction_result_unknown_error": {
+    "message": "An unknown error occurred",
+    "description": "Transaction result unknown error"
   }
 }

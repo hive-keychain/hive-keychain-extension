@@ -5,7 +5,6 @@ import { TransactionResponse } from 'ethers';
 
 const waitForTransaction = async (transactionResponse: TransactionResponse) => {
   const transactionReceipt = await transactionResponse.wait();
-  console.log(transactionReceipt);
   if (transactionReceipt) {
     EvmTransactionsUtils.deleteFromPendingTransactions(transactionReceipt.hash);
     createNotification(transactionResponse);

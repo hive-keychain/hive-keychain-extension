@@ -8,7 +8,6 @@ import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -17,6 +16,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -39,6 +39,12 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+enum ReplacedTransactionReason {
+  REPRICED = 'repriced',
+  CANCELLED = 'cancelled',
+  REPLACED = 'replaced',
+}
+
 const EvmTransactionResult = ({
   activeAccount,
   chain,
@@ -52,7 +58,9 @@ const EvmTransactionResult = ({
   pageTitle,
   detailFields,
   evmPrices,
+  transactionData,
   setTitleContainerProperties,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
@@ -73,86 +81,120 @@ const EvmTransactionResult = ({
     getTransactionStatus();
   }, []);
 
-  const getTransactionStatus = async () => {
-    try {
-      const transactionReceipt = await transactionResponse.wait();
-      if (transactionReceipt) {
-        const transactionResult = await EthersUtils.getProvider(
-          chain,
-        ).getTransaction(transactionReceipt.hash);
-        setTxReceipt(transactionReceipt);
-        if (transactionResult) setTxResult(transactionResult);
-      }
-    } catch (err) {
-      console.log(err);
-      if (!isCanceling && !isTransactionSpeedingUp) {
-        Logger.error(`Error while broadcasting`, err);
-        // Display error message
-      } else {
-        Logger.info('Transaction replaced');
-      }
-    } finally {
-      setWaitingForTx(false);
+  const getErrorMessage = (code: string) => {
+    switch (code) {
+      case 'REPLACEMENT_UNDERPRICED':
+        return 'evm_transaction_result_error_message_underpriced';
+      default:
+        return 'evm_transaction_result_unknown_error';
     }
+  };
+
+  const getTransactionStatus = async () => {
+    await transactionResponse
+      .wait()
+      .then(async (transactionReceipt: TransactionReceipt | null) => {
+        console.log('receipt', transactionReceipt);
+        if (transactionReceipt) {
+          const transactionResult = await EthersUtils.getProvider(
+            chain,
+          ).getTransaction(transactionReceipt.hash);
+          setTxReceipt(transactionReceipt);
+          if (transactionResult) setTxResult(transactionResult);
+        }
+      })
+      .catch((err) => {
+        if (err.reason) {
+          switch (err.reason) {
+            case ReplacedTransactionReason.REPRICED:
+              Logger.info('Transaction successfully sped up');
+              break;
+            case ReplacedTransactionReason.CANCELLED:
+            case ReplacedTransactionReason.REPLACED:
+              Logger.info('Transaction successfully canceled');
+              break;
+          }
+        } else {
+          console.log('Catch in getTransactionStatus', { err });
+        }
+      })
+      .finally(() => {
+        setWaitingForTx(false);
+      });
   };
 
   const cancelTransaction = async () => {
     setWaitingForTx(true);
-    const cancelTransactionResponse = await EvmTransactionsUtils.cancel(
-      transactionResponse,
-      chain,
-      gasFee,
-      activeAccount.wallet,
-      amount,
-      tokenInfo,
-      receiverAddress,
-      EvmTransactionType.EIP_1559,
-    );
-    try {
-      await cancelTransactionResponse.wait();
-      const cancelTransactionReceipt = await cancelTransactionResponse.wait();
 
-      if (cancelTransactionReceipt) {
-        const cancelTransactionResult = await EthersUtils.getProvider(
-          chain,
-        ).getTransaction(cancelTransactionReceipt.hash);
-        setTxReceipt(cancelTransactionReceipt);
-        if (cancelTransactionResult) setTxResult(cancelTransactionResult);
+    try {
+      const cancelTransactionResponse = await EvmTransactionsUtils.send(
+        activeAccount.wallet,
+        {
+          to: ethers.ZeroAddress,
+          value: 0,
+          data: ethers.ZeroHash,
+          from: activeAccount.wallet.address,
+          nonce: transactionResponse.nonce,
+          chainId: chain.chainId,
+        },
+        gasFee,
+        chain.chainId,
+        transactionResponse.nonce,
+      );
+      if (cancelTransactionResponse) {
+        cancelTransactionResponse
+          .wait()
+          .then(async (cancelTransactionReceipt: TransactionReceipt | null) => {
+            console.log('cancelTransactionReceipt', cancelTransactionReceipt);
+            if (cancelTransactionReceipt) {
+              const cancelTransactionResult = await EthersUtils.getProvider(
+                chain,
+              ).getTransaction(cancelTransactionReceipt.hash);
+              setTxReceipt(cancelTransactionReceipt);
+              if (cancelTransactionResult) setTxResult(cancelTransactionResult);
+            }
+          })
+          .catch((err) => console.log('Catch in transaction cancel', { err }))
+          .finally(() => {
+            setWaitingForTx(false);
+          });
       }
-    } catch (err) {
-      Logger.error(`Error while canceling`, err);
-      // catch error
-    } finally {
-      setWaitingForTx(false);
+    } catch (err: any) {
+      console.log('Catch in send transaction cancel', { err });
+      setErrorMessage(getErrorMessage(err.code));
+      setCanceling(false);
+      setGasPanelOpened(true);
     }
   };
 
   const speedUpTransaction = async () => {
-    const speedUpTransactionResponse = await EvmTransactionsUtils.transfer(
-      chain,
-      tokenInfo,
-      receiverAddress,
-      amount,
+    const speedUpTransactionResponse = await EvmTransactionsUtils.send(
       activeAccount.wallet,
+      {
+        ...transactionResponse,
+        from: activeAccount.wallet.address,
+      },
       increasedGasFee,
+      chain.chainId,
       transactionResponse.nonce,
     );
 
-    try {
-      const speedUpTransactionReceipt = await speedUpTransactionResponse.wait();
-
-      if (speedUpTransactionReceipt) {
-        const speedUpTransactionResult = await EthersUtils.getProvider(
-          chain,
-        ).getTransaction(speedUpTransactionReceipt.hash);
-        setTxReceipt(speedUpTransactionReceipt);
-        if (speedUpTransactionResult) setTxResult(speedUpTransactionResult);
-      }
-    } catch (err) {
-      Logger.error(`Error while speeding up`, err);
-      // catch error
-    } finally {
-      setWaitingForTx(false);
+    if (speedUpTransactionResponse) {
+      await speedUpTransactionResponse
+        .wait()
+        .then(async (speedUpTransactionReceipt: TransactionReceipt | null) => {
+          console.log('speedUpTransactionReceipt', speedUpTransactionReceipt);
+          if (speedUpTransactionReceipt) {
+            const speedUpTransactionResult = await EthersUtils.getProvider(
+              chain,
+            ).getTransaction(speedUpTransactionReceipt.hash);
+            setTxReceipt(speedUpTransactionReceipt);
+            if (speedUpTransactionResult) setTxResult(speedUpTransactionResult);
+          }
+        })
+        .catch((err) => {
+          console.log('Catch in transaction speed up', { err });
+        });
     }
   };
 
@@ -253,8 +295,6 @@ const EvmTransactionResult = ({
       connectedWallet,
     );
 
-    console.log('tokenInfo', tokenInfo);
-
     const metadata = await EvmNFTUtils.getMetadataFromTokenId(
       tokenInfo.type,
       Number(value).toString(),
@@ -333,6 +373,7 @@ const EvmTransactionResult = ({
             multiplier={1.5}
             transactionType={chain.defaultTransactionType}
             prices={evmPrices}
+            transactionData={transactionData}
           />
           <ButtonComponent
             label="popup_html_confirm"
@@ -446,11 +487,13 @@ const mapStateToProps = (state: RootState) => {
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
     evmPrices: state.evm.prices,
+    transactionData: state.navigation.stack[0].params.transactionData,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -226,7 +226,7 @@ const estimate = async (
         fullEstimation,
       );
   }
-
+  console.log({ fullEstimation });
   return fullEstimation;
 };
 

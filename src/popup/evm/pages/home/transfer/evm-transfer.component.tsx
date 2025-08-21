@@ -20,7 +20,6 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -262,7 +261,7 @@ const EvmTransfer = ({
         addToLoadingList('html_popup_transfer_fund_operation');
         try {
           const transactionResponse = await EvmTransactionsUtils.send(
-            { wallet: activeAccount.wallet } as EvmAccount,
+            activeAccount.wallet,
             {
               value: transactionData.value,
               to: transactionData.to,
@@ -274,6 +273,7 @@ const EvmTransfer = ({
           );
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+            pageTitle: 'popup_html_transfer_funds',
             transactionResponse: transactionResponse,
             detailFields: [
               {
@@ -292,8 +292,9 @@ const EvmTransfer = ({
                 type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
               } as EvmUserHistoryItemDetail,
             ],
-            pageTitle: 'popup_html_transfer_funds',
             tokenInfo: form.selectedToken.tokenInfo,
+            gasFee: gasFee,
+            transactionData: transactionData,
           });
           setSuccessMessage('evm_transaction_broadcasted');
         } catch (err) {

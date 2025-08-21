@@ -1,19 +1,13 @@
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmPendingTransaction,
   EvmSmartContractInfo,
-  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CanceledTransactionData,
   EvmTransactionType,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import {
-  GasFeeData,
-  GasFeeEstimationBase,
-} from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -29,150 +23,109 @@ import {
 } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const transfer = async (
-  chain: EvmChain,
-  tokenInfo: EvmSmartContractInfo,
-  receiverAddress: string,
-  amount: number,
+const send = async (
   wallet: HDNodeWallet,
-  gasFee: GasFeeEstimationBase,
-  nonce?: number,
-  transactionType?: EvmTransactionType,
+  request: Partial<TransactionRequest>,
+  gasFee: any,
+  chainId: string,
+  forceNounce?: number,
 ) => {
-  const provider = EthersUtils.getProvider(chain);
-  const connectedWallet = new Wallet(wallet.signingKey, provider);
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
+
+  let feeData = {};
+  if (gasFee)
+    switch (gasFee.type) {
+      case EvmTransactionType.EIP_1559: {
+        feeData = {
+          maxPriorityFeePerGas: ethers.parseUnits(
+            gasFee.priorityFee!.toString(),
+            'gwei',
+          ),
+          maxFeePerGas: ethers.parseUnits(
+            gasFee.maxFeePerGas!.toString(),
+            'gwei',
+          ),
+        };
+        break;
+      }
+      case EvmTransactionType.EIP_155:
+      case EvmTransactionType.LEGACY: {
+        feeData = {
+          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+        };
+        break;
+      }
+    }
+
   let transactionRequest: TransactionRequest;
+  transactionRequest = {
+    value: request.value,
+    data: request.data,
+    to: request.to,
+    from: wallet.address,
+    nonce: forceNounce ?? (await EvmRequestsUtils.getNonce(wallet, chain)),
+    gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
+    chainId: chain.chainId,
+    type: request.type,
+    ...feeData,
+  };
 
-  let feeData;
-  switch (transactionType) {
-    case EvmTransactionType.EIP_1559: {
-      feeData = {
-        maxPriorityFeePerGas: ethers.parseUnits(
-          gasFee.priorityFee!.toString(),
-          'gwei',
-        ),
-        maxFeePerGas: ethers.parseUnits(
-          gasFee.maxFeePerGas!.toString(),
-          'gwei',
-        ),
-      };
-      break;
-    }
-    case EvmTransactionType.LEGACY: {
-      feeData = {
-        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
-      };
-      break;
+  console.log({ transactionRequest });
+
+  if (
+    request.type &&
+    (request.type as unknown as EvmTransactionType) ===
+      EvmTransactionType.EIP_155
+  ) {
+    if (request.accessList) {
+      transactionRequest.accessList = request.accessList;
     }
   }
 
-  if (tokenInfo.type === EVMSmartContractType.ERC20) {
-    const contract = new ethers.Contract(
-      tokenInfo.address!,
-      Erc20Abi,
-      connectedWallet,
+  const provider = EthersUtils.getProvider(chain as EvmChain);
+  const connectedWallet = new Wallet(wallet.signingKey, provider);
+
+  const transactionResponse: TransactionResponse = await connectedWallet
+    .sendTransaction(transactionRequest)
+    .catch((err) => {
+      console.log('Error in send', err);
+      throw err;
+    })
+    .then((transaction) => transaction);
+  if (transactionResponse) {
+    addPendingTransaction(
+      connectedWallet.address,
+      transactionResponse,
+      chain.chainId,
     );
-
-    const data = contract.interface.encodeFunctionData('transfer', [
-      receiverAddress,
-      amount * 1000000,
-    ]);
-
-    transactionRequest = {
-      to: tokenInfo.address!,
-      value: 0,
-      data: data,
-      from: connectedWallet.address,
-      nonce: nonce ?? (await connectedWallet.getNonce(chain.chainId)),
-      gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
-      chainId: chain.chainId,
-      ...feeData,
-    };
-  } else {
-    transactionRequest = {
-      to: receiverAddress,
-      value: ethers.parseEther(amount.toString()),
-      from: connectedWallet.address,
-      nonce: nonce ?? (await connectedWallet.getNonce(chain.chainId)),
-      gasLimit: BigInt(gasFee.gasLimit.toFixed(0)),
-      chainId: chain.chainId,
-      ...feeData,
-    };
   }
-
-  const transactionResponse = await connectedWallet.sendTransaction(
-    transactionRequest,
-  );
-
-  await addPendingTransaction(
-    connectedWallet.address,
-    transactionResponse,
-    chain.chainId,
-  );
-
   return transactionResponse;
 };
 
 const cancel = async (
+  activeAccount: EvmActiveAccount,
+  nounce: number,
+  gasFee: any,
+  chainId: string,
   transactionResponse: TransactionResponse,
-  chain: EvmChain,
-  gasFee: GasFeeEstimationBase,
-  wallet: HDNodeWallet,
-  amount: number,
-  tokenInfo: EvmSmartContractInfo,
-  receiverAddress: string,
-  transactionType: EvmTransactionType,
 ) => {
-  let feeData: GasFeeData;
-  switch (transactionType) {
-    case EvmTransactionType.EIP_1559: {
-      feeData = {
-        priorityFee: ethers.parseUnits(gasFee.priorityFee!.toString(), 'gwei'),
-        maxFeePerGas: ethers.parseUnits(
-          gasFee.maxFeePerGas!.toString(),
-          'gwei',
-        ),
-      };
-      break;
-    }
-    case EvmTransactionType.LEGACY: {
-      feeData = {
-        gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
-      };
-      break;
-    }
-    case EvmTransactionType.EIP_155: {
-      feeData = {}; // TODO check
-      break;
-    }
-    case EvmTransactionType.EIP_4844: {
-      feeData = {}; // TODO Check
-      break;
-    }
-  }
+  // addCanceledTransaction()
 
-  const newGasFee = {
-    ...gasFee,
-    ...feeData,
-  } as GasFeeEstimationBase;
+  // TODO add cancel transaction to history
 
-  addCanceledTransaction(
-    transactionResponse,
-    wallet.address,
-    tokenInfo,
-    amount,
-    receiverAddress,
-    chain,
-  );
-
-  return transfer(
-    chain,
-    { type: EVMSmartContractType.NATIVE } as EvmSmartContractInfo,
-    ethers.ZeroAddress,
-    0,
-    wallet,
-    newGasFee,
-    transactionResponse.nonce,
+  return await send(
+    activeAccount.wallet,
+    {
+      to: ethers.ZeroAddress,
+      value: 0,
+      data: ethers.ZeroHash,
+      from: activeAccount.wallet.address,
+      nonce: nounce,
+      chainId: chainId,
+    },
+    gasFee,
+    chainId,
+    nounce,
   );
 };
 
@@ -322,79 +275,7 @@ const addCanceledTransaction = async (
   );
 };
 
-const send = async (
-  account: EvmAccount,
-  request: Partial<TransactionRequest>,
-  gasFee: any,
-  chainId: string,
-) => {
-  const chain = await ChainUtils.getChain<EvmChain>(chainId);
-
-  let feeData = {};
-  if (gasFee)
-    switch (gasFee.type) {
-      case EvmTransactionType.EIP_1559: {
-        feeData = {
-          maxPriorityFeePerGas: ethers.parseUnits(
-            gasFee.priorityFee!.toString(),
-            'gwei',
-          ),
-          maxFeePerGas: ethers.parseUnits(
-            gasFee.maxFeePerGas!.toString(),
-            'gwei',
-          ),
-        };
-        break;
-      }
-      case EvmTransactionType.EIP_155:
-      case EvmTransactionType.LEGACY: {
-        feeData = {
-          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
-        };
-        break;
-      }
-    }
-
-  let transactionRequest: TransactionRequest;
-  transactionRequest = {
-    value: request.value,
-    data: request.data,
-    to: request.to,
-    from: account.wallet.address,
-    nonce: await EvmRequestsUtils.getNonce(account, chain),
-    gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
-    chainId: chain.chainId,
-    type: request.type,
-    ...feeData,
-  };
-
-  if (
-    request.type &&
-    (request.type as unknown as EvmTransactionType) ===
-      EvmTransactionType.EIP_155
-  ) {
-    if (request.accessList) {
-      transactionRequest.accessList = request.accessList;
-    }
-  }
-
-  const provider = EthersUtils.getProvider(chain as EvmChain);
-  const connectedWallet = new Wallet(account.wallet.signingKey, provider);
-
-  const transactionResponse: TransactionResponse =
-    await connectedWallet.sendTransaction(transactionRequest);
-
-  addPendingTransaction(
-    connectedWallet.address,
-    transactionResponse,
-    chain.chainId,
-  );
-
-  return transactionResponse;
-};
-
 export const EvmTransactionsUtils = {
-  transfer,
   cancel,
   getHighestNonceInPendingTransaction,
   getPendingTransaction,

@@ -22,7 +22,6 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
@@ -132,7 +131,7 @@ const EvmNftTransfer = ({
     let fields = [
       {
         label: '',
-        value: form.nftId,
+        value: <img src={collectionItem.item.metadata.image} />,
         valueClassName: 'nft-image',
       },
       {
@@ -214,7 +213,7 @@ const EvmNftTransfer = ({
         addToLoadingList('evm_nft_transfer');
         try {
           const transactionResponse = await EvmTransactionsUtils.send(
-            { wallet: activeAccount.wallet } as EvmAccount,
+            activeAccount.wallet,
             {
               value: transactionData.value,
               to: transactionData.to,
@@ -226,8 +225,8 @@ const EvmNftTransfer = ({
           );
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-            transactionResponse: transactionResponse,
             pageTitle: 'evm_nft_transfer',
+            transactionResponse: transactionResponse,
             detailFields: [
               {
                 value: form.nftId,
@@ -255,10 +254,11 @@ const EvmNftTransfer = ({
               } as EvmUserHistoryItemDetail,
             ],
             tokenInfo: form.selectedToken,
+            transactionData: transactionData,
+            gasFee: gasFee,
           });
           setSuccessMessage('evm_transaction_broadcasted');
         } catch (error) {
-          console.error(error);
           Logger.error('Error during transfer', error);
           setErrorMessage('popup_html_transfer_failed');
         } finally {
