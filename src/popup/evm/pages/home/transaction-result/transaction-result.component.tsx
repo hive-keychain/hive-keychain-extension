@@ -172,33 +172,45 @@ const EvmTransactionResult = ({
   };
 
   const speedUpTransaction = async () => {
-    const speedUpTransactionResponse = await EvmTransactionsUtils.send(
-      activeAccount.wallet,
-      {
-        ...transactionResponse,
-        from: activeAccount.wallet.address,
-      },
-      increasedGasFee,
-      chain.chainId,
-      transactionResponse.nonce,
-    );
+    try {
+      const speedUpTransactionResponse = await EvmTransactionsUtils.send(
+        activeAccount.wallet,
+        {
+          ...transactionResponse,
+          from: activeAccount.wallet.address,
+        },
+        increasedGasFee,
+        chain.chainId,
+        transactionResponse.nonce,
+      );
 
-    if (speedUpTransactionResponse) {
-      await speedUpTransactionResponse
-        .wait()
-        .then(async (speedUpTransactionReceipt: TransactionReceipt | null) => {
-          console.log('speedUpTransactionReceipt', speedUpTransactionReceipt);
-          if (speedUpTransactionReceipt) {
-            const speedUpTransactionResult = await EthersUtils.getProvider(
-              chain,
-            ).getTransaction(speedUpTransactionReceipt.hash);
-            setTxReceipt(speedUpTransactionReceipt);
-            if (speedUpTransactionResult) setTxResult(speedUpTransactionResult);
-          }
-        })
-        .catch((err) => {
-          console.log('Catch in transaction speed up', { err });
-        });
+      if (speedUpTransactionResponse) {
+        await speedUpTransactionResponse
+          .wait()
+          .then(
+            async (speedUpTransactionReceipt: TransactionReceipt | null) => {
+              console.log(
+                'speedUpTransactionReceipt',
+                speedUpTransactionReceipt,
+              );
+              if (speedUpTransactionReceipt) {
+                const speedUpTransactionResult = await EthersUtils.getProvider(
+                  chain,
+                ).getTransaction(speedUpTransactionReceipt.hash);
+                setTxReceipt(speedUpTransactionReceipt);
+                if (speedUpTransactionResult)
+                  setTxResult(speedUpTransactionResult);
+              }
+            },
+          )
+          .catch((err) => {
+            console.log('Catch in transaction speed up', { err });
+          });
+      }
+    } catch (err: any) {
+      console.log('Catch in send transaction speed up', { err });
+      setErrorMessage(getErrorMessage(err.code));
+      setTransactionSpeedingUp(false);
     }
   };
 
