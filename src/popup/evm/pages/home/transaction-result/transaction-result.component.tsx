@@ -91,36 +91,40 @@ const EvmTransactionResult = ({
   };
 
   const getTransactionStatus = async () => {
-    await transactionResponse
-      .wait()
-      .then(async (transactionReceipt: TransactionReceipt | null) => {
-        console.log('receipt', transactionReceipt);
-        if (transactionReceipt) {
-          const transactionResult = await EthersUtils.getProvider(
-            chain,
-          ).getTransaction(transactionReceipt.hash);
-          setTxReceipt(transactionReceipt);
-          if (transactionResult) setTxResult(transactionResult);
-        }
-      })
-      .catch((err) => {
-        if (err.reason) {
-          switch (err.reason) {
-            case ReplacedTransactionReason.REPRICED:
-              Logger.info('Transaction successfully sped up');
-              break;
-            case ReplacedTransactionReason.CANCELLED:
-            case ReplacedTransactionReason.REPLACED:
-              Logger.info('Transaction successfully canceled');
-              break;
+    try {
+      await transactionResponse
+        .wait()
+        .then(async (transactionReceipt: TransactionReceipt | null) => {
+          console.log('receipt', transactionReceipt);
+          if (transactionReceipt) {
+            const transactionResult = await EthersUtils.getProvider(
+              chain,
+            ).getTransaction(transactionReceipt.hash);
+            setTxReceipt(transactionReceipt);
+            if (transactionResult) setTxResult(transactionResult);
           }
-        } else {
-          console.log('Catch in getTransactionStatus', { err });
-        }
-      })
-      .finally(() => {
-        setWaitingForTx(false);
-      });
+        })
+        .catch((err) => {
+          if (err.reason) {
+            switch (err.reason) {
+              case ReplacedTransactionReason.REPRICED:
+                Logger.info('Transaction successfully sped up');
+                break;
+              case ReplacedTransactionReason.CANCELLED:
+              case ReplacedTransactionReason.REPLACED:
+                Logger.info('Transaction successfully canceled');
+                break;
+            }
+          } else {
+            console.log('Catch in getTransactionStatus', { err });
+          }
+        })
+        .finally(() => {
+          setWaitingForTx(false);
+        });
+    } catch (err: any) {
+      console.log('catch in get transaction status', err);
+    }
   };
 
   const cancelTransaction = async () => {
@@ -137,7 +141,7 @@ const EvmTransactionResult = ({
           nonce: transactionResponse.nonce,
           chainId: chain.chainId,
         },
-        gasFee,
+        increasedGasFee,
         chain.chainId,
         transactionResponse.nonce,
       );
