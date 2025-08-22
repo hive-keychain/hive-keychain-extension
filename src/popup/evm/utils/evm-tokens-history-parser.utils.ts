@@ -33,7 +33,15 @@ const parseEvent = async (
   let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
 
   // parse event
-  if (
+
+  if (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) {
+    historyItem.isCanceled = true;
+    historyItem.label = chrome.i18n.getMessage(
+      'evm_history_canceled_transaction',
+    );
+    historyItem.pageTitle = 'evm_history_canceled_transaction';
+    historyItem.detailFields = [];
+  } else if (
     event.contractAddress?.length > 0 &&
     (!event.to || event.to.length === 0)
   ) {
@@ -60,7 +68,8 @@ const parseEvent = async (
   } else if (
     event.to &&
     event.to.length > 0 &&
-    event.input.replace('0x', '').length > 0
+    event.input.replace('0x', '').length > 0 &&
+    event.input.replace(ethers.ZeroHash, '').length > 0
   ) {
     let decodedData;
     // Smart contract (parse transaction)
@@ -69,7 +78,6 @@ const parseEvent = async (
         ...historyItem,
         type: EvmUserHistoryItemType.SMART_CONTRACT,
       };
-
       decodedData = await EvmTransactionParserUtils.parseData(
         event.input,
         chain,
@@ -96,6 +104,7 @@ const parseEvent = async (
       historyItem.detailFields = specificData.detailFields;
       historyItem.tokenInfo = specificData.tokenInfo;
     } catch (err) {
+      console.log(event);
       Logger.error(err as string);
       const defaultLabel =
         event.from.toLowerCase() === walletAddress.toLowerCase()
