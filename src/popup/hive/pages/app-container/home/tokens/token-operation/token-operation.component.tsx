@@ -31,7 +31,7 @@ import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-s
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import {
   ConfirmationPageFields,
-  ConfirmationPageFieldTag,
+  ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
@@ -190,7 +190,7 @@ const TokensOperation = ({
       {
         label: 'popup_html_transfer_amount',
         value: stringifiedAmount,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: form.symbol,
         iconPosition: 'right',
       },
@@ -200,7 +200,7 @@ const TokensOperation = ({
       fields.unshift({
         label: 'popup_html_transfer_to',
         value: `@${form.receiverUsername}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
         iconPosition: 'right',
       });
     }

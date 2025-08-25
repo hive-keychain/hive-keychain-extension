@@ -29,7 +29,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
@@ -350,13 +350,16 @@ const TokenSwaps = ({
     const fields = [
       { label: 'html_popup_swap_swap_id', value: estimateId },
       {
-        label: 'html_popup_swap_swap_amount',
-        value: `${FormatUtils.withCommas(
-          Number(amount).toFixed(startTokenPrecision),
-        )} ${startToken?.value.symbol} => ${FormatUtils.withCommas(
-          estimateValue!.toString(),
-        )} ${endToken?.value.symbol}`,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        label: 'html_popup_swap_swap_from',
+        value: Number(amount),
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: startToken?.value.symbol,
+        iconPosition: 'right',
+      },
+      {
+        label: 'html_popup_swap_swap_to',
+        value: estimateValue,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: endToken?.value.symbol,
         iconPosition: 'right',
       },

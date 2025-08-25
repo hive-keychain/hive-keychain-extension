@@ -27,7 +27,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import {
   ConfirmationPageFields,
-  ConfirmationPageFieldTag,
+  ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
@@ -193,19 +193,19 @@ const PowerUpDown = ({
       fields.push({
         label: 'popup_html_transfer_from',
         value: `@${activeAccount.name}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
       });
       fields.push({
         label: 'popup_html_transfer_to',
         value: `@${form.receiver}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
       });
     }
 
     fields.push({
       label: 'popup_html_amount',
       value: stringifiedAmount,
-      tag: ConfirmationPageFieldTag.AMOUNT,
+      tag: ConfirmationPageFieldType.AMOUNT,
       tokenSymbol: form.currency,
     });
 

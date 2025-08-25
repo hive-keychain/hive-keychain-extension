@@ -28,7 +28,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
 import {
   ConfirmationPageFields,
-  ConfirmationPageFieldTag,
+  ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
@@ -218,19 +218,19 @@ const TransferFunds = ({
       {
         label: 'popup_html_transfer_from',
         value: `@${activeAccount.name}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
         iconPosition: 'right',
       },
       {
         label: 'popup_html_transfer_to',
         value: `@${form.receiverUsername}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
         iconPosition: 'right',
       },
       {
         label: 'popup_html_transfer_amount',
         value: stringifiedAmount,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: currencyLabels[form.selectedCurrency],
         iconPosition: 'right',
       },

@@ -26,7 +26,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
@@ -264,13 +264,13 @@ const SavingsPage = ({
         {
           label: 'popup_html_username',
           value: `@${form.username}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           iconPosition: 'right',
         },
         {
           label: 'popup_html_value',
           value: stringifiedAmount,
-          tag: ConfirmationPageFieldTag.AMOUNT,
+          tag: ConfirmationPageFieldType.AMOUNT,
           tokenSymbol:
             currencyLabels[watch('currency') as keyof CurrencyLabels],
           iconPosition: 'right',

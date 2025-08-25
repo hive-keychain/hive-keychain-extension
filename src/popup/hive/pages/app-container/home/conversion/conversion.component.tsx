@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -163,13 +163,13 @@ const Conversion = ({
         {
           label: 'popup_html_username',
           value: `@${activeAccount.name!}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           avatarPosition: 'right',
         },
         {
           label: 'popup_html_value',
           value: stringifiedAmount,
-          tag: ConfirmationPageFieldTag.AMOUNT,
+          tag: ConfirmationPageFieldType.AMOUNT,
           tokenSymbol: form.currency,
         },
       ],

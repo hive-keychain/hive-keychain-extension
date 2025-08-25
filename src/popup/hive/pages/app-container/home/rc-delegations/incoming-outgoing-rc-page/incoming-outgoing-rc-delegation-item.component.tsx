@@ -18,7 +18,7 @@ import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -74,7 +74,7 @@ const RcIncomingOutgoingDelegationItem = ({
       {
         label: 'popup_html_rc_delegation_to',
         value: `@${rcDelegation.delegatee}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
         iconPosition: 'right',
       },
       {
@@ -85,7 +85,7 @@ const RcIncomingOutgoingDelegationItem = ({
           rcDelegation.value,
           globalProperties,
         )} ${currencyLabels.hp})`,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: currencyLabels.hp,
         iconPosition: 'right',
       },

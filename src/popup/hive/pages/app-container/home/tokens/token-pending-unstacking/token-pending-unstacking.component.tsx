@@ -24,7 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   ConfirmationPageFields,
-  ConfirmationPageFieldTag,
+  ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -74,7 +74,7 @@ const TokenPendingUnstake = ({
         value: `${FormatUtils.formatCurrencyValue(
           pendingUnstake.quantityLeft,
         )} ${pendingUnstake.symbol}`,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: pendingUnstake.symbol,
         iconPosition: 'right',
       },

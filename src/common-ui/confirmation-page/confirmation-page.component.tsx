@@ -15,7 +15,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import {
   ConfirmationPageFields,
-  ConfirmationPageFieldTag,
+  ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -171,7 +171,7 @@ const ConfirmationPage = ({
   };
   const getFieldComponent = (field: ConfirmationPageFields) => {
     switch (field.tag) {
-      case ConfirmationPageFieldTag.USERNAME:
+      case ConfirmationPageFieldType.USERNAME:
         return (
           <div className={`value ${field.valueClassName ?? ''}`}>
             <UsernameWithAvatar
@@ -180,7 +180,7 @@ const ConfirmationPage = ({
             />
           </div>
         );
-      case ConfirmationPageFieldTag.AMOUNT:
+      case ConfirmationPageFieldType.AMOUNT:
         return (
           <div className={`value ${field.valueClassName ?? ''}`}>
             <AmountWithLogo

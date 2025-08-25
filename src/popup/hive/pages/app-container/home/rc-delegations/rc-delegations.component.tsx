@@ -30,7 +30,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -177,7 +177,7 @@ const RCDelegations = ({
       {
         label: 'popup_html_rc_delegation_to',
         value: `@${form.delegatee}`,
-        tag: ConfirmationPageFieldTag.USERNAME,
+        tag: ConfirmationPageFieldType.USERNAME,
         iconPosition: 'right',
       },
       {
@@ -186,7 +186,7 @@ const RCDelegations = ({
           form.gigaRcValue,
           true,
         )} (≈ ${form.hpValue} ${currencyLabels.hp})`,
-        tag: ConfirmationPageFieldTag.AMOUNT,
+        tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: currencyLabels.hp,
         iconPosition: 'right',
       },

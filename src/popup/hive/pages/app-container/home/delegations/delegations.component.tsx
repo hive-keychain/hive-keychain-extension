@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -235,19 +235,19 @@ const Delegations = ({
         {
           label: 'popup_html_transfer_from',
           value: `@${activeAccount.name!}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           avatarPosition: 'right',
         },
         {
           label: 'popup_html_transfer_to',
           value: `@${form.username}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           avatarPosition: 'right',
         },
         {
           label: 'popup_html_value',
           value: stringifiedAmount,
-          tag: ConfirmationPageFieldTag.AMOUNT,
+          tag: ConfirmationPageFieldType.AMOUNT,
           tokenSymbol: currencyLabels.hp,
         },
       ],
@@ -299,13 +299,13 @@ const Delegations = ({
         {
           label: 'popup_html_transfer_from',
           value: `@${activeAccount.name!}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           iconPosition: 'left',
         },
         {
           label: 'popup_html_transfer_to',
           value: `@${form.username}`,
-          tag: ConfirmationPageFieldTag.USERNAME,
+          tag: ConfirmationPageFieldType.USERNAME,
           iconPosition: 'left',
         },
       ],

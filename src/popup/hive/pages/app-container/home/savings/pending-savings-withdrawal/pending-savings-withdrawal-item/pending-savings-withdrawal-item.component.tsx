@@ -18,7 +18,7 @@ import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
-import { ConfirmationPageFieldTag } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -54,7 +54,7 @@ const PendingSavingsWithdrawalItem = ({
         {
           label: 'popup_html_cancel_withdraw',
           value: `${item.amount} ${moment(item.complete).format('L')}`,
-          tag: ConfirmationPageFieldTag.AMOUNT,
+          tag: ConfirmationPageFieldType.AMOUNT,
           tokenSymbol: currency,
           iconPosition: 'right',
         },
