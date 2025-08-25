@@ -1,4 +1,5 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { Message } from '@interfaces/message.interface';
 import {
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
@@ -14,6 +15,7 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { MessageType } from '@reference-data/message-type.enum';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
@@ -62,6 +64,8 @@ export const useTransactionHook = (
 
   const [unableToReachBackend, setUnableToReachBackend] = useState(false);
 
+  const [message, setMessage] = useState<Message>();
+
   useEffect(() => {
     initDuplicateRequestWarningField();
     initShouldDiplayBlockButton();
@@ -85,6 +89,19 @@ export const useTransactionHook = (
     });
 
     setSingleWarningPopupOpened(true);
+  };
+
+  const setErrorMessage = (message: string | undefined) => {
+    if (message) {
+      setMessage({
+        key: message,
+        type: MessageType.ERROR,
+        params: [],
+        skipTranslation: true,
+      });
+    } else {
+      setMessage(undefined);
+    }
   };
 
   const handleSingleWarningIgnore = (
@@ -375,6 +392,8 @@ export const useTransactionHook = (
     shouldDisplayBlockButton,
     unableToReachBackend,
     setUnableToReachBackend,
+    message,
+    setErrorMessage,
   };
 };
 

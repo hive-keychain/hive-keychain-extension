@@ -6,44 +6,55 @@ import { ActionPayload } from './interfaces';
 export const setErrorMessage = (
   key: string,
   params: string[] = [],
+  skipTranslation?: boolean,
 ): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
-    payload: { key, type: MessageType.ERROR, params },
+    payload: { key, type: MessageType.ERROR, params, skipTranslation },
   };
 };
 
 export const setSuccessMessage = (
   key: string,
   params: string[] = [],
+  skipTranslation?: boolean,
 ): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
-    payload: { key, type: MessageType.SUCCESS, params },
+    payload: { key, type: MessageType.SUCCESS, params, skipTranslation },
   };
 };
 export const setInfoMessage = (
   key: string,
   params: string[] = [],
+  skipTranslation?: boolean,
 ): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
-    payload: { key, type: MessageType.INFO, params },
+    payload: { key, type: MessageType.INFO, params, skipTranslation },
   };
 };
 export const setWarningMessage = (
   key: string,
   params: string[] = [],
+  skipTranslation?: boolean,
 ): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
-    payload: { key, type: MessageType.WARNING, params },
+    payload: { key, type: MessageType.WARNING, params, skipTranslation },
   };
 };
 
-export const resetMessage = (): ActionPayload<Message> => {
+export const resetMessage = (
+  skipTranslation?: boolean,
+): ActionPayload<Message> => {
   return {
     type: MultichainActionType.SET_MESSAGE,
-    payload: { key: '', type: MessageType.SUCCESS, params: [] },
+    payload: {
+      key: '',
+      type: MessageType.SUCCESS,
+      params: [],
+      skipTranslation,
+    },
   };
 };

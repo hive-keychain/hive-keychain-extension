@@ -4,4 +4,5 @@ export interface Message {
   key: string;
   type: MessageType;
   params?: string[];
+  skipTranslation?: boolean;
 }

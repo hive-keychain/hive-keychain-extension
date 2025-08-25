@@ -390,6 +390,7 @@ const EvmTransactionResult = ({
             transactionType={chain.defaultTransactionType}
             prices={evmPrices}
             transactionData={transactionData}
+            setErrorMessage={setErrorMessage}
           />
           <ButtonComponent
             label="popup_html_confirm"

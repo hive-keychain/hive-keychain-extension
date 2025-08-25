@@ -231,6 +231,7 @@ const ConfirmationPage = ({
             transactionData={transactionData}
             prices={evmPrices}
             forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
+            setErrorMessage={setErrorMessage}
           />
         )}
       </div>

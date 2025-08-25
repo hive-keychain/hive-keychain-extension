@@ -40,6 +40,7 @@ interface GasFeePanelProps {
   transactionData?: ProviderTransactionData;
   prices: EvmPrices;
   forceOpenGasFeePanelEvent?: EventEmitter;
+  setErrorMessage: (message: string) => void;
 }
 
 export const GasFeePanel = ({
@@ -53,6 +54,7 @@ export const GasFeePanel = ({
   transactionData,
   prices,
   forceOpenGasFeePanelEvent,
+  setErrorMessage,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -138,104 +140,110 @@ export const GasFeePanel = ({
   }, [selectedFee]);
 
   const init = async () => {
-    const estimate = await GasFeeUtils.estimate(
-      chain,
-      wallet,
-      transactionType,
-      prices,
-      undefined,
-      transactionData,
-    );
-    if (!!multiplier && selectedFee) {
-      const increasedFee: GasFeeEstimationBase = {
-        ...selectedFee,
-        estimatedFee: Number(
-          new Decimal(selectedFee.estimatedFee)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.estimatedFee)),
-        ),
-        estimatedFeeUSD: Number(
-          new Decimal(selectedFee.estimatedFeeUSD)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.estimatedFeeUSD)),
-        ),
-        maxFee: Number(
-          new Decimal(selectedFee.maxFee)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.maxFee)),
-        ),
-        maxFeeUSD: Number(
-          new Decimal(selectedFee.maxFeeUSD)
-            .mul(multiplier)
-            .toFixed(MathUtils.countDecimals(selectedFee.maxFeeUSD)),
-        ),
-        maxFeePerGas: selectedFee.maxFeePerGas
-          ? Number(
-              new Decimal(selectedFee.maxFeePerGas)
-                .mul(multiplier)
-                .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
-            )
-          : undefined,
-        priorityFee: selectedFee.priorityFee
-          ? Number(
-              new Decimal(selectedFee.priorityFee)
-                .mul(multiplier)
-                .toFixed(selectedFee.priorityFee),
-            )
-          : undefined,
-      };
+    let estimate;
+    try {
+      estimate = await GasFeeUtils.estimate(
+        chain,
+        wallet,
+        transactionType,
+        prices,
+        undefined,
+        transactionData,
+      );
+      if (!!multiplier && selectedFee) {
+        const increasedFee: GasFeeEstimationBase = {
+          ...selectedFee,
+          estimatedFee: Number(
+            new Decimal(selectedFee.estimatedFee)
+              .mul(multiplier)
+              .toFixed(MathUtils.countDecimals(selectedFee.estimatedFee)),
+          ),
+          estimatedFeeUSD: Number(
+            new Decimal(selectedFee.estimatedFeeUSD)
+              .mul(multiplier)
+              .toFixed(MathUtils.countDecimals(selectedFee.estimatedFeeUSD)),
+          ),
+          maxFee: Number(
+            new Decimal(selectedFee.maxFee)
+              .mul(multiplier)
+              .toFixed(MathUtils.countDecimals(selectedFee.maxFee)),
+          ),
+          maxFeeUSD: Number(
+            new Decimal(selectedFee.maxFeeUSD)
+              .mul(multiplier)
+              .toFixed(MathUtils.countDecimals(selectedFee.maxFeeUSD)),
+          ),
+          maxFeePerGas: selectedFee.maxFeePerGas
+            ? Number(
+                new Decimal(selectedFee.maxFeePerGas)
+                  .mul(multiplier)
+                  .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
+              )
+            : undefined,
+          priorityFee: selectedFee.priorityFee
+            ? Number(
+                new Decimal(selectedFee.priorityFee)
+                  .mul(multiplier)
+                  .toFixed(selectedFee.priorityFee),
+              )
+            : undefined,
+        };
 
-      switch (transactionType) {
-        case EvmTransactionType.EIP_1559: {
-          increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-            increasedFee.gasLimit * increasedFee.maxFeePerGas!,
-          );
-          break;
+        switch (transactionType) {
+          case EvmTransactionType.EIP_1559: {
+            increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
+              increasedFee.gasLimit * increasedFee.maxFeePerGas!,
+            );
+            break;
+          }
+          case EvmTransactionType.LEGACY: {
+            increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
+              increasedFee.gasLimit * increasedFee.gasPrice!,
+            );
+            break;
+          }
         }
-        case EvmTransactionType.LEGACY: {
-          increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-            increasedFee.gasLimit * increasedFee.gasPrice!,
-          );
-          break;
-        }
-      }
 
-      if (
-        estimate?.aggressive?.estimatedFee &&
-        estimate.aggressive.estimatedFee < increasedFee.estimatedFee
-      )
-        estimate.aggressive.deactivated = true;
-      if (
-        estimate?.medium?.estimatedFee &&
-        estimate.medium.estimatedFee < increasedFee.estimatedFee
-      )
-        estimate.medium.deactivated = true;
+        if (
+          estimate?.aggressive?.estimatedFee &&
+          estimate.aggressive.estimatedFee < increasedFee.estimatedFee
+        )
+          estimate.aggressive.deactivated = true;
+        if (
+          estimate?.medium?.estimatedFee &&
+          estimate.medium.estimatedFee < increasedFee.estimatedFee
+        )
+          estimate.medium.deactivated = true;
 
-      onSelectFee(increasedFee);
-      estimate.increased = increasedFee;
-    } else {
-      if (estimate?.suggestedByDApp) {
-        onSelectFee(estimate.suggestedByDApp);
-      } else if (estimate.suggested) {
-        onSelectFee(estimate.suggested);
+        onSelectFee(increasedFee);
+        estimate.increased = increasedFee;
       } else {
-        // No suggested by dapp, no suggested, so we select the custom fee
-        onSelectFee(estimate.custom!);
+        if (estimate?.suggestedByDApp) {
+          onSelectFee(estimate.suggestedByDApp);
+        } else if (estimate.suggested) {
+          onSelectFee(estimate.suggested);
+        } else {
+          // No suggested by dapp, no suggested, so we select the custom fee
+          onSelectFee(estimate.custom!);
+        }
       }
-    }
 
-    if (
-      estimate.custom &&
-      !estimate.suggestedByDApp &&
-      !estimate.suggested &&
-      !chain.onlyCustomFee
-    ) {
-      // Backend data not available so we display a warning
-      setCustomFeeWarning('evm_gas_fee_warning_not_available');
-    } else if (chain.onlyCustomFee) {
-      setCustomFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+      if (
+        estimate.custom &&
+        !estimate.suggestedByDApp &&
+        !estimate.suggested &&
+        !chain.onlyCustomFee
+      ) {
+        // Backend data not available so we display a warning
+        setCustomFeeWarning('evm_gas_fee_warning_not_available');
+      } else if (chain.onlyCustomFee) {
+        setCustomFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+      }
+      setFeeEstimation(estimate);
+    } catch (err: any) {
+      console.log('Catch in gas fee Panel', { err });
+      setErrorMessage(err.message);
     }
-    setFeeEstimation(estimate);
   };
 
   const openCustomFeePanel = () => {

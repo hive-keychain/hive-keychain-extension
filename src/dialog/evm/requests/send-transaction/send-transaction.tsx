@@ -696,6 +696,7 @@ export const SendTransaction = (props: Props) => {
                     transactionType={transactionData.type}
                     transactionData={transactionData}
                     prices={evmPrices}
+                    setErrorMessage={transactionHook.setErrorMessage}
                   />
                 )}
             </>

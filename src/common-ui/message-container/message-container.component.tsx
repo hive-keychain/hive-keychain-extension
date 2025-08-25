@@ -1,6 +1,7 @@
 import { Message } from '@interfaces/message.interface';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
+import sanitizeHTML from 'sanitize-html';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -66,7 +67,12 @@ const MessageContainer = ({
         <div
           className="message"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(message.key, message.params),
+            __html: sanitizeHTML(
+              message.skipTranslation
+                ? message.key
+                : chrome.i18n.getMessage(message.key, message.params),
+              { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
+            ),
           }}></div>
         <ButtonComponent
           additionalClass={

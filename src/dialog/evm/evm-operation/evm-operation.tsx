@@ -1,4 +1,5 @@
 import { SVGIcons } from '@common-ui/icons.enum';
+import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -141,6 +142,12 @@ export const EvmOperation = ({
         )}
 
         <LoadingComponent hide={!loading} />
+        {transactionHook?.message && (
+          <MessageContainerComponent
+            message={transactionHook.message}
+            onResetMessage={() => transactionHook.setErrorMessage(undefined)}
+          />
+        )}
       </div>
 
       {transactionHook && (
