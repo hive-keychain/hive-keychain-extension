@@ -69,4 +69,16 @@ const getGasLimitFromRawTx = async (
   return Decimal.mul(Number(estimation), multiplier).toNumber();
 };
 
-export const EthersUtils = { getProvider, getGasLimit };
+const getErrorMessage = (code: string) => {
+  switch (code) {
+    case 'REPLACEMENT_UNDERPRICED':
+      return 'evm_transaction_result_error_message_underpriced';
+    case 'NONCE_EXPIRED':
+      return 'evm_transaction_result_error_message_nonce_expired';
+
+    default:
+      return 'evm_transaction_result_unknown_error';
+  }
+};
+
+export const EthersUtils = { getProvider, getGasLimit, getErrorMessage };

@@ -8,6 +8,7 @@ import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -81,15 +82,6 @@ const EvmTransactionResult = ({
     getTransactionStatus();
   }, []);
 
-  const getErrorMessage = (code: string) => {
-    switch (code) {
-      case 'REPLACEMENT_UNDERPRICED':
-        return 'evm_transaction_result_error_message_underpriced';
-      default:
-        return 'evm_transaction_result_unknown_error';
-    }
-  };
-
   const getTransactionStatus = async () => {
     try {
       await transactionResponse
@@ -134,12 +126,13 @@ const EvmTransactionResult = ({
       const cancelTransactionResponse = await EvmTransactionsUtils.send(
         activeAccount.wallet,
         {
-          to: ethers.ZeroAddress,
+          to: activeAccount.wallet.address,
           value: 0,
           data: ethers.ZeroHash,
           from: activeAccount.wallet.address,
           nonce: transactionResponse.nonce,
           chainId: chain.chainId,
+          type: Number(EvmTransactionType.EIP_1559),
         },
         increasedGasFee,
         chain.chainId,
@@ -158,16 +151,24 @@ const EvmTransactionResult = ({
               if (cancelTransactionResult) setTxResult(cancelTransactionResult);
             }
           })
-          .catch((err) => console.log('Catch in transaction cancel', { err }))
+          .catch((err) => {
+            console.log('Catch in transaction cancel', { err });
+            if (err.code === 'TRANSACTION_REPLACED') {
+              setCanceling(false);
+              setErrorMessage('evm_transaction_not_canceled_error');
+            }
+          })
           .finally(() => {
             setWaitingForTx(false);
           });
       }
     } catch (err: any) {
       console.log('Catch in send transaction cancel', { err });
-      setErrorMessage(getErrorMessage(err.code));
+      setErrorMessage(EthersUtils.getErrorMessage(err.code));
       setCanceling(false);
-      setGasPanelOpened(true);
+      if (err.code === 'REPLACEMENT_UNDERPRICED') {
+        setGasPanelOpened(true);
+      }
     }
   };
 
@@ -209,7 +210,7 @@ const EvmTransactionResult = ({
       }
     } catch (err: any) {
       console.log('Catch in send transaction speed up', { err });
-      setErrorMessage(getErrorMessage(err.code));
+      setErrorMessage(EthersUtils.getErrorMessage(err.code));
       setTransactionSpeedingUp(false);
     }
   };

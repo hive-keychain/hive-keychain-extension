@@ -5348,5 +5348,13 @@
   "evm_history_canceled_transaction": {
     "message": "Canceled transaction",
     "description": "Transaction canceled"
+  },
+  "evm_transaction_result_error_message_nonce_expired": {
+    "message": "Nonce expired, please try again",
+    "description": "Transaction result error message nonce expired"
+  },
+  "evm_transaction_not_canceled_error": {
+    "message": "The transaction couldn't be canceled",
+    "description": "Transaction couldn't be canceled error message"
   }
 }
