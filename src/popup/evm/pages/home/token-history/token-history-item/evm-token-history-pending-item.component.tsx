@@ -29,14 +29,14 @@ export const EvmTokenHistoryPendingItemComponent = ({
   }, []);
 
   const check = async () => {
+    const provider = await EthersUtils.getProvider(chain);
+
     const txResponse = new TransactionResponse(
       pendingTransactionData.transaction,
-      EthersUtils.getProvider(chain),
+      provider,
     );
 
-    const transactionResult = await EthersUtils.getProvider(
-      chain,
-    ).getTransaction(txResponse.hash);
+    const transactionResult = await provider.getTransaction(txResponse.hash);
 
     if (!transactionResult) {
       // await EvmTransactionsUtils.deleteFromPendingTransactions(

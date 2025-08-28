@@ -5089,6 +5089,14 @@
     "message": "Advanced",
     "description": "Evm Advanced menu"
   },
+  "evm_menu_rpc_node": {
+    "message": "RPC Node",
+    "description": "Evm RPC node menu"
+  },
+  "evm_menu_security": {
+    "message": "Security",
+    "description": "Evm Security menu"
+  },
   "evm_menu_advanced_smart_contracts": {
     "message": "Smart Contracts",
     "description": "Evm Advanced smart contracts"
@@ -5356,5 +5364,9 @@
   "evm_transaction_not_canceled_error": {
     "message": "The transaction couldn't be canceled",
     "description": "Transaction couldn't be canceled error message"
+  },
+  "evm_rpcs_not_responding_error": {
+    "message": "All RPCs are not responding, please try again later",
+    "description": "All RPCs are not responding error message"
   }
 }

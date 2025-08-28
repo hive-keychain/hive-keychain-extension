@@ -36,7 +36,7 @@ interface NewChainForm {
   blockExplorer: BlockExplorer;
   mainToken?: EvmMainToken;
   mainTokens?: HiveMainTokens;
-  rpc: MultichainRpc[];
+  rpcs: MultichainRpc[];
 }
 
 const formRules = FormUtils.createRules<NewChainForm>({
@@ -46,6 +46,7 @@ const formRules = FormUtils.createRules<NewChainForm>({
   logo: Joi.string().required(),
   chainId: Joi.string().required(),
   blockExplorer: Joi.object().required(),
+  rpcs: Joi.array().required(),
 });
 
 const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
@@ -71,7 +72,7 @@ const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
         hbd: 'TBD',
         hp: 'TP',
       },
-      rpc: [],
+      rpcs: [],
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<NewChainForm>>(formRules, {

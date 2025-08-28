@@ -115,6 +115,7 @@ export enum SVGIcons {
   MENU_ADVANCED_SETTINGS_RPC_NODE = 'menu/advanced-settings/rpc-nodes',
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
+  MENU_ADVANCED_SETTINGS_SECURITY = 'menu/advanced-settings/security',
 
   MENU_TOKENS = 'menu/tokens',
 

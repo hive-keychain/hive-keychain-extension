@@ -1,3 +1,4 @@
+import ButtonComponent from '@common-ui/button/button.component';
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
@@ -12,18 +13,22 @@ import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
-import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
   NavigationParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  EvmChain,
+  MultichainRpc,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
@@ -58,6 +63,7 @@ const Home = ({
   fetchPrices,
   navigateToWithParams,
   loadEvmHistory,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -68,10 +74,16 @@ const Home = ({
   const [pendingTransactionsItems, setPendingTransactionsItems] =
     useState<EvmUserHistoryItem[]>();
 
+  // RPC related
+  const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
+  const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
+  const [switchToRpc, setSwitchToRpc] = useState<MultichainRpc>();
+
   useEffect(() => {
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
+    initActiveRpc();
   }, []);
 
   useEffect(() => {
@@ -99,6 +111,40 @@ const Home = ({
       );
     }
   }, [activeAccount.nativeAndErc20Tokens]);
+
+  const initActiveRpc = async () => {
+    const rpc = await EvmRpcUtils.getActiveRpc(chain);
+    setInitialRpc(rpc);
+    const rpcStatusOk = await EvmRpcUtils.checkRpcStatus(rpc.url);
+
+    const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
+    console.log('switchAuto', switchAuto);
+
+    if (!rpcStatusOk) {
+      if (switchAuto) {
+        const switchResult = await EvmRpcUtils.automaticallySwitchToWorkingRpc(
+          chain,
+        );
+        if (!switchResult) {
+          setErrorMessage('evm_rpcs_not_responding_error');
+        } else {
+          loadActiveAccount(chain);
+        }
+      } else {
+        const rpcToSwitch = await EvmRpcUtils.switchToWorkingRpc(chain);
+        if (rpcToSwitch) {
+          setDisplayChangeRpcPopup(true);
+          setSwitchToRpc(rpcToSwitch);
+        }
+      }
+    }
+  };
+
+  const switchRpc = async () => {
+    await EvmRpcUtils.setActiveRpc(switchToRpc!, chain);
+    setDisplayChangeRpcPopup(false);
+    loadActiveAccount(chain);
+  };
 
   const loadActiveAccount = async (chain: EvmChain) => {
     if (chain) {
@@ -176,6 +222,7 @@ const Home = ({
   const renderPopup = (
     displayWhatsNew: boolean,
     surveyToDisplay: Survey | undefined,
+    displayChangeRpcPopup: boolean,
   ) => {
     if (displayWhatsNew) {
       return (
@@ -183,6 +230,20 @@ const Home = ({
           onOverlayClick={() => setDisplayWhatsNew(false)}
           content={whatsNewContent!}
         />
+      );
+    } else if (displayChangeRpcPopup) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+              initialRpc?.url!,
+              switchToRpc?.url!,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={switchRpc}></ButtonComponent>
+        </div>
       );
     } else if (surveyToDisplay) {
       return <SurveyComponent survey={surveyToDisplay} />;
@@ -278,7 +339,7 @@ const Home = ({
         additionalClass={showBottomBar ? undefined : 'down'}
       />
       <ProposalVotingSectionComponent />
-      {renderPopup(displayWhatsNew, surveyToDisplay)}
+      {renderPopup(displayWhatsNew, surveyToDisplay, displayChangeRpcPopup)}
       <TutorialPopupComponent />
     </HomepageContainer>
   );
@@ -296,7 +357,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadCurrencyPrices,
   resetTitleContainerProperties,
-  setSuccessMessage,
+  setErrorMessage,
   loadEvmActiveAccount,
   navigateTo,
   fetchPrices,

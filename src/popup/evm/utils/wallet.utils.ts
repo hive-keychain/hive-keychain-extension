@@ -54,15 +54,14 @@ const deriveWallets = async (
   wallet: HDNodeWallet,
   chain: EvmChain,
 ): Promise<WalletWithBalance[]> => {
+  const provider = await EthersUtils.getProvider(chain);
   const wallets = [];
   let i = 0,
     consecutiveEmptyWallets = 0;
   while (1) {
     const derivedWallet: HDNodeWallet = wallet.deriveChild(i);
 
-    const wei = await EthersUtils.getProvider(chain).getBalance(
-      derivedWallet.address,
-    );
+    const wei = await provider.getBalance(derivedWallet.address);
     const balance = Number(parseFloat(ethers.formatEther(wei)).toFixed(6));
     wallets.push({
       wallet: derivedWallet,
@@ -317,7 +316,8 @@ const rebuildAccount = (account: EvmAccount) => {
 
 const isWalletAddress = async (address: string, chain: EvmChain) => {
   try {
-    const code = await EthersUtils.getProvider(chain).getCode(address);
+    const provider = await EthersUtils.getProvider(chain);
+    const code = await provider.getCode(address);
     if (code !== '0x') return false;
   } catch (error) {}
   // if it comes here, then it's not a contract.

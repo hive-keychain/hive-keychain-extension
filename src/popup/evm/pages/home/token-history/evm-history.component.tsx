@@ -43,9 +43,8 @@ export const EvmHistory = ({
     transactionHash: string,
     historyItem: EvmUserHistoryItem,
   ) => {
-    const transactionResponse = await EthersUtils.getProvider(
-      chain,
-    ).getTransaction(transactionHash);
+    const provider = await EthersUtils.getProvider(chain);
+    const transactionResponse = await provider.getTransaction(transactionHash);
 
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: transactionResponse,

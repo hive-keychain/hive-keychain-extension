@@ -8,7 +8,7 @@ export const ChainReducer = (
     type: undefined,
     logo: '',
     chainId: '',
-    rpc: [],
+    rpcs: [],
   },
   { type, payload }: ActionPayload<Partial<Chain>>,
 ) => {

@@ -231,7 +231,7 @@ const EvmTransfer = ({
       data:
         form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? ''
-          : encodeTransferData(
+          : await encodeTransferData(
               form.selectedToken.tokenInfo,
               activeAccount,
               form.receiverAddress,
@@ -312,7 +312,7 @@ const EvmTransfer = ({
     setValue('amount', Number(balance));
   };
 
-  const encodeTransferData = (
+  const encodeTransferData = async (
     tokenInfo:
       | EvmSmartContractInfoErc20
       | EvmSmartContractInfoErc721
@@ -321,7 +321,7 @@ const EvmTransfer = ({
     receiverAddress: string,
     amount: number,
   ) => {
-    const provider = EthersUtils.getProvider(chain);
+    const provider = await EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(
       selectedAccount.wallet.signingKey,
       provider,

@@ -476,13 +476,16 @@ const getSmartContractProxy = async (
   smartContractAddress: string,
   chain: EvmChain,
 ): Promise<string | undefined> => {
-  const EIP1193RequestFunc = ({
+  const EIP1193RequestFunc = async ({
     method,
     params,
   }: {
     method: string;
     params: any[];
-  }): Promise<unknown> => EthersUtils.getProvider(chain).send(method, params);
+  }): Promise<unknown> => {
+    const provider = await EthersUtils.getProvider(chain);
+    return provider.send(method, params);
+  };
 
   const res = await detectProxyTarget(
     smartContractAddress as unknown as any,

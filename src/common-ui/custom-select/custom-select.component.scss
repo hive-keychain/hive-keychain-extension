@@ -145,6 +145,7 @@
           }
           .right-action-icon {
             display: block;
+            @include icon-size(20px);
           }
           .separator {
             background: $red;

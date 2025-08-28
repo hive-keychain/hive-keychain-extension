@@ -82,7 +82,7 @@ const send = async (
     }
   }
 
-  const provider = EthersUtils.getProvider(chain as EvmChain);
+  const provider = await EthersUtils.getProvider(chain as EvmChain);
   const connectedWallet = new Wallet(wallet.signingKey, provider);
 
   const transactionResponse: TransactionResponse = await connectedWallet

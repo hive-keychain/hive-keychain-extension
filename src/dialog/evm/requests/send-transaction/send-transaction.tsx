@@ -86,9 +86,6 @@ export const SendTransaction = (props: Props) => {
   }, [tokenInfo, selectedAccount, transferAmount]);
 
   const init = async () => {
-    // TODO uncomment when needed
-    // await sleep(4000);
-
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
 
     const chainTmp = await ChainUtils.getChain<EvmChain>(data.data.chainId!);
@@ -112,7 +109,7 @@ export const SendTransaction = (props: Props) => {
       wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
     });
 
-    const provider = EthersUtils.getProvider(chainTmp as EvmChain);
+    const provider = await EthersUtils.getProvider(chainTmp as EvmChain);
     const connectedWallet = new Wallet(
       HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
       provider,

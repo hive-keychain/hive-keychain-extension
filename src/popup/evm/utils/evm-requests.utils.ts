@@ -27,9 +27,13 @@ const getEthProvider = () => {
     (chain: Chain) => chain.chainId === '0x1',
   );
 
-  const provider = new ethers.JsonRpcProvider(ethChain!.rpc[0].url, undefined, {
-    staticNetwork: ethers.Network.from(Number(ethChain!.chainId)),
-  });
+  const provider = new ethers.JsonRpcProvider(
+    ethChain!.rpcs[0].url,
+    undefined,
+    {
+      staticNetwork: ethers.Network.from(Number(ethChain!.chainId)),
+    },
+  );
   return provider;
 };
 

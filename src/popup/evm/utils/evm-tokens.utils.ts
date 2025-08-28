@@ -120,7 +120,7 @@ const getTokenBalance = async (
   chain: EvmChain,
   token: EvmSmartContractInfo,
 ) => {
-  const provider = EthersUtils.getProvider(chain);
+  const provider = await EthersUtils.getProvider(chain);
   try {
     let formattedBalance;
     let balance;
@@ -233,7 +233,7 @@ const getErc721Tokens = async (
   let erc721tokens: EvmErc721Token[] = [];
   for (const contractAddress of Object.keys(idsPerCollection)) {
     const token = tokens.find((token) => token.address === contractAddress);
-    const provider = EthersUtils.getProvider(chain);
+    const provider = await EthersUtils.getProvider(chain);
     const contract = new ethers.Contract(token!.address!, ERC721Abi, provider);
     const collection: EvmErc721TokenCollectionItem[] = [];
 
@@ -274,7 +274,7 @@ const getErc1155Tokens = async (
       collection: [],
     };
     for (const token of tokens) {
-      const provider = EthersUtils.getProvider(chain);
+      const provider = await EthersUtils.getProvider(chain);
       const contract = new ethers.Contract(
         tokenInfo.address,
         ERC1155Abi,

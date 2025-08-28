@@ -15,6 +15,7 @@ export type EvmMainToken = string;
 
 export interface MultichainRpc {
   url: string;
+  isDefault?: boolean;
 }
 
 export interface Chain {
@@ -27,8 +28,7 @@ export interface Chain {
   blockExplorerApi?: BlockExplorer;
   network?: string;
 
-  // TODO remove optional
-  rpc: MultichainRpc[];
+  rpcs: MultichainRpc[];
 }
 
 export enum BlockExporerType {

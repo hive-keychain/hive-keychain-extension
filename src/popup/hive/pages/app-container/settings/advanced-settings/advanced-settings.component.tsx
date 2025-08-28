@@ -3,7 +3,7 @@ import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
-import getAdvancedSettingsMenuItems from './advanced-settings-menu-items';
+import { getAdvancedSettingsMenuItems } from './advanced-settings-menu-items';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (

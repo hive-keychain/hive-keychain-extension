@@ -2,12 +2,17 @@ import { Screen } from '@interfaces/screen.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 
-export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
+export const getEvmAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [
     {
       label: 'popup_html_rpc_node',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE,
-      nextScreen: Screen.SETTINGS_RPC_NODES,
+      nextScreen: Screen.EVM_RPC_NODES_SETTINGS,
+    },
+    {
+      label: 'evm_menu_security',
+      icon: SVGIcons.MENU_ADVANCED_SETTINGS_SECURITY,
+      nextScreen: Screen.EVM_SECURITY_SETTINGS,
     },
     {
       label: 'popup_html_autolock',
@@ -19,16 +24,7 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
     },
-    {
-      label: 'popup_html_keychainify',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
-      nextScreen: Screen.SETTINGS_KEYCHAINIFY,
-    },
-    {
-      label: 'popup_html_analytics',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
-      nextScreen: Screen.SETTINGS_ANALYTICS,
-    },
+
     {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
@@ -39,11 +35,11 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
         });
       },
     },
-    {
-      label: 'popup_html_import_export_settings',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_IMPORT_EXPORT,
-      nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
-    },
+    // {
+    //   label: 'popup_html_import_export_settings',
+    //   icon: SVGIcons.MENU_ADVANCED_SETTINGS_IMPORT_EXPORT,
+    //   nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
+    // },
     {
       label: 'popup_html_clear',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CLEAR_ALL,

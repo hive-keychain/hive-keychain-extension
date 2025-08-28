@@ -36,9 +36,9 @@ export const defaultChainList = [
       url: 'https://eth.blockscout.com',
     },
     isEth: true,
-    rpc: [
+    rpcs: [
       // { url: 'https://tx-sentinel-ethereum-mainnet.api.cx.metamask.io/' },
-      { url: 'https://ethereum-rpc.publicnode.com' },
+      { url: 'https://ethereum-rpc.publicnode.com', isDefault: true },
     ],
   } as EvmChain,
   {
@@ -57,9 +57,9 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api.snowscan.xyz',
     },
-    rpc: [
-      { url: 'https://avalanche-c-chain-rpc.publicnode.com' },
-      { url: 'https://avalanche.drpc.org' },
+    rpcs: [
+      { url: 'https://avalanche-c-chain-rpc.publicnode.com', isDefault: true },
+      { url: 'https://avalanche.drpc.org', isDefault: true },
     ],
   } as EvmChain,
   {
@@ -78,9 +78,9 @@ export const defaultChainList = [
       type: BlockExporerType.ETHERSCAN,
       url: 'https://api.bscscan.com',
     },
-    rpc: [
-      { url: 'https://bsc-rpc.publicnode.com' },
-      { url: 'https://bsc.drpc.org' },
+    rpcs: [
+      { url: 'https://bsc-rpc.publicnode.com', isDefault: true },
+      { url: 'https://bsc.drpc.org', isDefault: true },
     ],
   } as EvmChain,
   {
@@ -100,9 +100,9 @@ export const defaultChainList = [
       // url: 'https://api.polygonscan.com',
       url: 'https://polygon.blockscout.com',
     },
-    rpc: [
-      { url: 'https://polygon-bor-rpc.publicnode.com' },
-      { url: 'https://polygon.drpc.org' },
+    rpcs: [
+      { url: 'https://polygon-bor-rpc.publicnode.com', isDefault: true },
+      { url: 'https://polygon.drpc.org', isDefault: true },
     ],
   } as EvmChain,
   {
@@ -124,9 +124,9 @@ export const defaultChainList = [
     },
     testnet: true,
     isEth: true,
-    rpc: [
-      { url: 'https://ethereum-sepolia-rpc.publicnode.com' },
-      { url: 'https://sepolia.drpc.org' },
+    rpcs: [
+      { url: 'https://ethereum-sepolia-rpc.publicnode.com', isDefault: true },
+      { url: 'https://sepolia.drpc.org', isDefault: true },
     ],
   } as EvmChain,
 ];

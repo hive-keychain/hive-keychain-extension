@@ -1,0 +1,6 @@
+
+<svg width="46" height="41" viewBox="0 0 46 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+   <rect width="43.37" height="38.948" x=".423" y="-.423" stroke="var(--menu-icon-border-color)" stroke-width="var(--menu-icon-border-width)" rx="19.474" transform="matrix(1 0 0 -1 0 38.948)"/>
+   <path d="M22.9987 12C20.7824 12 19.3454 13.7161 17.6459 14.3417C16.9549 14.596 16.6093 14.7232 16.4695 14.9025C16.3297 15.0817 16.2887 15.3437 16.2068 15.8676C15.3305 21.4741 17.2459 26.6574 21.8139 28.6749C22.3047 28.8916 22.5501 29 23.0011 29C23.452 29 23.6975 28.8916 24.1882 28.6749C28.7559 26.6573 30.6695 21.4741 29.7929 15.8676C29.711 15.3436 29.67 15.0816 29.5302 14.9023C29.3903 14.723 29.0448 14.5959 28.3538 14.3417C26.6536 13.7163 25.215 12 22.9987 12Z" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M23 12V29M29.6316 20.5H16.3684" stroke="var(--menu-icon-color)" stroke-linecap="round"/>
+</svg>

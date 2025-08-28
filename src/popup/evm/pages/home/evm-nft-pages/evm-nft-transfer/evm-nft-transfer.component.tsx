@@ -186,7 +186,7 @@ const EvmNftTransfer = ({
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
       to: watch('selectedToken.address'),
-      data: encodeTransferData(
+      data: await encodeTransferData(
         form.selectedToken as
           | EvmSmartContractInfoErc1155
           | EvmSmartContractInfoErc721,
@@ -268,14 +268,14 @@ const EvmNftTransfer = ({
     } as EVMConfirmationPageParams);
   };
 
-  const encodeTransferData = (
+  const encodeTransferData = async (
     tokenInfo: EvmSmartContractInfoErc1155 | EvmSmartContractInfoErc721,
     activeAccount: EvmActiveAccount,
     receiverAddress: string,
     amount: number,
     tokenId: string,
   ) => {
-    const provider = EthersUtils.getProvider(chain);
+    const provider = await EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(
       activeAccount.wallet.signingKey,
       provider,

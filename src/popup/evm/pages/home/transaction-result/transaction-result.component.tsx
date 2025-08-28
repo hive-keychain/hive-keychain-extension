@@ -83,15 +83,16 @@ const EvmTransactionResult = ({
   }, []);
 
   const getTransactionStatus = async () => {
+    const provider = await EthersUtils.getProvider(chain);
     try {
       await transactionResponse
         .wait()
         .then(async (transactionReceipt: TransactionReceipt | null) => {
           console.log('receipt', transactionReceipt);
           if (transactionReceipt) {
-            const transactionResult = await EthersUtils.getProvider(
-              chain,
-            ).getTransaction(transactionReceipt.hash);
+            const transactionResult = await provider.getTransaction(
+              transactionReceipt.hash,
+            );
             setTxReceipt(transactionReceipt);
             if (transactionResult) setTxResult(transactionResult);
           }
@@ -120,6 +121,7 @@ const EvmTransactionResult = ({
   };
 
   const cancelTransaction = async () => {
+    const provider = await EthersUtils.getProvider(chain);
     setWaitingForTx(true);
 
     try {
@@ -144,9 +146,9 @@ const EvmTransactionResult = ({
           .then(async (cancelTransactionReceipt: TransactionReceipt | null) => {
             console.log('cancelTransactionReceipt', cancelTransactionReceipt);
             if (cancelTransactionReceipt) {
-              const cancelTransactionResult = await EthersUtils.getProvider(
-                chain,
-              ).getTransaction(cancelTransactionReceipt.hash);
+              const cancelTransactionResult = await provider.getTransaction(
+                cancelTransactionReceipt.hash,
+              );
               setTxReceipt(cancelTransactionReceipt);
               if (cancelTransactionResult) setTxResult(cancelTransactionResult);
             }
@@ -173,6 +175,7 @@ const EvmTransactionResult = ({
   };
 
   const speedUpTransaction = async () => {
+    const provider = await EthersUtils.getProvider(chain);
     try {
       const speedUpTransactionResponse = await EvmTransactionsUtils.send(
         activeAccount.wallet,
@@ -195,9 +198,9 @@ const EvmTransactionResult = ({
                 speedUpTransactionReceipt,
               );
               if (speedUpTransactionReceipt) {
-                const speedUpTransactionResult = await EthersUtils.getProvider(
-                  chain,
-                ).getTransaction(speedUpTransactionReceipt.hash);
+                const speedUpTransactionResult = await provider.getTransaction(
+                  speedUpTransactionReceipt.hash,
+                );
                 setTxReceipt(speedUpTransactionReceipt);
                 if (speedUpTransactionResult)
                   setTxResult(speedUpTransactionResult);
@@ -303,7 +306,7 @@ const EvmTransactionResult = ({
       HDNodeWallet.fromPhrase(
         activeAccount?.wallet.mnemonic?.phrase!,
       ).signingKey,
-      EthersUtils.getProvider(chain),
+      await EthersUtils.getProvider(chain),
     );
 
     const contract = new ethers.Contract(
