@@ -118,7 +118,6 @@ const Home = ({
     const rpcStatusOk = await EvmRpcUtils.checkRpcStatus(rpc.url);
 
     const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
-    console.log('switchAuto', switchAuto);
 
     if (!rpcStatusOk) {
       if (switchAuto) {
@@ -128,7 +127,7 @@ const Home = ({
         if (!switchResult) {
           setErrorMessage('evm_rpcs_not_responding_error');
         } else {
-          loadActiveAccount(chain);
+          refresh();
         }
       } else {
         const rpcToSwitch = await EvmRpcUtils.switchToWorkingRpc(chain);

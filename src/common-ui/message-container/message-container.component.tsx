@@ -2,7 +2,9 @@ import { Message } from '@interfaces/message.interface';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
 import sanitizeHTML from 'sanitize-html';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -18,13 +20,29 @@ const MessageContainer = ({
   onResetMessage,
 }: MessageContainerProps) => {
   useEffect(() => {
-    if (message.type !== MessageType.ERROR) {
+    if (
+      message.type !== MessageType.ERROR &&
+      message.type !== MessageType.WARNING
+    ) {
       setTimeout(() => close(), DEFAULT_TIMEOUT);
     }
   }, []);
 
   const close = () => {
     onResetMessage();
+  };
+
+  const onConfirm = () => {
+    if (message.confirmation && message.confirmation.onConfirm) {
+      message.confirmation.onConfirm();
+      onResetMessage();
+    }
+  };
+  const onCancel = () => {
+    if (message.confirmation && message.confirmation.onCancel) {
+      message.confirmation.onCancel();
+      onResetMessage();
+    }
   };
 
   const getIcon = (errorType: MessageType) => {
@@ -74,13 +92,28 @@ const MessageContainer = ({
               { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
             ),
           }}></div>
-        <ButtonComponent
-          additionalClass={
-            message.type === MessageType.SUCCESS ? 'success-button' : ''
-          }
-          label="message_container_close_button"
-          onClick={close}
-        />
+        {message.confirmation === undefined && (
+          <ButtonComponent
+            additionalClass={
+              message.type === MessageType.SUCCESS ? 'success-button' : ''
+            }
+            label="message_container_close_button"
+            onClick={close}
+          />
+        )}
+        {message.confirmation && (
+          <div className="confirmation-container">
+            <ButtonComponent
+              type={ButtonType.ALTERNATIVE}
+              label="popup_html_button_label_cancel"
+              onClick={() => onCancel()}
+            />
+            <ButtonComponent
+              label="popup_html_confirm"
+              onClick={() => onConfirm()}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -10,6 +10,10 @@ import InputComponent from '@common-ui/input/input.component';
 import { Separator } from '@common-ui/separator/separator.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import {
+  setErrorMessage,
+  setWarningMessage,
+} from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   EvmChain,
@@ -27,6 +31,8 @@ const EMPTY_RPC: MultichainRpc = {
 const EvmRpcNodes = ({
   chain,
   setTitleContainerProperties,
+  setErrorMessage,
+  setWarningMessage,
 }: PropsFromRedux) => {
   const [switchAuto, setSwitchAuto] = useState(true);
   const [activeRpc, setActiveRpc] = useState<MultichainRpc>();
@@ -53,6 +59,9 @@ const EvmRpcNodes = ({
       EvmRpcUtils.getRpcListForChain(chain),
       EvmRpcUtils.getSwitchRpcAuto(chain),
     ]);
+    console.log('rpc', rpc);
+    console.log('rpcList', rpcList);
+    console.log('switchRpcAuto', switchRpcAuto);
 
     setActiveRpc(rpc);
 
@@ -73,14 +82,35 @@ const EvmRpcNodes = ({
   };
 
   const addCustomRpc = async () => {
-    await EvmRpcUtils.addCustomRpc(newRpc, chain);
-    if (setNewRpcAsActive) {
-      selectRpc(newRpc);
+    // Before adding new rpc, check if it is already in the list
+    const isRpcAlreadyInList = rpcOptions?.some(
+      (option) => option.value.url === newRpc.url,
+    );
+
+    if (!newRpc.url) {
+      return;
     }
-    setNewRpc(EMPTY_RPC);
-    setSetNewRpcAsActive(false);
-    setIsAddRpcPanelDisplayed(false);
-    initPage();
+    if (isRpcAlreadyInList) {
+      setErrorMessage('evm_rpc_already_in_list');
+      return;
+    }
+
+    if (!(await EvmRpcUtils.checkRpcStatus(newRpc.url))) {
+      setWarningMessage('evm_add_rpc_not_working_warning', [], false, {
+        onConfirm: async () => {
+          await EvmRpcUtils.addCustomRpc(newRpc, chain);
+          if (setNewRpcAsActive) {
+            await selectRpc(newRpc);
+          }
+          setNewRpc(EMPTY_RPC);
+          setSetNewRpcAsActive(false);
+          setIsAddRpcPanelDisplayed(false);
+          initPage();
+        },
+        onCancel: () => {},
+      });
+      return;
+    }
   };
 
   const deleteRpc = async (rpc: MultichainRpc) => {
@@ -176,6 +206,8 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  setErrorMessage,
+  setWarningMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

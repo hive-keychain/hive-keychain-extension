@@ -5368,5 +5368,13 @@
   "evm_rpcs_not_responding_error": {
     "message": "All RPCs are not responding, please try again later",
     "description": "All RPCs are not responding error message"
+  },
+  "evm_rpc_already_in_list": {
+    "message": "This RPC is already in the list",
+    "description": "RPC already in list error message"
+  },
+  "evm_add_rpc_not_working_warning": {
+    "message": "This RPC doesn't seem to be working. Are you sure you want to add it ?",
+    "description": "RPC not working warning message while adding new rpc"
   }
 }
