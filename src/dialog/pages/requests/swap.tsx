@@ -133,7 +133,7 @@ const Swap = (props: Props) => {
         {renderUsername()}
 
         <AmountWithLogo
-          title="dialog_from_amount"
+          title="html_popup_swap_swap_from"
           amount={data.amount}
           symbol={data.startToken}
           iconPosition="right"
@@ -144,7 +144,7 @@ const Swap = (props: Props) => {
           }
         />
         <AmountWithLogo
-          title="dialog_to_amount"
+          title="html_popup_swap_swap_to"
           amount={(
             (data.steps[data.steps.length - 1].estimate *
               (100 - (swapConfig?.fee.amount || 0) - (data.partnerFee || 0))) /
