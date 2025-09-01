@@ -16,10 +16,12 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
+  ChainType,
   EvmChain,
   MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -45,23 +47,22 @@ const EvmRpcNodes = ({
 
   const [isAddRpcPanelDisplayed, setIsAddRpcPanelDisplayed] = useState(false);
 
+  const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
+  const [chainOptions, setChainOptions] = useState<OptionItem[]>();
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_rpc_node',
       isBackButtonEnabled: true,
     });
-    initPage();
   }, []);
 
   const initPage = async () => {
     const [rpc, rpcList, switchRpcAuto] = await Promise.all([
-      EvmRpcUtils.getActiveRpc(chain),
-      EvmRpcUtils.getRpcListForChain(chain),
-      EvmRpcUtils.getSwitchRpcAuto(chain),
+      EvmRpcUtils.getActiveRpc(selectedChain),
+      EvmRpcUtils.getRpcListForChain(selectedChain),
+      EvmRpcUtils.getSwitchRpcAuto(selectedChain),
     ]);
-    console.log('rpc', rpc);
-    console.log('rpcList', rpcList);
-    console.log('switchRpcAuto', switchRpcAuto);
 
     setActiveRpc(rpc);
 
@@ -74,7 +75,19 @@ const EvmRpcNodes = ({
     });
     setRpcOptions(rpcOptions);
     setSwitchAuto(switchRpcAuto);
+
+    setChainOptions(
+      (
+        (await ChainUtils.getAllSetupChainsForType(ChainType.EVM)) as EvmChain[]
+      ).map((c) => {
+        return { label: c.name, value: c, img: c.logo } as OptionItem;
+      }),
+    );
   };
+
+  useEffect(() => {
+    initPage();
+  }, [selectedChain.chainId]);
 
   const selectRpc = async (rpc: MultichainRpc) => {
     setActiveRpc(rpc);
@@ -98,7 +111,7 @@ const EvmRpcNodes = ({
     if (!(await EvmRpcUtils.checkRpcStatus(newRpc.url))) {
       setWarningMessage('evm_add_rpc_not_working_warning', [], false, {
         onConfirm: async () => {
-          await EvmRpcUtils.addCustomRpc(newRpc, chain);
+          await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
           if (setNewRpcAsActive) {
             await selectRpc(newRpc);
           }
@@ -114,14 +127,13 @@ const EvmRpcNodes = ({
   };
 
   const deleteRpc = async (rpc: MultichainRpc) => {
-    console.log('deleteRpc', rpc);
-    await EvmRpcUtils.deleteCustomRpc(rpc, chain);
+    await EvmRpcUtils.deleteCustomRpc(rpc, selectedChain);
     initPage();
   };
 
   const toggleSwitchRpcAuto = async () => {
     setSwitchAuto(!switchAuto);
-    await EvmRpcUtils.saveSwitchRpcAuto(chain, !switchAuto);
+    await EvmRpcUtils.saveSwitchRpcAuto(selectedChain, !switchAuto);
   };
 
   return (
@@ -132,7 +144,21 @@ const EvmRpcNodes = ({
 
       <div className="rpc-form-container">
         <div className="rpc-section">
-          <div className="title">{chain.name} RPC</div>
+          {chainOptions && selectedChain && (
+            <ComplexeCustomSelect
+              options={chainOptions}
+              selectedItem={{
+                label: selectedChain.name,
+                value: selectedChain,
+                img: selectedChain.logo,
+              }}
+              setSelectedItem={(item: OptionItem) =>
+                setSelectedChain(item.value)
+              }
+              background="white"
+            />
+          )}
+
           <CheckboxPanelComponent
             title="popup_html_rpc_automatic_mode"
             hint="popup_html_rpc_automatic_mode_hint"

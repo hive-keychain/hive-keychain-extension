@@ -19,6 +19,11 @@ const getDefaultChains = (): Chain[] => {
   return defaultChainList;
 };
 
+const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
+  const chains = await getSetupChains();
+  return chains.filter((c: Chain) => c.type === type) as unknown as T[];
+};
+
 const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
   let chainIds: Chain['chainId'][] =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -101,4 +106,5 @@ export const ChainUtils = {
   getChain,
   setPreviousChain,
   getPreviousChain,
+  getAllSetupChainsForType,
 };
