@@ -57,7 +57,7 @@ export const PersonalSign = (props: Props) => {
 
     transactionConfirmationFields.otherFields.push({
       type: EvmInputDisplayType.WALLET_ADDRESS,
-      name: 'evm_account',
+      name: 'dialog_account',
       value: accountDisplay.value,
     } as TransactionConfirmationField);
     transactionConfirmationFields.otherFields.push(
