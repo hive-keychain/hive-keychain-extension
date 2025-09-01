@@ -58,21 +58,23 @@ const EvmRpcNodes = ({
   }, []);
 
   const initPage = async () => {
-    const [rpc, rpcList, switchRpcAuto] = await Promise.all([
+    const [savedActiveRpc, rpcList, switchRpcAuto] = await Promise.all([
       EvmRpcUtils.getActiveRpc(selectedChain),
       EvmRpcUtils.getRpcListForChain(selectedChain),
       EvmRpcUtils.getSwitchRpcAuto(selectedChain),
     ]);
 
-    setActiveRpc(rpc);
+    setActiveRpc(savedActiveRpc);
 
-    const rpcOptions = rpcList.map((rpc) => {
-      return {
-        label: rpc.url,
-        value: rpc,
-        canDelete: !rpc.isDefault,
-      } as OptionItem;
-    });
+    const rpcOptions = rpcList
+      .filter((rpc) => rpc.url !== savedActiveRpc?.url)
+      .map((rpc) => {
+        return {
+          label: rpc.url,
+          value: rpc,
+          canDelete: !rpc.isDefault,
+        } as OptionItem;
+      });
     setRpcOptions(rpcOptions);
     setSwitchAuto(switchRpcAuto);
 
