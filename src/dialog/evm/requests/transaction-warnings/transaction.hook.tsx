@@ -300,17 +300,21 @@ export const useTransactionHook = (
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
     localAccounts: EvmAccount[],
+    name: string = '',
+    skipWarnings: boolean = false,
   ) => {
     return {
-      name: 'evm_operation_to',
+      name: name,
       type: EvmInputDisplayType.WALLET_ADDRESS,
       value: <EvmAddressComponent address={address} chainId={chainId} />,
-      warnings: await EvmTransactionParserUtils.getAddressWarning(
-        address,
-        chainId,
-        transactionInfo,
-        localAccounts,
-      ),
+      warnings: skipWarnings
+        ? []
+        : await EvmTransactionParserUtils.getAddressWarning(
+            address,
+            chainId,
+            transactionInfo,
+            localAccounts,
+          ),
     };
   };
 

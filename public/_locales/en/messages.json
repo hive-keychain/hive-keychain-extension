@@ -4884,6 +4884,10 @@
     "message": "To",
     "description": "Evm transaction operation field to"
   },
+  "evm_operation_from": {
+    "message": "From",
+    "description": "Evm transaction operation field from"
+  },
   "evm_operation_smart_contract_address": {
     "message": "Smart contract",
     "description": "Evm smart contract address"

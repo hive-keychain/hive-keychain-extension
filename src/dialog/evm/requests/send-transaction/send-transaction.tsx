@@ -557,10 +557,22 @@ export const SendTransaction = (props: Props) => {
 
         transactionConfirmationFields.otherFields.push(
           await transactionHook.getWalletAddressInput(
+            params.from,
+            chainTmp.chainId,
+            transactionInfo,
+            accounts,
+            'evm_operation_from',
+            true,
+          ),
+        );
+
+        transactionConfirmationFields.otherFields.push(
+          await transactionHook.getWalletAddressInput(
             params.to,
             chainTmp.chainId,
             transactionInfo,
             accounts,
+            'evm_operation_to',
           ),
         );
 
