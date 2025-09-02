@@ -21,6 +21,13 @@ const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
   // });
 };
 
+const setProvider = async (chain: EvmChain, rpcUrl: string) => {
+  jsonRpcProvider = new EtherJsonRpcProvider(rpcUrl, undefined, {
+    staticNetwork: ethers.Network.from(Number(chain.chainId)),
+  });
+  console.log('setProvider', jsonRpcProvider);
+};
+
 const getGasLimit = async (
   chain: EvmChain,
   wallet: HDNodeWallet,
@@ -83,4 +90,9 @@ const getErrorMessage = (code: string) => {
   }
 };
 
-export const EthersUtils = { getProvider, getGasLimit, getErrorMessage };
+export const EthersUtils = {
+  getProvider,
+  getGasLimit,
+  getErrorMessage,
+  setProvider,
+};

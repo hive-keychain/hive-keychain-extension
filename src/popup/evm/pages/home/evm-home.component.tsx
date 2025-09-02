@@ -119,6 +119,9 @@ const Home = ({
 
     const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
 
+    console.log('rpcStatusOk', rpcStatusOk);
+    console.log('switchAuto', switchAuto);
+
     if (!rpcStatusOk) {
       if (switchAuto) {
         const switchResult = await EvmRpcUtils.automaticallySwitchToWorkingRpc(
@@ -127,6 +130,7 @@ const Home = ({
         if (!switchResult) {
           setErrorMessage('evm_rpcs_not_responding_error');
         } else {
+          console.log('switch okay, refresh');
           refresh();
         }
       } else {
@@ -134,6 +138,8 @@ const Home = ({
         if (rpcToSwitch) {
           setDisplayChangeRpcPopup(true);
           setSwitchToRpc(rpcToSwitch);
+        } else {
+          setErrorMessage('evm_rpcs_not_responding_error');
         }
       }
     }

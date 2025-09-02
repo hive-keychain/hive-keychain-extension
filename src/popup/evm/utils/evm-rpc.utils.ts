@@ -1,13 +1,12 @@
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
   EvmChain,
   MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import axios from 'axios';
+import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-
-let activeRpcCache: { [chainId: string]: MultichainRpc } = {};
 
 const call = async (method: string, params: any[], rpcUrl: string) => {
   const body = JSON.stringify({
@@ -71,19 +70,13 @@ const deleteCustomRpc = async (rpcToDelete: MultichainRpc, chain: EvmChain) => {
 };
 
 const getActiveRpc = async (chain: EvmChain): Promise<MultichainRpc> => {
-  if (activeRpcCache[chain.chainId]) {
-    return activeRpcCache[chain.chainId];
+  const activeRpcs = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+  );
+  if (activeRpcs && activeRpcs[chain.chainId]) {
+    return activeRpcs[chain.chainId];
   } else {
-    const activeRpcs = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
-    );
-    if (activeRpcs && activeRpcs[chain.chainId]) {
-      activeRpcCache[chain.chainId] = activeRpcs[chain.chainId];
-      return activeRpcs[chain.chainId];
-    } else {
-      activeRpcCache[chain.chainId] = chain.rpcs[0];
-      return chain.rpcs[0];
-    }
+    return chain.rpcs[0];
   }
 };
 
@@ -99,6 +92,7 @@ const setActiveRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
     LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
     activeRpcs,
   );
+  await EthersUtils.setProvider(chain, rpc.url);
 };
 
 const getRpcListForChain = async (
@@ -144,33 +138,14 @@ const saveSwitchRpcAuto = async (chain: EvmChain, switchRpcAuto: boolean) => {
 };
 
 const checkRpcStatus = async (uri: string) => {
-  axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      throw new Error('EVM RPC NOK ' + uri + ' ' + error);
-    },
-  );
+  const rpcProvider = new EtherJsonRpcProvider(uri);
   try {
-    const result = await axios.post(
-      uri,
-      {
-        jsonrpc: '2.0',
-        method: 'eth_blockNumber',
-        params: [],
-      },
-      {
-        timeout: 10000,
-      },
-    );
-    if (result?.data?.error) {
-      return false;
-    }
+    await rpcProvider.send('eth_blockNumber', []);
     return true;
   } catch (err) {
-    Logger.error('error', err);
     return false;
+  } finally {
+    rpcProvider.destroy();
   }
 };
 
@@ -179,6 +154,7 @@ const switchToWorkingRpc = async (chain: EvmChain) => {
   const allRpcs = await getRpcListForChain(chain);
   for (const rpc of allRpcs) {
     const rpcStatusOk = await checkRpcStatus(rpc.url);
+    console.log('rpcStatusOk', rpcStatusOk, rpc.url);
     if (rpcStatusOk) {
       return rpc;
     }

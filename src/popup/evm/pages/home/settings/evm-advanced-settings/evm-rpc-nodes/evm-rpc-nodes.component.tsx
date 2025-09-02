@@ -55,29 +55,10 @@ const EvmRpcNodes = ({
       title: 'popup_html_rpc_node',
       isBackButtonEnabled: true,
     });
+    initChainList();
   }, []);
 
-  const initPage = async () => {
-    const [savedActiveRpc, rpcList, switchRpcAuto] = await Promise.all([
-      EvmRpcUtils.getActiveRpc(selectedChain),
-      EvmRpcUtils.getRpcListForChain(selectedChain),
-      EvmRpcUtils.getSwitchRpcAuto(selectedChain),
-    ]);
-
-    setActiveRpc(savedActiveRpc);
-
-    const rpcOptions = rpcList
-      .filter((rpc) => rpc.url !== savedActiveRpc?.url)
-      .map((rpc) => {
-        return {
-          label: rpc.url,
-          value: rpc,
-          canDelete: !rpc.isDefault,
-        } as OptionItem;
-      });
-    setRpcOptions(rpcOptions);
-    setSwitchAuto(switchRpcAuto);
-
+  const initChainList = async () => {
     setChainOptions(
       (
         (await ChainUtils.getAllSetupChainsForType(ChainType.EVM)) as EvmChain[]
@@ -88,12 +69,33 @@ const EvmRpcNodes = ({
   };
 
   useEffect(() => {
-    initPage();
+    initChain();
   }, [selectedChain.chainId]);
 
+  const initChain = async () => {
+    const [savedActiveRpc, rpcList, switchRpcAuto] = await Promise.all([
+      EvmRpcUtils.getActiveRpc(selectedChain),
+      EvmRpcUtils.getRpcListForChain(selectedChain),
+      EvmRpcUtils.getSwitchRpcAuto(selectedChain),
+    ]);
+
+    setActiveRpc(savedActiveRpc);
+    setSwitchAuto(switchRpcAuto);
+
+    setRpcOptions(
+      rpcList.map((rpc) => {
+        return {
+          label: rpc.url,
+          value: rpc,
+          canDelete: !rpc.isDefault && savedActiveRpc?.url !== rpc.url,
+        } as OptionItem;
+      }),
+    );
+  };
+
   const selectRpc = async (rpc: MultichainRpc) => {
+    await EvmRpcUtils.setActiveRpc(rpc, selectedChain);
     setActiveRpc(rpc);
-    await EvmRpcUtils.setActiveRpc(rpc, chain);
   };
 
   const addCustomRpc = async () => {
@@ -120,7 +122,9 @@ const EvmRpcNodes = ({
           setNewRpc(EMPTY_RPC);
           setSetNewRpcAsActive(false);
           setIsAddRpcPanelDisplayed(false);
-          initPage();
+          setTimeout(() => {
+            initChain();
+          }, 500);
         },
         onCancel: () => {},
       });
@@ -130,7 +134,9 @@ const EvmRpcNodes = ({
 
   const deleteRpc = async (rpc: MultichainRpc) => {
     await EvmRpcUtils.deleteCustomRpc(rpc, selectedChain);
-    initPage();
+    setTimeout(() => {
+      initChain();
+    }, 200);
   };
 
   const toggleSwitchRpcAuto = async () => {

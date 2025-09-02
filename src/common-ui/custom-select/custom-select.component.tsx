@@ -130,14 +130,15 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             key={option.key ?? `option-${option.label}`}
             isLast={props.options.length === index}
             item={option}
-            // isSelected={option.value === itemProps.selectedItem.value}
-            isSelected={false}
+            isSelected={option.value === itemProps.selectedItem.value}
             handleItemClicked={() => {
               itemProps.setSelectedItem(option);
             }}
             closeDropdown={() => methods.dropDown('close')}
             onDelete={itemProps.onDelete}
-            canDelete={option.canDelete}
+            canDelete={
+              option.canDelete && itemProps.selectedItem.value !== option.value
+            }
             generateImageIfNull={itemProps.generateImageIfNull}
           />
         ))}
