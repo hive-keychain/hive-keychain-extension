@@ -4,7 +4,7 @@
   "default_locale": "en",
   "version": "3.10.7",
   "permissions": ["storage", "idle", "alarms"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+  "content_security_policy": "script-src 'self'; object-src 'self';",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "/assets/images/iconhive.png"
