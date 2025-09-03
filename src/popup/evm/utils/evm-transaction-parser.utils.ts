@@ -340,6 +340,15 @@ const getDomainWarnings = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
+  if (verifyTransactionInformation?.domain?.fuzzy) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: 'evm_transaction_domain_fuzzy',
+      messageParams: [verifyTransactionInformation.domain.fuzzy],
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
 
   return warnings;
 };

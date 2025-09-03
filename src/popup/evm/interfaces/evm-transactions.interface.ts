@@ -103,6 +103,7 @@ export interface EvmTransactionVerificationInformation {
     isBlacklisted: boolean;
     isTrusted?: boolean;
     isWhitelisted: boolean;
+    fuzzy?: string;
   };
   to: {
     isBlacklisted: boolean;
