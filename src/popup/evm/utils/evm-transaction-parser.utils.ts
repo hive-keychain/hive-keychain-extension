@@ -444,7 +444,7 @@ const verifyTransactionInformation = async (
   contract?: string,
   proxy?: string,
 ): Promise<EvmTransactionVerificationInformation> => {
-  let url = `evm/verifyTransaction?`;
+  let url = `evm/verify-transaction?`;
   if (domain) {
     url += `domain=${domain}`;
   }
