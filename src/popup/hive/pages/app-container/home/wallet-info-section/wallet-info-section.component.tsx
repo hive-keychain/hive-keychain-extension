@@ -226,7 +226,7 @@ const WalletInfoSection = ({
                 list={filteredTokenList}
                 renderItem={(token: TokenBalance) => (
                   <WalletInfoSectionItemComponent
-                    key={`token-${token.symbol}`}
+                    key={`token-${token.symbol}-${activeAccount.name}`}
                     tokenSymbol={token.symbol}
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}

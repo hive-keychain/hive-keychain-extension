@@ -36,12 +36,15 @@ export const PreloadedImage = ({
   }, []);
 
   useEffect(() => {
-    if (mounted) preload();
+    if (mounted && src) preload();
   }, [src, mounted]);
 
   const preload = () => {
     // Check if image is already cached/loaded
     const existingImg = new Image();
+    existingImg.onerror = () => {
+      // Dont display errors
+    };
     existingImg.src = src;
 
     if (existingImg.complete) {
@@ -61,7 +64,7 @@ export const PreloadedImage = ({
 
     // Image not cached, proceed with normal preloading
     const img = new Image();
-    img.src = src;
+
     img.onload = () => {
       if (addBackground) {
         if (symbol) {
@@ -81,6 +84,7 @@ export const PreloadedImage = ({
         img.src = alt ?? '';
       }
     };
+    img.src = src;
   };
 
   return (
