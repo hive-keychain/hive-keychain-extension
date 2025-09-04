@@ -32,6 +32,7 @@ export interface EvmUserHistoryItem {
   tokenInfo?: EvmSmartContractInfo;
 
   isPending?: boolean;
+  warningMessage?: string;
 }
 
 export interface EvmUserHistoryItemDetail {

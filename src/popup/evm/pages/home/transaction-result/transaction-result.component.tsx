@@ -4,10 +4,7 @@ import {
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import {
-  EvmSmartContractInfo,
-  EvmSmartContractInfoErc20,
-} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
@@ -37,7 +34,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 enum ReplacedTransactionReason {
@@ -60,6 +56,7 @@ const EvmTransactionResult = ({
   detailFields,
   evmPrices,
   transactionData,
+  warningMessage,
   setTitleContainerProperties,
   setErrorMessage,
 }: PropsFromRedux) => {
@@ -333,7 +330,7 @@ const EvmTransactionResult = ({
             className={`transaction-status`}
           />
           <div className="amount-row">
-            {!txResult && !waitingForTx && tokenInfo && (
+            {/* {!txResult && !waitingForTx && tokenInfo && (
               <div className="amount">
                 {amount
                   ? FormatUtils.withCommas(
@@ -344,10 +341,11 @@ const EvmTransactionResult = ({
                   : 1}{' '}
                 {tokenInfo.symbol}
               </div>
-            )}
+            )} */}
             <div className="status">
               {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
             </div>
+            {warningMessage && <div className="warning">{warningMessage}</div>}
           </div>
         </div>
         {waitingForTx && !isCanceling && !isTransactionSpeedingUp && (
@@ -509,6 +507,7 @@ const mapStateToProps = (state: RootState) => {
     detailFields: state.navigation.stack[0].params.detailFields,
     evmPrices: state.evm.prices,
     transactionData: state.navigation.stack[0].params.transactionData,
+    warningMessage: state.navigation.stack[0].params.warningMessage,
   };
 };
 

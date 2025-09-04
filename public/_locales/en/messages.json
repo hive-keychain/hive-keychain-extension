@@ -5384,5 +5384,9 @@
   "evm_add_rpc_not_working_warning": {
     "message": "This RPC doesn't seem to be working. Are you sure you want to add it ?",
     "description": "RPC not working warning message while adding new rpc"
+  },
+  "evm_history_warning_potential_zero_amount_scam": {
+    "message": "This transaction might be a zero-amount scam. Be careful when transacting to this address.",
+    "description": "Potential zero amount scam warning message"
   }
 }

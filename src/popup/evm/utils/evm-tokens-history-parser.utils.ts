@@ -34,7 +34,10 @@ const parseEvent = async (
 
   // parse event
 
-  if (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) {
+  if (
+    (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) ||
+    event.to.toLowerCase() === walletAddress.toLowerCase()
+  ) {
     historyItem.isCanceled = true;
     historyItem.label = chrome.i18n.getMessage(
       'evm_history_canceled_transaction',
@@ -133,6 +136,17 @@ const parseEvent = async (
         : event.from,
       chain.chainId,
     );
+
+    if (
+      (event.to.toLowerCase() === walletAddress.toLowerCase() &&
+        Number(amount) === 0 &&
+        (await EvmAddressesUtils.isPotentialSpoofing(event.from))) ||
+      true
+    ) {
+      historyItem.warningMessage = chrome.i18n.getMessage(
+        'evm_history_warning_potential_zero_amount_scam',
+      );
+    }
 
     const details: EvmUserHistoryItemDetail[] = [];
     details.push({
