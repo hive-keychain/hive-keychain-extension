@@ -15,6 +15,7 @@ const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
   globalProperties,
+  userTokensLoading,
   tokensBalance,
   tokensMarket,
   tokens,
@@ -30,9 +31,12 @@ const EstimatedAccountValueSection = ({
   ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
 
   useEffect(() => {
-    init();
     loadHiddenTokensList();
   }, []);
+
+  useEffect(() => {
+    initAccountValueType();
+  }, [userTokensLoading]);
 
   const loadHiddenTokensList = async () => {
     const hiddenTokensList = await LocalStorageUtils.getValueFromLocalStorage(
@@ -41,12 +45,16 @@ const EstimatedAccountValueSection = ({
     setHiddenTokensList(hiddenTokensList ?? []);
   };
 
-  const init = async () => {
-    setAccountValueType(
-      (await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
-      )) || AccountValueType.DOLLARS,
-    );
+  const initAccountValueType = async () => {
+    if (!userTokensLoading) {
+      setAccountValueType(
+        (await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
+        )) || AccountValueType.DOLLARS,
+      );
+    } else {
+      setAccountValueType(AccountValueType.HIDDEN);
+    }
   };
 
   const loadHiveInternalMarketOrders = async (username: string) => {
@@ -164,6 +172,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.hive.activeAccount,
     currencyPrices: state.hive.currencyPrices,
     globalProperties: state.hive.globalProperties,
+    userTokensLoading: state.hive.userTokens.loading,
     tokensBalance: state.hive.userTokens.list,
     tokensMarket: state.hive.tokenMarket,
     tokens: state.hive.tokens,
