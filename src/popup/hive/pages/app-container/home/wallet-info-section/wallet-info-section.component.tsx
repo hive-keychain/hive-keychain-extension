@@ -247,14 +247,16 @@ const WalletInfoSection = ({
             </>
           )}
         {userTokens.loading && <RotatingLogoComponent />}
-        {filteredTokenList && filteredTokenList.length === 0 && (
-          <div className="no-token">
-            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-            <span className="text">
-              {chrome.i18n.getMessage('html_tokens_none_available')}
-            </span>
-          </div>
-        )}
+        {!userTokens.loading &&
+          filteredTokenList &&
+          filteredTokenList.length === 0 && (
+            <div className="no-token">
+              <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+              <span className="text">
+                {chrome.i18n.getMessage('html_tokens_none_available')}
+              </span>
+            </div>
+          )}
       </div>
     </div>
   );
