@@ -30,8 +30,7 @@
     }
     .user-picture {
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      @include icon-size(30px);
     }
 
     .react-dropdown-select-content {
@@ -148,8 +147,7 @@
     }
     .user-picture {
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      @include icon-size(32px);
     }
     .react-dropdown-select-dropdown {
       top: 72px;

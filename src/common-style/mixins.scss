@@ -130,8 +130,8 @@
 }
 
 @mixin icon-size($size) {
-  height: $size;
-  width: $size;
+  height: $size !important;
+  width: $size !important;
 }
 
 @mixin dmSans400($fontSize) {
