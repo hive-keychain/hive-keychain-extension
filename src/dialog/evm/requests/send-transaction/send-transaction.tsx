@@ -309,14 +309,13 @@ export const SendTransaction = (props: Props) => {
                   }
 
                   case EvmInputDisplayType.BALANCE: {
-                    // value = `${FormatUtils.withCommas(
-                    //   new Decimal(Number(decodedTransactionData.args[index]))
-                    //     .div(new Decimal(EvmFormatUtils.WEI))
-                    //     .toNumber(),
-                    //   (usedToken as EvmSmartContractInfoErc20).decimals,
-                    //   true,
-                    // )}  ${usedToken?.symbol}`;
-                    value = 'test';
+                    value = `${FormatUtils.withCommas(
+                      new Decimal(
+                        Number(decodedTransactionData.args[index]),
+                      ).toNumber(),
+                      (usedToken as EvmSmartContractInfoErc20).decimals,
+                      true,
+                    )}  ${usedToken?.symbol}`;
                     break;
                   }
                   case EvmInputDisplayType.NUMBER: {
@@ -335,7 +334,7 @@ export const SendTransaction = (props: Props) => {
                       input,
                       decodedTransactionData,
                     });
-                    value = 'default';
+                    value = String(decodedTransactionData.args[index]);
                 }
                 transactionConfirmationFields.otherFields.push({
                   name: input.name,
