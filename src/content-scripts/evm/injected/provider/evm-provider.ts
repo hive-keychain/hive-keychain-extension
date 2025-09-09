@@ -134,9 +134,9 @@ export class EvmProvider extends EventEmitter {
           return this._accounts;
         }
         case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-          if (args.params && (args.params as any[])[0]) {
+          if (args.params && (args.params as any[])[0].chainId) {
             this._dappForcedChain = true;
-            this.chainId = (args.params as any[])[0];
+            this.chainId = (args.params as any[])[0].chainId;
             this.emit('chainChanged', this.chainId);
           }
           return this.chainId;

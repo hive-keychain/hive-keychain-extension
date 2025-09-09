@@ -22,8 +22,6 @@ const initializeServiceWorker = async () => {
       const regex = /(?:https?:\/\/)?([a-z0-9-]+\.eth)\b/i;
       const match = details.url.match(regex);
       if (match) {
-        console.log('changing url');
-        console.log(match[1]); // 👉 "stoodkev.eth"
         chrome.tabs.update(details.tabId, {
           url: `https://app.ens.domains/${match[1]}`,
         });

@@ -80,30 +80,33 @@ export const validateRequest = (
       break;
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+      console.log({ params, method });
       if (!params[0]) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameters. Missing chainId`,
         } as ProviderRpcError;
       }
-      if (typeof params[0] !== 'string') {
+      if (typeof params[0].chainId !== 'string') {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!params[0].startsWith('0x')) {
+      if (!params[0].chainId.startsWith('0x')) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ${params[0]} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
       if (
-        !defaultChainList.find((chain: Chain) => chain.chainId === params[0])
+        !defaultChainList.find(
+          (chain: Chain) => chain.chainId === params[0].chainId,
+        )
       ) {
         throw {
           ...ProviderRpcErrorList.chainNotAdded,
-          message: `Invalid parameter. ${params[0]} hasn't been added to Keychain`,
+          message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
         } as ProviderRpcError;
       }
       break;
