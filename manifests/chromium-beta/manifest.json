@@ -3,7 +3,13 @@
   "description": "Hive Keychain Beta (don't forget to switch back to production version)",
   "default_locale": "en",
   "version": "3.9.6",
-  "permissions": ["storage", "idle", "alarms", "notifications"],
+  "permissions": [
+    "storage",
+    "idle",
+    "alarms",
+    "notifications",
+    "webNavigation"
+  ],
   "host_permissions": ["https://*/*", "http://*/*"],
   "action": {
     "default_popup": "popup.html",

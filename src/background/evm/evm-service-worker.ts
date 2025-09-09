@@ -16,6 +16,20 @@ import Logger from 'src/utils/logger.utils';
 
 const initializeServiceWorker = async () => {
   Logger.info('Starting EVM service worker');
+
+  chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+    if (details.url?.endsWith('.eth/')) {
+      const regex = /(?:https?:\/\/)?([a-z0-9-]+\.eth)\b/i;
+      const match = details.url.match(regex);
+      if (match) {
+        console.log('changing url');
+        console.log(match[1]); // 👉 "stoodkev.eth"
+        chrome.tabs.update(details.tabId, {
+          url: `https://app.ens.domains/${match[1]}`,
+        });
+      }
+    }
+  });
 };
 
 const chromeMessageHandler = async (
