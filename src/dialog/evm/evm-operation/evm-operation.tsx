@@ -123,12 +123,14 @@ export const EvmOperation = ({
               onClick={onClose}
               height="small"
             />
-            <ButtonComponent
-              type={ButtonType.IMPORTANT}
-              label="dialog_confirm"
-              onClick={onConfirm || genericOnConfirm}
-              height="small"
-            />
+            {!transactionHook?.hasBlockingError && (
+              <ButtonComponent
+                type={ButtonType.IMPORTANT}
+                label="dialog_confirm"
+                onClick={onConfirm || genericOnConfirm}
+                height="small"
+              />
+            )}
           </div>
         )}
         {/* add button to cancel request and block dapp */}

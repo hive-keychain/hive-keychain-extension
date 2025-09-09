@@ -18,10 +18,13 @@ export class EtherJsonRpcProvider extends ethers.JsonRpcProvider {
     return super.send(method, params).catch((err) => {
       console.log(
         'catch err in custom ether json rpc provider',
-        err,
+        { err },
         method,
         params,
       );
+
+      // switch () {
+
       throw { ...err, customMessage: 'Hello troudballe' };
     });
   }

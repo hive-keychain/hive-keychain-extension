@@ -1,3 +1,4 @@
+import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
@@ -78,15 +79,22 @@ const getGasLimitFromRawTx = async (
   return Decimal.mul(Number(estimation), multiplier).toNumber();
 };
 
-const getErrorMessage = (code: string) => {
+const getErrorMessage = (code: string, reason: string): EtherRPCCustomError => {
   switch (code) {
     case 'REPLACEMENT_UNDERPRICED':
-      return 'evm_transaction_result_error_message_underpriced';
+      return { message: 'evm_transaction_result_error_message_underpriced' };
     case 'NONCE_EXPIRED':
-      return 'evm_transaction_result_error_message_nonce_expired';
-
+      return { message: 'evm_transaction_result_error_message_nonce_expired' };
+    case 'CALL_EXCEPTION': {
+      if (reason.includes('transfer amount exceeds allowance')) {
+        return {
+          message: 'evm_error_message_transfer_amount_exceeds_allowance',
+          isBlocking: true,
+        };
+      }
+    }
     default:
-      return 'evm_transaction_result_unknown_error';
+      return { message: 'evm_transaction_result_unknown_error' };
   }
 };
 

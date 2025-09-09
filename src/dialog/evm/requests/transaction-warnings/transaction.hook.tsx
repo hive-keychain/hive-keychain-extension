@@ -1,5 +1,6 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Message } from '@interfaces/message.interface';
+import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
@@ -66,6 +67,8 @@ export const useTransactionHook = (
 
   const [message, setMessage] = useState<Message>();
 
+  const [hasBlockingError, setHasBlockingError] = useState(false);
+
   useEffect(() => {
     initDuplicateRequestWarningField();
     initShouldDiplayBlockButton();
@@ -91,13 +94,15 @@ export const useTransactionHook = (
     setSingleWarningPopupOpened(true);
   };
 
-  const setErrorMessage = (message: string | undefined) => {
-    if (message) {
+  const setErrorMessage = (error: EtherRPCCustomError | undefined) => {
+    if (error) {
+      setHasBlockingError(error.isBlocking ?? false);
+    }
+    if (error?.message) {
       setMessage({
-        key: message,
+        key: error.message,
         type: MessageType.ERROR,
         params: [],
-        skipTranslation: true,
       });
     } else {
       setMessage(undefined);
@@ -398,6 +403,8 @@ export const useTransactionHook = (
     setUnableToReachBackend,
     message,
     setErrorMessage,
+    hasBlockingError,
+    setHasBlockingError,
   };
 };
 

@@ -1,5 +1,6 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
@@ -155,6 +156,12 @@ const ConfirmationPage = ({
     );
   };
 
+  const handleErrors = (error: EtherRPCCustomError | undefined) => {
+    if (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <div
       className="confirmation-page"
@@ -231,7 +238,7 @@ const ConfirmationPage = ({
             transactionData={transactionData}
             prices={evmPrices}
             forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
-            setErrorMessage={setErrorMessage}
+            setErrorMessage={handleErrors}
           />
         )}
       </div>

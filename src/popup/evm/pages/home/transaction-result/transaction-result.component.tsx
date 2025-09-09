@@ -1,5 +1,6 @@
 import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
 import { SmallImageCardComponent } from '@common-ui/small-data-card/small-image-card.component';
+import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
@@ -163,7 +164,8 @@ const EvmTransactionResult = ({
       }
     } catch (err: any) {
       console.log('Catch in send transaction cancel', { err });
-      setErrorMessage(EthersUtils.getErrorMessage(err.code));
+      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      setErrorMessage(error.message);
       setCanceling(false);
       if (err.code === 'REPLACEMENT_UNDERPRICED') {
         setGasPanelOpened(true);
@@ -210,7 +212,8 @@ const EvmTransactionResult = ({
       }
     } catch (err: any) {
       console.log('Catch in send transaction speed up', { err });
-      setErrorMessage(EthersUtils.getErrorMessage(err.code));
+      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      setErrorMessage(error.message);
       setTransactionSpeedingUp(false);
     }
   };
@@ -321,6 +324,12 @@ const EvmTransactionResult = ({
     return metadata.metadata.image;
   };
 
+  const handleErrors = (error: EtherRPCCustomError | undefined) => {
+    if (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <div className="evm-transaction-result">
       <div className="tx-card">
@@ -392,7 +401,7 @@ const EvmTransactionResult = ({
             transactionType={chain.defaultTransactionType}
             prices={evmPrices}
             transactionData={transactionData}
-            setErrorMessage={setErrorMessage}
+            setErrorMessage={handleErrors}
           />
           <ButtonComponent
             label="popup_html_confirm"

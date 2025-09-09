@@ -1,3 +1,4 @@
+import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
@@ -41,7 +42,7 @@ interface GasFeePanelProps {
   transactionData?: ProviderTransactionData;
   prices: EvmPrices;
   forceOpenGasFeePanelEvent?: EventEmitter;
-  setErrorMessage: (message: string) => void;
+  setErrorMessage: (error: EtherRPCCustomError) => void;
 }
 
 export const GasFeePanel = ({
@@ -243,7 +244,8 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       console.log('Catch in gas fee Panel', { err });
-      setErrorMessage(EthersUtils.getErrorMessage(err.code));
+      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      setErrorMessage(error);
     }
   };
 

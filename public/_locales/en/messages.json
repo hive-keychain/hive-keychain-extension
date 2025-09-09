@@ -5388,5 +5388,9 @@
   "evm_history_warning_potential_zero_amount_scam": {
     "message": "This transaction might be a zero-amount scam. Be careful when transacting to this address.",
     "description": "Potential zero amount scam warning message"
+  },
+  "evm_error_message_transfer_amount_exceeds_allowance": {
+    "message": "Transfer amount exceeds allowance",
+    "description": "Transaction result error message transfer amount exceeds allowance"
   }
 }
