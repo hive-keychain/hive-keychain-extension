@@ -310,9 +310,16 @@ export const SendTransaction = (props: Props) => {
 
                   case EvmInputDisplayType.BALANCE: {
                     value = `${FormatUtils.withCommas(
-                      new Decimal(
-                        Number(decodedTransactionData.args[index]),
-                      ).toNumber(),
+                      new Decimal(Number(decodedTransactionData.args[index]))
+                        .div(
+                          new Decimal(
+                            Math.pow(
+                              10,
+                              (usedToken as EvmSmartContractInfoErc20).decimals,
+                            ),
+                          ),
+                        )
+                        .toNumber(),
                       (usedToken as EvmSmartContractInfoErc20).decimals,
                       true,
                     )}  ${usedToken?.symbol}`;

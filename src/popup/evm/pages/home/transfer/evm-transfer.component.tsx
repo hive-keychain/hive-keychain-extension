@@ -10,9 +10,7 @@ import {
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
-  EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc20,
-  EvmSmartContractInfoErc721,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
@@ -313,10 +311,7 @@ const EvmTransfer = ({
   };
 
   const encodeTransferData = async (
-    tokenInfo:
-      | EvmSmartContractInfoErc20
-      | EvmSmartContractInfoErc721
-      | EvmSmartContractInfoErc1155,
+    tokenInfo: EvmSmartContractInfoErc20,
     selectedAccount: EvmActiveAccount,
     receiverAddress: string,
     amount: number,
@@ -332,9 +327,12 @@ const EvmTransfer = ({
       connectedWallet,
     );
 
+    const finalAmount =
+      amount * Math.pow(10, (tokenInfo as EvmSmartContractInfoErc20).decimals);
+
     return contract.interface.encodeFunctionData('transfer', [
       receiverAddress,
-      amount * 1000000,
+      finalAmount,
     ]);
   };
 
