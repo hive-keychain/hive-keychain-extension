@@ -16,7 +16,9 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 interface Props {
   request: EvmRequest<AddChainRequest>;
@@ -122,6 +124,14 @@ export const AddChain = (props: Props) => {
     } else {
       await saveNewChain();
     }
+
+    CommunicationUtils.runtimeSendMessage({
+      command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+      value: {
+        requestId: request.request_id,
+        result: true,
+      },
+    });
   };
 
   return (

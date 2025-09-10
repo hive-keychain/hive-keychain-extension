@@ -120,7 +120,7 @@ export const validateRequest = (
       ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Chain is not compatible with Keychain`,
+          message: `Chain ${params[0].chainId} is not compatible with Keychain`,
         } as ProviderRpcError;
       }
       break;
