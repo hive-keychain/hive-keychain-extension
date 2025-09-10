@@ -85,7 +85,7 @@ const EvmRpcNodes = ({
     setRpcOptions(
       rpcList.map((rpc) => {
         return {
-          label: rpc.url,
+          label: rpc.url.replace('http://', '').replace('https://', ''),
           value: rpc,
           canDelete: !rpc.isDefault && savedActiveRpc?.url !== rpc.url,
         } as OptionItem;
