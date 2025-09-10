@@ -5392,5 +5392,41 @@
   "evm_error_message_transfer_amount_exceeds_allowance": {
     "message": "Transfer amount exceeds allowance",
     "description": "Transaction result error message transfer amount exceeds allowance"
+  },
+  "evm_add_chain": {
+    "message": "Add chain",
+    "description": "Add chain"
+  },
+  "evm_update_chain": {
+    "message": "Update chain",
+    "description": "Update chain"
+  },
+  "evm_chain_symbol": {
+    "message": "Symbol",
+    "description": "Chain symbol"
+  },
+  "evm_chain_decimals": {
+    "message": "Decimals",
+    "description": "Chain decimals"
+  },
+  "evm_chain_block_explorer": {
+    "message": "Block explorer",
+    "description": "Chain block explorer"
+  },
+  "evm_chain_rpcs": {
+    "message": "RPCs",
+    "description": "Chain rpc"
+  },
+  "evm_chain_name": {
+    "message": "Name",
+    "description": "Chain name"
+  },
+  "evm_add_chain_caption": {
+    "message": "$1 is asking you to add a new chain. Make sure you trust this chain before adding it.",
+    "description": "Add chain caption"
+  },
+  "evm_update_chain_caption": {
+    "message": "$1 is asking to update an existing chain. This will add the RPC urls to the ones already existing and set the first one of the list as active.",
+    "description": "Update chain caption"
   }
 }

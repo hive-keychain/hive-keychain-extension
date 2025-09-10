@@ -1,5 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
@@ -211,6 +212,10 @@ export const RequestConfirmation = ({ data }: Props) => {
             );
           }
         }
+      }
+
+      case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+        return <AddChain request={request} data={data} />;
       }
 
       default: {

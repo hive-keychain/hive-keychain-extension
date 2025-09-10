@@ -19,10 +19,10 @@ export interface EvmConnectedWallets {
   [domain: string]: string[];
 }
 
-export interface EvmRequest {
+export interface EvmRequest<T = any> {
   request_id: number;
   method: EvmRequestMethod;
-  params: any[];
+  params: T[];
   chainId?: string;
 }
 

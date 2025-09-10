@@ -10,6 +10,7 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ethers } from 'ethers';
 
 export const validateRequest = (
@@ -80,7 +81,6 @@ export const validateRequest = (
       break;
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-      console.log({ params, method });
       if (!params[0]) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
@@ -107,6 +107,20 @@ export const validateRequest = (
         throw {
           ...ProviderRpcErrorList.chainNotAdded,
           message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
+        } as ProviderRpcError;
+      }
+      break;
+    }
+    case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+      if (
+        !ChainUtils.getDefaultChains().find(
+          (chain) =>
+            params[0].chainId.toLowerCase() === chain.chainId.toLowerCase(),
+        )
+      ) {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: `Chain is not compatible with Keychain`,
         } as ProviderRpcError;
       }
       break;

@@ -27,4 +27,32 @@ const createRules = <T>(data: PartialSchemaMap<T>) => {
   return Joi.object<T>(data).unknown(true);
 };
 
-export const FormUtils = { parseJoiError, createRules };
+const setNestedValue = <T extends object>(
+  obj: T,
+  path: string,
+  value: any,
+): T => {
+  const keys = path.split('.');
+  const lastKey = keys.pop(); // Get the last key (the property to set)
+
+  if (!lastKey) {
+    return obj; // No valid path provided
+  }
+
+  let current: any = obj;
+  for (const key of keys) {
+    if (typeof current !== 'object' || current === null) {
+      // If a part of the path is not an object, create it or handle error
+      current[key] = {};
+    }
+    current = current[key];
+  }
+
+  if (typeof current === 'object' && current !== null) {
+    current[lastKey] = value;
+  }
+  console.log(obj);
+  return obj;
+};
+
+export const FormUtils = { parseJoiError, createRules, setNestedValue };

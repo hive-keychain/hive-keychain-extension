@@ -1,6 +1,7 @@
 import {
   Chain,
   ChainType,
+  EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -55,6 +56,15 @@ const getChain = async <T>(chainId: Chain['chainId']): Promise<T> => {
   )! as unknown as T;
 };
 
+const getChainFromDefaultChains = async <T>(
+  chainId: Chain['chainId'],
+): Promise<T> => {
+  const chains = getDefaultChains();
+  return chains.find(
+    (c: Chain) => c.chainId.toLowerCase() === chainId.toLowerCase(),
+  )! as unknown as T;
+};
+
 const getNonSetupChains = async (): Promise<Chain[]> => {
   let [setupChains, allChains] = await Promise.all([
     getSetupChains(),
@@ -96,6 +106,10 @@ const getCustomChains = async () => {
   return [];
 };
 
+const addCustomChain = async (chain: EvmChain) => {
+  const customChains = await getCustomChains();
+};
+
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
@@ -107,4 +121,5 @@ export const ChainUtils = {
   setPreviousChain,
   getPreviousChain,
   getAllSetupChainsForType,
+  getChainFromDefaultChains,
 };

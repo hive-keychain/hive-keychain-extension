@@ -54,6 +54,34 @@ const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
   );
 };
 
+const addCustomRpcsFromList = async (rpcs: string[], chain: EvmChain) => {
+  let allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+  );
+  if (!allCustomRpcs) {
+    allCustomRpcs = {};
+  }
+  if (!allCustomRpcs[chain.chainId]) {
+    allCustomRpcs[chain.chainId] = [];
+  }
+  for (const rpc of rpcs) {
+    if (
+      !allCustomRpcs[chain.chainId]
+        .map((rpc: MultichainRpc) => rpc.url)
+        .includes(rpc)
+    ) {
+      allCustomRpcs[chain.chainId].push({
+        url: rpc,
+        isDefault: false,
+      });
+    }
+  }
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    allCustomRpcs,
+  );
+};
+
 const deleteCustomRpc = async (rpcToDelete: MultichainRpc, chain: EvmChain) => {
   const allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
@@ -189,4 +217,5 @@ export const EvmRpcUtils = {
   checkRpcStatus,
   switchToWorkingRpc,
   automaticallySwitchToWorkingRpc,
+  addCustomRpcsFromList,
 };
