@@ -87,6 +87,7 @@
         .option {
           display: flex;
           flex-direction: column;
+          max-width: 320px;
           &:hover {
             background-color: $red;
             color: white;
@@ -127,6 +128,9 @@
           .item-label {
             flex: 1;
             color: var(--main-font-color);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
           }
           .active-icon {
             svg {
