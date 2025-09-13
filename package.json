@@ -54,7 +54,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.27.19",
     "@types/chrome": "^0.0.243",
     "@types/yargs": "17.0.11",
-    "axios": "^1.9.0",
+    "axios": "^1.12.1",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
