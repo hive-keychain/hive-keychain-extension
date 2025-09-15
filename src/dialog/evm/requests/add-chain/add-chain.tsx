@@ -11,7 +11,7 @@ import {
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
-  BlockExporerType,
+  BlockExplorerType,
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
@@ -46,9 +46,9 @@ export const AddChain = (props: Props) => {
     })), // TODO will need to merge with existing rpcs (add to customs)
     blockExplorer: {
       url: addChainRequest.blockExplorerUrls?.[0] || '',
-      type: BlockExporerType.ETHERSCAN,
+      type: BlockExplorerType.ETHERSCAN,
     },
-    blockExplorerApi: { url: '', type: BlockExporerType.ETHERSCAN },
+    blockExplorerApi: { url: '', type: BlockExplorerType.ETHERSCAN },
   });
 
   useEffect(() => {

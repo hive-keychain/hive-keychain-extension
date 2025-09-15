@@ -5428,5 +5428,17 @@
   "evm_update_chain_caption": {
     "message": "$1 is asking to update an existing chain. This will add the RPC urls to the ones already existing and set the first one of the list as active.",
     "description": "Update chain caption"
+  },
+  "html_popup_popular_chains": {
+    "message": "Popular chains",
+    "description": "Popular chains"
+  },
+  "html_popup_non_popular_chains": {
+    "message": "Other chains",
+    "description": "Non popular chains"
+  },
+  "popup_html_show_testnets": {
+    "message": "Show testnets",
+    "description": "Show testnets"
   }
 }

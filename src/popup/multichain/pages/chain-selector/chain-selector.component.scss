@@ -3,48 +3,76 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
+  height: calc(100% - 92px);
+  overflow: auto;
+  row-gap: 16px;
 
-  .caption {
-    @include caption();
+  .search-container {
+    display: flex;
+    column-gap: 8px;
+    width: 85%;
+    .custom-checkbox {
+      border-color: white;
+    }
   }
 
-  .chain-cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
+  .lists-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
     width: 100%;
-    padding: 0px 24px;
-    box-sizing: border-box;
 
-    --add-icon-color: #{$red};
-
-    .chain-card {
-      @include small-card();
+    .chain-cards-container {
       display: flex;
       flex-direction: column;
       row-gap: 8px;
-      margin: 0;
-      @include poppins500(15px);
-      cursor: pointer;
-      color: var(--main-font-color);
-      text-align: center;
 
-      .svg-icon {
-        @include icon-size(45px);
-        svg {
+      .chain-cards-container-title {
+        @include poppins500(15px);
+        color: var(--main-font-color);
+        text-align: center;
+      }
+
+      .chain-cards-container-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        width: 100%;
+        padding: 0px 24px;
+        box-sizing: border-box;
+
+        --add-icon-color: #{$red};
+      }
+
+      .chain-card {
+        @include small-card();
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        margin: 0;
+        @include poppins500(15px);
+        cursor: pointer;
+        color: var(--main-font-color);
+        text-align: center;
+        justify-content: space-between;
+
+        .svg-icon {
+          @include icon-size(45px);
+          svg {
+            @include icon-size(45px);
+          }
+        }
+        img {
           @include icon-size(45px);
         }
-      }
-      img {
-        @include icon-size(45px);
-      }
 
-      &.add-custom-chain {
-        justify-content: center;
-        .svg-icon {
-          @include icon-size(36px);
-          svg {
+        &.add-custom-chain {
+          justify-content: center;
+          .svg-icon {
             @include icon-size(36px);
+            svg {
+              @include icon-size(36px);
+            }
           }
         }
       }

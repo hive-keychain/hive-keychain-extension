@@ -2,7 +2,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import {
   BlockExplorer,
-  BlockExporerType,
+  BlockExplorerType,
   ChainType,
   EvmMainToken,
   HiveMainTokens,
@@ -60,7 +60,7 @@ const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
       name: '',
       blockExplorer: {
         url: '',
-        type: BlockExporerType.ETHERSCAN,
+        type: BlockExplorerType.ETHERSCAN,
       },
       chainId: '',
       logo: '',

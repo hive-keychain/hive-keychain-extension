@@ -1,5 +1,4 @@
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export enum ChainType {
   HIVE = 'HIVE',
@@ -21,7 +20,7 @@ export interface MultichainRpc {
 export interface Chain {
   name: string;
   type?: ChainType;
-  logo: SVGIcons | string;
+  logo: string;
   chainId: string;
   testnet?: boolean;
   blockExplorer?: BlockExplorer;
@@ -29,15 +28,16 @@ export interface Chain {
   network?: string;
 
   rpcs: MultichainRpc[];
+  isPopular?: boolean;
 }
 
-export enum BlockExporerType {
+export enum BlockExplorerType {
   ETHERSCAN = 'ETHERSCAN',
 }
 
 export interface BlockExplorer {
   url: string;
-  type: BlockExporerType;
+  type: BlockExplorerType;
 }
 
 export interface EvmChain extends Chain {

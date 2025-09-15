@@ -26,7 +26,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import {
-  BlockExporerType,
+  BlockExplorerType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -297,7 +297,7 @@ const getErc1155Tokens = async (
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   switch (chain.blockExplorerApi?.type) {
-    case BlockExporerType.ETHERSCAN:
+    case BlockExplorerType.ETHERSCAN:
       return await EtherscanApi.discoverTokens(walletAddress, chain);
     default:
       return [];
@@ -372,7 +372,7 @@ const getTokenListForWalletAddress = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfo[]> => {
   switch (chain.blockExplorerApi?.type) {
-    case BlockExporerType.ETHERSCAN: {
+    case BlockExplorerType.ETHERSCAN: {
       let result;
       let addresses: string[] = [];
 

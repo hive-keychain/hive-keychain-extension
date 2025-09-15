@@ -1,16 +1,19 @@
-import { Screen } from '@interfaces/screen.interface';
+import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
+import { InputType } from '@common-ui/input/input-type.enum';
+import InputComponent from '@common-ui/input/input.component';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { EnumUtils } from 'src/utils/enum.utils';
 
 interface ChainSelectorProps {}
 
@@ -19,16 +22,37 @@ const ChainSelector = ({
   setChain,
   navigateTo,
 }: PropsFromRedux & ChainSelectorProps) => {
-  const [nonSetupChains, setNonSetupChains] = useState<Chain[]>();
   const [setupChains, setSetupChains] = useState<Chain[]>();
+  const [popularChains, setPopularChains] = useState<Chain[]>();
+  const [nonPopularChains, setNonPopularChains] = useState<Chain[]>();
 
+  const [filteredPopularChains, setFilteredPopularChains] = useState<Chain[]>();
+  const [filteredNonPopularChains, setFilteredNonPopularChains] =
+    useState<Chain[]>();
+
+  const [showTestnets, setShowTestnets] = useState(false);
+
+  const [search, setSearch] = useState('');
   useEffect(() => {
     init();
   }, [chain]);
 
+  useEffect(() => {
+    setFilteredPopularChains(popularChains?.filter(filterChains));
+    setFilteredNonPopularChains(nonPopularChains?.filter(filterChains));
+  }, [search, showTestnets]);
+
   const init = async () => {
-    setNonSetupChains(await ChainUtils.getNonSetupChains());
     setSetupChains(await ChainUtils.getSetupChains());
+
+    const chains = await ChainUtils.getNonSetupChains();
+    const nonPopChains = chains?.filter((chain) => !chain.isPopular);
+    const popChains = chains?.filter((chain) => chain.isPopular);
+    setNonPopularChains(nonPopChains);
+    setPopularChains(popChains);
+    setFilteredPopularChains(popChains?.filter(filterChains));
+    setFilteredNonPopularChains(nonPopChains?.filter(filterChains));
+    setShowTestnets(false);
   };
 
   const selectChain = async (chain: Chain) => {
@@ -41,6 +65,18 @@ const ChainSelector = ({
     else if (setupChains) setChain(setupChains[0]);
   };
 
+  const filterChains = (chain: Chain) => {
+    return (
+      (showTestnets || (!showTestnets && !chain.testnet)) &&
+      (chain.chainId.toLowerCase().includes(search.toLowerCase()) ||
+        chain.name.toLowerCase().includes(search.toLowerCase()) ||
+        (chain.type === ChainType.EVM &&
+          (chain as EvmChain).mainToken
+            .toLowerCase()
+            .includes(search.toLowerCase())))
+    );
+  };
+
   return (
     <>
       <PageTitleComponent
@@ -49,35 +85,67 @@ const ChainSelector = ({
         isCloseButtonDisabled
         onBackAdditional={onCloseClicked}></PageTitleComponent>
       <div className="chain-selector-page">
-        <div className="caption">{chrome.i18n.getMessage('')}</div>
-        <div className="chain-cards-container">
-          {nonSetupChains &&
-            nonSetupChains.length > 0 &&
-            nonSetupChains.map((chain: Chain, index: number) => (
-              <div
-                key={`chain-${chain.name}-${index}`}
-                className="chain-card"
-                onClick={() => {
-                  selectChain(chain);
-                }}>
-                {EnumUtils.isValueOf(chain.logo, SVGIcons) && (
-                  <SVGIcon icon={chain.logo as SVGIcons} />
-                )}
-                {!EnumUtils.isValueOf(chain.logo, SVGIcons) && (
-                  <img src={chain.logo} />
-                )}
-                <div className="chain-name">{chain.name}</div>
-                {
-                  <Badge
-                    small
-                    badgeType={
-                      chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
-                    }
-                  />
-                }
+        <div className="search-container">
+          <InputComponent
+            classname="search-input"
+            value={search}
+            onChange={setSearch}
+            placeholder="popup_html_search"
+            type={InputType.TEXT}
+          />
+          <CheckboxComponent
+            checked={showTestnets}
+            onChange={setShowTestnets}
+            title="popup_html_show_testnets"
+          />
+        </div>
+
+        <div className="lists-container">
+          {filteredPopularChains && filteredPopularChains.length > 0 && (
+            <div className="chain-cards-container">
+              <div className="chain-cards-container-title">
+                {chrome.i18n.getMessage('html_popup_popular_chains')}
               </div>
-            ))}
-          <div
+              <div className="chain-cards-container-list">
+                {filteredPopularChains.map((chain: Chain, index: number) => (
+                  <div
+                    key={`chain-${chain.name}-${index}`}
+                    className="chain-card"
+                    onClick={() => {
+                      selectChain(chain);
+                    }}>
+                    <img src={chain.logo} />
+                    <div className="chain-name">{chain.name}</div>
+                    {chain.testnet && (
+                      <Badge small badgeType={BadgeType.TESTNET} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {filteredNonPopularChains && filteredNonPopularChains.length > 0 && (
+            <div className="chain-cards-container">
+              <div className="chain-cards-container-title">
+                {chrome.i18n.getMessage('html_popup_non_popular_chains')}
+              </div>
+              <div className="chain-cards-container-list">
+                {filteredNonPopularChains.map((chain: Chain, index: number) => (
+                  <div
+                    key={`chain-${chain.name}-${index}`}
+                    className="chain-card"
+                    onClick={() => {
+                      selectChain(chain);
+                    }}>
+                    <img src={chain.logo} />
+                    <div className="chain-name">{chain.name}</div>
+                    {chain.testnet && (
+                      <Badge small badgeType={BadgeType.TESTNET} />
+                    )}
+                  </div>
+                ))}
+              </div>
+              {/* <div
             key={`add-custom-chain`}
             className="chain-card add-custom-chain"
             onClick={() => navigateTo(Screen.CREATE_BLOCKCHAIN_PAGE)}>
@@ -85,7 +153,9 @@ const ChainSelector = ({
             <div className="chain-name">
               {chrome.i18n.getMessage('html_popup_add_blockchain')}
             </div>
-          </div>
+          </div> */}
+            </div>
+          )}
         </div>
       </div>
     </>
