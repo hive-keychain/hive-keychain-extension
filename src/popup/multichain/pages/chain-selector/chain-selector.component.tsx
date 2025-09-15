@@ -116,9 +116,12 @@ const ChainSelector = ({
                     }}>
                     <img src={chain.logo} />
                     <div className="chain-name">{chain.name}</div>
-                    {chain.testnet && (
-                      <Badge small badgeType={BadgeType.TESTNET} />
-                    )}
+                    <Badge
+                      small
+                      badgeType={
+                        chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
+                      }
+                    />
                   </div>
                 ))}
               </div>
@@ -139,9 +142,12 @@ const ChainSelector = ({
                     }}>
                     <img src={chain.logo} />
                     <div className="chain-name">{chain.name}</div>
-                    {chain.testnet && (
-                      <Badge small badgeType={BadgeType.TESTNET} />
-                    )}
+                    <Badge
+                      small
+                      badgeType={
+                        chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
+                      }
+                    />
                   </div>
                 ))}
               </div>

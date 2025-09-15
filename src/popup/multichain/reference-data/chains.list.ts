@@ -219,7 +219,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Fantom Chain Mainnet',
+    name: 'Fantom Chain',
     chainId: '0xfa',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/fantom.png',
@@ -412,7 +412,7 @@ export const defaultChainList = [
     isPopular: true,
   } as EvmChain,
   {
-    name: 'OP Mainnet',
+    name: 'OP',
     chainId: '0xa',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/op-mainnet.svg',
@@ -649,7 +649,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Conwai Mainnet',
+    name: 'Conwai',
     chainId: '0xa33fc',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/conwai.png',
@@ -821,7 +821,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Filecoin Virtual Machine',
+    name: 'Filecoin',
     chainId: '0x13a',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/fvm.svg',
@@ -1001,7 +1001,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Huddle01 Mainnet',
+    name: 'Huddle01',
     chainId: '0x3023',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/huddle01.png',
@@ -1025,7 +1025,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'HyperEVM Mainnet',
+    name: 'HyperEVM',
     chainId: '0x3e7',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/hyperliquid.png',
@@ -1081,7 +1081,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Immutable zkEVM Testnet',
+    name: 'Immutable zkEVM',
     chainId: '0x34a1',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/immutable-zkevm.svg',
@@ -1105,7 +1105,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'inEVM Mainnet',
+    name: 'inEVM',
     chainId: '0x9dd',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.amazonaws.com/inEVM.png',
@@ -1129,7 +1129,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Kinto Mainnet',
+    name: 'Kinto',
     chainId: '0x1ecf',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/kinto.svg',
@@ -1513,7 +1513,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Sanko Nitro Mainnet',
+    name: 'Sanko Nitro',
     chainId: '0x7cc',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/sanko.png',
@@ -1565,7 +1565,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Scroll Testnet',
+    name: 'Scroll',
     chainId: '0x8274f',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/scroll.svg',
@@ -1717,7 +1717,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'Unichain Sepolia Testnet',
+    name: 'Unichain Sepolia',
     chainId: '0x515',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/unichain.svg',
@@ -1821,7 +1821,7 @@ export const defaultChainList = [
     ],
   } as EvmChain,
   {
-    name: 'ZetaChain Testnet',
+    name: 'ZetaChain',
     chainId: '0x1b59',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/zeta.svg',

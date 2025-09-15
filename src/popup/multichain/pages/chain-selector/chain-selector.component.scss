@@ -55,6 +55,7 @@
         color: var(--main-font-color);
         text-align: center;
         justify-content: space-between;
+        height: 130px;
 
         .svg-icon {
           @include icon-size(45px);
