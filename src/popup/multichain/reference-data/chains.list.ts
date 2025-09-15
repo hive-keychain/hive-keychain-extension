@@ -38,11 +38,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://arbitrum-one-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://arbitrum-one.public.blastapi.io',
         isDefault: true,
       },
     ],
@@ -67,11 +67,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://base-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://base-mainnet.public.blastapi.io',
         isDefault: true,
       },
     ],
@@ -96,18 +96,18 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://sepolia.base.org',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://base-sepolia-rpc.publicnode.com',
         isDefault: true,
       },
     ],
   } as EvmChain,
   {
     name: 'Syscoin',
-    chainId: '0x38',
+    chainId: '0x39',
     type: ChainType.EVM,
     logo: 'https://uploads-ssl.webflow.com/644a5b7efad46e3cd70deafb/66328ec8726f60345e5930a3_syscoin.png',
     mainToken: 'SYS',
@@ -124,11 +124,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://syscoin-evm.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://syscoin.public-rpc.com',
         isDefault: true,
       },
     ],
@@ -152,11 +152,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://ethereum-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://eth.llamarpc.com',
         isDefault: true,
       },
     ],
@@ -181,11 +181,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://api.zan.top/eth-holesky',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://ethereum-holesky-rpc.publicnode.com',
         isDefault: true,
       },
     ],
@@ -237,17 +237,17 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://api.zan.top/ftm-mainnet',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://fantom-rpc.publicnode.com',
         isDefault: true,
       },
     ],
   } as EvmChain,
   {
-    name: 'Alvey Chain',
+    name: 'Flow',
     chainId: '0x2eb',
     type: ChainType.EVM,
     logo: 'https://uploads-ssl.webflow.com/644a5b7efad46e3cd70deafb/65afe53569ada8a3f6cc0dac_alveyscan.png',
@@ -265,11 +265,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://mainnet.evm.nodes.onflow.org',
         isDefault: true,
       },
     ],
@@ -293,11 +289,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://gnosis-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://endpoints.omniatech.io/v1/gnosis/mainnet/public',
         isDefault: true,
       },
     ],
@@ -321,17 +317,17 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://linea-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://linea.therpc.io',
         isDefault: true,
       },
     ],
   } as EvmChain,
   {
-    name: 'Lisk ',
+    name: 'Lisk',
     chainId: '0x46f',
     type: ChainType.EVM,
     logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/lisk.svg',
@@ -349,11 +345,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.api.lisk.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://lisk.gateway.tenderly.co',
         isDefault: true,
       },
     ],
@@ -377,11 +373,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://api.zan.top/opt-sepolia',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://sepolia.optimism.io',
         isDefault: true,
       },
     ],
@@ -405,11 +401,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://polygon-bor-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc-mainnet.matic.network',
         isDefault: true,
       },
     ],
@@ -434,11 +430,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://optimism-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://endpoints.omniatech.io/v1/op/mainnet/public',
         isDefault: true,
       },
     ],
@@ -463,11 +459,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.alephzero.raas.gelato.cloud',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://alephzero.drpc.org',
         isDefault: true,
       },
     ],
@@ -491,11 +487,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.alienxchain.io/http',
         isDefault: true,
       },
     ],
@@ -519,11 +511,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.apechain.com',
         isDefault: true,
       },
     ],
@@ -547,11 +535,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://oev.rpc.api3.org',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://oev-network.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -575,11 +563,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://arbitrum-nova-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://arbitrum-nova.public.blastapi.io',
         isDefault: true,
       },
     ],
@@ -603,43 +591,35 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://blessnet.calderachain.xyz/http',
         isDefault: true,
       },
     ],
   } as EvmChain,
-  {
-    name: 'ChainBounty',
-    chainId: '0xca74',
-    type: ChainType.EVM,
-    logo: 'https://blockscout-content.s3.us-east-1.amazonaws.com/chainbounty.png',
-    mainToken: 'BOUNTY',
-    defaultTransactionType: EvmTransactionType.EIP_1559,
-    blockExplorer: {
-      type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scan.chainbounty.io/',
-    },
-    blockExplorerApi: {
-      type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scan.chainbounty.io/',
-    },
-    testnet: false,
-    isEth: false,
-    rpcs: [
-      {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
-        isDefault: true,
-      },
-    ],
-  } as EvmChain,
+  // {
+  //   name: 'ChainBounty',
+  //   chainId: '0xca74',
+  //   type: ChainType.EVM,
+  //   logo: 'https://blockscout-content.s3.us-east-1.amazonaws.com/chainbounty.png',
+  //   mainToken: 'BOUNTY',
+  //   defaultTransactionType: EvmTransactionType.EIP_1559,
+  //   blockExplorer: {
+  //     type: BlockExplorerType.ETHERSCAN,
+  //     url: 'https://scan.chainbounty.io/',
+  //   },
+  //   blockExplorerApi: {
+  //     type: BlockExplorerType.ETHERSCAN,
+  //     url: 'https://scan.chainbounty.io/',
+  //   },
+  //   testnet: false,
+  //   isEth: false,
+  //   rpcs: [
+  //     {
+  //       url: 'https://rpc.chainbounty.io',
+  //       isDefault: true,
+  //     },
+  //   ],
+  // } as EvmChain,
   {
     name: 'Cheese Chain',
     chainId: '0x5d979',
@@ -659,11 +639,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.cheesechain.xyz',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://cheesechain.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -687,11 +667,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://conwai.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -715,11 +691,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://mainnet.corn-rpc.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://maizenet-rpc.usecorn.com',
         isDefault: true,
       },
     ],
@@ -743,11 +719,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.degen.tips',
         isDefault: true,
       },
     ],
@@ -771,11 +743,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.birdlayer.xyz',
         isDefault: true,
       },
     ],
@@ -799,11 +767,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rufus.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -827,11 +791,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.edgeless.network/http',
         isDefault: true,
       },
     ],
@@ -855,11 +815,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.edu-chain.raas.gelato.cloud',
         isDefault: true,
       },
     ],
@@ -883,11 +839,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://api.chain.love/rpc/v1',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://api.node.glif.io',
         isDefault: true,
       },
     ],
@@ -911,11 +867,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.mainnet.fluence.dev',
         isDefault: true,
       },
     ],
@@ -939,11 +891,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc-forta-chain-8gj1qndmfc.t.conduit.xyz',
         isDefault: true,
       },
     ],
@@ -967,11 +915,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.gravity.xyz',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.ankr.com/gravity',
         isDefault: true,
       },
     ],
@@ -995,11 +943,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.ham.fun',
         isDefault: true,
       },
     ],
@@ -1023,11 +967,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://henez.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -1051,11 +991,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.hoodi.ethpandaops.io',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://0xrpc.io/hoodi',
         isDefault: true,
       },
     ],
@@ -1079,11 +1019,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://huddle01.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -1107,11 +1043,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://hyperliquid-json-rpc.stakely.io',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.hyperlend.finance',
         isDefault: true,
       },
     ],
@@ -1135,11 +1071,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.immutable.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://immutable.gateway.tenderly.co',
         isDefault: true,
       },
     ],
@@ -1163,11 +1099,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.testnet.immutable.com',
         isDefault: true,
       },
     ],
@@ -1191,11 +1123,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://mainnet.rpc.inevm.com/http',
         isDefault: true,
       },
     ],
@@ -1219,43 +1147,43 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://kinto-mainnet.calderachain.xyz/http',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.kinto.xyz/http',
         isDefault: true,
       },
     ],
   } as EvmChain,
-  {
-    name: 'Lumiterra',
-    chainId: '0x16fd8',
-    type: ChainType.EVM,
-    logo: 'https://uploads-ssl.webflow.com/644a5b7efad46e3cd70deafb/6696c2954d4d133b75be0fa8_Lumiterra.png',
-    mainToken: 'eth',
-    defaultTransactionType: EvmTransactionType.EIP_1559,
-    blockExplorer: {
-      type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scan.layerlumi.com/',
-    },
-    blockExplorerApi: {
-      type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scan.layerlumi.com/',
-    },
-    testnet: false,
-    isEth: false,
-    rpcs: [
-      {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
-        isDefault: true,
-      },
-    ],
-  } as EvmChain,
+  // {
+  //   name: 'Lumiterra',
+  //   chainId: '0x16fd8',
+  //   type: ChainType.EVM,
+  //   logo: 'https://uploads-ssl.webflow.com/644a5b7efad46e3cd70deafb/6696c2954d4d133b75be0fa8_Lumiterra.png',
+  //   mainToken: 'eth',
+  //   defaultTransactionType: EvmTransactionType.EIP_1559,
+  //   blockExplorer: {
+  //     type: BlockExplorerType.ETHERSCAN,
+  //     url: 'https://scan.layerlumi.com/',
+  //   },
+  //   blockExplorerApi: {
+  //     type: BlockExplorerType.ETHERSCAN,
+  //     url: 'https://scan.layerlumi.com/',
+  //   },
+  //   testnet: false,
+  //   isEth: false,
+  //   rpcs: [
+  //     {
+  //       url: 'https://ethereum-sepolia-rpc.publicnode.com',
+  //       isDefault: true,
+  //     },
+  //     {
+  //       url: 'https://api.zan.top/eth-sepolia',
+  //       isDefault: true,
+  //     },
+  //   ],
+  // } as EvmChain,
   {
     name: 'Manta Pacific',
     chainId: '0xa9',
@@ -1275,11 +1203,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://endpoints.omniatech.io/v1/manta-pacific/mainnet/public',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://1rpc.io/manta',
         isDefault: true,
       },
     ],
@@ -1303,11 +1231,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.ankr.com/matchain_mainnet',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.matchain.io',
         isDefault: true,
       },
     ],
@@ -1331,11 +1259,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc-mainnet.mindnetwork.xyz',
         isDefault: true,
       },
     ],
@@ -1359,11 +1283,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://rpc.mintchain.io',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://global.rpc.mintchain.io',
         isDefault: true,
       },
     ],
@@ -1387,11 +1311,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://1rpc.io/mode',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://mainnet.mode.network',
         isDefault: true,
       },
     ],
@@ -1415,11 +1339,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.onchainpoints.xyz',
         isDefault: true,
       },
     ],
@@ -1443,11 +1363,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.onyx.org',
         isDefault: true,
       },
     ],
@@ -1471,11 +1387,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.orderly.network',
         isDefault: true,
       },
     ],
@@ -1499,11 +1411,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.playblock.io',
         isDefault: true,
       },
     ],
@@ -1527,11 +1435,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.apex.proofofplay.com',
         isDefault: true,
       },
     ],
@@ -1555,11 +1459,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.boss.proofofplay.com',
         isDefault: true,
       },
     ],
@@ -1577,17 +1477,13 @@ export const defaultChainList = [
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.redstone.xyz/',
+      url: 'https://explorer.resdtone.xyz/',
     },
     testnet: false,
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.redstonechain.com',
         isDefault: true,
       },
     ],
@@ -1611,11 +1507,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.reya.network',
         isDefault: true,
       },
     ],
@@ -1639,11 +1531,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://mainnet.sanko.xyz',
         isDefault: true,
       },
     ],
@@ -1667,11 +1555,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://scroll-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://endpoints.omniatech.io/v1/scroll/mainnet/public',
         isDefault: true,
       },
     ],
@@ -1695,11 +1583,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://scroll-sepolia-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://endpoints.omniatech.io/v1/scroll/sepolia/public',
         isDefault: true,
       },
     ],
@@ -1723,11 +1611,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.slingshotdao.com',
         isDefault: true,
       },
     ],
@@ -1751,11 +1635,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.soneium.org',
         isDefault: true,
       },
     ],
@@ -1779,11 +1659,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.superposition.so',
         isDefault: true,
       },
     ],
@@ -1807,11 +1683,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://trumpchain.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -1835,11 +1707,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://unichain-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://unichain.api.onfinality.io/public',
         isDefault: true,
       },
     ],
@@ -1863,11 +1735,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://unichain-sepolia-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://unichain-sepolia.therpc.io',
         isDefault: true,
       },
     ],
@@ -1891,11 +1763,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://vemp-horizon.calderachain.xyz/http',
         isDefault: true,
       },
     ],
@@ -1919,11 +1787,7 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.winr.games',
         isDefault: true,
       },
     ],
@@ -1947,11 +1811,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://zetachain-mainnet.public.blastapi.io',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://zetachain-evm.blockpi.network/v1/rpc/public',
         isDefault: true,
       },
     ],
@@ -1975,11 +1839,11 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://zetachain-testnet.public.blastapi.io',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://zetachain-athens-evm.blockpi.network/v1/rpc/public',
         isDefault: true,
       },
     ],
@@ -2003,11 +1867,11 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
+        url: 'https://endpoints.omniatech.io/v1/zksync-era/mainnet/public',
         isDefault: true,
       },
       {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://mainnet.era.zksync.io',
         isDefault: true,
       },
     ],
@@ -2031,11 +1895,7 @@ export const defaultChainList = [
     isEth: true,
     rpcs: [
       {
-        url: 'https://ethereum-sepolia-rpc.publicnode.com',
-        isDefault: true,
-      },
-      {
-        url: 'https://api.zan.top/eth-sepolia',
+        url: 'https://rpc.zora.energy',
         isDefault: true,
       },
     ],
