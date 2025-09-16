@@ -36,7 +36,8 @@ const parseEvent = async (
 
   if (
     (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) ||
-    event.to.toLowerCase() === walletAddress.toLowerCase()
+    (event.from === walletAddress.toLowerCase() &&
+      event.to.toLowerCase() === walletAddress.toLowerCase())
   ) {
     historyItem.isCanceled = true;
     historyItem.label = chrome.i18n.getMessage(
