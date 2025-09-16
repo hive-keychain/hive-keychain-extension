@@ -20,6 +20,51 @@ export const defaultChainList = [
     isPopular: true,
   } as HiveChain,
   {
+    name: 'Avalanche C-Chain',
+    chainId: '0xa86a',
+    type: ChainType.EVM,
+    logo: 'https://icons.llamao.fi/icons/chains/rsz_avalanche.jpg',
+    mainToken: 'AVAX',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://snowtrace.io/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://snowtrace.io/',
+    },
+    testnet: false,
+    isEth: false,
+    rpcs: [
+      { url: 'https://avalanche-c-chain-rpc.publicnode.com', isDefault: true },
+      { url: 'https://avalanche-mainnet.public.blastapi.io', isDefault: true },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
+    name: 'Avalanche Fuji',
+    chainId: '0xa869',
+    type: ChainType.EVM,
+    logo: 'https://icons.llamao.fi/icons/chains/rsz_avalanche.jpg',
+    mainToken: 'AVAX',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: ' https://subnets-test.avax.network/c-chain/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: ' https://subnets-test.avax.network/c-chain',
+    },
+    testnet: true,
+    isEth: false,
+    rpcs: [
+      { url: 'https://api.avax-test.network/ext/bc/C/rpc', isDefault: true },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
     name: 'Arbitrum One Nitro',
     chainId: '0xa4b1',
     type: ChainType.EVM,
@@ -43,6 +88,93 @@ export const defaultChainList = [
       },
       {
         url: 'https://arbitrum-one.public.blastapi.io',
+        isDefault: true,
+      },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
+    name: 'Arbitrum Sepolia',
+    chainId: '0x66eee',
+    type: ChainType.EVM,
+    logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/arbitrum-one-nitro.svg',
+    mainToken: 'ETH',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://arbitrum-sepolia.blockscout.com/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://arbitrum-sepolia.blockscout.com/',
+    },
+    testnet: true,
+    isEth: true,
+    rpcs: [
+      {
+        url: 'https://arbitrum-sepolia-rpc.publicnode.com',
+        isDefault: true,
+      },
+      {
+        url: 'https://arbitrum-sepolia.therpc.io',
+        isDefault: true,
+      },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
+    name: 'BNB',
+    chainId: '0x38',
+    type: ChainType.EVM,
+    logo: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
+    mainToken: 'ETH',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://bsctrace.com/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://bsctrace.com/',
+    },
+    testnet: false,
+    isEth: false,
+    rpcs: [
+      {
+        url: 'https://binance.llamarpc.com',
+        isDefault: true,
+      },
+      {
+        url: 'https://bsc-rpc.publicnode.com',
+        isDefault: true,
+      },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
+    name: 'BNB',
+    chainId: '0x61',
+    type: ChainType.EVM,
+    logo: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
+    mainToken: 'ETH',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://bsctrace.com/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://bsctrace.com/',
+    },
+    testnet: true,
+    isEth: true,
+    rpcs: [
+      {
+        url: 'https://bsc-testnet-rpc.publicnode.com',
+        isDefault: true,
+      },
+      {
+        url: 'https://endpoints.omniatech.io/v1/bsc/testnet/public',
         isDefault: true,
       },
     ],
@@ -104,6 +236,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    isPopular: true,
   } as EvmChain,
   {
     name: 'Syscoin',
@@ -114,11 +247,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bscscan.com/',
+      url: 'https://explorer.syscoin.org/',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bscscan.com/',
+      url: 'https://explorer.syscoin.org/',
     },
     testnet: false,
     isEth: false,
@@ -189,7 +322,9 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    isPopular: true,
   } as EvmChain,
+
   {
     name: 'Ethereum Sepolia',
     chainId: '0xaa36a7',
@@ -217,6 +352,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    isPopular: true,
   } as EvmChain,
   {
     name: 'Fantom Chain',
@@ -381,6 +517,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    isPopular: true,
   } as EvmChain,
   {
     name: 'Polygon PoS',
@@ -406,6 +543,35 @@ export const defaultChainList = [
       },
       {
         url: 'https://rpc-mainnet.matic.network',
+        isDefault: true,
+      },
+    ],
+    isPopular: true,
+  } as EvmChain,
+  {
+    name: 'Polygon Amoy',
+    chainId: '0x13882',
+    type: ChainType.EVM,
+    logo: 'https://blockscout-icons.s3.us-east-1.amazonaws.com/polygon-pos.svg',
+    mainToken: 'POL',
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+    blockExplorer: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://amoy.polygonscan.com/',
+    },
+    blockExplorerApi: {
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://amoy.polygonscan.com/',
+    },
+    testnet: true,
+    isEth: false,
+    rpcs: [
+      {
+        url: 'https://polygon-amoy-bor-rpc.publicnode.com',
+        isDefault: true,
+      },
+      {
+        url: 'https://rpc-amoy.polygon.technology',
         isDefault: true,
       },
     ],
