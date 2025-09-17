@@ -28,11 +28,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://snowtrace.io/',
+      url: 'https://snowtrace.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://snowtrace.io/',
+      url: 'https://snowtrace.io',
     },
     testnet: false,
     isEth: false,
@@ -51,7 +51,7 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: ' https://subnets-test.avax.network/c-chain/',
+      url: ' https://subnets-test.avax.network/c-chain',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
@@ -73,11 +73,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'http://arbitrum.blockscout.com/',
+      url: 'http://arbitrum.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'http://arbitrum.blockscout.com/',
+      url: 'http://arbitrum.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -102,11 +102,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://arbitrum-sepolia.blockscout.com/',
+      url: 'https://arbitrum-sepolia.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://arbitrum-sepolia.blockscout.com/',
+      url: 'https://arbitrum-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -131,11 +131,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bsctrace.com/',
+      url: 'https://bscscan.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bsctrace.com/',
+      url: 'https://bscscan.com',
     },
     testnet: false,
     isEth: false,
@@ -160,11 +160,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bsctrace.com/',
+      url: 'https://bscscan.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bsctrace.com/',
+      url: 'https://bscscan.com',
     },
     testnet: true,
     isEth: true,
@@ -189,11 +189,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://base.blockscout.com/',
+      url: 'https://base.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://base.blockscout.com/',
+      url: 'https://base.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -218,11 +218,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://base-sepolia.blockscout.com/',
+      url: 'https://base-sepolia.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://base-sepolia.blockscout.com/',
+      url: 'https://base-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -247,11 +247,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.syscoin.org/',
+      url: 'https://explorer.syscoin.org',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.syscoin.org/',
+      url: 'https://explorer.syscoin.org',
     },
     testnet: false,
     isEth: false,
@@ -275,11 +275,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth.blockscout.com/',
+      url: 'https://eth.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth.blockscout.com/',
+      url: 'https://eth.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -304,11 +304,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-holesky.blockscout.com/',
+      url: 'https://eth-holesky.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-holesky.blockscout.com/',
+      url: 'https://eth-holesky.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -334,11 +334,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-sepolia.blockscout.com/',
+      url: 'https://eth-sepolia.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-sepolia.blockscout.com/',
+      url: 'https://eth-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -363,11 +363,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://ftmscout.com/',
+      url: 'https://ftmscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://ftmscout.com/',
+      url: 'https://ftmscout.com',
     },
     testnet: false,
     isEth: false,
@@ -391,11 +391,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://evm.flowscan.io/',
+      url: 'https://evm.flowscan.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://evm.flowscan.io/',
+      url: 'https://evm.flowscan.io',
     },
     testnet: false,
     isEth: false,
@@ -415,11 +415,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://gnosis.blockscout.com/',
+      url: 'https://gnosis.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://gnosis.blockscout.com/',
+      url: 'https://gnosis.blockscout.com',
     },
     testnet: false,
     isEth: false,
@@ -443,11 +443,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.linea.build/',
+      url: 'https://explorer.linea.build',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.linea.build/',
+      url: 'https://explorer.linea.build',
     },
     testnet: false,
     isEth: true,
@@ -471,11 +471,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blockscout.lisk.com/',
+      url: 'https://blockscout.lisk.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blockscout.lisk.com/',
+      url: 'https://blockscout.lisk.com',
     },
     testnet: false,
     isEth: true,
@@ -499,11 +499,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://testnet-explorer.optimism.io/',
+      url: 'https://testnet-explorer.optimism.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://testnet-explorer.optimism.io/',
+      url: 'https://testnet-explorer.optimism.io',
     },
     testnet: true,
     isEth: true,
@@ -528,11 +528,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://polygon.blockscout.com/',
+      url: 'https://polygon.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://polygon.blockscout.com/',
+      url: 'https://polygon.blockscout.com',
     },
     testnet: false,
     isEth: false,
@@ -557,11 +557,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://amoy.polygonscan.com/',
+      url: 'https://amoy.polygonscan.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://amoy.polygonscan.com/',
+      url: 'https://amoy.polygonscan.com',
     },
     testnet: true,
     isEth: false,
@@ -586,11 +586,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.optimism.io/',
+      url: 'https://explorer.optimism.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.optimism.io/',
+      url: 'https://explorer.optimism.io',
     },
     testnet: false,
     isEth: true,
@@ -615,11 +615,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://evm-explorer.alephzero.org/',
+      url: 'https://evm-explorer.alephzero.org',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://evm-explorer.alephzero.org/',
+      url: 'https://evm-explorer.alephzero.org',
     },
     testnet: true,
     isEth: false,
@@ -643,11 +643,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.alienxchain.io/',
+      url: 'https://explorer.alienxchain.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.alienxchain.io/',
+      url: 'https://explorer.alienxchain.io',
     },
     testnet: false,
     isEth: true,
@@ -667,11 +667,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://apechain.calderaexplorer.xyz/',
+      url: 'https://apechain.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://apechain.calderaexplorer.xyz/',
+      url: 'https://apechain.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -691,11 +691,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://oev.explorer.api3.org/',
+      url: 'https://oev.explorer.api3.org',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://oev.explorer.api3.org/',
+      url: 'https://oev.explorer.api3.org',
     },
     testnet: false,
     isEth: true,
@@ -719,11 +719,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://arbitrum-nova.blockscout.com/',
+      url: 'https://arbitrum-nova.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://arbitrum-nova.blockscout.com/',
+      url: 'https://arbitrum-nova.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -747,11 +747,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blessnet.calderaexplorer.xyz/',
+      url: 'https://blessnet.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blessnet.calderaexplorer.xyz/',
+      url: 'https://blessnet.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -771,11 +771,11 @@ export const defaultChainList = [
   //   defaultTransactionType: EvmTransactionType.EIP_1559,
   //   blockExplorer: {
   //     type: BlockExplorerType.ETHERSCAN,
-  //     url: 'https://scan.chainbounty.io/',
+  //     url: 'https://scan.chainbounty.io',
   //   },
   //   blockExplorerApi: {
   //     type: BlockExplorerType.ETHERSCAN,
-  //     url: 'https://scan.chainbounty.io/',
+  //     url: 'https://scan.chainbounty.io',
   //   },
   //   testnet: false,
   //   isEth: false,
@@ -795,11 +795,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://cheesechain.calderaexplorer.xyz/',
+      url: 'https://cheesechain.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://cheesechain.calderaexplorer.xyz/',
+      url: 'https://cheesechain.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -823,11 +823,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://conwai.calderaexplorer.xyz/',
+      url: 'https://conwai.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://conwai.calderaexplorer.xyz/',
+      url: 'https://conwai.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -847,11 +847,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://maizenet-explorer.usecorn.com/',
+      url: 'https://maizenet-explorer.usecorn.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://maizenet-explorer.usecorn.com/',
+      url: 'https://maizenet-explorer.usecorn.com',
     },
     testnet: true,
     isEth: false,
@@ -875,11 +875,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.degen.tips/',
+      url: 'https://explorer.degen.tips',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.degen.tips/',
+      url: 'https://explorer.degen.tips',
     },
     testnet: false,
     isEth: false,
@@ -899,11 +899,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://testnet-scan.dodochain.com/',
+      url: 'https://testnet-scan.dodochain.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://testnet-scan.dodochain.com/',
+      url: 'https://testnet-scan.dodochain.com',
     },
     testnet: false,
     isEth: true,
@@ -947,11 +947,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://edgeless-mainnet.calderaexplorer.xyz/',
+      url: 'https://edgeless-mainnet.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://edgeless-mainnet.calderaexplorer.xyz/',
+      url: 'https://edgeless-mainnet.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -971,11 +971,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://educhain.blockscout.com/',
+      url: 'https://educhain.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://educhain.blockscout.com/',
+      url: 'https://educhain.blockscout.com',
     },
     testnet: false,
     isEth: false,
@@ -995,11 +995,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://filecoin.blockscout.com/',
+      url: 'https://filecoin.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://filecoin.blockscout.com/',
+      url: 'https://filecoin.blockscout.com',
     },
     testnet: false,
     isEth: false,
@@ -1023,11 +1023,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blockscout.mainnet.fluence.dev/',
+      url: 'https://blockscout.mainnet.fluence.dev',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://blockscout.mainnet.fluence.dev/',
+      url: 'https://blockscout.mainnet.fluence.dev',
     },
     testnet: false,
     isEth: false,
@@ -1047,11 +1047,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.forta.org/',
+      url: 'https://explorer.forta.org',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.forta.org/',
+      url: 'https://explorer.forta.org',
     },
     testnet: false,
     isEth: false,
@@ -1071,11 +1071,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.gravity.xyz/',
+      url: 'https://explorer.gravity.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.gravity.xyz/',
+      url: 'https://explorer.gravity.xyz',
     },
     testnet: false,
     isEth: false,
@@ -1099,11 +1099,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://ham.calderaexplorer.xyz/',
+      url: 'https://ham.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://ham.calderaexplorer.xyz/',
+      url: 'https://ham.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: true,
@@ -1123,11 +1123,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://henez.calderaexplorer.xyz/',
+      url: 'https://henez.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://henez.calderaexplorer.xyz/',
+      url: 'https://henez.calderaexplorer.xyz',
     },
     testnet: true,
     isEth: true,
@@ -1147,11 +1147,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-hoodi.blockscout.com/',
+      url: 'https://eth-hoodi.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://eth-hoodi.blockscout.com/',
+      url: 'https://eth-hoodi.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -1175,11 +1175,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://huddle01.calderaexplorer.xyz/',
+      url: 'https://huddle01.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://huddle01.calderaexplorer.xyz/',
+      url: 'https://huddle01.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: true,
@@ -1199,11 +1199,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://www.hyperscan.com/',
+      url: 'https://www.hyperscan.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://www.hyperscan.com/',
+      url: 'https://www.hyperscan.com',
     },
     testnet: true,
     isEth: false,
@@ -1227,11 +1227,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.immutable.com/',
+      url: 'https://explorer.immutable.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.immutable.com/',
+      url: 'https://explorer.immutable.com',
     },
     testnet: false,
     isEth: false,
@@ -1255,11 +1255,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.testnet.immutable.com/',
+      url: 'https://explorer.testnet.immutable.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.testnet.immutable.com/',
+      url: 'https://explorer.testnet.immutable.com',
     },
     testnet: true,
     isEth: false,
@@ -1279,11 +1279,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://inevm.calderaexplorer.xyz/',
+      url: 'https://inevm.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://inevm.calderaexplorer.xyz/',
+      url: 'https://inevm.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -1303,11 +1303,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.kinto.xyz/',
+      url: 'https://explorer.kinto.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.kinto.xyz/',
+      url: 'https://explorer.kinto.xyz',
     },
     testnet: false,
     isEth: true,
@@ -1331,11 +1331,11 @@ export const defaultChainList = [
   //   defaultTransactionType: EvmTransactionType.EIP_1559,
   //   blockExplorer: {
   //     type: BlockExplorerType.ETHERSCAN,
-  //     url: 'https://scan.layerlumi.com/',
+  //     url: 'https://scan.layerlumi.com',
   //   },
   //   blockExplorerApi: {
   //     type: BlockExplorerType.ETHERSCAN,
-  //     url: 'https://scan.layerlumi.com/',
+  //     url: 'https://scan.layerlumi.com',
   //   },
   //   testnet: false,
   //   isEth: false,
@@ -1359,11 +1359,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://pacific-explorer.manta.network/',
+      url: 'https://pacific-explorer.manta.network',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://pacific-explorer.manta.network/',
+      url: 'https://pacific-explorer.manta.network',
     },
     testnet: false,
     isEth: true,
@@ -1387,11 +1387,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://matchscan.io/',
+      url: 'https://matchscan.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://matchscan.io/',
+      url: 'https://matchscan.io',
     },
     testnet: false,
     isEth: false,
@@ -1415,11 +1415,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mindnetwork.xyz/',
+      url: 'https://explorer.mindnetwork.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mindnetwork.xyz/',
+      url: 'https://explorer.mindnetwork.xyz',
     },
     testnet: false,
     isEth: true,
@@ -1439,11 +1439,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mintchain.io/',
+      url: 'https://explorer.mintchain.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mintchain.io/',
+      url: 'https://explorer.mintchain.io',
     },
     testnet: false,
     isEth: true,
@@ -1467,11 +1467,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mode.network/',
+      url: 'https://explorer.mode.network',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.mode.network/',
+      url: 'https://explorer.mode.network',
     },
     testnet: false,
     isEth: true,
@@ -1495,11 +1495,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.onchainpoints.xyz/',
+      url: 'https://explorer.onchainpoints.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.onchainpoints.xyz/',
+      url: 'https://explorer.onchainpoints.xyz',
     },
     testnet: false,
     isEth: false,
@@ -1519,11 +1519,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.onyx.org/',
+      url: 'https://explorer.onyx.org',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.onyx.org/',
+      url: 'https://explorer.onyx.org',
     },
     testnet: false,
     isEth: false,
@@ -1543,11 +1543,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.orderly.network/',
+      url: 'https://explorer.orderly.network',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.orderly.network/',
+      url: 'https://explorer.orderly.network',
     },
     testnet: false,
     isEth: true,
@@ -1567,11 +1567,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.playblock.io/',
+      url: 'https://explorer.playblock.io',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.playblock.io/',
+      url: 'https://explorer.playblock.io',
     },
     testnet: false,
     isEth: false,
@@ -1591,11 +1591,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.apex.proofofplay.com/',
+      url: 'https://explorer.apex.proofofplay.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.apex.proofofplay.com/',
+      url: 'https://explorer.apex.proofofplay.com',
     },
     testnet: false,
     isEth: true,
@@ -1615,11 +1615,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.boss.proofofplay.com/',
+      url: 'https://explorer.boss.proofofplay.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.boss.proofofplay.com/',
+      url: 'https://explorer.boss.proofofplay.com',
     },
     testnet: false,
     isEth: true,
@@ -1639,11 +1639,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.redstone.xyz/',
+      url: 'https://explorer.redstone.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.resdtone.xyz/',
+      url: 'https://explorer.resdtone.xyz',
     },
     testnet: false,
     isEth: true,
@@ -1663,11 +1663,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.reya.network/',
+      url: 'https://explorer.reya.network',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.reya.network/',
+      url: 'https://explorer.reya.network',
     },
     testnet: false,
     isEth: true,
@@ -1687,11 +1687,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.sanko.xyz/',
+      url: 'https://explorer.sanko.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.sanko.xyz/',
+      url: 'https://explorer.sanko.xyz',
     },
     testnet: false,
     isEth: false,
@@ -1711,11 +1711,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scroll.blockscout.com/',
+      url: 'https://scroll.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scroll.blockscout.com/',
+      url: 'https://scroll.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -1739,11 +1739,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scroll-sepolia.blockscout.com/',
+      url: 'https://scroll-sepolia.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://scroll-sepolia.blockscout.com/',
+      url: 'https://scroll-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -1767,11 +1767,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explore.slingshotdao.com/',
+      url: 'https://explore.slingshotdao.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explore.slingshotdao.com/',
+      url: 'https://explore.slingshotdao.com',
     },
     testnet: false,
     isEth: false,
@@ -1791,11 +1791,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://soneium.blockscout.com/',
+      url: 'https://soneium.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://soneium.blockscout.com/',
+      url: 'https://soneium.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -1815,11 +1815,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.superposition.so/',
+      url: 'https://explorer.superposition.so',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.superposition.so/',
+      url: 'https://explorer.superposition.so',
     },
     testnet: false,
     isEth: true,
@@ -1839,11 +1839,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.trumpchain.dev/',
+      url: 'https://explorer.trumpchain.dev',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.trumpchain.dev/',
+      url: 'https://explorer.trumpchain.dev',
     },
     testnet: false,
     isEth: false,
@@ -1863,11 +1863,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://unichain.blockscout.com/',
+      url: 'https://unichain.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://unichain.blockscout.com/',
+      url: 'https://unichain.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -1891,11 +1891,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://unichain-sepolia.blockscout.com/',
+      url: 'https://unichain-sepolia.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://unichain-sepolia.blockscout.com/',
+      url: 'https://unichain-sepolia.blockscout.com',
     },
     testnet: true,
     isEth: true,
@@ -1919,11 +1919,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://vemp-horizon.calderaexplorer.xyz/',
+      url: 'https://vemp-horizon.calderaexplorer.xyz',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://vemp-horizon.calderaexplorer.xyz/',
+      url: 'https://vemp-horizon.calderaexplorer.xyz',
     },
     testnet: false,
     isEth: false,
@@ -1943,11 +1943,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.winr.games/',
+      url: 'https://explorer.winr.games',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.winr.games/',
+      url: 'https://explorer.winr.games',
     },
     testnet: false,
     isEth: false,
@@ -1967,11 +1967,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zetachain.blockscout.com/',
+      url: 'https://zetachain.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zetachain.blockscout.com/',
+      url: 'https://zetachain.blockscout.com',
     },
     testnet: false,
     isEth: false,
@@ -1995,11 +1995,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zetachain-testnet.blockscout.com/',
+      url: 'https://zetachain-testnet.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zetachain-testnet.blockscout.com/',
+      url: 'https://zetachain-testnet.blockscout.com',
     },
     testnet: true,
     isEth: false,
@@ -2023,11 +2023,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zksync.blockscout.com/',
+      url: 'https://zksync.blockscout.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://zksync.blockscout.com/',
+      url: 'https://zksync.blockscout.com',
     },
     testnet: false,
     isEth: true,
@@ -2051,11 +2051,11 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.zora.energy/',
+      url: 'https://explorer.zora.energy',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://explorer.zora.energy/',
+      url: 'https://explorer.zora.energy',
     },
     testnet: false,
     isEth: true,

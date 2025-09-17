@@ -30,7 +30,6 @@ export const EvmActiveAccountReducer = (
     case EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY:
     case EvmActionType.SET_ACTIVE_ACCOUNT_NFT:
     case EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS:
-      console.log({ type, newState: { ...state, ...payload } });
       return { ...state, ...payload };
     default:
       return state;

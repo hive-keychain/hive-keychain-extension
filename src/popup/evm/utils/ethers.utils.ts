@@ -26,7 +26,6 @@ const setProvider = async (chain: EvmChain, rpcUrl: string) => {
   jsonRpcProvider = new EtherJsonRpcProvider(rpcUrl, undefined, {
     staticNetwork: ethers.Network.from(Number(chain.chainId)),
   });
-  console.log('setProvider', jsonRpcProvider);
 };
 
 const getGasLimit = async (

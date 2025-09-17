@@ -2,11 +2,7 @@ import { BackgroundMessage } from '@background/multichain/background-message.int
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
-import {
-  Chain,
-  ChainType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -49,13 +45,6 @@ const ChainDropdown = ({
   };
 
   const selectChain = (chain: Chain) => {
-    switch (chain.type) {
-      case ChainType.EVM:
-        console.log('loading new chain ');
-        loadEvmActiveAccount(chain as EvmChain, activeAccount.wallet);
-        break;
-    }
-
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_EVENT,
       value: { eventType: EvmEventName.CHAIN_CHANGED, args: chain.chainId },

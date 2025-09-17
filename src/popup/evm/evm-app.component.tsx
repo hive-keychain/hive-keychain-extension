@@ -1,7 +1,9 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   navigateTo,
@@ -30,6 +32,7 @@ const EvmApp = ({
   navigateToWithParams,
   setEvmAccounts,
   fetchPrices,
+  loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   useEffect(() => {
@@ -57,7 +60,9 @@ const EvmApp = ({
 
   const init = async () => {
     try {
-      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+      const localAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      setEvmAccounts(localAccounts);
       const chainsTokensMetadata =
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -65,6 +70,12 @@ const EvmApp = ({
 
       const tokensMetadata = chainsTokensMetadata[chain.chainId];
       fetchPrices(tokensMetadata);
+
+      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
+        chain,
+        localAccounts,
+      );
+      loadEvmActiveAccount(chain, wallet);
     } catch (err) {
       setDisplaySplashscreen(false);
     }
@@ -103,6 +114,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   setEvmAccounts,
   fetchPrices,
+  loadEvmActiveAccount,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

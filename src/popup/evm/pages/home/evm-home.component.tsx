@@ -83,14 +83,8 @@ const Home = ({
     resetTitleContainerProperties();
     initWhatsNew();
     initSurvey();
-    initActiveRpc();
+    checkActiveRpc();
   }, []);
-
-  useEffect(() => {
-    if (!activeAccount.isInitialized) {
-      loadActiveAccount(chain);
-    }
-  }, [chain.chainId]);
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
@@ -112,15 +106,12 @@ const Home = ({
     }
   }, [activeAccount.nativeAndErc20Tokens]);
 
-  const initActiveRpc = async () => {
+  const checkActiveRpc = async () => {
     const rpc = await EvmRpcUtils.getActiveRpc(chain);
     setInitialRpc(rpc);
     const rpcStatusOk = await EvmRpcUtils.checkRpcStatus(rpc.url);
 
     const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
-
-    console.log('rpcStatusOk', rpcStatusOk);
-    console.log('switchAuto', switchAuto);
 
     if (!rpcStatusOk) {
       if (switchAuto) {
@@ -130,7 +121,6 @@ const Home = ({
         if (!switchResult) {
           setErrorMessage('evm_rpcs_not_responding_error');
         } else {
-          console.log('switch okay, refresh');
           refresh();
         }
       } else {
@@ -148,10 +138,10 @@ const Home = ({
   const switchRpc = async () => {
     await EvmRpcUtils.setActiveRpc(switchToRpc!, chain);
     setDisplayChangeRpcPopup(false);
-    loadActiveAccount(chain);
+    refresh();
   };
 
-  const loadActiveAccount = async (chain: EvmChain) => {
+  const loadActiveAccount = async () => {
     if (chain) {
       const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
         chain,
@@ -221,7 +211,7 @@ const Home = ({
   };
 
   const refresh = async () => {
-    loadEvmActiveAccount(chain, activeAccount.wallet);
+    loadActiveAccount();
   };
 
   const renderPopup = (

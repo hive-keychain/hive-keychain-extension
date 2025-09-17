@@ -1,5 +1,6 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import {
@@ -18,6 +19,10 @@ export const setChain =
   async (dispatch, getState) => {
     if (chain?.type === ChainType.EVM) {
       EvmChainUtils.saveLastUsedChain(chain as EvmChain);
+      EvmRpcUtils.setActiveRpc(
+        await EvmRpcUtils.getActiveRpc(chain as EvmChain),
+        chain as EvmChain,
+      );
     }
     dispatch({ type: EvmActionType.RESET_APP_STATUS });
     dispatch({ type: MultichainActionType.SET_CHAIN, payload: chain });
