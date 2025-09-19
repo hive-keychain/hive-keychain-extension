@@ -50,6 +50,12 @@
       .custom-select-handle {
         height: 10px;
         width: 10px;
+        svg {
+          outline: none !important;
+          path {
+            outline: none !important;
+          }
+        }
       }
     }
 
