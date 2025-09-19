@@ -1,12 +1,14 @@
-import { BaseApi } from '@api/base';
+// https://gas.api.cx.metamask.io/networks/43114/suggestedGasFees
+
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { BaseApi } from 'src/api/base';
 import Logger from 'src/utils/logger.utils';
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   const result = await get(`
-      ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
-    `);
-
+    ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
+  `);
+  console.log({ result });
   return result ?? [];
 };
 
@@ -16,7 +18,10 @@ const getNftTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await get(`
+    ${chain.blockExplorerApi?.url}/api?module=account&action=tokennfttx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
+    `);
+  return result ?? [];
 };
 
 const getInternalsTx = async (
@@ -25,7 +30,10 @@ const getInternalsTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await get(`
+    ${chain.blockExplorerApi?.url}/api?module=account&action=txlistinternal&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc
+    `);
+  return result ?? [];
 };
 
 const getTokenTx = async (
@@ -34,7 +42,10 @@ const getTokenTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=tokentx&address=${walletAddress}&page=${page}&offset=${offset}&sort=desc`,
+  );
+  return result ?? [];
 };
 
 const getHistory = async (
@@ -43,14 +54,17 @@ const getHistory = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await get(
+    `${chain.blockExplorerApi?.url}/api?module=account&action=txlist&address=${walletAddress}&sort=desc&page=${page}&offset=${offset}`,
+  );
+  return result ?? [];
 };
 
 const getAbi = async (chain: EvmChain, address: string) => {
   const result = await get(
     `${chain.blockExplorerApi?.url}/api?module=contract&action=getabi&address=${address}`,
   );
-  return null;
+  return result;
 };
 
 const get = async (url: string): Promise<any> => {
@@ -74,12 +88,13 @@ const getPendingTransactions = async (chain: EvmChain, address: string) => {
   return result;
 };
 
-export const EtherscanApi = {
+export const BlockscoutApi = {
+  get,
+  getTokenTx,
+  getHistory,
+  getInternalsTx,
+  getAbi,
   discoverTokens,
   getNftTx,
-  getHistory,
-  getTokenTx,
   getPendingTransactions,
-  getAbi,
-  getInternalsTx,
 };

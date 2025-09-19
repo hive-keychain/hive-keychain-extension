@@ -60,7 +60,7 @@ const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
       name: '',
       blockExplorer: {
         url: '',
-        type: BlockExplorerType.ETHERSCAN,
+        type: BlockExplorerType.BLOCKSCOUT,
       },
       chainId: '',
       logo: '',

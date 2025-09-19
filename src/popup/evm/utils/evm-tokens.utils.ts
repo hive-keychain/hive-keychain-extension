@@ -1,4 +1,5 @@
-import { EtherscanApi } from '@popup/evm/api/etherscan.api';
+import { AvalancheApi } from '@popup/evm/api/avalanche.api';
+import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import {
   EvmErc1155Token,
   EvmErc1155TokenCollectionItem,
@@ -32,7 +33,6 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
-import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -126,7 +126,6 @@ const getTokenBalance = async (
     let balance;
     let balanceInteger;
     let tokenInfo;
-
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
@@ -168,7 +167,6 @@ const getTokenBalance = async (
           ),
         );
         tokenInfo = token as EvmSmartContractInfoErc20;
-
         break;
       }
 
@@ -192,42 +190,60 @@ const getErc721Tokens = async (
   chain: EvmChain,
   tokens: EvmSmartContractInfoErc721[],
 ) => {
+  console.log({ tokens }, 'in getErc721Tokens');
   const LIMIT = 1000;
   let finalTransactions: any[] = [];
   let transactions: any[] = [];
-  do {
-    transactions = await EtherscanApi.getErc721TokenTransactions(
-      walletAddress,
-      chain,
-      1,
-      LIMIT,
-    );
-    finalTransactions = [...finalTransactions, ...transactions];
-  } while (transactions.length === LIMIT);
-
   const idsPerCollection: any = {};
 
-  for (const token of tokens) {
-    if (!idsPerCollection[token.address.toLowerCase()]) {
-      idsPerCollection[token.address.toLowerCase()] = [];
-    }
-  }
+  switch (chain.blockExplorerApi?.type) {
+    case BlockExplorerType.BLOCKSCOUT: {
+      do {
+        transactions = await BlockscoutApi.getNftTx(
+          walletAddress,
+          chain,
+          1,
+          LIMIT,
+        );
 
-  for (const tx of finalTransactions) {
-    if (
-      !tokens
-        .map((token) => token.address.toLowerCase())
-        .includes(tx.contractAddress)
-    )
-      continue;
+        finalTransactions = [...finalTransactions, ...transactions];
+      } while (transactions.length === LIMIT);
 
-    if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
-      idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
-    } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
-      idsPerCollection[tx.contractAddress.toLowerCase()] = idsPerCollection[
-        tx.contractAddress
-      ].filter((id: string) => id !== tx.tokenID);
+      for (const token of tokens) {
+        if (!idsPerCollection[token.address.toLowerCase()]) {
+          idsPerCollection[token.address.toLowerCase()] = [];
+        }
+      }
+
+      for (const tx of finalTransactions) {
+        if (
+          !tokens
+            .map((token) => token.address.toLowerCase())
+            .includes(tx.contractAddress)
+        )
+          continue;
+
+        if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
+          idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
+        } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
+          idsPerCollection[tx.contractAddress.toLowerCase()] = idsPerCollection[
+            tx.contractAddress
+          ].filter((id: string) => id !== tx.tokenID);
+        }
+      }
+
+      break;
     }
+
+    case BlockExplorerType.AVALANCHE_SCAN: {
+      const result = await AvalancheApi.getErc721(walletAddress, chain);
+      for (const token of result) {
+        idsPerCollection[token.address.toLowerCase()] = [token.tokenId];
+      }
+      break;
+    }
+    default:
+      break;
   }
 
   let erc721tokens: EvmErc721Token[] = [];
@@ -235,7 +251,6 @@ const getErc721Tokens = async (
     const token = tokens.find((token) => token.address === contractAddress);
     const provider = await EthersUtils.getProvider(chain);
     const contract = new ethers.Contract(token!.address!, ERC721Abi, provider);
-    const collection: EvmErc721TokenCollectionItem[] = [];
 
     const collectionPromises: Promise<EvmErc721TokenCollectionItem>[] = [];
 
@@ -251,7 +266,6 @@ const getErc721Tokens = async (
 
     erc721tokens.push({
       tokenInfo: token as EvmSmartContractInfoErc721,
-      // collection: [...collection, ...collection],
       collection: await Promise.all(collectionPromises),
     });
   }
@@ -297,8 +311,10 @@ const getErc1155Tokens = async (
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   switch (chain.blockExplorerApi?.type) {
-    case BlockExplorerType.ETHERSCAN:
-      return await EtherscanApi.discoverTokens(walletAddress, chain);
+    case BlockExplorerType.BLOCKSCOUT:
+      return await BlockscoutApi.discoverTokens(walletAddress, chain);
+    case BlockExplorerType.AVALANCHE_SCAN:
+      return await AvalancheApi.discoverTokens(walletAddress, chain);
     default:
       return [];
   }
@@ -328,17 +344,20 @@ const getTokensFullDetails = async (
       addresses.push(token.contractAddress);
     }
   }
-
+  console.log({ addresses }, 'in getTokensFullDetails');
   for (const address of addresses) {
-    if (!chainTokenMetaData.find((stm: any) => stm.address === address)) {
+    if (
+      !chainTokenMetaData.find(
+        (ctm: any) =>
+          ctm.address && ctm.address.toLowerCase() === address.toLowerCase(),
+      )
+    ) {
       addressesToFetch.push(address);
     }
   }
 
   let tokensMetadata: any = [];
-
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
-
   const newMetadata = [
     ...chainTokenMetaData.filter(
       (t: any) => t.type !== EVMSmartContractType.NATIVE,
@@ -367,56 +386,56 @@ const getTokensFullDetails = async (
   return newMetadata;
 };
 
-const getTokenListForWalletAddress = async (
-  walletAddress: string,
-  chain: EvmChain,
-): Promise<EvmSmartContractInfo[]> => {
-  switch (chain.blockExplorerApi?.type) {
-    case BlockExplorerType.ETHERSCAN: {
-      let result;
-      let addresses: string[] = [];
+// const getTokenListForWalletAddress = async (
+//   walletAddress: string,
+//   chain: EvmChain,
+// ): Promise<EvmSmartContractInfo[]> => {
+//   switch (chain.blockExplorerApi?.type) {
+//     case BlockExplorerType.BLOCKSCOUT: {
+//       let result;
+//       let addresses: string[] = [];
 
-      const limit = 10000;
-      let offset = 0;
+//       const limit = 10000;
+//       let offset = 0;
 
-      do {
-        let response = await EtherscanApi.getTokenTx(
-          walletAddress,
-          chain,
-          0,
-          offset,
-        );
-        result = response.result;
-        for (const token of result) {
-          if (
-            !addresses.includes(token.contractAddress) &&
-            !!token.contractAddress
-          ) {
-            addresses.push(token.contractAddress);
-          }
-        }
-        await AsyncUtils.sleep(1000);
-      } while (result.length === limit);
+//       do {
+//         let response = await BlockscoutApi.getTokenTx(
+//           walletAddress,
+//           chain,
+//           0,
+//           offset,
+//         );
+//         result = response.result;
+//         for (const token of result) {
+//           if (
+//             !addresses.includes(token.contractAddress) &&
+//             !!token.contractAddress
+//           ) {
+//             addresses.push(token.contractAddress);
+//           }
+//         }
+//         await AsyncUtils.sleep(1000);
+//       } while (result.length === limit);
 
-      let tokensMetadata = [];
-      try {
-        tokensMetadata = await getMetadataFromBackend(addresses, chain);
-      } catch (err) {
-        Logger.error('Error while fetching tokens metadata', err);
-        tokensMetadata =
-          (
-            await LocalStorageUtils.getValueFromLocalStorage(
-              LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-            )
-          )[chain.chainId] ?? [];
-      }
+//       let tokensMetadata = [];
+//       try {
+//         tokensMetadata = await getMetadataFromBackend(addresses, chain);
+//       } catch (err) {
+//         Logger.error('Error while fetching tokens metadata', err);
+//         tokensMetadata =
+//           (
+//             await LocalStorageUtils.getValueFromLocalStorage(
+//               LocalStorageKeyEnum.EVM_TOKENS_METADATA,
+//             )
+//           )[chain.chainId] ?? [];
+//       }
 
-      return tokensMetadata;
-    }
-    default:
-      return [];
-  }
-};
+//       return tokensMetadata;
+//     }
+//     default:
+//       return [];
+//   }
+// };
 
 const getMetadataFromBackend = async (
   addresses: string[],

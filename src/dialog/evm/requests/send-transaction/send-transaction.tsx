@@ -1,5 +1,6 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
-import { EtherscanApi } from '@popup/evm/api/etherscan.api';
+import { AvalancheApi } from '@popup/evm/api/avalanche.api';
+import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
@@ -23,7 +24,10 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  BlockExplorerType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
@@ -146,11 +150,22 @@ export const SendTransaction = (props: Props) => {
           params.to,
           chainTmp as EvmChain,
         );
-
-        let abi = await EtherscanApi.getAbi(
-          chainTmp! as EvmChain,
-          proxy ?? params.to,
-        );
+        let abi;
+        switch (chainTmp.blockExplorerApi?.type) {
+          case BlockExplorerType.BLOCKSCOUT:
+            abi = await BlockscoutApi.getAbi(
+              chainTmp! as EvmChain,
+              proxy ?? params.to,
+            );
+            break;
+          case BlockExplorerType.AVALANCHE_SCAN: {
+            abi = await AvalancheApi.getAbi(
+              chainTmp! as EvmChain,
+              proxy ?? params.to,
+            );
+            break;
+          }
+        }
 
         tData.abi = abi;
 

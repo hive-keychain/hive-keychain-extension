@@ -1,4 +1,5 @@
-import { EtherscanApi } from '@popup/evm/api/etherscan.api';
+import { AvalancheApi } from '@popup/evm/api/avalanche.api';
+import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
 import { EvmSettings } from '@popup/evm/interfaces/evm-settings.interface';
 import {
@@ -17,7 +18,10 @@ import { EvmTransactionDecodedData } from '@popup/evm/interfaces/evm-transaction
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  BlockExplorerType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
@@ -250,7 +254,16 @@ const getSpecificData = async (
     name = tokenMetadata.name ?? tokenMetadata.symbol;
     symbol = tokenMetadata.symbol;
   } else {
-    let abi = await EtherscanApi.getAbi(chain, contractAddress);
+    let abi;
+    switch (chain.blockExplorerApi?.type) {
+      case BlockExplorerType.BLOCKSCOUT:
+        abi = await BlockscoutApi.getAbi(chain as EvmChain, contractAddress);
+        break;
+      case BlockExplorerType.AVALANCHE_SCAN: {
+        abi = await AvalancheApi.getAbi(chain as EvmChain, contractAddress);
+        break;
+      }
+    }
 
     if (abi) {
       try {

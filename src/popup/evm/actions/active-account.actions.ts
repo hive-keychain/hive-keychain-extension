@@ -45,11 +45,13 @@ export const loadEvmActiveAccount =
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
     );
+    console.log({ allTokens });
 
     const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
       allTokens,
       chain,
     );
+    console.log({ allTokensInfo });
 
     Promise.all([
       EvmTokensUtils.getTokenBalances(

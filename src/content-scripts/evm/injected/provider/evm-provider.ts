@@ -47,15 +47,12 @@ export class EvmProvider extends EventEmitter {
       method: EvmRequestMethod.GET_CHAIN,
       params: [],
     })) as string;
-    console.log(chainId);
     // const accounts = (await this.processRequest({
     //   method: EvmRequestMethod.GET_ACCOUNTS,
     //   params: [],
     // })) as string[];
-    // console.log(accounts);
     // this._accounts = accounts;
     this.chainId = chainId;
-    // console.log('accountsChanged', this._accounts);
     // this.emit('accountsChanged', []);
   };
 
@@ -128,7 +125,6 @@ export class EvmProvider extends EventEmitter {
 
   async request(args: RequestArguments): Promise<any> {
     try {
-      console.log('request', args);
       validateRequest(args.method, args.params, '');
       switch (args.method) {
         case EvmRequestMethod.GET_ACCOUNTS: {

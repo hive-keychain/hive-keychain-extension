@@ -26,13 +26,14 @@ export interface Chain {
   blockExplorer?: BlockExplorer;
   blockExplorerApi?: BlockExplorer;
   network?: string;
-
   rpcs: MultichainRpc[];
   isPopular?: boolean;
 }
 
 export enum BlockExplorerType {
+  BLOCKSCOUT = 'BLOCKSCOUT',
   ETHERSCAN = 'ETHERSCAN',
+  AVALANCHE_SCAN = 'AVALANCHE_SCAN',
 }
 
 export interface BlockExplorer {

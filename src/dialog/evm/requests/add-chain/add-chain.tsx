@@ -46,9 +46,9 @@ export const AddChain = (props: Props) => {
     })), // TODO will need to merge with existing rpcs (add to customs)
     blockExplorer: {
       url: addChainRequest.blockExplorerUrls?.[0] || '',
-      type: BlockExplorerType.ETHERSCAN,
+      type: BlockExplorerType.BLOCKSCOUT,
     },
-    blockExplorerApi: { url: '', type: BlockExplorerType.ETHERSCAN },
+    blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
   });
 
   useEffect(() => {

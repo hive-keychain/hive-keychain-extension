@@ -25,6 +25,10 @@ export const EvmWalletNftGalleryComponent = ({
   const [other, setOther] = useState<EvmErc721Token[]>([]);
 
   useEffect(() => {
+    console.log(activeAccount, 'in evm wallet nft gallery');
+  }, [activeAccount]);
+
+  useEffect(() => {
     const otherTokens = [];
     for (const token of activeAccount.nfts.value) {
       if (token.collection.length === 1) {
@@ -33,6 +37,10 @@ export const EvmWalletNftGalleryComponent = ({
     }
     setOther(otherTokens);
   }, []);
+
+  useEffect(() => {
+    console.log(other, 'in evm wallet nft gallery');
+  }, [other]);
 
   return (
     <div className="nft-gallery">

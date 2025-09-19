@@ -27,7 +27,6 @@ export const EvmWalletTokensComponent = ({ prices, activeAccount }: Props) => {
         activeAccount.nativeAndErc20Tokens.value,
       )) as NativeAndErc20Token[];
     const sortedTokens = EvmTokensUtils.sortTokens(tokens, prices);
-
     setDisplayedTokens(sortedTokens);
   };
 
