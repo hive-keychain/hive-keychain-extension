@@ -58,9 +58,9 @@ export const EvmHistory = ({
         <>
           {pendingTransactionsItems && pendingTransactionsItems.length > 0 && (
             <>
-              {pendingTransactionsItems.map((item) => (
+              {pendingTransactionsItems.map((item, index) => (
                 <EvmTokenHistoryItemComponent
-                  key={item.transactionHash}
+                  keyS={`${item.transactionHash}-${index}`}
                   historyItem={item}
                   chain={chain}
                   goToDetailsPage={() => {
@@ -77,7 +77,7 @@ export const EvmHistory = ({
               list={history.events}
               renderItem={(event: any, index: number) => (
                 <EvmTokenHistoryItemComponent
-                  key={event.transactionHash}
+                  keyS={`${event.transactionHash}-${index}`}
                   historyItem={event}
                   chain={chain}
                   goToDetailsPage={() => {

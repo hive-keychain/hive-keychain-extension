@@ -140,7 +140,10 @@ const getAddressDetails = async (
   return details;
 };
 
-const getAddressType = async (address: string, chain: EvmChain) => {
+const getAddressType = async (
+  address: string,
+  chain: EvmChain,
+): Promise<EvmAddressType> => {
   let savedAddresses = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_SAVED_ADDRESSES,
   );

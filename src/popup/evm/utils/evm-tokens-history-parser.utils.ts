@@ -14,7 +14,10 @@ import {
   EVMSmartContractType,
   EvmSmartContractInfo,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmTransactionDecodedData } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  AvalancheNativeTransactionType,
+  EvmTransactionDecodedData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -33,177 +36,376 @@ const parseEvent = async (
   allTokensMetadata: EvmSmartContractInfo[],
   evmSettings?: EvmSettings,
 ) => {
-  // console.log(event);
   let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
 
   // parse event
 
-  if (
-    (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) ||
-    (event.from === walletAddress.toLowerCase() &&
-      event.to.toLowerCase() === walletAddress.toLowerCase())
-  ) {
-    historyItem.isCanceled = true;
-    historyItem.label = chrome.i18n.getMessage(
-      'evm_history_canceled_transaction',
-    );
-    historyItem.pageTitle = 'evm_history_canceled_transaction';
-    historyItem.detailFields = [];
-  } else if (
-    event.contractAddress?.length > 0 &&
-    (!event.to || event.to.length === 0)
-  ) {
-    // contract creation
-
-    const details: EvmUserHistoryItemDetail[] = [];
-    details.push({
-      label: 'evm_created_smart_contract',
-      value: event.contractAddress,
-      type: EvmUserHistoryItemDetailType.ADDRESS,
-    });
-
-    historyItem = {
-      ...historyItem,
-      type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
-    };
-
-    historyItem.label = chrome.i18n.getMessage(
-      'evm_history_smart_contract_creation_message',
-      [EvmFormatUtils.formatAddress(event.contractAddress)],
-    );
-    historyItem.pageTitle = 'evm_history_smart_contract_creation';
-    historyItem.detailFields = details;
-  } else if (
-    event.to &&
-    event.to.length > 0 &&
-    event.input.replace('0x', '').length > 0 &&
-    event.input.replace(ethers.ZeroHash, '').length > 0
-  ) {
-    let decodedData;
-    // Smart contract (parse transaction)
-    try {
-      historyItem = {
-        ...historyItem,
-        type: EvmUserHistoryItemType.SMART_CONTRACT,
-      };
-      decodedData = await EvmTransactionParserUtils.parseData(
-        event.input,
-        chain,
-      );
-
-      const specificData = await getSpecificData(
-        chain,
-        event.contractAddress.length > 0
-          ? event.contractAddress.toLowerCase()
-          : event.to.toLowerCase(),
-        event.from.toLowerCase(),
-        walletAddress.toLowerCase(),
-        decodedData,
-        allTokensMetadata,
-        event,
-        evmSettings,
-      );
-
-      if (!specificData) return;
-
-      historyItem.label = specificData.label;
-      historyItem.pageTitle = specificData.pageTitle;
-      historyItem.receiverAddress = specificData.receiverAddress;
-      historyItem.detailFields = specificData.detailFields;
-      historyItem.tokenInfo = specificData.tokenInfo;
-    } catch (err) {
+  switch (chain.blockExplorerApi?.type) {
+    case BlockExplorerType.AVALANCHE_SCAN: {
       console.log(event);
-      Logger.error(err as string);
-      const defaultLabel =
-        event.from.toLowerCase() === walletAddress.toLowerCase()
-          ? 'evm_history_default_out_smart_contract_operation'
-          : 'evm_history_default_in_smart_contract_operation';
+      if (event.token) {
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'popup_html_evm_transaction_info_from',
+          value: event.from,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+        details.push({
+          label: 'popup_html_evm_transaction_info_to',
+          value: event.to,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
 
-      historyItem.label = chrome.i18n.getMessage(defaultLabel);
-      historyItem.pageTitle = defaultLabel;
-      // history.events.push(historyItem);
+        const addressDetails = await EvmAddressesUtils.getAddressDetails(
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? event.to
+            : event.from,
+          chain.chainId,
+        );
+
+        switch (event.token.type) {
+          case EVMSmartContractType.ERC20: {
+            const amount = ethers.formatUnits(
+              event.value,
+              event.token.decimals,
+            );
+            const amountS = FormatUtils.withCommas(
+              amount,
+              event.token.decimals,
+              true,
+            );
+
+            details.push({
+              label: 'popup_html_transfer_amount',
+              value: `${amountS} ${event.token!.symbol.toString()}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            });
+
+            if (
+              event.to.toLowerCase() === walletAddress.toLowerCase() &&
+              Number(amount) === 0 &&
+              (await EvmAddressesUtils.isPotentialSpoofing(event.from))
+            ) {
+              historyItem.warningMessage = chrome.i18n.getMessage(
+                'evm_history_warning_potential_zero_amount_scam',
+              );
+            }
+
+            historyItem.label = chrome.i18n.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? 'popup_html_evm_history_transfer_out'
+                : event.from === ethers.ZeroAddress
+                ? 'evm_history_operation_transfer_in_no_sender'
+                : 'popup_html_evm_history_transfer_in',
+              [
+                amountS,
+                event.token!.symbol,
+                addressDetails.label ?? addressDetails.formattedAddress,
+              ],
+            );
+
+            break;
+          }
+          case EVMSmartContractType.ERC721: {
+            details.unshift({
+              label: `${event.token.name}#${Number(event.token.tokenId)}`,
+              value: event.token.tokenId,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            });
+
+            historyItem.label = chrome.i18n.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? 'evm_history_operation_safe_transfer_from_erc721_out'
+                : event.from === ethers.ZeroAddress
+                ? 'evm_history_operation_safe_transfer_from_erc721_in_no_sender'
+                : 'evm_history_operation_safe_transfer_from_erc721_in',
+              [
+                event.token!.symbol,
+                event.token!.tokenId,
+                addressDetails.label ?? addressDetails.formattedAddress,
+              ],
+            );
+
+            break;
+          }
+          case EVMSmartContractType.ERC1155: {
+            details.unshift({
+              label: `${event.token.name}#${Number(event.token.tokenId)}`,
+              value: event.token.tokenId,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            });
+
+            historyItem.label = chrome.i18n.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? 'evm_history_operation_safe_transfer_from_erc1155_out'
+                : event.from === ethers.ZeroAddress
+                ? 'evm_history_operation_safe_transfer_from_erc1155_in_no_sender'
+                : 'evm_history_operation_safe_transfer_from_erc1155_in',
+              [
+                event.value,
+                event.token!.symbol,
+                event.token!.tokenId,
+                addressDetails.label ?? addressDetails.formattedAddress,
+              ],
+            );
+            break;
+          }
+        }
+
+        historyItem.pageTitle = 'popup_html_transfer_funds';
+        historyItem.tokenInfo = event.token;
+        historyItem.detailFields = details;
+      } else {
+        switch (event.method) {
+          case AvalancheNativeTransactionType.CONTRACT_CALL: {
+            // native event
+            const amount = EvmFormatUtils.etherToWei(
+              Number(event.value),
+            ).toString();
+            const amountS = FormatUtils.withCommas(amount, 18, true);
+
+            const mainToken = allTokensMetadata.find(
+              (t) => t.type == EVMSmartContractType.NATIVE,
+            );
+            const token = allTokensMetadata.find(
+              (t) =>
+                t.type !== EVMSmartContractType.NATIVE &&
+                t.address.toLowerCase() === event.to.toLowerCase(),
+            );
+
+            const details: EvmUserHistoryItemDetail[] = [];
+            details.push({
+              label: 'popup_html_evm_transaction_info_from',
+              value: event.from,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            });
+            details.push({
+              label: 'popup_html_evm_transaction_info_to',
+              value: event.to,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            });
+            details.push({
+              label: 'popup_html_transfer_amount',
+              value: `${amountS} ${mainToken!.symbol.toString()}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            });
+            historyItem.detailFields = details;
+            historyItem.pageTitle = 'evm_pay_to_smart_contract';
+            historyItem.tokenInfo = mainToken;
+
+            historyItem.label = chrome.i18n.getMessage(
+              'popup_html_evm_history_transfer_out',
+              [amountS, mainToken!.symbol, token ? token.name : event.to],
+            );
+            break;
+          }
+          case AvalancheNativeTransactionType.NATIVE_TRANSFER: {
+            historyItem = await getNativeTransferData(
+              event,
+              chain,
+              walletAddress,
+              allTokensMetadata,
+              historyItem,
+            );
+            break;
+          }
+        }
+      }
+
+      break;
     }
-  } else if (
-    (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
-    EvmAddressType.WALLET_ADDRESS
-  ) {
-    // Normal transaction
-    const mainToken = allTokensMetadata.find(
-      (t) => t.type === EVMSmartContractType.NATIVE,
-    );
-    // native event
-    const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
-    const amountS = FormatUtils.withCommas(amount, 18, true);
+    case BlockExplorerType.BLOCKSCOUT:
+    case BlockExplorerType.ETHERSCAN: {
+      if (
+        (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) ||
+        (event.from === walletAddress.toLowerCase() &&
+          event.to.toLowerCase() === walletAddress.toLowerCase())
+      ) {
+        historyItem.isCanceled = true;
+        historyItem.label = chrome.i18n.getMessage(
+          'evm_history_canceled_transaction',
+        );
+        historyItem.pageTitle = 'evm_history_canceled_transaction';
+        historyItem.detailFields = [];
+      } else if (
+        event.contractAddress?.length > 0 &&
+        (!event.to || event.to.length === 0)
+      ) {
+        // contract creation
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'evm_created_smart_contract',
+          value: event.contractAddress,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
 
-    const addressDetails = await EvmAddressesUtils.getAddressDetails(
-      event.from.toLowerCase() === walletAddress.toLowerCase()
-        ? event.to
-        : event.from,
-      chain.chainId,
-    );
+        historyItem = {
+          ...historyItem,
+          type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
+        };
 
-    if (
-      (event.to.toLowerCase() === walletAddress.toLowerCase() &&
-        Number(amount) === 0 &&
-        (await EvmAddressesUtils.isPotentialSpoofing(event.from))) ||
-      true
-    ) {
-      historyItem.warningMessage = chrome.i18n.getMessage(
-        'evm_history_warning_potential_zero_amount_scam',
-      );
+        historyItem.label = chrome.i18n.getMessage(
+          'evm_history_smart_contract_creation_message',
+          [EvmFormatUtils.formatAddress(event.contractAddress)],
+        );
+        historyItem.pageTitle = 'evm_history_smart_contract_creation';
+        historyItem.detailFields = details;
+      } else if (
+        event.to &&
+        event.to.length > 0 &&
+        event.input &&
+        event.input.replace('0x', '').length > 0 &&
+        event.input.replace(ethers.ZeroHash, '').length > 0
+      ) {
+        let decodedData;
+        // Smart contract (parse transaction)
+        try {
+          historyItem = {
+            ...historyItem,
+            type: EvmUserHistoryItemType.SMART_CONTRACT,
+          };
+          decodedData = await EvmTransactionParserUtils.parseData(
+            event.input,
+            chain,
+          );
+
+          const specificData = await getSpecificData(
+            chain,
+            event.contractAddress.length > 0
+              ? event.contractAddress.toLowerCase()
+              : event.to.toLowerCase(),
+            event.from.toLowerCase(),
+            walletAddress.toLowerCase(),
+            decodedData,
+            allTokensMetadata,
+            event,
+            evmSettings,
+          );
+
+          if (!specificData) return;
+
+          historyItem.label = specificData.label;
+          historyItem.pageTitle = specificData.pageTitle;
+          historyItem.receiverAddress = specificData.receiverAddress;
+          historyItem.detailFields = specificData.detailFields;
+          historyItem.tokenInfo = specificData.tokenInfo;
+        } catch (err) {
+          console.log(event);
+          Logger.error(err as string);
+          const defaultLabel =
+            event.from.toLowerCase() === walletAddress.toLowerCase()
+              ? 'evm_history_default_out_smart_contract_operation'
+              : 'evm_history_default_in_smart_contract_operation';
+
+          historyItem.label = chrome.i18n.getMessage(defaultLabel);
+          historyItem.pageTitle = defaultLabel;
+          // history.events.push(historyItem);
+        }
+      } else if (
+        (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
+        EvmAddressType.WALLET_ADDRESS
+      ) {
+        // Normal transaction
+        historyItem = await getNativeTransferData(
+          event,
+          chain,
+          walletAddress,
+          allTokensMetadata,
+          historyItem,
+        );
+      } else {
+        console.log('no match', event);
+        Logger.error(`${event.hash} match no condition`);
+        const defaultLabel =
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? 'evm_history_default_out_smart_contract_operation'
+            : 'evm_history_default_in_smart_contract_operation';
+
+        historyItem.label = chrome.i18n.getMessage(defaultLabel);
+        historyItem.pageTitle = defaultLabel;
+      }
+      break;
     }
 
-    const details: EvmUserHistoryItemDetail[] = [];
-    details.push({
-      label: 'popup_html_evm_transaction_info_from',
-      value: event.from,
-      type: EvmUserHistoryItemDetailType.ADDRESS,
-    });
-    details.push({
-      label: 'popup_html_evm_transaction_info_to',
-      value: event.to,
-      type: EvmUserHistoryItemDetailType.ADDRESS,
-    });
-    details.push({
-      label: 'popup_html_transfer_amount',
-      value: `${amountS} ${mainToken!.symbol.toString()}`,
-      type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-    });
-
-    historyItem = {
-      ...historyItem,
-      type:
-        event.from.toLowerCase() === walletAddress.toLowerCase()
-          ? EvmUserHistoryItemType.TRANSFER_OUT
-          : EvmUserHistoryItemType.TRANSFER_IN,
-      from: event.from,
-      to: event.to,
-      amount: amount,
-      isCanceled: Number(event.value) === 0,
-      label: chrome.i18n.getMessage(
-        event.from.toLowerCase() === walletAddress.toLowerCase()
-          ? 'popup_html_evm_history_transfer_out'
-          : 'popup_html_evm_history_transfer_in',
-        [
-          amountS,
-          mainToken!.symbol,
-          addressDetails.label ?? addressDetails.formattedAddress,
-        ],
-      ),
-      detailFields: details,
-      pageTitle: 'popup_html_transfer_funds',
-      tokenInfo: mainToken,
-    } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
-  } else {
-    Logger.error(`${event.hash} match no condition`);
-    const defaultLabel =
-      event.from.toLowerCase() === walletAddress.toLowerCase()
-        ? 'evm_history_default_out_smart_contract_operation'
-        : 'evm_history_default_in_smart_contract_operation';
-
-    historyItem.label = chrome.i18n.getMessage(defaultLabel);
-    historyItem.pageTitle = defaultLabel;
+    default:
+      break;
   }
+
+  return historyItem;
+};
+
+const getNativeTransferData = async (
+  event: any,
+  chain: EvmChain,
+  walletAddress: string,
+  allTokensMetadata: EvmSmartContractInfo[],
+  historyItem: EvmUserHistoryItem,
+) => {
+  const mainToken = allTokensMetadata.find(
+    (t) => t.type === EVMSmartContractType.NATIVE,
+  );
+  // native event
+  const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
+  const amountS = FormatUtils.withCommas(amount, 18, true);
+
+  const addressDetails = await EvmAddressesUtils.getAddressDetails(
+    event.from.toLowerCase() === walletAddress.toLowerCase()
+      ? event.to
+      : event.from,
+    chain.chainId,
+  );
+
+  if (
+    event.to.toLowerCase() === walletAddress.toLowerCase() &&
+    Number(amount) === 0 &&
+    (await EvmAddressesUtils.isPotentialSpoofing(event.from))
+  ) {
+    historyItem.warningMessage = chrome.i18n.getMessage(
+      'evm_history_warning_potential_zero_amount_scam',
+    );
+  }
+
+  const details: EvmUserHistoryItemDetail[] = [];
+  details.push({
+    label: 'popup_html_evm_transaction_info_from',
+    value: event.from,
+    type: EvmUserHistoryItemDetailType.ADDRESS,
+  });
+  details.push({
+    label: 'popup_html_evm_transaction_info_to',
+    value: event.to,
+    type: EvmUserHistoryItemDetailType.ADDRESS,
+  });
+  details.push({
+    label: 'popup_html_transfer_amount',
+    value: `${amountS} ${mainToken!.symbol.toString()}`,
+    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+  });
+
+  historyItem = {
+    ...historyItem,
+    type:
+      event.from.toLowerCase() === walletAddress.toLowerCase()
+        ? EvmUserHistoryItemType.TRANSFER_OUT
+        : EvmUserHistoryItemType.TRANSFER_IN,
+    from: event.from,
+    to: event.to,
+    amount: amount,
+    isCanceled: Number(event.value) === 0,
+    label: chrome.i18n.getMessage(
+      event.from.toLowerCase() === walletAddress.toLowerCase()
+        ? 'popup_html_evm_history_transfer_out'
+        : 'popup_html_evm_history_transfer_in',
+      [
+        amountS,
+        mainToken!.symbol,
+        addressDetails.label ?? addressDetails.formattedAddress,
+      ],
+    ),
+    detailFields: details,
+    pageTitle: 'popup_html_transfer_funds',
+    tokenInfo: mainToken,
+  } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
   return historyItem;
 };
 

@@ -122,3 +122,8 @@ export interface EvmTransactionDecodedDataInput {
   name: string;
   value: any;
 }
+
+export enum AvalancheNativeTransactionType {
+  NATIVE_TRANSFER = 'NATIVE_TRANSFER',
+  CONTRACT_CALL = 'CONTRACT_CALL',
+}

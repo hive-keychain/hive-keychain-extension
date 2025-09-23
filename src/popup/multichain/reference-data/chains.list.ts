@@ -41,6 +41,7 @@ export const defaultChainList = [
       { url: 'https://avalanche-mainnet.public.blastapi.io', isDefault: true },
     ],
     isPopular: true,
+    network: 'mainnet',
   } as EvmChain,
   {
     name: 'Avalanche Fuji',
@@ -63,6 +64,7 @@ export const defaultChainList = [
       { url: 'https://api.avax-test.network/ext/bc/C/rpc', isDefault: true },
     ],
     isPopular: true,
+    network: 'fuji',
   } as EvmChain,
   {
     name: 'Arbitrum One Nitro',

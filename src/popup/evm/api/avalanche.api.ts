@@ -98,7 +98,42 @@ const getNftTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const [erc721Result, erc1155Result] = await Promise.all([
+    (
+      await get(
+        `https://glacier-api.avax.network/v1/chains/${Number(
+          chain.chainId,
+        )}/addresses/${walletAddress}/transactions:listErc721?pageSize=100&sortOrder=desc`,
+      )
+    ).transactions,
+    (
+      await get(
+        `https://glacier-api.avax.network/v1/chains/${Number(
+          chain.chainId,
+        )}/addresses/${walletAddress}/transactions:listErc1155?pageSize=100&sortOrder=desc`,
+      )
+    ).transactions,
+  ]);
+
+  return [...erc721Result, ...erc1155Result]
+    .sort((a, b) => b.timeStamp - a.timeStamp)
+    .map((tx: any) => {
+      const token = tx.erc721Token ?? tx.erc1155Token;
+      return {
+        blockHash: tx.blockHash,
+        blockNumber: tx.blockNumber,
+        from: tx.from.address,
+        gasPrice: tx.gasPrice,
+        gasUsed: tx.gasUsed,
+        hash: tx.txHash,
+        timeStamp: tx.blockTimestamp,
+        to: tx.to.address,
+        txreceipt_status: tx.txStatus,
+        value: tx.value,
+        contractAddress: token.address,
+        token: { ...token, type: token.ercType.replace('-', '') },
+      };
+    });
 };
 
 const getHistory = async (
@@ -107,15 +142,75 @@ const getHistory = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const [nativeTx] = await Promise.all([
+    getNativeTx(walletAddress, chain, page, offset),
+  ]);
+
+  console.log({ nativeTx }, 'nativeTx');
+
+  const result = nativeTx.sort((a: any, b: any) => b.timeStamp - a.timeStamp);
+
+  return result.map((tx: any) => {
+    return {
+      blockHash: tx.blockHash,
+      blockNumber: tx.blockNumber,
+      from: tx.from.address,
+      gasPrice: tx.gasPrice,
+      gasUsed: tx.gasUsed,
+      hash: tx.txHash,
+      timeStamp: tx.blockTimestamp,
+      to: tx.to.address,
+      txreceipt_status: tx.txStatus,
+      value: tx.value,
+      method: tx.method?.callType,
+    };
+  });
 };
+// TODO add token for next page
+const getNativeTx = async (
+  walletAddress: string,
+  chain: EvmChain,
+  page: number,
+  offset: number,
+) => {
+  return (
+    await get(
+      `https://glacier-api.avax.network/v1/chains/${Number(
+        chain.chainId,
+      )}/addresses/${walletAddress}/transactions:listNative?pageSize=100&sortOrder=desc`,
+    )
+  ).transactions;
+};
+
 const getTokenTx = async (
   walletAddress: string,
   chain: EvmChain,
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = (
+    await get(
+      `https://glacier-api.avax.network/v1/chains/${Number(
+        chain.chainId,
+      )}/addresses/${walletAddress}/transactions:listErc20?pageSize=100&sortOrder=desc`,
+    )
+  ).transactions;
+
+  return result.map((tx: any) => {
+    return {
+      blockHash: tx.blockHash,
+      blockNumber: tx.blockNumber,
+      from: tx.from.address,
+      gasPrice: tx.gasPrice,
+      gasUsed: tx.gasUsed,
+      hash: tx.txHash,
+      timeStamp: tx.blockTimestamp,
+      to: tx.to.address,
+      txreceipt_status: tx.txStatus,
+      value: tx.value,
+      token: { ...tx.erc20Token, type: EVMSmartContractType.ERC20 },
+    };
+  });
 };
 const getInternalsTx = async (
   walletAddress: string,

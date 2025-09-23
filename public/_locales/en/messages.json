@@ -5153,12 +5153,20 @@
     "message": "You received $1#$2 from $3",
     "description": ""
   },
+  "evm_history_operation_safe_transfer_from_erc721_in_no_sender": {
+    "message": "You received $1#$2",
+    "description": ""
+  },
   "evm_history_operation_safe_transfer_from_erc721_out": {
     "message": "You sent $1#$2 to $3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_in": {
     "message": "You received $1 $2#$3 from $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in_no_sender": {
+    "message": "You received $1 $2#$3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_out": {
@@ -5171,6 +5179,10 @@
   },
   "evm_history_operation_transfer_out": {
     "message": "You sent $1 $2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in_no_sender": {
+    "message": "You received $1 $2",
     "description": ""
   },
   "evm_history_operation_mint_batch": {
@@ -5440,5 +5452,12 @@
   "popup_html_show_testnets": {
     "message": "Show testnets",
     "description": "Show testnets"
+  },
+  "avalanche_smart_contract": {
+    "message": "Avalanche Smart contract test"
+  },
+  "evm_pay_to_smart_contract": {
+    "message": "Pay to Smart Contract",
+    "description": "Pay to smart contract"
   }
 }

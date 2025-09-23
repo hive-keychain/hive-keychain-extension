@@ -19,7 +19,8 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
 // const RESULTS_PER_PAGE = 20;
-const RESULTS_PER_PAGE = 1000;
+const RESULTS_PER_PAGE = 100;
+const RESULTS_PER_PAGE_AVALANCHE = 100;
 
 let cachedData: any[] = [];
 
@@ -56,6 +57,8 @@ const fetchHistory = async (
 
   promisesResult['internals'] = [];
 
+  console.log(promisesResult, 'promisesResult');
+
   // TODO delete when finish
   // const test = ['tokens', 'nfts', 'main'];
   // for (const key of test) {
@@ -90,10 +93,11 @@ const fetchHistory = async (
 
   const tmpCachedData = [];
   for (const data of cachedData) {
-    if (!eventsHashes.includes(data.hash)) {
+    const hash = data.hash ?? data.transactionHash;
+    if (!eventsHashes.includes(hash)) {
       if (data.timeStamp >= latestDate) {
         events.push(data);
-        eventsHashes.push(data.hash);
+        eventsHashes.push(hash);
       } else {
         tmpCachedData.push(data);
       }
@@ -103,7 +107,10 @@ const fetchHistory = async (
 
   for (const listKey of Object.keys(promisesResult)) {
     for (const event of promisesResult[listKey]) {
-      if (!eventsHashes.includes(event.hash ?? event.transactionHash)) {
+      if (
+        chain.blockExplorerApi?.type === BlockExplorerType.AVALANCHE_SCAN ||
+        !eventsHashes.includes(event.hash ?? event.transactionHash)
+      ) {
         if (Number(event.timeStamp) >= latestDate) {
           events.push(event);
           eventsHashes.push(event.hash ?? event.transactionHash);
@@ -122,7 +129,7 @@ const fetchHistory = async (
 
   const allSmartContractsAddresses = ArrayUtils.removeDuplicates(
     events
-      .filter((event) => event.contractAddress.length > 0)
+      .filter((event) => event.contractAddress?.length > 0)
       .map((event) => event.contractAddress),
   );
 
