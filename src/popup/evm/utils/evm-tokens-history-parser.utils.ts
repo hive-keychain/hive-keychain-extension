@@ -42,7 +42,6 @@ const parseEvent = async (
 
   switch (chain.blockExplorerApi?.type) {
     case BlockExplorerType.AVALANCHE_SCAN: {
-      console.log(event);
       if (event.token) {
         const details: EvmUserHistoryItemDetail[] = [];
         details.push({

@@ -84,6 +84,7 @@ const getTokenBalances = async (
     );
 
   const result = await Promise.all(balancesPromises);
+  console.log(result, 'result balances');
   return result.filter(
     (balance) =>
       !!balance &&
@@ -140,6 +141,7 @@ const getTokenBalance = async (
       }
 
       case EVMSmartContractType.ERC20: {
+        console.log(token, 'token in erc20');
         const contract = new ethers.Contract(
           (token as EvmSmartContractInfoErc20).address,
           Erc20Abi,
@@ -171,6 +173,7 @@ const getTokenBalance = async (
       }
 
       default:
+        console.log(token, 'token in default');
         return undefined;
     }
 

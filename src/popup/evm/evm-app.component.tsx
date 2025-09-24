@@ -68,8 +68,10 @@ const EvmApp = ({
           LocalStorageKeyEnum.EVM_TOKENS_METADATA,
         );
 
-      const tokensMetadata = chainsTokensMetadata[chain.chainId];
-      fetchPrices(tokensMetadata);
+      if (chainsTokensMetadata && chainsTokensMetadata[chain.chainId]) {
+        const tokensMetadata = chainsTokensMetadata[chain.chainId];
+        fetchPrices(tokensMetadata);
+      }
 
       const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
         chain,
@@ -77,6 +79,7 @@ const EvmApp = ({
       );
       loadEvmActiveAccount(chain, wallet);
     } catch (err) {
+      console.log(err);
       setDisplaySplashscreen(false);
     }
   };

@@ -9,7 +9,9 @@ const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
     ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
   `);
   console.log({ result });
-  return result ?? [];
+  return result
+    ? result.map((r: any) => ({ ...r, type: r.type.replace('-', '') }))
+    : [];
 };
 
 const getNftTx = async (
