@@ -1,4 +1,3 @@
-import { AnalyticsModule } from '@background/hive/modules/analytics.module';
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
@@ -34,15 +33,16 @@ type RequestData = {
   publicKey?: Key;
   windowId?: number;
   isMultisig?: boolean;
+  isWaitingForConfirmation: boolean;
+  isKeyless?: boolean;
 };
 export class HiveRequestsHandler {
   data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
-
   defaultRpcConfig: any;
 
   constructor() {
-    this.data = { confirmed: false };
+    this.data = { confirmed: false, isWaitingForConfirmation: false };
     this.hiveEngineConfig = Config.hiveEngine;
     this.defaultRpcConfig = config;
   }
@@ -55,8 +55,17 @@ export class HiveRequestsHandler {
     this.hiveEngineConfig = await BgdHiveEngineConfigModule.getActiveConfig();
   }
 
+  async setIsWaitingForConfirmation(isWaitingForConfirmation: boolean) {
+    this.data.isWaitingForConfirmation = isWaitingForConfirmation;
+    this.saveInLocalStorage();
+  }
+
   async setIsMultisig(isMultisig: boolean) {
     this.data.isMultisig = isMultisig;
+  }
+
+  async setIsKeyless(isKeyless: boolean) {
+    this.data.isKeyless = isKeyless;
   }
 
   async initializeParameters(
@@ -86,6 +95,7 @@ export class HiveRequestsHandler {
       this.data = {
         confirmed: this.data.confirmed,
         windowId: this.data.windowId,
+        isWaitingForConfirmation: false,
       };
       this.saveInLocalStorage();
     }
@@ -114,8 +124,6 @@ export class HiveRequestsHandler {
     if (msg.request.rpc)
       this.data.rpc = { uri: msg.request.rpc, testnet: false };
     initHiveRequestHandler(msg.request, this.data.tab, msg.domain, this);
-
-    AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {

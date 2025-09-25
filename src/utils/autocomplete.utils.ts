@@ -16,8 +16,8 @@ const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
       ...category,
       values: category.values.filter(
         (autocompleteValue) =>
-          autocompleteValue.label.toLowerCase().includes(query) ||
-          autocompleteValue.subLabel?.toLowerCase().includes(query),
+          autocompleteValue?.label?.toLowerCase().includes(query) ||
+          autocompleteValue?.subLabel?.toLowerCase().includes(query),
       ),
     };
   });

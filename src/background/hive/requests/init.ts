@@ -18,7 +18,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
 import {
-  anonymous_requests,
+  anonymousRequests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
 import * as Logic from './logic';
@@ -33,12 +33,13 @@ export const initHiveRequestHandler = async (
     accounts: string;
     current_rpc?: Rpc;
     no_confirm: NoConfirm;
+    KEYLESS_KEYCHAIN_ENABLED: boolean;
   } = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.ACCOUNTS,
     LocalStorageKeyEnum.NO_CONFIRM,
     LocalStorageKeyEnum.CURRENT_RPC,
+    LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
   ]);
-
   let rpc = items.current_rpc || Config.rpc.DEFAULT;
   if (request.rpc) {
     const override_rpc = await RpcUtils.findRpc(request.rpc);
@@ -49,10 +50,14 @@ export const initHiveRequestHandler = async (
   const { username, type } = request;
   const mk = await MkModule.getMk();
   Logger.info('Initializing request logic');
-  if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
+  if (
+    !items.accounts &&
+    type !== KeychainRequestTypes.addAccount &&
+    !items.KEYLESS_KEYCHAIN_ENABLED
+  ) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);
-  } else if (!items.accounts && !mk) {
+  } else if (!items.accounts && !mk && !items.KEYLESS_KEYCHAIN_ENABLED) {
     // Wallet not initialized for adding first account
     Logic.addAccountToEmptyWallet(requestHandler, tab!, request, domain);
   } else if (!mk) {
@@ -64,6 +69,8 @@ export const initHiveRequestHandler = async (
       domain,
       DialogCommand.UNLOCK,
     );
+  } else if (items.KEYLESS_KEYCHAIN_ENABLED) {
+    Logic.keylessKeychainRequest(requestHandler, tab!, request, domain);
   } else {
     const accounts = items.accounts
       ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])
@@ -88,7 +95,7 @@ export const initHiveRequestHandler = async (
         rpc,
         account,
       );
-    } else if (anonymous_requests.includes(type) && !username) {
+    } else if (anonymousRequests.includes(type) && !username) {
       // if no username specified for anonymous requests
       Logic.anonymousRequests(
         requestHandler,

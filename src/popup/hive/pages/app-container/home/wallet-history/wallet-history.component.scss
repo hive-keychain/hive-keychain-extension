@@ -21,7 +21,7 @@
       }
       .icon {
         height: 10px;
-        width: 20px;
+        width: 15px;
         transition-duration: 0.25s;
         transition-property: transform;
       }
@@ -70,7 +70,7 @@
         .input-container {
           width: 100%;
           input {
-            height: 30px;
+            height: 15px;
             font-size: 14px;
             &:focus {
               box-shadow: unset;
@@ -78,6 +78,10 @@
             &::-webkit-input-placeholder {
               font-size: 14px;
             }
+          }
+          .input-img svg {
+            height: 15px;
+            width: 15px;
           }
         }
       }

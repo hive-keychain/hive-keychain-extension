@@ -1,13 +1,14 @@
-import { Separator } from '@common-ui/separator/separator.component';
-import RequestItem from '@dialog/components/request-item/request-item';
-import Operation from '@dialog/hive/operation/operation';
-import { useAnonymousRequest } from '@dialog/hooks/anonymous-requests';
 import {
   RequestId,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import RequestItem from 'src/dialog/components/request-item/request-item';
+import Operation from 'src/dialog/hive/operation/operation';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
 type Props = {
   data: RequestUpdateProposalVote & RequestId;
@@ -21,8 +22,8 @@ const UpdateProposalVote = (props: Props) => {
   const { data, accounts } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
   const renderUsername = () => {
-    return !accounts ? (
-      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    return !accounts && data.username ? (
+      <UsernameWithAvatar title={'dialog_account'} username={data.username} />
     ) : (
       <></>
     );

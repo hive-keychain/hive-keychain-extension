@@ -13,7 +13,6 @@ type ResultMessage = {
   msg: { message: string; success: boolean; data: KeychainRequest };
   command: DialogCommand;
 };
-
 const RequestResponse = ({ data }: Props) => {
   if (data.msg.success) {
     setTimeout(() => {

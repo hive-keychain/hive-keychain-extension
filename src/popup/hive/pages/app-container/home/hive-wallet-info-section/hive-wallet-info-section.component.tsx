@@ -20,6 +20,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
@@ -218,7 +219,8 @@ const WalletInfoSection = ({
             }}
           />
         </div>
-        {allTokens?.length > 0 &&
+        {!userTokens.loading &&
+          allTokens?.length > 0 &&
           filteredTokenList &&
           filteredTokenList.length > 0 && (
             <>
@@ -226,7 +228,7 @@ const WalletInfoSection = ({
                 list={filteredTokenList}
                 renderItem={(token: TokenBalance) => (
                   <HiveWalletInfoSectionItemComponent
-                    key={`token-${token.symbol}`}
+                    key={`token-${token.symbol}-${activeAccount.name}`}
                     tokenSymbol={token.symbol}
                     tokenBalance={token}
                     tokenInfo={allTokens.find((t) => t.symbol === token.symbol)}
@@ -244,14 +246,17 @@ const WalletInfoSection = ({
               />
             </>
           )}
-        {filteredTokenList && filteredTokenList.length === 0 && (
-          <div className="no-token">
-            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-            <span className="text">
-              {chrome.i18n.getMessage('html_tokens_none_available')}
-            </span>
-          </div>
-        )}
+        {userTokens.loading && <RotatingLogoComponent />}
+        {!userTokens.loading &&
+          filteredTokenList &&
+          filteredTokenList.length === 0 && (
+            <div className="no-token">
+              <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+              <span className="text">
+                {chrome.i18n.getMessage('html_tokens_none_available')}
+              </span>
+            </div>
+          )}
       </div>
     </div>
   );

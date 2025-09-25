@@ -12,12 +12,14 @@ type Props = {
   translateSimpleAutoCompleteValues?: boolean;
   handleOnChange: (value: any) => void;
   value: any;
+  prefix?: string;
 };
 export const AutocompleteBox = ({
   autoCompleteValues,
   translateSimpleAutoCompleteValues,
   handleOnChange,
   value,
+  prefix,
 }: Props) => {
   const [filteredValues, setFilteredValues] = useState<AutoCompleteValuesType>(
     [],
@@ -73,6 +75,7 @@ export const AutocompleteBox = ({
                       onItemClick={handleOnChange}
                       subLabel={autoCompleteItem.subLabel}
                       translateSublabel={autoCompleteItem.translateSubLabel}
+                      prefix={prefix}
                     />
                   ))}
                 </div>
@@ -86,6 +89,7 @@ export const AutocompleteBox = ({
           {(filteredValues as string[]).map((item, index) => (
             <AutocompleteItemComponent
               key={`item-${index}`}
+              prefix={prefix}
               value={item}
               label={item}
               translateLabel={translateSimpleAutoCompleteValues}
@@ -106,6 +110,7 @@ export const AutocompleteBox = ({
               subLabel={item.subLabel}
               translateSublabel={item.translateSubLabel}
               onItemClick={handleOnChange}
+              prefix={prefix}
             />
           ))}
         </div>

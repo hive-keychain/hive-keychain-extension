@@ -4,7 +4,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 
-export const anonymous_requests = [
+export const anonymousRequests = [
   KeychainRequestTypes.delegation,
   KeychainRequestTypes.witnessVote,
   KeychainRequestTypes.proxy,

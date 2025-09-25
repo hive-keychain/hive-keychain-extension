@@ -57,6 +57,7 @@ const CreateAccountStepTwo = ({
   const [safelyCopied, setSafelyCopied] = useState(false);
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -129,6 +130,8 @@ const CreateAccountStepTwo = ({
     navigator.clipboard.writeText(
       FormatUtils.removeHtmlTags(generateKeysTextVersion()),
     );
+    setHasCopied(true);
+
     setSuccessMessage('popup_html_copied');
   };
 
@@ -164,6 +167,10 @@ const CreateAccountStepTwo = ({
   };
 
   const createAccount = async () => {
+    if (!hasCopied) {
+      setErrorMessage('html_popup_create_account_need_copy');
+      return;
+    }
     if (
       paymentUnderstanding &&
       safelyCopied &&

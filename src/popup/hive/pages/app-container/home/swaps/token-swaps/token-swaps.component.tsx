@@ -24,12 +24,14 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
@@ -197,7 +199,7 @@ const TokenSwaps = ({
       if (tokenInfo) {
         img =
           tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
-            ? tokenInfo.metadata.icon
+            ? ImageUtils.getImmutableImage(tokenInfo.metadata.icon)
             : '/assets/images/wallet/hive-engine.svg';
         imgBackup = '/assets/images/wallet/hive-engine.svg';
       } else {
@@ -228,7 +230,10 @@ const TokenSwaps = ({
         .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
         .map((token: Token) => {
           let img = '';
-          img = token.metadata.icon ?? '/assets/images/wallet/hive-engine.svg';
+          img =
+            token.metadata.icon && token.metadata.icon.length > 0
+              ? ImageUtils.getImmutableImage(token.metadata.icon)
+              : '/assets/images/wallet/hive-engine.svg';
           return {
             value: token,
             label: token.symbol,
@@ -349,12 +354,18 @@ const TokenSwaps = ({
     const fields = [
       { label: 'html_popup_swap_swap_id', value: estimateId },
       {
-        label: 'html_popup_swap_swap_amount',
-        value: `${FormatUtils.withCommas(
-          Number(amount).toFixed(startTokenPrecision),
-        )} ${startToken?.value.symbol} => ${FormatUtils.withCommas(
-          estimateValue!.toString(),
-        )} ${endToken?.value.symbol}`,
+        label: 'html_popup_swap_swap_from',
+        value: Number(amount),
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: startToken?.value.symbol,
+        iconPosition: 'right',
+      },
+      {
+        label: 'html_popup_swap_swap_to',
+        value: estimateValue,
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: endToken?.value.symbol,
+        iconPosition: 'right',
       },
       {
         label: 'html_popup_swap_swap_slipperage',

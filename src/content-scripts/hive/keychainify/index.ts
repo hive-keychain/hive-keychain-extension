@@ -58,7 +58,7 @@ let contentScript: Props = {
                 // Lets wait for a DOM change
                 process.observerTimer = window.setTimeout(function () {
                   process.checkAnchors(isKeychainifyEnabled);
-                }, 500);
+                }, 50000);
               });
             };
           })(contentScript.process),

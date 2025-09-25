@@ -2,7 +2,7 @@ import { Theme, ThemeOpacity } from '@popup/theme.context';
 import { KeychainApi } from 'src/api/keychain';
 
 let imgColors: any = {};
-
+let loaded = false;
 const componentToHex = (c: any) => {
   var hex = c.toString(16);
   return hex.length == 1 ? '0' + hex : hex;
@@ -23,7 +23,9 @@ const getBackgroundColor = (src: string) => {
 };
 
 const downloadColors = async () => {
+  if (loaded) return;
   imgColors = await KeychainApi.get('hive/tokensBackgroundColors');
+  loaded = true;
 };
 
 const getBackgroundColorFromBackend = (symbol: string, theme: Theme) => {

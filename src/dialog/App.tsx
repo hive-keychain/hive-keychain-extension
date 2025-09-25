@@ -8,6 +8,9 @@ import DialogError from 'src/dialog/multichain/error/error';
 import { RequestConfirmation } from 'src/dialog/multichain/request/request-confirmation';
 import RequestResponse from 'src/dialog/multichain/request/request-response';
 import Unlock from 'src/dialog/multichain/unlock/unlock';
+import AddAccountQR from 'src/dialog/pages/add-account-qr/add-account-qr';
+import { KeylessUsernameComponent } from 'src/dialog/pages/keyless-username/keyless-username';
+import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 // import './../analytics/analytics/gtag';
@@ -80,6 +83,12 @@ const App = () => {
         return <RequestResponse data={data} />;
       case DialogCommand.SIGN_WITH_LEDGER:
         return <SignTransaction data={data} />;
+      case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
+        return <RegisterKeylessComponent data={data} />;
+      case DialogCommand.ANONYMOUS_KEYLESS_OP:
+        return <KeylessUsernameComponent data={data} />;
+      case DialogCommand.ADD_ACCOUNT:
+        return <AddAccountQR data={data} />;
       default:
         return null;
     }

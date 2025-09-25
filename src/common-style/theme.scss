@@ -105,6 +105,8 @@ $dark: (
   --select-account-background: $dark-background,
   // Message
   --green-success: $green-success,
+  // Menu Bottom Bar
+  --menu-bottom-bar-icon-color: white,
 );
 $light: (
   --background: url('assets/images/background/light.svg'),
@@ -211,6 +213,8 @@ $light: (
   --select-account-background: $light-background,
   // Message
   --green-success: $green-success,
+  // Menu Bottom Bar
+  --menu-bottom-bar-icon-color: #484848,
 );
 
 @mixin spread-map($map: ()) {

@@ -1,4 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -27,7 +28,32 @@ const login = async (mk: string) => {
     mk,
   );
 
-  return !!evmAccounts;
+  if (!!evmAccounts) return true;
+
+  const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+    LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
+    LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
+  ]);
+
+  if (
+    storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED] &&
+    storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT]
+  ) {
+    try {
+      const decryptedKeylessAuthDataUserDictionary = await EncryptUtils.decrypt(
+        storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT],
+        mk,
+      );
+      const res = JSON.parse(
+        decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8),
+      );
+      return !!res;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  return false;
 };
 
 async function sendBackMk() {

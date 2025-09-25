@@ -7,6 +7,7 @@ import { MultisigModule } from '@background/hive/modules/multisig.module';
 import RPCModule from '@background/hive/modules/rpc.module';
 import SettingsModule from '@background/hive/modules/settings.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
+import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import getMessage from '@background/utils/i18n.utils';
 import {
@@ -126,11 +127,36 @@ const chromeMessageHandler = async (
         JSON.parse(backgroundMessage.value),
       );
       break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN:
+      KeylessKeychainModule.handleOperation(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
+      KeylessKeychainModule.register(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
     case BackgroundCommand.PING:
       Logger.log('ping');
       break;
   }
 };
+
+// When a chrome window is removed, check if there are no window left open
+chrome.windows.onRemoved.addListener(() => {
+  chrome.windows.getAll((windows) => {
+    if (windows.length === 0) {
+      LocalStorageUtils.clearSessionStorage();
+    }
+  });
+});
 
 export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,
@@ -142,6 +168,15 @@ export const performOperationFromIndex = async (
 
 export const HiveServiceWorker = {
   initializeServiceWorker,
+};
+
+export const performKeylessOperation = async (
+  requestHandler: HiveRequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  KeylessKeychainModule.handleOperation(requestHandler, request, domain, tab);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

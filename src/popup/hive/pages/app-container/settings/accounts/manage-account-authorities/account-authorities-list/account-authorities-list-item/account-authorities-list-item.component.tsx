@@ -16,6 +16,7 @@ import {
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -52,7 +53,12 @@ const AccountAuthoritiesListItem = ({
         [role, authorizedAccountName],
       ),
       fields: [
-        { label: 'popup_html_username', value: `@${authorizedAccountName}` },
+        {
+          label: 'popup_html_username',
+          value: `@${authorizedAccountName}`,
+          tag: ConfirmationPageFieldType.USERNAME,
+          iconPosition: 'right',
+        },
         {
           label: 'popup_html_role',
           value: chrome.i18n.getMessage(`popup_html_authority_${role}`),
