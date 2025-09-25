@@ -129,15 +129,15 @@ export const defaultChainList = [
     chainId: '0x38',
     type: ChainType.EVM,
     logo: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
-    mainToken: 'ETH',
+    mainToken: 'BNB',
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
-      type: BlockExplorerType.BLOCKSCOUT,
+      type: BlockExplorerType.ETHERSCAN,
       url: 'https://bscscan.com',
     },
     blockExplorerApi: {
-      type: BlockExplorerType.BLOCKSCOUT,
-      url: 'https://bscscan.com',
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://api.bscscan.com',
     },
     testnet: false,
     isEth: false,
@@ -158,18 +158,18 @@ export const defaultChainList = [
     chainId: '0x61',
     type: ChainType.EVM,
     logo: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
-    mainToken: 'ETH',
+    mainToken: 'BNB',
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
-      type: BlockExplorerType.BLOCKSCOUT,
+      type: BlockExplorerType.ETHERSCAN,
       url: 'https://bscscan.com',
     },
     blockExplorerApi: {
-      type: BlockExplorerType.BLOCKSCOUT,
-      url: 'https://bscscan.com',
+      type: BlockExplorerType.ETHERSCAN,
+      url: 'https://api.bscscan.com',
     },
     testnet: true,
-    isEth: true,
+    isEth: false,
     rpcs: [
       {
         url: 'https://bsc-testnet-rpc.publicnode.com',

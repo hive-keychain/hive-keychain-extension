@@ -1,5 +1,6 @@
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
 import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
+import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
   EvmSmartContractInfoErc1155,
@@ -209,6 +210,14 @@ const fetchMainHistory = (
           RESULTS_PER_PAGE,
         );
         break;
+      case BlockExplorerType.ETHERSCAN:
+        mainHistoryResponse = await EtherscanApi.getHistory(
+          walletAddress,
+          chain,
+          page,
+          RESULTS_PER_PAGE,
+        );
+        break;
     }
 
     Logger.info('End fetch main history : ' + (Date.now() - start) / 1000);
@@ -236,6 +245,14 @@ const fetchAllTokensTx = (
         break;
       case BlockExplorerType.AVALANCHE_SCAN:
         tokensHistory = await AvalancheApi.getTokenTx(
+          walletAddress,
+          chain,
+          page,
+          RESULTS_PER_PAGE,
+        );
+        break;
+      case BlockExplorerType.ETHERSCAN:
+        tokensHistory = await EtherscanApi.getTokenTx(
           walletAddress,
           chain,
           page,
@@ -275,6 +292,14 @@ const fetchAllNftsTx = (
           RESULTS_PER_PAGE,
         );
         break;
+      case BlockExplorerType.ETHERSCAN:
+        ntfsHistory = await EtherscanApi.getNftTx(
+          walletAddress,
+          chain,
+          page,
+          RESULTS_PER_PAGE,
+        );
+        break;
     }
 
     Logger.info('End fetch NFT history ' + (Date.now() - start) / 1000);
@@ -302,6 +327,14 @@ const fetchAllInternalTx = (
         break;
       case BlockExplorerType.AVALANCHE_SCAN:
         internalsHistory = await AvalancheApi.getInternalsTx(
+          walletAddress,
+          chain,
+          page,
+          RESULTS_PER_PAGE,
+        );
+        break;
+      case BlockExplorerType.ETHERSCAN:
+        internalsHistory = await EtherscanApi.getInternalsTx(
           walletAddress,
           chain,
           page,

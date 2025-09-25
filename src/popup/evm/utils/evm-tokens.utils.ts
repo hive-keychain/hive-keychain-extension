@@ -1,5 +1,6 @@
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
 import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
+import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
   EvmErc1155Token,
   EvmErc1155TokenCollectionItem,
@@ -238,6 +239,44 @@ const getErc721Tokens = async (
       break;
     }
 
+    case BlockExplorerType.ETHERSCAN: {
+      do {
+        transactions = await EtherscanApi.getNftTx(
+          walletAddress,
+          chain,
+          1,
+          LIMIT,
+        );
+
+        finalTransactions = [...finalTransactions, ...transactions];
+      } while (transactions.length === LIMIT);
+
+      for (const token of tokens) {
+        if (!idsPerCollection[token.address.toLowerCase()]) {
+          idsPerCollection[token.address.toLowerCase()] = [];
+        }
+      }
+
+      for (const tx of finalTransactions) {
+        if (
+          !tokens
+            .map((token) => token.address.toLowerCase())
+            .includes(tx.contractAddress)
+        )
+          continue;
+
+        if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
+          idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
+        } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
+          idsPerCollection[tx.contractAddress.toLowerCase()] = idsPerCollection[
+            tx.contractAddress
+          ].filter((id: string) => id !== tx.tokenID);
+        }
+      }
+
+      break;
+    }
+
     case BlockExplorerType.AVALANCHE_SCAN: {
       const result = await AvalancheApi.getErc721(walletAddress, chain);
       for (const token of result) {
@@ -318,6 +357,8 @@ const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
       return await BlockscoutApi.discoverTokens(walletAddress, chain);
     case BlockExplorerType.AVALANCHE_SCAN:
       return await AvalancheApi.discoverTokens(walletAddress, chain);
+    case BlockExplorerType.ETHERSCAN:
+      return await EtherscanApi.discoverTokens(walletAddress, chain);
     default:
       return [];
   }

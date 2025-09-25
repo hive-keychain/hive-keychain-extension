@@ -1,13 +1,14 @@
-import { BaseApi } from '@api/base';
+// https://gas.api.cx.metamask.io/networks/43114/suggestedGasFees
+
+import { KeychainApi } from '@api/keychain';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import Logger from 'src/utils/logger.utils';
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
-  const result = await get(`
-      ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
-    `);
-
-  return result ?? [];
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=discover&address=${walletAddress}&chain=${chain.chainId}`,
+  );
+  console.log({ result });
+  return result;
 };
 
 const getNftTx = async (
@@ -16,7 +17,11 @@ const getNftTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=get-nft-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
+  );
+  console.log({ result });
+  return result ?? [];
 };
 
 const getInternalsTx = async (
@@ -25,7 +30,11 @@ const getInternalsTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=get-internals-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
+  );
+  console.log({ result });
+  return result ?? [];
 };
 
 const getTokenTx = async (
@@ -34,7 +43,11 @@ const getTokenTx = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=get-token-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
+  );
+  console.log({ result });
+  return result ?? [];
 };
 
 const getHistory = async (
@@ -43,43 +56,35 @@ const getHistory = async (
   page: number,
   offset: number,
 ) => {
-  return [];
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=get-history&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
+  );
+  console.log({ result });
+  return result ?? [];
 };
 
 const getAbi = async (chain: EvmChain, address: string) => {
-  const result = await get(
-    `${chain.blockExplorerApi?.url}/api?module=contract&action=getabi&address=${address}`,
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=get-abi&address=${address}&chain=${chain.chainId}`,
   );
-  return null;
-};
-
-const get = async (url: string): Promise<any> => {
-  try {
-    const res = await BaseApi.get(url);
-    if (res && res.status === '1') {
-      return res.result;
-    } else {
-      return null;
-    }
-  } catch (err) {
-    Logger.error(err);
-    return null;
-  }
+  console.log({ result });
+  return result ?? [];
 };
 
 const getPendingTransactions = async (chain: EvmChain, address: string) => {
-  const result = await get(
-    `${chain.blockExplorerApi?.url}/api?module=account&action=pendingtxlist&address=${address}&page=1&offset=50`,
+  const result = await KeychainApi.get(
+    `evm/smart-contracts-info/etherscan?function=pending-tx-list&address=${address}&chain=${chain.chainId}`,
   );
-  return result;
+  console.log({ result });
+  return result ?? [];
 };
 
 export const EtherscanApi = {
+  getTokenTx,
+  getHistory,
+  getInternalsTx,
+  getAbi,
   discoverTokens,
   getNftTx,
-  getHistory,
-  getTokenTx,
   getPendingTransactions,
-  getAbi,
-  getInternalsTx,
 };

@@ -1,6 +1,7 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
 import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
+import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
@@ -165,6 +166,12 @@ export const SendTransaction = (props: Props) => {
             );
             break;
           }
+          case BlockExplorerType.BLOCKSCOUT:
+            abi = await EtherscanApi.getAbi(
+              chainTmp! as EvmChain,
+              proxy ?? params.to,
+            );
+            break;
         }
 
         tData.abi = abi;
