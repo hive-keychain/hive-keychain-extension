@@ -39,10 +39,16 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
 
   if (forceBaseChains) {
     if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
-      chains.push(getDefaultChains().find((c) => c.name === 'HIVE')!);
+      chains.push(
+        getDefaultChains().find(
+          (c) =>
+            c.name ===
+            'beeab0de00000000000000000000000000000000000000000000000000000000',
+        )!,
+      );
     }
     if (!chains.some((c: Chain) => c.type === ChainType.EVM)) {
-      chains.push(getDefaultChains().find((c) => c.name === 'Ethereum')!);
+      chains.push(getDefaultChains().find((c) => c.chainId === '0x1')!);
     }
   }
 
@@ -75,7 +81,7 @@ const getNonSetupChains = async (): Promise<Chain[]> => {
 
   return allChains.filter(
     (chain: Chain) =>
-      !(setupChains as Chain[]).map((c) => c.name).includes(chain.name),
+      !(setupChains as Chain[]).map((c) => c.chainId).includes(chain.chainId),
   );
 };
 

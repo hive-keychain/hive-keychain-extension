@@ -49,8 +49,6 @@ const ChainSelector = ({
     const nonPopChains = chains?.filter((chain) => !chain.isPopular);
     const popChains = chains?.filter((chain) => chain.isPopular);
 
-    console.log({ nonPopChains, popChains });
-
     setNonPopularChains(nonPopChains);
     setPopularChains(popChains);
     setFilteredPopularChains(popChains?.filter(filterChains));
