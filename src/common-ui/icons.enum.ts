@@ -24,6 +24,8 @@ export enum SVGIcons {
   EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
   EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
 
+  EVM_CHAIN_TESTNET = 'evm-chain/testnet',
+
   EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
   EVM_GAS_FEE_LOW = 'evm-gas-fee/gas-fee-low',
   EVM_GAS_FEE_MEDIUM = 'evm-gas-fee/gas-fee-medium',
