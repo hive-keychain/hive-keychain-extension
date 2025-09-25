@@ -8,6 +8,7 @@ import {
   TokenBalance,
   TokenMarket,
 } from '@interfaces/tokens.interface';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
@@ -425,7 +426,7 @@ const getTokenInfo = async (symbol: string): Promise<Token> => {
 const getTokenIcon = async (symbol: string, tokens?: Token[]) => {
   if (tokens) {
     const token = tokens.find((t) => t.symbol === symbol);
-    if (token) return token.metadata.icon;
+    if (token) return ImageUtils.getImmutableImage(token.metadata.icon);
   }
   return (
     await HiveEngineUtils.get<any[]>({
@@ -437,7 +438,7 @@ const getTokenIcon = async (symbol: string, tokens?: Token[]) => {
       indexes: [],
     })
   ).map((t: any) => {
-    return JSON.parse(t.metadata).icon;
+    return ImageUtils.getImmutableImage(JSON.parse(t.metadata).icon);
   })[0];
 };
 

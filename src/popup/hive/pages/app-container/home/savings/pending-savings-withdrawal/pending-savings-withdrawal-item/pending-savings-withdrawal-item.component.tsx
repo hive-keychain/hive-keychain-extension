@@ -113,7 +113,6 @@ const PendingSavingsWithdrawalItem = ({
                 ? SVGIcons.WALLET_HBD_LOGO
                 : undefined
             }
-            iconPosition="right"
           />
           {/* <span>
             {FormatUtils.formatCurrencyValue(

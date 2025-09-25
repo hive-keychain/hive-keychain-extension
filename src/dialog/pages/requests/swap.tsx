@@ -136,7 +136,6 @@ const Swap = (props: Props) => {
           title="html_popup_swap_swap_from"
           amount={data.amount}
           symbol={data.startToken}
-          iconPosition="right"
           icon={
             data.startToken === 'HIVE'
               ? SVGIcons.WALLET_HIVE_LOGO
@@ -156,7 +155,6 @@ const Swap = (props: Props) => {
               ? SVGIcons.WALLET_HIVE_LOGO
               : SVGIcons.WALLET_HBD_LOGO
           }
-          iconPosition="right"
         />
         {HiveUtils.isLayer1Token(data.startToken) ? (
           <RequestBalance

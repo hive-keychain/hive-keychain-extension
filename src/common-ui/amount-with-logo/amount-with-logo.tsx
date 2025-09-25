@@ -9,11 +9,7 @@ type Props = {
   amount: string | number;
   icon?: SVGIcons;
   symbol?: string;
-  showBorder?: boolean;
   className?: string;
-  size?: 'small' | 'medium' | 'large';
-  logoSize?: 'small' | 'medium' | 'large';
-  iconPosition?: 'left' | 'right';
   title?: string;
   tokens?: Token[];
 };
@@ -22,11 +18,7 @@ const AmountWithLogo = ({
   amount,
   icon,
   symbol,
-  showBorder = false,
   className = '',
-  size = 'medium',
-  logoSize = 'medium',
-  iconPosition = 'left',
   title,
   tokens,
 }: Props) => {
@@ -36,8 +28,12 @@ const AmountWithLogo = ({
   useEffect(() => {
     if (!icon && symbol) {
       setIsLoading(true);
-      ColorsUtils.downloadColors().then(() => {
-        TokensUtils.getTokenIcon(symbol, tokens)
+      ColorsUtils.downloadColors().then(async () => {
+        let tokensList = tokens;
+        if (!tokensList) {
+          tokensList = await TokensUtils.getAllTokens();
+        }
+        TokensUtils.getTokenIcon(symbol, tokensList)
           .then((iconUrl) => {
             setTokenIcon(iconUrl);
             setIsLoading(false);
@@ -51,7 +47,6 @@ const AmountWithLogo = ({
       setIsLoading(false);
     }
   }, [icon, symbol]);
-
   const iconElement = icon ? (
     <PreloadedImage
       className="amount-logo"
@@ -60,8 +55,6 @@ const AmountWithLogo = ({
       addBackground
       useDefaultSVG={icon}
     />
-  ) : isLoading ? (
-    <div className="amount-logo loading-placeholder" />
   ) : (
     <PreloadedImage
       className="amount-logo"
@@ -78,23 +71,13 @@ const AmountWithLogo = ({
   );
 
   return (
-    <div
-      className={`amount-with-logo ${
-        showBorder ? 'with-border' : ''
-      } size-${size} icon-position-${iconPosition} ${className}`}>
+    <div className={`amount-with-logo ${className}`}>
       {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
       <div className="amount-logo-container">
-        {iconPosition === 'left' ? (
-          <>
-            {iconElement}
-            {amountElement}
-          </>
-        ) : (
-          <>
-            {amountElement}
-            {iconElement}
-          </>
-        )}
+        <>
+          {amountElement}
+          {iconElement}
+        </>
       </div>
     </div>
   );

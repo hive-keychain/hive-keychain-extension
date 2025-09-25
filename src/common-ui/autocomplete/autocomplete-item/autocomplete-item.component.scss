@@ -7,6 +7,11 @@
   padding-left: 20px;
   .user-avatar {
     @include icon-size(30px);
+    border-radius: 50%;
+    margin-right: 12px;
+    &.shimmer {
+      @include icon-size(30px);
+    }
   }
   &:hover {
     background-color: $red;

@@ -24,6 +24,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -198,7 +199,7 @@ const TokenSwaps = ({
       if (tokenInfo) {
         img =
           tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
-            ? tokenInfo.metadata.icon
+            ? ImageUtils.getImmutableImage(tokenInfo.metadata.icon)
             : '/assets/images/wallet/hive-engine.svg';
         imgBackup = '/assets/images/wallet/hive-engine.svg';
       } else {
@@ -229,7 +230,10 @@ const TokenSwaps = ({
         .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
         .map((token: Token) => {
           let img = '';
-          img = token.metadata.icon ?? '/assets/images/wallet/hive-engine.svg';
+          img =
+            token.metadata.icon && token.metadata.icon.length > 0
+              ? ImageUtils.getImmutableImage(token.metadata.icon)
+              : '/assets/images/wallet/hive-engine.svg';
           return {
             value: token,
             label: token.symbol,

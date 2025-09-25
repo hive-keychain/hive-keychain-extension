@@ -55,7 +55,6 @@ const SendToken = (props: Props) => {
         title="dialog_amount"
         amount={FormatUtils.formatCurrencyValue(data.amount, precision, true)}
         symbol={data.currency}
-        iconPosition="right"
       />
       <Separator type={'horizontal'} fullSize />
       <RequestTokenBalance

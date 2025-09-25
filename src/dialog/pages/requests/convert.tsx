@@ -47,7 +47,6 @@ const Convert = (props: Props) => {
         title="dialog_amount"
         amount={FormatUtils.formatCurrencyValue(data.amount)}
         symbol={currencyLabel}
-        iconPosition="right"
         icon={
           currencyLabel === 'HIVE'
             ? SVGIcons.WALLET_HIVE_LOGO

@@ -32,7 +32,6 @@ const PowerUp = (props: Props) => {
         amount={FormatUtils.formatCurrencyValue(data.hive)}
         symbol={CurrencyUtils.getCurrencyLabel('HIVE', rpc.testnet)}
         icon={SVGIcons.WALLET_HIVE_LOGO}
-        iconPosition="right"
       />
     </Operation>
   );

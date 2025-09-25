@@ -43,7 +43,6 @@ const CreateProposal = (props: Props) => {
         amount={data.daily_pay}
         symbol={CurrencyUtils.getCurrencyLabel('HBD', rpc.testnet)}
         icon={SVGIcons.WALLET_HBD_LOGO}
-        iconPosition="right"
       />
     </Operation>
   );

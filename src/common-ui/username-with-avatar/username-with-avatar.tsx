@@ -4,19 +4,10 @@ import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.co
 type Props = {
   username: string;
   title?: string;
-  showBorder?: boolean;
   className?: string;
-  size?: 'small' | 'medium' | 'large';
-  avatarPosition?: 'left' | 'right';
 };
 
-const UsernameWithAvatar = ({
-  username,
-  title,
-  showBorder = false,
-  className = '',
-  avatarPosition = 'right',
-}: Props) => {
+const UsernameWithAvatar = ({ username, title, className = '' }: Props) => {
   const formattedUsername = username.startsWith('@')
     ? username.trim()
     : `@${username.trim()}`;
@@ -24,23 +15,13 @@ const UsernameWithAvatar = ({
   const usernameElement = <span className="username">{formattedUsername}</span>;
 
   return (
-    <div
-      className={`username-with-avatar ${
-        showBorder ? 'with-border' : ''
-      } avatar-position-${avatarPosition} ${className}`}>
+    <div className={`username-with-avatar ${className}`}>
       {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
       <div className="avatar-username-container">
-        {avatarPosition === 'left' ? (
-          <>
-            <UsernameAvatar username={formattedUsername.slice(1)} />
-            {usernameElement}
-          </>
-        ) : (
-          <>
-            {usernameElement}
-            <UsernameAvatar username={formattedUsername.slice(1)} />
-          </>
-        )}
+        <>
+          {usernameElement}
+          <UsernameAvatar username={formattedUsername.slice(1)} />
+        </>
       </div>
     </div>
   );

@@ -5,13 +5,6 @@
   user-select: none;
   transition: all 0.2s ease;
 
-  &.with-border {
-    padding: 6px 12px;
-    border: 1px solid var(--card-border);
-    background: var(--card-background);
-    border-radius: 66px;
-  }
-
   .title {
     @include poppins500(14px);
     color: var(--main-font-color);
@@ -32,6 +25,9 @@
     width: 32px;
     border-radius: 50%;
     object-fit: cover;
+    &.shimmer {
+      @include icon-size(32px);
+    }
 
     &.loading-placeholder {
       background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -44,13 +40,5 @@
   .amount {
     @include poppins400(14px);
     color: var(--main-font-color);
-  }
-
-  // Hover effects
-  &:hover {
-    &.with-border {
-      border-color: var(--card-border-hover);
-      background: var(--card-background-hover);
-    }
   }
 }
