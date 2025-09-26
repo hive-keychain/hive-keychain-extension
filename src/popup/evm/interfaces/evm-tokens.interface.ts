@@ -73,3 +73,15 @@ export interface PendingTransactionData {
   gasFee: GasFeeEstimationBase;
   receiverAddress: string;
 }
+
+export interface EvmCustomTokens {
+  erc20: string[]; // address
+  nft: string[];
+}
+
+export interface PopularToken {
+  address: string;
+  symbol: string;
+  name: string;
+  logo: string;
+}

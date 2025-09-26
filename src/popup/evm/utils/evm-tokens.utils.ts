@@ -616,6 +616,11 @@ const getMetadataFromStorage = async (
   } else return [] as EvmSmartContractInfo[];
 };
 
+const getPopularTokensForChain = async (chain: EvmChain) => {
+  const res = await KeychainApi.get(`evm/token/${chain.chainId}/popular`);
+  return res;
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -635,4 +640,5 @@ export const EvmTokensUtils = {
   filterTokensBasedOnSettings,
   getMetadataFromStorage,
   getMetadataFromBackend,
+  getPopularTokensForChain,
 };

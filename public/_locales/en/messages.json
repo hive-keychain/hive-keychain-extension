@@ -5459,5 +5459,21 @@
   "evm_pay_to_smart_contract": {
     "message": "Pay to Smart Contract",
     "description": "Pay to smart contract"
+  },
+  "evm_add_custom_token": {
+    "message": "Add custom token",
+    "description": "Add custom tokens"
+  },
+  "evm_add_custom_token_popup_title": {
+    "message": "Add custom token",
+    "description": "Add custom token popup title"
+  },
+  "evm_smart_contract_address": {
+    "message": "Smart contract address",
+    "description": "Smart contract address"
+  },
+  "evm_add_custom_token_popup_caption": {
+    "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
+    "description": "Add custom token popup caption"
   }
 }

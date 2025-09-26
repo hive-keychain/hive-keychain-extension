@@ -49,6 +49,7 @@ export interface EvmChain extends Chain {
   defaultTransactionType: EvmTransactionType;
   onlyCustomFee?: boolean;
   network?: string;
+  addTokensManually?: boolean;
 }
 
 export interface EvmProviders {}

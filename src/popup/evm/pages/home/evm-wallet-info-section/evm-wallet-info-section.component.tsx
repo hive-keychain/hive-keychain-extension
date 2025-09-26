@@ -55,6 +55,7 @@ export const EvmWalletInfoSectionComponent = ({
       case EvmDisplayedPage.TOKENS: {
         return (
           <EvmWalletTokensComponent
+            chain={chain}
             prices={prices}
             activeAccount={activeAccount}
           />

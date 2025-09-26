@@ -3,20 +3,30 @@ import {
   EvmActiveAccount,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
+import { EvmAddCustomTokenPopup } from '@popup/evm/pages/home/evm-add-custom-token-popup/evm-add-custom-token-popup.component';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
+  chain: EvmChain;
   prices: EvmPrices;
   activeAccount: EvmActiveAccount;
 }
 
-export const EvmWalletTokensComponent = ({ prices, activeAccount }: Props) => {
+export const EvmWalletTokensComponent = ({
+  chain,
+  prices,
+  activeAccount,
+}: Props) => {
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
   );
+
+  const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
+
   useEffect(() => {
     init();
   }, [activeAccount.nativeAndErc20Tokens]);
@@ -30,18 +40,43 @@ export const EvmWalletTokensComponent = ({ prices, activeAccount }: Props) => {
     setDisplayedTokens(sortedTokens);
   };
 
+  const openAddCustomTokenPanel = () => {
+    setShowAddCustomTokenPopup(true);
+  };
+
+  const saveCustomToken = (tokenAddress: string) => {
+    setShowAddCustomTokenPopup(false);
+    console.log('saveCustomToken', tokenAddress);
+  };
+
   return (
     <>
-      {!activeAccount.nativeAndErc20Tokens.loading &&
-        displayedTokens.map((token, index) => (
-          <EVMWalletInfoSectionItemComponent
-            key={`${token.tokenInfo.name}-${index}`}
-            token={token}
-            mainValueLabel={token.tokenInfo.symbol}
-            mainValue={token.formattedBalance}
-            mainValueSubLabel={token.tokenInfo.name}
-          />
-        ))}
+      {!activeAccount.nativeAndErc20Tokens.loading && (
+        <>
+          {displayedTokens.map((token, index) => (
+            <EVMWalletInfoSectionItemComponent
+              key={`${token.tokenInfo.name}-${index}`}
+              token={token}
+              mainValueLabel={token.tokenInfo.symbol}
+              mainValue={token.formattedBalance}
+              mainValueSubLabel={token.tokenInfo.name}
+            />
+          ))}
+          <div
+            className="wallet-info-row add-custom-tokens"
+            onClick={openAddCustomTokenPanel}>
+            {chrome.i18n.getMessage('evm_add_custom_token')}
+          </div>
+        </>
+      )}
+      {showAddCustomTokenPopup && (
+        <EvmAddCustomTokenPopup
+          chain={chain}
+          onClose={() => setShowAddCustomTokenPopup(false)}
+          onSave={saveCustomToken}
+        />
+      )}
+
       {activeAccount.nativeAndErc20Tokens.loading && <RotatingLogoComponent />}
     </>
   );
