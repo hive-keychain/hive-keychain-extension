@@ -128,7 +128,7 @@
   &:hover {
     .notifications-count {
       background-color: var(--action-button-background-color);
-      color: white;
+      color: $red;
     }
   }
 }
