@@ -6,4 +6,7 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+  &.shimmer {
+    @include icon-size(24px);
+  }
 }

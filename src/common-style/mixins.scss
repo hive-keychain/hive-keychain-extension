@@ -134,8 +134,8 @@
 }
 
 @mixin icon-size($size) {
-  height: $size;
-  width: $size;
+  height: $size !important;
+  width: $size !important;
   svg {
     height: $size;
     width: $size;
@@ -531,10 +531,16 @@
   height: 32px;
   width: 32px;
   border-radius: 50%;
+  &.shimmer {
+    @include icon-size(32px);
+  }
 }
 
 @mixin user-avatar-small {
   height: 24px;
   width: 24px;
   border-radius: 50%;
+  &.shimmer {
+    @include icon-size(24px);
+  }
 }

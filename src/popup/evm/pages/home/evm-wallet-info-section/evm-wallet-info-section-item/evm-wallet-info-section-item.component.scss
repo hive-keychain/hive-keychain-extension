@@ -28,6 +28,9 @@
     column-gap: 16px;
     .currency-icon {
       @include icon-size(36px);
+      &.shimmer {
+        @include icon-size(36px);
+      }
       svg {
         @include icon-size(24px);
       }
