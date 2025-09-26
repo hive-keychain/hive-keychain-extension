@@ -42,7 +42,7 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
       chains.push(
         getDefaultChains().find(
           (c) =>
-            c.name ===
+            c.chainId ===
             'beeab0de00000000000000000000000000000000000000000000000000000000',
         )!,
       );
