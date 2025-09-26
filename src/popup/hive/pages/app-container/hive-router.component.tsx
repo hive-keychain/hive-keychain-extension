@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { HiveHomeComponent } from '@popup/hive/pages/app-container/home/hive-home.component';
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
@@ -123,7 +124,9 @@ const AppRouter = ({
         return <AddAccountRouterComponent />;
       case HiveScreen.ACCOUNT_PAGE_ADD_BY_KEYS:
         return <AddByKeysComponent />;
-      case HiveScreen.ACCOUNT_PAGE_ADD_BY_AUTH:
+      case Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN:
+        return <KeylessKeychainComponent />;
+      case Screen.ACCOUNT_PAGE_ADD_BY_AUTH:
         return <AddByAuthComponent />;
       case HiveScreen.ACCOUNT_PAGE_IMPORT_KEYS:
         return <ImportKeysComponent />;

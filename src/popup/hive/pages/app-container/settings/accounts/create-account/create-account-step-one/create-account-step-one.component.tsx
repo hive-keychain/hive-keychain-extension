@@ -33,6 +33,7 @@ const CreateAccountStepOne = ({
   currencyLabels,
   setTitleContainerProperties,
   navigateToWithParams,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [accountOptions, setAccountOptions] = useState<AccountItemOption[]>();
   const [selectedAccount, setSelectedAccount] = useState<AccountItemOption>();
@@ -99,7 +100,22 @@ const CreateAccountStepOne = ({
 
   const validateAccountName = async () => {
     if (accountName.length < 3) {
-      setErrorMessage('html_popup_create_account_username_too_short');
+      setErrorMessage('popup_html_create_account_username_too_short');
+      return false;
+    }
+    if (accountName.length > 16) {
+      setErrorMessage('popup_html_create_account_username_too_long');
+      return false;
+    }
+    if (!/^[a-z0-9.-]+$/.test(accountName)) {
+      setErrorMessage('popup_html_create_account_username_case_not_valid');
+      return false;
+    }
+    // if doesnt start with a letter, or doesnt end with a letter or number, return false
+    if (!/^[a-zA-Z]/.test(accountName) || !/[a-zA-Z0-9]$/.test(accountName)) {
+      setErrorMessage(
+        'popup_html_create_account_username_start_or_end_not_valid',
+      );
       return false;
     }
     if (!AccountCreationUtils.validateUsername(accountName)) {
@@ -193,6 +209,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateToWithParams,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

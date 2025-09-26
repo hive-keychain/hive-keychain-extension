@@ -25,9 +25,13 @@ import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldType,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -181,22 +185,29 @@ const PowerUpDown = ({
 
     const stringifiedAmount = `${FormatUtils.formatCurrencyValue(
       parseFloat(form.amount.toString()),
-    )} ${form.currency}`;
+    )}`;
 
-    const fields = [];
+    const fields: ConfirmationPageFields[] = [];
 
     if (powerType === PowerType.POWER_UP) {
       fields.push({
         label: 'popup_html_transfer_from',
         value: `@${activeAccount.name}`,
+        tag: ConfirmationPageFieldType.USERNAME,
       });
       fields.push({
         label: 'popup_html_transfer_to',
         value: `@${form.receiver}`,
+        tag: ConfirmationPageFieldType.USERNAME,
       });
     }
 
-    fields.push({ label: 'popup_html_amount', value: stringifiedAmount });
+    fields.push({
+      label: 'popup_html_amount',
+      value: stringifiedAmount,
+      tag: ConfirmationPageFieldType.AMOUNT,
+      tokenSymbol: form.currency,
+    });
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
@@ -383,6 +394,7 @@ const PowerUpDown = ({
               placeholder="popup_html_receiver"
               label="popup_html_receiver"
               autocompleteValues={autocompleteFavoriteUsers}
+              autocompletePrefix="@"
             />
           )}
           <div className="amount-panel">

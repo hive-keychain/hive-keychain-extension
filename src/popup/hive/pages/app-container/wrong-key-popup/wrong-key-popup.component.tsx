@@ -71,18 +71,13 @@ const WrongKeyPopup = ({
   return (
     <PopupContainer className="wrong-key-popup">
       <div className="popup-title">
-        {chrome.i18n.getMessage('html_popup_wrong_key_title', [
-          wrongKeysFound.length !== 1 ? 's' : '',
-        ])}
+        {chrome.i18n.getMessage('html_popup_wrong_key_title')}
       </div>
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('html_popup_wrong_key_introduction', [
             accountFound,
-            wrongKeysFound.join(', '),
-            wrongKeysFound.length !== 1 ? 's' : '',
-            wrongKeysFound.length !== 1 ? 's' : '',
           ]),
         }}></div>
       <div className="popup-footer">

@@ -26,11 +26,11 @@ path {
     align-items: center;
     column-gap: 16px;
     .currency-icon {
+      border-radius: 50%;
       @include icon-size(36px);
       &.add-background {
         background: $light-blue;
         padding: 6px;
-        border-radius: 50%;
         @include icon-size(24px);
       }
     }

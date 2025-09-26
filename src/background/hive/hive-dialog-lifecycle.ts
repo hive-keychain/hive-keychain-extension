@@ -1,14 +1,24 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { CommunicationUtils } from 'src/utils/communication.utils';
 
 /* istanbul ignore next */
 chrome.windows.onRemoved.addListener(async (id: number) => {
   const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
-  const { windowId, request, request_id, tab, confirmed, isMultisig } =
-    requestHandler.data;
+  const {
+    windowId,
+    request,
+    request_id,
+    tab,
+    confirmed,
+    isMultisig,
+    isWaitingForConfirmation,
+    isKeyless,
+  } = requestHandler.data;
   if (id == windowId && !confirmed && tab) {
-    CommunicationUtils.tabsSendMessage(tab!, {
+    if (request?.type?.includes('vsc') && isWaitingForConfirmation) {
+      return;
+    }
+    chrome.tabs.sendMessage(tab!, {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,

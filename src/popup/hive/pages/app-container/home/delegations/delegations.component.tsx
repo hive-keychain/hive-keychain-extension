@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -231,9 +232,24 @@ const Delegations = ({
         `@${form.username}`,
       ]),
       fields: [
-        { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${form.username}` },
-        { label: 'popup_html_value', value: stringifiedAmount },
+        {
+          label: 'popup_html_transfer_from',
+          value: `@${activeAccount.name!}`,
+          tag: ConfirmationPageFieldType.USERNAME,
+          avatarPosition: 'right',
+        },
+        {
+          label: 'popup_html_transfer_to',
+          value: `@${form.username}`,
+          tag: ConfirmationPageFieldType.USERNAME,
+          avatarPosition: 'right',
+        },
+        {
+          label: 'popup_html_value',
+          value: stringifiedAmount,
+          tag: ConfirmationPageFieldType.AMOUNT,
+          tokenSymbol: currencyLabels.hp,
+        },
       ],
       title: 'popup_html_delegation',
       formParams: getFormParams(),
@@ -280,8 +296,18 @@ const Delegations = ({
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [
-        { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
-        { label: 'popup_html_transfer_to', value: `@${form.username}` },
+        {
+          label: 'popup_html_transfer_from',
+          value: `@${activeAccount.name!}`,
+          tag: ConfirmationPageFieldType.USERNAME,
+          iconPosition: 'left',
+        },
+        {
+          label: 'popup_html_transfer_to',
+          value: `@${form.username}`,
+          tag: ConfirmationPageFieldType.USERNAME,
+          iconPosition: 'left',
+        },
       ],
       title: 'popup_html_cancel_delegation',
       formParams: getFormParams(),
@@ -373,6 +399,7 @@ const Delegations = ({
             placeholder="popup_html_username"
             label="popup_html_username"
             autocompleteValues={autocompleteTransferUsernames}
+            autocompletePrefix="@"
           />
 
           <div className="amount-panel">

@@ -7,6 +7,7 @@ interface AutocompleteProps {
   subLabel?: string;
   translateSublabel?: boolean;
   onItemClick: (value: string) => void;
+  prefix?: string;
 }
 
 export const AutocompleteItemComponent = ({
@@ -16,6 +17,7 @@ export const AutocompleteItemComponent = ({
   subLabel,
   translateSublabel,
   onItemClick,
+  prefix,
 }: AutocompleteProps) => {
   return (
     <div
@@ -28,6 +30,11 @@ export const AutocompleteItemComponent = ({
           ? `${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel}`
           : ''}
       </div>
+      {/* {prefix === '@' && <UsernameAvatar username={value} />}
+      {prefix + (translateValue ? chrome.i18n.getMessage(value) : value)}
+      {subLabel && subLabel.trim().length > 0
+        ? `(${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel})`
+        : ''} */}
     </div>
   );
 };

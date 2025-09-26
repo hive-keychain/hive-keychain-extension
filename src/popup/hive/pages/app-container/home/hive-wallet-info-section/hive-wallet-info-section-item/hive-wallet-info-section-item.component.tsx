@@ -9,6 +9,7 @@ import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Asset } from 'hive-keychain-commons';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -169,7 +170,7 @@ const WalletInfoSectionItem = ({
         )}
         {typeof icon !== 'string' && tokenInfo && (
           <PreloadedImage
-            src={tokenInfo?.metadata.icon}
+            src={ImageUtils.getImmutableImage(tokenInfo?.metadata.icon)}
             className="currency-icon"
             addBackground={addBackground}
             symbol={tokenInfo.symbol}

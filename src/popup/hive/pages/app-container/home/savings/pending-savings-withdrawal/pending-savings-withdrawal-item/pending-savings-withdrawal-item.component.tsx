@@ -18,12 +18,13 @@ import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
-import FormatUtils from 'src/utils/format.utils';
 
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;
@@ -53,6 +54,9 @@ const PendingSavingsWithdrawalItem = ({
         {
           label: 'popup_html_cancel_withdraw',
           value: `${item.amount} ${moment(item.complete).format('L')}`,
+          tag: ConfirmationPageFieldType.AMOUNT,
+          tokenSymbol: currency,
+          iconPosition: 'right',
         },
       ],
       afterConfirmAction: async (options?: TransactionOptions) => {
@@ -99,11 +103,22 @@ const PendingSavingsWithdrawalItem = ({
           <div>{moment(item.complete).format('L')}</div>
         </CustomTooltip>
         <div className="right-panel">
-          <span>
+          <AmountWithLogo
+            amount={item.amount}
+            symbol={currency}
+            icon={
+              currency === 'HP'
+                ? SVGIcons.WALLET_HP_LOGO
+                : currency === 'HBD'
+                ? SVGIcons.WALLET_HBD_LOGO
+                : undefined
+            }
+          />
+          {/* <span>
             {FormatUtils.formatCurrencyValue(
               parseFloat(item.amount.toString()),
             )}
-          </span>
+          </span> */}
           <SVGIcon
             className="delete-icon"
             icon={SVGIcons.GLOBAL_DELETE}

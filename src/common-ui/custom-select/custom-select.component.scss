@@ -39,6 +39,9 @@
           height: 24px;
           width: 24px;
           border-radius: 50%;
+          &.shimmer {
+            @include icon-size(36px);
+          }
         }
         .left-svg {
           height: 24px;
@@ -58,6 +61,12 @@
       .custom-select-handle {
         height: 10px;
         width: 10px;
+        svg {
+          outline: none !important;
+          path {
+            outline: none !important;
+          }
+        }
       }
     }
 
@@ -112,8 +121,10 @@
           box-sizing: border-box;
 
           .left-image {
-            height: 24px;
-            width: 24px;
+            @include icon-size(24px);
+            &.shimmer {
+              @include icon-size(24px);
+            }
             border-radius: 50%;
           }
           .left-svg {

@@ -56,6 +56,9 @@
         }
         .label {
           @include poppins500(14px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .value {
           @include poppins400(14px);
@@ -63,6 +66,10 @@
           max-width: 70%;
           text-align: right;
           user-select: text;
+          min-height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           ul {
             margin: 0;
           }
@@ -71,6 +78,27 @@
           }
         }
       }
+    }
+    .balance-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      column-gap: 4px;
+      width: fit-content;
+      margin: 0 auto;
+      text-align: center;
+
+      .right-arrow-icon {
+        height: 16px;
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+    .insufficient-balance {
+      color: $red;
     }
   }
 

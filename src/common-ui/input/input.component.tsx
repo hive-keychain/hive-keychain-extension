@@ -35,6 +35,7 @@ export interface InputProps {
   rightActionIcon?: SVGIcons;
   rightActionIconClassname?: string;
   size?: 'small';
+  autocompletePrefix?: string;
 }
 
 const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
@@ -155,6 +156,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               autoCompleteValues={props.autocompleteValues}
               handleOnChange={props.onChange}
               value={props.value}
+              prefix={props.autocompletePrefix}
             />
           )}
           {props.logo && (

@@ -4,6 +4,7 @@ import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -11,6 +12,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const AddAccountMain = ({
   navigateTo,
@@ -74,6 +76,14 @@ const AddAccountMain = ({
     });
   };
 
+  const handleSetupKeylessKeychain = async () => {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
+      true,
+    );
+    navigateTo(Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN);
+  };
+
   return (
     <div
       className="add-account-page"
@@ -110,6 +120,14 @@ const AddAccountMain = ({
             dataTestId="import-keys-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
+            type={ButtonType.ALTERNATIVE}
+          />
+        )}
+        {accounts.length === 0 && (
+          <ButtonComponent
+            dataTestId="keyless-keychain-setup-button"
+            label={'popup_html_setup_keyless_keychain'}
+            onClick={handleSetupKeylessKeychain}
             type={ButtonType.ALTERNATIVE}
           />
         )}

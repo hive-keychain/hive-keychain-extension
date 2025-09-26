@@ -37,6 +37,9 @@ export interface ConfirmationPageFields {
   valueClassName?: string;
   warnings?: TransactionWarning[];
   info?: TransactionInfo[];
+  tokenSymbol?: string;
+  tag?: ConfirmationPageFieldType;
+  iconPosition?: 'left' | 'right';
 }
 
 export interface ConfirmationPageEvmFields extends ConfirmationPageFields {
@@ -46,4 +49,11 @@ export interface ConfirmationPageEvmFields extends ConfirmationPageFields {
 export interface EvmConfirmationPageGasFee {
   gasLimit: number;
   gasFee: GasFeeEstimationBase;
+}
+
+export enum ConfirmationPageFieldType {
+  USERNAME = 'username',
+  BALANCE = 'balance',
+  AMOUNT = 'amount',
+  OPERATION_TYPE = 'operation_type',
 }

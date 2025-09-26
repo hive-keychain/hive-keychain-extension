@@ -657,6 +657,119 @@ const getAccountFromKey = async (key: Key) => {
   return AccountUtils.getExtendedAccount(accountName[0]);
 };
 
+const processAuthorityUpdate = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedUsername: string,
+  weight?: number,
+) => {
+  const updatedAuthority = userAccount[role];
+
+  /** Check if account already exists in the account_auths array */
+  const authorizedAccounts = updatedAuthority.account_auths.map(
+    (auth) => auth[0],
+  );
+
+  const hasAuthority = authorizedAccounts.indexOf(authorizedUsername) !== -1;
+  if (hasAuthority) {
+    throw new KeychainError('already_has_authority_error');
+  }
+
+  /** Use weight_threshold as default weight */
+  const finalWeight = weight || userAccount[role].weight_threshold;
+  updatedAuthority.account_auths.push([authorizedUsername, +finalWeight]);
+  updatedAuthority.account_auths.sort((a, b) => a[0].localeCompare(b[0]));
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processAuthorityRemoval = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedUsername: string,
+) => {
+  const updatedAuthority = userAccount[role];
+  const totalAuthorizedUser = updatedAuthority.account_auths.length;
+
+  // Remove the authority if it exists
+  for (let i = 0; i < totalAuthorizedUser; i++) {
+    const user = updatedAuthority.account_auths[i];
+    if (user[0] === authorizedUsername) {
+      updatedAuthority.account_auths.splice(i, 1);
+      break;
+    }
+  }
+
+  /** Check if the account was actually removed */
+  if (totalAuthorizedUser === updatedAuthority.account_auths.length) {
+    throw new KeychainError('nothing_to_remove_error');
+  }
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processKeyAuthorityUpdate = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedKey: string,
+  weight?: number,
+) => {
+  const updatedAuthority = userAccount[role];
+
+  /** Check if key already exists in the key_auths array */
+  const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
+  const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
+  if (hasAuthority) {
+    throw new KeychainError('already_has_authority_error');
+  }
+
+  /** Use weight_threshold as default weight */
+  const finalWeight = weight || userAccount[role].weight_threshold;
+  updatedAuthority.key_auths.push([authorizedKey, +finalWeight]);
+  updatedAuthority.key_auths.sort((a, b) =>
+    (a[0] as string).localeCompare(b[0] as string),
+  );
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processKeyAuthorityRemoval = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedKey: string,
+) => {
+  const updatedAuthority = userAccount[role];
+  const totalAuthorizedKey = updatedAuthority.key_auths.length;
+
+  // Remove the key authority if it exists
+  for (let i = 0; i < totalAuthorizedKey; i++) {
+    const key = updatedAuthority.key_auths[i];
+    if (key[0] === authorizedKey) {
+      updatedAuthority.key_auths.splice(i, 1);
+      break;
+    }
+  }
+
+  /** Check if the key was actually removed */
+  if (totalAuthorizedKey === updatedAuthority.key_auths.length) {
+    throw new KeychainError('missing_authority_error');
+  }
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -692,6 +805,10 @@ const AccountUtils = {
   reorderAccounts,
   addAuthorizedKey,
   getAccountFromKey,
+  processAuthorityUpdate,
+  processAuthorityRemoval,
+  processKeyAuthorityUpdate,
+  processKeyAuthorityRemoval,
 };
 
 export const BackgroundAccountUtils = {
