@@ -149,15 +149,6 @@ const chromeMessageHandler = async (
   }
 };
 
-// When a chrome window is removed, check if there are no window left open
-chrome.windows.onRemoved.addListener(() => {
-  chrome.windows.getAll((windows) => {
-    if (windows.length === 0) {
-      LocalStorageUtils.clearSessionStorage();
-    }
-  });
-});
-
 export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,
   tab: number,

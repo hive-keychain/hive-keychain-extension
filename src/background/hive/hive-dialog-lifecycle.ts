@@ -2,7 +2,7 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 /* istanbul ignore next */
-chrome.windows.onRemoved.addListener(async (id: number) => {
+export const onRemoveHive = async (id: number) => {
   const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
   const {
     windowId,
@@ -36,4 +36,4 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
 
     requestHandler.reset(true);
   }
-});
+};

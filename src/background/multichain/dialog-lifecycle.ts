@@ -1,7 +1,10 @@
+import { onRemoveEvm } from '@background/evm/evm-dialog-lifecycle';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import { onRemoveHive } from '@background/hive/hive-dialog-lifecycle';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const createPopup = (
   callback: () => void,
@@ -63,3 +66,14 @@ export const removeWindow = (windowId: number) => {
     }
   });
 };
+
+// When a chrome window is removed, check if there are no window left open
+chrome.windows.onRemoved.addListener((id: number) => {
+  onRemoveEvm(id);
+  onRemoveHive(id);
+  chrome.windows.getAll((windows) => {
+    if (windows.length === 0) {
+      LocalStorageUtils.clearSessionStorage();
+    }
+  });
+});

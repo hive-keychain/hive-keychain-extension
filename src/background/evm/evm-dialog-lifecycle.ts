@@ -3,10 +3,9 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 /* istanbul ignore next */
-chrome.windows.onRemoved.addListener(async (id: number) => {
+export const onRemoveEvm = async (id: number) => {
   const requestHandler = await EvmRequestHandler.getFromLocalStorage();
   const { windowId, request, request_id, tab, confirmed } = requestHandler.data;
-
   if (id == windowId && !confirmed && tab) {
     CommunicationUtils.tabsSendMessage(tab!, {
       command: DialogCommand.ANSWER_EVM_REQUEST,
@@ -22,4 +21,4 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
 
     requestHandler.reset(true);
   }
-});
+};
