@@ -1,5 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import {
   EvmAccount,
   WalletWithBalance,
@@ -27,6 +28,8 @@ const ImportWalletConfirmation = ({
   mk,
   setEvmAccounts,
   chain,
+  activeAccount,
+  loadEvmActiveAccount,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
 
@@ -67,7 +70,13 @@ const ImportWalletConfirmation = ({
         nickname,
       );
       await ChainUtils.addChainToSetupChains(chain);
-      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+      if (!activeAccount.address) {
+        const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
+          mk,
+        );
+        setEvmAccounts(accounts);
+        await loadEvmActiveAccount(chain, accounts[0].wallet);
+      }
     }
   };
 
@@ -128,6 +137,7 @@ const mapStateToProps = (state: RootState) => {
     wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
     mk: state.mk,
     chain: state.chain,
+    activeAccount: state.evm.activeAccount,
   };
 };
 
@@ -135,6 +145,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
+  loadEvmActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

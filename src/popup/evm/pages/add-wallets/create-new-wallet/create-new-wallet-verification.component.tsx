@@ -1,5 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -20,8 +21,10 @@ const CreateNewWalletVerification = ({
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
+  loadEvmActiveAccount,
   wallet,
   mk,
+  chain,
   setEvmAccounts,
 }: PropsType) => {
   const [hiddenWordIndexes, setHiddenWordIndexes] = useState<number[]>([]);
@@ -75,7 +78,9 @@ const CreateNewWalletVerification = ({
       seedId: 0,
     };
     await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    setEvmAccounts(accounts);
+    await loadEvmActiveAccount(chain, accounts[0].wallet);
   };
 
   const verifyWord = () => {
@@ -183,6 +188,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     wallet: state.navigation.stack[0].params as HDNodeWallet,
     mk: state.mk,
+    activeAccount: state.evm.activeAccount,
+    chain: state.chain,
   };
 };
 
@@ -191,6 +198,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
+  loadEvmActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 
