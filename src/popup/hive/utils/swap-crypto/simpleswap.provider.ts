@@ -81,6 +81,7 @@ export class SimpleSwapProvider
     };
   };
   getMinMaxAmountAccepted = async (from: string, to: string) => {
+    if (from === 'HIVE') return;
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
     const minMaxRoute = `${this.urls.routes.minMaxAccepted}`;
@@ -93,7 +94,7 @@ export class SimpleSwapProvider
         },
       })
     ).data;
-    return response.result.min;
+    return [response.result.min, response.result.max];
   };
   /**
    * Note: For simpleswap fee is set in the website, specifically: https://partners.simpleswap.io/webtools/api

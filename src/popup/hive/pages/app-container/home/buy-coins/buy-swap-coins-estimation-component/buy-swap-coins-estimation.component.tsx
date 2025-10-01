@@ -32,6 +32,8 @@ interface Props {
   price?: CurrencyPrices;
   minAcceptedAmount?: number;
   minAmountLabel?: string;
+  maxAcceptedAmount?: number;
+  maxAmountLabel?: string;
   swapTokens?: () => void;
   displayReceiveTokenLogo?: boolean;
   errorMessage?: string;
@@ -58,6 +60,8 @@ const BuySwapCoinsEstimation = ({
   swapTokens,
   displayReceiveTokenLogo,
   errorMessage,
+  maxAcceptedAmount,
+  maxAmountLabel,
 }: Props) => {
   return (
     <FormContainer>
@@ -89,6 +93,16 @@ const BuySwapCoinsEstimation = ({
               {minAcceptedAmount > 0
                 ? FormatUtils.formatCurrencyValue(minAcceptedAmount)
                 : ''}
+            </div>
+          ) : null}
+        </div>
+        <div className="min-amount">
+          {maxAcceptedAmount &&
+          maxAmountLabel &&
+          maxAcceptedAmount !== Infinity ? (
+            <div>
+              {chrome.i18n.getMessage(maxAmountLabel)}{' '}
+              {FormatUtils.formatCurrencyValue(maxAcceptedAmount)}
             </div>
           ) : null}
         </div>

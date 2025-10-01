@@ -50,7 +50,8 @@ export class SwapCryptosMerger {
   ): Promise<
     {
       provider: SwapCryptos;
-      amount: number;
+      min: number | null;
+      max: number | null;
     }[]
   > => {
     let providerMinMaxAmountList = [];
@@ -62,7 +63,14 @@ export class SwapCryptosMerger {
         );
         providerMinMaxAmountList.push({
           provider: provider.name as SwapCryptos,
-          amount: parseFloat(minMaxAccepted),
+          min:
+            minMaxAccepted[0] === null
+              ? Infinity
+              : parseFloat(minMaxAccepted[0]),
+          max:
+            minMaxAccepted[1] === null
+              ? Infinity
+              : parseFloat(minMaxAccepted[1]),
         });
       } catch (error) {
         Logger.log('No min/max available in Exchange', { provider, error });

@@ -221,19 +221,13 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       await swapCryptos
         ?.getMinMaxAccepted(startTokenOption, endTokenOption)
         .then((res) => {
-          if (res) {
-            if (res.length === 1) {
-              setExchangeRangeAmount({ min: res[0].amount, max: 0 });
-            } else if (res.length > 1) {
-              setMinAmountProviderList(res);
-              const minValue = res.sort((a, b) => a.amount - b.amount)[0]
-                .amount;
-              setExchangeRangeAmount({
-                min: minValue,
-                max: 0,
-              });
-            }
-          }
+          const min = res.reduce((min, item) => {
+            return item.min ? Math.min(min, item.min) : min;
+          }, Infinity);
+          const max = res.reduce((max, item) => {
+            return item.max ? Math.max(max, item.max) : max;
+          }, 0);
+          setExchangeRangeAmount({ min, max });
         });
       setLoadingMinMaxAccepted(false);
     } catch (error) {
@@ -334,6 +328,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             countdown={countdown}
             minAmountLabel={'html_popup_swap_crypto_min_accepted_label'}
             minAcceptedAmount={exchangeRangeAmount.min}
+            maxAcceptedAmount={exchangeRangeAmount.max}
+            maxAmountLabel={'html_popup_swap_crypto_max_accepted_label'}
             swapTokens={swapStartAndEnd}
             displayReceiveTokenLogo
             errorMessage={errorInApi}

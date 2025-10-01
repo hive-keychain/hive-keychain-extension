@@ -148,7 +148,7 @@ export class StealthexProvider
         },
       )
     ).data;
-    return response.min_amount;
+    return [response.min_amount, response.max_amount];
   };
   getExchangeEstimation = async (amount: string, from: string, to: string) => {
     let requestHeaders: GenericObjectKeypair = {};
