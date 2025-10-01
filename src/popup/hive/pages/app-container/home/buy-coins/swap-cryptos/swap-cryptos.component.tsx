@@ -4,12 +4,10 @@ import {
 } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
+import { SimpleSwapProvider } from '@popup/hive/utils/swap-crypto/simpleswap.provider';
+import { StealthexProvider } from '@popup/hive/utils/swap-crypto/stealthex.provider';
 
-import {
-  SimpleSwapProvider,
-  StealthexProvider,
-  SwapCryptosMerger,
-} from '@popup/hive/utils/swap-cryptos.utils';
+import { SwapCryptosMerger } from '@popup/hive/utils/swap-crypto/swap-cryptos.utils';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
@@ -19,26 +17,8 @@ import { OptionItem } from 'src/common-ui/custom-select/custom-select.component'
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import Config from 'src/config';
 import { useCountdown } from 'src/dialog/hooks/countdown.hook';
-import { FormUtils } from 'src/utils/form.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-
-/**Note: Partner fee in percents (e.g. 1, 2, 5.3, 20) Max: 20 */
-export interface ExchangeOperationForm {
-  fixed: boolean;
-  amountFrom: string;
-  refundAddress: string;
-  addressTo: string;
-  currencyFrom: string;
-  currencyTo: string;
-  partnerFee: number;
-}
-
-//TODO fill bellow if needed.
-//  - remember there are some validation rules comming from each API
-const exchangeOperationFormRules = FormUtils.createRules<ExchangeOperationForm>(
-  {},
-);
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [minAmountProviderList, setMinAmountProviderList] = useState<

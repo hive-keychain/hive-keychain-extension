@@ -1,4 +1,3 @@
-import { ExchangeOperationForm } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos.component';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
@@ -118,4 +117,22 @@ export class SwapCryptosBaseProvider {
     this.refId = swapCryptosConfig.refId;
     this.partnerFeeAmount = swapCryptosConfig.partnerFeeAmount;
   }
+}
+
+export interface SwapCryptoListItem {
+  name: string;
+  symbol: string;
+  network: string;
+  precision: number;
+  exchanges: SwapCryptos[];
+}
+
+export interface ExchangeOperationForm {
+  fixed: boolean;
+  amountFrom: string;
+  refundAddress: string;
+  addressTo: string;
+  currencyFrom: string;
+  currencyTo: string;
+  partnerFee: number;
 }
