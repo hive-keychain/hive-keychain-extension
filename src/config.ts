@@ -69,7 +69,6 @@ const Config = {
   swapCryptos: {
     autoRefreshPeriodSec: 30,
     stealthex: {
-      //TODO add keychain data
       urls: {
         baseUrl: 'https://api.stealthex.io/v4/',
         referalBaseUrl: 'https://stealthex.io/?ref=',
@@ -82,9 +81,11 @@ const Config = {
           exchange: 'fee/exchange',
         },
       },
-      apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
+      apiKey:
+        process.env.STEALTHEX_DEV_API_KEY ||
+        '3d4e1f8b-259c-4c09-8b12-66fac24e826c',
       refId: 'gti0epcrc4c',
-      partnerFeeAmount: 20,
+      partnerFeeAmount: 0.8,
     } as SwapCryptosConfig,
     simpleswap: {
       //Note: this exchange set up its partner fee in: https://partners.simpleswap.io/webtools/api
@@ -101,7 +102,9 @@ const Config = {
           exchange: 'create_exchange',
         },
       },
-      apiKey: process.env.SIMPLESWAP_DEV_API_KEY ?? '',
+      apiKey:
+        process.env.SIMPLESWAP_DEV_API_KEY ??
+        '26391eff-73c0-4369-a37b-cd4b37a62a12',
       refId: '87338fbedd5a',
     } as SwapCryptosConfig,
     letsExchange: {

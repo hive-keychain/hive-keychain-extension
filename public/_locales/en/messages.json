@@ -3963,7 +3963,7 @@
     "description": "General word"
   },
   "buy_coins_swap_cryptos_error_api": {
-    "message": "There may be an error from Third party API, please try again later",
+    "message": "Something went wrong, please try again later",
     "description": "buy fiat crypto swap error message"
   },
   "buy_coins_swap_cryptos_error_adjust_min": {

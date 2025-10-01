@@ -113,36 +113,38 @@ const BuySwapCoinsEstimation = ({
             />
           </div>
         </div>
-        <div className="estimations">
-          <div className="quote-label-wrapper">
-            {estimations.length !== 0 && (
-              <span className="quote-label">
-                {chrome.i18n.getMessage('quotes')}
-              </span>
-            )}
-            {!!countdown && estimations.length != 0 && (
-              <span className="countdown">
-                {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
-              </span>
-            )}
+        {!errorMessage && (
+          <div className="estimations">
+            <div className="quote-label-wrapper">
+              {estimations.length !== 0 && (
+                <span className="quote-label">
+                  {chrome.i18n.getMessage('quotes')}
+                </span>
+              )}
+              {!!countdown && estimations.length != 0 && (
+                <span className="countdown">
+                  {chrome.i18n.getMessage('swap_autorefresh', countdown + '')}
+                </span>
+              )}
+            </div>
+            <div className="quotes">
+              {estimations.map((estimation, index) => {
+                const key =
+                  estimation.name + estimation.amount + index.toString();
+                return (
+                  <BuySwapCoinsEstimationItemComponent
+                    key={key}
+                    price={price!}
+                    endTokenList={endTokenList}
+                    displayReceiveTokenLogo={displayReceiveTokenLogo}
+                    estimation={estimation}
+                    setStep={setStep}
+                  />
+                );
+              })}
+            </div>
           </div>
-          <div className="quotes">
-            {estimations.map((estimation, index) => {
-              const key =
-                estimation.name + estimation.amount + index.toString();
-              return (
-                <BuySwapCoinsEstimationItemComponent
-                  key={key}
-                  price={price!}
-                  endTokenList={endTokenList}
-                  displayReceiveTokenLogo={displayReceiveTokenLogo}
-                  estimation={estimation}
-                  setStep={setStep}
-                />
-              );
-            })}
-          </div>
-        </div>
+        )}
         {errorMessage && (
           <div className="error">
             {chrome.i18n.getMessage('buy_coins_swap_cryptos_error_api')}
