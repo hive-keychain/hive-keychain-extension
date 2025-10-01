@@ -450,7 +450,11 @@ export class SwapCryptosMerger {
         Logger.log('No estimation available in Exchange', { provider, error });
       }
     }
-    return providerEstimationList.length ? providerEstimationList : undefined;
+    return providerEstimationList.length
+      ? providerEstimationList.sort(
+          (a, b) => b.estimation.estimation - a.estimation.estimation,
+        )
+      : undefined;
   };
   getNewExchange = async (
     formData: ExchangeOperationForm,
