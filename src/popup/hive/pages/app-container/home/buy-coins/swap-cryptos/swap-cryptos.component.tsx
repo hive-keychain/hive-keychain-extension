@@ -246,6 +246,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     if (
       parseFloat(newAmount) > 0 &&
       parseFloat(newAmount) >= newExchangeRangeAmount.min &&
+      parseFloat(newAmount) <= newExchangeRangeAmount.max &&
       !newLoadingMinMaxAccepted &&
       newStartToken &&
       newEndToken &&
@@ -260,6 +261,13 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           )
           .then((res) => {
             if (!res) {
+              if (
+                +amount > newExchangeRangeAmount.max ||
+                +amount < newExchangeRangeAmount.min
+              ) {
+                setErrorInApi('buy_coins_swap_cryptos_out_of_range');
+                return;
+              }
               setErrorInApi('buy_coins_swap_cryptos_error_api');
               return;
             }

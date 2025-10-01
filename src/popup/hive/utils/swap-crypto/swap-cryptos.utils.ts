@@ -97,7 +97,7 @@ export class SwapCryptosMerger {
           from,
           to,
         );
-        if (!estimation) continue;
+        if (!estimation || Number.isNaN(estimation.estimation)) continue;
         providerEstimationList.push({
           provider: provider.name as SwapCryptos,
           estimation: estimation,

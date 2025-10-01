@@ -3967,7 +3967,11 @@
     "description": "General word"
   },
   "buy_coins_swap_cryptos_error_api": {
-    "message": "Something went wrong, please try again later",
+    "message": "Something went wrong, please try changing the amount swapped or try again later.",
+    "description": "buy fiat crypto swap error message"
+  },
+  "buy_coins_swap_cryptos_out_of_range": {
+    "message": "The amount you entered is out of range.",
     "description": "buy fiat crypto swap error message"
   },
   "buy_coins_swap_cryptos_error_adjust_min": {

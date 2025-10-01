@@ -154,9 +154,7 @@ const BuySwapCoinsEstimation = ({
           </div>
         )}
         {errorMessage && (
-          <div className="error">
-            {chrome.i18n.getMessage('buy_coins_swap_cryptos_error_api')}
-          </div>
+          <div className="error">{chrome.i18n.getMessage(errorMessage)}</div>
         )}
       </div>
     </FormContainer>
