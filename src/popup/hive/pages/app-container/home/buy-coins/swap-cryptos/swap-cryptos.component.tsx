@@ -11,7 +11,13 @@ import { SwapCryptosMerger } from '@popup/hive/utils/swap-crypto/swap-cryptos.ut
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -28,6 +34,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loading, setLoading] = useState(true);
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
+  const isInitializedFromStorage = useRef(false);
   const [
     pairedCurrencyOptionsInitialList,
     setPairedCurrencyOptionsInitialList,
@@ -134,11 +141,12 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   ]);
 
   useEffect(() => {
-    if (startToken && endToken && !errorInApi) {
+    if (startToken && endToken && swapCryptos) {
       setLoadingMinMaxAccepted(true);
+      setErrorInApi(undefined);
       getMinAndMax(startToken, endToken);
     }
-  }, [startToken, endToken, errorInApi]);
+  }, [startToken, endToken]);
 
   const init = async () => {
     const newSwapCryptos = new SwapCryptosMerger([
@@ -169,10 +177,14 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   };
 
   useEffect(() => {
-    if (pairedCurrencyOptionsInitialList.length && !errorInApi) {
+    if (
+      pairedCurrencyOptionsInitialList.length &&
+      !isInitializedFromStorage.current
+    ) {
+      isInitializedFromStorage.current = true;
       initializeFromStorage(pairedCurrencyOptionsInitialList);
     }
-  }, [pairedCurrencyOptionsInitialList, errorInApi]);
+  }, [pairedCurrencyOptionsInitialList]);
 
   const initializeFromStorage = async (
     pairedCurrencyOptionsList: OptionItem[],
@@ -295,18 +307,22 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     }
   };
 
-  const swapStartAndEnd = () => {
-    const tempStarTokentListOptions = [...startTokenListOptions];
-    const tempEndTokenListOptions = [...endTokenListOptions];
-    const tempStartToken = { ...startToken! };
-    const tempEndToken = { ...endToken! };
-    setEndToken(tempStartToken);
+  const swapStartAndEnd = useCallback(() => {
+    // Batch all state updates to prevent race conditions
+    const tempStarTokentListOptions = startTokenListOptions;
+    const tempEndTokenListOptions = endTokenListOptions;
+    const tempStartToken = startToken;
+    const tempEndToken = endToken;
+
+    // Use functional updates to ensure we're working with the latest state
     setStartToken(tempEndToken);
+    setEndToken(tempStartToken);
     setStartTokenListOptions(tempEndTokenListOptions);
     setEndTokenListOptions(tempStarTokentListOptions);
     setEstimations([]);
     setAmount('');
-  };
+    setErrorInApi(undefined);
+  }, [startToken, endToken, startTokenListOptions, endTokenListOptions]);
   return (
     <div className="swap-cryptos">
       {loading && (
