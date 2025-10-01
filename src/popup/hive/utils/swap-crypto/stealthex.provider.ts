@@ -166,7 +166,10 @@ export class StealthexProvider
     const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${
       Config.swapCryptos.stealthex.refId
     }&amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}`;
-
+    //     const extensionId = (await chrome.management.getSelf()).id;
+    //     const link = `chrome-extension://${extensionId}/exchange-cryptos.html?amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}&type=${
+    //      SwapCryptos.STEALTHEX
+    //    }`;
     const estimation = (
       await axios.post(this.buildUrl(estimationRoute), requestData, {
         headers: requestHeaders,
