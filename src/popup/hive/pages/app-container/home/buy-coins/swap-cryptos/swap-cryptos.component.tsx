@@ -121,6 +121,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     );
   }, []);
 
+  // Throttled effect for amount changes only
   useEffect(() => {
     throttledRefresh(
       amount,
@@ -130,8 +131,21 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       exchangeRangeAmount,
       swapCryptos,
     );
+  }, [amount]);
+
+  // Instant effect for token changes and swapCryptos updates
+  useEffect(() => {
+    if (swapCryptos) {
+      getExchangeEstimate(
+        amount,
+        startToken,
+        endToken,
+        loadingMinMaxAccepted,
+        exchangeRangeAmount,
+        swapCryptos,
+      );
+    }
   }, [
-    amount,
     startToken,
     endToken,
     loadingMinMaxAccepted,
