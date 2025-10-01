@@ -223,6 +223,30 @@
     "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io\" target=\"_blank\" >signup.hive.io</a>.",
     "description": "When adding new account"
   },
+  "popup_html_keyless_keychain": {
+    "message": "Keyless Keychain",
+    "description": "Keyless keychain"
+  },
+  "popup_html_keyless_keychain_setup": {
+    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp with Keychain and scan the QR code to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_register": {
+    "message": "Keychain is in keyless mode and will use HiveAuth to authenticate you. \n Scan this QR code with your mobile device to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_setup_qr": {
+    "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_sessions": {
+    "message": "Sessions",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_leave_button": {
+    "message": "Leave Keyless Mode",
+    "description": "when keyless keychain is enabled"
+  },
   "popup_html_setup": {
     "message": "Setup",
     "description": "when adding new account"
@@ -436,7 +460,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "When enabled, this feature will open a Keychain pop when you click on supported links.",
+    "message": "When enabled, this feature will open a Keychain popup when you click on supported links.",
     "description": "on keychainify settings"
   },
   "popup_html_import": {
@@ -460,7 +484,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "<ul><li><span class='text'>The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a full-stack developer and Hive witness, and completed by two more full-time developers, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> and <a href=\"https://peakd.com/@theghost1980\" target=\"_blank\">@theghost1980</a>, and <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, our Community Manager. Our work is funded by the DHF, thanks to the community support.</span></li><div class='separator horizontal'></div><li><span class='text'>Besides this extension, we provide mobile Hive wallets for Android and iOS, various Hive tools, and Keychain Store, a mobile App for brick-and-mortar businesses wishing to add HIVE and HBD as payment methods.</span></li><div class='separator horizontal'></div><li><span class='text'>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.</></li></ul>",
+    "message": "<ul><li><span class='text'>The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a full-stack developer and Hive witness, and completed by two more full-time developers, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> and <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, and <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, our Community Manager. Our work is funded by the DHF, thanks to the community support.</span></li><div class='separator horizontal'></div><li><span class='text'>Besides this extension, we provide mobile Hive wallets for Android and iOS, various Hive tools, and Keychain Store, a mobile App for brick-and-mortar businesses wishing to add HIVE and HBD as payment methods.</span></li><div class='separator horizontal'></div><li><span class='text'>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -1109,6 +1133,14 @@
     "message": "Swap",
     "description": "When website requests a swap"
   },
+  "dialog_from_amount": {
+    "message": "From",
+    "description": "When website requests a swap"
+  },
+  "dialog_to_amount": {
+    "message": "To",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -1322,7 +1354,7 @@
     "description": "Website request title"
   },
   "dialog_title_proxy": {
-    "message": "Chose Proxy",
+    "message": "Choose Proxy",
     "description": "Website request title"
   },
   "dialog_title_token": {
@@ -1392,6 +1424,10 @@
   "dialog_recurrence_days_hours": {
     "message": "Every $1 day(s) and $2 hours(s)",
     "description": "When requesting recurrent transfers"
+  },
+  "bgd_keyless_keychain_error": {
+    "message": "Keyless Keychain Error",
+    "description": "Keyless Keychain Error"
   },
   "bgd_init_no_wallet": {
     "message": "No wallet!",
@@ -1496,6 +1532,9 @@
   "bgd_ops_sign_success": {
     "message": "Message signed successfully."
   },
+  "bgd_ops_sign_requested": {
+    "message": "Transaction has been requested. Please check your keychain mobile app to sign it."
+  },
   "bgd_ops_sign_error": {
     "message": "Could not sign."
   },
@@ -1567,6 +1606,16 @@
   },
   "bgd_ops_remove_auth": {
     "message": "Succesfully removed $1 authority from @$2 on account @$3."
+  },
+  "bgd_ops_keyless_broadcast_success": {
+    "message": "Keyless transaction has been broadcasted successfully."
+  },
+  "bgd_ops_keyless_broadcast_error": {
+    "message": "Keyless transaction failed to broadcast."
+  },
+  "bgd_ops_challenge_success": {
+    "message": "$1 request has been processed successfully.",
+    "description": "Success message for encode/decode/sign operations."
   },
   "popup_account_redeem": {
     "message": "You have Rewards ready to redeem in the amount of",
@@ -1801,6 +1850,43 @@
   "dialog_header_register": {
     "message": "Welcome to Keychain",
     "description": "When registering from request"
+  },
+
+  "dialog_register_keyless_title": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
+  "dialog_header_keyless_username": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
+  "dialog_register_keyless_loading": {
+    "message": "Registering to HiveAuth",
+    "description": "When registering to keyless keychain"
+  },
+  "dialog_hiveauth_connection_failed": {
+    "message": "Failed to establish HiveAuth connection after 5 attempts",
+    "description": "When registering to keyless keychain via HiveAuth"
+  },
+  "dialog_anonymous_keyless_content": {
+    "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
+    "description": "When registering from request"
+  },
+  "dialog_keyless_unsupported_operation": {
+    "message": "$1 is not supported by keyless keychain.",
+    "description": "When trying to perform an unsupported operation"
+  },
+  "dialog_keyless_username_required": {
+    "message": "Username is required",
+    "description": "When trying to perform an unsupported anonymous operation"
+  },
+  "dialog_keyless_expired": {
+    "message": "Keyless authentication request has expired. Please try again.",
+    "description": "When keyless tx expires"
+  },
+  "dialog_keyless_expire_in": {
+    "message": "Expiring in $1 seconds",
+    "description": "When keyless tx hasnt expired yet"
   },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
@@ -2993,16 +3079,12 @@
     "message": "Master password",
     "description": "General"
   },
-  "html_popup_create_account_username_too_short": {
-    "message": "Username is too short. Needs minimum 4 characters",
-    "description": "General"
-  },
   "html_popup_create_account_username_already_used": {
     "message": "Username is already used. Please pick a new one",
     "description": "General"
   },
   "html_popup_create_account_account_name_not_valid": {
-    "message": "Account name is not valid",
+    "message": "The account name is not valid. Make sure you don't have dots and hyphens next to each other, and that dot-separated segments are 3 characters long or more.",
     "description": "General"
   },
   "html_popup_create_account_safely_copied_keys": {
@@ -3090,11 +3172,11 @@
     "description": "Governance expiration renewal popup"
   },
   "html_popup_wrong_key_title": {
-    "message": "Wrong key$1 found",
+    "message": "Wrong key(s) found",
     "description": "Wrong key popup"
   },
   "html_popup_wrong_key_introduction": {
-    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "message": "Some wrong key(s) were found on your account @$1. Would you like to update them right now?",
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renewal_introduction": {
@@ -3471,8 +3553,24 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "You need to add your active key to Keychain to claim accounts",
+    "message": "You need to add your posting key to Keychain to claim rewards",
     "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_create_account_username_too_long": {
+    "message": "Username is too long (max 16 characters)",
+    "description": "create account => username too long"
+  },
+  "popup_html_create_account_username_case_not_valid": {
+    "message": "Username must only contain lowercase letters, numbers, hyphens and dots",
+    "description": "create account => username case not valid"
+  },
+  "popup_html_create_account_username_too_short": {
+    "message": "Username is too short (min 3 characters)",
+    "description": "create account => username too short"
+  },
+  "popup_html_create_account_username_start_or_end_not_valid": {
+    "message": "Username must start with a letter and end with a letter or number",
+    "description": "create account => username start or end not valid"
   },
   "popup_html_cant_automatically_claim_ledger": {
     "message": "You can't automatically claim because your key is saved on Ledger",
@@ -3490,6 +3588,11 @@
     "message": "Add from Ledger",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
+  "popup_html_setup_keyless_keychain": {
+    "message": "Keyless Keychain",
+    "description": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device"
+  },
+
   "add_key_from_ledger": {
     "message": "Link key",
     "description": "Title of add key from ledger page"

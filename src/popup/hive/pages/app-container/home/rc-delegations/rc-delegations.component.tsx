@@ -30,6 +30,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -173,13 +174,21 @@ const RCDelegations = ({
     const isCancel = Number(form.gigaRcValue) === 0;
 
     const fields = [
-      { label: 'popup_html_rc_delegation_to', value: `@${form.delegatee}` },
+      {
+        label: 'popup_html_rc_delegation_to',
+        value: `@${form.delegatee}`,
+        tag: ConfirmationPageFieldType.USERNAME,
+        iconPosition: 'right',
+      },
       {
         label: 'popup_html_rc_delegation_value',
         value: `${RcDelegationsUtils.formatRcWithUnit(
           form.gigaRcValue,
           true,
         )} (≈ ${form.hpValue} ${currencyLabels.hp})`,
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: currencyLabels.hp,
+        iconPosition: 'right',
       },
     ];
 
@@ -328,6 +337,7 @@ const RCDelegations = ({
             placeholder="popup_html_username"
             type={InputType.TEXT}
             autocompleteValues={autocompleteTransferUsernames}
+            autocompletePrefix="@"
           />
 
           <div className="amount-panel">

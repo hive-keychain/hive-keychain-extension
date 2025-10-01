@@ -4,6 +4,7 @@ import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-se
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 export enum OptionItemBadgeType {
@@ -65,7 +66,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           selectProps.methods.dropDown('close');
         }}>
         {itemProps.selectedItem.img && (
-          <img className="left-image" src={itemProps.selectedItem.img} />
+          <PreloadedImage
+            className="left-image"
+            src={itemProps.selectedItem.img}
+          />
         )}
         <span>{itemProps.selectedItem.label}</span>
         {itemProps.selectedItem.bagde && (

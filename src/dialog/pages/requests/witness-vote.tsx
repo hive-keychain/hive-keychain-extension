@@ -2,6 +2,7 @@ import { RequestId, RequestWitnessVote } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
@@ -18,9 +19,9 @@ const WitnessVote = (props: Props) => {
   const { data, accounts } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
   const renderUsername = () => {
-    return !accounts ? (
+    return !accounts && data.username ? (
       <>
-        <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+        <UsernameWithAvatar title={'dialog_account'} username={data.username} />
         <Separator type={'horizontal'} fullSize />
       </>
     ) : (
@@ -33,7 +34,7 @@ const WitnessVote = (props: Props) => {
       {...props}
       {...anonymousProps}>
       {renderUsername()}
-      <RequestItem title="dialog_witness" content={`@${data.witness}`} />
+      <UsernameWithAvatar title="dialog_witness" username={data.witness} />
       <Separator type={'horizontal'} fullSize />
       <RequestItem title="dialog_vote" content={JSON.stringify(data.vote)} />
     </Operation>

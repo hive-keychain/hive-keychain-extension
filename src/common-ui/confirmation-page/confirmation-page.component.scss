@@ -52,12 +52,19 @@
         justify-content: space-between;
         .label {
           @include poppins500(14px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .value {
           max-width: 70%;
           text-align: right;
           user-select: text;
           @include poppins400(14px);
+          min-height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           &.xs-font {
             font-size: 11px;
           }

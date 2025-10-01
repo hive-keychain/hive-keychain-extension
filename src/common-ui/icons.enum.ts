@@ -31,6 +31,7 @@ export enum SVGIcons {
   FAVORITE_ACCOUNTS_SAVE = 'favorite-accounts/save',
 
   GLOBAL_ARROW = 'global/arrow',
+  GLOBAL_ARROW_RIGHT = 'global/arrow-right',
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
@@ -111,6 +112,7 @@ export enum SVGIcons {
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
   MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
+  MENU_BOTTOM_BAR_MEDIUM = 'menu/bottom-bar/medium',
 
   MENU_RPC_ADD_BUTTON = 'menu/rpc/add-button',
   MENU_RPC_CLOSE_BUTTON = 'menu/rpc/close-button',

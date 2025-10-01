@@ -9,9 +9,12 @@ type Props = {
 };
 
 type ResultMessage = {
-  msg: { message: string; success: boolean; data: KeychainRequest };
+  msg: {
+    message: string;
+    success: boolean;
+    data: KeychainRequest;
+  };
 };
-
 const RequestResponse = ({ data }: Props) => {
   if (data.msg.success) {
     setTimeout(() => {
