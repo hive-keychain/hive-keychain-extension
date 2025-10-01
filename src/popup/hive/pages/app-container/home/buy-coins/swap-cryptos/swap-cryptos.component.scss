@@ -145,6 +145,7 @@
       justify-content: space-between;
       padding: 3px 15px;
       color: var(--main-font-color);
+      cursor: pointer;
       .amount {
         display: flex;
         flex-direction: column;
@@ -194,8 +195,13 @@
           width: 12px;
           height: 24px;
           align-self: baseline;
-          svg {
+          div {
             width: 12px;
+            height: 24px;
+            svg {
+              width: 12px;
+              height: 24px;
+            }
           }
         }
       }

@@ -1,9 +1,6 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { RampEstimationDisplay } from '@interfaces/ramps.interface';
-import {
-  SwapCryptos,
-  SwapCryptosEstimationDisplay,
-} from '@interfaces/swap-cryptos.interface';
+import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
 import { BuySwapCoinsEstimationItemComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation-item/buy-swap-coins-estimation-item.component';
 import React from 'react';
 import {
@@ -32,7 +29,6 @@ interface Props {
   inputPlaceHolder: string;
   estimations: RampEstimationDisplay[] | SwapCryptosEstimationDisplay[];
   countdown: number | null;
-  setStep?: (provider: SwapCryptos) => void;
   price?: CurrencyPrices;
   minAcceptedAmount?: number;
   minAmountLabel?: string;
@@ -59,7 +55,6 @@ const BuySwapCoinsEstimation = ({
   price,
   minAcceptedAmount,
   minAmountLabel,
-  setStep,
   swapTokens,
   displayReceiveTokenLogo,
   errorMessage,
@@ -138,7 +133,6 @@ const BuySwapCoinsEstimation = ({
                     endTokenList={endTokenList}
                     displayReceiveTokenLogo={displayReceiveTokenLogo}
                     estimation={estimation}
-                    setStep={setStep}
                   />
                 );
               })}

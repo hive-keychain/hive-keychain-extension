@@ -6,7 +6,7 @@ import { Asset } from 'hive-keychain-commons';
 const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {
   const currency = nb.split(' ')[1];
 
-  const value = parseFloat(nb).toFixed(decimals);
+  const value = decimals === -1 ? nb : parseFloat(nb).toFixed(decimals);
   var parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');

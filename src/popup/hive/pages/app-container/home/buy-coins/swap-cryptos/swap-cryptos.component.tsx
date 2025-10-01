@@ -5,7 +5,6 @@ import {
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
 
-import { SwapCryptosStepTwoComponent } from '@popup/hive/pages/app-container/home/buy-coins/swap-cryptos/swap-cryptos-step-two-component/swap-cryptos-step-two-component';
 import {
   SimpleSwapProvider,
   StealthexProvider,
@@ -15,7 +14,6 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -43,29 +41,9 @@ const exchangeOperationFormRules = FormUtils.createRules<ExchangeOperationForm>(
 );
 
 const SwapCryptos = ({ price }: PropsFromRedux) => {
-  const { control, handleSubmit, watch, setValue } =
-    useForm<ExchangeOperationForm>({
-      defaultValues: {
-        fixed: false,
-        amountFrom: '',
-        refundAddress: '',
-        addressTo: '',
-        currencyFrom: '',
-        currencyTo: '',
-        partnerFee: 20,
-      },
-    });
-
-  const getFormParams = () => {
-    return watch();
-  };
-  const [step, setStep] = useState(1);
   const [minAmountProviderList, setMinAmountProviderList] = useState<
     { provider: ProviderName; amount: number }[] | undefined
   >();
-  const [providerSelected, setProviderSelected] = useState<ProviderName>();
-  const [adjustMinAcceptedMessage, setAdjustMinAcceptedMessage] =
-    useState<string>();
   const [errorInApi, setErrorInApi] = useState<string>();
   const [swapCryptos, setSetswapCryptos] = useState<SwapCryptosMerger>();
   const [loading, setLoading] = useState(true);
@@ -324,32 +302,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     }
   };
 
-  const setFormParams = (provider: ProviderName) => {
-    setValue('currencyFrom', startToken.subLabel!);
-    setValue('currencyTo', endToken.subLabel!);
-    setValue('amountFrom', amount);
-    setProviderSelected(provider);
-    if (minAmountProviderList) {
-      const minAmountProviderAccepts = minAmountProviderList.find(
-        (m) => m.provider === provider,
-      );
-      if (
-        minAmountProviderAccepts &&
-        parseFloat(amount) < minAmountProviderAccepts.amount
-      ) {
-        setAdjustMinAcceptedMessage(
-          chrome.i18n.getMessage('buy_coins_swap_cryptos_error_adjust_min', [
-            minAmountProviderAccepts.amount.toFixed(3),
-            startToken.subLabel!,
-          ]),
-        );
-      } else {
-        setAdjustMinAcceptedMessage(undefined);
-      }
-    }
-    setStep(2);
-  };
-
   const swapStartAndEnd = () => {
     const tempStarTokentListOptions = [...startTokenListOptions];
     const tempEndTokenListOptions = [...endTokenListOptions];
@@ -373,7 +325,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         startTokenListOptions.length !== 0 &&
         startToken &&
         endTokenListOptions.length !== 0 &&
-        step === 1 &&
         endToken && (
           <BuySwapCoinsEstimationComponent
             startToken={startToken}
@@ -395,26 +346,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             swapTokens={swapStartAndEnd}
             displayReceiveTokenLogo
             errorMessage={errorInApi}
-            setStep={(provider) => setFormParams(provider)}
           />
         )}
-      {!loading && step === 2 && (
-        <SwapCryptosStepTwoComponent
-          startToken={startToken}
-          endToken={endToken}
-          getFormParams={getFormParams}
-          minAmountProviderList={minAmountProviderList}
-          providerSelected={providerSelected}
-          adjustMinAcceptedMessage={adjustMinAcceptedMessage}
-          swapCryptos={swapCryptos}
-          setStep={(value: number) => setStep(value)}
-          setValue={(name: string, value: any) =>
-            setValue(name as keyof ExchangeOperationForm, value as string)
-          }
-          handleSubmit={(cb: any) => handleSubmit(cb)}
-          control={control}
-        />
-      )}
     </div>
   );
 };

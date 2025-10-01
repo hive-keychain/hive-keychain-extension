@@ -1,9 +1,6 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { RampEstimationDisplay } from '@interfaces/ramps.interface';
-import {
-  SwapCryptos,
-  SwapCryptosEstimationDisplay,
-} from '@interfaces/swap-cryptos.interface';
+import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
 import React from 'react';
@@ -18,7 +15,6 @@ interface Props {
   price: CurrencyPrices;
   displayReceiveTokenLogo?: boolean;
   endTokenList: OptionItem[];
-  setStep?: (provider: SwapCryptos) => void;
 }
 
 const BuySwapCoinsEstimationItem = ({
@@ -26,7 +22,6 @@ const BuySwapCoinsEstimationItem = ({
   price,
   displayReceiveTokenLogo,
   endTokenList,
-  setStep,
 }: Props) => {
   const isRamp = (estimation as RampEstimationDisplay).hasOwnProperty(
     'paymentMethod',
@@ -36,14 +31,8 @@ const BuySwapCoinsEstimationItem = ({
     window.open(estimation.link, '__blank');
   };
 
-  const executeOperation = () => {
-    if (setStep) {
-      setStep(estimation.name as SwapCryptos);
-    }
-  };
-
   return (
-    <div className="quote" onClick={isRamp ? gotoUrl : undefined}>
+    <div className="quote" onClick={gotoUrl}>
       <SVGIcon icon={estimation.logo} />
       {isRamp && (
         <span className="method">
@@ -77,7 +66,7 @@ const BuySwapCoinsEstimationItem = ({
               }`}
             />
             <span className="estimation-span">
-              {FormatUtils.formatCurrencyValue(estimation.estimation)}{' '}
+              {FormatUtils.formatCurrencyValue(estimation.estimation, -1)}{' '}
               {(estimation as SwapCryptosEstimationDisplay).to.toUpperCase()}
             </span>
           </div>
@@ -96,23 +85,9 @@ const BuySwapCoinsEstimationItem = ({
             )}
           </div>
         )}
-        {!isRamp ? (
-          <div className="buttons-container">
-            <div className="act-button">
-              <SVGIcon icon={SVGIcons.BOTTOM_BAR_BUY} onClick={gotoUrl} />
-            </div>
-            <div className="act-button">
-              <SVGIcon
-                icon={SVGIcons.BOTTOM_BAR_SWAPS}
-                onClick={executeOperation}
-              />
-            </div>
-          </div>
-        ) : (
-          <span className="chevron">
-            <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
-          </span>
-        )}
+        <span className="chevron">
+          <SVGIcon icon={SVGIcons.SELECT_ARROW_RIGHT} />
+        </span>
       </div>
     </div>
   );
