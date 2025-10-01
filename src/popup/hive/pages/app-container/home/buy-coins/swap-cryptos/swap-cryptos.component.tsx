@@ -68,7 +68,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [estimations, setEstimations] = useState<
     SwapCryptosEstimationDisplay[]
   >([]);
-  const [loadingEstimation, setLoadingEstimation] = useState(false);
   const { countdown, refreshCountdown, nullifyCountdown } = useCountdown(
     Config.swapCryptos.autoRefreshPeriodSec,
     () => {
@@ -80,7 +79,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
         endToken &&
         swapCryptos
       ) {
-        setLoadingEstimation(true);
         getExchangeEstimate(
           amount,
           startToken,
@@ -138,6 +136,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     endToken,
     loadingMinMaxAccepted,
     exchangeRangeAmount,
+    swapCryptos,
   ]);
 
   useEffect(() => {
@@ -265,7 +264,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       newSwapCryptos
     ) {
       try {
-        setLoadingEstimation(true);
         newSwapCryptos
           .getExchangeEstimation(
             newAmount,
@@ -291,7 +289,6 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
               },
             );
           });
-        setLoadingEstimation(false);
         refreshCountdown();
       } catch (error) {
         Logger.log({ error });
