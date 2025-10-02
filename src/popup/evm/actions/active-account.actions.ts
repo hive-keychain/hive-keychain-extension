@@ -63,7 +63,6 @@ export const loadEvmActiveAccount =
             token.type === EVMSmartContractType.NATIVE,
         ),
       ).then((res) => {
-        console.log(res, 'res from getTokenBalances');
         dispatch({
           type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
           payload: { nativeAndErc20Tokens: { value: res, loading: false } },

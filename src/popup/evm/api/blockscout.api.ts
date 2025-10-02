@@ -8,7 +8,6 @@ const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   const result = await get(`
     ${chain.blockExplorerApi?.url}/api?module=account&action=tokenlist&address=${walletAddress}
   `);
-  console.log({ result });
   return result
     ? result.map((r: any) => ({ ...r, type: r.type.replace('-', '') }))
     : [];

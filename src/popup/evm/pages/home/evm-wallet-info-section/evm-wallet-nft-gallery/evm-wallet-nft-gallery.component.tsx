@@ -74,7 +74,7 @@ export const EvmWalletNftGalleryComponent = ({
             <div className="nft-preview-container">
               {other.map((otherToken, index) => (
                 <React.Fragment
-                  key={`${otherToken.tokenInfo.address}-${index}`}>
+                  key={`${otherToken.tokenInfo.contractAddress}-${index}`}>
                   <CustomTooltip
                     message={otherToken.collection[0].metadata.name}
                     skipTranslation>

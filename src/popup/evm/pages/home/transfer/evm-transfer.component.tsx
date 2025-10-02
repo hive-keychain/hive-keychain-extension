@@ -225,7 +225,7 @@ const EvmTransfer = ({
       to:
         form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? form.receiverAddress
-          : form.selectedToken.tokenInfo.address,
+          : form.selectedToken.tokenInfo.contractAddress,
       data:
         form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
           ? ''
@@ -322,7 +322,7 @@ const EvmTransfer = ({
       provider,
     );
     const contract = new ethers.Contract(
-      tokenInfo.address!,
+      tokenInfo.contractAddress!,
       Erc20Abi,
       connectedWallet,
     );

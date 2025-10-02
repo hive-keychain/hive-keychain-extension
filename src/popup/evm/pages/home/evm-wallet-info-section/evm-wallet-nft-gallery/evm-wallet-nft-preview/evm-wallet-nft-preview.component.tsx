@@ -18,18 +18,18 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
     <div
       className="nft-collection-preview-card"
       onClick={() => onClick()}
-      key={`collection-${token.tokenInfo.address}`}>
+      key={`collection-${token.tokenInfo.contractAddress}`}>
       <div className="nft-collection-name-panel">
         <span className="ntf-collection-name">{token.tokenInfo.name}</span>
         <span className="nft-collection-address">
-          {EvmFormatUtils.formatAddress(token.tokenInfo.address)}
+          {EvmFormatUtils.formatAddress(token.tokenInfo.contractAddress)}
         </span>
       </div>
       <div className="nft-collection-preview">
         <div className="nft-preview-container">
           {token.collection.slice(0, 4).map((collectionItem) => (
             <React.Fragment
-              key={`collection-${token.tokenInfo.address}-${collectionItem.id}`}>
+              key={`collection-${token.tokenInfo.contractAddress}-${collectionItem.id}`}>
               <CustomTooltip
                 message={collectionItem.metadata.name}
                 skipTranslation>

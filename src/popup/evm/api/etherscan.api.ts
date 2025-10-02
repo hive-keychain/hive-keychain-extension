@@ -1,14 +1,11 @@
 // https://gas.api.cx.metamask.io/networks/43114/suggestedGasFees
 
 import { KeychainApi } from '@api/keychain';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import Logger from 'src/utils/logger.utils';
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
-  Logger.warn(
-    'discover tokens in not available for etherscan at the moment. Please manually add your tokens',
-  );
-  return [];
+  return EvmTokensUtils.getCustomTokens(chain, walletAddress);
 };
 
 const getNftTx = async (

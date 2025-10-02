@@ -137,7 +137,7 @@ const EvmNftTransfer = ({
       {
         label: 'evm_operation_smart_contract_address',
         value: EvmFormatUtils.formatAddress(
-          collectionItem.collection.tokenInfo.address,
+          collectionItem.collection.tokenInfo.contractAddress,
         ),
       },
       {
@@ -185,7 +185,7 @@ const EvmNftTransfer = ({
     let transactionData: ProviderTransactionData = {
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
-      to: watch('selectedToken.address'),
+      to: watch('selectedToken.contractAddress'),
       data: await encodeTransferData(
         form.selectedToken as
           | EvmSmartContractInfoErc1155
@@ -281,7 +281,7 @@ const EvmNftTransfer = ({
       provider,
     );
     const contract = new ethers.Contract(
-      tokenInfo.address!,
+      tokenInfo.contractAddress!,
       tokenInfo.type === EVMSmartContractType.ERC1155 ? ERC1155Abi : ERC721Abi,
       connectedWallet,
     );

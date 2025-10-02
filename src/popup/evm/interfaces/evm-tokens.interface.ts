@@ -27,7 +27,7 @@ export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {
 
 export interface EvmSmartContractNonNativeBase
   extends EvmSmartContractInfoBase {
-  address: string;
+  contractAddress: string;
   possibleSpam: boolean;
   verifiedContract: boolean;
 }
@@ -80,7 +80,7 @@ export interface EvmCustomTokens {
 }
 
 export interface PopularToken {
-  address: string;
+  contractAddress: string;
   symbol: string;
   name: string;
   logo: string;

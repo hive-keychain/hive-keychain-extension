@@ -169,7 +169,7 @@ const parseEvent = async (
             const token = allTokensMetadata.find(
               (t) =>
                 t.type !== EVMSmartContractType.NATIVE &&
-                t.address.toLowerCase() === event.to.toLowerCase(),
+                t.contractAddress.toLowerCase() === event.to.toLowerCase(),
             );
 
             const details: EvmUserHistoryItemDetail[] = [];
@@ -433,7 +433,7 @@ const getSpecificData = async (
   const tokenMetadata = metadata.find(
     (md) =>
       md.type !== EVMSmartContractType.NATIVE &&
-      md.address.toLowerCase() === contractAddress.toLowerCase(),
+      md.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
   );
 
   let name;

@@ -84,8 +84,9 @@ export const EvmNftCollectionComponent = ({
                   collection={listItem.collection}
                   onClick={() => handleClick(listItem)}
                   expanded={
-                    selectedCollectionListItem?.collection.tokenInfo.address ===
-                      listItem.collection.tokenInfo.address &&
+                    selectedCollectionListItem?.collection.tokenInfo
+                      .contractAddress ===
+                      listItem.collection.tokenInfo.contractAddress &&
                     listItem.item.id === selectedCollectionListItem.item.id
                   }
                   onClickSend={() => handleClickOnSend()}

@@ -9,6 +9,10 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
+  EvmCustomToken,
+  EvmSavedCustomTokens,
+} from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc20,
@@ -145,7 +149,7 @@ const getTokenBalance = async (
       case EVMSmartContractType.ERC20: {
         console.log(token, 'token in erc20');
         const contract = new ethers.Contract(
-          (token as EvmSmartContractInfoErc20).address,
+          (token as EvmSmartContractInfoErc20).contractAddress,
           Erc20Abi,
           provider,
         );
@@ -216,15 +220,15 @@ const getErc721Tokens = async (
       } while (transactions.length === LIMIT);
 
       for (const token of tokens) {
-        if (!idsPerCollection[token.address.toLowerCase()]) {
-          idsPerCollection[token.address.toLowerCase()] = [];
+        if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
+          idsPerCollection[token.contractAddress.toLowerCase()] = [];
         }
       }
 
       for (const tx of finalTransactions) {
         if (
           !tokens
-            .map((token) => token.address.toLowerCase())
+            .map((token) => token.contractAddress.toLowerCase())
             .includes(tx.contractAddress)
         )
           continue;
@@ -254,15 +258,15 @@ const getErc721Tokens = async (
       } while (transactions.length === LIMIT);
 
       for (const token of tokens) {
-        if (!idsPerCollection[token.address.toLowerCase()]) {
-          idsPerCollection[token.address.toLowerCase()] = [];
+        if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
+          idsPerCollection[token.contractAddress.toLowerCase()] = [];
         }
       }
 
       for (const tx of finalTransactions) {
         if (
           !tokens
-            .map((token) => token.address.toLowerCase())
+            .map((token) => token.contractAddress.toLowerCase())
             .includes(tx.contractAddress)
         )
           continue;
@@ -292,9 +296,15 @@ const getErc721Tokens = async (
 
   let erc721tokens: EvmErc721Token[] = [];
   for (const contractAddress of Object.keys(idsPerCollection)) {
-    const token = tokens.find((token) => token.address === contractAddress);
+    const token = tokens.find(
+      (token) => token.contractAddress === contractAddress,
+    );
     const provider = await EthersUtils.getProvider(chain);
-    const contract = new ethers.Contract(token!.address!, ERC721Abi, provider);
+    const contract = new ethers.Contract(
+      token!.contractAddress!,
+      ERC721Abi,
+      provider,
+    );
 
     const collectionPromises: Promise<EvmErc721TokenCollectionItem>[] = [];
 
@@ -325,7 +335,7 @@ const getErc1155Tokens = async (
 
   for (const tokenInfo of tokenInfos) {
     const tokens = allTokens.filter(
-      (token) => token.contractAddress === tokenInfo.address,
+      (token) => token.contractAddress === tokenInfo.contractAddress,
     );
     const erc1155Token: EvmErc1155Token = {
       tokenInfo: tokenInfo,
@@ -334,7 +344,7 @@ const getErc1155Tokens = async (
     for (const token of tokens) {
       const provider = await EthersUtils.getProvider(chain);
       const contract = new ethers.Contract(
-        tokenInfo.address,
+        tokenInfo.contractAddress,
         ERC1155Abi,
         provider,
       );
@@ -374,6 +384,16 @@ const manualDiscoverErc20Tokens = async (
     const tokens = await KeychainApi.get(
       `evm/${chain.chainId}/wallet/${walletAddress}/discover-tokens-erc20`,
     );
+
+    // Save discovery to local storage
+    if (tokens) {
+      addCustomToken(
+        chain,
+        walletAddress,
+        tokens.map((t: any) => ({ address: t.address, type: t.type })),
+      );
+    }
+
     return tokens;
   } else return [];
 };
@@ -424,11 +444,24 @@ const getTokensFullDetails = async (
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
 
+  const missingMetadataAddresses = addressesToFetch.filter(
+    (address) => !tokensMetadata.map((t: any) => t.address).includes(address),
+  );
+
+  console.log(missingMetadataAddresses, 'missingMetadataAddresses');
+
+  const missingMetadata = discoveredTokens.filter((t) =>
+    missingMetadataAddresses.includes(t.contractAddress),
+  );
+
+  console.log(missingMetadata, 'missingMetadata');
+
   const newMetadata = [
     ...chainTokenMetaData.filter(
       (t: any) => t.type !== EVMSmartContractType.NATIVE,
     ),
     ...tokensMetadata,
+    ...missingMetadata,
   ];
   console.log(newMetadata, 'newMetadata');
   if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
@@ -507,17 +540,17 @@ const getTokensFullDetails = async (
 const getMetadataFromBackend = async (
   addresses: string[],
   chain: EvmChain,
-): Promise<EvmSmartContractInfo[]> => {
+): Promise<EvmSmartContractInfo[] | null> => {
   try {
     const result = await KeychainApi.get(
       `evm/smart-contracts-info/${chain.chainId}?addresses=${addresses?.join(
         ',',
       )}`,
     );
-    return result ?? [];
+    return result;
   } catch (err) {
     Logger.error('Error while fetching metadata', err);
-    return [] as EvmSmartContractInfo[];
+    return [];
   }
 };
 
@@ -541,7 +574,7 @@ const getTokenInfo = async (
     if (address) {
       token = tokenMetaData.find(
         (t: EvmSmartContractNonNativeBase) =>
-          t.address?.toLowerCase() === address.toLowerCase(),
+          t.contractAddress?.toLowerCase() === address.toLowerCase(),
       );
     } else {
       token = tokenMetaData.find(
@@ -644,6 +677,63 @@ const getPopularTokensForChain = async (chain: EvmChain) => {
   return res;
 };
 
+const addCustomToken = async (
+  chain: EvmChain,
+  walletAddress: string,
+  toAdd: EvmCustomToken | EvmCustomToken[],
+  batch?: boolean,
+) => {
+  let savedCustomTokens: EvmSavedCustomTokens =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    );
+  if (!savedCustomTokens) {
+    savedCustomTokens = {};
+  }
+  if (!savedCustomTokens[chain.chainId]) {
+    savedCustomTokens[chain.chainId] = {};
+  }
+
+  if (!savedCustomTokens[chain.chainId][walletAddress]) {
+    savedCustomTokens[chain.chainId][walletAddress] = [];
+  }
+  const allAddresses = savedCustomTokens[chain.chainId][walletAddress].map(
+    (t: EvmCustomToken) => t.address,
+  );
+  if (batch) {
+    for (const token of toAdd as EvmCustomToken[]) {
+      if (!allAddresses.includes(token.address)) {
+        savedCustomTokens[chain.chainId][walletAddress].push(token);
+      }
+    }
+  } else {
+    if (!allAddresses.includes((toAdd as EvmCustomToken).address)) {
+      savedCustomTokens[chain.chainId][walletAddress].push(
+        toAdd as EvmCustomToken,
+      );
+    }
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    savedCustomTokens,
+  );
+};
+
+const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
+  const savedCustomTokens: EvmSavedCustomTokens =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    );
+
+  if (!savedCustomTokens) return [] as EvmCustomToken[];
+  if (!savedCustomTokens[chain.chainId]) return [] as EvmCustomToken[];
+  if (!savedCustomTokens[chain.chainId][walletAddress])
+    return [] as EvmCustomToken[];
+
+  return savedCustomTokens[chain.chainId][walletAddress];
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -666,4 +756,6 @@ export const EvmTokensUtils = {
   getPopularTokensForChain,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
+  addCustomToken,
+  getCustomTokens,
 };

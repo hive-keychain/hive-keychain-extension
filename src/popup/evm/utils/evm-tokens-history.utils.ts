@@ -147,7 +147,7 @@ const fetchHistory = async (
                 | EvmSmartContractInfoErc1155
                 | EvmSmartContractInfoErc721
                 | EvmSmartContractInfoErc20
-            ).address,
+            ).contractAddress,
         ),
     ),
     chain,
@@ -157,7 +157,7 @@ const fetchHistory = async (
     (Date.now() - start) / 1000,
   );
 
-  const newAllTokensMetadata = [...allTokensMetadata, ...metadata];
+  const newAllTokensMetadata = [...allTokensMetadata, ...(metadata ?? [])];
 
   const evmSettings = await EvmSettingsUtils.getSettings();
 

@@ -41,7 +41,7 @@ export const EvmNftDetails = ({
 
   return (
     <div
-      key={`${collection.tokenInfo.address}-${nft.id}`}
+      key={`${collection.tokenInfo.contractAddress}-${nft.id}`}
       className={`detailed-nft ${expanded ? 'expanded' : ''}`}
       onClick={handleOnClick}>
       <img className={`${nftSize ?? 'normal'}`} src={nft.metadata.image} />
@@ -59,7 +59,9 @@ export const EvmNftDetails = ({
               {chrome.i18n.getMessage('evm_operation_smart_contract_address')}
             </div>
             <div className="value">
-              {EvmFormatUtils.formatAddress(collection.tokenInfo.address)}
+              {EvmFormatUtils.formatAddress(
+                collection.tokenInfo.contractAddress,
+              )}
             </div>
           </div>
           <div className="label-value smart-contract-address">
@@ -89,7 +91,7 @@ export const EvmNftDetails = ({
             nft.metadata.attributes.map((attribute) => (
               <div
                 className="label-value smart-contract-address"
-                key={`${collection.tokenInfo.address}-${nft.id}-${attribute.trait_type}`}>
+                key={`${collection.tokenInfo.contractAddress}-${nft.id}-${attribute.trait_type}`}>
                 <div className="label">{attribute.trait_type}</div>
                 <div className="value">{attribute.value}</div>
               </div>
