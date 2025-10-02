@@ -120,7 +120,10 @@ const updateAddressName = async (
     (account) => account.id === addressId,
   );
 
-  savedSeed.accounts[addressIndex].nickname = newName;
+  savedSeed.accounts[addressIndex].nickname =
+    newName.length > 0
+      ? newName
+      : `${chrome.i18n.getMessage('dialog_account')} ${addressIndex + 1}`;
 
   encryptAccountsInLocalStorage(mk, savedSeeds);
 };
@@ -150,7 +153,10 @@ const addAddressToSeed = async (
   savedSeeds[seedIndex].accounts.push({
     id: derivedWallet.index,
     path: derivedWallet.path,
-    nickname: addressNickname,
+    nickname:
+      addressNickname.length > 0
+        ? addressNickname
+        : `${chrome.i18n.getMessage('dialog_account')} ${newAccountIndex + 1}`,
   } as StoredEvmWalletAddress);
   encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
@@ -169,9 +175,10 @@ const addSeedAndAccounts = async (
     seed: wallet.mnemonic!.phrase,
     nickname: nickname,
     id,
-    accounts: accounts.map((derivedWallet) => ({
+    accounts: accounts.map((derivedWallet, index) => ({
       id: derivedWallet.id,
       path: derivedWallet.path!,
+      nickname: `${chrome.i18n.getMessage('dialog_account')} ${index + 1}`,
     })),
   };
   const allAccounts = [...previousAccounts, newAccounts];
