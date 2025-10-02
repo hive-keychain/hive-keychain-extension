@@ -128,6 +128,7 @@ const getTokenBalance = async (
     let balance;
     let balanceInteger;
     let tokenInfo;
+    console.log(token, 'token in getTokenBalance');
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
@@ -149,6 +150,7 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
+        console.log(balance, 'balance in erc20');
         formattedBalance = FormatUtils.withCommas(
           Number(
             parseFloat(
@@ -364,6 +366,25 @@ const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   }
 };
 
+const manualDiscoverErc20Tokens = async (
+  walletAddress: string,
+  chain: EvmChain,
+) => {
+  if (chain.manualDiscoverAvailable) {
+    const tokens = await KeychainApi.get(
+      `evm/${chain.chainId}/wallet/${walletAddress}/discover-tokens-erc20`,
+    );
+    return tokens;
+  } else return [];
+};
+const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
+  if (chain.manualDiscoverAvailable) {
+    return await KeychainApi.get(
+      `evm/${chain.chainId}/wallet/${walletAddress}/discover-tokens-nfts`,
+    );
+  } else return [];
+};
+
 const getTokensFullDetails = async (
   discoveredTokens: any[],
   chain: EvmChain,
@@ -399,15 +420,17 @@ const getTokensFullDetails = async (
       addressesToFetch.push(address);
     }
   }
-
+  console.log('fetching metadata for ', addressesToFetch);
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
+
   const newMetadata = [
     ...chainTokenMetaData.filter(
       (t: any) => t.type !== EVMSmartContractType.NATIVE,
     ),
     ...tokensMetadata,
   ];
+  console.log(newMetadata, 'newMetadata');
   if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
     const mainTokenMetadata = {
       type: EVMSmartContractType.NATIVE,
@@ -641,4 +664,6 @@ export const EvmTokensUtils = {
   getMetadataFromStorage,
   getMetadataFromBackend,
   getPopularTokensForChain,
+  manualDiscoverErc20Tokens,
+  manualDiscoverNfts,
 };

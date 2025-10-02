@@ -104,6 +104,62 @@ export const loadEvmActiveAccount =
     });
   };
 
+export const manualDiscoverErc20Tokens =
+  (): AppThunk => async (dispatch, getState) => {
+    console.log('manualDiscoverErc20Tokens action');
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: { nativeAndErc20Tokens: { value: [], loading: true } },
+    });
+
+    const tokens = await EvmTokensUtils.manualDiscoverErc20Tokens(
+      getState().evm.activeAccount.wallet.address,
+      getState().chain,
+    );
+
+    console.log(tokens, 'tokens in manualDiscoverErc20Tokens');
+
+    const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
+      tokens,
+      getState().chain,
+    );
+
+    const tokenBalances = (await EvmTokensUtils.getTokenBalances(
+      process.env.FORCED_EVM_WALLET_ADDRESS ??
+        getState().evm.activeAccount.wallet.address,
+      getState().chain,
+      allTokensInfo.filter(
+        (token) =>
+          token.type === EVMSmartContractType.ERC20 ||
+          token.type === EVMSmartContractType.NATIVE,
+      ),
+    )) as NativeAndErc20Token[];
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        nativeAndErc20Tokens: { value: tokenBalances, loading: false },
+      },
+    });
+  };
+
+export const manualDiscoverNfts =
+  (): AppThunk => async (dispatch, getState) => {
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: { nfts: { value: [], loading: true } },
+    });
+
+    // const tokenList = await EvmTokensUtils.manualDiscoverNfts(
+    //   getState().evm.activeAccount.wallet.address,
+    //   getState().chain,
+    // );
+
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: { nfts: { value: [], loading: false } },
+    });
+  };
+
 export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   dispatch({
     type: EvmActionType.SET_ACTIVE_ACCOUNT,

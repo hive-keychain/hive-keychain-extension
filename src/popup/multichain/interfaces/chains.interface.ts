@@ -50,6 +50,8 @@ export interface EvmChain extends Chain {
   onlyCustomFee?: boolean;
   network?: string;
   addTokensManually?: boolean;
+  disableTokensAndHistoryAutoLoading?: boolean;
+  manualDiscoverAvailable?: boolean;
 }
 
 export interface EvmProviders {}

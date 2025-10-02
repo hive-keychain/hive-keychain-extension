@@ -2,13 +2,13 @@
 
 import { KeychainApi } from '@api/keychain';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import Logger from 'src/utils/logger.utils';
 
 const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
-  const result = await KeychainApi.get(
-    `evm/smart-contracts-info/etherscan?function=discover&address=${walletAddress}&chain=${chain.chainId}`,
+  Logger.warn(
+    'discover tokens in not available for etherscan at the moment. Please manually add your tokens',
   );
-  console.log({ result });
-  return result;
+  return [];
 };
 
 const getNftTx = async (

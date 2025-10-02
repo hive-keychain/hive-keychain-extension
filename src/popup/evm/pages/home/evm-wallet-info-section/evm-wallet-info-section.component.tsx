@@ -26,6 +26,8 @@ interface EvmWalletInfoSectionProps {
   ) => void;
   loadEvmHistory: Function;
   pendingTransactionsItems?: EvmUserHistoryItem[];
+  manualDiscoverErc20Tokens: () => void;
+  manualDiscoverNfts: () => void;
 }
 
 enum EvmDisplayedPage {
@@ -41,6 +43,8 @@ export const EvmWalletInfoSectionComponent = ({
   onClickOnNftPreview,
   loadEvmHistory,
   pendingTransactionsItems,
+  manualDiscoverNfts,
+  manualDiscoverErc20Tokens,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     EvmDisplayedPage.TOKENS,
@@ -58,6 +62,7 @@ export const EvmWalletInfoSectionComponent = ({
             chain={chain}
             prices={prices}
             activeAccount={activeAccount}
+            manualDiscoverErc20Tokens={manualDiscoverErc20Tokens}
           />
         );
       }
@@ -66,6 +71,8 @@ export const EvmWalletInfoSectionComponent = ({
           <EvmWalletNftGalleryComponent
             activeAccount={activeAccount}
             onClickOnNftPreview={onClickOnNftPreview}
+            chain={chain}
+            manualDiscoverNfts={manualDiscoverNfts}
           />
         );
       }

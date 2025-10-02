@@ -152,7 +152,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
-    addTokensManually: true,
+    manualDiscoverAvailable: true,
   } as EvmChain,
   {
     name: 'BNB',
@@ -182,7 +182,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
-    addTokensManually: true,
+    manualDiscoverAvailable: true,
   } as EvmChain,
   {
     name: 'Base',

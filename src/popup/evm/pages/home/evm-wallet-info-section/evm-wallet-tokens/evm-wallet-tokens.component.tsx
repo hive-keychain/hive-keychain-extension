@@ -14,12 +14,14 @@ interface Props {
   chain: EvmChain;
   prices: EvmPrices;
   activeAccount: EvmActiveAccount;
+  manualDiscoverErc20Tokens: () => void;
 }
 
 export const EvmWalletTokensComponent = ({
   chain,
   prices,
   activeAccount,
+  manualDiscoverErc20Tokens,
 }: Props) => {
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
@@ -62,11 +64,22 @@ export const EvmWalletTokensComponent = ({
               mainValueSubLabel={token.tokenInfo.name}
             />
           ))}
-          <div
-            className="wallet-info-row add-custom-tokens"
-            onClick={openAddCustomTokenPanel}>
-            {chrome.i18n.getMessage('evm_add_custom_token')}
-          </div>
+          {!activeAccount.nativeAndErc20Tokens.loading &&
+            chain.addTokensManually && (
+              <div
+                className="wallet-info-row add-custom-tokens"
+                onClick={openAddCustomTokenPanel}>
+                {chrome.i18n.getMessage('evm_add_custom_token')}
+              </div>
+            )}
+          {!activeAccount.nativeAndErc20Tokens.loading &&
+            chain.manualDiscoverAvailable && (
+              <div
+                className="wallet-info-row add-custom-tokens"
+                onClick={() => manualDiscoverErc20Tokens()}>
+                {chrome.i18n.getMessage('evm_add_manually_discover')}
+              </div>
+            )}
         </>
       )}
       {showAddCustomTokenPopup && (

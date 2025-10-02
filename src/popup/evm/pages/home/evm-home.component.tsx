@@ -3,6 +3,8 @@ import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
   loadEvmHistory,
+  manualDiscoverErc20Tokens,
+  manualDiscoverNfts,
 } from '@popup/evm/actions/active-account.actions';
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
@@ -64,6 +66,8 @@ const Home = ({
   navigateToWithParams,
   loadEvmHistory,
   setErrorMessage,
+  manualDiscoverErc20Tokens,
+  manualDiscoverNfts,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -328,6 +332,8 @@ const Home = ({
           chain={chain}
           loadEvmHistory={loadEvmHistory}
           pendingTransactionsItems={pendingTransactionsItems}
+          manualDiscoverErc20Tokens={manualDiscoverErc20Tokens}
+          manualDiscoverNfts={manualDiscoverNfts}
         />
       </div>
       <ActionsSectionComponent
@@ -358,6 +364,8 @@ const connector = connect(mapStateToProps, {
   fetchPrices,
   navigateToWithParams,
   loadEvmHistory,
+  manualDiscoverErc20Tokens,
+  manualDiscoverNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

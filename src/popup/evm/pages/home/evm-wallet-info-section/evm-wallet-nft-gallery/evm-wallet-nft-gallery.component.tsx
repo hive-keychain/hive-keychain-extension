@@ -5,6 +5,7 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -16,17 +17,17 @@ interface Props {
     params: EvmErc721Token | EvmErc721Token[],
     screen: EvmScreen,
   ) => void;
+  chain: EvmChain;
+  manualDiscoverNfts: () => void;
 }
 
 export const EvmWalletNftGalleryComponent = ({
   activeAccount,
+  chain,
   onClickOnNftPreview,
+  manualDiscoverNfts,
 }: Props) => {
   const [other, setOther] = useState<EvmErc721Token[]>([]);
-
-  useEffect(() => {
-    console.log(activeAccount, 'in evm wallet nft gallery');
-  }, [activeAccount]);
 
   useEffect(() => {
     const otherTokens = [];
@@ -37,10 +38,6 @@ export const EvmWalletNftGalleryComponent = ({
     }
     setOther(otherTokens);
   }, []);
-
-  useEffect(() => {
-    console.log(other, 'in evm wallet nft gallery');
-  }, [other]);
 
   return (
     <div className="nft-gallery">
@@ -91,6 +88,13 @@ export const EvmWalletNftGalleryComponent = ({
             </div>
             <SVGIcon className="go-to-icon" icon={SVGIcons.GLOBAL_ARROW} />
           </div>
+        </div>
+      )}
+      {!activeAccount.nfts.loading && chain.manualDiscoverAvailable && (
+        <div
+          className="wallet-info-row add-custom-tokens"
+          onClick={() => manualDiscoverNfts()}>
+          {chrome.i18n.getMessage('evm_add_manually_discover')}
         </div>
       )}
       {activeAccount.nfts.loading && <RotatingLogoComponent />}
