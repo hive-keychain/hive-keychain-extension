@@ -19,9 +19,12 @@ export class SwapCryptosMerger {
       try {
         const currencyOptionList =
           await provider.getPairedCurrencyOptionItemList(symbol);
+
         for (const currencyOption of currencyOptionList) {
           const i = providersCurrencyOptionsList.findIndex(
-            (e) => e.value.symbol === currencyOption.value.symbol,
+            (e) =>
+              e.value.symbol === currencyOption.value.symbol &&
+              e.bagde?.label === currencyOption.bagde?.label,
           );
           if (i >= 0) {
             const exchanges: string[] =
@@ -59,7 +62,9 @@ export class SwapCryptosMerger {
       try {
         const minMaxAccepted = await provider.getMinMaxAmountAccepted(
           startTokenOption.subLabel!,
+          startTokenOption.bagde?.label!,
           endTokenOption.subLabel!,
+          endTokenOption.bagde?.label!,
         );
         providerMinMaxAmountList.push({
           provider: provider.name as SwapCryptos,
@@ -81,7 +86,9 @@ export class SwapCryptosMerger {
   getExchangeEstimation = async (
     amount: string,
     from: string,
+    fromNetwork: string,
     to: string,
+    toNetwork: string,
   ): Promise<
     | {
         provider: SwapCryptos;
@@ -95,8 +102,11 @@ export class SwapCryptosMerger {
         const estimation = await provider.getExchangeEstimation(
           amount,
           from,
+          fromNetwork,
           to,
+          toNetwork,
         );
+
         if (!estimation || Number.isNaN(estimation.estimation)) continue;
         providerEstimationList.push({
           provider: provider.name as SwapCryptos,

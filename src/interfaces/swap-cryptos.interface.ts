@@ -83,11 +83,18 @@ export interface SwapCryptosBaseProviderInterface {
   logo: SVGIcons;
   buildUrl: (route: string) => string;
   getPairedCurrencyOptionItemList: (symbol: string) => Promise<OptionItem[]>;
-  getMinMaxAmountAccepted: (from: string, to: string) => Promise<any>;
+  getMinMaxAmountAccepted: (
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => Promise<any>;
   getExchangeEstimation: (
     amount: string,
     from: string,
+    fromNetwork: string,
     to: string,
+    toNetwork: string,
   ) => Promise<SwapCryptosEstimationDisplay | undefined>;
   getNewExchange: (formData: ExchangeOperationForm) => Promise<any>;
 }
@@ -125,6 +132,7 @@ export interface SwapCryptoListItem {
   network: string;
   precision: number;
   exchanges: SwapCryptos[];
+  legacySymbol?: string;
 }
 
 export interface ExchangeOperationForm {

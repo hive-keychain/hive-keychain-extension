@@ -85,7 +85,7 @@ const Config = {
         process.env.STEALTHEX_DEV_API_KEY ||
         '3d4e1f8b-259c-4c09-8b12-66fac24e826c',
       refId: 'gti0epcrc4c',
-      partnerFeeAmount: 0.8,
+      partnerFeeAmount: 0.2,
     } as SwapCryptosConfig,
     simpleswap: {
       //Note: this exchange set up its partner fee in: https://partners.simpleswap.io/webtools/api

@@ -28,6 +28,7 @@ export class StealthexProvider
   }
   name: string;
   logo: SVGIcons;
+  allCurrenciesData: any[] = [];
   buildUrl = (route: string) => {
     const baseUrl = this.urls.baseUrl;
     return `${baseUrl}${route}`;
@@ -35,6 +36,7 @@ export class StealthexProvider
   getPairedCurrencyOptionItemList = async (symbol: string) => {
     let pairedCurrencyOptionsList: OptionItem<SwapCryptoListItem>[] = [];
     let requestHeaders: GenericObjectKeypair = {};
+
     requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
 
     const currenciesRoute = this.urls.routes.allCurrencies;
@@ -84,13 +86,17 @@ export class StealthexProvider
       const bagde = currency.network
         ? {
             type: OptionItemBadgeType.BADGE_RED,
-            label: currency.network,
+            label:
+              currency.network === 'mainnet'
+                ? currency.symbol
+                : currency.network,
           }
         : undefined;
       const thisCurrency = allCurrenciesData.find(
         (c: any) =>
           c.symbol === currency.symbol && c.network === currency.network,
       );
+
       if (!thisCurrency) return; // skip if not found
       pairedCurrencyOptionsList.push({
         label: thisCurrency.name,
@@ -99,6 +105,7 @@ export class StealthexProvider
         value: {
           name: thisCurrency.name,
           symbol: thisCurrency.symbol,
+          legacySymbol: thisCurrency.legacy_symbol,
           network: thisCurrency.network,
           precision: thisCurrency.precision,
           exchanges: [SwapCryptos.STEALTHEX],
@@ -106,15 +113,24 @@ export class StealthexProvider
         bagde,
       });
     });
+    this.allCurrenciesData = allCurrenciesData;
     this.pairedCurrencyOptionsList = pairedCurrencyOptionsList;
     return pairedCurrencyOptionsList;
   };
 
-  getRouteParams = (from: string, to: string, otherParams?: any) => {
+  getRouteParams = (
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+    otherParams?: any,
+  ) => {
     const hiveObj = { symbol: 'hive', network: 'mainnet' };
     const isFromHive = from.toLowerCase() === hiveObj.symbol;
     const other = this.pairedCurrencyOptionsList.find(
-      (c) => c.value.symbol === (isFromHive ? to : from),
+      (c) =>
+        c.value.symbol === (isFromHive ? to : from) &&
+        c.bagde?.label === (isFromHive ? toNetwork : fromNetwork),
     )!;
     const params = {
       route: isFromHive
@@ -132,7 +148,12 @@ export class StealthexProvider
     };
     return params;
   };
-  getMinMaxAmountAccepted = async (from: string, to: string) => {
+  getMinMaxAmountAccepted = async (
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => {
     let requestHeaders: GenericObjectKeypair = {};
     requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
 
@@ -142,7 +163,7 @@ export class StealthexProvider
     const response = (
       await axios.post(
         this.buildUrl(minMaxRoute),
-        this.getRouteParams(from, to),
+        this.getRouteParams(from, fromNetwork, to, toNetwork),
         {
           headers: requestHeaders,
         },
@@ -150,22 +171,41 @@ export class StealthexProvider
     ).data;
     return [response.min_amount, response.max_amount];
   };
-  getExchangeEstimation = async (amount: string, from: string, to: string) => {
+
+  getExchangeEstimation = async (
+    amount: string,
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => {
     let requestHeaders: GenericObjectKeypair = {};
     requestHeaders[`Authorization`] = `Bearer ${this.apiKey}`;
-
     const requestData = {
-      ...this.getRouteParams(from, to, {
+      ...this.getRouteParams(from, fromNetwork, to, toNetwork, {
         amount: parseFloat(amount),
         additional_fee_percent:
           Config.swapCryptos.stealthex.partnerFeeAmount ?? 0,
       }),
     };
-
     const estimationRoute = `${this.urls.routes.estimation}`;
-    const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${
-      Config.swapCryptos.stealthex.refId
-    }&amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}`;
+    const fromLegacySymbol =
+      from.toLowerCase() === 'hive'
+        ? 'hive'
+        : this.allCurrenciesData.find(
+            (c) =>
+              c.symbol.toLowerCase() === from.toLowerCase() &&
+              c.network === fromNetwork,
+          )?.legacy_symbol || from;
+    const toLegacySymbol =
+      to.toLowerCase() === 'hive'
+        ? 'hive'
+        : this.allCurrenciesData.find(
+            (c) =>
+              c.symbol.toLowerCase() === to.toLowerCase() &&
+              c.network === toNetwork,
+          )?.legacy_symbol || to;
+    const link = `${Config.swapCryptos.stealthex.urls.referalBaseUrl}${Config.swapCryptos.stealthex.refId}&amount=${amount}&from=${fromLegacySymbol}&to=${toLegacySymbol}`;
     //     const extensionId = (await chrome.management.getSelf()).id;
     //     const link = `chrome-extension://${extensionId}/exchange-cryptos.html?amount=${amount}&from=${from.toLowerCase()}&to=${to.toLowerCase()}&type=${
     //      SwapCryptos.STEALTHEX

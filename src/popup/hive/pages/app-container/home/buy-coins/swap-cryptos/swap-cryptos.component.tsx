@@ -269,7 +269,9 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           .getExchangeEstimation(
             newAmount,
             newStartToken.subLabel!,
+            newStartToken.bagde?.label!,
             newEndToken.subLabel!,
+            newEndToken.bagde?.label!,
           )
           .then((res) => {
             if (!res) {

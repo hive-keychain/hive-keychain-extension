@@ -65,14 +65,23 @@ export class SimpleSwapProvider
       }
     });
     this.pairedCurrencyOptionsList = pairedCurrencyOptionsList;
+
     return pairedCurrencyOptionsList;
   };
 
-  getTickersAndNetworks = (from: string, to: string) => {
+  getTickersAndNetworks = (
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => {
     const fromHive = from.toLowerCase() === 'hive';
     const otherCurrency = this.pairedCurrencyOptionsList.find(
-      (c) => c.value.symbol === (fromHive ? to : from),
+      (c) =>
+        c.value.symbol === (fromHive ? to : from) &&
+        c.bagde?.label === (fromHive ? toNetwork : fromNetwork),
     );
+    if (!otherCurrency) return;
     return {
       tickerFrom: fromHive ? 'hive' : otherCurrency?.value.symbol,
       networkFrom: fromHive ? 'hive' : otherCurrency?.value.network,
@@ -80,17 +89,30 @@ export class SimpleSwapProvider
       networkTo: !fromHive ? 'hive' : otherCurrency?.value.network,
     };
   };
-  getMinMaxAmountAccepted = async (from: string, to: string) => {
+  getMinMaxAmountAccepted = async (
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => {
     if (from === 'HIVE') return;
     const minMaxAcceptedRoute = this.urls.routes.minMaxAccepted;
     if (minMaxAcceptedRoute.trim().length === 0) return [];
     const minMaxRoute = `${this.urls.routes.minMaxAccepted}`;
+    const tickersAndNetworks = this.getTickersAndNetworks(
+      from,
+      fromNetwork,
+      to,
+      toNetwork,
+    );
+
+    if (!tickersAndNetworks) return;
     const response = (
       await axios.get(this.buildUrl(minMaxRoute), {
         params: {
           api_key: this.apiKey,
           fixed: false,
-          ...this.getTickersAndNetworks(from, to),
+          ...tickersAndNetworks,
         },
       })
     ).data;
@@ -99,18 +121,33 @@ export class SimpleSwapProvider
   /**
    * Note: For simpleswap fee is set in the website, specifically: https://partners.simpleswap.io/webtools/api
    */
-  getExchangeEstimation = async (amount: string, from: string, to: string) => {
+  getExchangeEstimation = async (
+    amount: string,
+    from: string,
+    fromNetwork: string,
+    to: string,
+    toNetwork: string,
+  ) => {
     if (from === 'HIVE') return;
     const estimationRoute = this.urls.routes.estimation;
+    const tickersAndNetworks = this.getTickersAndNetworks(
+      from,
+      fromNetwork,
+      to,
+      toNetwork,
+    );
+    if (!tickersAndNetworks) return;
     const link = `${this.urls.referalBaseUrl}${
       this.refId
-    }&from=${from.toLowerCase()}&to=${to.toLowerCase()}&amount=${amount}`;
+    }&from=${from.toLowerCase()}-${
+      tickersAndNetworks.networkFrom
+    }&to=${to.toLowerCase()}-${tickersAndNetworks.networkTo}&amount=${amount}`;
     const estimation = (
       await axios.get(`https://simpleswap.io/api/v4/estimates`, {
         params: {
           // api_key: this.apiKey,
           fixed: false,
-          ...this.getTickersAndNetworks(from, to),
+          ...tickersAndNetworks,
           amount,
           reverse: false,
         },
