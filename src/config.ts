@@ -95,7 +95,7 @@ const Config = {
         referalBaseUrl: 'https://simpleswap.io/?ref=',
         fullLinkToExchange: 'https://simpleswap.io/exchange?id=',
         routes: {
-          allCurrencies: 'get_all_currencies',
+          allCurrencies: 'v3/currencies',
           currencyPair: 'get_pairs',
           minMaxAccepted: 'v3/ranges',
           estimation: 'v3/estimates',
@@ -108,20 +108,18 @@ const Config = {
       refId: '87338fbedd5a',
     } as SwapCryptosConfig,
     letsExchange: {
-      //TODO add keychain data
       urls: {
-        baseUrl: 'https://api.stealthex.io/v4/',
-        referalBaseUrl: 'https://stealthex.io/?ref=',
-        fullLinkToExchange: 'https://stealthex.io/exchange?id=',
+        baseUrl: 'https://api.letsexchange.io/api/',
+        referalBaseUrl: 'https://letsexchange.io/?ref_id=',
         routes: {
-          allCurrencies: 'currencies',
-          minMaxAccepted: 'rates/range',
-          currencyPair: 'currencies/',
-          estimation: 'rates/estimated-amount',
-          exchange: 'fee/exchange',
+          allCurrencies: 'v2/coins',
+          minMaxAccepted: 'v1/info',
+          estimation: 'v1/info',
         },
       },
-      apiKey: process.env.STEALTHEX_DEV_API_KEY || '',
+      apiKey:
+        process.env.LETS_EXCHANGE_DEV_API_KEY ||
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsImRhdGEiOnsiaWQiOjEzMjEsImhhc2giOiJleUpwZGlJNklscHdRMWt3VmxKeksyVnhNRzlVVlRCbmFuSnZTWGM5UFNJc0luWmhiSFZsSWpvaWVscEVXVFpyYVc1dFowbENTV3hCWWxONk0xd3ZkVVZUVm5FMUszTlVSRVprUzBoWU4ydHpWbU5zVmtaeVdXNXJSMDU0WTJ4Tk5qVnFTMHBYWldWM2VsUTVkVzlQYVZRMU1tSllVSFkzU0ZwNVVWRmpSek5JZDNGUWJpdHFOREkwZFZWWk4weFFhazFJVkVOalBTSXNJbTFoWXlJNkltTmpNVFpsWVdaaE0yUmhNbU16T1RBMU5qVTBPVEV6TWpjeU56azROREZpTVdVeVpqZGtaamM0WW1ZMU9XRmhZMlUyT1RnMVpUTmhZakEwTW1SbE56QWlmUT09In0sImlzcyI6Imh0dHBzOlwvXC9sZXRzLWJlLW5naW54LmFkbWluLWxhcmF2ZWwtcHJvZC5zdmMuY2x1c3Rlci5sb2NhbFwvYXBpXC92MVwvYXBpLWtleSIsImlhdCI6MTc1OTM3NDE2NywiZXhwIjoyMDgwNzgyMTY3LCJuYmYiOjE3NTkzNzQxNjcsImp0aSI6Ik9qTUxNYjlDanl3YklXOXYifQ.kCW2cUe_Ao8uO_22Q7h3uDnb_77oGXYbCD-80z9QIyQ',
       refId: 'gesatTarQ0Gk86Nn',
     } as SwapCryptosConfig,
   },

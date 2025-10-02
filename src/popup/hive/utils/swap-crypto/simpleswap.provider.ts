@@ -40,10 +40,9 @@ export class SimpleSwapProvider
       axios.get(this.buildUrl(currenciesRoute)),
       axios.get(this.buildUrl(pairedCurrencyRoute)),
     ]);
-
-    allCurrencies.data.map((currency: any) => {
-      if (pairedCurrencyList.data.includes(currency.symbol)) {
-        const bagde = currency.network
+    allCurrencies.data.result.map((currency: any) => {
+      if (pairedCurrencyList.data.includes(currency.ticker)) {
+        const badge = currency.network
           ? {
               type: OptionItemBadgeType.BADGE_RED,
               label: currency.network,
@@ -51,21 +50,21 @@ export class SimpleSwapProvider
           : undefined;
         pairedCurrencyOptionsList.push({
           label: currency.name.split(' ')[0],
-          subLabel: currency.symbol,
+          subLabel: currency.ticker,
           img: currency.image,
           value: {
             name: currency.name,
-            symbol: currency.symbol,
+            symbol: currency.ticker,
             network: currency.network,
             precision: currency.precision,
+            legacySymbol: currency.legacySymbol,
             exchanges: [SwapCryptos.SIMPLESWAP],
           },
-          bagde,
+          bagde: badge,
         });
       }
     });
     this.pairedCurrencyOptionsList = pairedCurrencyOptionsList;
-
     return pairedCurrencyOptionsList;
   };
 

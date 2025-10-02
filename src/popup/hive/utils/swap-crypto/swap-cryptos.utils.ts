@@ -38,7 +38,19 @@ export class SwapCryptosMerger {
               },
             };
           } else {
-            providersCurrencyOptionsList.push(currencyOption);
+            // Check if there's already an entry with the same symbol but different network
+            const existingSameSymbol = providersCurrencyOptionsList.find(
+              (e) => e.value.symbol === currencyOption.value.symbol,
+            );
+
+            if (existingSameSymbol) {
+              providersCurrencyOptionsList.push({
+                ...currencyOption,
+                label: existingSameSymbol.label,
+              });
+            } else {
+              providersCurrencyOptionsList.push(currencyOption);
+            }
           }
         }
       } catch (error) {
