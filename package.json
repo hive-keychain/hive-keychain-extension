@@ -56,7 +56,7 @@
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
-    "hive-keychain-commons": "^1.9.9",
+    "hive-keychain-commons": "^1.10.3",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "hive-uri": "0.2.5",
     "joi": "17.13.3",

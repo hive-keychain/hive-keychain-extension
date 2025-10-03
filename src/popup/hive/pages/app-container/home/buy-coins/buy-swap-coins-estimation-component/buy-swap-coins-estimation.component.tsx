@@ -1,7 +1,7 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { RampEstimationDisplay } from '@interfaces/ramps.interface';
-import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
 import { BuySwapCoinsEstimationItemComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation-item/buy-swap-coins-estimation-item.component';
+import { ExchangeEstimation } from 'hive-keychain-commons';
 import React from 'react';
 import {
   ComplexeCustomSelect,
@@ -27,7 +27,7 @@ interface Props {
   endTokenLabel: string;
   inputAmountLabel: string;
   inputPlaceHolder: string;
-  estimations: RampEstimationDisplay[] | SwapCryptosEstimationDisplay[];
+  estimations: RampEstimationDisplay[] | ExchangeEstimation[];
   countdown: number | null;
   price?: CurrencyPrices;
   minAcceptedAmount?: number;
@@ -139,7 +139,9 @@ const BuySwapCoinsEstimation = ({
             <div className="quotes">
               {estimations.map((estimation, index) => {
                 const key =
-                  estimation.name + estimation.amount + index.toString();
+                  (estimation as ExchangeEstimation).estimation.name +
+                  (estimation as ExchangeEstimation).estimation.amount +
+                  index.toString();
                 return (
                   <BuySwapCoinsEstimationItemComponent
                     key={key}

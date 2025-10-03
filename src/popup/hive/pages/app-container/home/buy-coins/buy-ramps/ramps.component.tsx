@@ -20,7 +20,7 @@ import { useCountdown } from 'src/dialog/hooks/countdown.hook';
 export const HIVE_OPTION_ITEM = {
   label: 'HIVE',
   subLabel: 'HIVE',
-  value: 'HIVE',
+  value: { symbol: 'hive', network: 'hive' },
   img: `/assets/images/wallet/hive-logo.svg`,
 } as OptionItem;
 

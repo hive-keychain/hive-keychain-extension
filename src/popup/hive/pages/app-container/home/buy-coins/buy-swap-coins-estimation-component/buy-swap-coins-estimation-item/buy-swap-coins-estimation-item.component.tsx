@@ -1,8 +1,8 @@
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { RampEstimationDisplay } from '@interfaces/ramps.interface';
-import { SwapCryptosEstimationDisplay } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import CurrencyPricesUtils from '@popup/hive/utils/currency-prices.utils';
+import { ExchangeEstimation } from 'hive-keychain-commons';
 import React from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -11,7 +11,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
-  estimation: RampEstimationDisplay | SwapCryptosEstimationDisplay;
+  estimation: ExchangeEstimation | RampEstimationDisplay;
   price: CurrencyPrices;
   displayReceiveTokenLogo?: boolean;
   endTokenList: OptionItem[];
@@ -23,18 +23,25 @@ const BuySwapCoinsEstimationItem = ({
   displayReceiveTokenLogo,
   endTokenList,
 }: Props) => {
-  const isRamp = (estimation as RampEstimationDisplay).hasOwnProperty(
-    'paymentMethod',
-  );
+  // const isRamp = (estimation as RampEstimationDisplay).hasOwnProperty(
+  //   'paymentMethod',
+  // );
 
   const gotoUrl = () => {
-    window.open(estimation.link, '__blank');
+    window.open((estimation as ExchangeEstimation).estimation.link, '__blank');
   };
 
   return (
     <div className="quote" onClick={gotoUrl}>
-      <SVGIcon icon={estimation.logo} />
-      {isRamp && (
+      <SVGIcon
+        icon={
+          SVGIcons[
+            (estimation as ExchangeEstimation).estimation
+              .logoName as keyof typeof SVGIcons
+          ]
+        }
+      />
+      {/* {isRamp && (
         <span className="method">
           <SVGIcon
             icon={(estimation as RampEstimationDisplay).paymentMethod.icon}
@@ -46,28 +53,31 @@ const BuySwapCoinsEstimationItem = ({
             }
           />
         </span>
-      )}
+      )} */}
       <div className="receive">
         {displayReceiveTokenLogo ? (
           <div className="receive-token">
             <PreloadedImage
               className="left-image"
               src={
-                (estimation as SwapCryptosEstimationDisplay).to === 'HIVE'
+                (estimation as ExchangeEstimation).estimation.to === 'HIVE'
                   ? HIVE_OPTION_ITEM.img!
                   : endTokenList.find(
                       (i) =>
                         i.subLabel ===
-                        (estimation as SwapCryptosEstimationDisplay).to,
+                        (estimation as ExchangeEstimation).estimation.to,
                     )?.img!
               }
               alt={`side-icon-${
-                (estimation as SwapCryptosEstimationDisplay).to
+                (estimation as ExchangeEstimation).estimation.to
               }`}
             />
             <span className="estimation-span">
-              {FormatUtils.formatCurrencyValue(estimation.estimation, -1)}{' '}
-              {(estimation as SwapCryptosEstimationDisplay).to.toUpperCase()}
+              {FormatUtils.formatCurrencyValue(
+                (estimation as ExchangeEstimation).estimation.estimation,
+                -1,
+              )}{' '}
+              {(estimation as ExchangeEstimation).estimation.to.toUpperCase()}
             </span>
           </div>
         ) : (

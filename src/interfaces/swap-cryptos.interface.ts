@@ -34,6 +34,7 @@ export enum SwapCryptos {
   STEALTHEX = 'STEALTHEX',
   SIMPLESWAP = 'SIMPLESWAP',
   LETS_EXCHANGE = 'LETS_EXCHANGE',
+  CHANGELLY = 'CHANGELLY',
 }
 
 export interface SwapCryptosEstimation {

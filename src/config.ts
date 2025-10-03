@@ -1,6 +1,5 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RampConfig } from '@interfaces/ramps.interface';
-import { SwapCryptosConfig } from '@interfaces/swap-cryptos.interface';
 
 const Config = {
   hiveEngine: {
@@ -53,76 +52,16 @@ const Config = {
     autoRefreshPeriodSec: 30,
     transak: {
       baseUrl: 'https://api.transak.com',
-      apiKey:
-        process.env.TRANSAK_DEV_API_KEY ||
-        '716078e4-939c-445a-8c6d-534614cd31b1',
+      apiKey: process.env.TRANSAK_DEV_API_KEY,
     } as RampConfig,
     ramp: {
       baseUrl: process.env.RAMP_DEV_API_KEY
         ? 'https://api.demo.ramp.network'
         : 'https://api.ramp.network',
-      apiKey:
-        process.env.RAMP_DEV_API_KEY ||
-        '8wr6k8t4tp4yg5rxgkdkp42qhgvjwfrvqm5zwtm8',
+      apiKey: process.env.RAMP_DEV_API_KEY,
     } as RampConfig,
   },
-  swapCryptos: {
-    autoRefreshPeriodSec: 30,
-    stealthex: {
-      urls: {
-        baseUrl: 'https://api.stealthex.io/v4/',
-        referalBaseUrl: 'https://stealthex.io/?ref=',
-        fullLinkToExchange: 'https://stealthex.io/exchange?id=',
-        routes: {
-          allCurrencies: 'currencies',
-          minMaxAccepted: 'rates/range',
-          currencyPair: 'currencies/',
-          estimation: 'rates/estimated-amount',
-          exchange: 'fee/exchange',
-        },
-      },
-      apiKey:
-        process.env.STEALTHEX_DEV_API_KEY ||
-        '3d4e1f8b-259c-4c09-8b12-66fac24e826c',
-      refId: 'gti0epcrc4c',
-      partnerFeeAmount: 0.2,
-    } as SwapCryptosConfig,
-    simpleswap: {
-      //Note: this exchange set up its partner fee in: https://partners.simpleswap.io/webtools/api
-      // it seems it only accepts 5% as max value.
-      urls: {
-        baseUrl: 'https://api.simpleswap.io/',
-        referalBaseUrl: 'https://simpleswap.io/?ref=',
-        fullLinkToExchange: 'https://simpleswap.io/exchange?id=',
-        routes: {
-          allCurrencies: 'v3/currencies',
-          currencyPair: 'get_pairs',
-          minMaxAccepted: 'v3/ranges',
-          estimation: 'v3/estimates',
-          exchange: 'create_exchange',
-        },
-      },
-      apiKey:
-        process.env.SIMPLESWAP_DEV_API_KEY ??
-        '26391eff-73c0-4369-a37b-cd4b37a62a12',
-      refId: '87338fbedd5a',
-    } as SwapCryptosConfig,
-    letsExchange: {
-      urls: {
-        baseUrl: 'https://api.letsexchange.io/api/',
-        referalBaseUrl: 'https://letsexchange.io/?ref_id=',
-        routes: {
-          allCurrencies: 'v2/coins',
-          minMaxAccepted: 'v1/info',
-          estimation: 'v1/info',
-        },
-      },
-      apiKey:
-        process.env.LETS_EXCHANGE_DEV_API_KEY ||
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsImRhdGEiOnsiaWQiOjEzMjEsImhhc2giOiJleUpwZGlJNklscHdRMWt3VmxKeksyVnhNRzlVVlRCbmFuSnZTWGM5UFNJc0luWmhiSFZsSWpvaWVscEVXVFpyYVc1dFowbENTV3hCWWxONk0xd3ZkVVZUVm5FMUszTlVSRVprUzBoWU4ydHpWbU5zVmtaeVdXNXJSMDU0WTJ4Tk5qVnFTMHBYWldWM2VsUTVkVzlQYVZRMU1tSllVSFkzU0ZwNVVWRmpSek5JZDNGUWJpdHFOREkwZFZWWk4weFFhazFJVkVOalBTSXNJbTFoWXlJNkltTmpNVFpsWVdaaE0yUmhNbU16T1RBMU5qVTBPVEV6TWpjeU56azROREZpTVdVeVpqZGtaamM0WW1ZMU9XRmhZMlUyT1RnMVpUTmhZakEwTW1SbE56QWlmUT09In0sImlzcyI6Imh0dHBzOlwvXC9sZXRzLWJlLW5naW54LmFkbWluLWxhcmF2ZWwtcHJvZC5zdmMuY2x1c3Rlci5sb2NhbFwvYXBpXC92MVwvYXBpLWtleSIsImlhdCI6MTc1OTM3NDE2NywiZXhwIjoyMDgwNzgyMTY3LCJuYmYiOjE3NTkzNzQxNjcsImp0aSI6Ik9qTUxNYjlDanl3YklXOXYifQ.kCW2cUe_Ao8uO_22Q7h3uDnb_77oGXYbCD-80z9QIyQ',
-      refId: 'gesatTarQ0Gk86Nn',
-    } as SwapCryptosConfig,
-  },
+
   multisig: {
     baseURL:
       process.env.MULTISIG_BACKEND_SERVER ||
@@ -133,6 +72,9 @@ const Config = {
   },
   keyless: {
     host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
+  },
+  swapCryptos: {
+    autoRefreshPeriodSec: 30,
   },
 };
 

@@ -22,7 +22,7 @@ export interface OptionItem<T = any> {
   subLabel?: string;
   img?: string;
   imgBackup?: string;
-  bagde?: OptionItemBagde;
+  badge?: OptionItemBagde;
 }
 
 export interface CustomSelectProps<T> {
@@ -72,9 +72,9 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           />
         )}
         <span>{itemProps.selectedItem.label}</span>
-        {itemProps.selectedItem.bagde && (
-          <div className={`${itemProps.selectedItem.bagde.type}`}>
-            {itemProps.selectedItem.bagde.label}
+        {itemProps.selectedItem.badge && (
+          <div className={`${itemProps.selectedItem.badge.type}`}>
+            {itemProps.selectedItem.badge.label}
           </div>
         )}
       </div>
