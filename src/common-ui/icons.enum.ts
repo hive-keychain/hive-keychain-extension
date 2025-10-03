@@ -201,4 +201,5 @@ export enum SVGIcons {
   PROBIT = 'probit',
   TRANSAK = 'transak',
   UPBIT = 'upbit',
+  SWAP_CRYPTOS_LETS_EXCHANGE = 'SWAP_CRYPTOS_LETS_EXCHANGE',
 }

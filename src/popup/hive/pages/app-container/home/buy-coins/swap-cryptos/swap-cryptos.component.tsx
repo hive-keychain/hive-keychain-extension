@@ -4,6 +4,7 @@ import {
 } from '@interfaces/swap-cryptos.interface';
 import { HIVE_OPTION_ITEM } from '@popup/hive/pages/app-container/home/buy-coins/buy-ramps/ramps.component';
 import { BuySwapCoinsEstimationComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-swap-coins-estimation-component/buy-swap-coins-estimation.component';
+import { LetsExchangeProvider } from '@popup/hive/utils/swap-crypto/lets-exchange.provider';
 import { SimpleSwapProvider } from '@popup/hive/utils/swap-crypto/simpleswap.provider';
 import { StealthexProvider } from '@popup/hive/utils/swap-crypto/stealthex.provider';
 
@@ -152,6 +153,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     const newSwapCryptos = new SwapCryptosMerger([
       new StealthexProvider(),
       new SimpleSwapProvider(),
+      new LetsExchangeProvider(),
     ]);
     setSetswapCryptos(newSwapCryptos);
     newSwapCryptos
