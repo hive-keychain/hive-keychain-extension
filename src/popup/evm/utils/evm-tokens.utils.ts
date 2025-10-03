@@ -132,7 +132,6 @@ const getTokenBalance = async (
     let balance;
     let balanceInteger;
     let tokenInfo;
-    console.log(token, 'token in getTokenBalance');
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
@@ -147,14 +146,12 @@ const getTokenBalance = async (
       }
 
       case EVMSmartContractType.ERC20: {
-        console.log(token, 'token in erc20');
         const contract = new ethers.Contract(
           (token as EvmSmartContractInfoErc20).contractAddress,
           Erc20Abi,
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
-        console.log(balance, 'balance in erc20');
         formattedBalance = FormatUtils.withCommas(
           Number(
             parseFloat(
@@ -191,6 +188,7 @@ const getTokenBalance = async (
       balanceInteger: balanceInteger,
     };
   } catch (err) {
+    console.log(token);
     Logger.error('Error while formatting evm balances', err);
   }
 };
@@ -429,32 +427,28 @@ const getTokensFullDetails = async (
       addresses.push(token.contractAddress);
     }
   }
-  console.log({ addresses }, 'in getTokensFullDetails');
   for (const address of addresses) {
     if (
       !chainTokenMetaData.find(
         (ctm: any) =>
-          ctm.address && ctm.address.toLowerCase() === address.toLowerCase(),
+          ctm.contractAddress &&
+          ctm.contractAddress.toLowerCase() === address.toLowerCase(),
       )
     ) {
       addressesToFetch.push(address);
     }
   }
-  console.log('fetching metadata for ', addressesToFetch);
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
 
   const missingMetadataAddresses = addressesToFetch.filter(
-    (address) => !tokensMetadata.map((t: any) => t.address).includes(address),
+    (address) =>
+      !tokensMetadata.map((t: any) => t.contractAddress).includes(address),
   );
-
-  console.log(missingMetadataAddresses, 'missingMetadataAddresses');
 
   const missingMetadata = discoveredTokens.filter((t) =>
     missingMetadataAddresses.includes(t.contractAddress),
   );
-
-  console.log(missingMetadata, 'missingMetadata');
 
   const newMetadata = [
     ...chainTokenMetaData.filter(
@@ -463,7 +457,6 @@ const getTokensFullDetails = async (
     ...tokensMetadata,
     ...missingMetadata,
   ];
-  console.log(newMetadata, 'newMetadata');
   if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
     const mainTokenMetadata = {
       type: EVMSmartContractType.NATIVE,
