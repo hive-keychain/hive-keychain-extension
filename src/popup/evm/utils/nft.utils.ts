@@ -13,7 +13,12 @@ import { BaseApi } from 'src/api/base';
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   console.log('getImgFromMetadata', metadata);
   if (!metadata) return 'https://placehold.co/600x600?text=Not+Found';
-  if (metadata.image.startsWith('ipfs://')) {
+  if (metadata.image.startsWith('ipfs://ipfs/')) {
+    metadata.image = metadata.image.replace(
+      'ipfs://ipfs/',
+      'https://ipfs.io/ipfs/',
+    );
+  } else if (metadata.image.startsWith('ipfs://')) {
     metadata.image = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
   }
   return metadata.image;
@@ -29,13 +34,14 @@ const getMetadataFromURI = async (
   console.log('getMetadataFromURI');
   let metadata;
   try {
-    if (uri.startsWith('ipfs://')) {
+    if (uri.startsWith('ipfs://ipfs/')) {
+      uri = uri.replace('ipfs://ipfs/', '');
+      metadata = await IPFSApi.getURI(uri);
+      metadata.image = getImgFromMetadata(metadata);
+    } else if (uri.startsWith('ipfs://')) {
       uri = uri.replace('ipfs://', '');
       metadata = await IPFSApi.getURI(uri);
-      metadata.image = metadata.image.replace(
-        'ipfs://',
-        'https://ipfs.io/ipfs/',
-      );
+      metadata.image = getImgFromMetadata(metadata);
     } else if (uri.startsWith('https://') || uri.startsWith('http://')) {
       metadata = await BaseApi.get(uri);
     } else {

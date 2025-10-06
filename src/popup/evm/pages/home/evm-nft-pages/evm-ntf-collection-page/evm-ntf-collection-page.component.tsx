@@ -17,7 +17,7 @@ const EvmNftCollectionPage = ({
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
-      title: collection.tokenInfo.name,
+      title: collection.tokenInfo.name ?? 'No name',
       isBackButtonEnabled: true,
       skipTitleTranslation: true,
     });

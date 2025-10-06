@@ -42,7 +42,7 @@ export const EvmNftCollectionComponent = ({
         const lowerCaseQuery = query.toLowerCase();
         return (
           listItem.collection.tokenInfo.name
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(lowerCaseQuery) ||
           listItem.item.metadata.name?.toLowerCase().includes(lowerCaseQuery) ||
           listItem.item.metadata.description?.includes(lowerCaseQuery) ||
