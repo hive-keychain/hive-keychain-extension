@@ -42,6 +42,7 @@ export const defaultChainList = [
     ],
     isPopular: true,
     network: 'mainnet',
+    openSeaChainId: 'avalanche',
   } as EvmChain,
   {
     name: 'Avalanche Fuji',
@@ -94,6 +95,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
+    openSeaChainId: 'arbitrum',
   } as EvmChain,
   {
     name: 'Arbitrum Sepolia',
@@ -212,6 +214,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
+    openSeaChainId: 'base',
   } as EvmChain,
   {
     name: 'Base Sepolia',
@@ -298,6 +301,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
+    openSeaChainId: 'ethereum',
   } as EvmChain,
   {
     name: 'Holesky',
@@ -409,6 +413,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    openSeaChainId: 'flow',
   } as EvmChain,
   {
     name: 'Gnosis',
@@ -551,6 +556,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
+    openSeaChainId: 'matic',
   } as EvmChain,
   {
     name: 'Polygon Amoy',
@@ -609,6 +615,7 @@ export const defaultChainList = [
       },
     ],
     isPopular: true,
+    openSeaChainId: 'optimism',
   } as EvmChain,
   {
     name: 'Aleph Zero EVM',
@@ -741,6 +748,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    openSeaChainId: 'arbitrum_nova',
   } as EvmChain,
   {
     name: 'Blessnet',
@@ -1885,6 +1893,7 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    openSeaChainId: 'unichain',
   } as EvmChain,
   {
     name: 'Unichain Sepolia',
@@ -2069,5 +2078,6 @@ export const defaultChainList = [
         isDefault: true,
       },
     ],
+    openSeaChainId: 'zora',
   } as EvmChain,
 ];

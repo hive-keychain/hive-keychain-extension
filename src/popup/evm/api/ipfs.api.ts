@@ -5,7 +5,7 @@ const get = async (url: string): Promise<any> => {
 };
 
 const getURI = async (uri: string) => {
-  const res = await get(`https://ipfs.io/ipfs/${uri}`);
+  const res = await get(`https://ipfs.io/${uri}`);
   return res;
 };
 

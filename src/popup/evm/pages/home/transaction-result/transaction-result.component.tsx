@@ -310,7 +310,7 @@ const EvmTransactionResult = ({
     );
 
     const contract = new ethers.Contract(
-      (tokenInfo as any).address,
+      (tokenInfo as any).contractAddress,
       getAbiFromType(tokenInfo.type)!,
       connectedWallet,
     );
@@ -319,6 +319,8 @@ const EvmTransactionResult = ({
       tokenInfo.type,
       Number(value).toString(),
       contract,
+      chain,
+      (tokenInfo as any).contractAddress,
     );
 
     return metadata.metadata.image;

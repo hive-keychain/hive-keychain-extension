@@ -6,11 +6,7 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import {
-  EvmSmartContractInfoErc1155,
-  EvmSmartContractInfoErc721,
-  EVMSmartContractType,
-} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -68,27 +64,16 @@ export const loadEvmActiveAccount =
           payload: { nativeAndErc20Tokens: { value: res, loading: false } },
         });
       }),
-      Promise.all([
-        EvmTokensUtils.getErc721Tokens(
-          process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-          chain,
-          allTokensInfo.filter(
-            (token) => token.type === EVMSmartContractType.ERC721,
-          ) as EvmSmartContractInfoErc721[],
-        ),
-        EvmTokensUtils.getErc1155Tokens(
-          allTokens,
-          allTokensInfo.filter(
-            (token) => token.type === EVMSmartContractType.ERC1155,
-          ) as EvmSmartContractInfoErc1155[],
-          chain,
-        ),
-      ]).then(([erc721, erc1155]) => {
-        dispatch({
-          type: EvmActionType.SET_ACTIVE_ACCOUNT_NFT,
-          payload: { nfts: { value: [...erc721, ...erc1155], loading: false } },
-        });
-      }),
+      EvmTokensUtils.getNfts(wallet, chain, allTokensInfo, allTokens).then(
+        ([erc721, erc1155]) => {
+          dispatch({
+            type: EvmActionType.SET_ACTIVE_ACCOUNT_NFT,
+            payload: {
+              nfts: { value: [...erc721, ...erc1155], loading: false },
+            },
+          });
+        },
+      ),
       EvmTokensHistoryUtils.fetchHistory(wallet.address, chain).then((res) => {
         dispatch({
           type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,

@@ -82,12 +82,51 @@ const get = async (url: string): Promise<any> => {
     return null;
   }
 };
+const getV2 = async (url: string): Promise<any> => {
+  try {
+    const res = await BaseApi.get(url);
+    return res;
+  } catch (err) {
+    Logger.error(err);
+    return null;
+  }
+};
 
 const getPendingTransactions = async (chain: EvmChain, address: string) => {
   const result = await get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=pendingtxlist&address=${address}&page=1&offset=50`,
   );
   return result;
+};
+
+const getNftList = async (chain: EvmChain, walletAddress: string) => {
+  const result = await getV2(
+    `${chain.blockExplorerApi?.url}/api/v2/addresses/${walletAddress}/nft/collections`,
+  );
+  return {
+    items: result.items.map((item: any) => {
+      return {
+        ...item,
+        token: {
+          ...item.token,
+          type: item.token.type.replace('-', ''),
+          contractAddress: item.token.address_hash,
+        },
+        tokensInstances: item.token_instances.map((token: any) => {
+          return {
+            ...token,
+            image: token.image_url,
+            metadata: token.metadata
+              ? {
+                  ...token.metadata,
+                  image: token.metadata.image_url ?? token.metadata.image,
+                }
+              : null,
+          };
+        }),
+      };
+    }),
+  };
 };
 
 export const BlockscoutApi = {
@@ -99,4 +138,6 @@ export const BlockscoutApi = {
   discoverTokens,
   getNftTx,
   getPendingTransactions,
+  getNftList,
+  getV2,
 };

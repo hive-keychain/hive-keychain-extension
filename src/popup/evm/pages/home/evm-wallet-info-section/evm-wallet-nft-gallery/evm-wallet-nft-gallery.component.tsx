@@ -30,6 +30,10 @@ export const EvmWalletNftGalleryComponent = ({
   const [other, setOther] = useState<EvmErc721Token[]>([]);
 
   useEffect(() => {
+    console.log(activeAccount.nfts, 'activeAccount.nfts');
+  }, [activeAccount.nfts]);
+
+  useEffect(() => {
     const otherTokens = [];
     for (const token of activeAccount.nfts.value) {
       if (token.collection.length === 1) {
@@ -72,7 +76,7 @@ export const EvmWalletNftGalleryComponent = ({
           </div>
           <div className="nft-collection-preview">
             <div className="nft-preview-container">
-              {other.map((otherToken, index) => (
+              {other.slice(0, 4).map((otherToken, index) => (
                 <React.Fragment
                   key={`${otherToken.tokenInfo.contractAddress}-${index}`}>
                   <CustomTooltip
