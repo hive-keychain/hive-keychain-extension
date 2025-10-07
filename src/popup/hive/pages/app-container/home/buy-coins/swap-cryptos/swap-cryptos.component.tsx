@@ -122,6 +122,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       setErrorInApi(undefined);
       setEstimations([]);
       setAmount('');
+      setExchangeRangeAmount({ min: 0, max: 0 });
       getMinAndMax(startToken, endToken);
     }
   }, [startToken, endToken]);
@@ -224,6 +225,13 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           return item.max ? Math.max(max, item.max) : max;
         }, 0);
         setExchangeRangeAmount({ min, max });
+        // If user already entered an amount while min/max were loading, trigger estimation now
+        if (amount && amount.trim().length > 0) {
+          getExchangeEstimate(amount, startTokenOption, endTokenOption, false, {
+            min,
+            max,
+          });
+        }
       });
       setLoadingMinMaxAccepted(false);
     } catch (error) {
@@ -287,13 +295,11 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
   };
 
   const swapStartAndEnd = useCallback(() => {
-    // Batch all state updates to prevent race conditions
     const tempStarTokentListOptions = startTokenListOptions;
     const tempEndTokenListOptions = endTokenListOptions;
     const tempStartToken = startToken;
     const tempEndToken = endToken;
 
-    // Use functional updates to ensure we're working with the latest state
     setStartToken(tempEndToken);
     setEndToken(tempStartToken);
     setStartTokenListOptions(tempEndTokenListOptions);
