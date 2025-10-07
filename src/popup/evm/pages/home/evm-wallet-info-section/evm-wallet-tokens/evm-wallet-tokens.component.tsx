@@ -30,6 +30,7 @@ export const EvmWalletTokensComponent = ({
   const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
 
   useEffect(() => {
+    console.log(activeAccount.nativeAndErc20Tokens);
     init();
   }, [activeAccount.nativeAndErc20Tokens]);
 
@@ -48,7 +49,7 @@ export const EvmWalletTokensComponent = ({
 
   const saveCustomToken = (tokenAddress: string) => {
     setShowAddCustomTokenPopup(false);
-    console.log('saveCustomToken', tokenAddress);
+    // TODO: save custom token
   };
 
   return (
@@ -60,7 +61,7 @@ export const EvmWalletTokensComponent = ({
               key={`${token.tokenInfo.name}-${index}`}
               token={token}
               mainValueLabel={token.tokenInfo.symbol}
-              mainValue={token.formattedBalance}
+              mainValue={token.shortFormattedBalance}
               mainValueSubLabel={token.tokenInfo.name}
             />
           ))}

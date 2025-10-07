@@ -132,6 +132,7 @@ const getTokenBalance = async (
     let formattedBalance;
     let balance;
     let balanceInteger;
+    let shortFormattedBalance;
     let tokenInfo;
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
@@ -140,6 +141,11 @@ const getTokenBalance = async (
           Number(parseFloat(ethers.formatEther(balance))),
           8,
           true,
+        );
+        shortFormattedBalance = FormatUtils.withCommas(
+          Number(parseFloat(ethers.formatEther(balance))),
+          3,
+          false,
         );
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
         tokenInfo = token as EvmSmartContractInfoNative;
@@ -165,6 +171,18 @@ const getTokenBalance = async (
           Number((token as EvmSmartContractInfoErc20).decimals),
           true,
         );
+        shortFormattedBalance = FormatUtils.withCommas(
+          Number(
+            parseFloat(
+              ethers.formatUnits(
+                balance,
+                Number((token as EvmSmartContractInfoErc20).decimals),
+              ),
+            ),
+          ),
+          3,
+          false,
+        );
         balanceInteger = Number(
           parseFloat(
             ethers.formatUnits(
@@ -187,6 +205,7 @@ const getTokenBalance = async (
       formattedBalance: formattedBalance,
       balance: balance,
       balanceInteger: balanceInteger,
+      shortFormattedBalance: shortFormattedBalance,
     };
   } catch (err) {
     console.log(token);

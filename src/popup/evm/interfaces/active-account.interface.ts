@@ -28,6 +28,7 @@ export interface EvmActiveAccount {
 
 export interface NativeAndErc20Token {
   formattedBalance: string;
+  shortFormattedBalance: string;
   balance: bigint;
   balanceInteger: number;
   tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
