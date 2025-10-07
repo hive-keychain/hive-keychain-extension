@@ -11,7 +11,8 @@ import { ethers } from 'ethers';
 import { BaseApi } from 'src/api/base';
 
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
-  if (!metadata) return 'https://placehold.co/600x600?text=Not+Found';
+  if (!metadata || !metadata.image)
+    return 'https://placehold.co/600x600?text=Not+Found';
   if (metadata.image.startsWith('ipfs://ipfs/')) {
     metadata.image = metadata.image.replace(
       'ipfs://ipfs/',
@@ -67,7 +68,6 @@ const getMetadata = async (
   tokenId: string,
   contract: ethers.Contract,
 ) => {
-  console.log('getMetadata');
   let uri;
 
   switch (type) {
@@ -97,26 +97,36 @@ const getMetadataFromTokenId = async (
     metadata: null,
   };
 
-  switch (type) {
-    case EVMSmartContractType.ERC721:
-      uri = await contract.tokenURI(tokenId);
-      break;
-    case EVMSmartContractType.ERC1155:
-      uri = await contract.uri(tokenId);
-      break;
-  }
-  if (uri.includes('api.opensea.io')) {
-    collectionItem.metadata = await getMetadataFromOpenSea(
-      chain,
-      contractAddress,
-      tokenId,
-    );
-  } else {
-    collectionItem.metadata = await getMetadataFromURI(uri, tokenId);
-  }
+  try {
+    switch (type) {
+      case EVMSmartContractType.ERC721:
+        uri = await contract.tokenURI(tokenId);
+        break;
+      case EVMSmartContractType.ERC1155:
+        uri = await contract.uri(tokenId);
+        break;
+    }
+    if (uri.includes('api.opensea.io')) {
+      collectionItem.metadata = await getMetadataFromOpenSea(
+        chain,
+        contractAddress,
+        tokenId,
+      );
+    } else {
+      collectionItem.metadata = await getMetadataFromURI(uri, tokenId);
+    }
 
-  if (balance) {
-    (collectionItem as EvmErc1155TokenCollectionItem).balance = balance;
+    if (balance) {
+      (collectionItem as EvmErc1155TokenCollectionItem).balance = balance;
+    }
+  } catch (err) {
+    console.log(err);
+    collectionItem.metadata = {
+      name: 'No name',
+      description: 'No description',
+      image: 'https://placehold.co/600x600?text=Not+Found',
+      attributes: [],
+    };
   }
 
   return collectionItem;

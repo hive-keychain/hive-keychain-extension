@@ -102,6 +102,8 @@ const filterTokensBasedOnSettings = async (
 ) => {
   const evmSettings = await EvmSettingsUtils.getSettings();
 
+  console.log({ tokens });
+
   return tokens.filter((token) => {
     if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
       if (
@@ -198,7 +200,6 @@ const getErc721Tokens = async (
   allDiscoveredTokens: any[],
   tokensInfo: EvmSmartContractInfoErc721[],
 ) => {
-  console.log({ tokens: tokensInfo }, 'in getErc721Tokens');
   const LIMIT = 1000;
   let finalTransactions: any[] = [];
   let transactions: any[] = [];
@@ -230,20 +231,35 @@ const getErc721Tokens = async (
           collection: [],
         } as EvmErc721Token;
         for (const instance of nftItem.tokensInstances) {
-          item.collection.push({
-            id: instance.id,
-            metadata: {
-              name: instance.metadata?.name,
-              description: instance.metadata?.description,
-              image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
-              attributes: instance.metadata?.attributes,
-            },
-          });
+          if (!instance.metadata) {
+            item.collection.push(
+              await EvmNFTUtils.getMetadataFromTokenId(
+                EVMSmartContractType.ERC721,
+                instance.id,
+                new ethers.Contract(
+                  nftItem.token.contractAddress,
+                  ERC721Abi,
+                  await EthersUtils.getProvider(chain),
+                ),
+                chain,
+                nftItem.token.contractAddress,
+              ),
+            );
+          } else {
+            item.collection.push({
+              id: instance.id,
+              metadata: {
+                name: instance.metadata?.name,
+                description: instance.metadata?.description,
+                image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
+                attributes: instance.metadata?.attributes,
+              },
+            });
+          }
         }
         erc721tokens.push(item);
       }
 
-      console.log(idsPerCollection, 'idsPerCollection in blockscout');
       return erc721tokens;
     }
 
@@ -337,7 +353,6 @@ const getErc1155Tokens = async (
   chain: EvmChain,
 ): Promise<EvmErc1155Token[]> => {
   const erc1155Tokens: EvmErc1155Token[] = [];
-  console.log(tokenInfos, 'tokenInfos in getErc1155Tokens');
 
   switch (chain.blockExplorerApi?.type) {
     case BlockExplorerType.BLOCKSCOUT: {
@@ -366,8 +381,8 @@ const getErc1155Tokens = async (
             },
             balance: Number(instance.amount),
           });
-          erc1155Tokens.push(item);
         }
+        erc1155Tokens.push(item);
       }
       return erc1155Tokens;
     }
@@ -406,7 +421,6 @@ const getErc1155Tokens = async (
       break;
   }
 
-  console.log(erc1155Tokens, 'erc1155Tokens');
   return erc1155Tokens;
 };
 
@@ -493,13 +507,18 @@ const getTokensFullDetails = async (
       ? allSavedMetadata[chain.chainId]
       : [];
 
-  const addresses: string[] = [];
+  const addresses: { address: string; tokenId?: string }[] = [];
 
-  let addressesToFetch: string[] = [];
+  let addressesToFetch: { address: string; tokenId?: string }[] = [];
+
+  console.log({ discoveredTokens });
 
   for (const token of discoveredTokens) {
     if (!addresses.includes(token.contractAddress) && !!token.contractAddress) {
-      addresses.push(token.contractAddress);
+      addresses.push({
+        address: token.contractAddress,
+        tokenId: token.tokenId,
+      });
     }
   }
   for (const address of addresses) {
@@ -507,7 +526,7 @@ const getTokensFullDetails = async (
       !chainTokenMetaData.find(
         (ctm: any) =>
           ctm.contractAddress &&
-          ctm.contractAddress.toLowerCase() === address.toLowerCase(),
+          ctm.contractAddress.toLowerCase() === address.address.toLowerCase(),
       )
     ) {
       addressesToFetch.push(address);
@@ -609,7 +628,7 @@ const getTokensFullDetails = async (
 // };
 
 const getMetadataFromBackend = async (
-  addresses: string[],
+  addresses: { address: string; tokenId?: string }[],
   chain: EvmChain,
 ): Promise<EvmSmartContractInfo[] | null> => {
   try {

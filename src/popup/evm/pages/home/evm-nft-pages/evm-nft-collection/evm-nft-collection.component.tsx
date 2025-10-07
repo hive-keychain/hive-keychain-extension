@@ -45,10 +45,10 @@ export const EvmNftCollectionComponent = ({
             ?.toLowerCase()
             .includes(lowerCaseQuery) ||
           listItem.item.metadata.name?.toLowerCase().includes(lowerCaseQuery) ||
-          listItem.item.metadata.description?.includes(lowerCaseQuery) ||
-          listItem.item.metadata.attributes
-            ?.map((attr) => attr.value.toLowerCase())
-            .some((attr) => attr.includes(lowerCaseQuery))
+          listItem.item.metadata.description?.includes(lowerCaseQuery)
+          // listItem.item.metadata.attributes
+          //   ?.map((attr) => attrattr.value.toLowerCase())
+          //   .some((attr) => attr.includes(lowerCaseQuery))
         );
       }),
     );

@@ -4,7 +4,7 @@ import {
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import React, { BaseSyntheticEvent, useEffect } from 'react';
+import React, { BaseSyntheticEvent } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -26,10 +26,6 @@ export const EvmNftDetails = ({
   onClickSend,
   nftSize,
 }: Props) => {
-  useEffect(() => {
-    console.log({ nft, collection, expanded });
-  }, []);
-
   const handleOnClick = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
     if (onClick) onClick();
@@ -45,7 +41,9 @@ export const EvmNftDetails = ({
       className={`detailed-nft ${expanded ? 'expanded' : ''}`}
       onClick={handleOnClick}>
       <img className={`${nftSize ?? 'normal'}`} src={nft.metadata.image} />
-      <div className="name">{nft.metadata.name}</div>
+      <div className="name">
+        {nft.metadata.name ?? `${collection.tokenInfo.name} #${nft.id}`}
+      </div>
       {(nft as EvmErc1155TokenCollectionItem).balance > 1 && !expanded && (
         <div className="nft-balance">
           {(nft as EvmErc1155TokenCollectionItem).balance}

@@ -16,7 +16,11 @@ const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
   `);
   console.log(result, 'result in discoverTokens');
   return result
-    ? result.map((r: any) => ({ ...r, type: r.type.replace('-', '') }))
+    ? result.map((r: any) => ({
+        ...r,
+        type: r.type.replace('-', ''),
+        tokenId: r.id,
+      }))
     : [];
 };
 
@@ -109,64 +113,50 @@ const getNftList = async (
   chain: EvmChain,
   walletAddress: string,
   type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
-): Promise<any[]> => {
-  const res = await fetchNftList(chain, walletAddress, type);
-  return res.map((item: any) => {
-    return {
-      ...item,
-      token: {
-        ...item.token,
-        type: item.token.type.replace('-', ''),
-        contractAddress: item.token.address_hash,
-      },
-      tokensInstances: item.token_instances.map((token: any) => {
+) => {
+  let nextPageParams: any;
+  let items: any[] = [];
+  do {
+    const res = await getV2(
+      `${
+        chain.blockExplorerApi?.url
+      }/api/v2/addresses/${walletAddress}/nft/collections?type=${
+        BLOCKSCOUT_NFT_TYPE[type]
+      }${
+        nextPageParams
+          ? `&token_contract_address_hash=${nextPageParams.token_contract_address_hash}&items_count=${nextPageParams.items_count}&token_type=${nextPageParams.token_type}`
+          : ''
+      }`,
+    );
+    nextPageParams = res.next_page_params;
+
+    items = [
+      ...items,
+      ...res.items.map((item: any) => {
         return {
-          ...token,
-          image: token.image_url,
-          metadata: token.metadata
-            ? {
-                ...token.metadata,
-                image: token.metadata.image_url ?? token.metadata.image,
-              }
-            : null,
+          ...item,
+          token: {
+            ...item.token,
+            type: item.token.type.replace('-', ''),
+            contractAddress: item.token.address_hash,
+          },
+          tokensInstances: item.token_instances.map((token: any) => {
+            return {
+              ...token,
+              image: token.image_url,
+              metadata: token.metadata
+                ? {
+                    ...token.metadata,
+                    image: token.metadata.image_url ?? token.metadata.image,
+                  }
+                : null,
+            };
+          }),
         };
       }),
-    };
-  });
-};
-
-const fetchNftList = async (
-  chain: EvmChain,
-  walletAddress: string,
-  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
-  nextTokenContractAddressHash?: string,
-): Promise<any> => {
-  const res = await getV2(
-    `${
-      chain.blockExplorerApi?.url
-    }/api/v2/addresses/${walletAddress}/nft/collections?type=${
-      BLOCKSCOUT_NFT_TYPE[type]
-    }${
-      nextTokenContractAddressHash
-        ? `&token_contract_address_hash=${nextTokenContractAddressHash}`
-        : ''
-    }`,
-  );
-  if (
-    res.next_page_params?.token_contract_address_hash ===
-    nextTokenContractAddressHash
-  ) {
-    return [];
-  }
-  return [
-    ...res.items,
-    ...(await fetchNftList(
-      chain,
-      walletAddress,
-      type,
-      res.next_page_params.token_contract_address_hash,
-    )),
-  ];
+    ];
+  } while (nextPageParams);
+  return items;
 };
 
 export const BlockscoutApi = {
