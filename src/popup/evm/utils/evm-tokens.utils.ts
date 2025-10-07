@@ -347,7 +347,6 @@ const getErc1155Tokens = async (
         EVMSmartContractType.ERC1155,
       );
       for (const nftItem of nfts) {
-        console.log({ nftItem });
         const item = {
           tokenInfo: tokenInfos.find(
             (token) =>

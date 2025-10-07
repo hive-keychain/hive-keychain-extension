@@ -1,10 +1,12 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import {
   EvmActiveAccount,
+  EvmErc1155Token,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
@@ -28,25 +30,38 @@ export const EvmWalletNftGalleryComponent = ({
   manualDiscoverNfts,
 }: Props) => {
   const [other, setOther] = useState<EvmErc721Token[]>([]);
+  const [filteredCollections, setFilteredCollections] =
+    useState<(EvmErc721Token | EvmErc1155Token)[]>();
 
   useEffect(() => {
-    console.log(activeAccount.nfts, 'activeAccount.nfts');
+    if (!activeAccount.nfts.loading) {
+      init();
+    }
   }, [activeAccount.nfts]);
 
   useEffect(() => {
     const otherTokens = [];
-    for (const token of activeAccount.nfts.value) {
-      if (token.collection.length === 1) {
-        otherTokens.push(token);
+    if (filteredCollections) {
+      for (const token of filteredCollections) {
+        if (token.collection.length === 1) {
+          otherTokens.push(token);
+        }
       }
+      setOther(otherTokens);
     }
-    setOther(otherTokens);
-  }, []);
+  }, [filteredCollections]);
+
+  const init = async () => {
+    const acceptedTokens = (await EvmTokensUtils.filterTokensBasedOnSettings(
+      activeAccount.nfts.value,
+    )) as (EvmErc721Token | EvmErc1155Token)[];
+    setFilteredCollections(acceptedTokens);
+  };
 
   return (
     <div className="nft-gallery">
-      {!activeAccount.nfts.loading &&
-        activeAccount.nfts.value
+      {filteredCollections &&
+        filteredCollections
           .filter((token) => token.collection.length > 1)
           .sort((tokenA, tokenB) =>
             tokenA.tokenInfo.name > tokenB.tokenInfo.name ? 1 : -1,
