@@ -91,7 +91,7 @@ const BuySwapCoinsEstimation = ({
             <div>
               {chrome.i18n.getMessage(minAmountLabel)}{' '}
               {minAcceptedAmount > 0
-                ? FormatUtils.formatCurrencyValue(minAcceptedAmount)
+                ? FormatUtils.formatCurrencyValue(minAcceptedAmount, 4)
                 : ''}
             </div>
           ) : null}
