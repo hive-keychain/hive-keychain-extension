@@ -1,7 +1,7 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import {
   BackgroundType,
@@ -35,6 +35,11 @@ const Register = ({ data }: Props) => {
   const [password2, setPassword2] = useState('');
   const [signupError, setSignupError] = useState('');
   const [accepted, setAccepted] = useState(false);
+  const ref = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (ref && ref.current) ref.current.focus();
+  }, [ref]);
 
   const signup = () => {
     if (!accepted) {
@@ -86,6 +91,7 @@ const Register = ({ data }: Props) => {
           type={InputType.PASSWORD}
           dataTestId="password-input"
           classname="password-input"
+          ref={ref}
         />
         <InputComponent
           value={password2}

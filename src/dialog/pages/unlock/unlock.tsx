@@ -1,7 +1,7 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -32,7 +32,7 @@ type UnlockMessage = {
 export default ({ data, wrongMk, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const ref = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     setLoading(false);
   }, [index]);
@@ -51,6 +51,10 @@ export default ({ data, wrongMk, index }: Props) => {
     });
   };
 
+  useEffect(() => {
+    if (ref && ref.current) ref.current.focus();
+  }, [ref]);
+
   return (
     <div className="unlock-page">
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
@@ -64,6 +68,7 @@ export default ({ data, wrongMk, index }: Props) => {
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
+        ref={ref}
       />
       {wrongMk && (
         <div className="error">

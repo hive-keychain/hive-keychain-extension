@@ -3,7 +3,7 @@ import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import {
@@ -26,10 +26,15 @@ const SignUp = ({
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [accepted, setAccepted] = useState(false);
-
+  const ref = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     resetTitleContainerProperties;
   }, []);
+
+  useEffect(() => {
+    if (ref && ref.current) ref.current.focus();
+  }, [ref]);
+
   const submitMk = (): any => {
     if (!accepted) {
       setErrorMessage('html_popup_sign_up_need_accept_pp');
@@ -70,6 +75,7 @@ const SignUp = ({
           type={InputType.PASSWORD}
           dataTestId="password-input"
           classname="password-input"
+          ref={ref}
         />
         <InputComponent
           value={newPasswordConfirm}
