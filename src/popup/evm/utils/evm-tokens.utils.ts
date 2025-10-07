@@ -571,8 +571,10 @@ const getTokensFullDetails = async (
   );
 
   const allDiscoveredAddresses = discoveredTokens.map((t) => t.contractAddress);
-  return newMetadata.filter((t) =>
-    allDiscoveredAddresses.includes(t.contractAddress),
+  return newMetadata.filter(
+    (t) =>
+      allDiscoveredAddresses.includes(t.contractAddress) ||
+      t.type === EVMSmartContractType.NATIVE,
   );
 };
 
