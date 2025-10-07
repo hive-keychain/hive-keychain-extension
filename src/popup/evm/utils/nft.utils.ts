@@ -11,7 +11,6 @@ import { ethers } from 'ethers';
 import { BaseApi } from 'src/api/base';
 
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
-  console.log('getImgFromMetadata', metadata);
   if (!metadata) return 'https://placehold.co/600x600?text=Not+Found';
   if (metadata.image.startsWith('ipfs://ipfs/')) {
     metadata.image = metadata.image.replace(
@@ -31,7 +30,6 @@ const getMetadataFromURI = async (
   if (uri && uri.includes('{id}')) {
     uri = uri.replace('{id}', tokenId);
   }
-  console.log('getMetadataFromURI');
   let metadata;
   try {
     if (uri.startsWith('ipfs://ipfs/')) {
