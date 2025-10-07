@@ -11,6 +11,7 @@ import { FormContainer } from 'src/common-ui/form-container/form-container.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -37,6 +38,7 @@ interface Props {
   swapTokens?: () => void;
   displayReceiveTokenLogo?: boolean;
   errorMessage?: string;
+  loadingEstimate?: boolean;
 }
 
 const BuySwapCoinsEstimation = ({
@@ -62,6 +64,7 @@ const BuySwapCoinsEstimation = ({
   errorMessage,
   maxAcceptedAmount,
   maxAmountLabel,
+  loadingEstimate,
 }: Props) => {
   return (
     <FormContainer>
@@ -91,7 +94,7 @@ const BuySwapCoinsEstimation = ({
             <div>
               {chrome.i18n.getMessage(minAmountLabel)}{' '}
               {minAcceptedAmount > 0
-                ? FormatUtils.formatCurrencyValue(minAcceptedAmount, 4)
+                ? FormatUtils.formatCurrencyValue(minAcceptedAmount, 4, true)
                 : ''}
             </div>
           ) : null}
@@ -102,7 +105,7 @@ const BuySwapCoinsEstimation = ({
           maxAcceptedAmount !== Infinity ? (
             <div>
               {chrome.i18n.getMessage(maxAmountLabel)}{' '}
-              {FormatUtils.formatCurrencyValue(maxAcceptedAmount)}
+              {FormatUtils.formatCurrencyValue(maxAcceptedAmount, 4, true)}
             </div>
           ) : null}
         </div>
@@ -136,23 +139,30 @@ const BuySwapCoinsEstimation = ({
                 </span>
               )}
             </div>
-            <div className="quotes">
-              {estimations.map((estimation, index) => {
-                const key =
-                  (estimation as ExchangeEstimation).estimation.name +
-                  (estimation as ExchangeEstimation).estimation.amount +
-                  index.toString();
-                return (
-                  <BuySwapCoinsEstimationItemComponent
-                    key={key}
-                    price={price!}
-                    endTokenList={endTokenList}
-                    displayReceiveTokenLogo={displayReceiveTokenLogo}
-                    estimation={estimation}
-                  />
-                );
-              })}
-            </div>
+            {!loadingEstimate && (
+              <div className="quotes">
+                {estimations.map((estimation, index) => {
+                  const key =
+                    (estimation as ExchangeEstimation).estimation.name +
+                    (estimation as ExchangeEstimation).estimation.amount +
+                    index.toString();
+                  return (
+                    <BuySwapCoinsEstimationItemComponent
+                      key={key}
+                      price={price!}
+                      endTokenList={endTokenList}
+                      displayReceiveTokenLogo={displayReceiveTokenLogo}
+                      estimation={estimation}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+        {loadingEstimate && (
+          <div className="loading-panel">
+            <RotatingLogoComponent />
           </div>
         )}
         {errorMessage && (

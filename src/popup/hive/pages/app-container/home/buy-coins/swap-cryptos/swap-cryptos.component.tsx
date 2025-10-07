@@ -31,6 +31,7 @@ import Logger from 'src/utils/logger.utils';
 const SwapCryptos = ({ price }: PropsFromRedux) => {
   const [errorInApi, setErrorInApi] = useState<string>();
   const [loading, setLoading] = useState(true);
+  const [loadingEstimate, setLoadingEstimate] = useState(false);
   const [loadingMinMaxAccepted, setLoadingMinMaxAccepted] = useState(false);
   const isInitializedFromStorage = useRef(false);
   const [
@@ -95,7 +96,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
           newExchangeRangeAmount,
         );
       },
-      1000,
+      500,
       { leading: false } as ThrottleSettings,
     );
   }, []);
@@ -119,6 +120,8 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
     ) {
       setLoadingMinMaxAccepted(true);
       setErrorInApi(undefined);
+      setEstimations([]);
+      setAmount('');
       getMinAndMax(startToken, endToken);
     }
   }, [startToken, endToken]);
@@ -209,6 +212,11 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       await KeychainApi.get(
         `swap-cryptos/range/${startTokenOption.value.symbol}/${startTokenOption.value.network}/${endTokenOption.value.symbol}/${endTokenOption.value.network}`,
       ).then((res: ExchangeMinMaxAmount[]) => {
+        if (!res || res.length === 0) {
+          setErrorInApi('buy_coins_swap_cryptos_unsupported_pair');
+          setExchangeRangeAmount({ min: 0, max: 0 });
+          return;
+        }
         const min = res.reduce((min, item) => {
           return item.min ? Math.min(min, item.min) : min;
         }, Infinity);
@@ -239,30 +247,35 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
       newEndToken
     ) {
       try {
+        setLoadingEstimate(true);
         KeychainApi.get(
           `swap-cryptos/estimate/${newAmount}/${newStartToken.value.symbol}/${newStartToken.value.network}/${newEndToken.value.symbol}/${newEndToken.value.network}`,
-        ).then((res: ExchangeEstimation[]) => {
-          if (!res) {
-            if (
-              +amount > newExchangeRangeAmount.max ||
-              +amount < newExchangeRangeAmount.min
-            ) {
-              setErrorInApi('buy_coins_swap_cryptos_out_of_range');
+        )
+          .then((res: ExchangeEstimation[]) => {
+            if (!res) {
+              if (
+                +amount > newExchangeRangeAmount.max ||
+                +amount < newExchangeRangeAmount.min
+              ) {
+                setErrorInApi('buy_coins_swap_cryptos_out_of_range');
+                return;
+              }
+              setErrorInApi('buy_coins_swap_cryptos_error_api');
               return;
             }
-            setErrorInApi('buy_coins_swap_cryptos_error_api');
-            return;
-          }
-          setErrorInApi(undefined);
-          setEstimations(res);
-          LocalStorageUtils.saveValueInLocalStorage(
-            LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
-            {
-              from: newStartToken.subLabel!,
-              to: newEndToken.subLabel!,
-            },
-          );
-        });
+            setErrorInApi(undefined);
+            setEstimations(res);
+            LocalStorageUtils.saveValueInLocalStorage(
+              LocalStorageKeyEnum.LAST_CRYPTO_ESTIMATION,
+              {
+                from: newStartToken.subLabel!,
+                to: newEndToken.subLabel!,
+              },
+            );
+          })
+          .finally(() => {
+            setLoadingEstimate(false);
+          });
         refreshCountdown();
       } catch (error) {
         Logger.log({ error });
@@ -324,6 +337,7 @@ const SwapCryptos = ({ price }: PropsFromRedux) => {
             swapTokens={swapStartAndEnd}
             displayReceiveTokenLogo
             errorMessage={errorInApi}
+            loadingEstimate={loadingEstimate}
           />
         )}
     </div>
