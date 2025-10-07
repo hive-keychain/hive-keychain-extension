@@ -23,6 +23,9 @@ $autoCompleteItemHeight: 30px;
       display: flex;
       position: relative;
       flex: 1;
+      &.clear-icon-padding {
+        padding-right: 30px;
+      }
       input {
         width: calc(100% - 32px);
         flex: 1;

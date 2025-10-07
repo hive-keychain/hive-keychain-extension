@@ -81,6 +81,10 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             props.logo ? `has-${props.logoPosition ?? 'left'}-logo` : 'no-logo'
           } ${props.type === InputType.PASSWORD ? 'password-type' : ''} ${
             isFocused ? 'focused' : ''
+          } ${
+            ![InputType.PASSWORD, InputType.DATE].includes(props.type)
+              ? 'clear-icon-padding'
+              : ''
           }`}>
           <input
             disabled={props.disabled}
