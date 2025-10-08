@@ -8,6 +8,7 @@ import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-i
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -39,18 +40,6 @@ export const EvmWalletNftGalleryComponent = ({
     }
   }, [activeAccount.nfts]);
 
-  useEffect(() => {
-    const otherTokens = [];
-    if (filteredCollections) {
-      for (const token of filteredCollections) {
-        if (token.collection.length === 1) {
-          otherTokens.push(token);
-        }
-      }
-      setOther(otherTokens);
-    }
-  }, [filteredCollections]);
-
   const init = async () => {
     const acceptedTokens = (await EvmTokensUtils.filterTokensBasedOnSettings(
       activeAccount.nfts.value,
@@ -60,22 +49,20 @@ export const EvmWalletNftGalleryComponent = ({
 
   return (
     <div className="nft-gallery">
-      {filteredCollections &&
-        filteredCollections
-          .filter((token) => token.collection.length > 1)
-          .sort((tokenA, tokenB) =>
-            tokenA.tokenInfo.name > tokenB.tokenInfo.name ? 1 : -1,
-          )
-          .map((token, index) => (
-            <React.Fragment key={index}>
-              <EvmWalletNftPreviewComponent
-                token={token}
-                onClick={() =>
-                  onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
-                }
-              />
-            </React.Fragment>
-          ))}
+      {filteredCollections && (
+        <FlatList
+          list={filteredCollections}
+          renderItem={(token: EvmErc721Token | EvmErc1155Token) => (
+            <EvmWalletNftPreviewComponent
+              token={token}
+              onClick={() =>
+                onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
+              }
+            />
+          )}
+          renderOnScroll
+        />
+      )}
 
       {!activeAccount.nfts.loading && other.length > 0 && (
         <div
