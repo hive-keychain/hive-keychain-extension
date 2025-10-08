@@ -346,6 +346,15 @@ const EvmTransfer = ({
             value={balance}
             unit={watch('selectedToken').tokenInfo.symbol}
             label="popup_html_balance"
+            decimals={
+              watch('selectedToken').tokenInfo.type ===
+              EVMSmartContractType.NATIVE
+                ? 18
+                : (
+                    watch('selectedToken')
+                      .tokenInfo as EvmSmartContractInfoErc20
+                  ).decimals
+            }
           />
 
           {tokenOptions && (
