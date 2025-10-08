@@ -137,17 +137,13 @@ const getTokenBalance = async (
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
-        formattedBalance = FormatUtils.withCommas(
-          Number(parseFloat(ethers.formatEther(balance))),
-          8,
-          true,
-        );
-        shortFormattedBalance = FormatUtils.withCommas(
-          Number(parseFloat(ethers.formatEther(balance))),
-          3,
-          false,
-        );
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+        formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
+        const short = FormatUtils.withCommas(balanceInteger, 3, false);
+        shortFormattedBalance = `${
+          balanceInteger > 0 && short === '0.000' ? '~' : ''
+        }${short}`;
+
         tokenInfo = token as EvmSmartContractInfoNative;
         break;
       }
@@ -159,30 +155,6 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
-        formattedBalance = FormatUtils.withCommas(
-          Number(
-            parseFloat(
-              ethers.formatUnits(
-                balance,
-                Number((token as EvmSmartContractInfoErc20).decimals),
-              ),
-            ),
-          ),
-          Number((token as EvmSmartContractInfoErc20).decimals),
-          true,
-        );
-        shortFormattedBalance = FormatUtils.withCommas(
-          Number(
-            parseFloat(
-              ethers.formatUnits(
-                balance,
-                Number((token as EvmSmartContractInfoErc20).decimals),
-              ),
-            ),
-          ),
-          3,
-          false,
-        );
         balanceInteger = Number(
           parseFloat(
             ethers.formatUnits(
@@ -191,6 +163,16 @@ const getTokenBalance = async (
             ),
           ),
         );
+        formattedBalance = FormatUtils.withCommas(
+          balanceInteger,
+          Number((token as EvmSmartContractInfoErc20).decimals),
+          true,
+        );
+        const short = FormatUtils.withCommas(balanceInteger, 3, false);
+        shortFormattedBalance = `${
+          balanceInteger > 0 && short === '0.000' ? '~' : ''
+        }${short}`;
+
         tokenInfo = token as EvmSmartContractInfoErc20;
         break;
       }
