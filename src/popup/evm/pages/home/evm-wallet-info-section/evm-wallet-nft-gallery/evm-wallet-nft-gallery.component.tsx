@@ -100,6 +100,11 @@ export const EvmWalletNftGalleryComponent = ({
                     <img
                       className="nft-preview"
                       src={otherToken.collection[0].metadata.image}
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src =
+                          '/assets/images/placeholder-image.svg';
+                      }}
                     />
                   </CustomTooltip>
                 </React.Fragment>
@@ -117,7 +122,7 @@ export const EvmWalletNftGalleryComponent = ({
         </div>
       )}
       {activeAccount.nfts.loading && <RotatingLogoComponent />}
-      {activeAccount.nfts.value.length === 0 && (
+      {!activeAccount.nfts.loading && activeAccount.nfts.value.length === 0 && (
         <div className="no-nfts-found">
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
           <span className="text">

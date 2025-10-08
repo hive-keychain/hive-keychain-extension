@@ -12,7 +12,7 @@ import { BaseApi } from 'src/api/base';
 
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   if (!metadata || !metadata.image)
-    return 'https://placehold.co/600x600?text=Not+Found';
+    return '/assets/images/placeholder-image.svg';
   if (metadata.image.startsWith('ipfs://ipfs/')) {
     metadata.image = metadata.image.replace(
       'ipfs://ipfs/',
@@ -56,7 +56,7 @@ const getMetadataFromURI = async (
       metadata ?? {
         attributes: [],
         description: '',
-        image: 'https://placehold.co/600x600?text=Not+Found',
+        image: '/assets/images/placeholder-image.svg',
         name: 'No name',
       }
     );

@@ -58,6 +58,12 @@
       }
       &.small {
       }
+
+      &.placeholder {
+        width: 300px;
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+      }
     }
 
     .send-button {

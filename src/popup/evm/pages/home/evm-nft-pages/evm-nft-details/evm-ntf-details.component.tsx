@@ -40,7 +40,15 @@ export const EvmNftDetails = ({
       key={`${collection.tokenInfo.contractAddress}-${nft.id}`}
       className={`detailed-nft ${expanded ? 'expanded' : ''}`}
       onClick={handleOnClick}>
-      <img className={`${nftSize ?? 'normal'}`} src={nft.metadata.image} />
+      <img
+        className={`${nftSize ?? 'normal'}`}
+        src={nft.metadata.image}
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null;
+          currentTarget.src = '/assets/images/placeholder-image.svg';
+          currentTarget.classList.add('placeholder');
+        }}
+      />
       <div className="name">
         {nft.metadata.name ?? `${collection.tokenInfo.name} #${nft.id}`}
       </div>
@@ -85,7 +93,7 @@ export const EvmNftDetails = ({
             <div className="value">{collection.tokenInfo.type}</div>
           </div>
 
-          {nft.metadata.attributes &&
+          {!!nft.metadata.attributes &&
             nft.metadata.attributes.map((attribute) => (
               <div
                 className="label-value smart-contract-address"

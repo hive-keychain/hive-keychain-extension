@@ -37,6 +37,11 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
                   <img
                     className="nft-preview"
                     src={collectionItem.metadata.image}
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src =
+                        '/assets/images/placeholder-image.svg';
+                    }}
                   />
                   {(collectionItem as EvmErc1155TokenCollectionItem).balance >
                     1 && (

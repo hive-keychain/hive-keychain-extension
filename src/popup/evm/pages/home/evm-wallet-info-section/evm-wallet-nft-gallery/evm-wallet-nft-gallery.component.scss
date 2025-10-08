@@ -9,4 +9,8 @@
     @include no-data-panel();
     flex: 1;
   }
+
+  .rotating-logo {
+    align-self: center;
+  }
 }
