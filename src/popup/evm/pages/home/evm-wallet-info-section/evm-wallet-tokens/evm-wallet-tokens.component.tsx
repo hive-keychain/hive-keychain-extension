@@ -1,4 +1,5 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
+import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
 import {
   EvmActiveAccount,
   NativeAndErc20Token,
@@ -27,12 +28,34 @@ export const EvmWalletTokensComponent = ({
     [],
   );
 
+  const [filteredTokens, setFilteredTokens] = useState<NativeAndErc20Token[]>(
+    [],
+  );
+
   const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
+
+  const [tokenFilter, setTokenFilter] = useState('');
 
   useEffect(() => {
     console.log(activeAccount.nativeAndErc20Tokens);
     init();
   }, [activeAccount.nativeAndErc20Tokens]);
+
+  useEffect(() => {
+    if (filteredTokens) {
+      setDisplayedTokens(
+        filteredTokens.filter(
+          (token) =>
+            token.tokenInfo.name
+              ?.toLowerCase()
+              .includes(tokenFilter.toLowerCase()) ||
+            token.tokenInfo.symbol
+              ?.toLowerCase()
+              .includes(tokenFilter.toLowerCase()),
+        ),
+      );
+    }
+  }, [tokenFilter]);
 
   const init = async () => {
     const tokens: NativeAndErc20Token[] =
@@ -40,6 +63,7 @@ export const EvmWalletTokensComponent = ({
         activeAccount.nativeAndErc20Tokens.value,
       )) as NativeAndErc20Token[];
     const sortedTokens = EvmTokensUtils.sortTokens(tokens, prices);
+    setFilteredTokens(sortedTokens);
     setDisplayedTokens(sortedTokens);
   };
 
@@ -56,6 +80,10 @@ export const EvmWalletTokensComponent = ({
     <>
       {!activeAccount.nativeAndErc20Tokens.loading && (
         <>
+          <SeparatorWithFilter
+            setFilterValue={setTokenFilter}
+            filterValue={tokenFilter}
+          />
           {displayedTokens.map((token, index) => (
             <EVMWalletInfoSectionItemComponent
               key={`${token.tokenInfo.name}-${index}`}
