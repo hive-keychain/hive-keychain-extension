@@ -83,7 +83,7 @@
       color: var(--main-font-color);
       .label {
         @include poppins500(18px);
-        text-transform: capitalize;
+        text-transform: uppercase;
       }
       .sub-label {
         @include poppins400(14px);
