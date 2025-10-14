@@ -6,7 +6,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const CURRENT_LOCAL_STORAGE_VERSION = 5;
+const CURRENT_LOCAL_STORAGE_VERSION = 6;
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
@@ -164,6 +164,24 @@ const checkAndUpdateLocalStorage = async () => {
             true,
           );
         saveNewLocalStorageVersion(5);
+      }
+      case 5: {
+        const newFavoriteUsers: any = {};
+        const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.FAVORITE_USERS,
+        );
+        if (favoriteUsers) {
+          for (const user of favoriteUsers) {
+            newFavoriteUsers[user] = [];
+            for (const item of favoriteUsers[user]) {
+              newFavoriteUsers[user].push({
+                label: item.value,
+                subLabel: item.subLabel,
+              } as AutoCompleteValue);
+            }
+          }
+        }
+        saveNewLocalStorageVersion(6);
       }
     }
   }
