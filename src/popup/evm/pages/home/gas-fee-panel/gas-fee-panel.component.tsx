@@ -455,12 +455,13 @@ export const GasFeePanel = ({
                       '-'
                     )}
                   </div>
-                  {selectedFee.estimatedFee !== -1 && (
-                    <div className="label usd-value">
-                      {selectedFee.estimatedFeeUSD.toFixed(2)}
-                      {' USD'}
-                    </div>
-                  )}
+                  {selectedFee.estimatedFee !== -1 &&
+                    !!selectedFee.estimatedFeeUSD && (
+                      <div className="label usd-value">
+                        {selectedFee.estimatedFeeUSD.toFixed(2)}
+                        {' USD'}
+                      </div>
+                    )}
                 </div>
               </div>
             )}
@@ -481,7 +482,7 @@ export const GasFeePanel = ({
                       '-'
                     )}
                   </div>
-                  {selectedFee.maxFee !== -1 && (
+                  {selectedFee.maxFee !== -1 && !!selectedFee.maxFeeUSD && (
                     <div className="label usd-value">
                       {selectedFee.maxFeeUSD.toFixed(2)}
                       {' USD'}
