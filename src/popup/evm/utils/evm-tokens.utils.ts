@@ -372,16 +372,33 @@ const getErc1155Tokens = async (
           collection: [],
         } as EvmErc1155Token;
         for (const instance of nftItem.tokensInstances) {
-          item.collection.push({
-            id: instance.id,
-            metadata: {
-              name: instance.metadata?.name,
-              description: instance.metadata?.description,
-              image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
-              attributes: instance.metadata?.attributes,
-            },
-            balance: Number(instance.amount),
-          });
+          if (!instance.metadata) {
+            item.collection.push(
+              (await EvmNFTUtils.getMetadataFromTokenId(
+                EVMSmartContractType.ERC1155,
+                instance.id,
+                new ethers.Contract(
+                  nftItem.token.contractAddress,
+                  ERC1155Abi,
+                  await EthersUtils.getProvider(chain),
+                ),
+                chain,
+                nftItem.token.contractAddress,
+                Number(instance.amount),
+              )) as EvmErc1155TokenCollectionItem,
+            );
+          } else {
+            item.collection.push({
+              id: instance.id,
+              metadata: {
+                name: instance.metadata?.name,
+                description: instance.metadata?.description,
+                image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
+                attributes: instance.metadata?.attributes,
+              },
+              balance: Number(instance.amount),
+            });
+          }
         }
         erc1155Tokens.push(item);
       }
