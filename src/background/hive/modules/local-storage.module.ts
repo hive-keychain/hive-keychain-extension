@@ -171,7 +171,7 @@ const checkAndUpdateLocalStorage = async () => {
           LocalStorageKeyEnum.FAVORITE_USERS,
         );
         if (favoriteUsers) {
-          for (const user of favoriteUsers) {
+          for (const user of Object.keys(favoriteUsers)) {
             newFavoriteUsers[user] = [];
             for (const item of favoriteUsers[user]) {
               newFavoriteUsers[user].push({
@@ -180,7 +180,12 @@ const checkAndUpdateLocalStorage = async () => {
               } as AutoCompleteValue);
             }
           }
+          await LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+            newFavoriteUsers,
+          );
         }
+
         saveNewLocalStorageVersion(6);
       }
     }
