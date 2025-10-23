@@ -558,6 +558,8 @@ const getTokensFullDetails = async (
       !tokensMetadata.map((t: any) => t.contractAddress).includes(address),
   );
 
+  console.log({ missingMetadataAddresses });
+
   const missingMetadata = discoveredTokens.filter((t) =>
     missingMetadataAddresses.includes(t.contractAddress),
   );

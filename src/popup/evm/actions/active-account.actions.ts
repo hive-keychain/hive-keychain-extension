@@ -108,6 +108,8 @@ export const manualDiscoverErc20Tokens =
       getState().chain,
     );
 
+    console.log({ allTokensInfo });
+
     const tokenBalances = (await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ??
         getState().evm.activeAccount.wallet.address,
@@ -118,6 +120,7 @@ export const manualDiscoverErc20Tokens =
           token.type === EVMSmartContractType.NATIVE,
       ),
     )) as NativeAndErc20Token[];
+    console.log({ tokenBalances });
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
