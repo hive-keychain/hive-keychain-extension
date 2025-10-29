@@ -265,7 +265,7 @@
   padding: 0;
 }
 
-@mixin no-data-panel {
+@mixin no-data-panel($image-size: 72px) {
   @include small-card();
   display: flex;
   flex-direction: column;
@@ -279,9 +279,9 @@
   }
 
   .svg-icon {
-    @include icon-size(72px);
+    @include icon-size($image-size);
     svg {
-      @include icon-size(72px);
+      @include icon-size($image-size);
     }
   }
 }

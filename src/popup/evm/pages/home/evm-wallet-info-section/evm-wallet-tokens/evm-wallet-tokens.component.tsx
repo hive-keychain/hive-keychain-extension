@@ -1,3 +1,4 @@
+import { SVGIcons } from '@common-ui/icons.enum';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
 import {
@@ -83,6 +84,19 @@ export const EvmWalletTokensComponent = ({
           <SeparatorWithFilter
             setFilterValue={setTokenFilter}
             filterValue={tokenFilter}
+            rightAction={
+              chain.manualDiscoverAvailable || chain.addTokensManually
+                ? {
+                    icon: SVGIcons.WALLET_ADD,
+                    onClick: chain.manualDiscoverAvailable
+                      ? manualDiscoverErc20Tokens
+                      : openAddCustomTokenPanel,
+                  }
+                : undefined
+            }
+            filterDisabled={
+              activeAccount.nativeAndErc20Tokens.value.length === 0
+            }
           />
           {displayedTokens.map((token, index) => (
             <EVMWalletInfoSectionItemComponent
@@ -93,22 +107,6 @@ export const EvmWalletTokensComponent = ({
               mainValueSubLabel={token.tokenInfo.name}
             />
           ))}
-          {!activeAccount.nativeAndErc20Tokens.loading &&
-            chain.addTokensManually && (
-              <div
-                className="wallet-info-row add-custom-tokens"
-                onClick={openAddCustomTokenPanel}>
-                {chrome.i18n.getMessage('evm_add_custom_token')}
-              </div>
-            )}
-          {!activeAccount.nativeAndErc20Tokens.loading &&
-            chain.manualDiscoverAvailable && (
-              <div
-                className="wallet-info-row add-custom-tokens"
-                onClick={() => manualDiscoverErc20Tokens()}>
-                {chrome.i18n.getMessage('evm_add_manually_discover')}
-              </div>
-            )}
         </>
       )}
       {showAddCustomTokenPopup && (

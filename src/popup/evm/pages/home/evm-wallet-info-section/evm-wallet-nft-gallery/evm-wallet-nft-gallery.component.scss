@@ -6,7 +6,7 @@
   width: 100%;
 
   .no-nfts-found {
-    @include no-data-panel();
+    @include no-data-panel(50px);
     flex: 1;
   }
 

@@ -76,6 +76,7 @@ export enum SVGIcons {
   HIVE_ENGINE = 'wallet/hive-engine',
   WALLET_SETTINGS = 'wallet/settings',
   WALLET_SEARCH = 'wallet/search',
+  WALLET_ADD = 'wallet/add',
 
   INPUT_SHOW = 'input/show',
   INPUT_HIDE = 'input/hide',

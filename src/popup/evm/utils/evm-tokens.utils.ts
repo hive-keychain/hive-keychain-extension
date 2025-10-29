@@ -83,12 +83,14 @@ const getTokenBalances = async (
   chain: EvmChain,
   tokensMetadata: EvmSmartContractInfo[],
 ) => {
+  console.log({ tokensMetadata });
   const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
     tokensMetadata.map(async (token) =>
       getTokenBalance(walletAddress, chain, token),
     );
 
   const result = await Promise.all(balancesPromises);
+  console.log({ result }, 'in get token balances');
   return result.filter(
     (balance) =>
       !!balance &&
@@ -102,7 +104,7 @@ const filterTokensBasedOnSettings = async (
 ) => {
   const evmSettings = await EvmSettingsUtils.getSettings();
 
-  console.log({ tokens });
+  console.log({ tokens }, 'in filter based on settings');
 
   return tokens.filter((token) => {
     if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
@@ -155,6 +157,7 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
+        console.log(balance);
         balanceInteger = Number(
           parseFloat(
             ethers.formatUnits(
@@ -448,9 +451,34 @@ const getNfts = async (
   allTokensInfo: EvmSmartContractInfo[],
   allDiscoveredTokens: any[],
 ) => {
+  const walletAddress =
+    process.env.FORCED_EVM_WALLET_ADDRESS?.toLowerCase() ??
+    wallet.address.toLowerCase();
+  if (chain.manualDiscoverAvailable) {
+    const savedManualDiscoveredNfts =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
+      );
+    console.log(
+      savedManualDiscoveredNfts[chain.chainId],
+      'savedManualDiscoveredNfts[chain.chainId]',
+    );
+    console.log(walletAddress);
+    console.log(
+      savedManualDiscoveredNfts[chain.chainId][walletAddress],
+      'savedManualDiscoveredNfts[chain.chainId][walletAddress]',
+    );
+    if (
+      savedManualDiscoveredNfts &&
+      savedManualDiscoveredNfts[chain.chainId] &&
+      savedManualDiscoveredNfts[chain.chainId][walletAddress]
+    ) {
+      return [savedManualDiscoveredNfts[chain.chainId][walletAddress], []];
+    } else return [[], []];
+  }
   return Promise.all([
     getErc721Tokens(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+      walletAddress,
       chain,
       allDiscoveredTokens,
       allTokensInfo.filter(
@@ -458,7 +486,7 @@ const getNfts = async (
       ) as EvmSmartContractInfoErc721[],
     ),
     getErc1155Tokens(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+      walletAddress,
       allDiscoveredTokens,
       allTokensInfo.filter(
         (token) => token.type === EVMSmartContractType.ERC1155,
@@ -504,15 +532,84 @@ const manualDiscoverErc20Tokens = async (
 };
 const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
   if (chain.manualDiscoverAvailable) {
-    return await KeychainApi.get(
+    const nfts = await KeychainApi.get(
       `evm/${chain.chainId}/wallet/${walletAddress}/discover-tokens-nfts`,
     );
+
+    const result: (EvmErc721Token | EvmErc1155Token)[] = [];
+    console.log({ nfts }, 'in manual discover nfts');
+    for (const nft of nfts) {
+      let index = result.findIndex(
+        (r) => r.tokenInfo.contractAddress === nft.contractAddress,
+      );
+      if (index === -1) {
+        result.push({
+          tokenInfo: {
+            type: nft.type,
+            name: nft.name,
+            contractAddress: nft.contractAddress,
+            possibleSpam: nft.possibleSpam,
+            verifiedContract: nft.verifiedContract,
+            symbol: nft.symbol,
+            logo: nft.logo,
+            chainId: chain.chainId,
+          } as EvmSmartContractInfoErc721 | EvmSmartContractInfoErc1155,
+          collection: [],
+        });
+
+        index = result.length - 1;
+      }
+      const item: any = {
+        id: nft.tokenId,
+        metadata:
+          nft.metadata ??
+          (await EvmNFTUtils.getMetadata(
+            nft.type,
+            nft.tokenId,
+            new ethers.Contract(
+              nft.contractAddress,
+              nft.type === EVMSmartContractType.ERC721 ? ERC721Abi : ERC1155Abi,
+              await EthersUtils.getProvider(chain),
+            ),
+          )),
+      };
+      if (nft.amount) {
+        item.balance = Number(nft.amount);
+      }
+      result[index].collection.push(item);
+    }
+
+    let savedManualDiscoveredNfts =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
+      );
+    if (!savedManualDiscoveredNfts) {
+      savedManualDiscoveredNfts = {};
+    }
+    if (!savedManualDiscoveredNfts[chain.chainId]) {
+      savedManualDiscoveredNfts[chain.chainId] = {};
+    }
+    if (
+      !savedManualDiscoveredNfts[chain.chainId][walletAddress.toLowerCase()]
+    ) {
+      savedManualDiscoveredNfts[chain.chainId][walletAddress.toLowerCase()] =
+        [];
+    }
+    savedManualDiscoveredNfts[chain.chainId][walletAddress.toLowerCase()] =
+      result;
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
+      savedManualDiscoveredNfts,
+    );
+
+    return result;
   } else return [];
 };
 
 const getTokensFullDetails = async (
   discoveredTokens: any[],
   chain: EvmChain,
+  forceAll: boolean = false,
 ): Promise<EvmSmartContractInfo[]> => {
   let allSavedMetadata = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
@@ -593,6 +690,7 @@ const getTokensFullDetails = async (
   const allDiscoveredAddresses = discoveredTokens.map((t) => t.contractAddress);
   return newMetadata.filter(
     (t) =>
+      forceAll ||
       allDiscoveredAddresses.includes(t.contractAddress) ||
       t.type === EVMSmartContractType.NATIVE,
   );

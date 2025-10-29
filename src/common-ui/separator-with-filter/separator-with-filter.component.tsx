@@ -8,12 +8,19 @@ interface Props {
   setFilterValue: (newValue: string) => void;
   filterValue: string;
   leftIcon?: SVGIcons;
+  rightAction?: {
+    icon: SVGIcons;
+    onClick: (...args: any[]) => void;
+  };
+  filterDisabled?: boolean;
 }
 
 export const SeparatorWithFilter = ({
   setFilterValue,
   filterValue,
   leftIcon,
+  rightAction,
+  filterDisabled,
 }: Props) => {
   const [showSearch, setShowSearch] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,16 +47,27 @@ export const SeparatorWithFilter = ({
         ref={inputRef}
       />
 
-      <SVGIcon
-        icon={SVGIcons.WALLET_SEARCH}
-        className={`search-icon ${!showSearch ? '' : 'hide'}`}
-        onClick={() => {
-          setShowSearch(true);
-          setTimeout(() => {
-            inputRef.current?.focus();
-          }, 200);
-        }}
-      />
+      {!filterDisabled && (
+        <SVGIcon
+          icon={SVGIcons.WALLET_SEARCH}
+          className={`search-icon ${!showSearch ? '' : 'hide'}`}
+          onClick={() => {
+            setShowSearch(true);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 200);
+          }}
+        />
+      )}
+      {rightAction && (
+        <SVGIcon
+          icon={rightAction.icon}
+          className={`right-action-icon`}
+          onClick={() => {
+            rightAction.onClick();
+          }}
+        />
+      )}
     </div>
   );
 };
