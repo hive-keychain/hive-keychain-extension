@@ -46,14 +46,12 @@ export const loadEvmActiveAccount =
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
     );
-    console.log({ allTokens });
 
     const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
       allTokens,
       chain,
       chain.manualDiscoverAvailable || chain.addTokensManually,
     );
-    console.log({ allTokensInfo });
 
     Promise.all([
       EvmTokensUtils.getTokenBalances(
@@ -72,7 +70,6 @@ export const loadEvmActiveAccount =
       }),
       EvmTokensUtils.getNfts(wallet, chain, allTokensInfo, allTokens).then(
         ([erc721, erc1155]) => {
-          console.log(erc721, erc1155);
           dispatch({
             type: EvmActionType.SET_ACTIVE_ACCOUNT_NFT,
             payload: {
@@ -81,7 +78,10 @@ export const loadEvmActiveAccount =
           });
         },
       ),
-      EvmTokensHistoryUtils.fetchHistory(wallet.address, chain).then((res) => {
+      EvmTokensHistoryUtils.fetchHistory(
+        process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+        chain,
+      ).then((res) => {
         dispatch({
           type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
           payload: { history: { value: res, loading: false } },

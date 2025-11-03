@@ -459,15 +459,6 @@ const getNfts = async (
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
       );
-    console.log(
-      savedManualDiscoveredNfts[chain.chainId],
-      'savedManualDiscoveredNfts[chain.chainId]',
-    );
-    console.log(walletAddress);
-    console.log(
-      savedManualDiscoveredNfts[chain.chainId][walletAddress],
-      'savedManualDiscoveredNfts[chain.chainId][walletAddress]',
-    );
     if (
       savedManualDiscoveredNfts &&
       savedManualDiscoveredNfts[chain.chainId] &&

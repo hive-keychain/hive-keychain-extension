@@ -249,6 +249,255 @@ const parseEvent = async (
         );
         historyItem.pageTitle = 'evm_history_smart_contract_creation';
         historyItem.detailFields = details;
+      } else if (!!event.functionName || event.functionName.length > 0) {
+        const functionName = event.functionName.split('(')[0];
+        console.log(functionName, event);
+        let label = '';
+        let pageTitle = '';
+
+        switch (functionName) {
+          case 'transfer': {
+            pageTitle = 'evm_transfer';
+            const fromDetails = await EvmAddressesUtils.getAddressDetails(
+              event.from,
+              chain.chainId,
+            );
+            const toDetails = await EvmAddressesUtils.getAddressDetails(
+              event.to,
+              chain.chainId,
+            );
+
+            if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+              // transfer in
+              label = chrome.i18n.getMessage(
+                'evm_history_operation_transfer_in',
+                [
+                  ethers.formatUnits(event.value, event.tokenDecimals),
+                  event.tokenSymbol,
+                  fromDetails.formattedAddress,
+                ],
+              );
+            } else {
+              // transfer out
+              label = chrome.i18n.getMessage(
+                'evm_history_operation_transfer_out',
+                [
+                  ethers.formatUnits(event.value, event.tokenDecimals),
+                  event.tokenSymbol,
+                  toDetails.formattedAddress,
+                ],
+              );
+            }
+            break;
+          }
+          case 'transferFrom': {
+            pageTitle = 'evm_transfer';
+            switch (event.type) {
+              case EVMSmartContractType.ERC20: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_transfer_in',
+                    [
+                      ethers.formatUnits(event.value, event.tokenDecimals),
+                      event.tokenSymbol,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_transfer_out',
+                    [
+                      ethers.formatUnits(event.value, event.tokenDecimals),
+                      event.tokenSymbol,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+              case EVMSmartContractType.ERC721: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+
+                pageTitle = 'evm_transfer';
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_in',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_out',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+            }
+          }
+          case 'safeTransferFrom': {
+            pageTitle = 'evm_transfer';
+            switch (event.type) {
+              case EVMSmartContractType.ERC721: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_in',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_out',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+              case EVMSmartContractType.ERC1155: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc1155_in',
+                    [
+                      event.tokenValue,
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = chrome.i18n.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc1155_out',
+                    [
+                      event.tokenValue,
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+            }
+          }
+          case 'safeBatchTransferFrom': {
+            pageTitle = 'evm_transfer';
+            //only 1155
+            // TODO: implement
+            break;
+          }
+          case 'mint': {
+            switch (event.type) {
+              case EVMSmartContractType.ERC721:
+              case EVMSmartContractType.ERC1155:
+                label = chrome.i18n.getMessage(
+                  'evm_history_operation_mintNFTs',
+                  [event.tokenName, event.tokenID],
+                );
+                pageTitle = 'evm_mint';
+                break;
+            }
+          }
+          case 'mintBatch': {
+            // only 1155
+            //TODO need to find a transaction to test this
+            label = chrome.i18n.getMessage(
+              'evm_history_operation_mint_batch',
+              [],
+            );
+            break;
+          }
+          case 'safeMint': {
+            // only 721
+            label = chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
+              event.tokenName,
+              event.tokenID,
+            ]);
+            pageTitle = 'evm_mint';
+            break;
+          }
+
+          default: {
+            label = chrome.i18n.getMessage(
+              'evm_history_operation_generic_smart_contract_messages',
+              [
+                functionName,
+                event.tokenName,
+                EvmFormatUtils.formatAddress(event.contractAddress),
+              ],
+            );
+            pageTitle = 'evm_history_smart_contract';
+            break;
+          }
+        }
+
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'evm_operation_smart_contract_address',
+          value: event.contractAddress,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+
+        historyItem = {
+          ...historyItem,
+          type: EvmUserHistoryItemType.SMART_CONTRACT,
+          pageTitle: pageTitle,
+          label: label,
+          detailFields: details,
+        };
       } else if (
         event.to &&
         event.to.length > 0 &&
