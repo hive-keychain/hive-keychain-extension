@@ -30,9 +30,10 @@ const fetchHistory = async (
   chain: EvmChain,
   history?: EvmUserHistory,
 ) => {
+  console.log(history, 'history');
   const start = Date.now();
 
-  if (!history) {
+  if (!history || !history.events) {
     history = {
       lastPage: 1,
       events: [],

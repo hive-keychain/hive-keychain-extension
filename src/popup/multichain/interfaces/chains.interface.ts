@@ -53,6 +53,7 @@ export interface EvmChain extends Chain {
   disableTokensAndHistoryAutoLoading?: boolean;
   manualDiscoverAvailable?: boolean;
   openSeaChainId?: string;
+  manualLoadHistory?: boolean;
 }
 
 export interface EvmProviders {}

@@ -78,15 +78,17 @@ export const loadEvmActiveAccount =
           });
         },
       ),
-      EvmTokensHistoryUtils.fetchHistory(
-        process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-        chain,
-      ).then((res) => {
-        dispatch({
-          type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
-          payload: { history: { value: res, loading: false } },
-        });
-      }),
+      chain.manualLoadHistory
+        ? Promise.resolve()
+        : EvmTokensHistoryUtils.fetchHistory(
+            process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+            chain,
+          ).then((res) => {
+            dispatch({
+              type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
+              payload: { history: { value: res, loading: false } },
+            });
+          }),
     ]).then(() => {
       dispatch({
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -196,7 +198,7 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   const newHistory = await EvmTokensHistoryUtils.fetchHistory(
     getState().evm.activeAccount.wallet.address,
     getState().chain,
-    getState().evm.activeAccount.history.value,
+    getState().evm.activeAccount.history.value ?? null,
   );
 
   dispatch({

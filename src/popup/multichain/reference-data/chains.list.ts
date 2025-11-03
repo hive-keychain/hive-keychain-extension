@@ -155,6 +155,7 @@ export const defaultChainList = [
     ],
     isPopular: true,
     manualDiscoverAvailable: true,
+    manualLoadHistory: true,
   } as EvmChain,
   {
     name: 'BNB',
@@ -185,6 +186,7 @@ export const defaultChainList = [
     ],
     isPopular: true,
     manualDiscoverAvailable: true,
+    manualLoadHistory: true,
   } as EvmChain,
   {
     name: 'Base',

@@ -1,5 +1,6 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { Separator } from '@common-ui/separator/separator.component';
+import { loadEvmHistory } from '@popup/evm/actions/active-account.actions';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmUserHistory,
@@ -12,7 +13,7 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import FlatList from 'flatlist-react';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -33,11 +34,19 @@ export const EvmHistory = ({
   loading,
   onClickOnLoadMore,
   navigateToWithParams,
+  loadEvmHistory,
   pendingTransactionsItems,
 }: PropsFromRedux) => {
   const historyItemList = useRef<HTMLDivElement>(null);
 
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+
+  useEffect(() => {
+    console.log(history, 'history');
+    if ((chain.manualLoadHistory && !history) || (history && !history.events)) {
+      loadEvmHistory();
+    }
+  }, []);
 
   const goToDetailsPage = async (
     transactionHash: string,
@@ -132,6 +141,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
+  loadEvmHistory,
 });
 type PropsFromRedux = ConnectedProps<typeof connector> & Props;
 
