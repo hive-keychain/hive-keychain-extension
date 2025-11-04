@@ -42,7 +42,7 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { ethers, Wallet } from 'ethers';
+import { ethers, parseUnits, Wallet } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -243,6 +243,8 @@ const EvmTransfer = ({
           : '0x0',
     };
 
+    console.log(transactionData);
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
@@ -327,14 +329,21 @@ const EvmTransfer = ({
       connectedWallet,
     );
 
-    const finalAmount =
-      amount * Math.pow(10, (tokenInfo as EvmSmartContractInfoErc20).decimals);
-
+    const finalAmount = parseUnits(
+      amount.toString(),
+      (tokenInfo as EvmSmartContractInfoErc20).decimals,
+    );
     return contract.interface.encodeFunctionData('transfer', [
       receiverAddress,
       finalAmount,
     ]);
   };
+
+  useEffect(() => {
+    if (watch('selectedToken')) {
+      console.log(watch('selectedToken'));
+    }
+  }, [watch('selectedToken')]);
 
   return (
     <>
@@ -343,18 +352,18 @@ const EvmTransfer = ({
           className="transfer-funds-page"
           data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
           <BalanceSectionComponent
-            value={balance}
+            value={watch('selectedToken').shortFormattedBalance}
             unit={watch('selectedToken').tokenInfo.symbol}
             label="popup_html_balance"
-            decimals={
-              watch('selectedToken').tokenInfo.type ===
-              EVMSmartContractType.NATIVE
-                ? 18
-                : (
-                    watch('selectedToken')
-                      .tokenInfo as EvmSmartContractInfoErc20
-                  ).decimals
-            }
+            // decimals={
+            //   watch('selectedToken').tokenInfo.type ===
+            //   EVMSmartContractType.NATIVE
+            //     ? 18
+            //     : (
+            //         watch('selectedToken')
+            //           .tokenInfo as EvmSmartContractInfoErc20
+            //       ).decimals
+            // }
           />
 
           {tokenOptions && (

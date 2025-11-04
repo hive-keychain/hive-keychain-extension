@@ -176,11 +176,15 @@ export const defaultChainList = [
     isEth: false,
     rpcs: [
       {
+        url: 'https://data-seed-prebsc-1-s1.bnbchain.org:8545',
+        isDefault: true,
+      },
+      {
         url: 'https://bsc-testnet-rpc.publicnode.com',
         isDefault: true,
       },
       {
-        url: 'https://endpoints.omniatech.io/v1/bsc/testnet/public',
+        url: 'https://bsc-testnet.drpc.org',
         isDefault: true,
       },
     ],

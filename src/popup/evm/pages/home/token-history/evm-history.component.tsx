@@ -42,7 +42,6 @@ export const EvmHistory = ({
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
 
   useEffect(() => {
-    console.log(history, 'history');
     if ((chain.manualLoadHistory && !history) || (history && !history.events)) {
       loadEvmHistory();
     }
