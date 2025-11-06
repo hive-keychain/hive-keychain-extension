@@ -1,9 +1,56 @@
 #!/usr/bin/env bash
-VERSION=${1?Error: no version given}
+# bump-version - bump project version and manifests
+# Usage:
+#   scripts/bump-version --patch
+#   scripts/bump-version --minor
+#   scripts/bump-version <x.y.z>    # 'v' prefix allowed (e.g., v3.12.0)
+# Notes:
+# - With --patch/--minor, reads current version from package.json
+# - Updates package.json and manifests for chromium, chromium-beta and firefox
+# - Requires: jq, npx prettier
+# Examples:
+#   scripts/bump-version --patch
+#   scripts/bump-version 3.12.0
+
+MODE=${1:-}
+
+if [ -z "$MODE" ]; then
+  echo "Usage: scripts/bump-version --patch|--minor|<x.y.z>" >&2
+  exit 1
+fi
+
+VERSION=""
+
+if [[ "$MODE" == "--patch" || "$MODE" == "--minor" ]]; then
+  CURRENT_VERSION=$(jq -r '.version' package.json)
+  # Strip any pre-release/build metadata if present (e.g., 1.2.3-beta -> 1.2.3)
+  BASE_VERSION=${CURRENT_VERSION%%-*}
+  IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+  case "$MODE" in
+    --patch)
+      PATCH=$((PATCH + 1))
+      ;;
+    --minor)
+      MINOR=$((MINOR + 1))
+      PATCH=0
+      ;;
+  esac
+  VERSION="${MAJOR}.${MINOR}.${PATCH}"
+else
+  # Explicit version provided
+  INPUT_VERSION=${MODE#v}
+  if [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    VERSION="$INPUT_VERSION"
+  else
+    echo "Invalid version: '$MODE'. Expected <x.y.z> or --patch/--minor" >&2
+    exit 1
+  fi
+fi
+
 echo `jq --arg version "$VERSION" '.version=$version' package.json` > package.json
 echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium/manifest.json` > manifests/chromium/manifest.json
 echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium-beta/manifest.json` > manifests/chromium-beta/manifest.json
 echo `jq --arg version "$VERSION" '.version=$version' manifests/firefox/manifest.json` > manifests/firefox/manifest.json
-npx prettier -w package.json manifests/*    
+npx prettier -w package.json manifests/*
 echo "Bumped to version $VERSION"
 
