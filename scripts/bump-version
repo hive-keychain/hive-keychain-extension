@@ -7,7 +7,7 @@
 # Notes:
 # - With --patch/--minor, reads current version from package.json
 # - Updates package.json and manifests for chromium, chromium-beta and firefox
-# - Requires: jq, npx prettier
+# - Requires: jq, npx prettier, git with configured remote
 # Examples:
 #   scripts/bump-version --patch
 #   scripts/bump-version 3.12.0
@@ -52,5 +52,12 @@ echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium/manifes
 echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium-beta/manifest.json` > manifests/chromium-beta/manifest.json
 echo `jq --arg version "$VERSION" '.version=$version' manifests/firefox/manifest.json` > manifests/firefox/manifest.json
 npx prettier -w package.json manifests/*
-echo "Bumped to version $VERSION"
+
+# Commit, tag and push
+git commit -am "v$VERSION"
+git tag -a "v$VERSION" -m "v$VERSION"
+git push
+git push --tags
+
+echo "Bumped to version $VERSION and pushed tag v$VERSION"
 
