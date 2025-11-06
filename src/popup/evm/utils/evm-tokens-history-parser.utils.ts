@@ -249,7 +249,7 @@ const parseEvent = async (
         );
         historyItem.pageTitle = 'evm_history_smart_contract_creation';
         historyItem.detailFields = details;
-      } else if (!!event.functionName || event.functionName.length > 0) {
+      } else if (!!event.functionName && event.functionName.length > 0) {
         const functionName = event.functionName.split('(')[0];
         console.log(functionName, event);
         let label = '';
