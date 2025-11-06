@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.10.11",
+  "version": "3.11.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -29,7 +29,8 @@
     "bump:minor": "scripts/bump-version --minor",
     "release": "scripts/release.sh",
     "release-beta": "scripts/release-beta.sh",
-    "check-installed-libs": "node scripts/check-installed-libs.js"
+    "check-installed-libs": "node scripts/check-installed-libs.js",
+    "upload:chromium": "node scripts/chromium-upload.mjs"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,7 @@
     "@types/chrome": "0.0.243",
     "@types/yargs": "17.0.11",
     "axios": "1.9.0",
+    "chrome-webstore-upload": "^4.0.3",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
     "flatlist-react": "1.5.0",
