@@ -35,7 +35,7 @@ const ChainDropdown = ({
       chains.push(chain);
     }
     let optionItems: OptionItem[] = chains.map((c) => {
-      return { label: c.name, value: c, img: c.logo };
+      return { key: c.chainId, label: c.name, value: c, img: c.logo };
     });
     setOptions(optionItems);
   };
@@ -58,7 +58,12 @@ const ChainDropdown = ({
         <ComplexeCustomSelect
           additionalClassname="chain-selector"
           options={options}
-          selectedItem={{ label: chain.name, value: chain, img: chain.logo }}
+          selectedItem={{
+            key: chain.chainId,
+            label: chain.name,
+            value: chain,
+            img: chain.logo,
+          }}
           setSelectedItem={(item) => selectChain(item.value)}
           background="white"
           footer={
