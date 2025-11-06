@@ -14,6 +14,7 @@ import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
+
 /* istanbul ignore next */
 const stakeToken = (
   to: string,
@@ -298,6 +299,7 @@ const getHiveEngineTokenPrice = (
   market: TokenMarket[],
 ) => {
   const tokenMarket = market.find((t) => t.symbol === symbol);
+  if (!tokenMarket || !isAcceptableSpread(tokenMarket)) return 0;
   const price = tokenMarket
     ? parseFloat(tokenMarket.lastPrice)
     : symbol === 'SWAP.HIVE'
@@ -315,11 +317,7 @@ const getHiveEngineTokenValue = (
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
   const token = tokens?.find((t) => t.symbol === balance.symbol);
   if (Number(tokenMarket?.volume) <= 0) return 0;
-  const price = tokenMarket
-    ? parseFloat(tokenMarket.lastPrice)
-    : balance.symbol === 'SWAP.HIVE'
-    ? 1
-    : 0;
+  const price = getHiveEngineTokenPrice(balance, market);
 
   const totalToken =
     parseFloat(balance.balance) +
@@ -329,6 +327,16 @@ const getHiveEngineTokenValue = (
     parseFloat(balance.stake);
   return totalToken * price * hive?.usd!;
 };
+
+export const isAcceptableSpread = (tokenMarket: TokenMarket) => {
+  if (!tokenMarket?.highestBid || !tokenMarket?.lowestAsk) return false;
+
+  const spread =
+    parseFloat(tokenMarket.lowestAsk) / parseFloat(tokenMarket.highestBid);
+
+  return spread <= Config.hiveEngine.maxSpread;
+};
+
 /* istanbul ignore next */
 const getUserBalance = (account: string) => {
   return HiveEngineUtils.get<TokenBalance[]>({

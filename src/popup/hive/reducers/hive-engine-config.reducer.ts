@@ -8,6 +8,7 @@ const HiveEngineConfigReducer = (
     rpc: Config.hiveEngine.rpc,
     mainnet: Config.hiveEngine.mainnet,
     accountHistoryApi: Config.hiveEngine.accountHistoryApi,
+    maxSpread: Config.hiveEngine.maxSpread,
   },
   { type, payload }: ActionPayload<Partial<HiveEngineConfig>>,
 ): HiveEngineConfig => {
