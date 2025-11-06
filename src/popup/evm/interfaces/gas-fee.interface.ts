@@ -1,18 +1,19 @@
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface GasFeeEstimationBase {
   type: EvmTransactionType;
-  estimatedFee: number;
-  estimatedFeeUSD: number;
-  maxFee: number;
-  maxFeeUSD: number;
-  estimatedMaxDuration: number;
-  gasLimit: number;
+  estimatedFee: Decimal;
+  estimatedFeeUSD: Decimal;
+  maxFee: Decimal;
+  maxFeeUSD: Decimal;
+  estimatedMaxDuration: Decimal;
+  gasLimit: Decimal;
   deactivated?: boolean;
-  priorityFee?: number;
-  maxFeePerGas?: number;
-  gasPrice?: number;
+  priorityFee?: Decimal;
+  maxFeePerGas?: Decimal;
+  gasPrice?: Decimal;
   icon: SVGIcons;
   name: string;
 }
@@ -58,42 +59,12 @@ export enum EvmFeeTrend {
 }
 
 export interface CustomGasFeeForm {
-  maxBaseFeeInGwei: number;
-  maxBaseFeeValue?: number;
-  priorityFeeInGwei: number;
-  priorityFeeValue?: number;
-  gasPriceInGwei: number;
-  gasPriceValue?: number;
-  gasLimit: number;
+  maxBaseFeeInGwei: Decimal;
+  maxBaseFeeValue?: Decimal;
+  priorityFeeInGwei: Decimal;
+  priorityFeeValue?: Decimal;
+  gasPriceInGwei: Decimal;
+  gasPriceValue?: Decimal;
+  gasLimit: Decimal;
   type?: EvmTransactionType;
-}
-
-interface test {
-  maxPriorityFeePerGas: bigint;
-  maxFeePerGas: bigint;
-  type: EvmTransactionType;
-  estimatedFee: number;
-  estimatedMaxDuration: number;
-  gasLimit: number;
-  deactivated?: boolean;
-  priorityFee?: number;
-  gasPrice?: number;
-}
-
-interface test2 {
-  maxPriorityFeePerGas: bigint;
-  maxFeePerGas: bigint;
-  type: EvmTransactionType;
-  estimatedFee: number;
-  estimatedMaxDuration: number;
-  gasLimit: number;
-  deactivated?: boolean | undefined;
-  priorityFee?: number | undefined;
-  gasPrice?: number | undefined;
-}
-
-export interface GasFeeData {
-  priorityFee?: bigint;
-  maxFeePerGas?: bigint;
-  gasPrice?: bigint;
 }

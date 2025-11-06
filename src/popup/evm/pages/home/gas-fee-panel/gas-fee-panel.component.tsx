@@ -29,7 +29,6 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
-import { MathUtils } from 'src/utils/math.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
@@ -66,10 +65,10 @@ export const GasFeePanel = ({
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
   const [customGasFeeForm, setCustomGasFeeForm] = useState<CustomGasFeeForm>({
-    gasLimit: 0,
-    maxBaseFeeInGwei: 0,
-    priorityFeeInGwei: 0,
-    gasPriceInGwei: 0,
+    gasLimit: new Decimal(0),
+    maxBaseFeeInGwei: new Decimal(0),
+    priorityFeeInGwei: new Decimal(0),
+    gasPriceInGwei: new Decimal(0),
     type: transactionType,
   });
 
@@ -96,29 +95,23 @@ export const GasFeePanel = ({
       const priorityFeeInGwei = new Decimal(selectedFee.priorityFee ?? 0);
 
       setCustomGasFeeForm({
-        gasLimit: gasLimit.toNumber(),
+        gasLimit: gasLimit,
         type: transactionType,
-        gasPriceInGwei: gasPriceInGwei.toNumber(),
-        maxBaseFeeInGwei: maxBaseFeeInGwei.toNumber(),
-        priorityFeeInGwei: priorityFeeInGwei.toNumber(),
-        gasPriceValue: gasLimit
-          .mul(gasPriceInGwei)
-          .div(EvmFormatUtils.GWEI)
-          .toNumber(),
+        gasPriceInGwei: gasPriceInGwei,
+        maxBaseFeeInGwei: maxBaseFeeInGwei,
+        priorityFeeInGwei: priorityFeeInGwei,
+        gasPriceValue: gasLimit.mul(gasPriceInGwei).div(EvmFormatUtils.GWEI),
         priorityFeeValue: gasLimit
           .mul(priorityFeeInGwei)
-          .div(EvmFormatUtils.GWEI)
-          .toNumber(),
+          .div(EvmFormatUtils.GWEI),
         maxBaseFeeValue: gasLimit
           .mul(maxBaseFeeInGwei)
-          .div(EvmFormatUtils.GWEI)
-          .toNumber(),
+          .div(EvmFormatUtils.GWEI),
       });
     } else if (
       selectedFee &&
       selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
     ) {
-      console.log(selectedFee);
       const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
       const gasPriceInGwei = new Decimal(selectedFee.gasPrice ?? 0).div(
         EvmFormatUtils.GWEI,
@@ -130,23 +123,15 @@ export const GasFeePanel = ({
         EvmFormatUtils.GWEI,
       );
 
-      console.log(gasPriceInGwei, priorityFeeInGwei, maxBaseFeeInGwei);
-      console.log(gasPriceInGwei.toSignificantDigits());
-      console.log(
-        gasPriceInGwei.toString(),
-        gasPriceInGwei.toNumber(),
-        gasPriceInGwei.toFixed(),
-      );
-
       setCustomGasFeeForm((previousForm) => ({
         ...previousForm,
-        gasLimit: gasLimit.toNumber(),
-        priorityFeeInGwei: priorityFeeInGwei.toNumber(),
-        gasPriceInGwei: gasPriceInGwei.toNumber(),
-        maxBaseFeeInGwei: maxBaseFeeInGwei.toNumber(),
-        gasPriceValue: gasLimit.mul(gasPriceInGwei).toNumber(),
-        priorityFeeValue: gasLimit.mul(priorityFeeInGwei).toNumber(),
-        maxBaseFeeValue: gasLimit.mul(maxBaseFeeInGwei).toNumber(),
+        gasLimit: gasLimit,
+        priorityFeeInGwei: priorityFeeInGwei,
+        gasPriceInGwei: gasPriceInGwei,
+        maxBaseFeeInGwei: maxBaseFeeInGwei,
+        gasPriceValue: gasLimit.mul(gasPriceInGwei),
+        priorityFeeValue: gasLimit.mul(priorityFeeInGwei),
+        maxBaseFeeValue: gasLimit.mul(maxBaseFeeInGwei),
       }));
     }
   }, [selectedFee]);
@@ -166,59 +151,31 @@ export const GasFeePanel = ({
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
           ...selectedFee,
-          estimatedFee: Number(
-            new Decimal(selectedFee.estimatedFee)
-              .mul(multiplier)
-              .toFixed(MathUtils.countDecimals(selectedFee.estimatedFee)),
+          estimatedFee: new Decimal(selectedFee.estimatedFee).mul(multiplier),
+          estimatedFeeUSD: new Decimal(selectedFee.estimatedFeeUSD).mul(
+            multiplier,
           ),
-          estimatedFeeUSD: Number(
-            new Decimal(selectedFee.estimatedFeeUSD)
-              .mul(multiplier)
-              .toFixed(MathUtils.countDecimals(selectedFee.estimatedFeeUSD)),
-          ),
-          maxFee: Number(
-            new Decimal(selectedFee.maxFee)
-              .mul(multiplier)
-              .toFixed(MathUtils.countDecimals(selectedFee.maxFee)),
-          ),
-          maxFeeUSD: Number(
-            new Decimal(selectedFee.maxFeeUSD)
-              .mul(multiplier)
-              .toFixed(MathUtils.countDecimals(selectedFee.maxFeeUSD)),
-          ),
+          maxFee: new Decimal(selectedFee.maxFee).mul(multiplier),
+          maxFeeUSD: new Decimal(selectedFee.maxFeeUSD).mul(multiplier),
           maxFeePerGas: selectedFee.maxFeePerGas
-            ? Number(
-                new Decimal(selectedFee.maxFeePerGas)
-                  .mul(multiplier)
-                  .toFixed(MathUtils.countDecimals(selectedFee.maxFeePerGas)),
-              )
+            ? new Decimal(selectedFee.maxFeePerGas).mul(multiplier)
             : undefined,
           priorityFee: selectedFee.priorityFee
-            ? Number(
-                new Decimal(selectedFee.priorityFee)
-                  .mul(multiplier)
-                  .toFixed(selectedFee.priorityFee),
-              )
+            ? new Decimal(selectedFee.priorityFee).mul(multiplier)
             : undefined,
         };
 
         switch (transactionType) {
           case EvmTransactionType.EIP_1559: {
-            increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-              new Decimal(increasedFee.gasLimit)
-                .mul(new Decimal(increasedFee.maxFeePerGas!))
-                .div(EvmFormatUtils.GWEI)
-                .toNumber(),
-            );
+            increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
+              .mul(new Decimal(increasedFee.maxFeePerGas!))
+              .div(EvmFormatUtils.GWEI);
             break;
           }
           case EvmTransactionType.LEGACY: {
-            increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-              new Decimal(increasedFee.gasLimit)
-                .mul(new Decimal(increasedFee.gasPrice!))
-                .div(EvmFormatUtils.GWEI)
-                .toNumber(),
-            );
+            increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
+              .mul(new Decimal(increasedFee.gasPrice!))
+              .div(EvmFormatUtils.GWEI);
             break;
           }
         }
@@ -283,43 +240,37 @@ export const GasFeePanel = ({
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
-        newState.maxBaseFeeInGwei = Number(value);
+        newState.maxBaseFeeInGwei = new Decimal(value);
         newState.maxBaseFeeValue = new Decimal(value)
           .div(EvmFormatUtils.GWEI)
-          .mul(new Decimal(feeEstimation?.custom?.gasLimit!))
-          .toNumber();
+          .mul(feeEstimation?.custom?.gasLimit!);
         break;
       }
       case 'priorityFee': {
-        newState.priorityFeeInGwei = Number(value);
-        newState.priorityFeeValue = new Decimal(value)
-          .mul(new Decimal(feeEstimation?.custom?.gasLimit!))
-          .div(EvmFormatUtils.GWEI)
-          .toNumber();
+        newState.priorityFeeInGwei = new Decimal(value);
+        newState.priorityFeeValue = new Decimal(value).mul(
+          feeEstimation?.custom?.gasLimit!,
+        );
         break;
       }
       case 'gasPrice': {
-        newState.gasPriceInGwei = Number(value);
-        newState.gasPriceValue = new Decimal(value)
-          .mul(new Decimal(feeEstimation?.custom?.gasPrice!))
-          .div(EvmFormatUtils.GWEI)
-          .toNumber();
+        newState.gasPriceInGwei = new Decimal(value);
+        newState.gasPriceValue = new Decimal(value).mul(
+          feeEstimation?.custom?.gasPrice!,
+        );
         break;
       }
       case 'gasLimit': {
-        newState.gasLimit = Number(value);
+        newState.gasLimit = new Decimal(value);
         newState.gasPriceValue = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm?.gasPriceInGwei!))
-          .div(EvmFormatUtils.GWEI)
-          .toNumber();
+          .div(EvmFormatUtils.GWEI);
         newState.priorityFeeValue = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm?.priorityFeeInGwei!))
-          .div(EvmFormatUtils.GWEI)
-          .toNumber();
+          .div(EvmFormatUtils.GWEI);
         newState.maxBaseFeeValue = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm.maxBaseFeeInGwei!))
-          .div(EvmFormatUtils.GWEI)
-          .toNumber();
+          .div(EvmFormatUtils.GWEI);
         break;
       }
     }
@@ -328,8 +279,8 @@ export const GasFeePanel = ({
   };
 
   const saveCustomFee = () => {
-    let customMaxFee = 0;
-    let customEstimatedFee = 0;
+    let customMaxFee = new Decimal(0);
+    let customEstimatedFee = new Decimal(0);
 
     if (
       customGasFeeForm.priorityFeeInGwei > customGasFeeForm.maxBaseFeeInGwei
@@ -345,15 +296,15 @@ export const GasFeePanel = ({
         customMaxFee = Decimal.add(
           customGasFeeForm.maxBaseFeeValue!,
           customGasFeeForm.priorityFeeValue!,
-        ).toNumber();
+        );
         if (feeEstimation?.extraInfo) {
           customEstimatedFee = Decimal.add(
             Decimal.div(
-              Number(feeEstimation?.extraInfo.baseFee.estimated!),
+              new Decimal(feeEstimation?.extraInfo.baseFee.estimated!),
               EvmFormatUtils.GWEI,
             ),
             customGasFeeForm.priorityFeeValue!,
-          ).toNumber();
+          );
         } else customEstimatedFee = customMaxFee;
         break;
       }
@@ -363,7 +314,7 @@ export const GasFeePanel = ({
       }
     }
 
-    let customDuration = -1;
+    let customDuration = new Decimal(-1);
     if (
       feeEstimation?.aggressive?.maxFee &&
       customMaxFee >= feeEstimation.aggressive.maxFee
@@ -390,10 +341,12 @@ export const GasFeePanel = ({
       gasPrice: customGasFeeForm.gasPriceInGwei,
       maxFeePerGas: customGasFeeForm.maxBaseFeeInGwei,
       priorityFee: customGasFeeForm.priorityFeeInGwei,
-      estimatedFeeUSD:
-        customEstimatedFee * (prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
-      maxFeeUSD:
-        customMaxFee * (prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+      estimatedFeeUSD: customEstimatedFee.mul(
+        new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+      ),
+      maxFeeUSD: customMaxFee.mul(
+        new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+      ),
       name: 'popup_html_evm_custom_gas_fee_custom',
       icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
     } as GasFeeEstimationBase;
@@ -466,10 +419,10 @@ export const GasFeePanel = ({
                 </div>
                 <div className="label gas-fee">
                   <div>
-                    {selectedFee.estimatedFee !== -1 ? (
+                    {!selectedFee.estimatedFee.equals(-1) ? (
                       <>
                         {FormatUtils.formatCurrencyValue(
-                          selectedFee.estimatedFee,
+                          selectedFee.estimatedFee.toFixed(),
                           8,
                         )}{' '}
                         {chain.mainToken}
@@ -478,7 +431,7 @@ export const GasFeePanel = ({
                       '-'
                     )}
                   </div>
-                  {selectedFee.estimatedFee !== -1 &&
+                  {!selectedFee.estimatedFee.equals(-1) &&
                     !!selectedFee.estimatedFeeUSD && (
                       <div className="label usd-value">
                         {selectedFee.estimatedFeeUSD.toFixed(2)}
@@ -496,25 +449,29 @@ export const GasFeePanel = ({
               <div className="label gas-fee">
                 <div className="label gas-fee">
                   <div>
-                    {selectedFee.maxFee !== -1 ? (
+                    {!selectedFee.maxFee.equals(-1) ? (
                       <>
-                        {FormatUtils.formatCurrencyValue(selectedFee.maxFee, 8)}{' '}
+                        {FormatUtils.formatCurrencyValue(
+                          selectedFee.maxFee.toFixed(),
+                          8,
+                        )}{' '}
                         {chain.mainToken}
                       </>
                     ) : (
                       '-'
                     )}
                   </div>
-                  {selectedFee.maxFee !== -1 && !!selectedFee.maxFeeUSD && (
-                    <div className="label usd-value">
-                      {selectedFee.maxFeeUSD.toFixed(2)}
-                      {' USD'}
-                    </div>
-                  )}
+                  {!selectedFee.maxFee.equals(-1) &&
+                    !!selectedFee.maxFeeUSD && (
+                      <div className="label usd-value">
+                        {selectedFee.maxFeeUSD.toFixed(2)}
+                        {' USD'}
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
-            {selectedFee.estimatedMaxDuration !== -1 && (
+            {!selectedFee.estimatedMaxDuration.equals(-1) && (
               <div className="gas-fee-top-row">
                 <div className="label duration">
                   {chrome.i18n.getMessage(
@@ -608,7 +565,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom &&
-                      feeEstimation.custom.estimatedMaxDuration !== -1
+                      !feeEstimation.custom.estimatedMaxDuration.equals(-1)
                         ? chrome.i18n.getMessage(
                             'popup_html_evm_gas_fee_estimate_duration',
                             [
@@ -619,9 +576,9 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {feeEstimation.custom &&
-                      feeEstimation.custom.maxFee !== -1
+                      !feeEstimation.custom.maxFee.equals(-1)
                         ? FormatUtils.formatCurrencyValue(
-                            feeEstimation.custom.maxFee,
+                            feeEstimation.custom.maxFee.toFixed(),
                             8,
                           )
                         : '-'}
@@ -642,7 +599,7 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label duration">
                           {feeEstimation.suggestedByDApp &&
-                          feeEstimation.suggestedByDApp.maxFee !== -1
+                          !feeEstimation.suggestedByDApp.maxFee.equals(-1)
                             ? chrome.i18n.getMessage(
                                 'popup_html_evm_gas_fee_estimate_duration',
                                 [
@@ -653,9 +610,9 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label gas-fee">
                           {feeEstimation.suggestedByDApp &&
-                          feeEstimation.suggestedByDApp.maxFee !== -1
+                          !feeEstimation.suggestedByDApp.maxFee.equals(-1)
                             ? FormatUtils.formatCurrencyValue(
-                                feeEstimation.suggestedByDApp.maxFee,
+                                feeEstimation.suggestedByDApp.maxFee.toFixed(),
                                 8,
                               )
                             : '-'}
