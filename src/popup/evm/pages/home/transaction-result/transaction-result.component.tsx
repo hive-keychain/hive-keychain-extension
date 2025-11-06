@@ -19,6 +19,7 @@ import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import Decimal from 'decimal.js';
 import {
   HDNodeWallet,
   TransactionReceipt,
@@ -483,17 +484,21 @@ const EvmTransactionResult = ({
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_gas_price"
-            value={`${EvmFormatUtils.etherToGwei(txResult.gasPrice!)} Gwei`}
+            value={`${new Decimal(
+              EvmFormatUtils.etherToGwei(txResult.gasPrice!),
+            ).toFixed()} Gwei`}
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_priority_fee"
-            value={`${EvmFormatUtils.etherToGwei(
-              txResult.maxPriorityFeePerGas!,
-            )} Gwei`}
+            value={`${new Decimal(
+              EvmFormatUtils.etherToGwei(txResult.maxPriorityFeePerGas!),
+            ).toFixed()} Gwei`}
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_total_fee_per_gas"
-            value={`${EvmFormatUtils.etherToGwei(txResult.maxFeePerGas!)} Gwei`}
+            value={`${new Decimal(
+              EvmFormatUtils.etherToGwei(txResult.maxFeePerGas!),
+            ).toFixed()} Gwei`}
           />
         </div>
       )}

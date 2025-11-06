@@ -38,11 +38,11 @@ const send = async (
       case EvmTransactionType.EIP_1559: {
         feeData = {
           maxPriorityFeePerGas: ethers.parseUnits(
-            gasFee.priorityFee!.toString(),
+            gasFee.priorityFee!.toFixed(),
             'gwei',
           ),
           maxFeePerGas: ethers.parseUnits(
-            gasFee.maxFeePerGas!.toString(),
+            gasFee.maxFeePerGas!.toFixed(),
             'gwei',
           ),
         };
@@ -51,7 +51,7 @@ const send = async (
       case EvmTransactionType.EIP_155:
       case EvmTransactionType.LEGACY: {
         feeData = {
-          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toString(), 'gwei'),
+          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toFixed(), 'gwei'),
         };
         break;
       }
