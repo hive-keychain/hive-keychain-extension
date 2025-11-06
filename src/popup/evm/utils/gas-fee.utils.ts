@@ -47,11 +47,16 @@ const estimate = async (
     );
   }
 
-  if (!estimates) {
-    const [maxPriorityFeePerGas, gasPrice] = await Promise.all([
+  console.log(estimates);
+
+  if (!estimates || !estimates.low) {
+    const [maxPriorityFeePerGas, gasPrice, baseFee] = await Promise.all([
       EvmRequestsUtils.getMaxPriorityFeePerGas(),
       EvmRequestsUtils.getGasPrice(),
+      EvmRequestsUtils.getBaseFee(),
     ]);
+    console.log(maxPriorityFeePerGas, gasPrice, baseFee);
+    const maxFeePerGas = baseFee ? maxPriorityFeePerGas + baseFee : gasPrice;
 
     return {
       custom: {
@@ -62,7 +67,7 @@ const estimate = async (
         maxFeeUSD: -1,
         estimatedMaxDuration: -1,
         priorityFee: maxPriorityFeePerGas,
-        maxFeePerGas: gasPrice,
+        maxFeePerGas: maxFeePerGas,
         gasPrice: gasPrice,
         gasLimit: Number(gasLimit),
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
@@ -71,7 +76,7 @@ const estimate = async (
     };
   }
 
-  const price = evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0;
+  const price = new Decimal(evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0);
 
   const lowPriorityFee = Math.max(
     Number(estimates.low.suggestedMaxPriorityFeePerGas),
@@ -88,42 +93,36 @@ const estimate = async (
 
   const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
   const maxMedium = new Decimal(Number(estimates.medium.suggestedMaxFeePerGas))
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
   const maxAggressive = new Decimal(
     Number(estimates.high.suggestedMaxFeePerGas),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
   const low = new Decimal(lowPriorityFee + Number(estimates.estimatedBaseFee))
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
   const medium = new Decimal(
     mediumPriorityFee + Number(estimates.estimatedBaseFee),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
   const aggressive = new Decimal(
     aggressivePriorityFee + Number(estimates.estimatedBaseFee),
   )
     .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000)
-    .toNumber();
+    .div(1000);
 
   const fullEstimation: FullGasFeeEstimation = {
     suggested: {
       type: type,
-      estimatedFee: low,
-      estimatedFeeUSD: low * price,
-      maxFee: maxLow,
-      maxFeeUSD: maxLow * price,
+      estimatedFee: low.toNumber(),
+      estimatedFeeUSD: low.mul(price).toNumber(),
+      maxFee: maxLow.toNumber(),
+      maxFeeUSD: maxLow.mul(price).toNumber(),
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: lowPriorityFee,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
@@ -134,10 +133,10 @@ const estimate = async (
     },
     low: {
       type: type,
-      estimatedFee: low,
-      estimatedFeeUSD: low * price,
-      maxFee: maxLow,
-      maxFeeUSD: maxLow * price,
+      estimatedFee: low.toNumber(),
+      estimatedFeeUSD: low.mul(price).toNumber(),
+      maxFee: maxLow.toNumber(),
+      maxFeeUSD: maxLow.mul(price).toNumber(),
       estimatedMaxDuration: estimates.low.maxWaitTimeEstimate / 1000,
       priorityFee: lowPriorityFee,
       maxFeePerGas: Number(estimates.low.suggestedMaxFeePerGas),
@@ -148,10 +147,10 @@ const estimate = async (
     },
     medium: {
       type: type,
-      estimatedFee: medium,
-      estimatedFeeUSD: medium * price,
-      maxFee: maxMedium,
-      maxFeeUSD: maxMedium * price,
+      estimatedFee: medium.toNumber(),
+      estimatedFeeUSD: medium.mul(price).toNumber(),
+      maxFee: maxMedium.toNumber(),
+      maxFeeUSD: maxMedium.mul(price).toNumber(),
       estimatedMaxDuration: estimates.medium.maxWaitTimeEstimate / 1000,
       priorityFee: mediumPriorityFee,
       maxFeePerGas: Number(estimates.medium.suggestedMaxFeePerGas),
@@ -162,10 +161,10 @@ const estimate = async (
     },
     aggressive: {
       type: type,
-      estimatedFee: aggressive,
-      estimatedFeeUSD: aggressive * price,
-      maxFee: maxAggressive,
-      maxFeeUSD: maxAggressive * price,
+      estimatedFee: aggressive.toNumber(),
+      estimatedFeeUSD: aggressive.mul(price).toNumber(),
+      maxFee: maxAggressive.toNumber(),
+      maxFeeUSD: maxAggressive.mul(price).toNumber(),
       estimatedMaxDuration: estimates.high.maxWaitTimeEstimate / 1000,
       priorityFee: aggressivePriorityFee,
       maxFeePerGas: Number(estimates.high.suggestedMaxFeePerGas),
@@ -226,7 +225,6 @@ const estimate = async (
         fullEstimation,
       );
   }
-  console.log({ fullEstimation });
   return fullEstimation;
 };
 
@@ -259,7 +257,9 @@ const createDAppSuggestionFromTransactionData = async (
     case EvmTransactionType.EIP_155:
     case EvmTransactionType.LEGACY: {
       if (!transactionData.gasPrice) {
-        transactionData.gasPrice = await EvmRequestsUtils.getGasPrice();
+        transactionData.gasPrice = (
+          await EvmRequestsUtils.getGasPrice()
+        ).toString();
       }
       maxFee = new Decimal(Number(transactionData.gasPrice!)).div(
         EvmFormatUtils.GWEI,
@@ -295,10 +295,15 @@ const createDAppSuggestionFromTransactionData = async (
   return {
     type: transactionData.type,
     gasLimit: Number(transactionData.gasLimit),
-    gasPrice: Number(transactionData.gasPrice) / EvmFormatUtils.GWEI,
-    maxFeePerGas: Number(transactionData.maxFeePerGas) / EvmFormatUtils.GWEI,
-    priorityFee:
-      Number(transactionData.maxPriorityFeePerGas) / EvmFormatUtils.GWEI,
+    gasPrice: new Decimal(Number(transactionData.gasPrice))
+      .div(EvmFormatUtils.GWEI)
+      .toNumber(),
+    maxFeePerGas: new Decimal(Number(transactionData.maxFeePerGas))
+      .div(EvmFormatUtils.GWEI)
+      .toNumber(),
+    priorityFee: new Decimal(Number(transactionData.maxPriorityFeePerGas))
+      .div(EvmFormatUtils.GWEI)
+      .toNumber(),
     estimatedFee: estimatedFee,
     maxFee: maxFee,
     estimatedMaxDuration: estimatedMaxDuration,

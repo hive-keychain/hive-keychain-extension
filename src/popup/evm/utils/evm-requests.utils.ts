@@ -54,11 +54,11 @@ const estimateGasFee = async () => {
 };
 
 const getGasPrice = async () => {
-  return call('eth_gasPrice', []);
+  return Number(await call('eth_gasPrice', []));
 };
 
 const getMaxPriorityFeePerGas = async () => {
-  return call('eth_maxPriorityFeePerGas', []);
+  return Number(await call('eth_maxPriorityFeePerGas', []));
 };
 
 const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
@@ -212,6 +212,10 @@ const getResolveData = async (ensAddress: string) => {
   return null;
 };
 
+const getBaseFee = async () => {
+  return Number(await call('eth_baseFee', []));
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -236,4 +240,5 @@ export const EvmRequestsUtils = {
   getEnsResolver,
   getResolveData,
   getMaxPriorityFeePerGas,
+  getBaseFee,
 };

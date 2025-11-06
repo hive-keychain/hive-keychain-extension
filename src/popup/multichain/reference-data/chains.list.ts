@@ -37,6 +37,7 @@ export const defaultChainList = [
     testnet: false,
     isEth: false,
     rpcs: [
+      { url: 'https://api.avax.network/ext/bc/C/rpc', isDefault: true },
       { url: 'https://avalanche-c-chain-rpc.publicnode.com', isDefault: true },
       { url: 'https://avalanche-mainnet.public.blastapi.io', isDefault: true },
     ],

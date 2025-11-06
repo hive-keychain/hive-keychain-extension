@@ -88,55 +88,65 @@ export const GasFeePanel = ({
       selectedFee &&
       selectedFee.name !== 'popup_html_evm_custom_gas_fee_custom'
     ) {
-      const gasLimit = selectedFee.gasLimit ?? 0;
-      const gasPriceInGwei = selectedFee?.gasPrice ?? 0;
-      const maxBaseFeeInGwei =
-        (selectedFee?.maxFeePerGas ?? 0) - (selectedFee?.priorityFee ?? 0);
-      const priorityFeeInGwei = selectedFee.priorityFee ?? 0;
+      const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
+      const gasPriceInGwei = new Decimal(selectedFee?.gasPrice ?? 0);
+      const maxBaseFeeInGwei = new Decimal(selectedFee?.maxFeePerGas ?? 0).sub(
+        new Decimal(selectedFee?.priorityFee ?? 0),
+      );
+      const priorityFeeInGwei = new Decimal(selectedFee.priorityFee ?? 0);
 
       setCustomGasFeeForm({
-        gasLimit: selectedFee.gasLimit ?? 0,
+        gasLimit: gasLimit.toNumber(),
         type: transactionType,
-        gasPriceInGwei: gasPriceInGwei,
-        maxBaseFeeInGwei: maxBaseFeeInGwei,
-        priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * gasPriceInGwei,
-        ),
-        priorityFeeValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * priorityFeeInGwei,
-        ),
-        maxBaseFeeValue: EvmFormatUtils.etherToGwei(
-          Number(gasLimit) * maxBaseFeeInGwei,
-        ),
+        gasPriceInGwei: gasPriceInGwei.toNumber(),
+        maxBaseFeeInGwei: maxBaseFeeInGwei.toNumber(),
+        priorityFeeInGwei: priorityFeeInGwei.toNumber(),
+        gasPriceValue: gasLimit
+          .mul(gasPriceInGwei)
+          .div(EvmFormatUtils.GWEI)
+          .toNumber(),
+        priorityFeeValue: gasLimit
+          .mul(priorityFeeInGwei)
+          .div(EvmFormatUtils.GWEI)
+          .toNumber(),
+        maxBaseFeeValue: gasLimit
+          .mul(maxBaseFeeInGwei)
+          .div(EvmFormatUtils.GWEI)
+          .toNumber(),
       });
     } else if (
       selectedFee &&
       selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
     ) {
-      const gasLimit = selectedFee.gasLimit ?? 0;
-      const gasPriceInGwei = selectedFee.gasPrice
-        ? Number(selectedFee.gasPrice) / EvmFormatUtils.GWEI
-        : 0;
-      const priorityFeeInGwei = selectedFee.priorityFee
-        ? Number(selectedFee.priorityFee) / EvmFormatUtils.GWEI
-        : 0;
-      const maxBaseFeeInGwei = selectedFee.maxFeePerGas
-        ? Number(selectedFee.maxFeePerGas) / EvmFormatUtils.GWEI
-        : 0;
+      console.log(selectedFee);
+      const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
+      const gasPriceInGwei = new Decimal(selectedFee.gasPrice ?? 0).div(
+        EvmFormatUtils.GWEI,
+      );
+      const priorityFeeInGwei = new Decimal(selectedFee.priorityFee ?? 0).div(
+        EvmFormatUtils.GWEI,
+      );
+      const maxBaseFeeInGwei = new Decimal(selectedFee.maxFeePerGas ?? 0).div(
+        EvmFormatUtils.GWEI,
+      );
+
+      console.log(gasPriceInGwei, priorityFeeInGwei, maxBaseFeeInGwei);
+      console.log(gasPriceInGwei.toSignificantDigits());
+      console.log(
+        gasPriceInGwei.toString(),
+        gasPriceInGwei.toNumber(),
+        gasPriceInGwei.toFixed(),
+      );
 
       setCustomGasFeeForm((previousForm) => ({
         ...previousForm,
-        gasLimit: selectedFee.gasLimit ?? 0,
-        priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceInGwei: gasPriceInGwei,
-        maxBaseFeeInGwei: maxBaseFeeInGwei,
-        gasPriceValue:
-          (Number(gasLimit) * gasPriceInGwei) / EvmFormatUtils.GWEI,
-        priorityFeeValue:
-          (Number(gasLimit) * priorityFeeInGwei) / EvmFormatUtils.GWEI,
-        maxBaseFeeValue:
-          (Number(gasLimit) * maxBaseFeeInGwei) / EvmFormatUtils.GWEI,
+        gasLimit: gasLimit.toNumber(),
+        priorityFeeInGwei: priorityFeeInGwei.toNumber(),
+        gasPriceInGwei: gasPriceInGwei.toNumber(),
+        maxBaseFeeInGwei: maxBaseFeeInGwei.toNumber(),
+        gasPriceValue: gasLimit.mul(gasPriceInGwei).toNumber(),
+        priorityFeeValue: gasLimit.mul(priorityFeeInGwei).toNumber(),
+        maxBaseFeeValue: gasLimit.mul(maxBaseFeeInGwei).toNumber(),
       }));
     }
   }, [selectedFee]);
@@ -152,6 +162,7 @@ export const GasFeePanel = ({
         undefined,
         transactionData,
       );
+
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
           ...selectedFee,
@@ -194,13 +205,19 @@ export const GasFeePanel = ({
         switch (transactionType) {
           case EvmTransactionType.EIP_1559: {
             increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-              increasedFee.gasLimit * increasedFee.maxFeePerGas!,
+              new Decimal(increasedFee.gasLimit)
+                .mul(new Decimal(increasedFee.maxFeePerGas!))
+                .div(EvmFormatUtils.GWEI)
+                .toNumber(),
             );
             break;
           }
           case EvmTransactionType.LEGACY: {
             increasedFee.estimatedFee = EvmFormatUtils.etherToGwei(
-              increasedFee.gasLimit * increasedFee.gasPrice!,
+              new Decimal(increasedFee.gasLimit)
+                .mul(new Decimal(increasedFee.gasPrice!))
+                .div(EvmFormatUtils.GWEI)
+                .toNumber(),
             );
             break;
           }
@@ -267,36 +284,42 @@ export const GasFeePanel = ({
     switch (key) {
       case 'maxBaseFee': {
         newState.maxBaseFeeInGwei = Number(value);
-        newState.maxBaseFeeValue = EvmFormatUtils.etherToGwei(
-          value * feeEstimation?.custom?.gasLimit!,
-        );
+        newState.maxBaseFeeValue = new Decimal(value)
+          .div(EvmFormatUtils.GWEI)
+          .mul(new Decimal(feeEstimation?.custom?.gasLimit!))
+          .toNumber();
         break;
       }
       case 'priorityFee': {
         newState.priorityFeeInGwei = Number(value);
-        newState.priorityFeeValue = EvmFormatUtils.etherToGwei(
-          value * feeEstimation?.custom?.gasLimit!,
-        );
+        newState.priorityFeeValue = new Decimal(value)
+          .mul(new Decimal(feeEstimation?.custom?.gasLimit!))
+          .div(EvmFormatUtils.GWEI)
+          .toNumber();
         break;
       }
       case 'gasPrice': {
         newState.gasPriceInGwei = Number(value);
-        newState.gasPriceValue = EvmFormatUtils.etherToGwei(
-          value * feeEstimation?.custom?.gasPrice!,
-        );
+        newState.gasPriceValue = new Decimal(value)
+          .mul(new Decimal(feeEstimation?.custom?.gasPrice!))
+          .div(EvmFormatUtils.GWEI)
+          .toNumber();
         break;
       }
       case 'gasLimit': {
         newState.gasLimit = Number(value);
-        newState.gasPriceValue = EvmFormatUtils.etherToGwei(
-          Number(value) * customGasFeeForm?.gasPriceInGwei!,
-        );
-        newState.priorityFeeValue = EvmFormatUtils.etherToGwei(
-          Number(value) * customGasFeeForm?.priorityFeeInGwei!,
-        );
-        newState.maxBaseFeeValue = EvmFormatUtils.etherToGwei(
-          Number(value) * customGasFeeForm.maxBaseFeeInGwei!,
-        );
+        newState.gasPriceValue = new Decimal(Number(value))
+          .mul(new Decimal(customGasFeeForm?.gasPriceInGwei!))
+          .div(EvmFormatUtils.GWEI)
+          .toNumber();
+        newState.priorityFeeValue = new Decimal(Number(value))
+          .mul(new Decimal(customGasFeeForm?.priorityFeeInGwei!))
+          .div(EvmFormatUtils.GWEI)
+          .toNumber();
+        newState.maxBaseFeeValue = new Decimal(Number(value))
+          .mul(new Decimal(customGasFeeForm.maxBaseFeeInGwei!))
+          .div(EvmFormatUtils.GWEI)
+          .toNumber();
         break;
       }
     }
@@ -650,8 +673,10 @@ export const GasFeePanel = ({
                         <InputComponent
                           label="popup_html_evm_gas_fee_form_base_fee"
                           placeholder="popup_html_evm_gas_fee_form_base_fee"
-                          type={InputType.NUMBER}
-                          value={customGasFeeForm.maxBaseFeeInGwei}
+                          type={InputType.TEXT}
+                          value={new Decimal(
+                            customGasFeeForm.maxBaseFeeInGwei,
+                          ).toFixed()}
                           onChange={(value) =>
                             updateCustomFee('maxBaseFee', value)
                           }
@@ -704,7 +729,9 @@ export const GasFeePanel = ({
                           label="popup_html_evm_gas_fee_form_priority_fee"
                           placeholder="popup_html_evm_gas_fee_form_priority_fee"
                           type={InputType.NUMBER}
-                          value={customGasFeeForm.priorityFeeInGwei}
+                          value={new Decimal(
+                            customGasFeeForm.priorityFeeInGwei,
+                          ).toFixed()}
                           onChange={(value) =>
                             updateCustomFee('priorityFee', value)
                           }
@@ -761,7 +788,9 @@ export const GasFeePanel = ({
                         label="popup_html_evm_gas_fee_form_gas_price"
                         placeholder="popup_html_evm_gas_fee_form_gas_price"
                         type={InputType.NUMBER}
-                        value={customGasFeeForm.gasPriceInGwei}
+                        value={new Decimal(
+                          customGasFeeForm.gasPriceInGwei,
+                        ).toFixed()}
                         onChange={(value) => updateCustomFee('gasPrice', value)}
                         hint={`≈${
                           customGasFeeForm.gasPriceInGwei
@@ -769,6 +798,7 @@ export const GasFeePanel = ({
                             : 0
                         } ${chain.mainToken}`}
                         skipHintTranslation
+                        step={'any'}
                       />
                     </div>
                   )}
@@ -780,6 +810,7 @@ export const GasFeePanel = ({
                       value={customGasFeeForm.gasLimit}
                       onChange={(value) => updateCustomFee('gasLimit', value)}
                       skipHintTranslation
+                      step={1}
                     />
                   </div>
                   <div className="button-panel">

@@ -15,7 +15,7 @@ export interface InputProps {
   label?: string;
   placeholder?: string;
   type: InputType;
-  step?: number;
+  step?: number | 'any';
   min?: number;
   max?: number;
   skipLabelTranslation?: boolean;

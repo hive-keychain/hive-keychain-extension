@@ -37,11 +37,21 @@ const addHexPrefix = (str: string) => {
   return `0x${str}`;
 };
 
+const gweiToWei = (value: number) => {
+  return value * 1000000000;
+};
+
+const weiToGwei = (value: number) => {
+  return value / 1000000000;
+};
+
 export const EvmFormatUtils = {
   addHexPrefix,
   formatAddress,
   etherToGwei,
   etherToWei,
+  gweiToWei,
+  weiToGwei,
   GWEI,
   WEI,
 };
