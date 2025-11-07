@@ -58,6 +58,12 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {!EnumUtils.isValueOf(item.img, SVGIcons) && (
               <img className="left-image" src={item.img} />
             )}
+            {item.imgChip && (
+              <SVGIcon
+                className="left-svg-chip"
+                icon={item.imgChip as SVGIcons}
+              />
+            )}
           </>
         )}
         {!item.img && generateImageIfNull && (

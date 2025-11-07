@@ -14,6 +14,7 @@ export interface OptionItem {
   canDelete?: boolean;
   subLabel?: string;
   img?: string;
+  imgChip?: SVGIcons;
   imgBackup?: string;
   key?: string;
 }
@@ -75,6 +76,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
               <PreloadedImage
                 className="left-image"
                 src={itemProps.selectedItem.img}
+              />
+            )}
+            {itemProps.selectedItem.imgChip && (
+              <SVGIcon
+                className="left-svg-chip"
+                icon={itemProps.selectedItem.imgChip as SVGIcons}
               />
             )}
           </>

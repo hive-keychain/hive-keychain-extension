@@ -35,7 +35,13 @@ const ChainDropdown = ({
       chains.push(chain);
     }
     let optionItems: OptionItem[] = chains.map((c) => {
-      return { key: c.chainId, label: c.name, value: c, img: c.logo };
+      return {
+        key: c.chainId,
+        label: c.name,
+        value: c,
+        img: c.logo,
+        imgChip: c.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
+      };
     });
     setOptions(optionItems);
   };
@@ -63,6 +69,7 @@ const ChainDropdown = ({
             label: chain.name,
             value: chain,
             img: chain.logo,
+            imgChip: chain.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
           }}
           setSelectedItem={(item) => selectChain(item.value)}
           background="white"

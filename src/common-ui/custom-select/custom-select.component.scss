@@ -34,7 +34,7 @@
         box-sizing: border-box;
         width: 100%;
         font-size: $input-font-size;
-
+        position: relative;
         .left-image {
           height: 24px;
           width: 24px;
@@ -50,6 +50,13 @@
             height: 24px;
             width: 24px;
           }
+        }
+        .left-svg-chip {
+          @include icon-size(20px);
+          position: absolute;
+          top: 22px;
+          left: 18px;
+          color: $red;
         }
       }
     }
@@ -119,6 +126,7 @@
           column-gap: 12px;
           padding: 10px 6px;
           box-sizing: border-box;
+          position: relative;
 
           .left-image {
             @include icon-size(24px);
@@ -133,6 +141,20 @@
             svg {
               height: 24px;
               width: 24px;
+            }
+          }
+
+          .left-svg-chip {
+            @include icon-size(20px);
+            position: absolute;
+            top: 22px;
+            left: 18px;
+            color: $red;
+          }
+
+          &:hover {
+            .left-svg-chip {
+              color: white;
             }
           }
 
