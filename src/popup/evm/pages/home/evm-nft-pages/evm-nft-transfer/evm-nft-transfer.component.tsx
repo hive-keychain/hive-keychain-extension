@@ -65,7 +65,7 @@ interface EvmNftTransferForm {
 
 const transferFormRules = FormUtils.createRules<EvmNftTransferForm>({
   receiverAddress: Joi.string().required(),
-  amount: Joi.number().required().positive().max(Joi.ref('$balance')),
+  amount: Joi.number().required().max(Joi.ref('$balance')),
   selectedToken: Joi.object().required(),
 });
 
@@ -89,15 +89,10 @@ const EvmNftTransfer = ({
           ? formParams.receiverUsername
           : '',
         selectedToken: collectionItem.collection.tokenInfo,
-        amount: EVMSmartContractType.ERC1155 ? 0 : 1,
+        amount: 1,
         nftId: collectionItem.item.id,
       },
       resolver: (values, context, options) => {
-        const balance =
-          collectionItem.collection.tokenInfo.type ===
-          EVMSmartContractType.ERC1155
-            ? (collectionItem.item as EvmErc1155TokenCollectionItem).balance
-            : 1;
         const resolver = joiResolver<Joi.ObjectSchema<EvmNftTransferForm>>(
           transferFormRules,
           { context: { balance: balance }, errors: { render: true } },
@@ -105,6 +100,11 @@ const EvmNftTransfer = ({
         return resolver(values, { balance: balance }, options);
       },
     });
+
+  const balance =
+    collectionItem.collection.tokenInfo.type === EVMSmartContractType.ERC1155
+      ? (collectionItem.item as EvmErc1155TokenCollectionItem).balance
+      : 1;
 
   const [autocompleteValues, setAutocompleteValues] =
     useState<AutoCompleteValues>();
@@ -125,6 +125,7 @@ const EvmNftTransfer = ({
 
   const handleClickOnSend = async (form: EvmNftTransferForm) => {
     // encode data
+
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation();
 
@@ -290,16 +291,15 @@ const EvmNftTransfer = ({
       return contract.interface.encodeFunctionData('safeTransferFrom', [
         activeAccount.address,
         receiverAddress,
-        tokenId,
-        amount,
+        Number(tokenId),
+        Number(amount),
         '0x',
       ]);
     } else if (tokenInfo.type === EVMSmartContractType.ERC721) {
-      return contract.interface.encodeFunctionData('safeTransferFrom', [
-        activeAccount.address,
-        receiverAddress,
-        tokenId,
-      ]);
+      return contract.interface.encodeFunctionData(
+        'safeTransferFrom(address,address,uint256)',
+        [activeAccount.address, receiverAddress, Number(tokenId)],
+      );
     } else {
       throw new Error('Invalid token type');
     }
@@ -309,7 +309,7 @@ const EvmNftTransfer = ({
     <div
       className="evm-nft-transfer-funds-page"
       data-testid={`${Screen.EVM_NFT_TRANSFER_PAGE}-page`}>
-      <FormContainer onSubmit={handleClickOnSend}>
+      <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
         <div className="form-fields">
           <EvmNftDetails
             collection={collectionItem.collection}
@@ -332,9 +332,12 @@ const EvmNftTransfer = ({
             <FormInputComponent
               name="amount"
               control={control}
-              type={InputType.TEXT}
+              type={InputType.NUMBER}
               placeholder="popup_html_amount"
               label="popup_html_amount"
+              customOnChange={(value) => {
+                setValue('amount', Number(value));
+              }}
             />
           )}
         </div>

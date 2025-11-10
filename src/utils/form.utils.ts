@@ -13,6 +13,7 @@ const FormValidationError: Record<string, string> = {
 
 const parseJoiError = (error: FieldError) => {
   Logger.error('Error in form: ', error);
+  console.log(error);
   if (error.type === 'number.min')
     return capitalize(error.message?.replace(/"/g, ''));
   let errMessage = chrome.i18n.getMessage(

@@ -31,6 +31,7 @@ export const EvmNftDetails = ({
     if (onClick) onClick();
   };
   const handleOnClickSend = (event: BaseSyntheticEvent) => {
+    console.log('handleOnClickSend', onClickSend);
     event.stopPropagation();
     if (onClickSend) onClickSend();
   };

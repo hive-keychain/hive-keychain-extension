@@ -4,6 +4,7 @@ import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface'
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
+  EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -17,7 +18,7 @@ import { RootState } from '@popup/multichain/store';
 import Decimal from 'decimal.js';
 import EventEmitter from 'events';
 import React, { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -134,14 +135,19 @@ const ConfirmationPage = ({
       tokenInfo,
     );
 
-    setBalanceInfo({
-      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-      estimatedAfter: `${FormatUtils.withCommas(
-        new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-        (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
-        true,
-      )}  ${tokenInfo?.symbol}`,
-    });
+    if (
+      tokenInfo.type === EVMSmartContractType.ERC20 ||
+      tokenInfo.type === EVMSmartContractType.NATIVE
+    ) {
+      setBalanceInfo({
+        before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
+        estimatedAfter: `${FormatUtils.withCommas(
+          new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
+          (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
+          true,
+        )}  ${tokenInfo?.symbol}`,
+      });
+    }
   };
 
   const handleOnWarningClicked = (

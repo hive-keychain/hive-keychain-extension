@@ -106,6 +106,7 @@ export const EvmWalletNftGalleryComponent = ({
                 onClick={() =>
                   onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
                 }
+                key={`${token.tokenInfo.contractAddress}`}
               />
             )}
             renderWhenEmpty={() => (

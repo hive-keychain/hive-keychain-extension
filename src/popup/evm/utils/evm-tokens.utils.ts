@@ -374,6 +374,7 @@ const getErc1155Tokens = async (
           )!,
           collection: [],
         } as EvmErc1155Token;
+
         for (const instance of nftItem.tokensInstances) {
           if (!instance.metadata) {
             item.collection.push(
@@ -387,7 +388,7 @@ const getErc1155Tokens = async (
                 ),
                 chain,
                 nftItem.token.contractAddress,
-                Number(instance.amount),
+                Number(instance.value),
               )) as EvmErc1155TokenCollectionItem,
             );
           } else {
@@ -399,7 +400,7 @@ const getErc1155Tokens = async (
                 image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
                 attributes: instance.metadata?.attributes,
               },
-              balance: Number(instance.amount),
+              balance: Number(instance.value),
             });
           }
         }
