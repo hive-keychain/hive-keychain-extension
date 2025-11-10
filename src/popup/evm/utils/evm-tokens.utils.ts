@@ -157,7 +157,6 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
-        console.log(balance);
         balanceInteger = Number(
           parseFloat(
             ethers.formatUnits(
@@ -210,6 +209,9 @@ const getErc721Tokens = async (
   const idsPerCollection: any = {};
 
   let erc721tokens: EvmErc721Token[] = [];
+
+  console.log(tokensInfo, 'tokensInfo');
+  console.log(allDiscoveredTokens, 'allDiscoveredTokens');
 
   switch (chain.blockExplorerApi?.type) {
     case BlockExplorerType.BLOCKSCOUT: {
@@ -311,6 +313,7 @@ const getErc721Tokens = async (
       for (const token of result) {
         idsPerCollection[token.address.toLowerCase()] = [token.tokenId];
       }
+      console.log(idsPerCollection, 'idsPerCollection');
       break;
     }
     default:
@@ -319,7 +322,8 @@ const getErc721Tokens = async (
 
   for (const contractAddress of Object.keys(idsPerCollection)) {
     const token = tokensInfo.find(
-      (token) => token.contractAddress === contractAddress,
+      (token) =>
+        token.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
     );
     const provider = await EthersUtils.getProvider(chain);
     const contract = new ethers.Contract(

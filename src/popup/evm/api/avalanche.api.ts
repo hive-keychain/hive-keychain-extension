@@ -20,7 +20,11 @@ const getErc721 = async (walletAddress: string, chain: EvmChain) => {
         chain.chainId,
       )}/addresses/${walletAddress}/balances:listErc721`,
     )
-  ).erc721TokenBalances;
+  ).erc721TokenBalances.map((token: any) => ({
+    ...token,
+    type: EVMSmartContractType.ERC721,
+    contractAddress: token.address.toLowerCase(),
+  }));
 };
 
 const getErc1155 = async (walletAddress: string, chain: EvmChain) => {
