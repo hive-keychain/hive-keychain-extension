@@ -45,7 +45,7 @@ const EvmNftCollectionPage = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
-    collection: state.navigation.params.collection as EvmErc721Token,
+    collection: state.navigation.stack[0].params.collection as EvmErc721Token,
   };
 };
 

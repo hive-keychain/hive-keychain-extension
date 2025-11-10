@@ -87,7 +87,6 @@ const EvmTransactionResult = ({
       await transactionResponse
         .wait()
         .then(async (transactionReceipt: TransactionReceipt | null) => {
-          console.log('receipt', transactionReceipt);
           if (transactionReceipt) {
             const transactionResult = await provider.getTransaction(
               transactionReceipt.hash,
