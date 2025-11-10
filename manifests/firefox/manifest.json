@@ -19,5 +19,10 @@
       "all_frames": true
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "{b6bd7e35-0762-42a2-a283-95a94635047d}"
+    }
+  }
 }
