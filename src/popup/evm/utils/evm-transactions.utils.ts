@@ -8,6 +8,7 @@ import {
   EvmTransactionType,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -26,10 +27,16 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const send = async (
   wallet: HDNodeWallet,
   request: Partial<TransactionRequest>,
-  gasFee: any,
+  gasFee: GasFeeEstimationBase,
   chainId: string,
   forceNounce?: number,
 ) => {
+  console.log(
+    gasFee.priorityFee?.toFixed(),
+    gasFee.maxFeePerGas?.toFixed(),
+    gasFee.gasPrice?.toFixed(),
+    'gasFee',
+  );
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
 
   let feeData = {};
@@ -39,11 +46,11 @@ const send = async (
         feeData = {
           maxPriorityFeePerGas: ethers.parseUnits(
             gasFee.priorityFee!.toFixed(),
-            'gwei',
+            'wei',
           ),
           maxFeePerGas: ethers.parseUnits(
             gasFee.maxFeePerGas!.toFixed(),
-            'gwei',
+            'wei',
           ),
         };
         break;
@@ -51,7 +58,7 @@ const send = async (
       case EvmTransactionType.EIP_155:
       case EvmTransactionType.LEGACY: {
         feeData = {
-          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toFixed(), 'gwei'),
+          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toFixed(), 'wei'),
         };
         break;
       }

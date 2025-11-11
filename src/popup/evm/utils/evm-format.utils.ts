@@ -1,3 +1,5 @@
+import Decimal from 'decimal.js';
+
 const GWEI = 1000000000;
 const WEI = 1000000000000000000;
 
@@ -37,12 +39,12 @@ const addHexPrefix = (str: string) => {
   return `0x${str}`;
 };
 
-const gweiToWei = (value: number) => {
-  return value * 1000000000;
+const gweiToWei = (value: Decimal) => {
+  return value.mul(new Decimal(1000000000));
 };
 
-const weiToGwei = (value: number) => {
-  return value / 1000000000;
+const weiToGwei = (value: Decimal) => {
+  return value.div(new Decimal(1000000000));
 };
 
 export const EvmFormatUtils = {

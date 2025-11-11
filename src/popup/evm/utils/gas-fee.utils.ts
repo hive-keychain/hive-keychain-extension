@@ -13,7 +13,7 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
+import { ethers, HDNodeWallet } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
@@ -31,7 +31,13 @@ const estimate = async (
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
   let estimates;
-  estimates = await getGasFeeEstimations(chain);
+  try {
+    estimates = await getGasFeeEstimations(chain);
+  } catch (error) {
+    console.log(error, 'error');
+  }
+
+  const price = new Decimal(evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0);
 
   if (!gasLimit) {
     gasLimit = Number(
@@ -60,13 +66,19 @@ const estimate = async (
       ? new Decimal(maxPriorityFeePerGas).add(new Decimal(baseFee))
       : new Decimal(gasPrice);
 
+    const maxFee = new Decimal(
+      ethers.formatEther(maxFeePerGas.mul(gasLimit).toNumber()),
+    );
+
+    const valueUSD = maxFee.mul(price);
+
     return {
       custom: {
         type: type,
-        estimatedFee: new Decimal(-1),
-        maxFee: new Decimal(-1),
-        estimatedFeeUSD: new Decimal(-1),
-        maxFeeUSD: new Decimal(-1),
+        estimatedFee: maxFee,
+        maxFee: maxFee,
+        estimatedFeeUSD: valueUSD,
+        maxFeeUSD: valueUSD,
         estimatedMaxDuration: new Decimal(-1),
         priorityFee: new Decimal(maxPriorityFeePerGas),
         maxFeePerGas: new Decimal(maxFeePerGas),
@@ -77,8 +89,6 @@ const estimate = async (
       },
     };
   }
-
-  const price = new Decimal(evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0);
 
   const lowPriorityFee = Math.max(
     Number(estimates.low.suggestedMaxPriorityFeePerGas),

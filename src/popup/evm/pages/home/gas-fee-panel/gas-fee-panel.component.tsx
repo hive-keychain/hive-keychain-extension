@@ -16,7 +16,7 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
+import { ethers, HDNodeWallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
@@ -100,11 +100,11 @@ export const GasFeePanel = ({
         gasPriceInGwei: gasPriceInGwei,
         maxBaseFeeInGwei: maxBaseFeeInGwei,
         priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceValue: gasLimit.mul(gasPriceInGwei).div(EvmFormatUtils.GWEI),
-        priorityFeeValue: gasLimit
+        gasPriceInEth: gasLimit.mul(gasPriceInGwei).div(EvmFormatUtils.GWEI),
+        priorityFeeInEth: gasLimit
           .mul(priorityFeeInGwei)
           .div(EvmFormatUtils.GWEI),
-        maxBaseFeeValue: gasLimit
+        maxBaseFeeInEth: gasLimit
           .mul(maxBaseFeeInGwei)
           .div(EvmFormatUtils.GWEI),
       });
@@ -112,6 +112,7 @@ export const GasFeePanel = ({
       selectedFee &&
       selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
     ) {
+      console.log(selectedFee, 'selectedFee');
       const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
       const gasPriceInGwei = new Decimal(selectedFee.gasPrice ?? 0).div(
         EvmFormatUtils.GWEI,
@@ -129,9 +130,21 @@ export const GasFeePanel = ({
         priorityFeeInGwei: priorityFeeInGwei,
         gasPriceInGwei: gasPriceInGwei,
         maxBaseFeeInGwei: maxBaseFeeInGwei,
-        gasPriceValue: gasLimit.mul(gasPriceInGwei),
-        priorityFeeValue: gasLimit.mul(priorityFeeInGwei),
-        maxBaseFeeValue: gasLimit.mul(maxBaseFeeInGwei),
+        gasPriceInEth: new Decimal(
+          ethers.formatEther(
+            gasLimit.mul(selectedFee.gasPrice ?? 0).toNumber(),
+          ),
+        ),
+        priorityFeeInEth: new Decimal(
+          ethers.formatEther(
+            gasLimit.mul(selectedFee.priorityFee ?? 0).toNumber(),
+          ),
+        ),
+        maxBaseFeeInEth: new Decimal(
+          ethers.formatEther(
+            gasLimit.mul(selectedFee.maxFeePerGas ?? 0).toNumber(),
+          ),
+        ),
       }));
     }
   }, [selectedFee]);
@@ -147,6 +160,8 @@ export const GasFeePanel = ({
         undefined,
         transactionData,
       );
+
+      console.log(estimate, 'estimate');
 
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
@@ -200,6 +215,7 @@ export const GasFeePanel = ({
           onSelectFee(estimate.suggested);
         } else {
           // No suggested by dapp, no suggested, so we select the custom fee
+          console.log(estimate.custom, 'selecting estimate.custom');
           onSelectFee(estimate.custom!);
         }
       }
@@ -241,34 +257,34 @@ export const GasFeePanel = ({
     switch (key) {
       case 'maxBaseFee': {
         newState.maxBaseFeeInGwei = new Decimal(value);
-        newState.maxBaseFeeValue = new Decimal(value)
+        newState.maxBaseFeeInEth = new Decimal(value)
           .div(EvmFormatUtils.GWEI)
           .mul(feeEstimation?.custom?.gasLimit!);
         break;
       }
       case 'priorityFee': {
         newState.priorityFeeInGwei = new Decimal(value);
-        newState.priorityFeeValue = new Decimal(value).mul(
+        newState.priorityFeeInEth = new Decimal(value).mul(
           feeEstimation?.custom?.gasLimit!,
         );
         break;
       }
       case 'gasPrice': {
         newState.gasPriceInGwei = new Decimal(value);
-        newState.gasPriceValue = new Decimal(value).mul(
+        newState.gasPriceInEth = new Decimal(value).mul(
           feeEstimation?.custom?.gasPrice!,
         );
         break;
       }
       case 'gasLimit': {
         newState.gasLimit = new Decimal(value);
-        newState.gasPriceValue = new Decimal(Number(value))
+        newState.gasPriceInEth = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm?.gasPriceInGwei!))
           .div(EvmFormatUtils.GWEI);
-        newState.priorityFeeValue = new Decimal(Number(value))
+        newState.priorityFeeInEth = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm?.priorityFeeInGwei!))
           .div(EvmFormatUtils.GWEI);
-        newState.maxBaseFeeValue = new Decimal(Number(value))
+        newState.maxBaseFeeInEth = new Decimal(Number(value))
           .mul(new Decimal(customGasFeeForm.maxBaseFeeInGwei!))
           .div(EvmFormatUtils.GWEI);
         break;
@@ -294,8 +310,8 @@ export const GasFeePanel = ({
     switch (transactionType) {
       case EvmTransactionType.EIP_1559: {
         customMaxFee = Decimal.add(
-          customGasFeeForm.maxBaseFeeValue!,
-          customGasFeeForm.priorityFeeValue!,
+          customGasFeeForm.maxBaseFeeInEth!,
+          customGasFeeForm.priorityFeeInEth!,
         );
         if (feeEstimation?.extraInfo) {
           customEstimatedFee = Decimal.add(
@@ -303,13 +319,13 @@ export const GasFeePanel = ({
               new Decimal(feeEstimation?.extraInfo.baseFee.estimated!),
               EvmFormatUtils.GWEI,
             ),
-            customGasFeeForm.priorityFeeValue!,
+            customGasFeeForm.priorityFeeInEth!,
           );
         } else customEstimatedFee = customMaxFee;
         break;
       }
       case EvmTransactionType.LEGACY: {
-        customMaxFee = customGasFeeForm.gasPriceValue!;
+        customMaxFee = customGasFeeForm.gasPriceInEth!;
         break;
       }
     }
@@ -338,9 +354,9 @@ export const GasFeePanel = ({
       estimatedMaxDuration: customDuration,
       gasLimit: customGasFeeForm.gasLimit,
       type: customGasFeeForm.type,
-      gasPrice: customGasFeeForm.gasPriceInGwei,
-      maxFeePerGas: customGasFeeForm.maxBaseFeeInGwei,
-      priorityFee: customGasFeeForm.priorityFeeInGwei,
+      gasPrice: EvmFormatUtils.gweiToWei(customGasFeeForm.gasPriceInGwei),
+      maxFeePerGas: EvmFormatUtils.gweiToWei(customGasFeeForm.maxBaseFeeInGwei),
+      priorityFee: EvmFormatUtils.gweiToWei(customGasFeeForm.priorityFeeInGwei),
       estimatedFeeUSD: customEstimatedFee.mul(
         new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
       ),
@@ -626,20 +642,23 @@ export const GasFeePanel = ({
                 <div className="custom-gas-fee-panel">
                   {customGasFeeForm.type === EvmTransactionType.EIP_1559 && (
                     <>
+                      {customFeeWarning && (
+                        <div className="gas-fee-warning">
+                          {chrome.i18n.getMessage(customFeeWarning)}
+                        </div>
+                      )}
                       <div className="base-fee-panel">
                         <InputComponent
                           label="popup_html_evm_gas_fee_form_base_fee"
                           placeholder="popup_html_evm_gas_fee_form_base_fee"
-                          type={InputType.TEXT}
-                          value={new Decimal(
-                            customGasFeeForm.maxBaseFeeInGwei,
-                          ).toFixed()}
+                          type={InputType.NUMBER}
+                          value={customGasFeeForm.maxBaseFeeInGwei.toFixed()}
                           onChange={(value) =>
                             updateCustomFee('maxBaseFee', value)
                           }
                           hint={`≈${
-                            customGasFeeForm.maxBaseFeeValue
-                              ? customGasFeeForm.maxBaseFeeValue?.toString()
+                            customGasFeeForm.maxBaseFeeInEth
+                              ? customGasFeeForm.maxBaseFeeInEth?.toString()
                               : 0
                           } ${chain.mainToken}`}
                           skipHintTranslation
@@ -686,15 +705,13 @@ export const GasFeePanel = ({
                           label="popup_html_evm_gas_fee_form_priority_fee"
                           placeholder="popup_html_evm_gas_fee_form_priority_fee"
                           type={InputType.NUMBER}
-                          value={new Decimal(
-                            customGasFeeForm.priorityFeeInGwei,
-                          ).toFixed()}
+                          value={customGasFeeForm.priorityFeeInGwei.toFixed()}
                           onChange={(value) =>
                             updateCustomFee('priorityFee', value)
                           }
                           hint={`≈${
-                            customGasFeeForm.priorityFeeValue
-                              ? customGasFeeForm.priorityFeeValue?.toString()
+                            customGasFeeForm.priorityFeeInEth
+                              ? customGasFeeForm.priorityFeeInEth?.toString()
                               : 0
                           } ${chain.mainToken}`}
                           skipHintTranslation

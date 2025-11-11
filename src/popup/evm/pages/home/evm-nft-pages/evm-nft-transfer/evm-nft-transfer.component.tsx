@@ -351,9 +351,10 @@ const EvmNftTransfer = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  console.log(state.navigation);
   return {
     activeAccount: state.evm.activeAccount,
-    collectionItem: state.navigation.params
+    collectionItem: state.navigation.stack[0].params
       .collectionItem as EvmNftCollectionListItem,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
