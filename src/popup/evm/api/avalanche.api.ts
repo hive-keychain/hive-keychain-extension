@@ -150,8 +150,6 @@ const getHistory = async (
     getNativeTx(walletAddress, chain, page, offset),
   ]);
 
-  console.log({ nativeTx }, 'nativeTx');
-
   const result = nativeTx.sort((a: any, b: any) => b.timeStamp - a.timeStamp);
 
   return result.map((tx: any) => {

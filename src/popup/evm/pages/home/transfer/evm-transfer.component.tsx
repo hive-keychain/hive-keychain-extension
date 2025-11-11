@@ -243,8 +243,6 @@ const EvmTransfer = ({
           : '0x0',
     };
 
-    console.log(transactionData);
-
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
@@ -338,12 +336,6 @@ const EvmTransfer = ({
       finalAmount,
     ]);
   };
-
-  useEffect(() => {
-    if (watch('selectedToken')) {
-      console.log(watch('selectedToken'));
-    }
-  }, [watch('selectedToken')]);
 
   return (
     <>

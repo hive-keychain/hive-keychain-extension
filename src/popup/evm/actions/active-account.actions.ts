@@ -22,7 +22,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
   async (dispatch, getState) => {
-    console.log('loadEvmActiveAccount actions', chain, wallet.address);
     await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -99,7 +98,6 @@ export const loadEvmActiveAccount =
 
 export const manualDiscoverErc20Tokens =
   (): AppThunk => async (dispatch, getState) => {
-    console.log('manualDiscoverErc20Tokens action');
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { nativeAndErc20Tokens: { value: [], loading: true } },
@@ -125,7 +123,6 @@ export const manualDiscoverErc20Tokens =
           token.type === EVMSmartContractType.NATIVE,
       ),
     )) as NativeAndErc20Token[];
-    console.log({ tokenBalances });
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {

@@ -83,14 +83,12 @@ const getTokenBalances = async (
   chain: EvmChain,
   tokensMetadata: EvmSmartContractInfo[],
 ) => {
-  console.log({ tokensMetadata });
   const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
     tokensMetadata.map(async (token) =>
       getTokenBalance(walletAddress, chain, token),
     );
 
   const result = await Promise.all(balancesPromises);
-  console.log({ result }, 'in get token balances');
   return result.filter(
     (balance) =>
       !!balance &&
@@ -103,8 +101,6 @@ const filterTokensBasedOnSettings = async (
   tokens: (NativeAndErc20Token | EvmErc721Token | EvmErc1155Token)[],
 ) => {
   const evmSettings = await EvmSettingsUtils.getSettings();
-
-  console.log({ tokens }, 'in filter based on settings');
 
   return tokens.filter((token) => {
     if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
@@ -210,9 +206,6 @@ const getErc721Tokens = async (
 
   let erc721tokens: EvmErc721Token[] = [];
 
-  console.log(tokensInfo, 'tokensInfo');
-  console.log(allDiscoveredTokens, 'allDiscoveredTokens');
-
   switch (chain.blockExplorerApi?.type) {
     case BlockExplorerType.BLOCKSCOUT: {
       for (const token of tokensInfo) {
@@ -309,11 +302,9 @@ const getErc721Tokens = async (
 
     case BlockExplorerType.AVALANCHE_SCAN: {
       const result = await AvalancheApi.getErc721(walletAddress, chain);
-      console.log(result);
       for (const token of result) {
         idsPerCollection[token.address.toLowerCase()] = [token.tokenId];
       }
-      console.log(idsPerCollection, 'idsPerCollection');
       break;
     }
     default:
@@ -533,7 +524,6 @@ const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
     );
 
     const result: (EvmErc721Token | EvmErc1155Token)[] = [];
-    console.log({ nfts }, 'in manual discover nfts');
     for (const nft of nfts) {
       let index = result.findIndex(
         (r) => r.tokenInfo.contractAddress === nft.contractAddress,
@@ -622,8 +612,6 @@ const getTokensFullDetails = async (
 
   let addressesToFetch: { address: string; tokenId?: string }[] = [];
 
-  console.log({ discoveredTokens });
-
   for (const token of discoveredTokens) {
     if (!addresses.includes(token.contractAddress) && !!token.contractAddress) {
       addresses.push({
@@ -650,8 +638,6 @@ const getTokensFullDetails = async (
     (address) =>
       !tokensMetadata.map((t: any) => t.contractAddress).includes(address),
   );
-
-  console.log({ missingMetadataAddresses });
 
   const missingMetadata = discoveredTokens.filter((t) =>
     missingMetadataAddresses.includes(t.contractAddress),

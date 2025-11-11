@@ -52,7 +52,6 @@ export const AddChain = (props: Props) => {
   });
 
   useEffect(() => {
-    console.log(props);
     init();
   }, []);
 
@@ -92,11 +91,9 @@ export const AddChain = (props: Props) => {
   };
 
   const saveNewChain = async () => {
-    console.log('saveNewChain');
     const chain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
       addChainRequest.chainId,
     );
-    console.log('chain', chain);
     await ChainUtils.addChainToSetupChains(chain);
     if (addChainRequest.rpcUrls.length > 0) {
       await EvmRpcUtils.addCustomRpcsFromList(addChainRequest.rpcUrls, chain);

@@ -25,7 +25,7 @@ export class EtherJsonRpcProvider extends ethers.JsonRpcProvider {
 
       // switch () {
 
-      throw { ...err, customMessage: 'Hello troudballe' };
+      throw { ...err, customMessage: 'Caught error' };
     });
   }
 }

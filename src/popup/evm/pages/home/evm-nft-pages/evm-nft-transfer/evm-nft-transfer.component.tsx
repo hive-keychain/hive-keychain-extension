@@ -351,7 +351,6 @@ const EvmNftTransfer = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state.navigation);
   return {
     activeAccount: state.evm.activeAccount,
     collectionItem: state.navigation.stack[0].params

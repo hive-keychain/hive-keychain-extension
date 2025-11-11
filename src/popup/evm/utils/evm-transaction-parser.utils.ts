@@ -359,7 +359,6 @@ const getAddressWarning = async (
   verifyTransactionInformation: EvmTransactionVerificationInformation,
   localAccounts: EvmAccount[],
 ) => {
-  console.log('verifyTransactionInformation', verifyTransactionInformation);
   const warnings: EvmTransactionWarning[] = [];
   if (verifyTransactionInformation?.to?.isBlacklisted) {
     warnings.push({

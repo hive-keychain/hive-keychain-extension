@@ -31,12 +31,6 @@ const send = async (
   chainId: string,
   forceNounce?: number,
 ) => {
-  console.log(
-    gasFee.priorityFee?.toFixed(),
-    gasFee.maxFeePerGas?.toFixed(),
-    gasFee.gasPrice?.toFixed(),
-    'gasFee',
-  );
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
 
   let feeData = {};

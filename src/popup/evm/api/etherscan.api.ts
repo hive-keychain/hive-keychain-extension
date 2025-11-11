@@ -17,7 +17,6 @@ const getNftTx = async (
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=get-nft-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 
@@ -30,7 +29,6 @@ const getInternalsTx = async (
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=get-internals-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 
@@ -43,7 +41,6 @@ const getTokenTx = async (
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=get-token-tx&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 
@@ -56,7 +53,6 @@ const getHistory = async (
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=get-history&address=${walletAddress}&chain=${chain.chainId}&page=${page}&offset=${offset}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 
@@ -64,7 +60,6 @@ const getAbi = async (chain: EvmChain, address: string) => {
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=get-abi&address=${address}&chain=${chain.chainId}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 
@@ -72,7 +67,6 @@ const getPendingTransactions = async (chain: EvmChain, address: string) => {
   const result = await KeychainApi.get(
     `evm/smart-contracts-info/etherscan?function=pending-tx-list&address=${address}&chain=${chain.chainId}`,
   );
-  console.log({ result });
   return result ?? [];
 };
 

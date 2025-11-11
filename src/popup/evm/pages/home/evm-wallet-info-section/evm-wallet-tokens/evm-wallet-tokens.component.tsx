@@ -38,7 +38,6 @@ export const EvmWalletTokensComponent = ({
   const [tokenFilter, setTokenFilter] = useState('');
 
   useEffect(() => {
-    console.log(activeAccount.nativeAndErc20Tokens);
     init();
   }, [activeAccount.nativeAndErc20Tokens]);
 

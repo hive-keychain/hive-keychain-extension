@@ -112,7 +112,6 @@ export const GasFeePanel = ({
       selectedFee &&
       selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
     ) {
-      console.log(selectedFee, 'selectedFee');
       const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
       const gasPriceInGwei = new Decimal(selectedFee.gasPrice ?? 0).div(
         EvmFormatUtils.GWEI,
@@ -160,8 +159,6 @@ export const GasFeePanel = ({
         undefined,
         transactionData,
       );
-
-      console.log(estimate, 'estimate');
 
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
@@ -215,7 +212,6 @@ export const GasFeePanel = ({
           onSelectFee(estimate.suggested);
         } else {
           // No suggested by dapp, no suggested, so we select the custom fee
-          console.log(estimate.custom, 'selecting estimate.custom');
           onSelectFee(estimate.custom!);
         }
       }

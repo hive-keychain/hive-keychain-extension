@@ -30,7 +30,6 @@ const fetchHistory = async (
   chain: EvmChain,
   history?: EvmUserHistory,
 ) => {
-  console.log(history, 'history');
   const start = Date.now();
 
   if (!history || !history.events) {
@@ -58,8 +57,6 @@ const fetchHistory = async (
   });
 
   promisesResult['internals'] = [];
-
-  console.log(promisesResult, 'promisesResult');
 
   // TODO delete when finish
   // const test = ['tokens', 'nfts', 'main'];

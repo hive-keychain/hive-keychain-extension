@@ -69,7 +69,6 @@ export type EvmRequestMessage = {
 };
 
 export const RequestConfirmation = ({ data }: Props) => {
-  console.log({ data });
   if (data.command === DialogCommand.SEND_DIALOG_CONFIRM) {
     data = data as HiveRequestMessage;
     const request = data.data as KeychainRequest;

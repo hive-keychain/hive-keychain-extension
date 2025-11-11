@@ -28,7 +28,6 @@ export const EvmAddCustomTokenPopup = ({ chain, onClose, onSave }: Props) => {
 
   const init = async () => {
     const popularTokens = await EvmTokensUtils.getPopularTokensForChain(chain);
-    console.log(popularTokens);
 
     const popularTokensOptions = popularTokens.map((token: PopularToken) => ({
       label: token.symbol,
