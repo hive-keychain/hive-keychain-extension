@@ -226,6 +226,14 @@ const isLayer1Token = (token: string) => {
   return ['HIVE', 'HBD'].includes(token);
 };
 
+const getHardforkVersion = async (): Promise<number> => {
+  return parseInt(
+    (await HiveTxUtils.getData('condenser_api.get_hardfork_version', [])).split(
+      '.',
+    )[1],
+  );
+};
+
 const HiveUtils = {
   getVP,
   getVotingDollarsPerAccount,
@@ -241,6 +249,7 @@ const HiveUtils = {
   getCurrentMedianHistoryPrice,
   getRewardFund,
   isLayer1Token,
+  getHardforkVersion,
 };
 
 export default HiveUtils;

@@ -13,6 +13,7 @@ import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import HiveUtils from '@popup/hive/utils/hive.utils';
 import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -117,9 +118,14 @@ const createSignAndBroadcastTransaction = async (
     method.toLowerCase() as KeychainKeyTypesLC,
   );
   if (isUsingMultisig) {
+    const hardforkVersion = await HiveUtils.getHardforkVersion();
+    Logger.log(`hardforkVersion => ${hardforkVersion}`);
     transaction = await hiveTransaction.create(
       operations,
-      Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
+      hardforkVersion >= 28
+        ? Config.transactions.multisigExpirationTimeInMinutesForHardfork28 *
+            MINUTE
+        : Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
     );
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {

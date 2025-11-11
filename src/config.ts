@@ -39,6 +39,7 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
     multisigExpirationTimeInMinutes: 60,
+    multisigExpirationTimeInMinutesForHardfork28: 24 * 60,
   },
   swaps: {
     autoRefreshPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),
