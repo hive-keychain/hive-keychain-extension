@@ -86,6 +86,8 @@ export const performEvmOperation = async (
     const error = err as any;
 
     const etherJSError = getErrorFromEtherJS(error.code);
+    Logger.log('etherJSError', etherJSError);
+    Logger.log('error', error);
     handleEvmError(
       requestHandler,
       requestHandler.data.tab!,

@@ -3,6 +3,7 @@ import { createEvmMessage } from '@background/hive/requests/operations/operation
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import Decimal from 'decimal.js';
 
 export const sendEvmTransaction = async (
   requestHandler: EvmRequestHandler,
@@ -17,6 +18,16 @@ export const sendEvmTransaction = async (
   });
   if (account) {
     let res;
+    extraData = {
+      ...extraData,
+      gasFee: {
+        ...extraData.gasFee,
+        gasLimit: new Decimal(extraData.gasFee.gasLimit),
+        maxFee: new Decimal(extraData.gasFee.maxFee ?? 0),
+        maxFeePerGas: new Decimal(extraData.gasFee.maxFeePerGas ?? 0),
+        priorityFee: new Decimal(extraData.gasFee.priorityFee ?? 0),
+      },
+    };
     res = await EvmTransactionsUtils.send(
       account.wallet,
       request.params[0],
