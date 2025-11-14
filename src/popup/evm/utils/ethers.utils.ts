@@ -6,20 +6,30 @@ import { ethers, HDNodeWallet, TransactionRequest } from 'ethers';
 import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
 
 let jsonRpcProvider: ethers.JsonRpcApiProvider;
+let chainId: EvmChain['chainId'];
 
 const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
-  if (!jsonRpcProvider) {
-    jsonRpcProvider = new EtherJsonRpcProvider(
+  if (chainId !== chain.chainId) {
+    return new EtherJsonRpcProvider(
       rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url,
       undefined,
       { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
     );
-  }
+  } else {
+    if (!jsonRpcProvider) {
+      chainId = chain.chainId;
+      jsonRpcProvider = new EtherJsonRpcProvider(
+        rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url,
+        undefined,
+        { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
+      );
+    }
 
-  return jsonRpcProvider;
-  // return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpcs[0].url, undefined, {
-  //   staticNetwork: ethers.Network.from(Number(chain.chainId)),
-  // });
+    return jsonRpcProvider;
+    // return new ethers.JsonRpcProvider(rpcUrl ?? chain.rpcs[0].url, undefined, {
+    //   staticNetwork: ethers.Network.from(Number(chain.chainId)),
+    // });
+  }
 };
 
 const setProvider = async (chain: EvmChain, rpcUrl: string) => {
