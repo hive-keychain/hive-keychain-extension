@@ -30,6 +30,7 @@
     "release": "scripts/release.sh",
     "release-beta": "scripts/release-beta.sh",
     "check-installed-libs": "node scripts/check-installed-libs.js",
+    "upload": "concurrently \"npm:upload:*\"",
     "upload:chromium": "node scripts/chromium-upload.mjs",
     "upload:firefox": "node scripts/firefox-upload.mjs"
   },

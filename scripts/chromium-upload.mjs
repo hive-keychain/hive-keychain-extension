@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import ChromeWebstoreUpload from 'chrome-webstore-upload';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -33,6 +34,9 @@ async function deploy() {
     console.log('📢 Publishing...');
     const publishRes = await webStore.publish();
     console.log('🎉 Publish complete:', publishRes);
+    await exec(
+      `open https://chrome.google.com/webstore/devconsole/8c663caa-0306-42da-901c-dd3e1da5c716`,
+    );
   } catch (err) {
     console.error('❌ Error during upload/publish:', err);
     process.exit(1);

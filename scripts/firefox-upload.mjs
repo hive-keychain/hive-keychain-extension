@@ -1,4 +1,5 @@
 // firefox-upload.mjs
+import { exec } from 'child_process';
 import dotenv from 'dotenv';
 import FormData from 'form-data';
 import fs from 'fs';
@@ -6,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import fetch from 'node-fetch';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -170,6 +172,9 @@ async function deploy() {
     }
 
     console.log('🎉 Firefox Add-on deployed and published:', notesResult);
+    await exec(
+      `open https://addons.mozilla.org/en-US/developers/addon/hive-keychain/versions`,
+    );
   } catch (err) {
     console.error('❌ Deployment error:', err);
     process.exit(1);
