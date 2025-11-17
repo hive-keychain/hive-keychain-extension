@@ -30,7 +30,6 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SETUP_CHAINS,
     );
-  console.log({ chainIds });
   if (!chainIds) chainIds = [];
 
   const chains = [...getDefaultChains(), ...(await getCustomChains())].filter(

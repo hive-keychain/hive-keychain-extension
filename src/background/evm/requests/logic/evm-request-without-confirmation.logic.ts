@@ -31,7 +31,6 @@ export const evmRequestWithoutConfirmation = async (
       result: {},
     },
   };
-
   switch (request.method) {
     case EvmRequestMethod.GET_CHAIN: {
       message.value.result = await EvmChainUtils.getLastEvmChainId();
@@ -125,6 +124,10 @@ export const evmRequestWithoutConfirmation = async (
       }
       break;
     }
+    // case EvmRequestMethod.ESTIMATE_GAS_FEE: {
+    //   message.value.result = await EvmRequestsUtils.estimateGasFee();
+    //   break;
+    // }
 
     default: {
       try {
@@ -135,7 +138,6 @@ export const evmRequestWithoutConfirmation = async (
         );
       } catch (err) {
         const error = err as any;
-        console.log({ error });
         let value;
         if (!!error.error && !!error.error.code) {
           value = error.error;

@@ -10,7 +10,6 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { BlockTag, ethers, HDNodeWallet } from 'ethers';
@@ -49,7 +48,7 @@ const getBlockNumber = async () => {
 
 const estimateGasFee = async () => {
   const activeChain = await EvmChainUtils.getLastEvmChain();
-  return '222';
+  return 2;
   //   return await GasFeeUtils.estimate(activeChain);
 };
 
@@ -58,7 +57,6 @@ const getGasPrice = async () => {
   try {
     res = await call('eth_gasPrice', []);
   } catch (err) {
-    console.log(err, 'error getting gas price');
     res = 0;
   }
 
@@ -70,7 +68,6 @@ const getMaxPriorityFeePerGas = async () => {
   try {
     res = await call('eth_maxPriorityFeePerGas', []);
   } catch (err) {
-    console.log(err, 'error getting max priority fee per gas');
     res = 0;
   }
 
@@ -127,7 +124,6 @@ const getTransactionReceipt = async (transactionHash: string) => {
 
 const call = async (method: string, params: any[]) => {
   const provider = await instanciateProvider();
-
   const response = await provider.send(method, params);
   return response;
 };
@@ -180,14 +176,9 @@ const decryptMessage = (account: EvmAccount, message: string) => {
 
 const getNonce = async (wallet: HDNodeWallet, chain: EvmChain) => {
   const provider = await instanciateProvider(chain);
-  const nonce = await provider.getTransactionCount(wallet.address);
+  const nonce = await provider.getTransactionCount(wallet.address, 'pending');
 
-  const highestPendingNonce =
-    await EvmTransactionsUtils.getHighestNonceInPendingTransaction(
-      chain.chainId,
-      wallet.address,
-    );
-  return Math.max(nonce, highestPendingNonce + 1);
+  return nonce;
 };
 
 const getEnsResolver = async (ensAddress: string) => {
@@ -265,4 +256,5 @@ export const EvmRequestsUtils = {
   getResolveData,
   getMaxPriorityFeePerGas,
   getBaseFee,
+  instanciateProvider,
 };

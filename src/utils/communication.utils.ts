@@ -12,6 +12,7 @@ const tabsSendMessage = async (
   try {
     const res = await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {
+    console.log(err, 'error in tabsSendMessage');
     if (onFail) onFail();
   }
 };

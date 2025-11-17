@@ -143,6 +143,7 @@ export class EvmProvider extends EventEmitter {
       const result = await this.processRequest(args);
       return result;
     } catch (err) {
+      console.log('error in evm provider request', err);
       throw err;
     }
   }
@@ -153,6 +154,7 @@ export class EvmProvider extends EventEmitter {
         EvmEventName.REQUEST,
         { ...args, chainId: this.chainId },
         (response: any) => {
+          console.log('response in evm provider request', response);
           if (response.result !== null && response.result !== undefined) {
             resolve(response.result);
           } else {

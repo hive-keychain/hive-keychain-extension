@@ -34,10 +34,10 @@ export const validateRequest = (
         if (!!transactionParams.gasPrice)
           throw ProviderRpcErrorList.invalidMethodParams as ProviderRpcError;
       }
-      if (isNaN(Number(transactionParams.value))) {
+      if (transactionParams.value && isNaN(Number(transactionParams.value))) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Invalid parameter. Value is not a valid number (value: ${transactionParams.value})`,
+          message: `Invalid parameter. Value21 is not a valid number (value: ${transactionParams.value})`,
         } as ProviderRpcError;
       }
       if (transactionParams.to && !ethers.isAddress(transactionParams.to)) {
@@ -72,7 +72,10 @@ export const validateRequest = (
           )}] (type: ${transactionParams.type})`,
         } as ProviderRpcError;
       }
-      if (!transactionParams.value.startsWith('0x')) {
+      if (
+        transactionParams.value &&
+        !transactionParams.value.startsWith('0x')
+      ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ${transactionParams.value} is not a valid hexadecimal`,
@@ -87,26 +90,24 @@ export const validateRequest = (
           message: `Invalid parameters. Missing chainId`,
         } as ProviderRpcError;
       }
-      if (typeof params[0].chainId !== 'string') {
+      if (typeof params[0] !== 'string') {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!params[0].chainId.startsWith('0x')) {
+      if (!params[0].startsWith('0x')) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ${params[0]} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
       if (
-        !defaultChainList.find(
-          (chain: Chain) => chain.chainId === params[0].chainId,
-        )
+        !defaultChainList.find((chain: Chain) => chain.chainId === params[0])
       ) {
         throw {
           ...ProviderRpcErrorList.chainNotAdded,
-          message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
+          message: `Invalid parameter. ${params[0]} hasn't been added to Keychain`,
         } as ProviderRpcError;
       }
       break;

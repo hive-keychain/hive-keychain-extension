@@ -15,6 +15,7 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
 import {
   ethers,
   HDNodeWallet,
@@ -32,7 +33,6 @@ const send = async (
   forceNounce?: number,
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
-
   let feeData = {};
   if (gasFee)
     switch (gasFee.type) {
@@ -52,7 +52,10 @@ const send = async (
       case EvmTransactionType.EIP_155:
       case EvmTransactionType.LEGACY: {
         feeData = {
-          gasPrice: ethers.parseUnits(gasFee.gasPrice!.toFixed(), 'wei'),
+          gasPrice: ethers.parseUnits(
+            new Decimal(gasFee.gasPrice!).toFixed(),
+            'wei',
+          ),
         };
         break;
       }
@@ -60,7 +63,7 @@ const send = async (
 
   let transactionRequest: TransactionRequest;
   transactionRequest = {
-    value: request.value,
+    value: request.value ?? '0x0',
     data: request.data,
     to: request.to,
     from: wallet.address,
@@ -70,6 +73,8 @@ const send = async (
     type: request.type,
     ...feeData,
   };
+
+  console.log(transactionRequest, 'transactionRequest in send');
 
   if (
     request.type &&
@@ -201,6 +206,7 @@ const getHighestNonceInPendingTransaction = async (
     walletAddress,
     chainId,
   );
+
   return transactions.length > 0
     ? Math.max(
         ...transactions.map((pendingTx) => pendingTx.txResponseParams.nonce),

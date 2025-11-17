@@ -167,7 +167,7 @@ export const defaultChainList = [
     defaultTransactionType: EvmTransactionType.EIP_1559,
     blockExplorer: {
       type: BlockExplorerType.ETHERSCAN,
-      url: 'https://bscscan.com',
+      url: 'https://testnet.bscscan.com',
     },
     blockExplorerApi: {
       type: BlockExplorerType.ETHERSCAN,
