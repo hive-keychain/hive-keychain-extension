@@ -300,6 +300,7 @@ const NotificationsAdvancedConfigPage = () => {
                   autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
                     (field) => field.name,
                   )}
+                  autocompletePrefix=""
                 />
                 <div className="add-button" onClick={addNewCriteria}>
                   <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
