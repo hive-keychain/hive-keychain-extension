@@ -4,6 +4,7 @@ import type {
   TransferOperation,
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
+import { PendingRecurrentTransfer } from '@interfaces/transaction.interface';
 import {
   ExchangesUtils,
   TransferUtils as TransferUtilsCommons,
@@ -137,9 +138,10 @@ const getRecurrentTransferOperation = (
       memo: memo,
       recurrence: frequency,
       executions: iterations,
+      pair_id: null,
       extensions: [],
     },
-  ] as RecurrentTransferOperation;
+  ] as unknown as RecurrentTransferOperation;
 };
 
 const getTransferTransaction = (
@@ -169,6 +171,16 @@ const getTransferTransaction = (
   }
 };
 
+const getRecurrentTransfers = async (
+  name: string,
+): Promise<{ recurrent_transfers: PendingRecurrentTransfer[] }> => {
+  const recurrentTransfers = await HiveTxUtils.getData(
+    'database_api.find_recurrent_transfers',
+    { from: name },
+  );
+  return recurrentTransfers;
+};
+
 const TransferUtils = {
   getTransferFromToSavingsValidationWarning,
   sendTransfer,
@@ -176,6 +188,7 @@ const TransferUtils = {
   getRecurrentTransferOperation,
   getTransferTransaction,
   getTransferWarningLabel,
+  getRecurrentTransfers,
 };
 
 export default TransferUtils;

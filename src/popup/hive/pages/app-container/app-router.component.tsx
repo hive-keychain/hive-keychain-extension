@@ -3,6 +3,7 @@ import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosyst
 import { TokenSwapsHistoryComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps-history/token-swaps-history.component';
 import { TokenSwapsComponent } from '@popup/hive/pages/app-container/home/swaps/token-swaps/token-swaps.component';
 import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/tokens/token-pending-unstacking/token-pending-unstacking.component';
+import { PendingRecurrentTransfersPageComponent } from '@popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
@@ -21,7 +22,7 @@ import { ImportKeysComponent } from 'src/popup/hive/pages/add-account/import-key
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
 import { BuyCoinsComponent } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins.component';
 import { ConversionComponent } from 'src/popup/hive/pages/app-container/home/conversion/conversion.component';
-import { PendingConersionPageComponent } from 'src/popup/hive/pages/app-container/home/conversion/pending-conversion/pending-conversion.component';
+import { PendingConversionPageComponent } from 'src/popup/hive/pages/app-container/home/conversion/pending-conversion/pending-conversion.component';
 import { DelegationsComponent } from 'src/popup/hive/pages/app-container/home/delegations/delegations.component';
 import { IncomingOutgoingPageComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from 'src/popup/hive/pages/app-container/home/governance/governance.component';
@@ -74,6 +75,8 @@ const AppRouter = ({
         return <GovernanceComponent />;
       case Screen.TRANSFER_FUND_PAGE:
         return <TransferFundsComponent />;
+      case Screen.RECURRENT_TRANSFERS_PAGE:
+        return <PendingRecurrentTransfersPageComponent />;
       case Screen.POWER_UP_PAGE:
         return <PowerUpDownComponent />;
       case Screen.POWER_DOWN_PAGE:
@@ -87,7 +90,7 @@ const AppRouter = ({
       case Screen.CONVERSION_PAGE:
         return <ConversionComponent />;
       case Screen.PENDING_CONVERSION_PAGE:
-        return <PendingConersionPageComponent />;
+        return <PendingConversionPageComponent />;
       case Screen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
       case Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE:

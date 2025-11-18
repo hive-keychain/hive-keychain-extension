@@ -1,3 +1,4 @@
+import { recurrentTransfersReducer } from '@popup/hive/reducers/recurrent-transfers.reducer';
 import { RpcSwitcherReducer } from '@popup/hive/reducers/rpc-switcher.reducer';
 import TokensPendingUnstakingReducer from '@popup/hive/reducers/tokens-pending-unstaking.reducer';
 import { combineReducers } from 'redux';
@@ -35,6 +36,7 @@ const hiveReducers = combineReducers({
   appStatus: AppStatusReducer,
   rpcSwitcher: RpcSwitcherReducer,
   tokensPendingUnstaking: TokensPendingUnstakingReducer,
+  recurrentTransfers: recurrentTransfersReducer,
 });
 
 export default hiveReducers;

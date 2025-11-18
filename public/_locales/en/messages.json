@@ -3187,6 +3187,18 @@
     "message": "Pending",
     "description": "Global"
   },
+  "popup_html_active_recurrent_transfer": {
+    "message": "active recurrent transfer(s)",
+    "description": "Global"
+  },
+  "popup_html_pending_remaining_executions": {
+    "message": "$1 remaining execution(s)",
+    "description": "Pending recurrent transfer remaining executions"
+  },
+  "popup_html_pending_recurrence": {
+    "message": "Every $1 hours",
+    "description": "Pending recurrent transfer recurrence every x hours"
+  },
   "popup_html_pending_currency": {
     "message": "Pending conversions",
     "description": "Global"

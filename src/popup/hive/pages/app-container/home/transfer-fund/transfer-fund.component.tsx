@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { fetchRecurrentTransfers } from '@popup/hive/actions/recurrent-transfer.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -106,6 +107,8 @@ const TransferFunds = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchRecurrentTransfers,
+  recurrentTransfers,
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
@@ -146,6 +149,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     fetchPhishingAccounts();
+    fetchRecurrentTransfers(activeAccount.name!);
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
       title: 'popup_html_transfer_funds',
@@ -370,7 +374,6 @@ const TransferFunds = ({
       },
     } as ConfirmationPageParams);
   };
-
   return (
     <>
       <div
@@ -381,6 +384,19 @@ const TransferFunds = ({
           unit={currencyLabels[watch('selectedCurrency')]}
           label="popup_html_balance"
         />
+        {recurrentTransfers?.length > 0 && (
+          <div
+            className="pending-recurrent-transfer-panel"
+            onClick={() => {
+              navigateTo(Screen.RECURRENT_TRANSFERS_PAGE);
+            }}>
+            <div className="pending-recurrent-transfer-text">
+              {`${recurrentTransfers?.length} ${chrome.i18n.getMessage(
+                'popup_html_active_recurrent_transfer',
+              )}`}
+            </div>
+          </div>
+        )}
 
         <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
           <div className="form-fields">
@@ -509,6 +525,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     phishing: state.hive.phishing,
     localAccounts: state.hive.accounts,
+    recurrentTransfers: state.hive.recurrentTransfers,
   };
 };
 
@@ -521,6 +538,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchRecurrentTransfers,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
