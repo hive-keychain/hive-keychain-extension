@@ -104,7 +104,11 @@ const verifyAccount = async (
     throw new Error(AccountErrorMessages.ALREADY_REGISTERED);
   }
 
-  return await getKeys(username, password);
+  const keys = await getKeys(username, password);
+  if (!keys || KeysUtils.keysCount(keys) === 0) {
+    throw new Error(AccountErrorMessages.INCORRECT_KEY);
+  }
+  return keys;
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
