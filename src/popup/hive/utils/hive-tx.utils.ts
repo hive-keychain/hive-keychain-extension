@@ -337,6 +337,7 @@ const getData = async (
   key?: string,
 ) => {
   const response = await call(method, params, 3000);
+  console.log(HiveTxConfig.chain_id);
   if (response?.result) {
     return key ? response.result[key] : response.result;
   } else {
