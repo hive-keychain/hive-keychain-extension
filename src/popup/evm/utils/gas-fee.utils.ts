@@ -61,13 +61,20 @@ const estimate = async (
       EvmRequestsUtils.getGasPrice(),
       EvmRequestsUtils.getBaseFee(),
     ]);
-    console.log(maxPriorityFeePerGas, gasPrice, baseFee);
-    const maxFeePerGas = baseFee
-      ? new Decimal(maxPriorityFeePerGas).add(new Decimal(baseFee))
-      : new Decimal(gasPrice);
+
+    const maxPriorityFeePerGasInGwei = EvmFormatUtils.weiToGwei(
+      new Decimal(maxPriorityFeePerGas),
+    );
+    const gasPriceInGwei = EvmFormatUtils.weiToGwei(new Decimal(gasPrice));
+    const baseFeeInGwei = EvmFormatUtils.weiToGwei(new Decimal(baseFee ?? 0));
+
+    console.log(maxPriorityFeePerGasInGwei, gasPriceInGwei, baseFeeInGwei);
+    const maxFeePerGasInGwei = baseFee
+      ? maxPriorityFeePerGasInGwei.add(baseFeeInGwei)
+      : gasPriceInGwei;
 
     const maxFee = new Decimal(
-      ethers.formatEther(maxFeePerGas.mul(gasLimit).toNumber()),
+      ethers.formatEther(maxFeePerGasInGwei.mul(gasLimit).toNumber()),
     );
 
     const valueUSD = maxFee.mul(price);
@@ -81,7 +88,7 @@ const estimate = async (
         maxFeeUSD: valueUSD,
         estimatedMaxDuration: new Decimal(-1),
         priorityFee: new Decimal(maxPriorityFeePerGas),
-        maxFeePerGas: new Decimal(maxFeePerGas),
+        maxFeePerGas: new Decimal(maxFeePerGasInGwei),
         gasPrice: new Decimal(gasPrice),
         gasLimit: new Decimal(gasLimit),
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
