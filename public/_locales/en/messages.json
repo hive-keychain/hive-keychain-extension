@@ -5586,5 +5586,17 @@
   "evm_add_manually_discover": {
     "message": "Discover tokens",
     "description": "Discover tokens"
+  },
+  "evm_pending_queued_transactions": {
+    "message": "You have 1 pending transaction and $1 queued transactions",
+    "description": "Pending and queued transactions"
+  },
+  "evm_unknown_pending_transaction": {
+    "message": "Unknown pending transaction",
+    "description": "Unknown pending transaction"
+  },
+  "evm_pending_transaction": {
+    "message": "Pending transaction",
+    "description": "Pending transaction"
   }
 }

@@ -60,6 +60,7 @@ export interface EvmPendingTransaction {
   txResponseParams: any;
   walletAddress: string;
   chainId: string;
+  broadcastDate: number;
 }
 
 export interface UserPendingTransactions {

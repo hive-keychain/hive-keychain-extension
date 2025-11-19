@@ -140,7 +140,6 @@ const signData = async (
   message: any,
   version: SignTypedDataVersion,
 ) => {
-  console.log({ privateKey, message, version });
   try {
     return signTypedData({
       privateKey: Buffer.from(privateKey.substring(2), 'hex'),
@@ -174,9 +173,13 @@ const decryptMessage = (account: EvmAccount, message: string) => {
   });
 };
 
-const getNonce = async (wallet: HDNodeWallet, chain: EvmChain) => {
+const getNonce = async (
+  wallet: HDNodeWallet,
+  chain: EvmChain,
+  blocktag: string = 'pending',
+) => {
   const provider = await instanciateProvider(chain);
-  const nonce = await provider.getTransactionCount(wallet.address, 'pending');
+  const nonce = await provider.getTransactionCount(wallet.address, blocktag);
 
   return nonce;
 };

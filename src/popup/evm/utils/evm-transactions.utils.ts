@@ -1,3 +1,4 @@
+import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmPendingTransaction,
@@ -5,6 +6,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CanceledTransactionData,
+  EvmPendingTransactionDetails,
   EvmTransactionType,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -12,7 +14,12 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import {
+  BlockExplorerType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
@@ -34,17 +41,20 @@ const send = async (
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   let feeData = {};
+  console.log(gasFee, 'gasFee in send');
+  console.log(gasFee.maxFeePerGas?.toFixed());
+  console.log(gasFee.priorityFee?.toFixed());
   if (gasFee)
     switch (gasFee.type) {
       case EvmTransactionType.EIP_1559: {
         feeData = {
           maxPriorityFeePerGas: ethers.parseUnits(
             gasFee.priorityFee!.toFixed(),
-            'wei',
+            'gwei',
           ),
           maxFeePerGas: ethers.parseUnits(
             gasFee.maxFeePerGas!.toFixed(),
-            'wei',
+            'gwei',
           ),
         };
         break;
@@ -54,7 +64,7 @@ const send = async (
         feeData = {
           gasPrice: ethers.parseUnits(
             new Decimal(gasFee.gasPrice!).toFixed(),
-            'wei',
+            'gwei',
           ),
         };
         break;
@@ -144,6 +154,7 @@ const addPendingTransaction = async (
     txResponseParams: transactionResponse.toJSON(),
     walletAddress: walletAddress,
     chainId: chainId,
+    broadcastDate: Date.now(),
   });
 
   LocalStorageUtils.saveValueInLocalStorage(
@@ -166,6 +177,43 @@ const deleteFromPendingTransactions = async (txHash: string) => {
   );
 };
 
+const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
+  try {
+    const pendingNonce = await EvmRequestsUtils.getNonce(
+      wallet,
+      chain,
+      'pending',
+    );
+    const latestNonce = await EvmRequestsUtils.getNonce(
+      wallet,
+      chain,
+      'latest',
+    );
+    const hasPending = pendingNonce > latestNonce;
+    console.log({
+      pendingNonce,
+      latestNonce,
+      pendingTransactionCount: hasPending ? 1 : 0,
+      queuedTransactionsCount: pendingNonce - latestNonce - 1,
+      pendingTransactionDetails: await getPendingTransactionsForWallet2(
+        wallet.address,
+        chain,
+      ),
+    });
+    return {
+      hasPending,
+      pendingTransactionsCount: hasPending ? 1 : 0,
+      queuedTransactionsCount: pendingNonce - latestNonce - 1,
+      pendingTransactionDetails: await getPendingTransactionsForWallet2(
+        wallet.address,
+        chain,
+      ),
+    };
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+
 const getAllPendingTransactions = async () => {
   let transactions: EvmPendingTransaction[] =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -184,6 +232,45 @@ const getPendingTransactionsForWallet = async (
       transaction.walletAddress.toLowerCase() === walletAddress.toLowerCase() &&
       transaction.chainId === chainId,
   );
+};
+
+const getPendingTransactionsForWallet2 = async (
+  walletAddress: string,
+  chain: EvmChain,
+): Promise<EvmPendingTransactionDetails> => {
+  console.log('checking pending transactions for wallet', walletAddress, chain);
+  const provider = await EthersUtils.getProvider(chain);
+  switch (chain.blockExplorer?.type) {
+    case BlockExplorerType.BLOCKSCOUT: {
+      const result = await BlockscoutApi.getPendingTransactions(
+        chain,
+        walletAddress,
+      );
+      const pendingTx = new TransactionResponse(result[0], provider);
+
+      const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
+      const item = await EvmTokensHistoryParserUtils.parseEvent(
+        result[0],
+        chain,
+        walletAddress.toLowerCase(),
+        tokensMetadata,
+      );
+
+      return {
+        label:
+          item?.label ??
+          chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+        title: 'evm_pending_transactions',
+        transactionResponse: pendingTx,
+      };
+    }
+    default: {
+      return {
+        label: chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+        title: 'evm_pending_queued_transactions',
+      };
+    }
+  }
 };
 
 const getPendingTransaction = async (
@@ -292,4 +379,6 @@ export const EvmTransactionsUtils = {
   addCanceledTransaction,
   getAllCanceledTransactions,
   send,
+  hasPendingTransaction,
+  getPendingTransactionsForWallet2,
 };

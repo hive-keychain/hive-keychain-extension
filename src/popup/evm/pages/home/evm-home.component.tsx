@@ -9,6 +9,7 @@ import {
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmPendingTransactionsInfo } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
@@ -35,6 +36,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
@@ -78,6 +80,9 @@ const Home = ({
   const [pendingTransactionsItems, setPendingTransactionsItems] =
     useState<EvmUserHistoryItem[]>();
 
+  const [pendingTransactionsInfo, setPendingTransactionsInfo] =
+    useState<EvmPendingTransactionsInfo>();
+
   // RPC related
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
@@ -96,6 +101,12 @@ const Home = ({
       ChainUtils.addChainToSetupChains(chain);
     }
   }, [activeAccount.address]);
+
+  useEffect(() => {
+    if (activeAccount.wallet.address) {
+      loadPendingTransactions(activeAccount.wallet);
+    }
+  }, [activeAccount.wallet.address]);
 
   useEffect(() => {
     if (
@@ -152,8 +163,16 @@ const Home = ({
         accounts,
       );
       loadEvmActiveAccount(chain, wallet);
-      getPendingTransactions();
+      // getPendingTransactions();
     }
+  };
+
+  const loadPendingTransactions = async (wallet: HDNodeWallet) => {
+    console.log('loading pending transactions');
+    const pendingTransactionsInfo =
+      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+    console.log('pendingTransactionsInfo', pendingTransactionsInfo);
+    setPendingTransactionsInfo(pendingTransactionsInfo);
   };
 
   const getPendingTransactions = async () => {
@@ -325,6 +344,19 @@ const Home = ({
 
           <EvmDappStatusComponent />
         </div>
+        {pendingTransactionsInfo && pendingTransactionsInfo.hasPending && (
+          <div className="pending-transactions-info">
+            <div className="pending-transactions-info-title">
+              {chrome.i18n.getMessage(
+                pendingTransactionsInfo.pendingTransactionDetails.title,
+                [pendingTransactionsInfo.queuedTransactionsCount.toString()],
+              )}
+            </div>
+            <div className="pending-transactions-info-item">
+              {pendingTransactionsInfo.pendingTransactionDetails.label}
+            </div>
+          </div>
+        )}
         <EvmWalletInfoSectionComponent
           activeAccount={activeAccount}
           prices={prices}

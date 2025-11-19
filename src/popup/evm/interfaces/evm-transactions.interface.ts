@@ -1,4 +1,5 @@
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import { TransactionResponse } from 'ethers';
 
 export interface CanceledTransactionData {
   amount: number;
@@ -126,4 +127,17 @@ export interface EvmTransactionDecodedDataInput {
 export enum AvalancheNativeTransactionType {
   NATIVE_TRANSFER = 'NATIVE_TRANSFER',
   CONTRACT_CALL = 'CONTRACT_CALL',
+}
+
+export interface EvmPendingTransactionsInfo {
+  hasPending: boolean;
+  pendingTransactionsCount: number;
+  queuedTransactionsCount: number;
+  pendingTransactionDetails: EvmPendingTransactionDetails;
+}
+
+export interface EvmPendingTransactionDetails {
+  label: string;
+  title: string;
+  transactionResponse?: TransactionResponse;
 }
