@@ -63,10 +63,10 @@ const getVotingDollarsPerAccount = (
   account: ExtendedAccount,
   full: boolean,
 ) => {
+  full = true;
   if (!properties.globals || !account.name) {
     return null;
   }
-  const vp = getVP(account)! * 100;
   const rewardBalance = HiveUtils.getRewardBalance(properties);
   const recentClaims = HiveUtils.getRecentClaims(properties);
   const hivePrice = HiveUtils.getHivePrice(properties);
@@ -76,13 +76,13 @@ const getVotingDollarsPerAccount = (
     const effective_vesting_shares = Math.round(
       getEffectiveVestingSharesPerAccount(account) * 1000000,
     );
-    const current_power = full ? 10000 : vp;
+    const POWER_FULL = 10000;
     const weight = voteWeight * 100;
 
     const max_vote_denom =
       (votePowerReserveRate * HIVE_VOTING_MANA_REGENERATION_SECONDS) /
       (60 * 60 * 24);
-    let used_power = Math.round((current_power * weight) / HIVE_100_PERCENT);
+    let used_power = Math.round((POWER_FULL * weight) / HIVE_100_PERCENT);
     used_power = Math.round((used_power + max_vote_denom - 1) / max_vote_denom);
     const rshares = Math.round(
       (effective_vesting_shares * used_power) / HIVE_100_PERCENT,

@@ -21,7 +21,7 @@ export const recurrentTransfer = async (
   data: RequestRecurrentTransfer & RequestId,
   options?: TransactionOptions,
 ) => {
-  const { username, to, amount, recurrence, executions } = data;
+  const { username, to, amount, recurrence, executions, pair_id } = data;
   let { memo } = data;
   let currency = CurrencyUtils.getCurrencyLabel(
     data.currency,
@@ -84,6 +84,7 @@ export const recurrentTransfer = async (
           recurrence,
           key,
           options,
+          pair_id,
         );
         break;
       }
