@@ -1,4 +1,17 @@
+import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Message } from '@interfaces/message.interface';
 import { PendingRecurrentTransfer } from '@interfaces/transaction.interface';
+import { fetchRecurrentTransfers } from '@popup/hive/actions/recurrent-transfer.actions';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -8,14 +21,22 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 
 const PendingRecurrentTransfersPage = ({
   recurrentTransfers,
   setTitleContainerProperties,
+  activeAccount,
+  setErrorMessage,
+  setSuccessMessage,
+  navigateTo,
+  fetchRecurrentTransfers,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_recurrent_transfer',
+      title: 'popup_html_recurrent_transfers',
       isBackButtonEnabled: true,
     });
   }, []);
@@ -30,6 +51,13 @@ const PendingRecurrentTransfersPage = ({
             (recurrentTransfer: PendingRecurrentTransfer) => (
               <RecurrentTransferItemComponent
                 recurrentTransfer={recurrentTransfer}
+                activeAccount={activeAccount}
+                setErrorMessage={setErrorMessage}
+                setSuccessMessage={setSuccessMessage}
+                navigateTo={navigateTo}
+                fetchRecurrentTransfers={fetchRecurrentTransfers}
+                addToLoadingList={addToLoadingList}
+                removeFromLoadingList={removeFromLoadingList}
               />
             ),
           )}
@@ -49,12 +77,50 @@ const RecurrentTransferItemComponent = ({
     trigger_date,
     pair_id,
   },
+  activeAccount,
+  setErrorMessage,
+  setSuccessMessage,
+  navigateTo,
+  fetchRecurrentTransfers,
+  addToLoadingList,
+  removeFromLoadingList,
 }: {
   recurrentTransfer: PendingRecurrentTransfer;
+  activeAccount: ActiveAccount;
+  setErrorMessage: (key: string, params?: string[]) => ActionPayload<Message>;
+  setSuccessMessage: (key: string, params?: string[]) => ActionPayload<Message>;
+  navigateTo: (screen: Screen, resetStack?: boolean) => void;
+  fetchRecurrentTransfers: (name: string) => void;
+  addToLoadingList: (key: string) => void;
+  removeFromLoadingList: (key: string) => void;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpandablePanel = () => {
     setIsExpanded(!isExpanded);
+  };
+  const cancelRecurrentTransfer = async () => {
+    addToLoadingList('html_popup_stop_recc_transfer_fund_operation');
+    const success = await TransferUtils.sendTransfer(
+      from,
+      to,
+      '0.000 HIVE',
+      '',
+      true,
+      2,
+      24,
+      activeAccount.keys.active!,
+      undefined,
+      pair_id,
+    );
+    if (success) {
+      fetchRecurrentTransfers(activeAccount.name!);
+      setSuccessMessage('popup_html_cancel_transfer_recurrent_successful', [
+        `@${to}`,
+      ]);
+    } else {
+      setErrorMessage('popup_html_transfer_failed');
+    }
+    removeFromLoadingList('html_popup_stop_recc_transfer_fund_operation');
   };
   return (
     <div className="recurrent-transfer-row" key={`${to}-${pair_id}`}>
@@ -95,8 +161,7 @@ const RecurrentTransferItemComponent = ({
               <div className="expandable-panel-content">
                 <div
                   className="delegation-item-button delete"
-                  //    onClick={() => cancelDelegation()}
-                >
+                  onClick={() => cancelRecurrentTransfer()}>
                   <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                   <span className="label">
                     {chrome.i18n.getMessage('popup_html_button_label_cancel')}
@@ -114,11 +179,18 @@ const RecurrentTransferItemComponent = ({
 const mapStateToProps = (state: RootState) => {
   return {
     recurrentTransfers: state.hive.recurrentTransfers,
+    activeAccount: state.hive.activeAccount,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  setErrorMessage,
+  setSuccessMessage,
+  navigateTo,
+  fetchRecurrentTransfers,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

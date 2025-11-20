@@ -2017,6 +2017,10 @@
     "message": "Recurrent transfer",
     "description": "In transfer fund page"
   },
+  "popup_html_recurrent_transfers": {
+    "message": "Recurrent transfers",
+    "description": "In transfer fund page"
+  },
   "popup_html_cancel_recurrent_transfer": {
     "message": "Cancel recurrent transfer",
     "description": "In transfer fund page"

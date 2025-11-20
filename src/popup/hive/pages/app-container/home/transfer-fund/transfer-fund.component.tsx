@@ -241,18 +241,12 @@ const TransferFunds = ({
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
-    const isCancelRecurrent = form.amount === 0 && form.isRecurrent;
-
-    if (
-      form.isRecurrent &&
-      !isCancelRecurrent &&
-      (!form.frequency || !form.iteration)
-    ) {
+    if (form.isRecurrent && (!form.frequency || !form.iteration)) {
       setErrorMessage('popup_html_transfer_recurrent_missing_field');
       return;
     }
 
-    if (form.isRecurrent && !isCancelRecurrent) {
+    if (form.isRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
         value: chrome.i18n.getMessage('popup_html_transfer_recurrence_value', [
@@ -260,9 +254,6 @@ const TransferFunds = ({
           form.iteration.toString(),
         ]),
       });
-    }
-    if (isCancelRecurrent) {
-      fields = [fields[0], fields[1]];
     }
 
     let warningMessage = await TransferUtils.getTransferWarningLabel(
@@ -274,23 +265,15 @@ const TransferFunds = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
-        isCancelRecurrent
-          ? 'popup_html_transfer_confirm_cancel_recurrent'
-          : 'popup_html_transfer_confirm_text',
-      ),
+      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
-      title: isCancelRecurrent
-        ? 'popup_html_cancel_recurrent_transfer'
-        : 'popup_html_transfer_funds',
+      title: 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
-          form.isRecurrent && form.amount === 0
-            ? 'html_popup_stop_recc_transfer_fund_operation'
-            : 'html_popup_transfer_fund_operation',
+          'html_popup_transfer_fund_operation',
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
@@ -314,23 +297,25 @@ const TransferFunds = ({
             }
           }
 
+          const pair_id = TransferUtils.getRecurrentTransferPairId(
+            recurrentTransfers,
+            form.receiverUsername,
+          );
+
           success = await TransferUtils.sendTransfer(
             activeAccount.name!,
             form.receiverUsername,
             formattedAmount,
             memoParam,
             form.isRecurrent,
-            isCancelRecurrent ? 2 : +form.iteration,
-            isCancelRecurrent ? 24 : +form.frequency,
+            +form.iteration,
+            +form.frequency,
             activeAccount.keys.active!,
             options,
+            pair_id,
           );
 
-          removeFromLoadingList(
-            form.isRecurrent && form.amount === 0
-              ? 'html_popup_stop_recc_transfer_fund_operation'
-              : 'html_popup_transfer_fund_operation',
-          );
+          removeFromLoadingList('html_popup_transfer_fund_operation');
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -347,20 +332,12 @@ const TransferFunds = ({
                 stringifiedAmount,
               ]);
             } else {
-              isCancelRecurrent
-                ? setSuccessMessage(
-                    'popup_html_cancel_transfer_recurrent_successful',
-                    [`@${form.receiverUsername}`],
-                  )
-                : setSuccessMessage(
-                    'popup_html_transfer_recurrent_successful',
-                    [
-                      `@${form.receiverUsername}`,
-                      stringifiedAmount,
-                      form.frequency.toString(),
-                      form.iteration.toString(),
-                    ],
-                  );
+              setSuccessMessage('popup_html_transfer_recurrent_successful', [
+                `@${form.receiverUsername}`,
+                stringifiedAmount,
+                form.frequency.toString(),
+                form.iteration.toString(),
+              ]);
             }
           } else {
             setErrorMessage('popup_html_transfer_failed');
@@ -468,13 +445,9 @@ const TransferFunds = ({
               name="isRecurrent"
               control={control}
               dataTestId="checkbox-transfer-recurrent"
-              title={
-                watch('amount') + '' === '0'
-                  ? 'popup_html_cancel_recurrent_transfer'
-                  : 'popup_html_recurrent_transfer'
-              }
+              title={'popup_html_recurrent_transfer'}
             />
-            {watch('isRecurrent') && watch('amount') + '' !== '0' && (
+            {watch('isRecurrent') && (
               <div className="recurrent-panel">
                 <FormInputComponent
                   name="frequency"

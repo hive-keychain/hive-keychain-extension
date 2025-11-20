@@ -77,6 +77,7 @@ const sendTransfer = (
   frequency: number,
   activeKey: Key,
   options?: TransactionOptions,
+  pair_id?: number,
 ) => {
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
@@ -95,6 +96,7 @@ const sendTransfer = (
           memo,
           frequency,
           iterations,
+          pair_id,
         ),
       ],
       activeKey,
@@ -128,6 +130,7 @@ const getRecurrentTransferOperation = (
   memo: string,
   frequency: number,
   iterations: number,
+  pair_id: number = 0,
 ) => {
   return [
     'recurrent_transfer',
@@ -138,10 +141,9 @@ const getRecurrentTransferOperation = (
       memo: memo,
       recurrence: frequency,
       executions: iterations,
-      pair_id: null,
-      extensions: [],
+      extensions: [{ type: 1, value: { pair_id } }],
     },
-  ] as unknown as RecurrentTransferOperation;
+  ] as RecurrentTransferOperation;
 };
 
 const getTransferTransaction = (
@@ -181,6 +183,21 @@ const getRecurrentTransfers = async (
   return recurrentTransfers;
 };
 
+const getRecurrentTransferPairId = (
+  recurrentTransfers: PendingRecurrentTransfer[],
+  to: string,
+): number => {
+  const pairTrx = recurrentTransfers.filter((transfer) => transfer.to === to);
+  if (pairTrx.length === 0) return 0;
+  const pairId = pairTrx.reduce(
+    (max: number, transfer: PendingRecurrentTransfer) => {
+      return max === 0 || transfer.pair_id > max ? transfer.pair_id : max;
+    },
+    0,
+  );
+  return pairId + 1;
+};
+
 const TransferUtils = {
   getTransferFromToSavingsValidationWarning,
   sendTransfer,
@@ -189,6 +206,7 @@ const TransferUtils = {
   getTransferTransaction,
   getTransferWarningLabel,
   getRecurrentTransfers,
+  getRecurrentTransferPairId,
 };
 
 export default TransferUtils;
