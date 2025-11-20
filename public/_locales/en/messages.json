@@ -1381,6 +1381,10 @@
     "message": "Recurrence",
     "description": "When requesting recurrent transfers"
   },
+  "dialog_pair_id": {
+    "message": "Pair ID",
+    "description": "When requesting recurrent transfers"
+  },
   "dialog_executions": {
     "message": "Executions",
     "description": "When requesting recurrent transfers"

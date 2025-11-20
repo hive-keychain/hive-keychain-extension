@@ -107,6 +107,14 @@ const RecurrentTransfer = (props: Props) => {
           data.executions + '',
         ])}
       />
+      {data.pair_id ? (
+        <>
+          <Separator type={'horizontal'} fullSize />
+          <RequestItem title="dialog_pair_id" content={data.pair_id + ''} />
+        </>
+      ) : (
+        <></>
+      )}
     </Operation>
   );
 };
