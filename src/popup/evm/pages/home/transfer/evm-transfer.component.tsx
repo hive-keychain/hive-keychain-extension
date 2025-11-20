@@ -93,11 +93,13 @@ const EvmTransfer = ({
     defaultValues: {
       receiverAddress: formParams.receiverAddress
         ? formParams.receiverUsername
-        : '',
+        : // : '',
+          '0x1D3571e28c4f7667fdD889BBAAd50b0FEB1941Ce',
       selectedToken: formParams?.selectedToken
         ? formParams?.selectedToken
         : navParams?.selectedCurrency,
-      amount: formParams.amount ? formParams.amount : '',
+      // amount: formParams.amount ? formParams.amount : '',
+      amount: formParams.amount ? formParams.amount : 0.0001,
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<TransferForm>>(

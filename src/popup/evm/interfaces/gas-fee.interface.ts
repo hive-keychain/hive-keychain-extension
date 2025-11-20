@@ -59,12 +59,12 @@ export enum EvmFeeTrend {
 }
 
 export interface CustomGasFeeForm {
-  maxBaseFeeInGwei: Decimal;
+  maxBaseFeeInGwei: string;
   maxBaseFeeInEth?: Decimal;
-  priorityFeeInGwei: Decimal;
+  priorityFeeInGwei: string;
   priorityFeeInEth?: Decimal;
-  gasPriceInGwei: Decimal;
+  gasPriceInGwei: string;
   gasPriceInEth?: Decimal;
-  gasLimit: Decimal;
+  gasLimit: string;
   type?: EvmTransactionType;
 }

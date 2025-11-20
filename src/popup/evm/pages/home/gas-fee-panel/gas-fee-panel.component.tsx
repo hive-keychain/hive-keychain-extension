@@ -65,10 +65,10 @@ export const GasFeePanel = ({
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
   const [customGasFeeForm, setCustomGasFeeForm] = useState<CustomGasFeeForm>({
-    gasLimit: new Decimal(0),
-    maxBaseFeeInGwei: new Decimal(0),
-    priorityFeeInGwei: new Decimal(0),
-    gasPriceInGwei: new Decimal(0),
+    gasLimit: '0',
+    maxBaseFeeInGwei: '0',
+    priorityFeeInGwei: '0',
+    gasPriceInGwei: '0',
     type: transactionType,
   });
 
@@ -83,73 +83,49 @@ export const GasFeePanel = ({
   }, [transactionData]);
 
   useEffect(() => {
-    if (
-      selectedFee &&
-      selectedFee.name !== 'popup_html_evm_custom_gas_fee_custom'
-    ) {
+    if (selectedFee) {
+      console.log('selectedFee', {
+        gasLimit: selectedFee.gasLimit.toFixed(),
+        gasPrice: selectedFee.gasPrice?.toFixed(),
+        maxFeePerGas: selectedFee.maxFeePerGas?.toFixed(),
+        priorityFee: selectedFee.priorityFee?.toFixed(),
+        maxFee: selectedFee.maxFee.toFixed(),
+        estimatedFee: selectedFee.estimatedFee.toFixed(),
+        estimatedFeeUSD: selectedFee.estimatedFeeUSD.toFixed(),
+        estimatedMaxDuration: selectedFee.estimatedMaxDuration.toFixed(),
+        name: selectedFee.name,
+        icon: selectedFee.icon,
+        type: selectedFee.type,
+      });
       const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
       const gasPriceInGwei = new Decimal(selectedFee?.gasPrice ?? 0);
       const maxBaseFeeInGwei = new Decimal(selectedFee?.maxFeePerGas ?? 0).sub(
         new Decimal(selectedFee?.priorityFee ?? 0),
       );
       const priorityFeeInGwei = new Decimal(selectedFee.priorityFee ?? 0);
-
       setCustomGasFeeForm({
-        gasLimit: gasLimit,
+        gasLimit: gasLimit.toFixed(),
         type: transactionType,
-        gasPriceInGwei: gasPriceInGwei,
-        maxBaseFeeInGwei: maxBaseFeeInGwei,
-        priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceInEth: gasLimit.mul(gasPriceInGwei).div(EvmFormatUtils.GWEI),
-        priorityFeeInEth: gasLimit
-          .mul(priorityFeeInGwei)
-          .div(EvmFormatUtils.GWEI),
-        maxBaseFeeInEth: gasLimit
-          .mul(maxBaseFeeInGwei)
-          .div(EvmFormatUtils.GWEI),
-      });
-    } else if (
-      selectedFee &&
-      selectedFee.name === 'popup_html_evm_custom_gas_fee_custom'
-    ) {
-      const gasLimit = new Decimal(selectedFee.gasLimit ?? 0);
-      const gasPriceInGwei = new Decimal(selectedFee.gasPrice ?? 0).div(
-        EvmFormatUtils.GWEI,
-      );
-      const priorityFeeInGwei = new Decimal(selectedFee.priorityFee ?? 0).div(
-        EvmFormatUtils.GWEI,
-      );
-      const maxBaseFeeInGwei = new Decimal(selectedFee.maxFeePerGas ?? 0).div(
-        EvmFormatUtils.GWEI,
-      );
+        gasPriceInGwei: gasPriceInGwei.toFixed(),
+        maxBaseFeeInGwei: maxBaseFeeInGwei.toFixed(),
+        priorityFeeInGwei: priorityFeeInGwei.toFixed(),
 
-      setCustomGasFeeForm((previousForm) => ({
-        ...previousForm,
-        gasLimit: gasLimit,
-        priorityFeeInGwei: priorityFeeInGwei,
-        gasPriceInGwei: gasPriceInGwei,
-        maxBaseFeeInGwei: maxBaseFeeInGwei,
         gasPriceInEth: new Decimal(
-          ethers.formatEther(
-            gasLimit.mul(selectedFee.gasPrice ?? 0).toNumber(),
-          ),
-        ),
+          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+        ).mul(gasPriceInGwei),
         priorityFeeInEth: new Decimal(
-          ethers.formatEther(
-            gasLimit.mul(selectedFee.priorityFee ?? 0).toNumber(),
-          ),
-        ),
+          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+        ).mul(priorityFeeInGwei),
         maxBaseFeeInEth: new Decimal(
-          ethers.formatEther(
-            gasLimit.mul(selectedFee.maxFeePerGas ?? 0).toNumber(),
-          ),
-        ),
-      }));
+          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+        ).mul(maxBaseFeeInGwei),
+      });
     }
   }, [selectedFee]);
 
   const init = async () => {
     let estimate;
+    console.log('init gas fee panel');
     try {
       estimate = await GasFeeUtils.estimate(
         chain,
@@ -158,6 +134,73 @@ export const GasFeePanel = ({
         prices,
         undefined,
         transactionData,
+      );
+
+      console.log(
+        {
+          low: {
+            estimatedFee: estimate?.low?.estimatedFee?.toFixed(),
+            estimatedFeeUSD: estimate?.low?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.low?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.low?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.low?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.low?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.low?.priorityFee?.toFixed(),
+          },
+          medium: {
+            estimatedFee: estimate?.medium?.estimatedFee?.toFixed(),
+            estimatedFeeUSD: estimate?.medium?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.medium?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.medium?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.medium?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.medium?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.medium?.priorityFee?.toFixed(),
+          },
+          aggressive: {
+            estimatedFee: estimate?.aggressive?.estimatedFee?.toFixed(),
+            estimatedFeeUSD: estimate?.aggressive?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.aggressive?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.aggressive?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.aggressive?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.aggressive?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.aggressive?.priorityFee?.toFixed(),
+          },
+          suggested: {
+            estimatedFee: estimate?.suggested?.estimatedFee?.toFixed(),
+            estimatedFeeUSD: estimate?.suggested?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.suggested?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.suggested?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.suggested?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.suggested?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.suggested?.priorityFee?.toFixed(),
+          },
+          custom: {
+            estimatedFee: estimate?.custom?.estimatedFee?.toFixed(),
+            estimatedFeeUSD: estimate?.custom?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.custom?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.custom?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.custom?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.custom?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.custom?.priorityFee?.toFixed(),
+          },
+          suggestedByDApp: {
+            estimatedFee: estimate?.suggestedByDApp?.estimatedFee?.toFixed(),
+            estimatedFeeUSD:
+              estimate?.suggestedByDApp?.estimatedFeeUSD?.toFixed(),
+            estimatedMaxDuration:
+              estimate?.suggestedByDApp?.estimatedMaxDuration?.toFixed(),
+            maxFee: estimate?.suggestedByDApp?.maxFee?.toFixed(),
+            maxFeeUSD: estimate?.suggestedByDApp?.maxFeeUSD?.toFixed(),
+            maxFeePerGas: estimate?.suggestedByDApp?.maxFeePerGas?.toFixed(),
+            priorityFee: estimate?.suggestedByDApp?.priorityFee?.toFixed(),
+          },
+        },
+        'in init',
       );
 
       if (!!multiplier && selectedFee) {
@@ -177,20 +220,20 @@ export const GasFeePanel = ({
             : undefined,
         };
 
-        switch (transactionType) {
-          case EvmTransactionType.EIP_1559: {
-            increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
-              .mul(new Decimal(increasedFee.maxFeePerGas!))
-              .div(EvmFormatUtils.GWEI);
-            break;
-          }
-          case EvmTransactionType.LEGACY: {
-            increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
-              .mul(new Decimal(increasedFee.gasPrice!))
-              .div(EvmFormatUtils.GWEI);
-            break;
-          }
-        }
+        // switch (transactionType) {
+        //   case EvmTransactionType.EIP_1559: {
+        //     increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
+        //       .mul(new Decimal(increasedFee.maxFeePerGas!))
+        //       .div(EvmFormatUtils.GWEI);
+        //     break;
+        //   }
+        //   case EvmTransactionType.LEGACY: {
+        //     increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
+        //       .mul(new Decimal(increasedFee.gasPrice!))
+        //       .div(EvmFormatUtils.GWEI);
+        //     break;
+        //   }
+        // }
 
         if (
           estimate?.aggressive?.estimatedFee &&
@@ -247,42 +290,64 @@ export const GasFeePanel = ({
 
   const updateCustomFee = (
     key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
-    value: number,
+    value: string,
   ) => {
+    const valueNumber = value.length > 0 ? new Decimal(value) : new Decimal(0);
+
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
-        newState.maxBaseFeeInGwei = new Decimal(value);
-        newState.maxBaseFeeInEth = new Decimal(value)
-          .div(EvmFormatUtils.GWEI)
-          .mul(feeEstimation?.custom?.gasLimit!);
+        newState.maxBaseFeeInGwei = value;
+        newState.maxBaseFeeInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
+            'gwei',
+          ),
+        );
         break;
       }
       case 'priorityFee': {
-        newState.priorityFeeInGwei = new Decimal(value);
-        newState.priorityFeeInEth = new Decimal(value).mul(
-          feeEstimation?.custom?.gasLimit!,
+        newState.priorityFeeInGwei = value;
+        newState.priorityFeeInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
+            'gwei',
+          ),
         );
         break;
       }
       case 'gasPrice': {
-        newState.gasPriceInGwei = new Decimal(value);
-        newState.gasPriceInEth = new Decimal(value).mul(
-          feeEstimation?.custom?.gasPrice!,
+        newState.gasPriceInGwei = value;
+        newState.gasPriceInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
+            'gwei',
+          ),
         );
         break;
       }
       case 'gasLimit': {
-        newState.gasLimit = new Decimal(value);
-        newState.gasPriceInEth = new Decimal(Number(value))
-          .mul(new Decimal(customGasFeeForm?.gasPriceInGwei!))
-          .div(EvmFormatUtils.GWEI);
-        newState.priorityFeeInEth = new Decimal(Number(value))
-          .mul(new Decimal(customGasFeeForm?.priorityFeeInGwei!))
-          .div(EvmFormatUtils.GWEI);
-        newState.maxBaseFeeInEth = new Decimal(Number(value))
-          .mul(new Decimal(customGasFeeForm.maxBaseFeeInGwei!))
-          .div(EvmFormatUtils.GWEI);
+        newState.gasLimit = value;
+
+        newState.gasPriceInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm?.gasPriceInGwei!).toNumber(),
+            'gwei',
+          ),
+        );
+        newState.priorityFeeInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm?.priorityFeeInGwei!).toNumber(),
+            'gwei',
+          ),
+        );
+        newState.maxBaseFeeInEth = new Decimal(
+          ethers.formatUnits(
+            valueNumber.mul(customGasFeeForm.maxBaseFeeInGwei!).toNumber(),
+            'gwei',
+          ),
+        );
+
         break;
       }
     }
@@ -291,86 +356,96 @@ export const GasFeePanel = ({
   };
 
   const saveCustomFee = () => {
-    let customMaxFee = new Decimal(0);
-    let customEstimatedFee = new Decimal(0);
+    try {
+      let customMaxFee = new Decimal(0);
+      let customEstimatedFee = new Decimal(0);
 
-    if (
-      customGasFeeForm.priorityFeeInGwei > customGasFeeForm.maxBaseFeeInGwei
-    ) {
-      setCustomFeeWarning(
-        'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
-      );
-      return;
-    }
-
-    switch (transactionType) {
-      case EvmTransactionType.EIP_1559: {
-        customMaxFee = Decimal.add(
-          customGasFeeForm.maxBaseFeeInEth!,
-          customGasFeeForm.priorityFeeInEth!,
+      if (
+        customGasFeeForm.priorityFeeInGwei > customGasFeeForm.maxBaseFeeInGwei
+      ) {
+        setCustomFeeWarning(
+          'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
         );
-        if (feeEstimation?.extraInfo) {
-          customEstimatedFee = Decimal.add(
-            Decimal.div(
-              new Decimal(feeEstimation?.extraInfo.baseFee.estimated!),
-              EvmFormatUtils.GWEI,
-            ),
+        return;
+      }
+
+      switch (transactionType) {
+        case EvmTransactionType.EIP_1559: {
+          customMaxFee = Decimal.add(
+            customGasFeeForm.maxBaseFeeInEth!,
             customGasFeeForm.priorityFeeInEth!,
           );
-        } else customEstimatedFee = customMaxFee;
-        break;
+          if (feeEstimation?.extraInfo) {
+            customEstimatedFee = Decimal.add(
+              Decimal.div(
+                new Decimal(feeEstimation?.extraInfo.baseFee.estimated!),
+                EvmFormatUtils.GWEI,
+              ),
+              customGasFeeForm.priorityFeeInEth!,
+            );
+          } else customEstimatedFee = customMaxFee;
+          break;
+        }
+        case EvmTransactionType.LEGACY: {
+          customMaxFee = customGasFeeForm.gasPriceInEth!;
+          break;
+        }
       }
-      case EvmTransactionType.LEGACY: {
-        customMaxFee = customGasFeeForm.gasPriceInEth!;
-        break;
+
+      let customDuration = new Decimal(-1);
+      if (
+        feeEstimation?.aggressive?.maxFee &&
+        customMaxFee >= feeEstimation.aggressive.maxFee
+      ) {
+        customDuration = feeEstimation.aggressive.estimatedMaxDuration;
+      } else if (
+        feeEstimation?.medium?.maxFee &&
+        customMaxFee >= feeEstimation.medium.maxFee
+      ) {
+        customDuration = feeEstimation.medium.estimatedMaxDuration;
+      } else if (
+        feeEstimation?.low?.maxFee &&
+        customMaxFee >= feeEstimation.low.maxFee
+      ) {
+        customDuration = feeEstimation.low.estimatedMaxDuration;
       }
+
+      const custom: GasFeeEstimationBase = {
+        estimatedFee: customEstimatedFee,
+        maxFee: customMaxFee,
+        estimatedMaxDuration: customDuration,
+        gasLimit: new Decimal(customGasFeeForm.gasLimit),
+        type: customGasFeeForm.type,
+        gasPrice: EvmFormatUtils.gweiToWei(
+          new Decimal(customGasFeeForm.gasPriceInGwei),
+        ),
+        maxFeePerGas: EvmFormatUtils.gweiToWei(
+          new Decimal(customGasFeeForm.maxBaseFeeInGwei),
+        ),
+        priorityFee: EvmFormatUtils.gweiToWei(
+          new Decimal(customGasFeeForm.priorityFeeInGwei),
+        ),
+        estimatedFeeUSD: customEstimatedFee.mul(
+          new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+        ),
+        maxFeeUSD: customMaxFee.mul(
+          new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
+        ),
+        name: 'popup_html_evm_custom_gas_fee_custom',
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      } as GasFeeEstimationBase;
+      onSelectFee(custom);
+
+      const fullGasFeeEstimation = {
+        ...feeEstimation,
+        custom: custom,
+      };
+
+      setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
+      closeCustomFeePanel();
+    } catch (err) {
+      console.log(err);
     }
-
-    let customDuration = new Decimal(-1);
-    if (
-      feeEstimation?.aggressive?.maxFee &&
-      customMaxFee >= feeEstimation.aggressive.maxFee
-    ) {
-      customDuration = feeEstimation.aggressive.estimatedMaxDuration;
-    } else if (
-      feeEstimation?.medium?.maxFee &&
-      customMaxFee >= feeEstimation.medium.maxFee
-    ) {
-      customDuration = feeEstimation.medium.estimatedMaxDuration;
-    } else if (
-      feeEstimation?.low?.maxFee &&
-      customMaxFee >= feeEstimation.low.maxFee
-    ) {
-      customDuration = feeEstimation.low.estimatedMaxDuration;
-    }
-
-    const custom: GasFeeEstimationBase = {
-      estimatedFee: customEstimatedFee,
-      maxFee: customMaxFee,
-      estimatedMaxDuration: customDuration,
-      gasLimit: customGasFeeForm.gasLimit,
-      type: customGasFeeForm.type,
-      gasPrice: EvmFormatUtils.gweiToWei(customGasFeeForm.gasPriceInGwei),
-      maxFeePerGas: EvmFormatUtils.gweiToWei(customGasFeeForm.maxBaseFeeInGwei),
-      priorityFee: EvmFormatUtils.gweiToWei(customGasFeeForm.priorityFeeInGwei),
-      estimatedFeeUSD: customEstimatedFee.mul(
-        new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
-      ),
-      maxFeeUSD: customMaxFee.mul(
-        new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
-      ),
-      name: 'popup_html_evm_custom_gas_fee_custom',
-      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
-    } as GasFeeEstimationBase;
-    onSelectFee(custom);
-
-    const fullGasFeeEstimation = {
-      ...feeEstimation,
-      custom: custom,
-    };
-
-    setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
-    closeCustomFeePanel();
   };
 
   const getFeeLabel = () => {
@@ -648,7 +723,7 @@ export const GasFeePanel = ({
                           label="popup_html_evm_gas_fee_form_base_fee"
                           placeholder="popup_html_evm_gas_fee_form_base_fee"
                           type={InputType.NUMBER}
-                          value={customGasFeeForm.maxBaseFeeInGwei.toFixed()}
+                          value={customGasFeeForm.maxBaseFeeInGwei}
                           onChange={(value) =>
                             updateCustomFee('maxBaseFee', value)
                           }
@@ -701,7 +776,7 @@ export const GasFeePanel = ({
                           label="popup_html_evm_gas_fee_form_priority_fee"
                           placeholder="popup_html_evm_gas_fee_form_priority_fee"
                           type={InputType.NUMBER}
-                          value={customGasFeeForm.priorityFeeInGwei.toFixed()}
+                          value={customGasFeeForm.priorityFeeInGwei}
                           onChange={(value) =>
                             updateCustomFee('priorityFee', value)
                           }

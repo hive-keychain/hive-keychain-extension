@@ -53,7 +53,7 @@ const estimate = async (
     );
   }
 
-  console.log(estimates);
+  console.log({ estimates });
 
   if (!estimates || !estimates.low) {
     const [maxPriorityFeePerGas, gasPrice, baseFee] = await Promise.all([
@@ -62,16 +62,28 @@ const estimate = async (
       EvmRequestsUtils.getBaseFee(),
     ]);
 
+    console.log(
+      maxPriorityFeePerGas,
+      gasPrice,
+      baseFee,
+      'maxPriorityFeePerGas, gasPrice, baseFee',
+    );
+
     const maxPriorityFeePerGasInGwei = EvmFormatUtils.weiToGwei(
       new Decimal(maxPriorityFeePerGas),
     );
     const gasPriceInGwei = EvmFormatUtils.weiToGwei(new Decimal(gasPrice));
     const baseFeeInGwei = EvmFormatUtils.weiToGwei(new Decimal(baseFee ?? 0));
 
-    console.log(maxPriorityFeePerGasInGwei, gasPriceInGwei, baseFeeInGwei);
-    const maxFeePerGasInGwei = baseFee
-      ? maxPriorityFeePerGasInGwei.add(baseFeeInGwei)
-      : gasPriceInGwei;
+    console.log(
+      maxPriorityFeePerGasInGwei.toFixed(),
+      gasPriceInGwei.toFixed(),
+      baseFeeInGwei.toFixed(),
+    );
+    const maxFeePerGasInGwei =
+      baseFeeInGwei && baseFeeInGwei.greaterThan(0)
+        ? maxPriorityFeePerGasInGwei.add(baseFeeInGwei)
+        : gasPriceInGwei;
 
     const maxFee = new Decimal(
       ethers.formatEther(maxFeePerGasInGwei.mul(gasLimit).toNumber()),
