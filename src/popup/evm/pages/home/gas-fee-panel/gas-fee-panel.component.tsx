@@ -60,7 +60,8 @@ export const GasFeePanel = ({
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
 
-  const [customFeeWarning, setCustomFeeWarning] = useState<string>();
+  const [gasFeeWarning, setgasFeeWarning] = useState<string>();
+  const [customFeeFormWarning, setCustomFeeFormWarning] = useState<string>();
 
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
     useState<boolean>(false);
@@ -266,9 +267,9 @@ export const GasFeePanel = ({
         !chain.onlyCustomFee
       ) {
         // Backend data not available so we display a warning
-        setCustomFeeWarning('evm_gas_fee_warning_not_available');
+        setgasFeeWarning('evm_gas_fee_warning_not_available');
       } else if (chain.onlyCustomFee) {
-        setCustomFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+        setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
       }
       setFeeEstimation(estimate);
     } catch (err: any) {
@@ -360,15 +361,6 @@ export const GasFeePanel = ({
       let customMaxFee = new Decimal(0);
       let customEstimatedFee = new Decimal(0);
 
-      if (
-        customGasFeeForm.priorityFeeInGwei > customGasFeeForm.maxBaseFeeInGwei
-      ) {
-        setCustomFeeWarning(
-          'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
-        );
-        return;
-      }
-
       switch (transactionType) {
         case EvmTransactionType.EIP_1559: {
           customMaxFee = Decimal.add(
@@ -390,6 +382,16 @@ export const GasFeePanel = ({
           customMaxFee = customGasFeeForm.gasPriceInEth!;
           break;
         }
+      }
+
+      const priorityFeeInWei = EvmFormatUtils.gweiToWei(
+        new Decimal(customGasFeeForm.priorityFeeInGwei),
+      );
+      if (customGasFeeForm.priorityFeeInEth?.greaterThan(customMaxFee)) {
+        setCustomFeeFormWarning(
+          'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
+        );
+        return;
       }
 
       let customDuration = new Decimal(-1);
@@ -491,9 +493,9 @@ export const GasFeePanel = ({
               icon={SVGIcons.EVM_GAS_FEE_DETAILS}
             />
           </div>
-          {customFeeWarning && (
+          {gasFeeWarning && (
             <div className="gas-fee-warning">
-              {chrome.i18n.getMessage(customFeeWarning)}
+              {chrome.i18n.getMessage(gasFeeWarning)}
             </div>
           )}
           <div className="details">
@@ -713,9 +715,9 @@ export const GasFeePanel = ({
                 <div className="custom-gas-fee-panel">
                   {customGasFeeForm.type === EvmTransactionType.EIP_1559 && (
                     <>
-                      {customFeeWarning && (
+                      {customFeeFormWarning && (
                         <div className="gas-fee-warning">
-                          {chrome.i18n.getMessage(customFeeWarning)}
+                          {chrome.i18n.getMessage(customFeeFormWarning)}
                         </div>
                       )}
                       <div className="base-fee-panel">

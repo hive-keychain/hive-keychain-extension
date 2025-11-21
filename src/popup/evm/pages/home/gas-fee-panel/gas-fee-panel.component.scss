@@ -113,6 +113,10 @@
     flex-direction: column;
     row-gap: 16px;
 
+    .gas-fee-warning {
+      color: $red;
+    }
+
     .data-panel {
       margin-top: 4px;
       display: flex;
