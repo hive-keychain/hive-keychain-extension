@@ -13,8 +13,8 @@ let accountHistoryApi = 'https://history.hive-engine.com';
 
 (async () => {
   const config = await BgdHiveEngineConfigModule.getActiveConfig();
-  rpc = config.rpc;
-  accountHistoryApi = config.accountHistoryApi;
+  rpc = config?.rpc;
+  accountHistoryApi = config?.accountHistoryApi;
 })();
 
 const getApi = () => {
