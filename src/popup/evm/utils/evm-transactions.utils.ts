@@ -254,6 +254,8 @@ const getPendingTransactionsForWallet2 = async (
         chain,
         walletAddress.toLowerCase(),
         tokensMetadata,
+        undefined,
+        true,
       );
 
       return {

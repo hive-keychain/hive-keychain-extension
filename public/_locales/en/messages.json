@@ -5248,6 +5248,10 @@
     "message": "You created the $1 smart contract",
     "description": "Evm smart contract creation"
   },
+  "evm_history_smart_contract_creation_message_pending": {
+    "message": "Creating smart contract",
+    "description": "Evm smart contract creation"
+  },
   "evm_history_smart_contract": {
     "message": "Smart Contract",
     "description": "Evm smart contract"
@@ -5268,6 +5272,10 @@
     "message": "You sent $1#$2 to $3",
     "description": ""
   },
+  "evm_history_operation_safe_transfer_from_erc721_out_pending": {
+    "message": "Sending $1#$2 to $3",
+    "description": ""
+  },
   "evm_history_operation_safe_transfer_from_erc1155_in": {
     "message": "You received $1 $2#$3 from $4",
     "description": ""
@@ -5280,12 +5288,20 @@
     "message": "You sent $1 $2#$3 to $4",
     "description": ""
   },
+  "evm_history_operation_safe_transfer_from_erc1155_out_pending": {
+    "message": "Sending $1 $2#$3 to $4",
+    "description": ""
+  },
   "evm_history_operation_transfer_in": {
     "message": "You received $1 $2 from $3",
     "description": ""
   },
   "evm_history_operation_transfer_out": {
     "message": "You sent $1 $2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out_pending": {
+    "message": "Sending $1 $2 to $3",
     "description": ""
   },
   "evm_history_operation_transfer_in_no_sender": {
@@ -5296,24 +5312,48 @@
     "message": "You minted $1 tokens from the $2 collection",
     "description": "Batch mint operation"
   },
+  "evm_history_operation_mint_batch_pending": {
+    "message": "Minting $1 tokens from the $2 collection",
+    "description": "Batch mint operation"
+  },
   "evm_history_operation_approve_out_erc20": {
     "message": "You approved $1 to use up to $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc20_pending": {
+    "message": "Approving $1 to use up to $2 $3",
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_erc721": {
     "message": "You approved $1 to use $2#$3",
     "description": "Approve history item"
   },
+  "evm_history_operation_approve_out_erc721_pending": {
+    "message": "Approving $1 to use $2#$3",
+    "description": "Approve history item"
+  },
   "evm_history_operation_mintNFTs": {
     "message": "You minted $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_mintNFTs_pending": {
+    "message": "Minting $1#$2",
     "description": "Mint single nft history item"
   },
   "evm_history_operation_generic_smart_contract_messages": {
     "message": "Broadcasted operation $1 on contract $2 ($3)",
     "description": "Generic smart contract operation history label"
   },
+  "evm_history_operation_generic_smart_contract_messages_pending": {
+    "message": "Broadcasting operation $1 on contract $2 ($3)",
+    "description": "Generic smart contract operation history label"
+  },
   "evm_history_default_out_smart_contract_operation": {
     "message": "You broadcasted a transaction",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_out_smart_contract_operation_pending": {
+    "message": "Broadcasting a transaction",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_default_in_smart_contract_operation": {

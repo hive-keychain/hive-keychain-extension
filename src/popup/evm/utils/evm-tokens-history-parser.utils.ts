@@ -35,6 +35,7 @@ const parseEvent = async (
   walletAddress: string,
   allTokensMetadata: EvmSmartContractInfo[],
   evmSettings?: EvmSettings,
+  isPending?: boolean,
 ) => {
   let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
 
@@ -92,7 +93,9 @@ const parseEvent = async (
 
             historyItem.label = chrome.i18n.getMessage(
               event.from.toLowerCase() === walletAddress.toLowerCase()
-                ? 'popup_html_evm_history_transfer_out'
+                ? `popup_html_evm_history_transfer_out${
+                    isPending ? '_pending' : ''
+                  }`
                 : event.from === ethers.ZeroAddress
                 ? 'evm_history_operation_transfer_in_no_sender'
                 : 'popup_html_evm_history_transfer_in',
@@ -114,7 +117,9 @@ const parseEvent = async (
 
             historyItem.label = chrome.i18n.getMessage(
               event.from.toLowerCase() === walletAddress.toLowerCase()
-                ? 'evm_history_operation_safe_transfer_from_erc721_out'
+                ? `evm_history_operation_safe_transfer_from_erc721_out${
+                    isPending ? '_pending' : ''
+                  }`
                 : event.from === ethers.ZeroAddress
                 ? 'evm_history_operation_safe_transfer_from_erc721_in_no_sender'
                 : 'evm_history_operation_safe_transfer_from_erc721_in',
@@ -136,7 +141,9 @@ const parseEvent = async (
 
             historyItem.label = chrome.i18n.getMessage(
               event.from.toLowerCase() === walletAddress.toLowerCase()
-                ? 'evm_history_operation_safe_transfer_from_erc1155_out'
+                ? `evm_history_operation_safe_transfer_from_erc1155_out${
+                    isPending ? '_pending' : ''
+                  }`
                 : event.from === ethers.ZeroAddress
                 ? 'evm_history_operation_safe_transfer_from_erc1155_in_no_sender'
                 : 'evm_history_operation_safe_transfer_from_erc1155_in',
@@ -193,7 +200,9 @@ const parseEvent = async (
             historyItem.tokenInfo = mainToken;
 
             historyItem.label = chrome.i18n.getMessage(
-              'popup_html_evm_history_transfer_out',
+              `popup_html_evm_history_transfer_out${
+                isPending ? '_pending' : ''
+              }`,
               [amountS, mainToken!.symbol, token ? token.name : event.to],
             );
             break;
@@ -205,6 +214,7 @@ const parseEvent = async (
               walletAddress,
               allTokensMetadata,
               historyItem,
+              isPending,
             );
             break;
           }
@@ -244,7 +254,9 @@ const parseEvent = async (
         };
 
         historyItem.label = chrome.i18n.getMessage(
-          'evm_history_smart_contract_creation_message',
+          `evm_history_smart_contract_creation_message${
+            isPending ? '_pending' : ''
+          }`,
           [EvmFormatUtils.formatAddress(event.contractAddress)],
         );
         historyItem.pageTitle = 'evm_history_smart_contract_creation';
@@ -280,7 +292,9 @@ const parseEvent = async (
             } else {
               // transfer out
               label = chrome.i18n.getMessage(
-                'evm_history_operation_transfer_out',
+                `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
                 [
                   ethers.formatUnits(event.value, event.tokenDecimals),
                   event.tokenSymbol,
@@ -316,7 +330,9 @@ const parseEvent = async (
                 } else {
                   // transfer out
                   label = chrome.i18n.getMessage(
-                    'evm_history_operation_transfer_out',
+                    `evm_history_operation_transfer_out${
+                      isPending ? '_pending' : ''
+                    }`,
                     [
                       ethers.formatUnits(event.value, event.tokenDecimals),
                       event.tokenSymbol,
@@ -350,7 +366,9 @@ const parseEvent = async (
                 } else {
                   // transfer out
                   label = chrome.i18n.getMessage(
-                    'evm_history_operation_safe_transfer_from_erc721_out',
+                    `evm_history_operation_safe_transfer_from_erc721_out${
+                      isPending ? '_pending' : ''
+                    }`,
                     [
                       event.tokenName,
                       event.tokenID,
@@ -387,7 +405,9 @@ const parseEvent = async (
                 } else {
                   // transfer out
                   label = chrome.i18n.getMessage(
-                    'evm_history_operation_safe_transfer_from_erc721_out',
+                    `evm_history_operation_safe_transfer_from_erc721_out${
+                      isPending ? '_pending' : ''
+                    }`,
                     [
                       event.tokenName,
                       event.tokenID,
@@ -420,7 +440,9 @@ const parseEvent = async (
                 } else {
                   // transfer out
                   label = chrome.i18n.getMessage(
-                    'evm_history_operation_safe_transfer_from_erc1155_out',
+                    `evm_history_operation_safe_transfer_from_erc1155_out${
+                      isPending ? '_pending' : ''
+                    }`,
                     [
                       event.tokenValue,
                       event.tokenName,
@@ -444,7 +466,9 @@ const parseEvent = async (
               case EVMSmartContractType.ERC721:
               case EVMSmartContractType.ERC1155:
                 label = chrome.i18n.getMessage(
-                  'evm_history_operation_mintNFTs',
+                  `evm_history_operation_mintNFTs${
+                    isPending ? '_pending' : ''
+                  }`,
                   [event.tokenName, event.tokenID],
                 );
                 pageTitle = 'evm_mint';
@@ -455,24 +479,26 @@ const parseEvent = async (
             // only 1155
             //TODO need to find a transaction to test this
             label = chrome.i18n.getMessage(
-              'evm_history_operation_mint_batch',
+              `evm_history_operation_mint_batch${isPending ? '_pending' : ''}`,
               [],
             );
             break;
           }
           case 'safeMint': {
             // only 721
-            label = chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
-              event.tokenName,
-              event.tokenID,
-            ]);
+            label = chrome.i18n.getMessage(
+              `evm_history_operation_mintNFTs${isPending ? '_pending' : ''}`,
+              [event.tokenName, event.tokenID],
+            );
             pageTitle = 'evm_mint';
             break;
           }
 
           default: {
             label = chrome.i18n.getMessage(
-              'evm_history_operation_generic_smart_contract_messages',
+              `evm_history_operation_generic_smart_contract_messages${
+                isPending ? '_pending' : ''
+              }`,
               [
                 functionName,
                 event.tokenName,
@@ -516,7 +542,6 @@ const parseEvent = async (
             event.input,
             chain,
           );
-
           const specificData = await getSpecificData(
             chain,
             event.contractAddress.length > 0
@@ -528,6 +553,7 @@ const parseEvent = async (
             allTokensMetadata,
             event,
             evmSettings,
+            isPending,
           );
 
           if (!specificData) return;
@@ -542,7 +568,9 @@ const parseEvent = async (
           Logger.error(err as string);
           const defaultLabel =
             event.from.toLowerCase() === walletAddress.toLowerCase()
-              ? 'evm_history_default_out_smart_contract_operation'
+              ? `evm_history_default_out_smart_contract_operation${
+                  isPending ? '_pending' : ''
+                }`
               : 'evm_history_default_in_smart_contract_operation';
 
           historyItem.label = chrome.i18n.getMessage(defaultLabel);
@@ -560,15 +588,17 @@ const parseEvent = async (
           walletAddress,
           allTokensMetadata,
           historyItem,
+          isPending,
         );
       } else {
         console.log('no match', event);
         Logger.error(`${event.hash} match no condition`);
         const defaultLabel =
           event.from.toLowerCase() === walletAddress.toLowerCase()
-            ? 'evm_history_default_out_smart_contract_operation'
+            ? `evm_history_default_out_smart_contract_operation${
+                isPending ? '_pending' : ''
+              }`
             : 'evm_history_default_in_smart_contract_operation';
-
         historyItem.label = chrome.i18n.getMessage(defaultLabel);
         historyItem.pageTitle = defaultLabel;
       }
@@ -588,6 +618,7 @@ const getNativeTransferData = async (
   walletAddress: string,
   allTokensMetadata: EvmSmartContractInfo[],
   historyItem: EvmUserHistoryItem,
+  isPending?: boolean,
 ) => {
   const mainToken = allTokensMetadata.find(
     (t) => t.type === EVMSmartContractType.NATIVE,
@@ -642,7 +673,7 @@ const getNativeTransferData = async (
     isCanceled: Number(event.value) === 0,
     label: chrome.i18n.getMessage(
       event.from.toLowerCase() === walletAddress.toLowerCase()
-        ? 'popup_html_evm_history_transfer_out'
+        ? `popup_html_evm_history_transfer_out${isPending ? '_pending' : ''}`
         : 'popup_html_evm_history_transfer_in',
       [
         amountS,
@@ -666,12 +697,15 @@ const getSpecificData = async (
   metadata: EvmSmartContractInfo[],
   event: any,
   evmSettings?: EvmSettings,
+  isPending?: boolean,
 ): Promise<EvmHistoryItemSpecificData | undefined> => {
   const details: EvmUserHistoryItemDetail[] = [];
 
   const defaultLabel =
     broadcaster.toLowerCase() === walletAddress.toLowerCase()
-      ? 'evm_history_default_out_smart_contract_operation'
+      ? `evm_history_default_out_smart_contract_operation${
+          isPending ? '_pending' : ''
+        }`
       : 'evm_history_default_in_smart_contract_operation';
 
   let result: EvmHistoryItemSpecificData = {
@@ -784,7 +818,9 @@ const getSpecificData = async (
           else {
             result = {
               label: chrome.i18n.getMessage(
-                'evm_history_operation_safe_transfer_from_erc1155_out',
+                `evm_history_operation_safe_transfer_from_erc1155_out${
+                  isPending ? '_pending' : ''
+                }`,
                 [
                   decodedData.inputs[3].value,
                   name,
@@ -848,7 +884,9 @@ const getSpecificData = async (
           else {
             result = {
               label: chrome.i18n.getMessage(
-                'evm_history_operation_safe_transfer_from_erc721_out',
+                `evm_history_operation_safe_transfer_from_erc721_out${
+                  isPending ? '_pending' : ''
+                }`,
                 [
                   name,
                   decodedData.inputs[2].value,
@@ -897,7 +935,9 @@ const getSpecificData = async (
           label: chrome.i18n.getMessage(
             isTransferIn
               ? 'evm_history_operation_transfer_in'
-              : 'evm_history_operation_transfer_out',
+              : `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
             [
               amount,
               symbol,
@@ -948,7 +988,9 @@ const getSpecificData = async (
           label: chrome.i18n.getMessage(
             isTransferIn
               ? 'evm_history_operation_transfer_in'
-              : 'evm_history_operation_transfer_out',
+              : `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
             [
               amount,
               symbol,
@@ -990,7 +1032,9 @@ const getSpecificData = async (
         if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
           result = {
             label: chrome.i18n.getMessage(
-              'evm_history_operation_approve_out_erc20',
+              `evm_history_operation_approve_out_erc20${
+                isPending ? '_pending' : ''
+              }`,
               [toDetails.label ?? toDetails.formattedAddress, amount, symbol],
             ),
             pageTitle: 'evm_approval',
@@ -1015,7 +1059,9 @@ const getSpecificData = async (
         } else if (tokenMetadata?.type === EVMSmartContractType.ERC721) {
           result = {
             label: chrome.i18n.getMessage(
-              'evm_history_operation_approve_out_erc721',
+              `evm_history_operation_approve_out_erc721${
+                isPending ? '_pending' : ''
+              }`,
               [
                 toDetails.label ?? toDetails.formattedAddress,
                 name,
@@ -1057,10 +1103,10 @@ const getSpecificData = async (
         }
 
         result = {
-          label: chrome.i18n.getMessage('evm_history_operation_mint_batch', [
-            decodedData.inputs[1].value.length,
-            name,
-          ]),
+          label: chrome.i18n.getMessage(
+            `evm_history_operation_mint_batch${isPending ? '_pending' : ''}`,
+            [decodedData.inputs[1].value.length, name],
+          ),
           pageTitle: 'evm_mint_batch',
           detailFields: [
             ...details,
@@ -1076,10 +1122,10 @@ const getSpecificData = async (
 
       case 'mintNFTs': {
         result = {
-          label: chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
-            name,
-            decodedData.inputs[0].value,
-          ]),
+          label: chrome.i18n.getMessage(
+            `evm_history_operation_mintNFTs${isPending ? '_pending' : ''}`,
+            [name, decodedData.inputs[0].value],
+          ),
           pageTitle: 'evm_mint',
           detailFields: [
             {
@@ -1094,7 +1140,9 @@ const getSpecificData = async (
       default: {
         result = {
           label: chrome.i18n.getMessage(
-            'evm_history_operation_generic_smart_contract_messages',
+            `evm_history_operation_generic_smart_contract_messages${
+              isPending ? '_pending' : ''
+            }`,
             [
               decodedData.operationName,
               name,
