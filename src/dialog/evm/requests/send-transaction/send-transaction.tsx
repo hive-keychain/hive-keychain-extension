@@ -109,6 +109,11 @@ export const SendTransaction = (props: Props) => {
         account.wallet.address.toLowerCase() === params.from.toLowerCase(),
     );
 
+    await transactionHook.initPendingTransactionWarning(
+      usedAccount?.wallet!,
+      chainTmp as EvmChain,
+    );
+
     setSelectedAccount({
       ...usedAccount!,
       wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
@@ -533,6 +538,17 @@ export const SendTransaction = (props: Props) => {
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),
           );
+
+          const usedAccountInput = await transactionHook.getWalletAddressInput(
+            usedAccount.wallet.address,
+            chainTmp.chainId,
+            transactionInfo,
+            accounts,
+            'dialog_account',
+          );
+          transactionConfirmationFields.otherFields.push({
+            ...usedAccountInput,
+          });
 
           transactionConfirmationFields.otherFields.push(
             await transactionHook.getDomainWarnings(transactionInfo),

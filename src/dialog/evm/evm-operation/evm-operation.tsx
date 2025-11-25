@@ -1,6 +1,8 @@
+import { Card } from '@common-ui/card/card.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
@@ -105,6 +107,22 @@ export const EvmOperation = ({
           )}
 
           {caption && <DialogCaption text={caption} />}
+
+          {transactionHook?.pendingTransactionWarningField && (
+            <Card>
+              <EvmRequestItem
+                field={transactionHook.pendingTransactionWarningField}
+                onWarningClicked={() =>
+                  transactionHook.openSingleWarningPopup(
+                    -1,
+                    -1,
+                    transactionHook.pendingTransactionWarningField!
+                      .warnings![0],
+                  )
+                }
+              />
+            </Card>
+          )}
 
           {fields && (
             <div className="operation-body">

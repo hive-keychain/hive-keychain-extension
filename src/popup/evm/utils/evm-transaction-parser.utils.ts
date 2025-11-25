@@ -1,5 +1,4 @@
 import { Interface } from '@ethersproject/abi';
-import * as Eth from '@metamask/ethjs';
 import {
   EvmSmartContractInfo,
   EVMSmartContractType,
@@ -549,9 +548,10 @@ const parseData = async (
     let registry;
     try {
       registry = new MethodRegistry({
-        provider: new Eth.HttpProvider(
-          `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-        ),
+        provider: {
+          host: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+          timeout: 30000,
+        },
         network: chain.chainId,
       });
       console.log({ registry });

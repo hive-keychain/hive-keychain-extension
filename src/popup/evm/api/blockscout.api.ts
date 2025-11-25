@@ -102,10 +102,21 @@ const getV2 = async (url: string): Promise<any> => {
 };
 
 const getPendingTransactions = async (chain: EvmChain, address: string) => {
-  const result = await get(
+  const res = await get(
     `${chain.blockExplorerApi?.url}/api?module=account&action=pendingtxlist&address=${address}&page=1&offset=50`,
   );
-  return result;
+  return res;
+  // return [
+  //   {
+  //     from: '0xA22c23883cB845Eff9Ae7b2852f658587aE60148',
+  //     gasPrice: BigInt(1000000009),
+  //     hash: '0xe0ec114ff6a070b6aa65a5547974a67108b0b62fdf4ce7a3864a1fd8b15677b2',
+  //     data: '0x0',
+  //     nonce: 413,
+  //     to: '0xA22c23883cB845Eff9Ae7b2852f658587aE60148',
+  //     value: BigInt(0),
+  //   },
+  // ] as TransactionResponseParams[];
 };
 
 const getNftList = async (

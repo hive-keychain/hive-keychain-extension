@@ -5638,5 +5638,9 @@
   "evm_pending_transaction": {
     "message": "Pending transaction",
     "description": "Pending transaction"
+  },
+  "evm_pending_transaction_warning": {
+    "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
+    "description": "Pending transaction warning"
   }
 }

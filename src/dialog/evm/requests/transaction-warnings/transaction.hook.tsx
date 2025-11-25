@@ -15,8 +15,11 @@ import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
+import { HDNodeWallet } from 'ethers';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
@@ -58,6 +61,9 @@ export const useTransactionHook = (
   const [ready, setReady] = useState(false);
 
   const [duplicatedTransactionField, setDuplicatedTransactionWarning] =
+    useState<TransactionConfirmationField>();
+
+  const [pendingTransactionWarningField, setPendingTransactionWarningField] =
     useState<TransactionConfirmationField>();
 
   const [shouldDisplayBlockButton, setShouldDisplayBlockButton] =
@@ -224,7 +230,29 @@ export const useTransactionHook = (
     );
   };
 
-  // TODO fix
+  const initPendingTransactionWarning = async (
+    wallet: HDNodeWallet,
+    chain: EvmChain,
+  ) => {
+    const pendingTransactionsInfo =
+      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+    if (pendingTransactionsInfo?.hasPending) {
+      setPendingTransactionWarningField({
+        name: '',
+        type: EvmInputDisplayType.STRING,
+        value: <div className="value-content"></div>,
+        warnings: [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            message: 'evm_pending_transaction_warning',
+            type: EvmTransactionWarningType.BASE,
+          },
+        ],
+      });
+    }
+  };
+
   const handleOnConfirmClick = () => {
     if (hasWarning()) {
       setWarningsPopupOpened(true);
@@ -268,6 +296,11 @@ export const useTransactionHook = (
       duplicatedTransactionField.warnings !== undefined &&
       duplicatedTransactionField.warnings[0].ignored === false;
 
+    const hasPendingTransactionWarning =
+      pendingTransactionWarningField !== undefined &&
+      pendingTransactionWarningField.warnings !== undefined &&
+      pendingTransactionWarningField.warnings[0].ignored === false;
+
     if (localFields)
       return (
         localFields?.some(
@@ -275,7 +308,9 @@ export const useTransactionHook = (
             field.warnings &&
             field.warnings.length > 0 &&
             field.warnings.some((warning) => warning.ignored === false),
-        ) || hasDuplicatedWarning
+        ) ||
+        hasDuplicatedWarning ||
+        hasPendingTransactionWarning
       );
 
     return false;
@@ -405,6 +440,8 @@ export const useTransactionHook = (
     setErrorMessage,
     hasBlockingError,
     setHasBlockingError,
+    initPendingTransactionWarning,
+    pendingTransactionWarningField,
   };
 };
 

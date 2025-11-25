@@ -1,3 +1,4 @@
+import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
@@ -97,6 +98,7 @@ const ConfirmationPage = ({
     });
 
     initBalance(tokenInfo);
+    transactionHook.initPendingTransactionWarning(wallet, chain as EvmChain);
     transactionHook.setConfirmationPageFields(fields);
   };
 
@@ -185,6 +187,21 @@ const ConfirmationPage = ({
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}
           </div>
+        )}
+
+        {transactionHook.pendingTransactionWarningField && (
+          <Card>
+            <EvmRequestItem
+              field={transactionHook.pendingTransactionWarningField}
+              onWarningClicked={() =>
+                transactionHook.openSingleWarningPopup(
+                  -1,
+                  -1,
+                  transactionHook.pendingTransactionWarningField!.warnings![0],
+                )
+              }
+            />
+          </Card>
         )}
 
         {hasField && (

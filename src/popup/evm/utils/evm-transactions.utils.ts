@@ -190,16 +190,6 @@ const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
       'latest',
     );
     const hasPending = pendingNonce > latestNonce;
-    console.log({
-      pendingNonce,
-      latestNonce,
-      pendingTransactionCount: hasPending ? 1 : 0,
-      queuedTransactionsCount: pendingNonce - latestNonce - 1,
-      pendingTransactionDetails: await getPendingTransactionsForWallet2(
-        wallet.address,
-        chain,
-      ),
-    });
     return {
       hasPending,
       pendingTransactionsCount: hasPending ? 1 : 0,
@@ -262,7 +252,7 @@ const getPendingTransactionsForWallet2 = async (
         label:
           item?.label ??
           chrome.i18n.getMessage('evm_unknown_pending_transaction'),
-        title: 'evm_pending_transactions',
+        title: 'evm_pending_queued_transactions',
         transactionResponse: pendingTx,
       };
     }

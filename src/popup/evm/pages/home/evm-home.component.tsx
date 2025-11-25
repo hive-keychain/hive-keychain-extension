@@ -305,6 +305,14 @@ const Home = ({
     }
   };
 
+  const handleClickOnPendingTransactions = () => {
+    navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+      transactionResponse:
+        pendingTransactionsInfo?.pendingTransactionDetails.transactionResponse,
+      pageTitle: 'evm_pending_transaction',
+    } as NavigationParams);
+  };
+
   return (
     <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
       <TopBarComponent
@@ -345,7 +353,9 @@ const Home = ({
           <EvmDappStatusComponent />
         </div>
         {pendingTransactionsInfo && pendingTransactionsInfo.hasPending && (
-          <div className="pending-transactions-info">
+          <div
+            className="pending-transactions-info"
+            onClick={handleClickOnPendingTransactions}>
             <div className="pending-transactions-info-title">
               {chrome.i18n.getMessage(
                 pendingTransactionsInfo.pendingTransactionDetails.title,
