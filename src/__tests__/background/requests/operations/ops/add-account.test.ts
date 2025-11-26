@@ -2,6 +2,7 @@ import MkModule from '@background/mk.module';
 import { addAccount } from '@background/requests/operations/ops/add-account';
 import { RequestsHandler } from '@background/requests/request-handler';
 import AccountUtils from '@hiveapp/utils/account.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import {
   KeychainRequestTypes,
   RequestAddAccount,
@@ -38,9 +39,13 @@ describe('add-account tests:\n', () => {
   });
 
   it('Must return error with no such account', async () => {
-    AccountUtils.getExtendedAccount = jest
-      .fn()
-      .mockResolvedValueOnce(undefined);
+    jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValueOnce(null as any);
     const requestHandler = new RequestsHandler();
     const result = await addAccount(requestHandler, data);
     const { request_id, ...datas } = data;
@@ -59,10 +64,13 @@ describe('add-account tests:\n', () => {
   });
 
   it('Must return message with invalid account error if no keys on data', async () => {
-    AccountUtils.getExtendedAccount = jest
-      .fn()
-      .mockResolvedValueOnce(accounts.extended);
     jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValueOnce(accounts.extended);
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = {};
     const { request_id, ...datas } = cloneData;
@@ -83,10 +91,25 @@ describe('add-account tests:\n', () => {
   });
 
   it('Must return message with invalid account if no mk', async () => {
-    AccountUtils.getExtendedAccount = jest
-      .fn()
-      .mockResolvedValueOnce(accounts.extended);
     jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValueOnce(accounts.extended);
+    // Mock KeysUtils to return matching public keys so validation passes
+    jest
+      .spyOn(KeysUtils, 'getPublicKeyFromPrivateKeyString')
+      .mockImplementation((key: string) => {
+        if (key === userData.one.nonEncryptKeys.active) {
+          return userData.one.encryptKeys.active;
+        }
+        if (key === userData.one.nonEncryptKeys.posting) {
+          return userData.one.encryptKeys.posting;
+        }
+        return '';
+      });
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = userData.one.nonEncryptKeys;
     const requestHandler = new RequestsHandler();
@@ -108,10 +131,13 @@ describe('add-account tests:\n', () => {
 
   it('Must throw an unhandled error if invalid active key', async () => {
     try {
-      AccountUtils.getExtendedAccount = jest
-        .fn()
+      jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+      jest
+        .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce([]);
+      jest
+        .spyOn(AccountUtils, 'getExtendedAccount')
         .mockResolvedValueOnce(accounts.extended);
-      jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
       const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
       cloneData.keys = userData.one.encryptKeys;
       const requestHandler = new RequestsHandler();
@@ -123,10 +149,23 @@ describe('add-account tests:\n', () => {
 
   it('Must throw an unhandled error if invalid posting key', async () => {
     try {
-      AccountUtils.getExtendedAccount = jest
-        .fn()
+      jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+      jest
+        .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce([]);
+      jest
+        .spyOn(AccountUtils, 'getExtendedAccount')
         .mockResolvedValueOnce(accounts.extended);
-      jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
+      // Mock KeysUtils to return matching active key but non-matching posting key
+      jest
+        .spyOn(KeysUtils, 'getPublicKeyFromPrivateKeyString')
+        .mockImplementation((key: string) => {
+          if (key === userData.one.nonEncryptKeys.active) {
+            return userData.one.encryptKeys.active;
+          }
+          // Return a different public key for posting to cause validation failure
+          return 'STMInvalidPostingKey';
+        });
       const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
       cloneData.keys = {
         ...userData.one.nonEncryptKeys,
@@ -134,19 +173,33 @@ describe('add-account tests:\n', () => {
       };
       const requestHandler = new RequestsHandler();
       await addAccount(requestHandler, cloneData);
-    } catch (error) {
-      expect(error).toEqual(new Error('Invalid posting key'));
+      // Should not reach here
+      expect(true).toBe(false);
+    } catch (error: any) {
+      expect(error.message).toBe('Invalid posting key');
     }
   });
 
   it('Must add account', async () => {
-    AccountUtils.getExtendedAccount = jest
-      .fn()
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
       .mockResolvedValueOnce(accounts.extended);
     jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
     jest
       .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
       .mockResolvedValueOnce(accounts.twoAccounts);
+    // Mock KeysUtils to return matching public keys
+    jest
+      .spyOn(KeysUtils, 'getPublicKeyFromPrivateKeyString')
+      .mockImplementation((key: string) => {
+        if (key === userData.one.nonEncryptKeys.active) {
+          return userData.one.encryptKeys.active;
+        }
+        if (key === userData.one.nonEncryptKeys.posting) {
+          return userData.one.encryptKeys.posting;
+        }
+        return '';
+      });
     const sSaveAccounts = jest
       .spyOn(AccountUtils, 'saveAccounts')
       .mockResolvedValue(undefined);

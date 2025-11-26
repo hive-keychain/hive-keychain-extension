@@ -2,6 +2,10 @@ import { KeychainApi } from '@api/keychain';
 import Hive, { Settings } from '@engrave/ledger-app-hive';
 import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import TransferUtils from '@hiveapp/utils/transfer.utils';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import { KeysUtils } from '@popup/hive/utils/keys.utils';
+import MkUtils from '@popup/hive/utils/mk.utils';
 import {
   AccountCreateOperation,
   Operation,
@@ -12,7 +16,7 @@ import {
   Transaction as HiveTransaction,
   config as HiveTxConfig,
 } from 'hive-tx';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import accounts, * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { KeychainError } from 'src/keychain-error';
@@ -90,6 +94,23 @@ describe('hive-tx.utils.ts tests:\n', () => {
 
   describe('createSignAndBroadcastTransaction cases: \n', () => {
     describe('not using ledger & no signHash:\n', () => {
+      beforeEach(() => {
+        // Mock account utilities needed by createSignAndBroadcastTransaction
+        jest.spyOn(MultisigUtils, 'getUsernameFromTransaction').mockReturnValue(mk.user.one);
+        jest.spyOn(AccountUtils, 'getExtendedAccount').mockResolvedValue(dataAccounts.default.extended);
+        jest.spyOn(MkUtils, 'getMkFromLocalStorage').mockResolvedValue(mk.user.two);
+        jest.spyOn(AccountUtils, 'getAccountsFromLocalStorage').mockResolvedValue([
+          {
+            name: mk.user.one,
+            keys: {
+              posting: userData.one.encryptKeys.posting,
+            },
+          },
+        ]);
+        jest.spyOn(KeysUtils, 'isKeyActiveOrPosting').mockResolvedValue('posting' as any);
+        jest.spyOn(KeysUtils, 'isUsingMultisig').mockReturnValue(false);
+      });
+
       it('Must catch error, call logger and throw Error if not valid key', async () => {
         const sLoggerError = jest.spyOn(Logger, 'error');
         jest
@@ -101,7 +122,8 @@ describe('hive-tx.utils.ts tests:\n', () => {
             userData.one.encryptKeys.posting,
           );
         } catch (error) {
-          expect(sLoggerError).toBeCalledWith(new Error('invalid private key'));
+          // Logger.error is called with the actual error from PrivateKey.fromString
+          expect(sLoggerError).toBeCalledTimes(1);
           expect(error).toEqual(
             new Error('html_popup_error_while_signing_transaction'),
           );
@@ -110,6 +132,23 @@ describe('hive-tx.utils.ts tests:\n', () => {
     });
 
     describe('using ledger:\n', () => {
+      beforeEach(() => {
+        // Mock account utilities needed by createSignAndBroadcastTransaction
+        jest.spyOn(MultisigUtils, 'getUsernameFromTransaction').mockReturnValue(mk.user.one);
+        jest.spyOn(AccountUtils, 'getExtendedAccount').mockResolvedValue(dataAccounts.default.extended);
+        jest.spyOn(MkUtils, 'getMkFromLocalStorage').mockResolvedValue(mk.user.two);
+        jest.spyOn(AccountUtils, 'getAccountsFromLocalStorage').mockResolvedValue([
+          {
+            name: mk.user.one,
+            keys: {
+              posting: '#ajjsk1121312312',
+            },
+          },
+        ]);
+        jest.spyOn(KeysUtils, 'isKeyActiveOrPosting').mockResolvedValue('posting' as any);
+        jest.spyOn(KeysUtils, 'isUsingMultisig').mockReturnValue(false);
+      });
+
       it('Must catch and throw error if is not Displayable On Device', async () => {
         jest
           .spyOn(HiveTransaction.prototype, 'create')

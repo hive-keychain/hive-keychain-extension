@@ -3,6 +3,7 @@ import { Witness } from '@interfaces/witness.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -70,7 +71,10 @@ const Governance = ({
   };
 
   return (
-    <div className="governance-page" aria-label="governance-page">
+    <div
+      className="governance-page"
+      aria-label="governance-page"
+      data-testid={`${Screen.GOVERNANCE_PAGE}-page`}>
       {!isLoading && <TabsComponent tabs={tabs} />}
       {isLoading && (
         <div className="rotating-logo-container">

@@ -24,7 +24,13 @@ describe('select-keys.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+      { 
+        ...initialStates.iniStateAs.defaultExistent, 
+        hive: {
+          ...initialStates.iniStateAs.defaultExistent.hive,
+          accounts: []
+        }
+      },
       {
         app: {
           accountsRelated: {

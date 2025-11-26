@@ -7,19 +7,25 @@ import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
  */
 const iniState = {
   mk: mk.user.one,
-  accounts: [] as LocalAccount[],
-} as RootState;
+  hive: {
+    accounts: [] as LocalAccount[],
+  },
+} as unknown as RootState;
 
 const iniStateAs = {
   defaultExistent: {
     mk: mk.user.one,
-    accounts: accounts.twoAccounts,
-  } as RootState,
+    hive: {
+      accounts: accounts.twoAccounts,
+    },
+  } as unknown as RootState,
   defaultExistentAllKeys: {
     mk: mk.user.one,
-    accounts: [accounts.local.oneAllkeys, accounts.local.two],
+    hive: {
+      accounts: [accounts.local.oneAllkeys, accounts.local.two],
+    },
   },
-  emptyState: {} as RootState,
+  emptyState: {} as unknown as RootState,
 };
 
 export default { iniState, iniStateAs };

@@ -1,4 +1,4 @@
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 const dataTestIdComponent = {
   settingsMainPage: 'settings-main-page-component',
@@ -52,8 +52,8 @@ const dataTestIdComponent = {
     },
   },
   userPreferences: {
-    authorizedOperations: `${Icons.AUTHORIZED_OPERATIONS}-page`,
-    automatedTasks: `${Icons.AUTOMATED_TASKS}-page`,
+    authorizedOperations: `${SVGIcons.MENU_USER_PREFERENCES_OPERATIONS}-page`,
+    automatedTasks: `${SVGIcons.MENU_USER_PREFERENCES_AUTOMATED_TASKS}-page`,
   },
   whatsNew: 'whats-new-component',
 };

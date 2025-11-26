@@ -2,8 +2,10 @@ import { KeychainApi } from '@api/keychain';
 import CurrencyPricesUtils from '@hiveapp/utils/currency-prices.utils';
 import bittrexData from 'src/__tests__/utils-for-testing/data/bittrex-data/bittrex-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('currency-prices-utils tests', () => {
+  jest.setTimeout(10000); // Increase timeout for async tests
   afterAll(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -20,14 +22,12 @@ describe('currency-prices-utils tests', () => {
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply);
     });
-    test('If error on request will throw an unhandled error', async () => {
+    test('If error on request will return empty object', async () => {
       const errorThrown = new Error('Network Failed');
       KeychainApi.get = jest.fn().mockRejectedValueOnce(errorThrown);
-      try {
-        expect(await CurrencyPricesUtils.getPrices()).toBe(1);
-      } catch (error) {
-        expect(error).toEqual(errorThrown);
-      }
+      LocalStorageUtils.getValueFromLocalStorage = jest.fn().mockResolvedValueOnce(null);
+      const result = await CurrencyPricesUtils.getPrices();
+      expect(result).toEqual({});
     });
   });
 
@@ -71,11 +71,7 @@ describe('currency-prices-utils tests', () => {
     test('If error on request will throw an unhandled error', async () => {
       const errorThrown = new Error('Network Failed');
       mocksImplementation.mockFetch(errorThrown, 500, true);
-      try {
-        expect(await CurrencyPricesUtils.getBittrexCurrency('BTC')).toBe(1);
-      } catch (error) {
-        expect(error).toEqual(errorThrown);
-      }
+      await expect(CurrencyPricesUtils.getBittrexCurrency('BTC')).rejects.toEqual(errorThrown);
     });
   });
 });

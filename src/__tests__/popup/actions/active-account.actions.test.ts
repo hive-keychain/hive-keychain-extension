@@ -42,7 +42,7 @@ describe('active-account.actions tests:\n', () => {
       );
       const delay = 3100;
       await sleep(delay);
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: fakeExtendedAccountResponse[0],
         keys: userData.two.keys,
         name: userData.two.username,
@@ -63,8 +63,8 @@ describe('active-account.actions tests:\n', () => {
       );
       const delay = 3100;
       await sleep(delay);
-      expect(fakeStore.getState().activeAccount).toEqual(
-        initialStateDifferentAccounts.activeAccount,
+      expect(fakeStore.getState().hive.activeAccount).toEqual(
+        initialStateDifferentAccounts.hive.activeAccount,
       );
     });
   });
@@ -79,7 +79,7 @@ describe('active-account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         activeAccountActions.refreshKeys(localAccount),
       );
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: {
           name: localAccount.name,
         },
@@ -105,7 +105,7 @@ describe('active-account.actions tests:\n', () => {
           name: userData.two.username,
         }),
       );
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: fakeExtendedAccountResponse[0],
         keys: userData.two.keys,
         name: userData.two.username,
@@ -124,7 +124,7 @@ describe('active-account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         activeAccountActions.getAccountRC(userData.two.username),
       );
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: {
           name: userData.two.username,
         },
@@ -144,7 +144,7 @@ describe('active-account.actions tests:\n', () => {
     test('Must reset activeAccount to default values', async () => {
       const fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(activeAccountActions.resetActiveAccount());
-      expect(fakeStore.getState().activeAccount).toEqual(defaultResetValues);
+      expect(fakeStore.getState().hive.activeAccount).toEqual(defaultResetValues);
     });
   });
 });

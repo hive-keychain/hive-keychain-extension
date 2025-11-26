@@ -29,8 +29,14 @@ describe('operations.utils tests:\n', () => {
     jest.resetAllMocks();
   });
   describe('createMessage cases:\n', () => {
-    it('Must return an answerRequest with success', () => {
-      const result = createMessage(
+    it('Must return an answerRequest with success', async () => {
+      const successMsg = chrome.i18n.getMessage('bgd_ops_transfer_success', [
+        datas.amount,
+        datas.currency,
+        datas.username!,
+        datas.to,
+      ]);
+      const result = await createMessage(
         undefined,
         {
           tx_id: 'tx_id',
@@ -38,12 +44,7 @@ describe('operations.utils tests:\n', () => {
           confirmed: true,
         } as TransactionResult,
         datas,
-        chrome.i18n.getMessage('bgd_ops_transfer_success', [
-          datas.amount,
-          datas.currency,
-          datas.username!,
-          datas.to,
-        ]),
+        successMsg,
         null,
         undefined,
       );
@@ -52,42 +53,40 @@ describe('operations.utils tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
+          error: undefined,
           result: {
             tx_id: 'tx_id',
             id: 'id',
             confirmed: true,
           } as TransactionResult,
           data: data,
-          message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
-            datas.amount,
-            datas.currency,
-            datas.username!,
-            datas.to,
-          ]),
+          message: successMsg,
           request_id,
+          publicKey: undefined,
         },
       });
     });
 
-    it('Must return an answerRequest with error', () => {
+    it('Must return an answerRequest with error', async () => {
       const errorMsg = 'Error while waiting confirmation';
-      const result = createMessage(
-        `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+      const errorMessage = `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`;
+      const result = await createMessage(
+        errorMessage,
         undefined,
         datas,
         null,
-        `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+        errorMessage,
         undefined,
       );
       const { request_id, ...data } = datas;
       expect(result).toEqual({
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
-          error: `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+          error: errorMessage,
           success: false,
           result: undefined,
           data: data,
-          message: `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+          message: errorMessage,
           request_id,
           publicKey: undefined,
         },

@@ -1,5 +1,6 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import MkUtils from '@hiveapp/utils/mk.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('mk.utils tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -9,6 +10,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(undefined);
+      LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce({});
       const result = await MkUtils.login('wrong_password_to_decrypt');
       expect(result).toBe(false);
     });
@@ -16,6 +20,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce([]);
+      LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce({});
       const result = await MkUtils.login('right_password');
       expect(result).toBe(true);
     });

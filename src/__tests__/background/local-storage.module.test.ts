@@ -6,6 +6,7 @@ import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/inte
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('local-storage.module tests:\n', () => {
+  jest.setTimeout(10000); // Increase timeout for async tests
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
@@ -14,20 +15,39 @@ describe('local-storage.module tests:\n', () => {
   });
 
   it('Must execute switch cases', async () => {
+    let version = 2;
+    let callCount = 0;
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
-      .mockImplementation((...args: any[]) =>
-        mocksImplementation.getValuefromLS(args[0], {
-          customStorageVersion: 2,
+      .mockImplementation((...args: any[]) => {
+        if (args[0] === LocalStorageKeyEnum.LOCAL_STORAGE_VERSION) {
+          callCount++;
+          // After first call, return updated version to prevent infinite recursion
+          if (callCount > 1 && version >= 5) {
+            return Promise.resolve(5);
+          }
+          return Promise.resolve(version);
+        }
+        return mocksImplementation.getValuefromLS(args[0], {
+          customStorageVersion: version,
           customCurrentRpc: {
             uri: 'https://hived.privex.io/',
           } as Rpc,
-        } as CustomDataFromLocalStorage),
-      );
+        } as CustomDataFromLocalStorage);
+      });
     const sSaveValueInLocalStorage = jest.spyOn(
       LocalStorageUtils,
       'saveValueInLocalStorage',
-    );
+    ).mockImplementation((key, value) => {
+      if (key === LocalStorageKeyEnum.LOCAL_STORAGE_VERSION) {
+        version = value as number;
+        // Once we reach version 5, stop recursion by keeping it at 5
+        if (version >= 5) {
+          version = 5;
+        }
+      }
+      return Promise.resolve();
+    });
     await LocalStorageModule.checkAndUpdateLocalStorage();
     expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
       1,

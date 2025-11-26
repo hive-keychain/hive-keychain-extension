@@ -18,6 +18,8 @@ module.exports = {
     '^@interfaces(.*)$': '<rootDir>/src/interfaces/$1',
     '^@reference-data(.*)$': '<rootDir>/src/reference-data/$1',
     '^@api(.*)$': '<rootDir>/src/api/$1',
+    '^@hiveapp(.*)$': '<rootDir>/src/popup/hive/$1',
+    '^axios$': '<rootDir>/node_modules/axios/dist/node/axios.cjs',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
     '@ledgerhq/devices/hid-framing': '@ledgerhq/devices/lib/hid-framing',
   },

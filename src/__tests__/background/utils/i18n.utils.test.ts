@@ -33,15 +33,24 @@ describe('i18n.utils tests:\n', () => {
     it('Must return missing name message', async () => {
       chrome.i18n.getUILanguage = jest.fn().mockReturnValue('fr-FR');
       const result = await getMessage('popup_html_new_age_keychain');
-      expect(result).toBe(`[Missing popup_html_new_age_keychain locale]`);
+      // Implementation returns the key name itself if not found in fallback EN locale
+      expect(result).toBe('popup_html_new_age_keychain');
     });
 
     it('Must return message from EN as not found on ES', async () => {
       chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-ES');
       const sGetURL = jest.spyOn(chrome.runtime, 'getURL');
+      // Mock fetch to fail for ES locale, forcing fallback to EN
+      global.fetch = jest.fn().mockImplementation((url: string): any => {
+        if (url.includes('_locales/es/')) {
+          throw new Error('File not found');
+        }
+        return { json: () => messagesJsonFile(url) };
+      });
       const result = await getMessage(
         'popup_html_undelegation_pending_until_message',
       );
+      // getURL is called once in try block (es) and once in catch block (en)
       expect(sGetURL).toBeCalledTimes(2);
       expect(sGetURL).toHaveBeenNthCalledWith(1, '_locales/es/messages.json');
       expect(sGetURL).toHaveBeenNthCalledWith(2, '_locales/en/messages.json');

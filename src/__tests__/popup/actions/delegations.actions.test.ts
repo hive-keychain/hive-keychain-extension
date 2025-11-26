@@ -19,7 +19,7 @@ describe('delegations.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegators(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.incoming).toEqual(
+      expect(fakeStore.getState().hive.delegations.incoming).toEqual(
         delegations.delegators,
       );
     });
@@ -36,8 +36,8 @@ describe('delegations.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegators(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.incoming).toEqual(null);
-      expect(fakeStore.getState().errorMessage).toEqual(errorMessageExpected);
+      expect(fakeStore.getState().hive.delegations.incoming).toEqual(null);
+      expect(fakeStore.getState().message).toEqual(errorMessageExpected);
     });
   });
 
@@ -50,7 +50,7 @@ describe('delegations.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegatees(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.outgoing).toEqual(
+      expect(fakeStore.getState().hive.delegations.outgoing).toEqual(
         delegations.delegatees,
       );
     });
@@ -65,7 +65,7 @@ describe('delegations.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegatees(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.outgoing).toEqual([]);
+      expect(fakeStore.getState().hive.delegations.outgoing).toEqual([]);
       expect(spyLoggerError).toBeCalledTimes(1);
       expect(spyLoggerError).toBeCalledWith(promiseError);
       spyLoggerError.mockClear();

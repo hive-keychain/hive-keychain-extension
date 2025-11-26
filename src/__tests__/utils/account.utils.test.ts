@@ -7,6 +7,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { KeyType, Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import accounts, * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -189,9 +190,107 @@ describe('account.utils tests:\n', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
+    jest.restoreAllMocks();
+    // Don't reset modules as it breaks the isWif mock
+    // jest.resetModules();
   });
   describe('getKeys tests:\n', () => {
+    let getPublicKeySpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      // Mock getPublicKeyFromPrivateKeyString to return the expected public keys
+      const { KeysUtils } = require('@hiveapp/utils/keys.utils');
+      getPublicKeySpy = jest
+        .spyOn(KeysUtils, 'getPublicKeyFromPrivateKeyString')
+        .mockImplementation((key: unknown) => {
+          // Map test private keys to their public keys
+          if (key === userData.one.nonEncryptKeys.active) {
+            return userData.one.encryptKeys.active;
+          }
+          if (key === userData.one.nonEncryptKeys.posting) {
+            return userData.one.encryptKeys.posting;
+          }
+          if (key === userData.one.nonEncryptKeys.memo) {
+            return userData.one.encryptKeys.memo;
+          }
+          // Fall back to actual implementation
+          try {
+            return (
+              KeysUtils.getPublicKeyFromPrivateKeyString.originalImplementation?.(
+                key as string,
+              ) || null
+            );
+          } catch {
+            return null;
+          }
+        });
+
+      // Mock getPubkeyWeight to return 1 for matching keys
+      jest
+        .spyOn(KeysUtils, 'getPubkeyWeight')
+        .mockImplementation((pubkey: unknown, authority: unknown) => {
+          const pubkeyStr = pubkey as string;
+          const auth = authority as any;
+          if (
+            pubkeyStr === userData.one.encryptKeys.active &&
+            auth === dataAccounts.default.extended.active
+          ) {
+            return 1;
+          }
+          if (
+            pubkeyStr === userData.one.encryptKeys.posting &&
+            auth === dataAccounts.default.extended.posting
+          ) {
+            return 1;
+          }
+          // Check if pubkey matches memo_key
+          if (
+            pubkeyStr === userData.one.encryptKeys.memo &&
+            pubkeyStr === dataAccounts.default.extended.memo_key
+          ) {
+            return 1;
+          }
+          return 0;
+        });
+
+      // Mock derivateFromMasterPassword for non-WIF cases (fallback)
+      // This is only used when isWif returns false, but since we're using WIF keys from .env,
+      // isWif should return true and this shouldn't be called. However, we mock it as a fallback.
+      jest
+        .spyOn(KeysUtils, 'derivateFromMasterPassword')
+        .mockImplementation((...args: unknown[]) => {
+          const username = args[0] as string;
+          const password = args[1] as string;
+          // If password matches our test keys from .env, return the corresponding keys object
+          if (password === userData.one.nonEncryptKeys.active) {
+            return {
+              active: userData.one.nonEncryptKeys.active,
+              activePubkey: userData.one.encryptKeys.active,
+            };
+          }
+          if (password === userData.one.nonEncryptKeys.posting) {
+            return {
+              posting: userData.one.nonEncryptKeys.posting,
+              postingPubkey: userData.one.encryptKeys.posting,
+            };
+          }
+          if (password === userData.one.nonEncryptKeys.memo) {
+            return {
+              memo: userData.one.nonEncryptKeys.memo,
+              memoPubkey: userData.one.encryptKeys.memo,
+            };
+          }
+          return null;
+        });
+    });
+
+    afterEach(() => {
+      if (getPublicKeySpy) {
+        getPublicKeySpy.mockRestore();
+      }
+      jest.restoreAllMocks();
+    });
+
     test('Must throw error if username not found', async () => {
       const userObject: {
         badUsername: string;
@@ -281,6 +380,51 @@ describe('account.utils tests:\n', () => {
       }
     });
     test('Must return a valid Key Object', async () => {
+      // Mock getAccount to return the account data
+      AccountUtils.getAccount = jest
+        .fn()
+        .mockResolvedValue([dataAccounts.default.extended]);
+
+      // Mock getPublicKeyFromPrivateKeyString to return the expected public key
+      const { KeysUtils } = require('@hiveapp/utils/keys.utils');
+      const getPublicKeySpy = jest
+        .spyOn(KeysUtils, 'getPublicKeyFromPrivateKeyString')
+        .mockImplementation((key: unknown) => {
+          if (key === userData.one.nonEncryptKeys.active) {
+            return userData.one.encryptKeys.active;
+          }
+          return null;
+        });
+
+      // Mock getPubkeyWeight to return 1 for matching active key
+      jest
+        .spyOn(KeysUtils, 'getPubkeyWeight')
+        .mockImplementation((pubkey: unknown, authority: unknown) => {
+          const pubkeyStr = pubkey as string;
+          const auth = authority as any;
+          if (
+            pubkeyStr === userData.one.encryptKeys.active &&
+            auth === dataAccounts.default.extended.active
+          ) {
+            return 1;
+          }
+          return 0;
+        });
+
+      // Mock derivateFromMasterPassword as fallback (in case isWif returns false)
+      jest
+        .spyOn(KeysUtils, 'derivateFromMasterPassword')
+        .mockImplementation((...args: unknown[]) => {
+          const password = args[1] as string;
+          if (password === userData.one.nonEncryptKeys.active) {
+            return {
+              active: userData.one.nonEncryptKeys.active,
+              activePubkey: userData.one.encryptKeys.active,
+            };
+          }
+          return null;
+        });
+
       const resultValidDataNonExistingAccounts =
         await AccountUtils.verifyAccount(
           userData.one.username,
@@ -292,6 +436,9 @@ describe('account.utils tests:\n', () => {
         activePubkey: userData.one.encryptKeys.active,
       };
       expect(resultValidDataNonExistingAccounts).toEqual(expected_obj_active);
+
+      getPublicKeySpy.mockRestore();
+      jest.restoreAllMocks();
     });
   });
 
@@ -644,6 +791,12 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        [],
+        [],
+        AccountValueType.DOLLARS,
+        [],
+        { hive: 0, hbd: 0 },
+        [],
       );
       expect(result).toBe(0);
     });
@@ -657,6 +810,12 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        [],
+        [],
+        AccountValueType.DOLLARS,
+        [],
+        { hive: 0, hbd: 0 },
+        [],
       );
       expect(result).toBe(0);
     });
@@ -670,6 +829,12 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        [],
+        [],
+        AccountValueType.DOLLARS,
+        [],
+        { hive: 0, hbd: 0 },
+        [],
       );
       expect(result).toBe(1.51);
     });

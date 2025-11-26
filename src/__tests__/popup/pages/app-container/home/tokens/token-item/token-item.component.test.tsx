@@ -11,6 +11,32 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 
+// Mock network requests
+global.fetch = jest.fn((url: string) => {
+  // Mock Hive Engine API calls
+  if (url.includes('hive-engine') || url.includes('api.hive-engine')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ result: [] }),
+    } as Response);
+  }
+  // Mock PeakD notifications API
+  if (url.includes('notifications') || url.includes('peakd')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([]),
+    } as Response);
+  }
+  // Mock other API calls
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ result: [] }),
+  } as Response);
+}) as jest.Mock;
+
 describe('token-item.component tests:\n', () => {
   const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
     actionButton.label.includes('token'),
@@ -37,10 +63,16 @@ describe('token-item.component tests:\n', () => {
         },
       },
     );
+    // Wait for component to initialize
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
     await act(async () => {
       await userEvent.click(
-        screen.getByTestId(
+        await screen.findByTestId(
           `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
+          {},
+          { timeout: 5000 },
         ),
       );
     });

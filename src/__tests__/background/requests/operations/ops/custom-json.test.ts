@@ -2,6 +2,7 @@ import LedgerModule from '@background/ledger.module';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainKeyTypes,
@@ -85,6 +86,19 @@ describe('custom-json tests:\n', () => {
 
   describe('Using Ledger cases:\n', () => {
     it('Must return success', async () => {
+      const mockTransaction = {
+        expiration: '10/10/2023',
+        extensions: [],
+        operations: [],
+        ref_block_num: 0,
+        ref_block_prefix: 0,
+      };
+      jest
+        .spyOn(CustomJsonUtils, 'getCustomJsonTransaction')
+        .mockResolvedValueOnce(mockTransaction as any);
+      jest
+        .spyOn(LedgerModule, 'signTransactionFromLedger')
+        .mockImplementation(() => {});
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')
         .mockResolvedValueOnce('signed!');

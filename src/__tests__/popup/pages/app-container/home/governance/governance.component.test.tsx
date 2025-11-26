@@ -9,10 +9,37 @@ import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-test
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+// Mock network requests
+global.fetch = jest.fn((url: string) => {
+  // Mock Hive Engine API calls
+  if (url.includes('hive-engine') || url.includes('api.hive-engine')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ result: [] }),
+    } as Response);
+  }
+  // Mock PeakD notifications API
+  if (url.includes('notifications') || url.includes('peakd')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([]),
+    } as Response);
+  }
+  // Mock other API calls
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ result: [] }),
+  } as Response);
+}) as jest.Mock;
+
 describe('governance.component tests:\n', () => {
+  jest.setTimeout(10000); // Increase timeout for this test suite
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
@@ -22,13 +49,34 @@ describe('governance.component tests:\n', () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          apiRelated: {
+            KeychainApi: {
+              customData: {
+                witnessRanking: witness.ranking,
+              },
+            },
+          },
+        },
+      },
     );
+    // Wait for app to initialize
+    await screen.findByTestId('clickable-settings');
     await act(async () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
-      );
     });
+    // Wait for settings page to render
+    await screen.findByTestId(`${Screen.SETTINGS_MAIN_PAGE}-page`);
+    await act(async () => {
+      // Find governance menu item
+      const governanceMenuItem = await screen.findByTestId(
+        dataTestIdButton.menuPreFix + SVGIcons.MENU_GOVERNANCE,
+      );
+      await userEvent.click(governanceMenuItem);
+    });
+    // Wait for navigation and data loading to complete
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`, {}, { timeout: 5000 });
   });
 
   it('Must load governance page & witness tab by default', async () => {
@@ -41,18 +89,22 @@ describe('governance.component tests:\n', () => {
   });
 
   it('Must load proxy tab', async () => {
+    // Wait for governance page to load first
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`);
     await act(async () => {
-      await userEvent.click(screen.getAllByRole('tab')[1]);
+      const tabs = await screen.findAllByRole('tab');
+      await userEvent.click(tabs[1]);
     });
     expect(await screen.findByTestId(dataTestIdTab.proxy)).toBeInTheDocument();
   });
 
   it('Must load proposal tab', async () => {
+    // Wait for governance page to load first
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`);
     await act(async () => {
-      await userEvent.click(screen.getAllByRole('tab')[2]);
+      const tabs = await screen.findAllByRole('tab');
+      await userEvent.click(tabs[2]);
     });
-    expect(
-      await screen.findByTestId(dataTestIdTab.proposal),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId(dataTestIdTab.proposal)).toBeInTheDocument();
   });
 });

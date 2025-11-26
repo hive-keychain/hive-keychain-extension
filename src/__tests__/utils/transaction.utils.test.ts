@@ -5,7 +5,7 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import transactionHistory from 'src/__tests__/utils-for-testing/data/history/transactions/transaction-history';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { store } from 'src/popup/hive/store';
+import { store } from '@popup/multichain/store';
 import Logger from 'src/utils/logger.utils';
 
 describe('transaction.utils tests:\n', () => {
@@ -26,7 +26,7 @@ describe('transaction.utils tests:\n', () => {
 
     test('Getting data from an account that has transfers, must return a new sorted array with added fields', async () => {
       const showOutPutData = false;
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(
@@ -47,7 +47,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Getting data from an account that has no transfers, must return [[], start]', async () => {
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce([]));
@@ -64,7 +64,7 @@ describe('transaction.utils tests:\n', () => {
     });
 
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(transactionHistory.fakeOneTransactionResponse));
@@ -82,7 +82,7 @@ describe('transaction.utils tests:\n', () => {
 
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(

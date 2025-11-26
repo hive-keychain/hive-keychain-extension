@@ -24,7 +24,7 @@ describe('index tests:\n', () => {
   });
 
   it('Must match this values by default', () => {
-    expect(keychainRequest.requestHandler.data).toEqual({ confirmed: false });
+    expect(keychainRequest.requestHandler.data).toEqual({ confirmed: false, isWaitingForConfirmation: false });
     expect(keychainRequest.requestHandler.hiveEngineConfig).toEqual(
       Config.hiveEngine,
     );
@@ -66,12 +66,14 @@ describe('index tests:\n', () => {
     requestHandler.reset(false);
     expect(requestHandler.data).toEqual({
       confirmed: false,
+      isWaitingForConfirmation: false,
       windowId: undefined,
     });
     expect(sSaveValueInLocalStorage).toBeCalledWith(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
       {
         confirmed: false,
+        isWaitingForConfirmation: false,
         windowId: undefined,
       },
     );

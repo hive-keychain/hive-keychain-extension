@@ -13,7 +13,10 @@ describe('sign-up.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      initialEmptyStateStore,
+      {
+        ...initialEmptyStateStore,
+        hasFinishedSignup: false,
+      },
       {
         app: {
           accountsRelated: {
@@ -31,6 +34,8 @@ describe('sign-up.component tests:\n', () => {
         },
       },
     );
+    // Wait for sign-up page to render
+    await screen.findByTestId('signup-page');
   });
   afterEach(() => cleanup());
 

@@ -13,6 +13,44 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { Screen } from '@reference-data/screen.enum';
+
+// Mock ProposalUtils methods
+jest.mock('@hiveapp/utils/proposal.utils', () => {
+  const actual = jest.requireActual('@hiveapp/utils/proposal.utils');
+  return {
+    ...actual,
+    isRequestingProposalVotes: jest.fn(),
+    hasVotedForProposal: jest.fn(),
+    voteForKeychainProposal: jest.fn(),
+  };
+});
+
+// Mock network requests
+global.fetch = jest.fn((url: string) => {
+  // Mock Hive Engine API calls
+  if (url.includes('hive-engine') || url.includes('api.hive-engine')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ result: [] }),
+    } as Response);
+  }
+  // Mock PeakD notifications API
+  if (url.includes('notifications') || url.includes('peakd')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([]),
+    } as Response);
+  }
+  // Mock other API calls
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ result: [] }),
+  } as Response);
+}) as jest.Mock;
 
 describe('proposal-voting-section.component tests:\n', () => {
   afterEach(() => {
@@ -22,25 +60,28 @@ describe('proposal-voting-section.component tests:\n', () => {
   });
   describe('With Active key', () => {
     beforeEach(async () => {
+      // Mock ProposalUtils methods before rendering
+      (ProposalUtils.isRequestingProposalVotes as jest.Mock).mockResolvedValue(true);
+      (ProposalUtils.hasVotedForProposal as jest.Mock).mockResolvedValue(false);
+      
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
-        {
-          app: {
-            proposal: {
-              ProposalUtils: {
-                hasVotedForProposal: false,
-              },
-            },
-          },
-        },
       );
+      // Wait for home page to be rendered
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`, {}, { timeout: 10000 });
+      // Wait for proposal voting section to initialize and render
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      });
     });
 
     it('Must show keychain proposal', async () => {
+      // Wait for the proposal voting section to appear
+      await screen.findByTestId(dataTestIdDiv.proposalVotingSection, {}, { timeout: 10000 });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_proposal_request'),
+          chrome.i18n.getMessage('popup_html_proposal_vote'),
         ),
       ).toBeInTheDocument();
     });
@@ -53,10 +94,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
+          await screen.findByTestId(dataTestIdDiv.proposalVotingSection, {}, { timeout: 5000 }),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal, {}, { timeout: 5000 }),
         );
       });
       expect(
@@ -73,10 +114,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
+          await screen.findByTestId(dataTestIdDiv.proposalVotingSection, {}, { timeout: 5000 }),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal, {}, { timeout: 5000 }),
         );
       });
       expect(
@@ -90,10 +131,10 @@ describe('proposal-voting-section.component tests:\n', () => {
       const sChromeTabs = jest.spyOn(chrome.tabs, 'create');
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
+          await screen.findByTestId(dataTestIdDiv.proposalVotingSection, {}, { timeout: 5000 }),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.readProposal),
+          await screen.findByTestId(dataTestIdButton.readProposal, {}, { timeout: 5000 }),
         );
       });
       expect(sChromeTabs).toHaveBeenCalledWith({
@@ -105,6 +146,10 @@ describe('proposal-voting-section.component tests:\n', () => {
 
   describe('No Active key', () => {
     beforeEach(async () => {
+      // Mock ProposalUtils methods before rendering
+      (ProposalUtils.isRequestingProposalVotes as jest.Mock).mockResolvedValue(true);
+      (ProposalUtils.hasVotedForProposal as jest.Mock).mockResolvedValue(false);
+      
       const cloneLocalAccounts = objects.clone(
         accounts.twoAccounts,
       ) as LocalAccount[];
@@ -123,14 +168,20 @@ describe('proposal-voting-section.component tests:\n', () => {
           },
         },
       );
+      // Wait for home page to be rendered
+      await screen.findByTestId(`${Screen.HOME_PAGE}-page`, {}, { timeout: 10000 });
+      // Wait for proposal voting section to initialize and render
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      });
     });
     it('Must show error trying to vote proposal', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
+          await screen.findByTestId(dataTestIdDiv.proposalVotingSection, {}, { timeout: 5000 }),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal, {}, { timeout: 5000 }),
         );
       });
       expect(

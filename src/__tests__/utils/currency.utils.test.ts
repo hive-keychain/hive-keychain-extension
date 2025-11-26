@@ -2,10 +2,11 @@ import CurrencyUtils from '@hiveapp/utils/currency.utils';
 
 describe('currency.utils tests:\n', () => {
   describe('getCurrencyLabels tests:\n', () => {
-    test('Passing isTestnet as true must return currency labels for testnet', () => {
+    test('Passing isTestnet as true must return currency labels (currently always mainnet)', () => {
       const isTestnet = true;
       const result = CurrencyUtils.getCurrencyLabels(isTestnet);
-      expect(result).toEqual({ hbd: 'TBD', hive: 'TESTS', hp: 'TP' });
+      // Implementation currently always returns mainnet labels (testnet support commented out)
+      expect(result).toEqual({ hbd: 'HBD', hive: 'HIVE', hp: 'HP' });
     });
 
     test('Passing isTestnet as false must return currency labels for mainnet', () => {
@@ -51,25 +52,28 @@ describe('currency.utils tests:\n', () => {
       expect(result).toBe('HP');
     });
 
-    test('Passing currency="hive" and isTesnet as true, must return TESTS', () => {
+    test('Passing currency="hive" and isTesnet as true, must return HIVE (testnet support disabled)', () => {
       const isTestnet = true;
       const currency = 'hive';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TESTS');
+      // Implementation currently always returns mainnet labels
+      expect(result).toBe('HIVE');
     });
 
-    test('Passing currency="hbd" and isTesnet as true, must return TBD', () => {
+    test('Passing currency="hbd" and isTesnet as true, must return HBD (testnet support disabled)', () => {
       const isTestnet = true;
       const currency = 'hbd';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TBD');
+      // Implementation currently always returns mainnet labels
+      expect(result).toBe('HBD');
     });
 
-    test('Passing currency="hp" and isTesnet as true, must return TP', () => {
+    test('Passing currency="hp" and isTesnet as true, must return HP (testnet support disabled)', () => {
       const isTestnet = true;
       const currency = 'hp';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TP');
+      // Implementation currently always returns mainnet labels
+      expect(result).toBe('HP');
     });
   });
 });

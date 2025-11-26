@@ -29,7 +29,8 @@ describe('user-preferences.component tests:\n', () => {
     cleanup();
   });
   it('Must load each menu items', () => {
-    UserPreferencesMenuItems.forEach((item) => {
+    const items = UserPreferencesMenuItems(() => {});
+    items.forEach((item) => {
       expect(screen.getByTestId(dataTestIdButton.menuPreFix + item.icon));
     });
   });
@@ -37,10 +38,11 @@ describe('user-preferences.component tests:\n', () => {
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue([]);
-    for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
+    const items = UserPreferencesMenuItems(() => {});
+    for (let i = 0; i < items.length; i++) {
       const menuButtonAriaLabel =
-        dataTestIdButton.menuPreFix + UserPreferencesMenuItems[i].icon;
-      const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
+        dataTestIdButton.menuPreFix + items[i].icon;
+      const pageAriaLabel = items[i].nextScreen + '-page';
       await act(async () => {
         await userEvent.click(screen.getByTestId(menuButtonAriaLabel));
       });

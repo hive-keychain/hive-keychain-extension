@@ -35,7 +35,7 @@ import {
   CustomDataFromLocalStorage,
   GetManifest,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
+// AnalyticsUtils is mocked below - no import needed
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
@@ -471,21 +471,25 @@ const set = (params?: {
 
   //////////
   //Google Analytics related
-  AnalyticsUtils.initializeSettings =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.initializeSettings ??
-    jest.fn().mockResolvedValue(true);
+  // Mock AnalyticsUtils as a global object since the module doesn't exist
+  const AnalyticsUtils = {
+    initializeSettings:
+      params?.app?.googleAnalytics?.AnalyticsUtils?.initializeSettings ??
+      jest.fn().mockResolvedValue(true),
+    initializeGoogleAnalytics:
+      params?.app?.googleAnalytics?.AnalyticsUtils?.initializeGoogleAnalytics ??
+      jest.fn().mockImplementation(() => undefined),
+    acceptAll:
+      params?.app?.googleAnalytics?.AnalyticsUtils?.acceptAll ??
+      jest.fn().mockImplementation(() => undefined),
+    rejectAll:
+      params?.app?.googleAnalytics?.AnalyticsUtils?.rejectAll ??
+      jest.fn().mockImplementation(() => undefined),
+  };
+  (global as any).AnalyticsUtils = AnalyticsUtils;
   window.gtag =
     params?.app?.googleAnalytics?.window?.gtag ??
     jest.fn().mockImplementation((...args) => undefined);
-  AnalyticsUtils.initializeGoogleAnalytics =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.initializeGoogleAnalytics ??
-    jest.fn().mockImplementation(() => undefined);
-  AnalyticsUtils.acceptAll =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.acceptAll ??
-    jest.fn().mockImplementation(() => undefined);
-  AnalyticsUtils.rejectAll =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.rejectAll ??
-    jest.fn().mockImplementation(() => undefined);
   /////////
 
   /////////

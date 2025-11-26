@@ -52,7 +52,7 @@ describe('transaction.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         transactionActions.initAccountTransactions(userData.one.username),
       );
-      expect(fakeStore.getState().transactions).toEqual({
+      expect(fakeStore.getState().hive.transactions).toEqual({
         list: fakeResponse,
         loading: false,
       });
@@ -69,7 +69,7 @@ describe('transaction.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         transactionActions.fetchAccountTransactions(userData.two.username, -1),
       );
-      expect(fakeStore.getState().transactions).toEqual({
+      expect(fakeStore.getState().hive.transactions).toEqual({
         list: fakeResponse[0],
         loading: false,
         lastUsedStart: 1000,

@@ -1,7 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { SignFromLedgerRequestMessage } from 'src/dialog/pages/sign-transaction';
+import { SignFromLedgerRequestMessage } from 'src/dialog/pages/sign-transaction/sign-transaction';
 
 describe('ledger module tests:\n', () => {
   const data: SignFromLedgerRequestMessage = {

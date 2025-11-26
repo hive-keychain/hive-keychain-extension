@@ -10,7 +10,10 @@ describe('autolock.utils tests', () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue('TRUE');
-    chrome.runtime.sendMessage = jest.fn((msg) => msg);
+    chrome.runtime.sendMessage = jest.fn((msg, callback) => {
+      if (callback) callback(undefined);
+      return Promise.resolve(undefined);
+    }) as any;
     await AutolockUtils.initBackgroundAutolock();
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       command: 'updateAutoLock',
@@ -26,7 +29,10 @@ describe('autolock.utils tests', () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue(null);
-    chrome.runtime.sendMessage = jest.fn((msg) => msg);
+    chrome.runtime.sendMessage = jest.fn((msg, callback) => {
+      if (callback) callback(undefined);
+      return Promise.resolve(undefined);
+    }) as any;
     await AutolockUtils.initBackgroundAutolock();
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       command: 'updateAutoLock',
@@ -37,7 +43,10 @@ describe('autolock.utils tests', () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue('');
-    chrome.runtime.sendMessage = jest.fn((msg) => msg);
+    chrome.runtime.sendMessage = jest.fn((msg, callback) => {
+      if (callback) callback(undefined);
+      return Promise.resolve(undefined);
+    }) as any;
     await AutolockUtils.initBackgroundAutolock();
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       command: 'updateAutoLock',
@@ -48,7 +57,10 @@ describe('autolock.utils tests', () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue(undefined);
-    chrome.runtime.sendMessage = jest.fn((msg) => msg);
+    chrome.runtime.sendMessage = jest.fn((msg, callback) => {
+      if (callback) callback(undefined);
+      return Promise.resolve(undefined);
+    }) as any;
     await AutolockUtils.initBackgroundAutolock();
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       command: 'updateAutoLock',

@@ -2,7 +2,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as mkActions from 'src/popup/hive/actions/mk.actions';
+import * as mkActions from '@popup/multichain/actions/mk.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('mk.actions tests:\n', () => {
@@ -11,7 +11,7 @@ describe('mk.actions tests:\n', () => {
   });
   describe('setMk tests:\n', () => {
     test('Must set mk', () => {
-      const mockSaveValue = (LocalStorageUtils.saveValueInLocalStorage =
+      const mockSaveValue = (LocalStorageUtils.saveValueInSessionStorage =
         jest.fn());
       const fakeStore = getFakeStore(initialEmptyStateStore);
       fakeStore.dispatch<any>(mkActions.setMk(mk.user.two, false));
@@ -24,7 +24,7 @@ describe('mk.actions tests:\n', () => {
       mockSaveValue.mockReset();
     });
     test('As empty will still set mk', () => {
-      const mockSaveValue = (LocalStorageUtils.saveValueInLocalStorage =
+      const mockSaveValue = (LocalStorageUtils.saveValueInSessionStorage =
         jest.fn());
       const fakeStore = getFakeStore(initialEmptyStateStore);
       const mk = '';
@@ -38,7 +38,7 @@ describe('mk.actions tests:\n', () => {
 
   describe('forgetMk tests:\n', () => {
     test('Must remove mk', () => {
-      const mockRemoveValue = (LocalStorageUtils.removeFromLocalStorage =
+      const mockRemoveValue = (LocalStorageUtils.removeFromSessionStorage =
         jest.fn());
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,

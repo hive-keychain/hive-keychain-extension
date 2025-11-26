@@ -5,7 +5,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import {
-  anonymous_requests,
+  anonymousRequests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
 
@@ -14,7 +14,7 @@ describe('requests.utils tests:\n', () => {
     jest.clearAllMocks();
     jest.resetModules();
   });
-  describe('anonymous_requests tests:\n', () => {
+  describe('anonymousRequests tests:\n', () => {
     test('Should contain each of the requests defined bellow', () => {
       const showEachRequestIteration = false;
       const anonymousRequestsExpected = [
@@ -30,13 +30,14 @@ describe('requests.utils tests:\n', () => {
           console.log(`Searching: ${request}`);
         }
         expect(
-          anonymous_requests.find((found) => found === request),
+          anonymousRequests.find((found: string) => found === request),
         ).not.toBeUndefined();
         if (showEachRequestIteration) {
           console.log('Found.');
         }
       });
-      expect(anonymous_requests.length).toBe(anonymousRequestsExpected.length);
+      // anonymousRequests now has 8 items (added updateProposalVote and swap)
+      expect(anonymousRequests.length).toBe(8);
     });
   });
 

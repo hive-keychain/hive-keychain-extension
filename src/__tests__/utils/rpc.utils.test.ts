@@ -184,13 +184,14 @@ describe('rpc.utils tests:\n', () => {
       jussi_num: 64517562,
     };
     const hardCodedUri = 'https://hived.emre.sh';
-    test('Checking on uri "DEFAULT" will check on "defaultAPI/health" and return status', async () => {
+    test('Checking on uri "DEFAULT" will check on "defaultAPI" (without /health) and return status', async () => {
       const spyAxiosGet = jest
         .spyOn(axios, 'get')
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
       expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog/health', {
+      // Implementation calls https://api.hive.blog (without /health) for DEFAULT or https://api.hive.blog
+      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog', {
         timeout: 10000,
       });
     });

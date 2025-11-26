@@ -86,7 +86,24 @@ describe('proposal.utils tests:\n', () => {
         'theghost1980',
         dynamic.globalProperties,
       );
-      expect(result).toEqual(proposal.expectedResultProposal);
+      // Asset objects now have additional methods, so we need to compare properties individually
+      expect(result.length).toBe(proposal.expectedResultProposal.length);
+      for (let index = 0; index < result.length; index++) {
+        const proposalItem = result[index];
+        const expected = proposal.expectedResultProposal[index];
+        expect(proposalItem.id).toBe(expected.id);
+        expect(proposalItem.creator).toBe(expected.creator);
+        expect(proposalItem.receiver).toBe(expected.receiver);
+        expect(proposalItem.startDate.format()).toBe(expected.startDate.format());
+        expect(proposalItem.endDate.format()).toBe(expected.endDate.format());
+        expect(proposalItem.dailyPay.toString()).toBe(expected.dailyPay.toString());
+        expect(proposalItem.subject).toBe(expected.subject);
+        expect(proposalItem.totalVotes).toBe(expected.totalVotes);
+        expect(proposalItem.link).toBe(expected.link);
+        expect(proposalItem.proposalId).toBe(expected.proposalId);
+        expect(proposalItem.voted).toBe(expected.voted);
+        expect(proposalItem.funded).toBe(expected.funded);
+      }
     });
 
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
@@ -102,7 +119,24 @@ describe('proposal.utils tests:\n', () => {
         'theghost1980',
         dynamic.globalProperties,
       );
-      expect(result).toEqual(constants.expectedResultProposalWithkeyChain);
+      // Asset objects now have additional methods, so we need to compare properties individually
+      expect(result.length).toBe(constants.expectedResultProposalWithkeyChain.length);
+      for (let index = 0; index < result.length; index++) {
+        const proposal = result[index];
+        const expected = constants.expectedResultProposalWithkeyChain[index];
+        expect(proposal.id).toBe(expected.id);
+        expect(proposal.creator).toBe(expected.creator);
+        expect(proposal.receiver).toBe(expected.receiver);
+        expect(proposal.startDate.format()).toBe(expected.startDate.format());
+        expect(proposal.endDate.format()).toBe(expected.endDate.format());
+        expect(proposal.dailyPay.toString()).toBe(expected.dailyPay.toString());
+        expect(proposal.subject).toBe(expected.subject);
+        expect(proposal.totalVotes).toBe(expected.totalVotes);
+        expect(proposal.link).toBe(expected.link);
+        expect(proposal.proposalId).toBe(expected.proposalId);
+        expect(proposal.voted).toBe(expected.voted);
+        expect(proposal.funded).toBe(expected.funded);
+      }
     });
   });
 

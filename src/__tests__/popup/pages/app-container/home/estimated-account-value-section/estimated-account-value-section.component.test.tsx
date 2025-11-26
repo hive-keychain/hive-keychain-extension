@@ -8,6 +8,32 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+// Mock network requests
+global.fetch = jest.fn((url: string) => {
+  // Mock Hive Engine API calls
+  if (url.includes('hive-engine') || url.includes('api.hive-engine')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ result: [] }),
+    } as Response);
+  }
+  // Mock PeakD notifications API
+  if (url.includes('notifications') || url.includes('peakd')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([]),
+    } as Response);
+  }
+  // Mock other API calls
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ result: [] }),
+  } as Response);
+}) as jest.Mock;
+
 describe('estimated-account-value-section.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -34,7 +60,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     it('Must display the estimated account value', async () => {
       expect(
         await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
-      ).toHaveTextContent(`$ ${accountValue} USD`);
+      ).toHaveTextContent(`$ ${accountValue}`);
     });
 
     it('Must display custom tooltip on mouse enter', async () => {

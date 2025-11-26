@@ -6,7 +6,7 @@ import {
   TestsConfigureModules,
 } from 'src/__tests__/utils-for-testing/loading-values-configuration/loading-values-configuration';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
-import { RootState } from 'src/popup/hive/store';
+import { RootState } from 'src/popup/multichain/store';
 
 /**
  * Belongs to: E2E testing.

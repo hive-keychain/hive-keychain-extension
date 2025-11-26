@@ -1,8 +1,8 @@
+import * as navigationActions from '@popup/multichain/actions/navigation.actions';
+import { Navigation } from '@popup/multichain/reducers/navigation.reducer';
 import { Screen } from '@reference-data/screen.enum';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as navigationActions from 'src/popup/hive/actions/navigation.actions';
-import { Navigation } from 'src/popup/hive/reducers/navigation.reducer';
 describe('navigation.actions tests:\n', () => {
   describe('resetNav tests:\n', () => {
     test('Must reset navigation', async () => {
@@ -14,7 +14,7 @@ describe('navigation.actions tests:\n', () => {
           ] as Navigation[],
         },
       });
-      await fakeStore.dispatch<any>(navigationActions.resetNav());
+      await fakeStore.dispatch<any>(navigationActions.resetNav() as any);
       expect(fakeStore.getState().navigation).toEqual({
         stack: [],
         params: null,
@@ -31,7 +31,7 @@ describe('navigation.actions tests:\n', () => {
         },
       });
       await fakeStore.dispatch<any>(
-        navigationActions.navigateTo(Screen.CONVERSION_PAGE, true),
+        navigationActions.navigateTo(Screen.CONVERSION_PAGE, true) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         params: undefined,
@@ -46,7 +46,7 @@ describe('navigation.actions tests:\n', () => {
         },
       });
       await fakeStore.dispatch<any>(
-        navigationActions.navigateTo(Screen.HOME_PAGE, false),
+        navigationActions.navigateTo(Screen.HOME_PAGE, false) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         stack: [{ currentPage: Screen.HOME_PAGE }],
@@ -55,7 +55,7 @@ describe('navigation.actions tests:\n', () => {
     test('Must set new stack', async () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        navigationActions.navigateTo(Screen.HOME_PAGE, false),
+        navigationActions.navigateTo(Screen.HOME_PAGE, false) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         params: undefined,
@@ -77,7 +77,7 @@ describe('navigation.actions tests:\n', () => {
           Screen.CONVERSION_PAGE,
           ['param 1', 'param 2'],
           true,
-        ),
+        ) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         params: ['param 1', 'param 2'],
@@ -101,7 +101,7 @@ describe('navigation.actions tests:\n', () => {
           Screen.HOME_PAGE,
           ['param 1', 'param 2', 'param 3'],
           false,
-        ),
+        ) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         stack: [{ currentPage: Screen.HOME_PAGE }],
@@ -111,7 +111,11 @@ describe('navigation.actions tests:\n', () => {
       const params = ['param 1', 'param 2', 'param 3'];
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
-        navigationActions.navigateToWithParams(Screen.HOME_PAGE, params, false),
+        navigationActions.navigateToWithParams(
+          Screen.HOME_PAGE,
+          params,
+          false,
+        ) as any,
       );
       expect(fakeStore.getState().navigation).toEqual({
         params: params,
@@ -123,7 +127,7 @@ describe('navigation.actions tests:\n', () => {
   describe('goBack tests:\n', () => {
     test('Must return empty stack', async () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
-      await fakeStore.dispatch<any>(navigationActions.goBack());
+      await fakeStore.dispatch<any>(navigationActions.goBack() as any);
       expect(fakeStore.getState().navigation).toEqual({ stack: [] });
     });
     test('Must remove first element in the stack and keep old params', async () => {
@@ -142,7 +146,7 @@ describe('navigation.actions tests:\n', () => {
           ],
         },
       });
-      await fakeStore.dispatch<any>(navigationActions.goBack());
+      await fakeStore.dispatch<any>(navigationActions.goBack() as any);
       expect(fakeStore.getState().navigation).toEqual({
         stack: [
           {
@@ -165,7 +169,7 @@ describe('navigation.actions tests:\n', () => {
           ],
         },
       });
-      await fakeStore.dispatch<any>(navigationActions.goBack());
+      await fakeStore.dispatch<any>(navigationActions.goBack() as any);
       expect(fakeStore.getState().navigation).toEqual({
         stack: [],
       });

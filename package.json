@@ -20,7 +20,7 @@
     "crowdin:pull": "crowdin download",
     "crowdin:push": "crowdin upload sources",
     "doc": "documentation build public/hive_keychain.js -f md -c documentation/build/documentation.yml -o documentation/README.md",
-    "test": "jest --verbose",
+    "test": "jest",
     "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",

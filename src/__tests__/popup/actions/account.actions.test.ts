@@ -11,7 +11,7 @@ import {
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
 import * as accountActions from 'src/popup/hive/actions/account.actions';
-import { setErrorMessage } from 'src/popup/hive/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 
 describe('account.actions tests:\n', () => {
   afterEach(() => {
@@ -31,7 +31,7 @@ describe('account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         accountActions.retrieveAccounts(mk.user.one),
       );
-      expect(fakeStore.getState().accounts).toEqual([]);
+      expect(fakeStore.getState().hive.accounts).toEqual([]);
     });
 
     test('With accounts returned from local storage', async () => {
@@ -40,14 +40,14 @@ describe('account.actions tests:\n', () => {
       const spyGetAccountsFromLocalStorage = jest
         .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
         .mockResolvedValueOnce(
-          initialStateWAccountsWActiveAccountStore.accounts,
+          initialStateWAccountsWActiveAccountStore.hive.accounts,
         );
 
       await fakeStore.dispatch<any>(
         accountActions.retrieveAccounts(mk.user.one),
       );
-      expect(fakeStore.getState().accounts).toEqual(
-        initialStateWAccountsWActiveAccountStore.accounts,
+      expect(fakeStore.getState().hive.accounts).toEqual(
+        initialStateWAccountsWActiveAccountStore.hive.accounts,
       );
       spyGetAccountsFromLocalStorage.mockReset();
       spyGetAccountsFromLocalStorage.mockRestore();
@@ -62,7 +62,7 @@ describe('account.actions tests:\n', () => {
         keys: { activePubkey: userData.one.encryptKeys.active },
       } as LocalAccount;
       await fakeStore.dispatch<any>(accountActions.addAccount(account));
-      expect(fakeStore.getState().accounts).toEqual([account]);
+      expect(fakeStore.getState().hive.accounts).toEqual([account]);
     });
   });
 
@@ -70,7 +70,7 @@ describe('account.actions tests:\n', () => {
     test('Must delete accounts', async () => {
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(accountActions.resetAccount());
-      expect(fakeStore.getState().accounts).toEqual([]);
+      expect(fakeStore.getState().hive.accounts).toEqual([]);
     });
   });
 
@@ -82,7 +82,7 @@ describe('account.actions tests:\n', () => {
       ] as LocalAccount[];
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(accountActions.setAccounts(accounts));
-      expect(fakeStore.getState().accounts).toEqual(accounts);
+      expect(fakeStore.getState().hive.accounts).toEqual(accounts);
     });
   });
 
@@ -102,8 +102,8 @@ describe('account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
-      expect(fakeStore.getState().accounts).toEqual([accountAddedKey]);
-      expect(fakeStore.getState().activeAccount.keys.active).toBe(
+      expect(fakeStore.getState().hive.accounts).toEqual([accountAddedKey]);
+      expect(fakeStore.getState().hive.activeAccount.keys.active).toBe(
         activePrivateKey,
       );
     });
@@ -113,8 +113,8 @@ describe('account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
-      expect(fakeStore.getState().accounts).toEqual(
-        initialStateWOneKey.accounts,
+      expect(fakeStore.getState().hive.accounts).toEqual(
+        initialStateWOneKey.hive.accounts,
       );
     });
   });
@@ -132,7 +132,7 @@ describe('account.actions tests:\n', () => {
       const keyType = KeyType.POSTING;
       jest
         .spyOn(AccountUtils, 'deleteKey')
-        .mockReturnValueOnce(initialStateWOneKey.accounts);
+        .mockReturnValueOnce(initialStateWOneKey.hive.accounts);
       jest
         .spyOn(AccountUtils, 'getAccount')
         .mockResolvedValueOnce(fakeExtendedAccountResponse);
@@ -150,11 +150,11 @@ describe('account.actions tests:\n', () => {
       });
 
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
-      expect(fakeStore.getState().accounts).toEqual(
-        initialStateWOneKey.accounts,
+      expect(fakeStore.getState().hive.accounts).toEqual(
+        initialStateWOneKey.hive.accounts,
       );
-      expect(fakeStore.getState().activeAccount).toEqual(
-        initialStateWOneKey.activeAccount,
+      expect(fakeStore.getState().hive.activeAccount).toEqual(
+        initialStateWOneKey.hive.activeAccount,
       );
     });
     test('Must remove the posting key and update active account keys', async () => {
@@ -176,8 +176,8 @@ describe('account.actions tests:\n', () => {
         .mockReturnValueOnce(deletedPostingKeyAccounts);
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
-      expect(fakeStore.getState().accounts).toEqual(deletedPostingKeyAccounts);
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.accounts).toEqual(deletedPostingKeyAccounts);
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: { name: mk.user.one },
         keys: deletedPostingKeyAccounts[0].keys,
         name: mk.user.one,
@@ -203,8 +203,8 @@ describe('account.actions tests:\n', () => {
         .mockReturnValueOnce(deletedActiveKeyAccounts);
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
-      expect(fakeStore.getState().accounts).toEqual(deletedActiveKeyAccounts);
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.accounts).toEqual(deletedActiveKeyAccounts);
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: { name: mk.user.one },
         keys: deletedActiveKeyAccounts[0].keys,
         name: mk.user.one,
@@ -230,8 +230,8 @@ describe('account.actions tests:\n', () => {
         .mockReturnValueOnce(deletedMemoKeyAccounts);
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
-      expect(fakeStore.getState().accounts).toEqual(deletedMemoKeyAccounts);
-      expect(fakeStore.getState().activeAccount).toEqual({
+      expect(fakeStore.getState().hive.accounts).toEqual(deletedMemoKeyAccounts);
+      expect(fakeStore.getState().hive.activeAccount).toEqual({
         account: { name: mk.user.one },
         keys: deletedMemoKeyAccounts[0].keys,
         name: mk.user.one,

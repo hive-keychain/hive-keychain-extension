@@ -12,6 +12,32 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import AccountSubMenuItems from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu-items';
 
+// Mock network requests
+global.fetch = jest.fn((url: string) => {
+  // Mock Hive Engine API calls
+  if (url.includes('hive-engine') || url.includes('api.hive-engine')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ result: [] }),
+    } as Response);
+  }
+  // Mock PeakD notifications API
+  if (url.includes('notifications') || url.includes('peakd')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([]),
+    } as Response);
+  }
+  // Mock other API calls
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({ result: [] }),
+  } as Response);
+}) as jest.Mock;
+
 describe('account-sub-menu.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -23,10 +49,14 @@ describe('account-sub-menu.component tests:\n', () => {
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
     );
+    // Wait for component to initialize
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+    await act(async () => {
+      await userEvent.click(await screen.findByTestId(dataTestIdButton.menu, {}, { timeout: 5000 }));
       await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS, {}, { timeout: 5000 }),
       );
     });
   });
