@@ -61,7 +61,7 @@ const getGasPrice = async () => {
     res = 0;
   }
 
-  return Number(res);
+  return parseInt(res, 16);
 };
 
 const getMaxPriorityFeePerGas = async () => {
@@ -73,7 +73,7 @@ const getMaxPriorityFeePerGas = async () => {
     res = 0;
   }
 
-  return Number(res);
+  return parseInt(res, 16);
 };
 
 const getBaseFee = async () => {

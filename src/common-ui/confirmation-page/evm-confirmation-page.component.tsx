@@ -105,10 +105,10 @@ const ConfirmationPage = ({
   const handleClickOnConfirm = () => {
     if (
       hasGasFee &&
-      (selectedFee?.maxFee.equals(-1) ||
-        selectedFee?.estimatedFee.equals(-1) ||
+      (selectedFee?.maxFeeInEth.equals(-1) ||
+        selectedFee?.estimatedFeeInEth.equals(-1) ||
         selectedFee?.gasLimit.equals(-1) ||
-        selectedFee?.priorityFee?.equals(-1))
+        selectedFee?.priorityFeeInGwei?.equals(-1))
     ) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;

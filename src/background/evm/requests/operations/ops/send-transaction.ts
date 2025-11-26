@@ -22,10 +22,17 @@ export const sendEvmTransaction = async (
       ...extraData,
       gasFee: {
         ...extraData.gasFee,
+        baseFeePerGasInGwei: new Decimal(
+          extraData.gasFee.baseFeePerGasInGwei ?? 0,
+        ),
+        estimatedFeeInEth: new Decimal(extraData.gasFee.estimatedFeeInEth ?? 0),
+        gasPriceInGwei: new Decimal(extraData.gasFee.gasPriceInGwei ?? 0),
+        maxFeePerGasInGwei: new Decimal(
+          extraData.gasFee.maxFeePerGasInGwei ?? 0,
+        ),
+        priorityFeeInGwei: new Decimal(extraData.gasFee.priorityFeeInGwei ?? 0),
         gasLimit: new Decimal(extraData.gasFee.gasLimit),
-        maxFee: new Decimal(extraData.gasFee.maxFee ?? 0),
-        maxFeePerGas: new Decimal(extraData.gasFee.maxFeePerGas ?? 0),
-        priorityFee: new Decimal(extraData.gasFee.priorityFee ?? 0),
+        maxFeeInEth: new Decimal(extraData.gasFee.maxFeeInEth ?? 0),
       },
     };
     res = await EvmTransactionsUtils.send(

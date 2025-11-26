@@ -31,7 +31,7 @@ export const GasFeePanelItem = ({
         ])}
       </div>
       <div className="label gas-fee">
-        {FormatUtils.formatCurrencyValue(estimation.maxFee.toFixed(), 8)}
+        {FormatUtils.formatCurrencyValue(estimation.maxFeeInEth.toFixed(), 8)}
       </div>
     </div>
   );

@@ -31,6 +31,7 @@ import {
   Wallet,
 } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const send = async (
   wallet: HDNodeWallet,
@@ -41,19 +42,16 @@ const send = async (
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   let feeData = {};
-  console.log(gasFee, 'gasFee in send');
-  console.log(gasFee.maxFeePerGas?.toFixed());
-  console.log(gasFee.priorityFee?.toFixed());
   if (gasFee)
     switch (gasFee.type) {
       case EvmTransactionType.EIP_1559: {
         feeData = {
           maxPriorityFeePerGas: ethers.parseUnits(
-            gasFee.priorityFee!.toFixed(),
+            gasFee.priorityFeeInGwei!.toFixed(),
             'gwei',
           ),
           maxFeePerGas: ethers.parseUnits(
-            gasFee.maxFeePerGas!.toFixed(),
+            gasFee.maxFeePerGasInGwei!.toFixed(),
             'gwei',
           ),
         };
@@ -63,7 +61,7 @@ const send = async (
       case EvmTransactionType.LEGACY: {
         feeData = {
           gasPrice: ethers.parseUnits(
-            new Decimal(gasFee.gasPrice!).toFixed(),
+            new Decimal(gasFee.gasPriceInGwei!).toFixed(),
             'gwei',
           ),
         };
@@ -84,8 +82,6 @@ const send = async (
     ...feeData,
   };
 
-  console.log(transactionRequest, 'transactionRequest in send');
-
   if (
     request.type &&
     (request.type as unknown as EvmTransactionType) ===
@@ -102,7 +98,7 @@ const send = async (
   const transactionResponse: TransactionResponse = await connectedWallet
     .sendTransaction(transactionRequest)
     .catch((err) => {
-      console.log('Error in send', err);
+      Logger.error('Error in send', err);
       throw err;
     })
     .then((transaction) => transaction);
@@ -200,7 +196,7 @@ const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
       ),
     };
   } catch (error) {
-    console.log('error', error);
+    Logger.error('Error in hasPendingTransaction', error);
   }
 };
 
@@ -228,7 +224,6 @@ const getPendingTransactionsForWallet2 = async (
   walletAddress: string,
   chain: EvmChain,
 ): Promise<EvmPendingTransactionDetails> => {
-  console.log('checking pending transactions for wallet', walletAddress, chain);
   const provider = await EthersUtils.getProvider(chain);
   switch (chain.blockExplorer?.type) {
     case BlockExplorerType.BLOCKSCOUT: {

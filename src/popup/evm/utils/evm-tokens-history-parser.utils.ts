@@ -263,7 +263,7 @@ const parseEvent = async (
         historyItem.detailFields = details;
       } else if (!!event.functionName && event.functionName.length > 0) {
         const functionName = event.functionName.split('(')[0];
-        console.log(functionName, event);
+        // console.log(functionName, event);
         let label = '';
         let pageTitle = '';
 

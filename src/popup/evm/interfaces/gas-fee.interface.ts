@@ -4,16 +4,17 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface GasFeeEstimationBase {
   type: EvmTransactionType;
-  estimatedFee: Decimal;
+  estimatedFeeInEth: Decimal;
   estimatedFeeUSD: Decimal;
-  maxFee: Decimal;
+  maxFeeInEth: Decimal;
   maxFeeUSD: Decimal;
   estimatedMaxDuration: Decimal;
   gasLimit: Decimal;
   deactivated?: boolean;
-  priorityFee?: Decimal;
-  maxFeePerGas?: Decimal;
-  gasPrice?: Decimal;
+  priorityFeeInGwei?: Decimal;
+  maxFeePerGasInGwei?: Decimal;
+  baseFeePerGasInGwei?: Decimal;
+  gasPriceInGwei?: Decimal;
   icon: SVGIcons;
   name: string;
 }

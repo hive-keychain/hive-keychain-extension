@@ -691,10 +691,10 @@ export const SendTransaction = (props: Props) => {
 
   const handleClickOnConfirm = () => {
     if (
-      transactionHook.selectedFee?.maxFee.equals(-1) ||
-      transactionHook.selectedFee?.estimatedFee.equals(-1) ||
+      transactionHook.selectedFee?.maxFeeInEth.equals(-1) ||
+      transactionHook.selectedFee?.estimatedFeeInEth.equals(-1) ||
       transactionHook.selectedFee?.gasLimit.equals(-1) ||
-      transactionHook.selectedFee?.priorityFee?.equals(-1)
+      transactionHook.selectedFee?.priorityFeeInGwei?.equals(-1)
     ) {
       // Force open gas fee panel
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
