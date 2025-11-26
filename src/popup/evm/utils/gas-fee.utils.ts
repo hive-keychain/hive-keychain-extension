@@ -93,7 +93,7 @@ const estimate = async (
 
     const valueUSD = maxFee.mul(price);
 
-    return {
+    const feeResult: FullGasFeeEstimation = {
       custom: {
         type: type,
         estimatedFeeInEth: maxFee,
@@ -110,6 +110,20 @@ const estimate = async (
         name: 'popup_html_evm_custom_gas_fee_custom',
       },
     };
+
+    if (
+      transactionData &&
+      (transactionData.gasPrice ||
+        (transactionData.maxPriorityFeePerGas && transactionData.maxFeePerGas))
+    ) {
+      feeResult.suggestedByDApp = await createDAppSuggestionFromTransactionData(
+        transactionData,
+        gasLimit!,
+        feeResult,
+      );
+    }
+
+    return feeResult;
   }
 
   const lowPriorityFee = Math.max(
@@ -288,7 +302,7 @@ const createDAppSuggestionFromTransactionData = async (
         EvmFormatUtils.GWEI,
       );
       estimatedFee = new Decimal(
-        Number(estimates?.extraInfo?.baseFee.estimated),
+        Number(estimates?.extraInfo?.baseFee?.estimated ?? 0),
       ).add(
         new Decimal(Number(transactionData.maxPriorityFeePerGas!)).div(
           EvmFormatUtils.GWEI,
