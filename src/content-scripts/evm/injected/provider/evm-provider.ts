@@ -154,7 +154,7 @@ export class EvmProvider extends EventEmitter {
         EvmEventName.REQUEST,
         { ...args, chainId: this.chainId },
         (response: any) => {
-          console.log('response in evm provider request', response);
+          console.log('response in evm provider request', response, args);
           if (response.result !== null && response.result !== undefined) {
             resolve(response.result);
           } else {
