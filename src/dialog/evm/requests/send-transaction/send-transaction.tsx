@@ -150,6 +150,17 @@ export const SendTransaction = (props: Props) => {
     }
 
     if (usedAccount) {
+      const usedAccountInput = await transactionHook.getWalletAddressInput(
+        usedAccount.wallet.address,
+        chainTmp.chainId,
+        {} as any,
+        accounts,
+        'dialog_account',
+      );
+      transactionConfirmationFields.otherFields.push({
+        ...usedAccountInput,
+      });
+
       // Case with data
       if (params.data) {
         const proxy = await EvmTransactionParserUtils.getSmartContractProxy(
@@ -538,17 +549,6 @@ export const SendTransaction = (props: Props) => {
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),
           );
-
-          const usedAccountInput = await transactionHook.getWalletAddressInput(
-            usedAccount.wallet.address,
-            chainTmp.chainId,
-            transactionInfo,
-            accounts,
-            'dialog_account',
-          );
-          transactionConfirmationFields.otherFields.push({
-            ...usedAccountInput,
-          });
 
           transactionConfirmationFields.otherFields.push(
             await transactionHook.getDomainWarnings(transactionInfo),

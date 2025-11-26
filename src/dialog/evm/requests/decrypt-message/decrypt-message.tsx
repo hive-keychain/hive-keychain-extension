@@ -1,6 +1,7 @@
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { HDNodeWallet } from 'ethers';
@@ -20,7 +21,7 @@ interface Props {
 
 export const DecryptMessage = (props: Props) => {
   const { accounts, data, request } = props;
-  const warningHook = useTransactionHook(data, request);
+  const transactionHook = useTransactionHook(data, request);
 
   const [decryptedMessage, setDecryptedMessage] = useState<
     string | undefined
@@ -38,14 +39,31 @@ export const DecryptMessage = (props: Props) => {
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
-    transactionConfirmationFields.otherFields.push(
-      await warningHook.getDomainWarnings(transactionInfo),
+
+    const chain = await EvmChainUtils.getLastEvmChain();
+    const usedAccount = accounts.find(
+      (account) =>
+        account.wallet.address.toLowerCase() ===
+        request.params[1].toLowerCase(),
     );
-    warningHook.setUnableToReachBackend(
+    const usedAccountInput = await transactionHook.getWalletAddressInput(
+      usedAccount!.wallet.address,
+      chain.chainId,
+      {} as any,
+      accounts,
+      'dialog_account',
+    );
+    transactionConfirmationFields.otherFields.push({
+      ...usedAccountInput,
+    });
+    transactionConfirmationFields.otherFields.push(
+      await transactionHook.getDomainWarnings(transactionInfo),
+    );
+    transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
-    warningHook.setFields(transactionConfirmationFields);
+    transactionHook.setFields(transactionConfirmationFields);
   };
 
   const decryptMessage = () => {
@@ -72,7 +90,7 @@ export const DecryptMessage = (props: Props) => {
       caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
         data.dappInfo.domain,
       ])}
-      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
+      fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={
         <>
           <div
@@ -96,6 +114,6 @@ export const DecryptMessage = (props: Props) => {
           </div>
         </>
       }
-      transactionHook={warningHook}></EvmOperation>
+      transactionHook={transactionHook}></EvmOperation>
   );
 };
