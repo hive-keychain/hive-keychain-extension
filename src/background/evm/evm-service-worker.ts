@@ -9,15 +9,21 @@ import {
   ProviderRpcError,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { TransactionResponse } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 const initializeServiceWorker = async () => {
+  Object.assign(global, { contextType: 'service_worker' });
+
   Logger.info('Starting EVM service worker');
 
-  chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
     if (details.url?.endsWith('.eth/')) {
       const regex = /(?:https?:\/\/)?([a-z0-9-]+\.eth)\b/i;
       const match = details.url.match(regex);
@@ -147,6 +153,17 @@ const chromeMessageHandler = async (
       CommunicationUtils.runtimeSendMessage({
         ...backgroundMessage,
       });
+      break;
+    }
+    case BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION: {
+      const value = backgroundMessage.value;
+      const transactionResponse = new TransactionResponse(
+        value.transactionResponse,
+        await EthersUtils.getProvider(value.chain as EvmChain),
+      );
+      EvmPendingTransactionsNotifications.waitForTransaction(
+        transactionResponse,
+      );
       break;
     }
   }

@@ -12,3 +12,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
+
+Object.assign(global, { contextType: 'popup' });

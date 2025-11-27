@@ -23,7 +23,8 @@
       "@dialog/*": ["src/dialog/*"],
       "@common-ui/*": ["./src/common-ui/*"],
       "react": ["./node_modules/@types/react"]
-    }
+    },
+    "types": ["chrome"]
   },
   "include": ["src/**/*"],
   "exclude": ["src/__tests__/*"] // Comment when working on tests

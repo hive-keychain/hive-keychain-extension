@@ -34,6 +34,7 @@ export enum BackgroundCommand {
   REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
   GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
+  WAIT_FOR_EVM_TRANSACTION_CONFIRMATION = 'waitForEvmTransactionConfirmation',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',

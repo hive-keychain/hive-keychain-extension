@@ -8,7 +8,6 @@ interface Window {
   gtag: (a: string, b: any, c?: any) => void;
   ethereum: any;
 }
-
 declare module '*.svg' {
   import React = require('react');
 
@@ -18,3 +17,4 @@ declare module '*.svg' {
 }
 
 declare module '@metamask/ethjs';
+/// <reference types="chrome" />

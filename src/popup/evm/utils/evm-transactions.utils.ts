@@ -21,6 +21,8 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { ContextType } from '@reference-data/context-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import {
@@ -30,6 +32,7 @@ import {
   TransactionResponse,
   Wallet,
 } from 'ethers';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -103,11 +106,7 @@ const send = async (
     })
     .then((transaction) => transaction);
   if (transactionResponse) {
-    addPendingTransaction(
-      connectedWallet.address,
-      transactionResponse,
-      chain.chainId,
-    );
+    addPendingTransaction(connectedWallet.address, transactionResponse, chain);
   }
   return transactionResponse;
 };
@@ -142,14 +141,14 @@ const cancel = async (
 const addPendingTransaction = async (
   walletAddress: string,
   transactionResponse: TransactionResponse,
-  chainId: EvmChain['chainId'],
+  chain: EvmChain,
 ) => {
   let transactions = await getAllPendingTransactions();
 
   transactions.push({
     txResponseParams: transactionResponse.toJSON(),
     walletAddress: walletAddress,
-    chainId: chainId,
+    chainId: chain.chainId,
     broadcastDate: Date.now(),
   });
 
@@ -158,15 +157,31 @@ const addPendingTransaction = async (
     transactions,
   );
 
-  EvmPendingTransactionsNotifications.waitForTransaction(transactionResponse);
+  switch ((global as any).contextType) {
+    case ContextType.POPUP: {
+      CommunicationUtils.runtimeSendMessage({
+        command: BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION,
+        value: { transactionResponse, chain },
+      });
+      break;
+    }
+    case ContextType.SERVICE_WORKER: {
+      EvmPendingTransactionsNotifications.waitForTransaction(
+        transactionResponse,
+      );
+      break;
+    }
+  }
 };
 
 const deleteFromPendingTransactions = async (txHash: string) => {
+  console.log('deleteFromPendingTransactions', txHash);
   let transactions = await getAllPendingTransactions();
   transactions = transactions.filter(
     (transaction: EvmPendingTransaction) =>
       transaction.txResponseParams.hash.toLowerCase() !== txHash.toLowerCase(),
   );
+  console.log('transactions', transactions);
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     transactions,
