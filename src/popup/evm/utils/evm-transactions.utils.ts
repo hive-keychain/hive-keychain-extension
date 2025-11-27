@@ -175,13 +175,11 @@ const addPendingTransaction = async (
 };
 
 const deleteFromPendingTransactions = async (txHash: string) => {
-  console.log('deleteFromPendingTransactions', txHash);
   let transactions = await getAllPendingTransactions();
   transactions = transactions.filter(
     (transaction: EvmPendingTransaction) =>
       transaction.txResponseParams.hash.toLowerCase() !== txHash.toLowerCase(),
   );
-  console.log('transactions', transactions);
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     transactions,
@@ -205,7 +203,7 @@ const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
       hasPending,
       pendingTransactionsCount: hasPending ? 1 : 0,
       queuedTransactionsCount: pendingNonce - latestNonce - 1,
-      pendingTransactionDetails: await getPendingTransactionsForWallet2(
+      pendingTransactionDetails: await getPendingTransactionsDetails(
         wallet.address,
         chain,
       ),
@@ -235,10 +233,18 @@ const getPendingTransactionsForWallet = async (
   );
 };
 
-const getPendingTransactionsForWallet2 = async (
+const getPendingTransactionsDetails = async (
   walletAddress: string,
   chain: EvmChain,
+  nonce?: number,
 ): Promise<EvmPendingTransactionDetails> => {
+  let pendingTransactionDetail: EvmPendingTransactionDetails = {
+    label: chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+    title: 'evm_pending_queued_transactions',
+  };
+
+  let pendingTx: any;
+
   const provider = await EthersUtils.getProvider(chain);
   switch (chain.blockExplorer?.type) {
     case BlockExplorerType.BLOCKSCOUT: {
@@ -246,33 +252,46 @@ const getPendingTransactionsForWallet2 = async (
         chain,
         walletAddress,
       );
-      const pendingTx = new TransactionResponse(result[0], provider);
+      pendingTx = new TransactionResponse(result[0], provider);
 
-      const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
-      const item = await EvmTokensHistoryParserUtils.parseEvent(
-        result[0],
-        chain,
-        walletAddress.toLowerCase(),
-        tokensMetadata,
-        undefined,
-        true,
-      );
-
-      return {
-        label:
-          item?.label ??
-          chrome.i18n.getMessage('evm_unknown_pending_transaction'),
-        title: 'evm_pending_queued_transactions',
-        transactionResponse: pendingTx,
-      };
+      break;
     }
     default: {
-      return {
-        label: chrome.i18n.getMessage('evm_unknown_pending_transaction'),
-        title: 'evm_pending_queued_transactions',
-      };
+      const localPendingTransactions = await getPendingTransactionsForWallet(
+        walletAddress,
+        chain.chainId,
+      );
+
+      if (nonce) {
+        const tx = localPendingTransactions.find(
+          (transaction) => transaction.txResponseParams.nonce === nonce,
+        );
+        pendingTx = new TransactionResponse(tx?.txResponseParams, provider);
+      }
     }
   }
+
+  if (pendingTx) {
+    const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
+    const item = await EvmTokensHistoryParserUtils.parseEvent(
+      pendingTx,
+      chain,
+      walletAddress.toLowerCase(),
+      tokensMetadata,
+      undefined,
+      true,
+    );
+
+    pendingTransactionDetail = {
+      label:
+        item?.label ??
+        chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+      title: 'evm_pending_queued_transactions',
+      transactionResponse: pendingTx,
+    };
+  }
+
+  return pendingTransactionDetail;
 };
 
 const getPendingTransaction = async (
@@ -382,5 +401,5 @@ export const EvmTransactionsUtils = {
   getAllCanceledTransactions,
   send,
   hasPendingTransaction,
-  getPendingTransactionsForWallet2,
+  getPendingTransactionsDetails,
 };

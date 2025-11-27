@@ -5642,5 +5642,9 @@
   "evm_pending_transaction_warning": {
     "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
     "description": "Pending transaction warning"
+  },
+  "evm_gas_fee_warning_gas_limit_too_low": {
+    "message": "Gas limit is too low. Should be at least 21000",
+    "description": "Gas limit is too low"
   }
 }

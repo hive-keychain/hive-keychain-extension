@@ -215,11 +215,15 @@ export const GasFeePanel = ({
     value: string,
   ) => {
     const valueNumber = value.length > 0 ? new Decimal(value) : new Decimal(0);
+    console.log(valueNumber);
 
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
         newState.maxBaseFeeInGwei = value;
+
+        // newState.maxBaseFeeInEth = new Decimal()
+
         newState.maxBaseFeeInEth = new Decimal(
           ethers.formatUnits(
             valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
@@ -251,24 +255,32 @@ export const GasFeePanel = ({
       case 'gasLimit': {
         newState.gasLimit = value;
 
-        newState.gasPriceInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm?.gasPriceInGwei!).toNumber(),
-            'gwei',
-          ),
-        );
-        newState.priorityFeeInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm?.priorityFeeInGwei!).toNumber(),
-            'gwei',
-          ),
-        );
-        newState.maxBaseFeeInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm.maxBaseFeeInGwei!).toNumber(),
-            'gwei',
-          ),
-        );
+        if (
+          customGasFeeForm.gasPriceInGwei &&
+          !isNaN(parseFloat(customGasFeeForm.gasPriceInGwei))
+        ) {
+          newState.gasPriceInEth = new Decimal(
+            ethers.formatUnits(customGasFeeForm.gasPriceInGwei!, 'gwei'),
+          ).mul(valueNumber);
+        }
+
+        if (
+          customGasFeeForm.priorityFeeInGwei &&
+          !isNaN(parseFloat(customGasFeeForm.priorityFeeInGwei))
+        ) {
+          newState.priorityFeeInEth = new Decimal(
+            ethers.formatUnits(customGasFeeForm.priorityFeeInGwei!, 'gwei'),
+          ).mul(valueNumber);
+        }
+
+        if (
+          customGasFeeForm.maxBaseFeeInGwei &&
+          !isNaN(parseFloat(customGasFeeForm.maxBaseFeeInGwei))
+        ) {
+          newState.maxBaseFeeInEth = new Decimal(
+            ethers.formatUnits(customGasFeeForm.maxBaseFeeInGwei!, 'gwei'),
+          ).mul(valueNumber);
+        }
 
         break;
       }
@@ -309,6 +321,11 @@ export const GasFeePanel = ({
         setCustomFeeFormWarning(
           'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
         );
+        return;
+      }
+
+      if (Number(customGasFeeForm.gasLimit) < 21000) {
+        setCustomFeeFormWarning('evm_gas_fee_warning_gas_limit_too_low');
         return;
       }
 
