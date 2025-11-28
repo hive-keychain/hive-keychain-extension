@@ -14,9 +14,9 @@ import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import HiveUtils from '@popup/hive/utils/hive.utils';
-import MkUtils from '@popup/hive/utils/mk.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import {
   Transaction as HiveTransaction,
@@ -31,6 +31,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const MINUTE = 60;
 
@@ -101,7 +102,7 @@ const createSignAndBroadcastTransaction = async (
 
   const localAccount = (
     await AccountUtils.getAccountsFromLocalStorage(
-      await MkUtils.getMkFromLocalStorage(),
+      await VaultUtils.getValueFromVault(VaultKey.__MK),
     )
   ).find(
     (account) => account.keys.posting === key || account.keys.active === key,

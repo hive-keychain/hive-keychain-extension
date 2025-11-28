@@ -1,11 +1,13 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 function getMk() {
-  return LocalStorageUtils.getValueFromSessionStorage(LocalStorageKeyEnum.__MK);
+  return VaultUtils.getValueFromVault(VaultKey.__MK);
 }
 
 const login = async (password: string): Promise<boolean> => {
@@ -49,11 +51,11 @@ async function sendBackMk() {
 }
 
 function saveMk(newMk: string) {
-  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, newMk);
+  VaultUtils.saveValueInVault(VaultKey.__MK, newMk);
 }
 
 function lock() {
-  LocalStorageUtils.removeFromSessionStorage(LocalStorageKeyEnum.__MK);
+  VaultUtils.removeFromVault(VaultKey.__MK);
 }
 
 const MkModule = {

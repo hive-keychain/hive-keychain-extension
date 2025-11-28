@@ -3,8 +3,10 @@ import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const CURRENT_LOCAL_STORAGE_VERSION = 5;
 const checkAndUpdateLocalStorage = async () => {
@@ -121,9 +123,7 @@ const checkAndUpdateLocalStorage = async () => {
         }
         if (oldFormat) {
           const favoriteUserData: any = {};
-          const mk = await LocalStorageUtils.getValueFromSessionStorage(
-            LocalStorageKeyEnum.__MK,
-          );
+          const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
           const localAccounts =
             await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
           if (localAccounts) {

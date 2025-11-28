@@ -11,6 +11,7 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import getMessage from '@background/utils/i18n.utils';
+import VaultModule from '@background/vault.module';
 import {
   KeychainRequest,
   KeychainRequestWrapper,
@@ -18,13 +19,19 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
 /* istanbul ignore next */
 (async () => {
+  if (!process.env.IS_FIREFOX) {
+    Logger.log('Initializing vault');
+    VaultModule.init();
+  }
   await RPCModule.init();
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
   Logger.info('Initializing background tasks');
@@ -39,6 +46,8 @@ import MkModule from './mk.module';
   );
   MultisigModule.start();
 })();
+
+let vault: Record<string, any> = {};
 /* istanbul ignore next */
 //@ts-ignore
 chrome.i18n.getMessage = getMessage;
@@ -48,7 +57,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  Logger.log('Background message', backgroundMessage);
+  // Logger.log('Background message', backgroundMessage);
   switch (backgroundMessage.command) {
     case BackgroundCommand.GET_MK:
       MkModule.sendBackMk();
@@ -135,14 +144,30 @@ const chromeMessageHandler = async (
     case BackgroundCommand.PING:
       Logger.log('ping');
       break;
+
+    // Replace vault by persistent data storage for Firefox
+    case VaultCommand.GET_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      return vault[backgroundMessage.key!];
+    case VaultCommand.SET_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      vault[backgroundMessage.key!] = backgroundMessage.value;
+      return true;
+    case VaultCommand.REMOVE_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      delete vault[backgroundMessage.key!];
+      return true;
   }
+  return true;
 };
 
 // When a chrome window is removed, check if there are no window left open
 chrome.windows.onRemoved.addListener(() => {
-  chrome.windows.getAll((windows) => {
+  chrome.windows.getAll(async (windows) => {
     if (windows.length === 0) {
-      LocalStorageUtils.clearSessionStorage();
+      if (await chrome.offscreen.hasDocument()) {
+        VaultUtils.removeFromVault(VaultKey.__MK);
+      }
     }
   });
 });

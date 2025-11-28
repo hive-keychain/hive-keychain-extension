@@ -9,6 +9,7 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
@@ -24,13 +25,13 @@ import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
@@ -123,7 +124,7 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
 const getAccountFromLocalStorage = async (
   username: string,
 ): Promise<LocalAccount | undefined> => {
-  const mk = await MkUtils.getMkFromLocalStorage();
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   const accounts = await getAccountsFromLocalStorage(mk);
   return accounts.find((acc) => acc.name === username);
 };
@@ -494,7 +495,7 @@ const getRCMana = async (username: string) => {
 };
 
 const addKeyFromLedger = async (username: string, keys: Keys) => {
-  const mk = await MkUtils.getMkFromLocalStorage();
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   let account = accounts.find(
     (account: LocalAccount) => account.name === username,
@@ -621,9 +622,7 @@ const getUpdateAccountTransaction = (
 };
 
 const addAccount = async (username: string, keys: Keys) => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
 
   const localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   localAccounts.push({ name: username, keys: keys });
@@ -631,9 +630,7 @@ const addAccount = async (username: string, keys: Keys) => {
 };
 
 const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
 
   let savedAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   if (!savedAccounts) savedAccounts = [];

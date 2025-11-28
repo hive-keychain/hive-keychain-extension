@@ -6,11 +6,13 @@ import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const start = async () => {
   Logger.info(
@@ -21,9 +23,7 @@ const start = async () => {
 };
 
 const alarmHandler = async () => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   if (!mk) return;
 
   const localStorage = await LocalStorageUtils.getMultipleValueFromLocalStorage(
