@@ -71,9 +71,6 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
             (field: ConfirmationPageEvmFields | TransactionConfirmationField) =>
               fieldWarningTemplate(field),
           )}
-
-        {/* {warningHook.duplicatedTransactionField &&
-          fieldWarningTemplate(warningHook.duplicatedTransactionField)} */}
       </div>
 
       {EvmTransactionParserUtils.getHighestWarning(

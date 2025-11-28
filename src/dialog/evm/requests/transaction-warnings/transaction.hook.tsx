@@ -137,16 +137,34 @@ export const useTransactionHook = (
       ignoreWarning(
         selectedSingleWarning.fieldIndex!,
         selectedSingleWarning.warningIndex,
+        selectedSingleWarning.warning.warningKey,
       );
     }
   };
 
-  const ignoreWarning = (fieldIndex: number, warningIndex: number) => {
-    if (fieldIndex === -1 && warningIndex === -1) {
-      if (duplicatedTransactionField) {
-        const newDuplicated = { ...duplicatedTransactionField };
-        newDuplicated.warnings![0].ignored = true;
-        setDuplicatedTransactionWarning(newDuplicated);
+  const ignoreWarning = (
+    fieldIndex: number,
+    warningIndex: number,
+    warningKey?: string,
+  ) => {
+    if (warningKey) {
+      switch (warningKey) {
+        case 'duplicatedTransaction': {
+          if (duplicatedTransactionField) {
+            const newDuplicated = { ...duplicatedTransactionField };
+            newDuplicated.warnings![0].ignored = true;
+            setDuplicatedTransactionWarning(newDuplicated);
+          }
+          break;
+        }
+        case 'pendingTransaction': {
+          if (pendingTransactionWarningField) {
+            const newPending = { ...pendingTransactionWarningField };
+            newPending.warnings![0].ignored = true;
+            setPendingTransactionWarningField(newPending);
+          }
+          break;
+        }
       }
     } else if (fields) {
       const newFields: TransactionConfirmationFields = { ...fields! };
@@ -177,6 +195,11 @@ export const useTransactionHook = (
         const newDuplicated = { ...duplicatedTransactionField };
         newDuplicated.warnings![0].ignored = true;
         setDuplicatedTransactionWarning(newDuplicated);
+      }
+      if (pendingTransactionWarningField) {
+        const newPending = { ...pendingTransactionWarningField };
+        newPending.warnings![0].ignored = true;
+        setPendingTransactionWarningField(newPending);
       }
 
       const newFields: TransactionConfirmationFields = { ...fields! };
@@ -247,6 +270,7 @@ export const useTransactionHook = (
             level: EvmTransactionWarningLevel.HIGH,
             message: 'evm_pending_transaction_warning',
             type: EvmTransactionWarningType.BASE,
+            warningKey: 'pendingTransaction',
           },
         ],
       });
@@ -385,6 +409,7 @@ export const useTransactionHook = (
             level: EvmTransactionWarningLevel.HIGH,
             type: EvmTransactionWarningType.BASE,
             message: 'evm_warning_possible_duplicated_transaction',
+            warningKey: 'duplicatedTransaction',
           } as EvmTransactionWarning,
         ],
       };

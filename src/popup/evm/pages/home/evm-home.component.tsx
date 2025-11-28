@@ -1,4 +1,5 @@
 import ButtonComponent from '@common-ui/button/button.component';
+import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirmation-page.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
@@ -9,7 +10,12 @@ import {
 import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import { EvmPendingTransactionsInfo } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmPendingTransactionsInfo,
+  EvmTransactionType,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
@@ -21,7 +27,14 @@ import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
-import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -36,7 +49,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HDNodeWallet } from 'ethers';
+import { ethers, HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
@@ -53,6 +66,7 @@ import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
@@ -70,6 +84,9 @@ const Home = ({
   setErrorMessage,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
+  addToLoadingList,
+  removeFromLoadingList,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -168,10 +185,8 @@ const Home = ({
   };
 
   const loadPendingTransactions = async (wallet: HDNodeWallet) => {
-    console.log('loading pending transactions');
     const pendingTransactionsInfo =
       await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
-    console.log('pendingTransactionsInfo', pendingTransactionsInfo);
     setPendingTransactionsInfo(pendingTransactionsInfo);
   };
 
@@ -305,12 +320,83 @@ const Home = ({
     }
   };
 
-  const handleClickOnPendingTransactions = () => {
-    navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-      transactionResponse:
-        pendingTransactionsInfo?.pendingTransactionDetails.transactionResponse,
-      pageTitle: 'evm_pending_transaction',
-    } as NavigationParams);
+  const handleClickOnPendingTransactions = async () => {
+    if (
+      pendingTransactionsInfo?.pendingTransactionDetails.transactionResponse
+    ) {
+      navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+        transactionResponse:
+          pendingTransactionsInfo?.pendingTransactionDetails
+            .transactionResponse,
+        pageTitle: 'evm_pending_transaction',
+      } as NavigationParams);
+    } else {
+      const transactionData: ProviderTransactionData = {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to: activeAccount.address,
+        data: ethers.ZeroHash,
+        value: '0x0',
+        nonce: pendingTransactionsInfo?.pendingTransactionDetails.nonce,
+      };
+
+      navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+        method: null,
+        message: chrome.i18n.getMessage(
+          'evm_cancel_transaction_confirm_message',
+        ),
+        fields: [
+          {
+            label: 'evm_nonce',
+            value: (
+              <div>
+                {pendingTransactionsInfo?.pendingTransactionDetails.nonce}
+              </div>
+            ),
+            warnings: [],
+          },
+        ],
+        title: 'evm_cancel_transaction',
+        tokenInfo: activeAccount.nativeAndErc20Tokens.value.find(
+          (t) => t.tokenInfo.symbol === chain.mainToken,
+        )!,
+        formParams: {},
+        hasGasFee: true,
+        wallet: activeAccount.wallet,
+        transactionData: transactionData,
+        afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
+          addToLoadingList('html_popup_cancel_transaction_operation');
+          try {
+            const transactionResponse = await EvmTransactionsUtils.send(
+              activeAccount.wallet,
+              {
+                value: transactionData.value,
+                to: transactionData.to,
+                type: Number(EvmTransactionType.EIP_1559),
+                data: transactionData.data,
+              },
+              gasFee,
+              chain.chainId,
+            );
+
+            navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+              pageTitle: 'evm_canceled_transaction',
+              transactionResponse: transactionResponse,
+              detailFields: [],
+              gasFee: gasFee,
+              transactionData: transactionData,
+            });
+            setSuccessMessage('evm_transaction_broadcasted');
+          } catch (err) {
+            console.log(err);
+            Logger.error('Error during cancel transaction', err);
+            setErrorMessage('evm_cancel_transaction_error');
+          } finally {
+            removeFromLoadingList('html_popup_cancel_transaction_operation');
+          }
+        },
+      } as EVMConfirmationPageParams);
+    }
   };
 
   return (
@@ -408,6 +494,9 @@ const connector = connect(mapStateToProps, {
   loadEvmHistory,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
+  addToLoadingList,
+  removeFromLoadingList,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

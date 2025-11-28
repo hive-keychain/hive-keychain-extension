@@ -2353,6 +2353,10 @@
     "message": "Transferring funds",
     "description": "Transfer fund operation"
   },
+  "html_popup_cancel_transaction_operation": {
+    "message": "Cancelling transaction",
+    "description": "Cancel transaction operation"
+  },
   "html_popup_stop_recc_transfer_fund_operation": {
     "message": "Stopping a recurrent transfer",
     "description": "Transfer fund operation"
@@ -5646,5 +5650,25 @@
   "evm_gas_fee_warning_gas_limit_too_low": {
     "message": "Gas limit is too low. Should be at least 21000",
     "description": "Gas limit is too low"
+  },
+  "evm_nonce": {
+    "message": "Nonce",
+    "description": "Nonce"
+  },
+  "evm_cancel_transaction": {
+    "message": "Cancel transaction",
+    "description": "Cancel transaction"
+  },
+  "evm_canceled_transaction": {
+    "message": "Canceled transaction",
+    "description": "Canceled transaction"
+  },
+  "evm_cancel_transaction_error": {
+    "message": "Error during cancel transaction",
+    "description": "Error during cancel transaction"
+  },
+  "evm_cancel_transaction_confirm_message": {
+    "message": "You are about to cancel a unknown pending transaction.",
+    "description": "Error during cancel transaction"
   }
 }

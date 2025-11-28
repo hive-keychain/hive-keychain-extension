@@ -43,6 +43,7 @@ export interface ProviderTransactionData {
   gasPrice?: string;
   gasLimit?: number;
   accessList?: any[];
+  nonce?: number;
   // smartContract?: string;
 }
 
@@ -65,6 +66,7 @@ export interface EvmTransactionWarning {
   type: EvmTransactionWarningType;
   onConfirm?: (...args: any[]) => void;
   extraData?: any;
+  warningKey?: string;
 }
 
 export interface EvmTransactionInfo {
@@ -140,4 +142,5 @@ export interface EvmPendingTransactionDetails {
   label: string;
   title: string;
   transactionResponse?: TransactionResponse;
+  nonce?: number;
 }
