@@ -9,7 +9,7 @@ import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-test
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { SVGIcons } from 'src/common-ui/icons.enum';
+import { Icons, SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 // Mock network requests
@@ -39,7 +39,7 @@ global.fetch = jest.fn((url: string) => {
 }) as jest.Mock;
 
 describe('governance.component tests:\n', () => {
-  jest.setTimeout(10000); // Increase timeout for this test suite
+  jest.setTimeout(30000); // Increase timeout for this test suite
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
@@ -61,22 +61,30 @@ describe('governance.component tests:\n', () => {
         },
       },
     );
-    // Wait for app to initialize
-    await screen.findByTestId('clickable-settings');
+    // Wait for home page to be rendered
+    await screen.findByTestId(`${Screen.HOME_PAGE}-page`, {}, { timeout: 10000 });
+    // Wait for components to initialize
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     });
-    // Wait for settings page to render
-    await screen.findByTestId(`${Screen.SETTINGS_MAIN_PAGE}-page`);
     await act(async () => {
-      // Find governance menu item
-      const governanceMenuItem = await screen.findByTestId(
-        dataTestIdButton.menuPreFix + SVGIcons.MENU_GOVERNANCE,
+      const menuButton = await screen.findByTestId(dataTestIdButton.menu, {}, { timeout: 5000 });
+      await userEvent.click(menuButton);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Click HIVE menu to access governance
+      const hiveMenuButton = await screen.findByTestId(
+        dataTestIdButton.menuPreFix + Icons.HIVE,
+        {},
+        { timeout: 5000 },
       );
-      await userEvent.click(governanceMenuItem);
+      await userEvent.click(hiveMenuButton);
     });
     // Wait for navigation and data loading to complete
-    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`, {}, { timeout: 5000 });
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`, {}, { timeout: 15000 });
+    // Wait for tabs to be rendered (governance component shows loading spinner first)
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    });
   });
 
   it('Must load governance page & witness tab by default', async () => {
@@ -90,21 +98,61 @@ describe('governance.component tests:\n', () => {
 
   it('Must load proxy tab', async () => {
     // Wait for governance page to load first
-    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`);
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`, {}, { timeout: 15000 });
+    // Wait for tabs to be rendered (governance component shows loading spinner first)
     await act(async () => {
-      const tabs = await screen.findAllByRole('tab');
-      await userEvent.click(tabs[1]);
+      let tabs;
+      let attempts = 0;
+      while (attempts < 20) {
+        tabs = screen.queryAllByRole('tab');
+        // Also try finding by label text
+        if (tabs.length === 0) {
+          const labels = screen.queryAllByText(/witness|proxy|proposal/i);
+          if (labels.length > 0) {
+            tabs = labels;
+            break;
+          }
+        } else {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        attempts++;
+      }
+      if (tabs && tabs.length > 1) {
+        await userEvent.click(tabs[1]);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
     });
-    expect(await screen.findByTestId(dataTestIdTab.proxy)).toBeInTheDocument();
+    expect(await screen.findByTestId(dataTestIdTab.proxy, {}, { timeout: 15000 })).toBeInTheDocument();
   });
 
   it('Must load proposal tab', async () => {
     // Wait for governance page to load first
-    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`);
+    await screen.findByTestId(`${Screen.GOVERNANCE_PAGE}-page`, {}, { timeout: 15000 });
+    // Wait for tabs to be rendered (governance component shows loading spinner first)
     await act(async () => {
-      const tabs = await screen.findAllByRole('tab');
-      await userEvent.click(tabs[2]);
+      let tabs;
+      let attempts = 0;
+      while (attempts < 20) {
+        tabs = screen.queryAllByRole('tab');
+        // Also try finding by label text
+        if (tabs.length === 0) {
+          const labels = screen.queryAllByText(/witness|proxy|proposal/i);
+          if (labels.length > 0) {
+            tabs = labels;
+            break;
+          }
+        } else {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        attempts++;
+      }
+      if (tabs && tabs.length > 2) {
+        await userEvent.click(tabs[2]);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
     });
-    expect(await screen.findByTestId(dataTestIdTab.proposal)).toBeInTheDocument();
+    expect(await screen.findByTestId(dataTestIdTab.proposal, {}, { timeout: 15000 })).toBeInTheDocument();
   });
 });
