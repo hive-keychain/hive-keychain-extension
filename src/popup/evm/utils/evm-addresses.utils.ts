@@ -11,8 +11,9 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { generate } from '@victr/geopattern';
 import { ethers } from 'ethers';
+import * as jdenticon from 'jdenticon';
+import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { v4 } from 'uuid';
 
@@ -168,7 +169,19 @@ const getAddressType = async (
 };
 
 const getIdenticonFromAddress = (address: string) => {
-  return generate(address, { generator: 'overlappingCircles' }).toDataUrl();
+  const svgString = jdenticon.toSvg(address, 32);
+  const backgroundColor = ColorsUtils.getBackgroundColor(
+    `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`,
+  );
+  return {
+    svg: jdenticon.toSvg(address, 32, {
+      backColor: backgroundColor,
+      padding: 0.2,
+    }),
+    backgroundColor: backgroundColor,
+  };
+  // return generate(address, { generator: 'overlappingCircles' }).toDataUrl();
+  // return generate(address, { generator: 'chevrons' }).toDataUrl();
   // return identicon(address, 90, 50);
 };
 

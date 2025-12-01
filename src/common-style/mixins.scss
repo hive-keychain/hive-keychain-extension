@@ -528,12 +528,22 @@
 }
 
 @mixin user-avatar {
-  height: 32px;
-  width: 32px;
+  height: 32px !important;
+  width: 32px !important;
   border-radius: 50%;
+
   &.shimmer {
     @include icon-size(32px);
   }
+
+  svg {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    border: 1px solid $light-grey-border;
+  }
+
+  background: white;
 }
 
 @mixin user-avatar-small {

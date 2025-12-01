@@ -7,6 +7,7 @@ interface Props {
 }
 
 export const EvmAccountImage = ({ address, avatar }: Props) => {
+  const identicon = EvmAddressesUtils.getIdenticonFromAddress(address ?? '');
   return (
     <>
       {avatar && <img className="user-picture no-padding" src={avatar} />}
@@ -43,11 +44,13 @@ export const EvmAccountImage = ({ address, avatar }: Props) => {
         //       },
         //     ),
         //   }}></div>
+        //
         <div
-          style={{
-            backgroundImage: EvmAddressesUtils.getIdenticonFromAddress(address),
+          className="user-picture"
+          dangerouslySetInnerHTML={{
+            __html: identicon.svg,
           }}
-          className="user-picture"></div>
+          style={{ backgroundColor: 'white' }}></div>
       )}
     </>
   );
