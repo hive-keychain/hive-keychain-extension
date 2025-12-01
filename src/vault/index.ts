@@ -3,7 +3,7 @@ import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
 let vault: Record<string, any> = {};
-Logger.log('Vault initialized');
+Logger.log('Vault initialized', new Date().toISOString());
 chrome.runtime.sendMessage({ command: BackgroundCommand.VAULT_LOADED });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

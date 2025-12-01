@@ -24,7 +24,7 @@ const init = async () => {
     const offscreenExists = await chrome.offscreen.hasDocument();
     if (offscreenExists) {
       Logger.debug('Found existing offscreen document, closing.');
-      await chrome.offscreen.closeDocument();
+      return;
     }
 
     await chrome.offscreen.createDocument({
