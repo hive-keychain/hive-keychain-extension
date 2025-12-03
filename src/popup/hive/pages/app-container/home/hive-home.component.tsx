@@ -8,6 +8,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { ActionButtonList } from '@popup/hive/pages/app-container/home/actions-section/action-button.list';
 import { HiveWalletInfoSectionComponent } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section.component';
 import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
 import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
@@ -467,6 +468,7 @@ const Home = ({
             </div>
             <ActionsSectionComponent
               additionalClass={showBottomBar ? undefined : 'down'}
+              actionButtonList={ActionButtonList}
             />
           </>
         )}

@@ -4,6 +4,7 @@ import {
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -32,7 +33,9 @@ export const Ecosystem = ({
 
   const init = async () => {
     setLoading(true);
-    const categories: DAppCategory[] = await EcosystemUtils.getDappList(chain!);
+    const categories: DAppCategory[] = await EcosystemUtils.getDappList(
+      chain.name!,
+    );
     if (categories) {
       const tempTabs: any = [];
       for (const category of categories) {
@@ -80,7 +83,7 @@ export const Ecosystem = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { chain: state.chain };
+  return { chain: state.chain as Chain };
 };
 
 const connector = connect(mapStateToProps, {

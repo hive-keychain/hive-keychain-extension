@@ -1,28 +1,24 @@
 .title-section {
-  display: grid;
-  grid-template-columns: 18px 1fr 18px;
+  display: flex;
+  // grid-template-columns: 18px 1fr 18px;
   column-gap: 16px;
   height: 48px;
   padding: 16px 24px;
   align-items: center;
-  &.with-detach-option {
-    grid-template-columns: 18px 1fr 96px;
-    .right-section {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
+
+  .fill-space {
+    flex: 1;
   }
 
   .title {
+    position: absolute;
+    width: calc(100% - 48px);
+    text-align: center;
     user-select: none;
-    flex: 1;
     color: var(--main-font-color);
     pointer-events: none;
     height: 28px;
     overflow: hidden;
-    text-align: center;
     @include poppins500(20px);
   }
 

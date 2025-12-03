@@ -16,6 +16,7 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/evm-action-section.list';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
@@ -466,6 +467,9 @@ const Home = ({
       </div>
       <ActionsSectionComponent
         additionalClass={showBottomBar ? undefined : 'down'}
+        actionButtonList={EvmActionButtonList(
+          activeAccount.nativeAndErc20Tokens.value[0],
+        )}
       />
       <ProposalVotingSectionComponent />
       {renderPopup(displayWhatsNew, surveyToDisplay, displayChangeRpcPopup)}

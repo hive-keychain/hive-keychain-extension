@@ -18,15 +18,15 @@ export const EvmActionButtonList = (
       nextScreenParams: { selectedToken: selectedToken },
       icon: SVGIcons.BOTTOM_BAR_SEND,
     },
-    {
-      label: 'popup_html_buy',
-      icon: SVGIcons.BOTTOM_BAR_BUY,
-      nextScreen: Screen.BUY_COINS_PAGE,
-    },
-    {
-      label: 'html_popup_swaps_process_swap',
-      icon: SVGIcons.BOTTOM_BAR_SWAPS,
-      nextScreen: Screen.TOKEN_SWAP_PAGE,
-    },
+    // {
+    //   label: 'popup_html_buy',
+    //   icon: SVGIcons.BOTTOM_BAR_BUY,
+    //   nextScreen: Screen.BUY_COINS_PAGE,
+    // },
+    // {
+    //   label: 'html_popup_swaps_process_swap',
+    //   icon: SVGIcons.BOTTOM_BAR_SWAPS,
+    //   nextScreen: Screen.TOKEN_SWAP_PAGE,
+    // },
   ];
 };

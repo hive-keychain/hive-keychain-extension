@@ -17,7 +17,9 @@ const EvmSettings = ({ forgetMk, resetNav }: PropsFromRedux) => {
   };
 
   const getThemeIcon = () => {
-    theme === Theme.DARK ? SVGIcons.MENU_THEME_LIGHT : SVGIcons.MENU_THEME_DARK;
+    return theme === Theme.DARK
+      ? SVGIcons.MENU_THEME_LIGHT
+      : SVGIcons.MENU_THEME_DARK;
   };
   return (
     <MenuComponent

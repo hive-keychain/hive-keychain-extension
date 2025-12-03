@@ -83,37 +83,37 @@ const PageTitle = ({
       ) : (
         <div></div>
       )}
+      <div className="fill-space"></div>
       <div className="title">
         {skipTitleTranslation
           ? title
           : chrome.i18n.getMessage(title, titleParams)}
       </div>
-      <div className="right-section">
-        {showDetachWindowOption && (
-          <SVGIcon
-            onClick={handleDetachWindow}
-            icon={SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION}
-            className={`icon-button menu-toggle-theme`}
-            hoverable
-            tooltipMessage="popup_html_detach_window_tooltip_text"
-            tooltipPosition="bottom"
-          />
-        )}
-        {rightAction && (
-          <SVGIcon
-            onClick={handleRightActionButtonClick}
-            icon={rightAction.icon}
-            className={`icon-button ${rightAction.className}`}
-          />
-        )}
-        {!rightAction && !isCloseButtonDisabled && (
-          <SVGIcon
-            dataTestId="icon-close-page"
-            onClick={handleCloseButtonClick}
-            icon={SVGIcons.TOP_BAR_CLOSE_BTN}
-          />
-        )}
-      </div>
+      {/* <div className="right-section"> */}
+      {showDetachWindowOption && (
+        <SVGIcon
+          onClick={handleDetachWindow}
+          icon={SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION}
+          className={`icon-button menu-toggle-theme`}
+          hoverable
+          tooltipMessage="popup_html_detach_window_tooltip_text"
+          tooltipPosition="bottom"
+        />
+      )}
+      {rightAction && (
+        <SVGIcon
+          onClick={handleRightActionButtonClick}
+          icon={rightAction.icon}
+          className={`icon-button ${rightAction.className}`}
+        />
+      )}
+      {!rightAction && !isCloseButtonDisabled && (
+        <SVGIcon
+          dataTestId="icon-close-page"
+          onClick={handleCloseButtonClick}
+          icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+        />
+      )}
     </div>
   );
 };
