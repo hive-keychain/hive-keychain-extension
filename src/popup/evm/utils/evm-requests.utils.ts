@@ -236,6 +236,13 @@ const getResolveData = async (ensAddress: string) => {
   return null;
 };
 
+const getWalletCapabilities = async () => {
+  const chain = await EvmChainUtils.getLastEvmChain();
+  return {
+    [chain.chainId]: {},
+  };
+};
+
 export const EvmRequestsUtils = {
   getBalance,
   getBlockNumber,
@@ -262,4 +269,5 @@ export const EvmRequestsUtils = {
   getMaxPriorityFeePerGas,
   getBaseFee,
   instanciateProvider,
+  getWalletCapabilities,
 };

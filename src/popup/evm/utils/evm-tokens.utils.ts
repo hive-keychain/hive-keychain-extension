@@ -63,6 +63,7 @@ const getTotalBalanceInUsd = (
   }, 0);
 };
 
+// TODO need to add erc20 and nfts tokens values as well
 const getTotalBalanceInMainToken = (
   tokens: NativeAndErc20Token[],
   chain: EvmChain,
@@ -72,6 +73,7 @@ const getTotalBalanceInMainToken = (
     (token) =>
       token.tokenInfo.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
   );
+
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens, prices) || 0;
     return valueInUsd / (prices[mainToken.tokenInfo.symbol]?.usd ?? 1);

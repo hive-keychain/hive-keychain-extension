@@ -32,6 +32,10 @@ export const evmRequestWithoutConfirmation = async (
     },
   };
   switch (request.method) {
+    case EvmRequestMethod.WALLET_GET_CAPABILITIES: {
+      message.value.result = await EvmRequestsUtils.getWalletCapabilities();
+      break;
+    }
     case EvmRequestMethod.GET_CHAIN: {
       message.value.result = await EvmChainUtils.getLastEvmChainId();
       break;

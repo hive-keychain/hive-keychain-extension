@@ -74,6 +74,7 @@ export enum EvmRequestMethod {
   WALLET_INVOKE_KEYRING = 'wallet_invokeKeyring',
   WEB3_CLIENT_VERSION = 'web3_clientVersion',
   WEB3_SHA3 = 'web3_sha3',
+  WALLET_GET_CAPABILITIES = 'wallet_getCapabilities',
 
   ETH_SIGN_DATA = 'eth_signTypedData',
   ETH_SIGN_DATA_1 = 'eth_signTypedData_v1',
@@ -181,4 +182,5 @@ export const EvmUnrestrictedMethods = [
   EvmRequestMethod.SEND_RAW_TRANSACTION,
   EvmRequestMethod.KC_RESOLVE_ENS,
   EvmRequestMethod.KC_LOOKUP_ENS,
+  EvmRequestMethod.WALLET_GET_CAPABILITIES,
 ];
