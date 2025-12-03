@@ -18,6 +18,7 @@ export const validateRequest = (
   params: any,
   domain: string,
 ): boolean => {
+  console.log(method, params, domain);
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {
       const transactionParams = params[0] as ProviderTransactionData;
@@ -37,7 +38,7 @@ export const validateRequest = (
       if (transactionParams.value && isNaN(Number(transactionParams.value))) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Invalid parameter. Value21 is not a valid number (value: ${transactionParams.value})`,
+          message: `Invalid parameter. Value is not a valid number (value: ${transactionParams.value})`,
         } as ProviderRpcError;
       }
       if (transactionParams.to && !ethers.isAddress(transactionParams.to)) {
@@ -90,24 +91,26 @@ export const validateRequest = (
           message: `Invalid parameters. Missing chainId`,
         } as ProviderRpcError;
       }
-      if (typeof params[0] !== 'string') {
+      if (typeof params[0].chainId !== 'string') {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!params[0].startsWith('0x')) {
+      if (!params[0].chainId.startsWith('0x')) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Invalid parameter. ${params[0]} is not a valid chainId. It must be using hexadecimal format`,
+          message: `Invalid parameter. ${params[0].chainId} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
       if (
-        !defaultChainList.find((chain: Chain) => chain.chainId === params[0])
+        !defaultChainList.find(
+          (chain: Chain) => chain.chainId === params[0].chainId,
+        )
       ) {
         throw {
           ...ProviderRpcErrorList.chainNotAdded,
-          message: `Invalid parameter. ${params[0]} hasn't been added to Keychain`,
+          message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
         } as ProviderRpcError;
       }
       break;
