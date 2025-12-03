@@ -45,7 +45,10 @@ const chromeMessageHandler = async (
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      console.log(backgroundMessage, 'in evm service worker send evm request');
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
+        (backgroundMessage as KeychainEvmRequestWrapper).request_id,
+      );
       if (requestHandler) {
         requestHandler.closeWindow();
       }
@@ -69,7 +72,7 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      const { mk, data, tab } = backgroundMessage.value;
+      const { mk, data, tab, request_id } = backgroundMessage.value;
 
       if (data.command === DialogCommand.UNLOCK_EVM) {
         const login = await MkModule.login(mk);
@@ -79,7 +82,7 @@ const chromeMessageHandler = async (
             data.msg.data,
             tab,
             data.dappInfo,
-            await EvmRequestHandler.getFromLocalStorage(),
+            await EvmRequestHandler.getFromLocalStorage(request_id),
           );
         } else {
           CommunicationUtils.runtimeSendMessage({
@@ -93,7 +96,9 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
+        backgroundMessage.value.requestId,
+      );
       CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: backgroundMessage.value,
@@ -104,7 +109,7 @@ const chromeMessageHandler = async (
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
       const { request, tab, domain, extraData } = backgroundMessage.value;
       performEvmOperation(
-        await EvmRequestHandler.getFromLocalStorage(),
+        await EvmRequestHandler.getFromLocalStorage(request.request_id),
         request,
         tab,
         domain,
@@ -113,8 +118,10 @@ const chromeMessageHandler = async (
       break;
 
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
-      const { data, tab, domain } = backgroundMessage.value;
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      const { request, tab, domain } = backgroundMessage.value;
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
+        request.request_id,
+      );
       CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
         command: BackgroundCommand.SEND_EVM_ERROR,
         value: {

@@ -43,7 +43,7 @@ export class EvmRequestHandler {
 
   reset(resetWinId: boolean) {
     if (resetWinId) {
-      EvmRequestHandler.clearLocalStorage();
+      EvmRequestHandler.removeFromLocalStorage(this.data.request_id!);
     } else {
       this.data = {
         confirmed: this.data.confirmed,
@@ -75,10 +75,17 @@ export class EvmRequestHandler {
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
-  static async getFromLocalStorage() {
-    const params = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-    );
+  static async getFromLocalStorage(requestId: number) {
+    const requestHandlersParams =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      );
+
+    let params;
+    if (requestHandlersParams && requestHandlersParams[requestId]) {
+      params = requestHandlersParams[requestId];
+    }
+
     const handler = new EvmRequestHandler();
     if (params) {
       await handler.initFromLocalStorage(params, []);
@@ -91,16 +98,54 @@ export class EvmRequestHandler {
     return handler;
   }
 
+  static async getFromLocalStorageByWindowId(windowId: number) {
+    const requestHandlersParams =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      );
+    if (requestHandlersParams) {
+      for (const requestId in requestHandlersParams) {
+        if (requestHandlersParams[requestId].windowId === windowId) {
+          const handler = new EvmRequestHandler();
+          await handler.initFromLocalStorage(
+            requestHandlersParams[requestId],
+            [],
+          );
+          return handler;
+        }
+      }
+    } else {
+      return null;
+    }
+  }
+
   async saveInLocalStorage() {
+    let requestHandlersParams =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      );
+    if (!requestHandlersParams) {
+      requestHandlersParams = {};
+    }
+    requestHandlersParams[this.data.request_id!] = this.data;
+
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      this.data,
+      requestHandlersParams,
     );
   }
 
-  static async clearLocalStorage() {
-    await LocalStorageUtils.removeFromLocalStorage(
+  static async removeFromLocalStorage(requestId: number) {
+    let requestHandlersParams =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      );
+    if (requestHandlersParams) {
+      delete requestHandlersParams[requestId];
+    }
+    await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      requestHandlersParams,
     );
   }
 }

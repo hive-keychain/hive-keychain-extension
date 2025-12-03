@@ -22,6 +22,7 @@ const setupInjection = () => {
 };
 
 document.addEventListener(EvmEventName.REQUEST, async (request: any) => {
+  console.log(request, 'in evm content script request');
   sendEvmRequestToBackground(request.detail, chrome);
 });
 
