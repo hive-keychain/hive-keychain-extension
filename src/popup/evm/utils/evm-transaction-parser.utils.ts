@@ -23,7 +23,7 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MethodRegistry } from 'eth-method-registry';
-import { ethers } from 'ethers';
+import { ethers, Result } from 'ethers';
 import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
@@ -687,6 +687,15 @@ function findFirstNestedBrackets(
 const recipientInputNameList = ['recipient', 'spender'];
 const amountInputNameList = ['amount'];
 
+const parseArgs = (args: Result): any[] => {
+  return args.toArray().map((arg) => {
+    if (typeof arg === 'object') {
+      return parseArgs(arg);
+    }
+    return arg;
+  });
+};
+
 export const EvmTransactionParserUtils = {
   getDisplayInputType,
   shouldDisplayBalanceChange,
@@ -702,4 +711,5 @@ export const EvmTransactionParserUtils = {
   findAbiFromData,
   recipientInputNameList,
   amountInputNameList,
+  parseArgs,
 };

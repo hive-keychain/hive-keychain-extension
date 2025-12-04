@@ -45,7 +45,6 @@ const chromeMessageHandler = async (
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
-      console.log(backgroundMessage, 'in evm service worker send evm request');
       const requestHandler = await EvmRequestHandler.getFromLocalStorage(
         (backgroundMessage as KeychainEvmRequestWrapper).request_id,
       );

@@ -191,6 +191,7 @@ export const SendTransaction = (props: Props) => {
         }
 
         tData.abi = abi;
+        tData.value = params.value;
 
         tokenAddress = params.to;
 
@@ -224,7 +225,13 @@ export const SendTransaction = (props: Props) => {
             });
 
             tData.method = decodedTransactionData?.name;
-            tData.args = decodedTransactionData?.args;
+            if (decodedTransactionData?.args) {
+              const args = EvmTransactionParserUtils.parseArgs(
+                decodedTransactionData?.args,
+              );
+            }
+            // tData.args = decodedTransactionData?.args.;
+            tData.signature = decodedTransactionData?.signature;
 
             setShouldDisplayBalanceChange(
               EvmTransactionParserUtils.shouldDisplayBalanceChange(
@@ -280,8 +287,10 @@ export const SendTransaction = (props: Props) => {
                 name: 'evm_main_token_amount',
                 type: EvmInputDisplayType.BALANCE,
                 value: `${FormatUtils.withCommas(
-                  Number(decodedTransactionData?.value),
-                )}  ${chain?.mainToken}`,
+                  ethers.formatEther(Number(decodedTransactionData?.value)),
+                  18,
+                  true,
+                )}  ${chainTmp?.mainToken}`,
               };
             }
 

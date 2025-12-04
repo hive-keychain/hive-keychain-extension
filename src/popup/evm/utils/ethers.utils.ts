@@ -46,6 +46,7 @@ const getGasLimit = async (
   args?: any[],
   data?: string,
   to?: string,
+  value?: string,
 ) => {
   const provider = await getProvider(chain);
 
@@ -63,6 +64,7 @@ const getGasLimit = async (
         from: wallet.address,
         data: data,
         to: to,
+        value: value,
       };
       return getGasLimitFromRawTx(tx, provider);
     }
@@ -71,6 +73,7 @@ const getGasLimit = async (
       from: wallet.address,
       data: data,
       to: to,
+      value: value,
     };
     return getGasLimitFromRawTx(tx, provider);
   } else {
@@ -95,7 +98,7 @@ const getErrorMessage = (code: string, reason: string): EtherRPCCustomError => {
     case 'NONCE_EXPIRED':
       return { message: 'evm_transaction_result_error_message_nonce_expired' };
     case 'CALL_EXCEPTION': {
-      if (reason.includes('transfer amount exceeds allowance')) {
+      if (reason && reason.includes('transfer amount exceeds allowance')) {
         return {
           message: 'evm_error_message_transfer_amount_exceeds_allowance',
           isBlocking: true,

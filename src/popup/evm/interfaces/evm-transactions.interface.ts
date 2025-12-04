@@ -28,6 +28,7 @@ export const getAllTransactionTypes = () => {
 export interface ProviderTransactionData {
   abi?: any;
   method?: string;
+  signature?: string;
   args?: any[];
   to?: string;
   from: string;

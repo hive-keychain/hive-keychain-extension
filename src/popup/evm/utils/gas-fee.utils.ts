@@ -46,10 +46,11 @@ const estimate = async (
         chain,
         wallet,
         transactionData?.abi,
-        transactionData?.method,
+        transactionData?.signature ?? transactionData?.method,
         transactionData?.args,
         transactionData?.data,
         transactionData?.to,
+        transactionData?.value,
       ),
     );
   }

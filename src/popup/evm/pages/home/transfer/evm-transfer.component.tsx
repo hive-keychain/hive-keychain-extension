@@ -296,7 +296,6 @@ const EvmTransfer = ({
           });
           setSuccessMessage('evm_transaction_broadcasted');
         } catch (err) {
-          console.log(err);
           Logger.error('Error during transfer', err);
           setErrorMessage('popup_html_transfer_failed');
         } finally {

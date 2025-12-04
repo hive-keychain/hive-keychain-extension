@@ -77,7 +77,6 @@ export const performEvmOperation = async (
         break;
       }
     }
-    console.log(result, 'result in perform operation. Before sending result');
     CommunicationUtils.tabsSendMessage(tab, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: { requestId: request.request_id, result: result },

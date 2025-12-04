@@ -57,7 +57,6 @@ const getGasPrice = async () => {
   try {
     res = await call('eth_gasPrice', []);
   } catch (err) {
-    console.log(err, 'error getting gas price');
     res = 0;
   }
 
@@ -69,7 +68,6 @@ const getMaxPriorityFeePerGas = async () => {
   try {
     res = await call('eth_maxPriorityFeePerGas', []);
   } catch (err) {
-    console.log(err, 'error getting max priority fee per gas');
     res = 0;
   }
 
@@ -81,7 +79,6 @@ const getBaseFee = async () => {
   try {
     res = await call('eth_baseFee', []);
   } catch (err) {
-    console.log(err, 'error getting base fee');
     res = 0;
   }
 
@@ -161,7 +158,7 @@ const signData = async (
       version,
     });
   } catch (err) {
-    console.log(err);
+    Logger.error('Error in signData', err);
     return null;
   }
 };

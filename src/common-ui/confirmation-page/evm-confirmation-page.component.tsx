@@ -275,7 +275,6 @@ const ConfirmationPage = ({
           dataTestId="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={($event: BaseSyntheticEvent) => {
-            console.log('handleClickOnConfirm');
             handleClickOnConfirm();
           }}
           type={ButtonType.IMPORTANT}></ButtonComponent>

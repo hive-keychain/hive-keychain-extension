@@ -29,6 +29,7 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
@@ -194,7 +195,7 @@ export const GasFeePanel = ({
       }
       setFeeEstimation(estimate);
     } catch (err: any) {
-      console.log('Catch in gas fee Panel', { err });
+      Logger.error('Catch in gas fee Panel', { err });
       const error = EthersUtils.getErrorMessage(err.code, err.reason);
       setErrorMessage(error);
     }
@@ -215,7 +216,6 @@ export const GasFeePanel = ({
     value: string,
   ) => {
     const valueNumber = value.length > 0 ? new Decimal(value) : new Decimal(0);
-    console.log(valueNumber);
 
     const newState = { ...customGasFeeForm };
     switch (key) {

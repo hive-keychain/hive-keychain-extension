@@ -389,7 +389,6 @@ const Home = ({
             });
             setSuccessMessage('evm_transaction_broadcasted');
           } catch (err) {
-            console.log(err);
             Logger.error('Error during cancel transaction', err);
             setErrorMessage('evm_cancel_transaction_error');
           } finally {

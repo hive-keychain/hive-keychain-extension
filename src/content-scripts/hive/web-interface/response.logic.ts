@@ -40,7 +40,6 @@ export const sendEvmRequestToBackground = async (
   req: EvmRequest,
   chrome: typeof globalThis.chrome,
 ) => {
-  console.log(req, 'in sendEvmRequestToBackground');
   const link = document.querySelector("link[rel='icon']");
 
   CommunicationUtils.runtimeSendMessage({
