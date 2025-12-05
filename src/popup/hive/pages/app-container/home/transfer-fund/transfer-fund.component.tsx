@@ -21,6 +21,7 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
+import { capitalize } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
@@ -50,6 +51,7 @@ import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
@@ -160,6 +162,13 @@ const TransferFunds = ({
   useEffect(() => {
     setBalance(balances[watch('selectedCurrency')]);
   }, [watch('selectedCurrency')]);
+
+  useEffect(() => {
+    const memo = watch('memo');
+    if (memo && memo.startsWith('#')) {
+      setValue('encrypted', true);
+    }
+  }, [watch('memo')]);
 
   const options = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -351,6 +360,7 @@ const TransferFunds = ({
       },
     } as ConfirmationPageParams);
   };
+
   return (
     <>
       <div
@@ -430,7 +440,13 @@ const TransferFunds = ({
               control={control}
               dataTestId="input-memo-optional"
               type={InputType.TEXT}
-              label="popup_html_memo_optional"
+              label="popup_html_transfer_memo"
+              hint={
+                watch('encrypted') || watch('memo').startsWith('#')
+                  ? capitalize(chrome.i18n.getMessage('popup_encrypted'))
+                  : undefined
+              }
+              skipHintTranslation
               placeholder="popup_html_memo_optional"
               rightActionClicked={() =>
                 setValue('encrypted', !watch('encrypted'))

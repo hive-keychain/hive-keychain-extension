@@ -668,7 +668,7 @@
     "description": "When initiating a HIVE or HBD transfer and the balance is loading."
   },
   "popup_html_memo_optional": {
-    "message": "MEMO (optional)",
+    "message": "Memo (optional)",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
