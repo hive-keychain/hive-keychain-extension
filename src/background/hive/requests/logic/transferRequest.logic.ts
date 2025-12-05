@@ -31,7 +31,6 @@ export const transferRequest = (
     /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
-        requestHandler,
         tab!,
         'user_cancel',
         await chrome.i18n.getMessage('bgd_auth_canceled'),
@@ -43,7 +42,6 @@ export const transferRequest = (
     /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
-        requestHandler,
         tab!,
         'user_cancel',
         await chrome.i18n.getMessage('bgd_auth_canceled'),
@@ -55,7 +53,6 @@ export const transferRequest = (
     /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
-        requestHandler,
         tab!,
         'user_cancel',
         await chrome.i18n.getMessage('bgd_auth_canceled'),

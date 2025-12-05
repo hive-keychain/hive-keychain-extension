@@ -161,7 +161,6 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
-
-  requestHandler.closeWindow();
+  requestHandler.removeRequestById(request.request_id);
   CommunicationUtils.tabsSendMessage(tab, message);
 };

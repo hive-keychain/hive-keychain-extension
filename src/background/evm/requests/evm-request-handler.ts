@@ -19,46 +19,48 @@ type RequestData = {
   tab?: number;
   request?: EvmRequest;
   request_id?: number;
-  confirmed: boolean;
-  windowId?: number;
 };
 export class EvmRequestHandler {
-  data: RequestData;
+  requestsData: RequestData[];
   accounts: EvmAccount[];
+  windowId: number | undefined;
   constructor() {
-    this.data = { confirmed: false };
+    this.requestsData = [];
     this.accounts = [];
+    this.windowId = undefined;
   }
 
-  async initFromLocalStorage(data: RequestData, accounts: EvmAccount[]) {
-    this.data = data;
+  async initFromLocalStorage(
+    requestsData: RequestData[],
+    accounts: EvmAccount[],
+    windowId?: number,
+  ) {
+    this.requestsData = requestsData;
     this.accounts = accounts;
+    this.windowId = windowId;
   }
 
   closeWindow() {
-    if (this.data.windowId) {
-      removeWindow(this.data.windowId);
+    console.log('closeWindow in EvmRequestHandler', this.windowId);
+    if (this.windowId) {
+      console.log(this.windowId, 'windowId in closeWindow');
+      removeWindow(this.windowId);
     }
   }
 
   reset(resetWinId: boolean) {
     if (resetWinId) {
-      EvmRequestHandler.removeFromLocalStorage(this.data.request_id!);
+      this.removeFromLocalStorage();
     } else {
-      this.data = {
-        confirmed: this.data.confirmed,
-        windowId: this.data.windowId,
-      };
+      this.requestsData = [];
+      this.accounts = [];
+
       this.saveInLocalStorage();
     }
   }
 
-  setConfirmed(confirmed: boolean) {
-    this.data.confirmed = confirmed;
-  }
-
   setWindowId(windowId?: number) {
-    this.data.windowId = windowId;
+    this.windowId = windowId;
   }
 
   setKeys(key: string, publicKey: string) {}
@@ -67,28 +69,58 @@ export class EvmRequestHandler {
     sender: chrome.runtime.MessageSender,
     msg: KeychainEvmRequestWrapper,
   ) {
-    this.data.tab = sender.tab!.id;
-    this.data.request = msg.request;
-    this.data.request_id = msg.request_id;
-    initEvmRequestHandler(msg.request, this.data.tab, msg.dappInfo, this);
+    this.requestsData.push({
+      tab: sender.tab!.id,
+      request: msg.request,
+      request_id: msg.request_id,
+    });
+    this.saveInLocalStorage();
+
+    initEvmRequestHandler(msg.request, sender.tab!.id, msg.dappInfo, this);
 
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
-  static async getFromLocalStorage(requestId: number) {
+  async removeRequestById(requestId: number) {
+    console.log(requestId, 'requestId in removeRequestById');
+
+    console.log(
+      this.requestsData,
+      'requestsData before filter in removeRequestById',
+    );
+
+    this.requestsData = this.requestsData.filter(
+      (request: RequestData) => request.request_id !== requestId,
+    );
+
+    console.log(this.requestsData, 'requestsData in removeRequestById');
+    await this.saveInLocalStorage();
+
+    console.log(
+      this.requestsData.length,
+      'requestsData.length in removeRequestById',
+    );
+
+    if (this.requestsData.length === 0) {
+      this.closeWindow();
+    }
+  }
+
+  // Local storage methods
+
+  static async getFromLocalStorage() {
     const requestHandlersParams =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       );
 
-    let params;
-    if (requestHandlersParams && requestHandlersParams[requestId]) {
-      params = requestHandlersParams[requestId];
-    }
-
     const handler = new EvmRequestHandler();
-    if (params) {
-      await handler.initFromLocalStorage(params, []);
+    if (requestHandlersParams) {
+      await handler.initFromLocalStorage(
+        requestHandlersParams.requestsData,
+        requestHandlersParams.accounts,
+        requestHandlersParams.windowId,
+      );
     }
     const mk = await MkUtils.getMkFromLocalStorage();
     if (mk)
@@ -98,54 +130,20 @@ export class EvmRequestHandler {
     return handler;
   }
 
-  static async getFromLocalStorageByWindowId(windowId: number) {
-    const requestHandlersParams =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      );
-    if (requestHandlersParams) {
-      for (const requestId in requestHandlersParams) {
-        if (requestHandlersParams[requestId].windowId === windowId) {
-          const handler = new EvmRequestHandler();
-          await handler.initFromLocalStorage(
-            requestHandlersParams[requestId],
-            [],
-          );
-          return handler;
-        }
-      }
-    } else {
-      return null;
-    }
-  }
-
   async saveInLocalStorage() {
-    let requestHandlersParams =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      );
-    if (!requestHandlersParams) {
-      requestHandlersParams = {};
-    }
-    requestHandlersParams[this.data.request_id!] = this.data;
-
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      requestHandlersParams,
+      {
+        requestsData: this.requestsData,
+        windowId: this.windowId,
+        accounts: this.accounts,
+      },
     );
   }
 
-  static async removeFromLocalStorage(requestId: number) {
-    let requestHandlersParams =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      );
-    if (requestHandlersParams) {
-      delete requestHandlersParams[requestId];
-    }
-    await LocalStorageUtils.saveValueInLocalStorage(
+  async removeFromLocalStorage() {
+    await LocalStorageUtils.removeFromLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      requestHandlersParams,
     );
   }
 }

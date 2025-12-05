@@ -21,7 +21,7 @@ export const personalSign = async (
     return await createEvmMessage(
       null,
       res,
-      requestHandler.data,
+      request,
       await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
     );
   }

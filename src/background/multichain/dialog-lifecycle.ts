@@ -14,10 +14,9 @@ export const createPopup = (
 ) => {
   let width = 435;
 
-  requestHandler.setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
-  if (requestHandler.data.windowId) {
-    removeWindow(requestHandler.data.windowId!);
+  if (requestHandler.windowId) {
+    removeWindow(requestHandler.windowId!);
     requestHandler.setWindowId(undefined);
   }
   //Create new window on the top right of the screen
@@ -44,6 +43,7 @@ export const createPopup = (
             left: w.width! - width + w.left!,
           },
           () => {
+            console.log('setting windowId in createPopup', win.id);
             requestHandler.setWindowId(win.id);
             requestHandler.saveInLocalStorage();
             waitUntilDialogIsReady(100, DialogCommand.READY, callback);
@@ -57,11 +57,15 @@ export const createPopup = (
 // check if win exists before removing it
 /* istanbul ignore next */
 export const removeWindow = (windowId: number) => {
+  console.log(windowId, 'windowId in removeWindow');
   chrome.windows.getAll((windows) => {
+    console.log(windows, 'windows in removeWindow');
     const hasWin = windows.filter((win) => {
       return win.id == windowId;
     }).length;
+    console.log(hasWin, 'hasWin in removeWindow');
     if (hasWin) {
+      console.log('removing window');
       chrome.windows.remove(windowId);
     }
   });

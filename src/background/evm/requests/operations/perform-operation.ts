@@ -88,7 +88,7 @@ export const performEvmOperation = async (
     Logger.log('error', error);
     handleEvmError(
       requestHandler,
-      requestHandler.data.tab!,
+      tab,
       request,
       etherJSError,
       etherJSError.message,
@@ -96,5 +96,6 @@ export const performEvmOperation = async (
     );
   } finally {
     if (message) CommunicationUtils.runtimeSendMessage(message);
+    requestHandler.removeRequestById(request.request_id);
   }
 };

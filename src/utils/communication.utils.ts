@@ -24,6 +24,7 @@ const runtimeSendMessage = async (
   try {
     const res = await chrome.runtime.sendMessage(message);
   } catch (err) {
+    console.log(err, 'error in runtimeSendMessage');
     if (onFail) onFail();
   }
 };

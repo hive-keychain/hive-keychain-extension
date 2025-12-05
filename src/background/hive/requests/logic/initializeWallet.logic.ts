@@ -13,7 +13,6 @@ export const initializeWallet = (
   /* istanbul ignore next */
   createPopup(async () => {
     sendErrors(
-      requestHandler,
       tab,
       'no_wallet',
       await chrome.i18n.getMessage('bgd_init_no_wallet'),

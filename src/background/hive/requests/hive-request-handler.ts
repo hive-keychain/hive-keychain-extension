@@ -40,6 +40,7 @@ export class HiveRequestsHandler {
   data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
   defaultRpcConfig: any;
+  windowId: number | undefined;
 
   constructor() {
     this.data = { confirmed: false, isWaitingForConfirmation: false };

@@ -23,7 +23,6 @@ export const anonymousRequests = (
   if (!account_candidates.length) {
     createPopup(async () => {
       sendErrors(
-        requestHandler,
         tab!,
         'user_cancel',
         await chrome.i18n.getMessage('bgd_auth_canceled'),

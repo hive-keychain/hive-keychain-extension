@@ -21,7 +21,7 @@ export const decryptMessage = async (
     return await createEvmMessage(
       null,
       res,
-      requestHandler.data,
+      request,
       await chrome.i18n.getMessage('dialog_evm_decrypt_message_success'),
     );
   }

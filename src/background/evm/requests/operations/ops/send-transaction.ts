@@ -45,7 +45,7 @@ export const sendEvmTransaction = async (
     return await createEvmMessage(
       null,
       res.hash,
-      requestHandler.data,
+      request,
       await chrome.i18n.getMessage('evm_send_transaction_success'),
     );
   }

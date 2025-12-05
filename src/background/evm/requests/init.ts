@@ -56,7 +56,7 @@ export const initEvmRequestHandler = async (
       const providerError = getEvmProviderRpcFullError('userReject');
       handleEvmError(
         requestHandler,
-        requestHandler.data.tab!,
+        tab!,
         request,
         providerError,
         providerError.message,

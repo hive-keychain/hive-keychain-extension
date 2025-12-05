@@ -45,13 +45,12 @@ const chromeMessageHandler = async (
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
-        (backgroundMessage as KeychainEvmRequestWrapper).request_id,
-      );
-      if (requestHandler) {
-        requestHandler.closeWindow();
+      let requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      console.log(requestHandler, 'requestHandler in evm service worker');
+      if (!requestHandler) {
+        requestHandler = new EvmRequestHandler();
       }
-      new EvmRequestHandler().sendRequest(
+      requestHandler.sendRequest(
         sender,
         backgroundMessage as KeychainEvmRequestWrapper,
       );
@@ -81,7 +80,7 @@ const chromeMessageHandler = async (
             data.msg.data,
             tab,
             data.dappInfo,
-            await EvmRequestHandler.getFromLocalStorage(request_id),
+            await EvmRequestHandler.getFromLocalStorage(),
           );
         } else {
           CommunicationUtils.runtimeSendMessage({
@@ -95,40 +94,41 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
-        backgroundMessage.value.requestId,
-      );
-      CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
+      const message = backgroundMessage.value;
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+
+      CommunicationUtils.tabsSendMessage(message.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
-        value: backgroundMessage.value,
+        value: message,
       });
-      requestHandler.closeWindow();
+
+      requestHandler.removeRequestById(message.request.request_id);
+
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
       const { request, tab, domain, extraData } = backgroundMessage.value;
       performEvmOperation(
-        await EvmRequestHandler.getFromLocalStorage(request.request_id),
+        await EvmRequestHandler.getFromLocalStorage(),
         request,
         tab,
         domain,
         extraData,
       );
+
       break;
 
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
       const { request, tab, domain } = backgroundMessage.value;
-      const requestHandler = await EvmRequestHandler.getFromLocalStorage(
-        request.request_id,
-      );
-      CommunicationUtils.tabsSendMessage(requestHandler.data.tab!, {
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      CommunicationUtils.tabsSendMessage(tab, {
         command: BackgroundCommand.SEND_EVM_ERROR,
         value: {
-          requestId: requestHandler.data.request_id,
+          requestId: request.request_id,
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      requestHandler.closeWindow();
+      requestHandler.removeRequestById(request.request_id);
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
