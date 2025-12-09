@@ -337,21 +337,27 @@ const getData = async (
   params: any[] | object,
   key?: string,
 ) => {
-  const response = await call(method, params, 3000);
-  if (response?.result) {
-    return key ? response.result[key] : response.result;
-  } else {
-    if (window && window.document) {
-      import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
-        useWorkingRPC();
-      });
+  try {
+    const response = await call(method, params, 3000);
+    if (response?.result) {
+      return key ? response.result[key] : response.result;
+    } else {
+      switchToWorkingRpc(method, response.error);
     }
-    throw new Error(
-      `Error while retrieving data from ${method} : ${JSON.stringify(
-        response.error,
-      )}`,
-    );
+  } catch (err) {
+    switchToWorkingRpc(method, err);
   }
+};
+
+const switchToWorkingRpc = async (method: string, error: any) => {
+  if (window && window.document) {
+    import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
+      useWorkingRPC();
+    });
+  }
+  throw new Error(
+    `Error while retrieving data from ${method} : ${JSON.stringify(error)}`,
+  );
 };
 
 const useMultisigThroughBackgroundOnly = async (
