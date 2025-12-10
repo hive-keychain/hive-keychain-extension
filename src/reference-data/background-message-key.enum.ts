@@ -54,6 +54,7 @@ export enum BackgroundCommand {
   // Keyless Keychain
   KEYLESS_KEYCHAIN = 'KEYLESS_KEYCHAIN',
   KEYLESS_KEYCHAIN_REGISTER = 'KEYLESS_KEYCHAIN_REGISTER',
+  VAULT_LOADED = 'VAULT_LOADED',
 }
 
 export type SendBackImportCommand = Extract<

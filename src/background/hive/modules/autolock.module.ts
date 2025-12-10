@@ -24,7 +24,6 @@ const set = async (autoLock: Autolock) => {
 const start = async () => {
   Logger.info('Starting autolock');
 };
-
 chrome.idle.onStateChanged.addListener(async (state: any) => {
   const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.AUTOLOCK,

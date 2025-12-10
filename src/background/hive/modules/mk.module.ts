@@ -1,13 +1,15 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
-function getMk() {
-  return LocalStorageUtils.getValueFromSessionStorage(LocalStorageKeyEnum.__MK);
-}
+const getMk = () => {
+  return VaultUtils.getValueFromVault(VaultKey.__MK);
+};
 
 const login = async (mk: string) => {
   const hiveEncryptedAccounts =
@@ -56,20 +58,20 @@ const login = async (mk: string) => {
   return false;
 };
 
-async function sendBackMk() {
+const sendBackMk = async () => {
   CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_BACK_MK,
     value: await getMk(),
   });
-}
+};
 
-function saveMk(newMk: string) {
-  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, newMk);
-}
+const saveMk = (newMk: string) => {
+  VaultUtils.saveValueInVault(VaultKey.__MK, newMk);
+};
 
-function lock() {
-  LocalStorageUtils.removeFromSessionStorage(LocalStorageKeyEnum.__MK);
-}
+const lock = () => {
+  VaultUtils.removeFromVault(VaultKey.__MK);
+};
 
 const MkModule = {
   sendBackMk,

@@ -14,6 +14,7 @@ import { CustomJsonUtils } from 'src/popup/hive/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/popup/hive/utils/hive-engine.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
+
 /* istanbul ignore next */
 const stakeToken = (
   to: string,
@@ -297,13 +298,12 @@ const getHiveEngineTokenPrice = (
   { symbol }: Partial<TokenBalance>,
   market: TokenMarket[],
 ) => {
+  if (symbol === 'SWAP.HIVE') {
+    return 1;
+  }
   const tokenMarket = market.find((t) => t.symbol === symbol);
-  const price = tokenMarket
-    ? parseFloat(tokenMarket.lastPrice)
-    : symbol === 'SWAP.HIVE'
-    ? 1
-    : 0;
-  return price;
+  if (!tokenMarket || !isAcceptableSpread(symbol!, tokenMarket)) return 0;
+  return parseFloat(tokenMarket.lastPrice);
 };
 
 const getHiveEngineTokenValue = (
@@ -314,12 +314,10 @@ const getHiveEngineTokenValue = (
 ) => {
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
   const token = tokens?.find((t) => t.symbol === balance.symbol);
-  if (Number(tokenMarket?.volume) <= 0) return 0;
-  const price = tokenMarket
-    ? parseFloat(tokenMarket.lastPrice)
-    : balance.symbol === 'SWAP.HIVE'
-    ? 1
-    : 0;
+
+  if (Number(tokenMarket?.volume) <= 0 && token?.symbol !== 'SWAP.HIVE')
+    return 0;
+  const price = getHiveEngineTokenPrice(balance, market);
 
   const totalToken =
     parseFloat(balance.balance) +
@@ -329,6 +327,20 @@ const getHiveEngineTokenValue = (
     parseFloat(balance.stake);
   return totalToken * price * hive?.usd!;
 };
+
+export const isAcceptableSpread = (
+  symbol: string,
+  tokenMarket: TokenMarket,
+) => {
+  if (symbol === 'SWAP.HIVE') return true;
+  if (!tokenMarket?.highestBid || !tokenMarket?.lowestAsk) return false;
+
+  const spread =
+    parseFloat(tokenMarket.lowestAsk) / parseFloat(tokenMarket.highestBid);
+
+  return spread <= Config.hiveEngine.maxSpread;
+};
+
 /* istanbul ignore next */
 const getUserBalance = (account: string) => {
   return HiveEngineUtils.get<TokenBalance[]>({

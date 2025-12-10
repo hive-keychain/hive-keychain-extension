@@ -36,20 +36,9 @@ const login = async (password: string): Promise<boolean> => {
   return false;
 };
 
-/* istanbul ignore next */
-const getMkFromLocalStorage = () => {
-  return LocalStorageUtils.getValueFromSessionStorage(LocalStorageKeyEnum.__MK);
-};
-/* istanbul ignore next */
-const saveMkInLocalStorage = (mk: string): void => {
-  LocalStorageUtils.saveValueInSessionStorage(LocalStorageKeyEnum.__MK, mk);
-};
-
 const MkUtils = {
   isPasswordValid,
   login,
-  getMkFromLocalStorage,
-  saveMkInLocalStorage,
 };
 
 export default MkUtils;

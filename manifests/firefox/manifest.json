@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "3.9.6",
+  "version": "3.12.5",
   "permissions": [
     "storage",
     "idle",
@@ -10,7 +10,7 @@
     "notifications",
     "webNavigation"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+  "content_security_policy": "script-src 'self'; object-src 'self';",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "/assets/images/iconhive.png"
@@ -33,5 +33,8 @@
       "all_frames": true
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 2,
+  "applications": {
+    "gecko": { "id": "{b6bd7e35-0762-42a2-a283-95a94635047d}" }
+  }
 }

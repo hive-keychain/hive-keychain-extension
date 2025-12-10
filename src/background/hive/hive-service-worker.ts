@@ -24,6 +24,10 @@ import MkModule from './modules/mk.module';
 import { HiveRequestsHandler } from './requests/hive-request-handler';
 import { performHiveOperation } from './requests/operations/perform-operation';
 
+import { VaultKey } from '@reference-data/vault-message-key.enum';
+import VaultUtils from 'src/utils/vault.utils';
+
+/* istanbul ignore next */
 const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
   await RPCModule.init();
@@ -50,7 +54,6 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  // Logger.log('Background message hive service worker', backgroundMessage);
   switch (backgroundMessage.command) {
     case BackgroundCommand.GET_MK:
       MkModule.sendBackMk();
@@ -147,7 +150,19 @@ const chromeMessageHandler = async (
       Logger.log('ping');
       break;
   }
+  return true;
 };
+
+// When a chrome window is removed, check if there are no window left open
+chrome.windows.onRemoved.addListener(() => {
+  chrome.windows.getAll(async (windows) => {
+    if (windows.length === 0) {
+      if (await chrome.offscreen.hasDocument()) {
+        VaultUtils.removeFromVault(VaultKey.__MK);
+      }
+    }
+  });
+});
 
 export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,

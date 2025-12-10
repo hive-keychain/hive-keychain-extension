@@ -1,3 +1,4 @@
+import MkModule from '@background/hive/modules/mk.module';
 import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
@@ -121,9 +122,7 @@ const checkAndUpdateLocalStorage = async () => {
         }
         if (oldFormat) {
           const favoriteUserData: any = {};
-          const mk = await LocalStorageUtils.getValueFromSessionStorage(
-            LocalStorageKeyEnum.__MK,
-          );
+          const mk = await MkModule.getMk();
           const localAccounts =
             await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
           if (localAccounts) {

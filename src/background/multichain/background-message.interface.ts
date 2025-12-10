@@ -7,6 +7,7 @@ import {
   DialogCommand,
   MultisigDialogCommand,
 } from '@reference-data/dialog-message-key.enum';
+import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import { KeychainRequestData } from 'hive-keychain-commons';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 
@@ -16,8 +17,9 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 // }
 
 export type BaseBackgroundMessage = {
-  command: BackgroundCommand;
+  command: BackgroundCommand | VaultCommand;
   value?: any;
+  key?: string;
 };
 
 export type SendRequestMessage = {

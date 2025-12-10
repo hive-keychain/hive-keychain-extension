@@ -326,6 +326,7 @@ const recurrentTransfer = Joi.object({
   executions: Joi.number().integer().required(),
   recurrence: Joi.number().integer().required(),
   rpc,
+  pair_id: Joi.number().integer(),
 });
 
 const encodeMultisig = Joi.object({

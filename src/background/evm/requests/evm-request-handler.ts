@@ -6,9 +6,10 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import MkUtils from '@popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 if (!process.env.IS_FIREFOX) {
   //@ts-ignore
@@ -122,7 +123,7 @@ export class EvmRequestHandler {
         requestHandlersParams.windowId,
       );
     }
-    const mk = await MkUtils.getMkFromLocalStorage();
+    const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     if (mk)
       handler.accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
         mk,

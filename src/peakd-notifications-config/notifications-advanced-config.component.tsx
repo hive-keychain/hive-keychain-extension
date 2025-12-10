@@ -11,11 +11,11 @@ import {
 import { Screen } from '@interfaces/screen.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import MkUtils from '@popup/hive/utils/mk.utils';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
@@ -38,6 +38,7 @@ import { MessageContainerComponent } from 'src/common-ui/message-container/messa
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
@@ -101,7 +102,7 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const initSelectOptions = async (activeUsername: string) => {
-    const mk = await MkUtils.getMkFromLocalStorage();
+    const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     if (!mk) {
     } else {
       const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
@@ -300,6 +301,7 @@ const NotificationsAdvancedConfigPage = () => {
                   autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
                     (field) => field.name,
                   )}
+                  autocompletePrefix=""
                 />
                 <div className="add-button" onClick={addNewCriteria}>
                   <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />

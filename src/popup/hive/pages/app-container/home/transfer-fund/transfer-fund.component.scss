@@ -3,6 +3,9 @@
   flex: 1;
   overflow: hidden;
 
+  .pending-recurrent-transfer-panel {
+    @include pending-panel;
+  }
   .form-container {
     .recurrent-panel {
       display: flex;

@@ -4,7 +4,6 @@ import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { EvmAppComponent } from '@popup/evm/evm-app.component';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
 import { HiveAppComponent } from '@popup/hive/hive-app.component';
-import MkUtils from '@popup/hive/utils/mk.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
@@ -22,6 +21,7 @@ import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
@@ -30,6 +30,7 @@ import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.c
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 type Props = { screen: SignUpScreen };
 
@@ -68,7 +69,7 @@ const ChainRouter = ({
   }, []);
 
   const initMk = async () => {
-    const mkFromStorage = await MkUtils.getMkFromLocalStorage();
+    const mkFromStorage = await VaultUtils.getValueFromVault(VaultKey.__MK);
     if (mkFromStorage) {
       setMk(mkFromStorage, false);
     }

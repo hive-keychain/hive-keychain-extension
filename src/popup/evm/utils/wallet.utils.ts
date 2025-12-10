@@ -14,12 +14,13 @@ import {
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
-import MkUtils from '@popup/hive/utils/mk.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
 import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const INITIAL_PATH = "44'/60'/0'/0";
 
@@ -488,7 +489,7 @@ const revokeAllPermissions = async (domain: string) => {
 
 const getAllLocalAddresses = async () => {
   const accounts = await rebuildAccountsFromLocalStorage(
-    await MkUtils.getMkFromLocalStorage(),
+    await VaultUtils.getValueFromVault(VaultKey.__MK),
   );
   return accounts.map((account) => account.wallet.address.toLowerCase());
 };

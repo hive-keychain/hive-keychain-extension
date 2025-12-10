@@ -5,7 +5,8 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
+import VaultUtils from 'src/utils/vault.utils';
 
 export const createPopup = async (
   callback: () => void,
@@ -75,7 +76,7 @@ chrome.windows.onRemoved.addListener((id: number) => {
   onRemoveHive(id);
   chrome.windows.getAll((windows) => {
     if (windows.length === 0) {
-      LocalStorageUtils.clearSessionStorage();
+      VaultUtils.removeFromVault(VaultKey.__MK);
     }
   });
 });

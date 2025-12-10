@@ -22,6 +22,7 @@ const config = {
     evmKeychain: './src/content-scripts/evm/injected/evm-keychain.ts',
     evmContentScript: './src/content-scripts/evm/evm-content-script.ts',
     portfolio: './src/portfolio/index.tsx',
+    vault: './src/vault/index.ts',
   },
   module: {
     rules: [

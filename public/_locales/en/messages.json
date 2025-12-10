@@ -688,7 +688,7 @@
     "description": "When initiating a HIVE or HBD transfer and the balance is loading."
   },
   "popup_html_memo_optional": {
-    "message": "MEMO (optional)",
+    "message": "Memo (optional)",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
@@ -1401,6 +1401,10 @@
     "message": "Recurrence",
     "description": "When requesting recurrent transfers"
   },
+  "dialog_pair_id": {
+    "message": "Pair ID",
+    "description": "When requesting recurrent transfers"
+  },
   "dialog_executions": {
     "message": "Executions",
     "description": "When requesting recurrent transfers"
@@ -2035,6 +2039,10 @@
   },
   "popup_html_recurrent_transfer": {
     "message": "Recurrent transfer",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfers": {
+    "message": "Recurrent transfers",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
@@ -3210,6 +3218,18 @@
   "popup_html_pending": {
     "message": "Pending",
     "description": "Global"
+  },
+  "popup_html_active_recurrent_transfer": {
+    "message": "active recurrent transfer(s)",
+    "description": "Global"
+  },
+  "popup_html_pending_remaining_executions": {
+    "message": "$1 remaining execution(s)",
+    "description": "Pending recurrent transfer remaining executions"
+  },
+  "popup_html_pending_recurrence": {
+    "message": "Every $1 hours",
+    "description": "Pending recurrent transfer recurrence every x hours"
   },
   "popup_html_pending_currency": {
     "message": "Pending conversions",
