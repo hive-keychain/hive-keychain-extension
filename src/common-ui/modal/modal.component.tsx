@@ -3,13 +3,15 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 
 interface ModalProps {
   children: JSX.Element | JSX.Element[];
-  title: string;
+  title?: string;
 }
 
 export const ModalComponent = ({ children, title }: ModalProps) => {
   return (
     <PopupContainer className="modal-container">
-      <div className="modal-title">{chrome.i18n.getMessage(title)}</div>
+      {title && (
+        <div className="modal-title">{chrome.i18n.getMessage(title)}</div>
+      )}
       <div className="modal-content">{children}</div>
     </PopupContainer>
   );

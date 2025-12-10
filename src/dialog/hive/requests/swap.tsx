@@ -4,6 +4,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { SwapConfig, SwapServerStatus } from '@interfaces/swap-token.interface';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -103,6 +104,7 @@ const Swap = (props: Props) => {
     return (
       <DialogError
         data={{
+          command: DialogCommand.SEND_DIALOG_ERROR,
           msg: {
             display_msg: chrome.i18n.getMessage(
               serverStatus.isMaintenanceOn

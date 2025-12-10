@@ -10,7 +10,7 @@ export const broadcastVote = async (
   data: RequestVote & RequestId,
   options?: TransactionOptions,
 ) => {
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
   let err, result, err_message;
   try {
     // TODO : When Ledger ready for full usage with posting key, add compatibility with Ledger

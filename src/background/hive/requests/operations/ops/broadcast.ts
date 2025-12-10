@@ -23,7 +23,7 @@ export const broadcastOperations = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
 
   // check if operations contains any transfer wich requires memo encryption
   try {

@@ -46,7 +46,6 @@ const chromeMessageHandler = async (
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_REQUEST: {
       let requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      console.log(requestHandler, 'requestHandler in evm service worker');
       if (!requestHandler) {
         requestHandler = new EvmRequestHandler();
       }
@@ -102,7 +101,7 @@ const chromeMessageHandler = async (
         value: message,
       });
 
-      requestHandler.removeRequestById(message.request.request_id);
+      requestHandler.removeRequestById(message.request_id);
 
       break;
     }

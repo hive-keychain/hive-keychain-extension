@@ -21,7 +21,7 @@ export const broadcastCreateProposal = async (
   options?: TransactionOptions,
 ) => {
   let err, result, err_message;
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -85,7 +85,7 @@ export const broadcastUpdateProposalVote = async (
   data: RequestUpdateProposalVote & RequestId,
   options?: TransactionOptions,
 ) => {
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
       data.username!,
@@ -177,7 +177,7 @@ export const broadcastRemoveProposal = async (
   options?: TransactionOptions,
 ) => {
   let err, result, ids, err_message;
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     ids =
       typeof data.proposal_ids === 'string'

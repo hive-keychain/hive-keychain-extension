@@ -31,7 +31,7 @@ export const addAccountRequest = (
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,
-        data: request,
+        request,
         domain,
         tab,
       });

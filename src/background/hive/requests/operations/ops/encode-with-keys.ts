@@ -12,7 +12,7 @@ export const encodeWithKeys = async (
   let encoded: { [a: string]: string } = {};
   let error = null;
   try {
-    const key = requestHandler.data.key;
+    const key = requestHandler.getRequestData(data.request_id)?.key;
 
     for (const receiverPublicKey of data.publicKeys) {
       encoded[receiverPublicKey.toString()] = encode(

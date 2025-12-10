@@ -1,3 +1,4 @@
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Message } from '@interfaces/message.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
@@ -25,7 +26,6 @@ import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';

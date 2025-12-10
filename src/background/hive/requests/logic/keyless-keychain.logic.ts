@@ -55,8 +55,11 @@ const createAnonymousKeylessOpPopup = async (
   domain: string,
   keylessAuthData: KeylessAuthData | undefined,
 ) => {
-  await requestHandler.setIsKeyless(true);
-  await requestHandler.setIsWaitingForConfirmation(!keylessAuthData);
+  await requestHandler.setIsKeyless(true, request.request_id!);
+  await requestHandler.setIsWaitingForConfirmation(
+    !keylessAuthData,
+    request.request_id!,
+  );
   const callback = async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANONYMOUS_KEYLESS_OP,
@@ -93,8 +96,8 @@ const createRegisterKeylessKeychainPopup = async (
   request: KeychainRequest,
   domain: string,
 ) => {
-  await requestHandler.setIsKeyless(true);
-  await requestHandler.setIsWaitingForConfirmation(true);
+  await requestHandler.setIsKeyless(true, request.request_id!);
+  await requestHandler.setIsWaitingForConfirmation(true, request.request_id!);
   const callback = async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.REGISTER_KEYLESS_KEYCHAIN,

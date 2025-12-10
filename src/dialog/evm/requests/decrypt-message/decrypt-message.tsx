@@ -1,3 +1,4 @@
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -11,7 +12,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 
 interface Props {
   request: EvmRequest;

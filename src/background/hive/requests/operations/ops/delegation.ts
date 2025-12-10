@@ -19,7 +19,7 @@ export const broadcastDelegation = async (
   data: RequestDelegation & RequestId,
   options?: TransactionOptions,
 ) => {
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
       data.username!,

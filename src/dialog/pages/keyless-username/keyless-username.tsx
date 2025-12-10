@@ -27,11 +27,12 @@ const KeylessUsername = (props: Props) => {
 
   const handleSubmit = async () => {
     data.username = username;
-    requestHandler.data.request = {
-      ...requestHandler.data.request!,
+    requestHandler.setRequest(data.request_id, {
+      ...data,
       domain: domain,
       username: username,
-    };
+    });
+
     const keylessAuthData =
       await KeylessKeychainModule.getKeylessRegistrationInfo(data, domain, tab);
     if (!keylessAuthData) {

@@ -14,7 +14,7 @@ export const encodeMessage = async (
   let encoded = null;
   let error = null;
   try {
-    const key = requestHandler.data.key;
+    const key = requestHandler.getRequestData(data.request_id)?.key;
     const receiver = await AccountUtils.getExtendedAccount(data.receiver);
     let publicKey;
 

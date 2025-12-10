@@ -9,6 +9,7 @@ const tabsSendMessage = async (
   message: BackgroundMessage | DialogMessage,
   onFail?: Function,
 ) => {
+  console.log('tabsSendMessage', tabId, message);
   try {
     const res = await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {

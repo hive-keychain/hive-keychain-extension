@@ -19,10 +19,10 @@ export const signBuffer = async (
   let signed = null;
   let error = null;
   let err_message = null;
-  let publicKey = requestHandler.data.publicKey;
+  let publicKey = requestHandler.getRequestData(data.request_id)?.publicKey;
 
   try {
-    let key = requestHandler.data.key;
+    let key = requestHandler.getRequestData(data.request_id)?.key;
     if (!key) {
       [key, publicKey] = requestHandler.getUserKeyPair(
         data.username!,

@@ -21,7 +21,7 @@ export const broadcastProxy = async (
   let result, err, err_message;
 
   try {
-    let key = requestHandler.data.key;
+    let key = requestHandler.getRequestData(data.request_id)?.key;
     if (!key) {
       [key] = requestHandler.getUserKeyPair(
         data.username!,

@@ -1,16 +1,19 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { SVGIcons } from '@common-ui/icons.enum';
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
-import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
-import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import {
+  EvmRequestMessage,
+  HiveRequestMessage,
+} from '@dialog/interfaces/messages.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
-import { Rpc } from '@interfaces/rpc.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
 import { DecryptMessage } from 'src/dialog/evm/requests/decrypt-message/decrypt-message';
 import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
@@ -47,180 +50,222 @@ import Vote from 'src/dialog/hive/requests/vote';
 import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 
 type Props = {
-  data: HiveRequestMessage | EvmRequestMessage;
+  message: HiveRequestMessage | EvmRequestMessage;
 };
 
-export type HiveRequestMessage = {
-  command: DialogCommand.SEND_DIALOG_CONFIRM;
-  data: KeychainRequest;
-  rpc: Rpc;
-  tab: number;
-  domain: string;
-  accounts?: string[];
-  hiveEngineConfig: HiveEngineConfig;
-};
+type RequestsMessages = HiveRequestMessage[] | EvmRequestMessage[];
 
-export type EvmRequestMessage = {
-  command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
-  data: EvmRequest;
-  tab: number;
-  dappInfo: EvmDappInfo;
-  accounts?: EvmAccount[];
-};
-
-export const RequestConfirmation = ({ data }: Props) => {
-  if (data.command === DialogCommand.SEND_DIALOG_CONFIRM) {
-    data = data as HiveRequestMessage;
-    const request = data.data as KeychainRequest;
-    switch (request.type) {
-      case KeychainRequestTypes.addAccount:
-        return <AddAccount {...data} data={request} />;
-      case KeychainRequestTypes.vote:
-        return <Vote {...data} data={request} />;
-      case KeychainRequestTypes.decode:
-        return <DecodeMemo {...data} data={request} />;
-      case KeychainRequestTypes.encode:
-        return <EncodeMemo {...data} data={request} />;
-      case KeychainRequestTypes.encodeWithKeys:
-        return <EncodeWithKeys {...data} data={request} />;
-      case KeychainRequestTypes.custom:
-        return <CustomJson {...data} data={request} />;
-      case KeychainRequestTypes.signBuffer:
-        return <SignBuffer {...data} data={request} />;
-      case KeychainRequestTypes.updateProposalVote:
-        return <UpdateProposalVote {...data} data={request} />;
-      case KeychainRequestTypes.transfer:
-        return <Transfer {...data} data={request} />;
-      case KeychainRequestTypes.addAccountAuthority:
-        return <AddAccountAuthority {...data} data={request} />;
-      case KeychainRequestTypes.removeAccountAuthority:
-        return <RemoveAccountAuthority {...data} data={request} />;
-      case KeychainRequestTypes.addKeyAuthority:
-        return <AddKeyAuthority {...data} data={request} />;
-      case KeychainRequestTypes.removeKeyAuthority:
-        return <RemoveKeyAuthority {...data} data={request} />;
-      case KeychainRequestTypes.delegation:
-        return <Delegation {...data} data={request} />;
-      case KeychainRequestTypes.powerUp:
-        return <PowerUp {...data} data={request} />;
-      case KeychainRequestTypes.powerDown:
-        return <PowerDown {...data} data={request} />;
-      case KeychainRequestTypes.witnessVote:
-        return <WitnessVote {...data} data={request} />;
-      case KeychainRequestTypes.proxy:
-        return <Proxy {...data} data={request} />;
-      case KeychainRequestTypes.signTx:
-        return <SignTx {...data} data={request} />;
-      case KeychainRequestTypes.convert:
-        return <Convert {...data} data={request} />;
-      case KeychainRequestTypes.recurrentTransfer:
-        return <RecurrentTransfer {...data} data={request} />;
-      case KeychainRequestTypes.createProposal:
-        return <CreateProposal {...data} data={request} />;
-      case KeychainRequestTypes.removeProposal:
-        return <RemoveProposal {...data} data={request} />;
-      case KeychainRequestTypes.sendToken:
-        return <SendToken {...data} data={request} />;
-      case KeychainRequestTypes.createClaimedAccount:
-        return <CreateClaimedAccount {...data} data={request} />;
-      case KeychainRequestTypes.post:
-        return <Post {...data} data={request} />;
-      case KeychainRequestTypes.broadcast:
-        return <Broadcast {...data} data={request} />;
-      case KeychainRequestTypes.swap:
-        return <Swap {...data} data={request} />;
-      default:
-        return null;
+export const RequestConfirmation = ({ message }: Props) => {
+  const [displayedRequestIndex, setDisplayedRequestIndex] = useState(0);
+  const [requestsMessages, setRequestsMessages] = useState<RequestsMessages>(
+    [],
+  );
+  useEffect(() => {
+    console.log('message in request confirmation', message);
+    if (
+      message.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM ||
+      message.command === DialogCommand.SEND_DIALOG_CONFIRM
+    ) {
+      setRequestsMessages([...requestsMessages, message] as RequestsMessages);
     }
-  } else if (data.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM) {
-    data = data as EvmRequestMessage;
-    const request = data.data as EvmRequest;
-    switch (request.method) {
-      case EvmRequestMethod.GET_ACCOUNTS:
-      case EvmRequestMethod.REQUEST_ACCOUNTS: {
-        return (
-          <ConnectAccounts
-            request={request}
-            accounts={data.accounts!}
-            data={data}
-          />
-        );
-      }
-      case EvmRequestMethod.ETH_SIGN_DATA:
-      case EvmRequestMethod.ETH_SIGN_DATA_3:
-      case EvmRequestMethod.ETH_SIGN_DATA_4: {
-        return (
-          <SignTypedData
-            request={request}
-            accounts={data.accounts!}
-            data={data}
-          />
-        );
-      }
+  }, [message]);
 
-      case EvmRequestMethod.PERSONAL_SIGN: {
-        return (
-          <PersonalSign
-            request={request}
-            accounts={data.accounts!}
-            data={data}
-          />
-        );
+  const displayRequest = (
+    displayedMessage: HiveRequestMessage | EvmRequestMessage,
+  ) => {
+    if (displayedMessage.command === DialogCommand.SEND_DIALOG_CONFIRM) {
+      const message = requestsMessages[
+        displayedRequestIndex
+      ] as HiveRequestMessage;
+      const request = message.request as KeychainRequest;
+      switch (request.type) {
+        case KeychainRequestTypes.addAccount:
+          return <AddAccount {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.vote:
+          return <Vote {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.decode:
+          return <DecodeMemo {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.encode:
+          return <EncodeMemo {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.encodeWithKeys:
+          return <EncodeWithKeys {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.custom:
+          return <CustomJson {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.signBuffer:
+          return <SignBuffer {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.updateProposalVote:
+          return <UpdateProposalVote {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.transfer:
+          return <Transfer {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.addAccountAuthority:
+          return <AddAccountAuthority {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.removeAccountAuthority:
+          return (
+            <RemoveAccountAuthority {...displayedMessage} data={request} />
+          );
+        case KeychainRequestTypes.addKeyAuthority:
+          return <AddKeyAuthority {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.removeKeyAuthority:
+          return <RemoveKeyAuthority {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.delegation:
+          return <Delegation {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.powerUp:
+          return <PowerUp {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.powerDown:
+          return <PowerDown {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.witnessVote:
+          return <WitnessVote {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.proxy:
+          return <Proxy {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.signTx:
+          return <SignTx {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.convert:
+          return <Convert {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.recurrentTransfer:
+          return <RecurrentTransfer {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.createProposal:
+          return <CreateProposal {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.removeProposal:
+          return <RemoveProposal {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.sendToken:
+          return <SendToken {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.createClaimedAccount:
+          return <CreateClaimedAccount {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.post:
+          return <Post {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.broadcast:
+          return <Broadcast {...displayedMessage} data={request} />;
+        case KeychainRequestTypes.swap:
+          return <Swap {...displayedMessage} data={request} />;
+        default:
+          return null;
       }
+    } else if (
+      displayedMessage.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM
+    ) {
+      console.log(displayedMessage, 'displayedMessage in displayRequest');
+      const request = displayedMessage.request as EvmRequest;
+      switch (request.method) {
+        case EvmRequestMethod.GET_ACCOUNTS:
+        case EvmRequestMethod.REQUEST_ACCOUNTS: {
+          return (
+            <ConnectAccounts
+              request={request}
+              accounts={displayedMessage.accounts!}
+              data={displayedMessage}
+            />
+          );
+        }
+        case EvmRequestMethod.ETH_SIGN_DATA:
+        case EvmRequestMethod.ETH_SIGN_DATA_3:
+        case EvmRequestMethod.ETH_SIGN_DATA_4: {
+          return (
+            <SignTypedData
+              request={request}
+              accounts={displayedMessage.accounts!}
+              data={displayedMessage}
+            />
+          );
+        }
 
-      case EvmRequestMethod.GET_ENCRYPTION_KEY: {
-        return (
-          <GetEncryptionKey
-            request={request}
-            data={data}
-            accounts={data.accounts!}
-          />
-        );
-      }
+        case EvmRequestMethod.PERSONAL_SIGN: {
+          return (
+            <PersonalSign
+              request={request}
+              accounts={displayedMessage.accounts!}
+              data={displayedMessage}
+            />
+          );
+        }
 
-      case EvmRequestMethod.ETH_DECRYPT: {
-        return (
-          <DecryptMessage
-            request={request}
-            data={data}
-            accounts={data.accounts!}
-          />
-        );
-      }
+        case EvmRequestMethod.GET_ENCRYPTION_KEY: {
+          return (
+            <GetEncryptionKey
+              request={request}
+              data={displayedMessage}
+              accounts={displayedMessage.accounts!}
+            />
+          );
+        }
 
-      case EvmRequestMethod.SEND_TRANSACTION: {
-        return (
-          <SendTransaction
-            request={request}
-            data={data}
-            accounts={data.accounts!}
-          />
-        );
-      }
+        case EvmRequestMethod.ETH_DECRYPT: {
+          return (
+            <DecryptMessage
+              request={request}
+              data={displayedMessage}
+              accounts={displayedMessage.accounts!}
+            />
+          );
+        }
 
-      case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
-        const requestedPermission = Object.keys(request.params[0])[0];
-        switch (requestedPermission) {
-          case EvmRequestPermission.ETH_ACCOUNTS: {
-            return (
-              <ConnectAccounts
-                request={request}
-                accounts={data.accounts!}
-                data={data}
-              />
-            );
+        case EvmRequestMethod.SEND_TRANSACTION: {
+          return (
+            <SendTransaction
+              request={request}
+              data={displayedMessage}
+              accounts={displayedMessage.accounts!}
+            />
+          );
+        }
+
+        case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
+          const requestedPermission = Object.keys(request.params[0])[0];
+          switch (requestedPermission) {
+            case EvmRequestPermission.ETH_ACCOUNTS: {
+              return (
+                <ConnectAccounts
+                  request={request}
+                  accounts={displayedMessage.accounts!}
+                  data={displayedMessage}
+                />
+              );
+            }
           }
         }
-      }
 
-      case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
-        return <AddChain request={request} data={data} />;
-      }
+        case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+          return <AddChain request={request} data={displayedMessage} />;
+        }
 
-      default: {
-        return <div>{JSON.stringify(data)}</div>;
+        default: {
+          return <div>{JSON.stringify(displayedMessage)}</div>;
+        }
       }
-    }
-  }
-  return null;
+    } else
+      console.log(
+        'message in request confirmation is not a valid message',
+        displayedMessage,
+      );
+  };
+
+  return (
+    <>
+      {requestsMessages.length > 1 && (
+        <div className="multiple-page-container">
+          {displayedRequestIndex > 0 && (
+            <SVGIcon
+              className="previous-button"
+              icon={SVGIcons.GLOBAL_ARROW_RIGHT}
+              onClick={() =>
+                setDisplayedRequestIndex(displayedRequestIndex - 1)
+              }
+            />
+          )}
+          {displayedRequestIndex + 1} / {requestsMessages.length}
+          {displayedRequestIndex < requestsMessages.length - 1 && (
+            <SVGIcon
+              className="next-button"
+              icon={SVGIcons.GLOBAL_ARROW_RIGHT}
+              onClick={() =>
+                setDisplayedRequestIndex(displayedRequestIndex + 1)
+              }
+            />
+          )}
+        </div>
+      )}
+      {requestsMessages.length > 0 && (
+        <>{displayRequest(requestsMessages[displayedRequestIndex])}</>
+      )}
+    </>
+  );
 };

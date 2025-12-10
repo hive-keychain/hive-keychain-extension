@@ -1,7 +1,7 @@
 import { EvmOperation } from '@dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from '@dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from '@dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmRequestMessage } from '@dialog/multichain/request/request-confirmation';
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import {

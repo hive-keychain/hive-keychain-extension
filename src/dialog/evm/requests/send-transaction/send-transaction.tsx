@@ -1,3 +1,4 @@
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
 import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
@@ -41,7 +42,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -93,7 +93,7 @@ export const SendTransaction = (props: Props) => {
   const init = async () => {
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
 
-    const chainTmp = await ChainUtils.getChain<EvmChain>(data.data.chainId!);
+    const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
 
     setChain(chainTmp as EvmChain);
 

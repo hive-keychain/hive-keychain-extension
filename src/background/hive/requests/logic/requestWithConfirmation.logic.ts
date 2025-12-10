@@ -13,15 +13,27 @@ export const requestWithConfirmation = (
   current_rpc: Rpc,
 ) => {
   /* istanbul ignore next */
-  const callback = () => {
+
+  if (requestHandler.windowId) {
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_CONFIRM,
-      data: request,
+      request,
       domain,
       tab,
       rpc: current_rpc,
       hiveEngineConfig: requestHandler.hiveEngineConfig,
     });
-  };
-  createPopup(callback, requestHandler);
+  } else {
+    const callback = () => {
+      CommunicationUtils.runtimeSendMessage({
+        command: DialogCommand.SEND_DIALOG_CONFIRM,
+        request,
+        domain,
+        tab,
+        rpc: current_rpc,
+        hiveEngineConfig: requestHandler.hiveEngineConfig,
+      });
+    };
+    createPopup(callback, requestHandler);
+  }
 };

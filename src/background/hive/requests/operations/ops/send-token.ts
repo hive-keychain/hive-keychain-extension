@@ -14,7 +14,7 @@ export const broadcastSendToken = async (
   options?: TransactionOptions,
 ) => {
   let err, err_message, result;
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {

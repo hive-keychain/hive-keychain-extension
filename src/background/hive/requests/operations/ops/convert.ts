@@ -20,8 +20,8 @@ export const convert = async (
 ) => {
   let result, err, err_message;
   const { username, amount, collaterized } = data;
-  const key = requestHandler.data.key;
-  const rpc = requestHandler.data.rpc;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
+  const rpc = requestHandler.getRequestData(data.request_id)?.rpc;
   const requestId = await getNextRequestID(username);
   const conversionType = collaterized
     ? ConversionType.CONVERT_HIVE_TO_HBD

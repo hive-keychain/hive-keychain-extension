@@ -13,7 +13,7 @@ export const broadcastPost = async (
   options?: TransactionOptions,
 ) => {
   let err, result, err_message;
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     if (data.comment_options === '') {
       result = await BloggingUtils.post(

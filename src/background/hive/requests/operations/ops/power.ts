@@ -19,7 +19,7 @@ export const broadcastPowerUp = async (
   data: RequestPowerUp & RequestId,
   options?: TransactionOptions,
 ) => {
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
 
   let result, err, err_message;
 
@@ -77,7 +77,7 @@ export const broadcastPowerDown = async (
   data: RequestPowerDown & RequestId,
   options?: TransactionOptions,
 ) => {
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
 
   let result, err, err_message;
   try {

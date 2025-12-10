@@ -23,7 +23,7 @@ export const broadcastWitnessVote = async (
     err_message = null;
 
   try {
-    let key = requestHandler.data.key;
+    let key = requestHandler.getRequestData(data.request_id)?.key;
     if (!key) {
       [key] = requestHandler.getUserKeyPair(
         data.username!,

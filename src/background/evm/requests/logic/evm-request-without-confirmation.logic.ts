@@ -152,7 +152,7 @@ export const evmRequestWithoutConfirmation = async (
         message = {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {
-            requestId: request.request_id,
+            request_id: request.request_id,
             error: value,
           },
         };

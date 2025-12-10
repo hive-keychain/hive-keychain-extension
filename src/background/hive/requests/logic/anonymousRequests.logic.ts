@@ -34,7 +34,7 @@ export const anonymousRequests = (
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,
-        data: request,
+        request,
         domain,
         accounts: account_candidates,
         tab,

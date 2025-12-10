@@ -51,7 +51,7 @@ export type AnswerDialogMessage = {
 
 export type SendConfirmHiveMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM;
-  data: KeychainRequestData;
+  request: KeychainRequestData;
   domain: string;
   tab: number;
   accounts?: string[] | undefined;
@@ -61,7 +61,7 @@ export type SendConfirmHiveMessage = {
 
 export type SendConfirmEvmMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
-  data: EvmRequest;
+  request: EvmRequest;
   dappInfo: EvmDappInfo;
   tab: number;
   accounts: EvmAccount[];

@@ -25,12 +25,12 @@ export const recurrentTransfer = async (
   let { memo } = data;
   let currency = CurrencyUtils.getCurrencyLabel(
     data.currency,
-    requestHandler.data.rpc?.testnet || false,
+    requestHandler.getRequestData(data.request_id)?.rpc?.testnet || false,
   );
   let result, err, err_message;
 
   try {
-    let key = requestHandler.data.key;
+    let key = requestHandler.getRequestData(data.request_id)?.key;
     if (!key) {
       [key] = requestHandler.getUserKeyPair(
         data.username!,

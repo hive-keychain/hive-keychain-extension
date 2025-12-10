@@ -8,7 +8,7 @@ export const decodeMessage = async (
 ) => {
   let decoded = null;
   let error = null;
-  const key = requestHandler.data.key;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     decoded = await decode(key, data.message);
   } catch (err) {

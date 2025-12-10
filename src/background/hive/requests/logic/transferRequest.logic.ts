@@ -67,7 +67,7 @@ export const transferRequest = (
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,
-        data: request,
+        request,
         domain,
         accounts: encode || enforce ? undefined : active_accounts,
         tab,

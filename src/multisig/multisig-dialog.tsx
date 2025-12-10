@@ -11,7 +11,10 @@ import {
 } from '@interfaces/multisig.interface';
 import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { MultisigDialogCommand } from '@reference-data/dialog-message-key.enum';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -248,6 +251,7 @@ const MultisigDialog = () => {
           <DialogError
             data={{
               msg: { display_msg: chrome.i18n.getMessage(data.message) },
+              command: DialogCommand.SEND_DIALOG_ERROR,
             }}
           />
         );

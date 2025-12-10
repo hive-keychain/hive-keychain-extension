@@ -21,7 +21,7 @@ export const broadcastCreateClaimedAccount = async (
   options?: TransactionOptions,
 ) => {
   let err, result, err_message;
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     const accountAuthorities = {
       owner: JSON.parse(data.owner),

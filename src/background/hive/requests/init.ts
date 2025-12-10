@@ -80,6 +80,7 @@ export const initHiveRequestHandler = async (
       accounts,
       rpc,
       items.no_confirm || [],
+      request.request_id!,
     );
 
     let account = accounts.find((e) => e.name === username);
@@ -120,7 +121,7 @@ export const initHiveRequestHandler = async (
           //@ts-ignore
           const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
-          requestHandler.setKeys(key!, publicKey!);
+          requestHandler.setKeys(key!, publicKey!, request.request_id!);
 
           if (
             !isWhitelisted(items.no_confirm, req, domain, rpc) ||

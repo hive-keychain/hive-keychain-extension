@@ -3,20 +3,21 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { onRemoveHive } from '@background/hive/hive-dialog-lifecycle';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
+import { sleep } from '@hiveio/dhive/lib/utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-export const createPopup = (
+export const createPopup = async (
   callback: () => void,
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   popupHtml = 'dialog.html',
   height = 600,
 ) => {
   let width = 435;
-
   //Ensuring only one window is opened by the extension at a time.
   if (requestHandler.windowId) {
     removeWindow(requestHandler.windowId!);
+    await sleep(1000);
     requestHandler.setWindowId(undefined);
   }
   //Create new window on the top right of the screen
@@ -59,13 +60,10 @@ export const createPopup = (
 export const removeWindow = (windowId: number) => {
   console.log(windowId, 'windowId in removeWindow');
   chrome.windows.getAll((windows) => {
-    console.log(windows, 'windows in removeWindow');
     const hasWin = windows.filter((win) => {
       return win.id == windowId;
     }).length;
-    console.log(hasWin, 'hasWin in removeWindow');
     if (hasWin) {
-      console.log('removing window');
       chrome.windows.remove(windowId);
     }
   });

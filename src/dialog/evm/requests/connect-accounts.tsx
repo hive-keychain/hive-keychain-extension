@@ -1,5 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -14,7 +15,6 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 interface Props {
@@ -95,7 +95,7 @@ export const ConnectAccounts = (props: Props) => {
       CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
         value: {
-          requestId: request.request_id,
+          request_id: request.request_id,
           result: result,
         },
       });

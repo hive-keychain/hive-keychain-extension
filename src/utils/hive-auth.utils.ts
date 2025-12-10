@@ -348,11 +348,9 @@ const handleSignRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  const signWait = await signRequest(
-    requestHandler.data.request!,
-    keylessRequest.appName,
-    tab,
-  );
+  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
+
+  const signWait = await signRequest(request, keylessRequest.appName, tab);
 
   if (!ws) {
     throw new Error('WebSocket is not connected');
@@ -372,7 +370,7 @@ const handleSignRequest = async (
   const message = await createMessage(
     null,
     signResponse,
-    requestHandler.data.request!,
+    request,
     await chrome.i18n.getMessage('bgd_ops_sign_success'),
     null,
     null,
@@ -389,12 +387,8 @@ const handleEncodeDecodeRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  await challengeRequest(
-    requestHandler,
-    requestHandler.data.request!,
-    keylessRequest.appName,
-    tab,
-  );
+  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
+  await challengeRequest(requestHandler, request, keylessRequest.appName, tab);
 };
 
 const handleAuthAck = async (
@@ -404,6 +398,7 @@ const handleAuthAck = async (
   authAck: AuthAck,
   tab: number,
 ): Promise<void> => {
+  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
   try {
     if (authAck.uuid !== keylessRequest.uuid) return;
     const authAckData = validateAuthAckData(authAck, keylessRequest);
@@ -427,11 +422,11 @@ const handleAuthAck = async (
     });
 
     // Handle different request types
-    if (requestHandler.data.request?.type === KeychainRequestTypes.signBuffer) {
+    if (request.type === KeychainRequestTypes.signBuffer) {
       await handleSignBufferRequest(keylessRequest, authAckData, tab);
     } else if (
-      requestHandler.data.request?.type === KeychainRequestTypes.encode ||
-      requestHandler.data.request?.type === KeychainRequestTypes.decode
+      request.type === KeychainRequestTypes.encode ||
+      request.type === KeychainRequestTypes.decode
     ) {
       await handleEncodeDecodeRequest(requestHandler, keylessRequest, tab);
     } else {
@@ -443,7 +438,7 @@ const handleAuthAck = async (
     const message = await createMessage(
       error,
       null,
-      requestHandler.data.request!,
+      request,
       null,
       errorMessage,
       null,
@@ -1093,7 +1088,7 @@ const handleChallengeAck = async (
 
     // Send message to runtime if request is anonymous
     if (
-      requestHandler.data.isKeyless ||
+      requestHandler.isKeyless(request.request_id) ||
       request.type === KeychainRequestTypes.encode ||
       request.type === KeychainRequestTypes.decode
     ) {
@@ -1125,7 +1120,7 @@ const handleChallengeNack = async (
   sendResponseToDapp(request, domain, tab, challengeNack, error);
 
   // Send message to runtime if request is anonymous
-  if (requestHandler.data.isKeyless) {
+  if (requestHandler.isKeyless(request.request_id)) {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {

@@ -1,4 +1,5 @@
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
@@ -35,7 +36,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import { EvmRequestMessage } from 'src/dialog/multichain/request/request-confirmation';
 import FormatUtils from 'src/utils/format.utils';
 
 interface BalanceInfo {

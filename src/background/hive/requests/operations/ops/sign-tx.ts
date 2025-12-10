@@ -13,7 +13,7 @@ export const signTx = async (
   requestHandler: HiveRequestsHandler,
   data: RequestSignTx & RequestId,
 ) => {
-  let key = requestHandler.data.key;
+  let key = requestHandler.getRequestData(data.request_id)?.key;
   let result, err, err_message;
 
   const transaction = data.tx;

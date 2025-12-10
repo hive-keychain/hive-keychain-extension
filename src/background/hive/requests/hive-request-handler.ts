@@ -37,54 +37,114 @@ type RequestData = {
   isKeyless?: boolean;
 };
 export class HiveRequestsHandler {
-  data: RequestData;
+  requestsData: RequestData[];
+  // data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
   defaultRpcConfig: any;
   windowId: number | undefined;
+  accounts: LocalAccount[];
 
   constructor() {
-    this.data = { confirmed: false, isWaitingForConfirmation: false };
+    // this.data = { confirmed: false, isWaitingForConfirmation: false };
     this.hiveEngineConfig = Config.hiveEngine;
     this.defaultRpcConfig = config;
+    this.requestsData = [];
+    this.accounts = [];
   }
 
-  async initFromLocalStorage(data: RequestData) {
-    this.data = data;
+  async initFromLocalStorage(
+    requestsData: RequestData[],
+    accounts: LocalAccount[],
+    hiveEngineConfig: HiveEngineConfig,
+    defaultRpcConfig: any,
+    windowId?: number,
+  ) {
+    // this.data = data;
+    this.requestsData = requestsData;
+    this.accounts = accounts;
+    this.windowId = windowId;
+    this.hiveEngineConfig = hiveEngineConfig;
+    this.defaultRpcConfig = defaultRpcConfig;
   }
 
   async setupHiveEngine() {
     this.hiveEngineConfig = await BgdHiveEngineConfigModule.getActiveConfig();
   }
 
-  async setIsWaitingForConfirmation(isWaitingForConfirmation: boolean) {
-    this.data.isWaitingForConfirmation = isWaitingForConfirmation;
+  async setIsWaitingForConfirmation(
+    isWaitingForConfirmation: boolean,
+    requestId: number,
+  ) {
+    // this.data.isWaitingForConfirmation = isWaitingForConfirmation;
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.isWaitingForConfirmation = isWaitingForConfirmation;
+        break;
+      }
+    }
     this.saveInLocalStorage();
   }
 
-  async setIsMultisig(isMultisig: boolean) {
-    this.data.isMultisig = isMultisig;
+  isWaitingForConfirmation(requestId: number) {
+    const request = this.requestsData.find(
+      (request) => request.request_id === requestId,
+    );
+    return request?.isWaitingForConfirmation;
   }
 
-  async setIsKeyless(isKeyless: boolean) {
-    this.data.isKeyless = isKeyless;
+  async setIsMultisig(isMultisig: boolean, requestId: number) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.isMultisig = isMultisig;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
+  }
+
+  isMultisig(requestId: number) {
+    const request = this.requestsData.find(
+      (request) => request.request_id === requestId,
+    );
+    return request?.isMultisig;
+  }
+
+  async setIsKeyless(isKeyless: boolean, requestId: number) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.isKeyless = isKeyless;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
+  }
+
+  isKeyless(requestId: number) {
+    const request = this.requestsData.find(
+      (request) => request.request_id === requestId,
+    );
+    return request?.isKeyless;
   }
 
   async initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
     preferences: NoConfirm,
+    requestId: number,
   ) {
-    this.data.accounts = accounts;
-    this.data.rpc = rpc;
-    await this.setupHiveEngine();
-    this.data.preferences = preferences;
+    this.requestsData.forEach(async (request) => {
+      request.accounts = accounts;
+      request.rpc = rpc;
+      await this.setupHiveEngine();
+      request.preferences = preferences;
+    });
 
     config.node = rpc.uri;
   }
 
   closeWindow() {
-    if (this.data.windowId) {
-      removeWindow(this.data.windowId);
+    if (this.windowId) {
+      removeWindow(this.windowId);
     }
   }
 
@@ -93,51 +153,112 @@ export class HiveRequestsHandler {
       config.node = this.defaultRpcConfig.node;
       HiveRequestsHandler.clearLocalStorage();
     } else {
-      this.data = {
-        confirmed: this.data.confirmed,
-        windowId: this.data.windowId,
-        isWaitingForConfirmation: false,
-      };
+      this.requestsData = [];
       this.saveInLocalStorage();
     }
   }
 
-  setConfirmed(confirmed: boolean) {
-    this.data.confirmed = confirmed;
+  setConfirmed(confirmed: boolean, requestId: number) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.confirmed = confirmed;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
   }
 
   setWindowId(windowId?: number) {
-    this.data.windowId = windowId;
+    this.windowId = windowId;
   }
 
-  setKeys(key: string, publicKey: string) {
-    this.data.key = key;
-    this.data.publicKey = publicKey;
+  setKeys(key: string, publicKey: string, requestId: number) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.key = key;
+        requestData.publicKey = publicKey;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
   }
 
   sendRequest(
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
   ) {
-    this.data.tab = sender.tab!.id;
-    this.data.request = msg.request;
-    this.data.request_id = msg.request_id;
-    if (msg.request.rpc)
-      this.data.rpc = { uri: msg.request.rpc, testnet: false };
-    initHiveRequestHandler(msg.request, this.data.tab, msg.domain, this);
+    const requestData: RequestData = {
+      tab: sender.tab!.id,
+      request: msg.request,
+      request_id: msg.request_id,
+      confirmed: false,
+      isWaitingForConfirmation: false,
+    };
+    if (msg.request.rpc) {
+      requestData.rpc = { uri: msg.request.rpc, testnet: false };
+    }
+    this.requestsData.push(requestData);
+
+    initHiveRequestHandler(msg.request, sender.tab!.id, msg.domain, this);
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
     const pubKey: string = `${keyType}Pubkey`;
     return [
-      this.data.accounts?.find((e) => e.name === username)?.keys[keyType],
+      this.accounts?.find((e) => e.name === username)?.keys[keyType],
       //@ts-ignore
-      this.data.accounts?.find((e) => e.name === username)?.keys[pubKey!],
+      this.accounts?.find((e) => e.name === username)?.keys[pubKey!],
     ];
   }
 
   getUserPrivateKey(username: string, keyType: KeychainKeyTypesLC) {
-    return this.data.accounts?.find((e) => e.name === username)?.keys[keyType];
+    return this.accounts?.find((e) => e.name === username)?.keys[keyType];
+  }
+
+  getRequestData(requestId: number) {
+    return this.requestsData.find(
+      (request) => request.request_id === requestId,
+    );
+  }
+
+  getRequest(requestId: number) {
+    const requestData = this.getRequestData(requestId);
+    return requestData?.request;
+  }
+
+  setRequest(requestId: number, request: KeychainRequest) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.request = request;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
+  }
+
+  async removeRequestById(requestId: number) {
+    console.log(requestId, 'requestId in removeRequestById');
+
+    console.log(
+      this.requestsData,
+      'requestsData before filter in removeRequestById',
+    );
+
+    this.requestsData = this.requestsData.filter(
+      (request: RequestData) => request.request_id !== requestId,
+    );
+
+    console.log(this.requestsData, 'requestsData in removeRequestById');
+    await this.saveInLocalStorage();
+
+    console.log(
+      this.requestsData.length,
+      'requestsData.length in removeRequestById',
+    );
+
+    if (this.requestsData.length === 0) {
+      this.closeWindow();
+    }
   }
 
   static async getFromLocalStorage() {
@@ -146,7 +267,13 @@ export class HiveRequestsHandler {
     );
     const handler = new HiveRequestsHandler();
     if (params) {
-      await handler.initFromLocalStorage(params);
+      await handler.initFromLocalStorage(
+        params.requestsData,
+        params.accounts,
+        params.hiveEngineConfig,
+        params.defaultRpcConfig,
+        params.windowId,
+      );
     }
     return handler;
   }
@@ -154,7 +281,13 @@ export class HiveRequestsHandler {
   async saveInLocalStorage() {
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
-      this.data,
+      {
+        requestsData: this.requestsData,
+        accounts: this.accounts,
+        windowId: this.windowId,
+        hiveEngineConfig: this.hiveEngineConfig,
+        defaultRpcConfig: this.defaultRpcConfig,
+      },
     );
   }
 
