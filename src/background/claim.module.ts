@@ -1,9 +1,9 @@
 import { ActiveAccountModule } from '@background/active-account.module';
+import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import Config from 'src/config';
@@ -15,7 +15,6 @@ import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
-import VaultUtils from 'src/utils/vault.utils';
 
 const start = async () => {
   if (!!process.env.STOP_AUTOLOCK) return;
@@ -32,7 +31,7 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
+  const mk = await MkModule.getMk();
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
   const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];

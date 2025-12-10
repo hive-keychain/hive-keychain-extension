@@ -47,6 +47,8 @@ const init = async () => {
   await Promise.race([loadPromise, timeoutPromise]);
 };
 
-const VaultModule = { init };
+const VaultModule = {
+  init,
+};
 
 export default VaultModule;

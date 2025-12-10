@@ -26,6 +26,8 @@ import VaultUtils from 'src/utils/vault.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
+Object.assign(global, { contextType: 'service_worker' });
+
 /* istanbul ignore next */
 (async () => {
   if (!process.env.IS_FIREFOX) {
@@ -47,7 +49,6 @@ import MkModule from './mk.module';
   MultisigModule.start();
 })();
 
-let vault: Record<string, any> = {};
 /* istanbul ignore next */
 //@ts-ignore
 chrome.i18n.getMessage = getMessage;
@@ -148,14 +149,14 @@ const chromeMessageHandler = async (
     // Replace vault by persistent data storage for Firefox
     case VaultCommand.GET_VALUE:
       if (!process.env.IS_FIREFOX) return;
-      return vault[backgroundMessage.key!];
+      return MkModule.getMk();
     case VaultCommand.SET_VALUE:
       if (!process.env.IS_FIREFOX) return;
-      vault[backgroundMessage.key!] = backgroundMessage.value;
+      MkModule.saveMk(backgroundMessage.value);
       return true;
     case VaultCommand.REMOVE_VALUE:
       if (!process.env.IS_FIREFOX) return;
-      delete vault[backgroundMessage.key!];
+      MkModule.lock();
       return true;
   }
   return true;
