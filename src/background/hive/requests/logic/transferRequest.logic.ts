@@ -63,6 +63,16 @@ export const transferRequest = (
       );
     }, requestHandler);
   } else {
+    // if (requestHandler.windowId) {
+    //   CommunicationUtils.runtimeSendMessage({
+    //     command: DialogCommand.SEND_DIALOG_CONFIRM,
+    //     request,
+    //     domain,
+    //     accounts: encode || enforce ? undefined : active_accounts,
+    //     tab,
+    //     rpc: current_rpc,
+    //   });
+    // } else {
     /* istanbul ignore next */
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
@@ -75,5 +85,6 @@ export const transferRequest = (
       });
     };
     createPopup(callback, requestHandler);
+    // }
   }
 };

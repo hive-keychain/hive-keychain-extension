@@ -14,7 +14,29 @@ export const requestWithConfirmation = (
 ) => {
   /* istanbul ignore next */
 
-  if (requestHandler.windowId) {
+  // if (requestHandler.windowId) {
+  //   CommunicationUtils.runtimeSendMessage({
+  //     command: DialogCommand.SEND_DIALOG_CONFIRM,
+  //     request,
+  //     domain,
+  //     tab,
+  //     rpc: current_rpc,
+  //     hiveEngineConfig: requestHandler.hiveEngineConfig,
+  //   });
+  // } else {
+  //   const callback = () => {
+  //     CommunicationUtils.runtimeSendMessage({
+  //       command: DialogCommand.SEND_DIALOG_CONFIRM,
+  //       request,
+  //       domain,
+  //       tab,
+  //       rpc: current_rpc,
+  //       hiveEngineConfig: requestHandler.hiveEngineConfig,
+  //     });
+  //   };
+  //   createPopup(callback, requestHandler);
+  // }
+  const callback = () => {
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_CONFIRM,
       request,
@@ -23,17 +45,6 @@ export const requestWithConfirmation = (
       rpc: current_rpc,
       hiveEngineConfig: requestHandler.hiveEngineConfig,
     });
-  } else {
-    const callback = () => {
-      CommunicationUtils.runtimeSendMessage({
-        command: DialogCommand.SEND_DIALOG_CONFIRM,
-        request,
-        domain,
-        tab,
-        rpc: current_rpc,
-        hiveEngineConfig: requestHandler.hiveEngineConfig,
-      });
-    };
-    createPopup(callback, requestHandler);
-  }
+  };
+  createPopup(callback, requestHandler);
 };

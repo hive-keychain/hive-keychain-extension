@@ -68,11 +68,14 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
-      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
-      if (requestHandler) {
-        requestHandler.closeWindow();
+      let requestHandler = await HiveRequestsHandler.getFromLocalStorage();
+      // if (requestHandler) {
+      //   requestHandler.closeWindow();
+      // }
+      if (!requestHandler) {
+        requestHandler = new HiveRequestsHandler();
       }
-      new HiveRequestsHandler().sendRequest(
+      requestHandler.sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,
       );
@@ -84,12 +87,17 @@ const chromeMessageHandler = async (
         const login = await MkModule.login(mk);
         if (login) {
           MkModule.saveMk(mk);
-          initHiveRequestHandler(
-            data.msg.data,
-            tab,
-            domain,
-            await HiveRequestsHandler.getFromLocalStorage(),
-          );
+
+          const requestHandler =
+            await HiveRequestsHandler.getFromLocalStorage();
+          for (const requestData of requestHandler.requestsData) {
+            initHiveRequestHandler(
+              requestData.request!,
+              tab,
+              domain,
+              requestHandler,
+            );
+          }
         } else {
           CommunicationUtils.runtimeSendMessage({
             msg: { ...data.msg, wrongMk: true },

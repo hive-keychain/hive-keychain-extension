@@ -92,7 +92,6 @@ export const initEvmRequestHandler = async (
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
-        console.log('ici 3');
         evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
       } else {
         // return error ?

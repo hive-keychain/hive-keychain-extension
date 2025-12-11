@@ -8,13 +8,10 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 
 /* istanbul ignore next */
 export const onRemoveEvm = async (winId: number) => {
-  console.log(winId, 'winId in onRemoveEvm');
   const requestHandler = await EvmRequestHandler.getFromLocalStorage();
   if (requestHandler) {
     for (const requestData of requestHandler.requestsData) {
-      console.log(requestData, 'requestData in onRemoveEvm');
       if (winId == requestHandler.windowId && requestData.tab) {
-        console.log('everything shoud be ok');
         CommunicationUtils.tabsSendMessage(requestData.tab!, {
           command: BackgroundCommand.SEND_EVM_ERROR,
           value: {

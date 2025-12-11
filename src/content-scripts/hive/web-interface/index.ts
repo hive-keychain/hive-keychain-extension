@@ -5,7 +5,6 @@ import schemas, {
   commonRequestParams,
 } from 'src/content-scripts/hive/web-interface/input-validation';
 import {
-  cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
   sendResponse,
@@ -17,7 +16,7 @@ if (window.chrome) {
   window.chrome.storage = undefined;
 }
 
-let req: KeychainRequest | null = null;
+// let req: KeychainRequest | null = null;
 
 // Injecting Keychain
 
@@ -47,18 +46,18 @@ type KeychainRequestWrapper = {
   detail: KeychainRequest;
 };
 document.addEventListener('swRequest_hive', (request: object) => {
-  const prevReq = req;
-  req = (request as KeychainRequestWrapper).detail;
+  // const prevReq = req;
+  const req = (request as KeychainRequestWrapper).detail;
   const validation = validateRequest(req);
   const { error, value } = validation;
   if (!error) {
     sendRequestToBackground(value, chrome);
-    if (prevReq) {
-      cancelPreviousRequest(prevReq);
-    }
+    // if (prevReq) {
+    //   cancelPreviousRequest(prevReq);
+    // }
   } else {
     sendIncompleteDataResponse(value!, error);
-    req = prevReq;
+    // req = prevReq;
   }
 });
 
@@ -66,7 +65,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
 chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
   if (obj.command === DialogCommand.ANSWER_REQUEST) {
     sendResponse(obj.msg);
-    req = null;
+    // req = null;
   }
 });
 

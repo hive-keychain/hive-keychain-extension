@@ -61,7 +61,6 @@ export const RequestConfirmation = ({ message }: Props) => {
     [],
   );
   useEffect(() => {
-    console.log('message in request confirmation', message);
     if (
       message.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM ||
       message.command === DialogCommand.SEND_DIALOG_CONFIRM
@@ -143,7 +142,6 @@ export const RequestConfirmation = ({ message }: Props) => {
     } else if (
       displayedMessage.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM
     ) {
-      console.log(displayedMessage, 'displayedMessage in displayRequest');
       const request = displayedMessage.request as EvmRequest;
       switch (request.method) {
         case EvmRequestMethod.GET_ACCOUNTS:
@@ -231,11 +229,7 @@ export const RequestConfirmation = ({ message }: Props) => {
           return <div>{JSON.stringify(displayedMessage)}</div>;
         }
       }
-    } else
-      console.log(
-        'message in request confirmation is not a valid message',
-        displayedMessage,
-      );
+    }
   };
 
   return (

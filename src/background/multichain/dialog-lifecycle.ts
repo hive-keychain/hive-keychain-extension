@@ -3,7 +3,6 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { onRemoveHive } from '@background/hive/hive-dialog-lifecycle';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
-import { sleep } from '@hiveio/dhive/lib/utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import VaultUtils from 'src/utils/vault.utils';
@@ -17,49 +16,47 @@ export const createPopup = async (
   let width = 435;
   //Ensuring only one window is opened by the extension at a time.
   if (requestHandler.windowId) {
-    removeWindow(requestHandler.windowId!);
-    await sleep(1000);
-    requestHandler.setWindowId(undefined);
+    callback();
   }
   //Create new window on the top right of the screen
   /* istanbul ignore next */
-  chrome.windows.getCurrent((w) => {
-    chrome.windows.create(
-      {
-        url: chrome.runtime.getURL(popupHtml),
-        type: 'popup',
-        height: height,
-        width: width,
-        left: w.width! - width + w.left!,
-        top: w.top,
-        focused: false,
-      },
-      (win) => {
-        if (!win) return;
-        chrome.windows.update(
-          win.id!,
-          {
-            height: height,
-            width: width,
-            top: w.top,
-            left: w.width! - width + w.left!,
-          },
-          () => {
-            console.log('setting windowId in createPopup', win.id);
-            requestHandler.setWindowId(win.id);
-            requestHandler.saveInLocalStorage();
-            waitUntilDialogIsReady(100, DialogCommand.READY, callback);
-          },
-        );
-      },
-    );
-  });
+  else {
+    chrome.windows.getCurrent((w) => {
+      chrome.windows.create(
+        {
+          url: chrome.runtime.getURL(popupHtml),
+          type: 'popup',
+          height: height,
+          width: width,
+          left: w.width! - width + w.left!,
+          top: w.top,
+          focused: false,
+        },
+        (win) => {
+          if (!win) return;
+          chrome.windows.update(
+            win.id!,
+            {
+              height: height,
+              width: width,
+              top: w.top,
+              left: w.width! - width + w.left!,
+            },
+            () => {
+              requestHandler.setWindowId(win.id);
+              requestHandler.saveInLocalStorage();
+              waitUntilDialogIsReady(100, DialogCommand.READY, callback);
+            },
+          );
+        },
+      );
+    });
+  }
 };
 
 // check if win exists before removing it
 /* istanbul ignore next */
 export const removeWindow = (windowId: number) => {
-  console.log(windowId, 'windowId in removeWindow');
   chrome.windows.getAll((windows) => {
     const hasWin = windows.filter((win) => {
       return win.id == windowId;

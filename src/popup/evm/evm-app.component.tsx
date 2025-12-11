@@ -19,6 +19,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const EvmApp = ({
   accounts,
@@ -79,7 +80,7 @@ const EvmApp = ({
       );
       loadEvmActiveAccount(chain, wallet);
     } catch (err) {
-      console.log(err);
+      Logger.log(err);
       setDisplaySplashscreen(false);
     }
   };

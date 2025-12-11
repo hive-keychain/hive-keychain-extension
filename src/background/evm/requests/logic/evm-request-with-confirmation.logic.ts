@@ -11,7 +11,6 @@ export const evmRequestWithConfirmation = (
   request: EvmRequest,
   dappInfo: EvmDappInfo,
 ) => {
-  console.log(requestHandler, 'requestHandler in evmRequestWithConfirmation');
   if (requestHandler.windowId) {
     // send message to notifiy of new request
     CommunicationUtils.runtimeSendMessage({

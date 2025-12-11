@@ -42,16 +42,14 @@ export class EvmRequestHandler {
   }
 
   closeWindow() {
-    console.log('closeWindow in EvmRequestHandler', this.windowId);
     if (this.windowId) {
-      console.log(this.windowId, 'windowId in closeWindow');
       removeWindow(this.windowId);
     }
   }
 
   reset(resetWinId: boolean) {
     if (resetWinId) {
-      this.removeFromLocalStorage();
+      EvmRequestHandler.removeFromLocalStorage();
     } else {
       this.requestsData = [];
       this.accounts = [];
@@ -83,24 +81,11 @@ export class EvmRequestHandler {
   }
 
   async removeRequestById(requestId: number) {
-    console.log(requestId, 'requestId in removeRequestById');
-
-    console.log(
-      this.requestsData,
-      'requestsData before filter in removeRequestById',
-    );
-
     this.requestsData = this.requestsData.filter(
       (request: RequestData) => request.request_id !== requestId,
     );
 
-    console.log(this.requestsData, 'requestsData in removeRequestById');
     await this.saveInLocalStorage();
-
-    console.log(
-      this.requestsData.length,
-      'requestsData.length in removeRequestById',
-    );
 
     if (this.requestsData.length === 0) {
       this.closeWindow();
@@ -142,7 +127,7 @@ export class EvmRequestHandler {
     );
   }
 
-  async removeFromLocalStorage() {
+  static async removeFromLocalStorage() {
     await LocalStorageUtils.removeFromLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
     );

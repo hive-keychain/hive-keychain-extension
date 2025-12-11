@@ -132,12 +132,15 @@ export class HiveRequestsHandler {
     preferences: NoConfirm,
     requestId: number,
   ) {
-    this.requestsData.forEach(async (request) => {
-      request.accounts = accounts;
-      request.rpc = rpc;
-      await this.setupHiveEngine();
-      request.preferences = preferences;
-    });
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.accounts = accounts;
+        requestData.rpc = rpc;
+        await this.setupHiveEngine();
+        requestData.preferences = preferences;
+        break;
+      }
+    }
 
     config.node = rpc.uri;
   }
@@ -237,24 +240,11 @@ export class HiveRequestsHandler {
   }
 
   async removeRequestById(requestId: number) {
-    console.log(requestId, 'requestId in removeRequestById');
-
-    console.log(
-      this.requestsData,
-      'requestsData before filter in removeRequestById',
-    );
-
     this.requestsData = this.requestsData.filter(
       (request: RequestData) => request.request_id !== requestId,
     );
 
-    console.log(this.requestsData, 'requestsData in removeRequestById');
     await this.saveInLocalStorage();
-
-    console.log(
-      this.requestsData.length,
-      'requestsData.length in removeRequestById',
-    );
 
     if (this.requestsData.length === 0) {
       this.closeWindow();
