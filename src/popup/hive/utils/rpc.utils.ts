@@ -9,6 +9,7 @@ const getFullList = (): Rpc[] => {
   return DefaultRpcs.map((rpc: Rpc) => {
     return {
       ...rpc,
+      custom: false,
       uri: rpc.uri.endsWith('/')
         ? rpc.uri.substring(0, rpc.uri.length - 1)
         : rpc.uri,
@@ -34,7 +35,11 @@ const getCustomRpcs = async (): Promise<Rpc[]> => {
   const customRpcs: Rpc[] = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.RPC_LIST,
   );
-  return customRpcs ? customRpcs : ([] as Rpc[]);
+  const rpcList = customRpcs ? customRpcs : ([] as Rpc[]);
+  return rpcList.map((rpc) => ({
+    ...rpc,
+    custom: true,
+  }));
 };
 
 const addCustomRpc = async (rpc: Rpc): Promise<void> => {
