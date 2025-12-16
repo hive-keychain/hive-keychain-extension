@@ -36,6 +36,7 @@ export const handleDeprecatedMethods = async (
         display_msg: await chrome.i18n.getMessage(errorMessage, [
           request.method,
         ]),
+        tab,
       },
     });
   };

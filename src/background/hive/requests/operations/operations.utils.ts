@@ -10,6 +10,7 @@ export const createMessage = async (
   err: any,
   result: any,
   datas: KeychainRequestData & RequestId,
+  tab: number,
   success_message: string | null,
   fail_message?: string | null,
   publicKey?: Key,
@@ -33,6 +34,7 @@ export const createMessage = async (
       message: message,
       request_id,
       publicKey,
+      tab: tab,
     },
   };
 };

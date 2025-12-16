@@ -130,6 +130,7 @@ const createUnsupportedOperationPopup = (
               .replace(/^./, (str) => str.toUpperCase()),
           ],
         ),
+        tab: tab,
       },
     });
   };

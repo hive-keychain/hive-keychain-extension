@@ -8,6 +8,8 @@ export const decodeMessage = async (
 ) => {
   let decoded = null;
   let error = null;
+  const request = requestHandler.getRequestData(data.request_id);
+
   const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     decoded = await decode(key, data.message);
@@ -18,6 +20,7 @@ export const decodeMessage = async (
       error,
       decoded,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_decode'),
       await chrome.i18n.getMessage('bgd_ops_decode_err'),
     );

@@ -1,7 +1,5 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
-import { SVGIcons } from '@common-ui/icons.enum';
-import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
 import {
   EvmRequestMessage,
@@ -13,7 +11,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ConnectAccounts } from 'src/dialog/evm/requests/connect-accounts';
 import { DecryptMessage } from 'src/dialog/evm/requests/decrypt-message/decrypt-message';
 import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
@@ -53,30 +51,12 @@ type Props = {
   message: HiveRequestMessage | EvmRequestMessage;
 };
 
-type RequestsMessages = HiveRequestMessage[] | EvmRequestMessage[];
-
 export const RequestConfirmation = ({ message }: Props) => {
-  const [displayedRequestIndex, setDisplayedRequestIndex] = useState(0);
-  const [requestsMessages, setRequestsMessages] = useState<RequestsMessages>(
-    [],
-  );
-  useEffect(() => {
-    if (
-      message.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM ||
-      message.command === DialogCommand.SEND_DIALOG_CONFIRM
-    ) {
-      setRequestsMessages([...requestsMessages, message] as RequestsMessages);
-    }
-  }, [message]);
-
   const displayRequest = (
     displayedMessage: HiveRequestMessage | EvmRequestMessage,
   ) => {
     if (displayedMessage.command === DialogCommand.SEND_DIALOG_CONFIRM) {
-      const message = requestsMessages[
-        displayedRequestIndex
-      ] as HiveRequestMessage;
-      const request = message.request as KeychainRequest;
+      const request = displayedMessage.request as KeychainRequest;
       switch (request.type) {
         case KeychainRequestTypes.addAccount:
           return <AddAccount {...displayedMessage} data={request} />;
@@ -232,34 +212,5 @@ export const RequestConfirmation = ({ message }: Props) => {
     }
   };
 
-  return (
-    <>
-      {requestsMessages.length > 1 && (
-        <div className="multiple-page-container">
-          {displayedRequestIndex > 0 && (
-            <SVGIcon
-              className="previous-button"
-              icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() =>
-                setDisplayedRequestIndex(displayedRequestIndex - 1)
-              }
-            />
-          )}
-          {displayedRequestIndex + 1} / {requestsMessages.length}
-          {displayedRequestIndex < requestsMessages.length - 1 && (
-            <SVGIcon
-              className="next-button"
-              icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() =>
-                setDisplayedRequestIndex(displayedRequestIndex + 1)
-              }
-            />
-          )}
-        </div>
-      )}
-      {requestsMessages.length > 0 && (
-        <>{displayRequest(requestsMessages[displayedRequestIndex])}</>
-      )}
-    </>
-  );
+  return <>{displayRequest(message)}</>;
 };

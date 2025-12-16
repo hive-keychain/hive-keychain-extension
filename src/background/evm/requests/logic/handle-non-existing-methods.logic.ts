@@ -42,6 +42,7 @@ export const handleNonExistingMethod = async (
           'dialog_evm_non_existing_method',
           [request.method],
         ),
+        tab,
       },
     });
   };

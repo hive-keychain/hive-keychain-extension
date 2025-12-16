@@ -19,6 +19,8 @@ export const convert = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
   const { username, amount, collaterized } = data;
   const key = requestHandler.getRequestData(data.request_id)?.key;
   const rpc = requestHandler.getRequestData(data.request_id)?.rpc;
@@ -79,6 +81,7 @@ export const convert = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage(successMessage, [amount, username]),
       err_message,
     );

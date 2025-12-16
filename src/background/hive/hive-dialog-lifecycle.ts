@@ -31,10 +31,12 @@ export const onRemoveHive = async (id: number) => {
               }`,
             ),
             request_id: requestData.request_id,
+            tab: requestData.tab,
           },
         });
         await requestHandler.removeRequestById(
           requestData!.request!.request_id,
+          requestData.tab,
         );
       }
     }

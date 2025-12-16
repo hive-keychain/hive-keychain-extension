@@ -87,9 +87,9 @@ export class EvmRequestHandler {
 
     await this.saveInLocalStorage();
 
-    if (this.requestsData.length === 0) {
-      this.closeWindow();
-    }
+    // if (this.requestsData.length === 0) {
+    //   this.closeWindow();
+    // }
   }
 
   // Local storage methods

@@ -10,6 +10,7 @@ export const broadcastVote = async (
   data: RequestVote & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
   const key = requestHandler.getRequestData(data.request_id)?.key;
   let err, result, err_message;
   try {
@@ -33,6 +34,7 @@ export const broadcastVote = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_vote', [
         data.author,
         data.permlink,

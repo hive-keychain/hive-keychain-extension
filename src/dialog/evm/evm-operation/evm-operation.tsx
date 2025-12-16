@@ -5,7 +5,7 @@ import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -46,6 +46,10 @@ export const EvmOperation = ({
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [request]);
 
   const genericOnConfirm = () => {
     if (transactionHook && transactionHook.hasWarning()) {

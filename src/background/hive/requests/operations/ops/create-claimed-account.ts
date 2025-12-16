@@ -21,6 +21,8 @@ export const broadcastCreateClaimedAccount = async (
   options?: TransactionOptions,
 ) => {
   let err, result, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
   let key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     const accountAuthorities = {
@@ -75,6 +77,7 @@ export const broadcastCreateClaimedAccount = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_create_account', [
         data.new_account,
       ]),

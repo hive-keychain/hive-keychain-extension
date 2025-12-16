@@ -21,9 +21,9 @@ export const broadcastWitnessVote = async (
   let result,
     err,
     err_message = null;
-
+  const request = requestHandler.getRequestData(data.request_id);
   try {
-    let key = requestHandler.getRequestData(data.request_id)?.key;
+    let key = request?.key;
     if (!key) {
       [key] = requestHandler.getUserKeyPair(
         data.username!,
@@ -72,6 +72,7 @@ export const broadcastWitnessVote = async (
       err,
       result,
       data,
+      request?.tab!,
       data.vote
         ? await chrome.i18n.getMessage('bgd_ops_witness_voted', [data.witness])
         : await chrome.i18n.getMessage('bgd_ops_witness_unvoted', [

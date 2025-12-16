@@ -11,6 +11,8 @@ export const encodeWithKeys = async (
 ) => {
   let encoded: { [a: string]: string } = {};
   let error = null;
+  const request = requestHandler.getRequestData(data.request_id);
+
   try {
     const key = requestHandler.getRequestData(data.request_id)?.key;
 
@@ -28,6 +30,7 @@ export const encodeWithKeys = async (
       error,
       encoded,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_encode'),
       await chrome.i18n.getMessage('bgd_ops_encode_err'),
     );

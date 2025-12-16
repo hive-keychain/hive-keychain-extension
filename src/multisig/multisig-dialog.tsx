@@ -27,7 +27,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
-import DialogError from 'src/dialog/multichain/error/error';
+import { DialogError } from 'src/dialog/multichain/error/error';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import BrowserUtils from 'src/utils/browser.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';

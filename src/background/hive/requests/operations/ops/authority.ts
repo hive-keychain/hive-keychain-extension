@@ -27,6 +27,8 @@ export const broadcastAddAccountAuthority = async (
   const { username, authorizedUsername } = data;
   let role = data.role.toLowerCase();
   let { weight } = data;
+  const request = requestHandler.getRequestData(data.request_id);
+
   try {
     const key = requestHandler.getRequestData(data.request_id)?.key;
     const userAccount = await AccountUtils.getExtendedAccount(username);
@@ -84,6 +86,7 @@ export const broadcastAddAccountAuthority = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_add_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
@@ -102,6 +105,8 @@ export const broadcastRemoveAccountAuthority = async (
   let err, result, err_message;
   const { username, authorizedUsername } = data;
   let role = data.role.toLowerCase();
+  const request = requestHandler.getRequestData(data.request_id);
+
   try {
     const key = requestHandler.getRequestData(data.request_id)?.key;
     const userAccount = await AccountUtils.getExtendedAccount(username);
@@ -157,6 +162,7 @@ export const broadcastRemoveAccountAuthority = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_remove_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
@@ -176,6 +182,7 @@ export const broadcastAddKeyAuthority = async (
   const { username, authorizedKey } = data;
   let role = data.role.toLowerCase();
   let { weight } = data;
+  const request = requestHandler.getRequestData(data.request_id);
 
   try {
     const key = requestHandler.getRequestData(data.request_id)?.key;
@@ -233,6 +240,7 @@ export const broadcastAddKeyAuthority = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_add_key_auth', [
         data.authorizedKey,
         await chrome.i18n.getMessage(data.role.toLowerCase()),
@@ -252,6 +260,7 @@ export const broadcastRemoveKeyAuthority = async (
   let err, result, err_message;
   const { username, authorizedKey } = data;
   let role = data.role.toLowerCase();
+  const request = requestHandler.getRequestData(data.request_id);
 
   try {
     const key = requestHandler.getRequestData(data.request_id)?.key;
@@ -308,6 +317,7 @@ export const broadcastRemoveKeyAuthority = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
         data.authorizedKey,
         await chrome.i18n.getMessage(data.role.toLowerCase()),

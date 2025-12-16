@@ -12,6 +12,8 @@ export const broadcastPost = async (
   data: RequestPost & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let err, result, err_message;
   const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
@@ -52,6 +54,7 @@ export const broadcastPost = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_post'),
       err_message,
     );

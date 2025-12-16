@@ -332,6 +332,7 @@ const handleSignBufferRequest = async (
     null,
     authAckData.challenge.challenge,
     keylessRequest.request,
+    tab,
     await chrome.i18n.getMessage('bgd_ops_sign_success'),
     null,
     authAckData.challenge.pubkey,
@@ -371,6 +372,7 @@ const handleSignRequest = async (
     null,
     signResponse,
     request,
+    tab,
     await chrome.i18n.getMessage('bgd_ops_sign_success'),
     null,
     null,
@@ -418,6 +420,7 @@ const handleAuthAck = async (
       msg: {
         success: true,
         message: 'Keyless Authentication Success',
+        tab: tab,
       },
     });
 
@@ -439,6 +442,7 @@ const handleAuthAck = async (
       error,
       null,
       request,
+      tab,
       null,
       errorMessage,
       null,
@@ -790,6 +794,7 @@ const handleSignWait = async (
               success: false,
               message: error.message,
               error: error.message,
+              tab: tab,
             },
           });
           reject(error);
@@ -1101,6 +1106,7 @@ const handleChallengeAck = async (
               request.type.slice(1).toLowerCase(),
           ]),
           result: challengeAckData,
+          tab: tab,
         },
       });
     }
@@ -1127,6 +1133,7 @@ const handleChallengeNack = async (
         success: false,
         message: error.message,
         error: error.message,
+        tab: tab,
       },
     });
   }

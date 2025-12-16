@@ -15,7 +15,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import RequestTokenBalance from 'src/dialog/components/request-token-balance/request-token-balance';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
-import DialogError from 'src/dialog/multichain/error/error';
+import { DialogError } from 'src/dialog/multichain/error/error';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
@@ -116,6 +116,7 @@ const Swap = (props: Props) => {
                 ? [swapConfig?.slippage?.min + '']
                 : undefined,
             ),
+            tab: props.tab,
           },
         }}
       />

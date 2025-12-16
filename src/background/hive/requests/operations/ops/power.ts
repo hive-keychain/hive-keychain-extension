@@ -19,6 +19,8 @@ export const broadcastPowerUp = async (
   data: RequestPowerUp & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let key = requestHandler.getRequestData(data.request_id)?.key;
 
   let result, err, err_message;
@@ -65,6 +67,7 @@ export const broadcastPowerUp = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
       err_message,
     );
@@ -77,6 +80,8 @@ export const broadcastPowerDown = async (
   data: RequestPowerDown & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let key = requestHandler.getRequestData(data.request_id)?.key;
 
   let result, err, err_message;
@@ -133,6 +138,7 @@ export const broadcastPowerDown = async (
       err,
       result,
       data,
+      request?.tab!,
       parseFloat(data.hive_power) == 0
         ? await chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
         : await chrome.i18n.getMessage('bgd_ops_pd', [

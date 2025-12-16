@@ -22,6 +22,7 @@ export const broadcastTransfer = async (
   let result,
     err: any,
     err_message = null;
+  const request = requestHandler.getRequestData(data.request_id);
   try {
     const { username, to } = data;
     const memoKey: string = requestHandler.getUserKeyPair(
@@ -93,6 +94,7 @@ export const broadcastTransfer = async (
         true,
         null,
         data,
+        request?.tab!,
         null,
         await chrome.i18n.getMessage('bgd_ops_encode_err'),
       );
@@ -109,6 +111,7 @@ export const broadcastTransfer = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_transfer_success', [
         data.amount,
         data.currency,

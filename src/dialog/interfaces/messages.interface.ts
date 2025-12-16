@@ -24,12 +24,17 @@ export type EvmRequestMessage = {
 };
 
 export type ErrorMessage = {
-  msg: { display_msg: string };
+  msg: { display_msg: string; tab?: number };
   command: DialogCommand.SEND_DIALOG_ERROR;
 };
 
 export type ResultMessage = {
-  msg: { message: string; success: boolean; data: KeychainRequest };
+  msg: {
+    message: string;
+    success: boolean;
+    data: KeychainRequest;
+    tab?: number;
+  };
   command: DialogCommand.ANSWER_REQUEST | DialogCommand.ANSWER_EVM_REQUEST;
 };
 

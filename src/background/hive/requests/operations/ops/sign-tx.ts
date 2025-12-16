@@ -16,6 +16,8 @@ export const signTx = async (
   let key = requestHandler.getRequestData(data.request_id)?.key;
   let result, err, err_message;
 
+  const request = requestHandler.getRequestData(data.request_id);
+
   const transaction = data.tx;
   if (!transaction.extensions) {
     transaction.extensions = [];
@@ -54,6 +56,7 @@ export const signTx = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_sign_tx'),
       err_message,
     );

@@ -23,14 +23,16 @@ export const recurrentTransfer = async (
 ) => {
   const { username, to, amount, recurrence, executions, pair_id } = data;
   let { memo } = data;
+  const request = requestHandler.getRequestData(data.request_id);
+
   let currency = CurrencyUtils.getCurrencyLabel(
     data.currency,
-    requestHandler.getRequestData(data.request_id)?.rpc?.testnet || false,
+    request?.rpc?.testnet || false,
   );
   let result, err, err_message;
 
   try {
-    let key = requestHandler.getRequestData(data.request_id)?.key;
+    let key = request?.key;
     if (!key) {
       [key] = requestHandler.getUserKeyPair(
         data.username!,
@@ -101,6 +103,7 @@ export const recurrentTransfer = async (
       err,
       result,
       data,
+      request?.tab!,
       parseFloat(amount) === 0
         ? await chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer')
         : await chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),

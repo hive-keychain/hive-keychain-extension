@@ -14,7 +14,9 @@ export const broadcastSendToken = async (
   options?: TransactionOptions,
 ) => {
   let err, err_message, result;
-  let key = requestHandler.getRequestData(data.request_id)?.key;
+  const request = requestHandler.getRequestData(data.request_id);
+
+  let key = request?.key;
   try {
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -60,6 +62,7 @@ export const broadcastSendToken = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_tokens'),
       err_message,
     );

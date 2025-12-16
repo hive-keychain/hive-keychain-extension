@@ -19,6 +19,8 @@ export const broadcastDelegation = async (
   data: RequestDelegation & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let key = requestHandler.getRequestData(data.request_id)?.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -87,6 +89,7 @@ export const broadcastDelegation = async (
       err,
       result,
       data,
+      request?.tab!,
       parseFloat(data.amount) === 0
         ? await chrome.i18n.getMessage('bgd_ops_undelegate', [
             data.delegatee,

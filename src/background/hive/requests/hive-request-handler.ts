@@ -239,16 +239,16 @@ export class HiveRequestsHandler {
     this.saveInLocalStorage();
   }
 
-  async removeRequestById(requestId: number) {
+  async removeRequestById(requestId: number, tabId: number) {
     this.requestsData = this.requestsData.filter(
       (request: RequestData) => request.request_id !== requestId,
     );
 
     await this.saveInLocalStorage();
 
-    if (this.requestsData.length === 0) {
-      this.closeWindow();
-    }
+    // if (this.requestsData.length === 0) {
+    //   this.closeWindow();
+    // }
   }
 
   static async getFromLocalStorage() {

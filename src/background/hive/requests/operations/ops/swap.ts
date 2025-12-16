@@ -23,6 +23,8 @@ export const broadcastSwap = async (
     err: any,
     err_message = null;
   let swapId: string = '';
+  const request = requestHandler.getRequestData(data.request_id);
+
   try {
     const {
       username,
@@ -119,6 +121,7 @@ export const broadcastSwap = async (
         true,
         null,
         data,
+        request?.tab!,
         null,
         await chrome.i18n.getMessage('bgd_ops_encode_err'),
       );
@@ -135,6 +138,7 @@ export const broadcastSwap = async (
       err,
       { ...result, swap_id: swapId },
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_swap_start_success', [
         data.amount + '',
         data.startToken,

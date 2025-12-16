@@ -10,6 +10,7 @@ export const addAccount = async (
   requestHandler: HiveRequestsHandler,
   data: RequestAddAccount & RequestId,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
   const { username, keys } = data;
   let err = null;
   const mk = await MkModule.getMk();
@@ -81,6 +82,7 @@ export const addAccount = async (
     !!err,
     !err,
     data,
+    request?.tab!,
     err
       ? null
       : await chrome.i18n.getMessage('bgd_ops_add_account', [username]),

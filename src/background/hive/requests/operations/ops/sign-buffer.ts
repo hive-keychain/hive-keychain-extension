@@ -20,6 +20,7 @@ export const signBuffer = async (
   let error = null;
   let err_message = null;
   let publicKey = requestHandler.getRequestData(data.request_id)?.publicKey;
+  const request = requestHandler.getRequestData(data.request_id);
 
   try {
     let key = requestHandler.getRequestData(data.request_id)?.key;
@@ -45,6 +46,7 @@ export const signBuffer = async (
       error,
       signed,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_sign_success'),
       err_message ?? (await chrome.i18n.getMessage('bgd_ops_sign_error')),
       publicKey,

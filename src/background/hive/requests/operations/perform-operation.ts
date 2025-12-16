@@ -33,7 +33,6 @@ import { broadcastSwap } from '@background/hive/requests/operations/ops/swap';
 import { broadcastTransfer } from '@background/hive/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/hive/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/hive/requests/operations/ops/witness-vote';
-import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import {
   KeychainRequest,
@@ -188,9 +187,9 @@ export const performHiveOperation = async (
     if (no_confirm) {
       addToWhitelist(request.username!, domain, request.type);
       if (!!requestHandler.windowId) {
-        removeWindow(requestHandler.windowId!);
+        // removeWindow(requestHandler.windowId!);
       }
     } else if (message) CommunicationUtils.runtimeSendMessage(message);
-    requestHandler.removeRequestById(request.request_id);
+    requestHandler.removeRequestById(request.request_id, tab);
   }
 };

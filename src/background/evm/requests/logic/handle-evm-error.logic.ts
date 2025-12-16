@@ -36,6 +36,7 @@ export const handleEvmError = async (
             errorMessage,
             errorMessageParams,
           ),
+          tab,
         },
       });
     };

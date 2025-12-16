@@ -22,6 +22,8 @@ export const broadcastCustomJson = async (
   data: RequestCustomJSON & RequestId,
   options?: TransactionOptions,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let key = requestHandler.getRequestData(data.request_id)?.key;
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
@@ -75,6 +77,7 @@ export const broadcastCustomJson = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_broadcast'),
       err_message,
     );

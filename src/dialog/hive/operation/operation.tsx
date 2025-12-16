@@ -63,6 +63,10 @@ const Operation = ({
   const domainHeader = useDomainCheck({ ...data, domain });
 
   useEffect(() => {
+    setLoading(false);
+  }, [data]);
+
+  useEffect(() => {
     if (data && (username || data.username)) checkForMultsig();
   }, [data, username]);
 
@@ -176,8 +180,16 @@ const Operation = ({
     });
   };
 
+  const genericOnCancel = () => {
+    //TODO implement on service worker
+    CommunicationUtils.runtimeSendMessage({
+      command: BackgroundCommand.REJECT_TRANSACTION,
+      value: {},
+    });
+  };
+
   return (
-    <div className="operation">
+    <div className="operation" key={`operation-${data.request_id}-${tab}`}>
       <div
         className="scrollable"
         style={{
@@ -276,7 +288,7 @@ const Operation = ({
             label="dialog_cancel"
             type={ButtonType.ALTERNATIVE}
             onClick={() => {
-              window.close();
+              genericOnCancel();
             }}
             height="small"
           />

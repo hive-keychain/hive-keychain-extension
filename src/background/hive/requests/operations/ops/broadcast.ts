@@ -23,6 +23,8 @@ export const broadcastOperations = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
   const key = requestHandler.getRequestData(data.request_id)?.key;
 
   // check if operations contains any transfer wich requires memo encryption
@@ -112,6 +114,7 @@ export const broadcastOperations = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_broadcast'),
       err_message,
     );

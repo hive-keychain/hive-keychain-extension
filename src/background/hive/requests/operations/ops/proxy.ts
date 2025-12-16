@@ -19,6 +19,7 @@ export const broadcastProxy = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
 
   try {
     let key = requestHandler.getRequestData(data.request_id)?.key;
@@ -68,6 +69,7 @@ export const broadcastProxy = async (
       err,
       result,
       data,
+      request?.tab!,
       data.proxy.length
         ? await chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
         : await chrome.i18n.getMessage('bgd_ops_unproxy'),

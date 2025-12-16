@@ -11,6 +11,8 @@ export const encodeMessage = async (
   requestHandler: HiveRequestsHandler,
   data: RequestEncode & RequestId,
 ) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
   let encoded = null;
   let error = null;
   try {
@@ -31,6 +33,7 @@ export const encodeMessage = async (
       error,
       encoded,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_encode'),
       await chrome.i18n.getMessage('bgd_ops_encode_err'),
     );

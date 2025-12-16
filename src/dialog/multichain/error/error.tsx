@@ -6,9 +6,18 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
   data: ErrorMessage;
+  onClose?: () => void;
 };
 
-const DialogError = ({ data }: Props) => {
+export const DialogError = ({ data, onClose }: Props) => {
+  const handleOnCloseClicked = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      close();
+    }
+  };
+
   return (
     <div className="error-message-container">
       <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
@@ -22,9 +31,10 @@ const DialogError = ({ data }: Props) => {
           </p>
         ))}
       </div>
-      <ButtonComponent label="message_container_close_button" onClick={close} />
+      <ButtonComponent
+        label="message_container_close_button"
+        onClick={handleOnCloseClicked}
+      />
     </div>
   );
 };
-
-export default DialogError;

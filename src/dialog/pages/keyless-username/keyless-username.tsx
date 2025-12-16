@@ -9,7 +9,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
-interface KeylessUsernameProps {
+export interface KeylessUsernameMessage {
   command: DialogCommand;
   requestHandler: HiveRequestsHandler;
   data: KeychainRequest;
@@ -18,7 +18,7 @@ interface KeylessUsernameProps {
 }
 
 interface Props {
-  data: KeylessUsernameProps;
+  data: KeylessUsernameMessage;
 }
 
 const KeylessUsername = (props: Props) => {

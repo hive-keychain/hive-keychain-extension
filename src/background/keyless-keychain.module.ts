@@ -39,6 +39,7 @@ const handleOperation = async (
             'dialog_keyless_unsupported_operation',
             [request.type],
           ),
+          tab: tab,
         },
       });
       break;
@@ -62,6 +63,7 @@ const register = async (
         message: await chrome.i18n.getMessage(
           'dialog_keyless_username_required',
         ),
+        tab: tab,
       },
     });
     return;

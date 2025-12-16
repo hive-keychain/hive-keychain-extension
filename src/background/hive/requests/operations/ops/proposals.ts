@@ -22,6 +22,8 @@ export const broadcastCreateProposal = async (
 ) => {
   let err, result, err_message;
   const key = requestHandler.getRequestData(data.request_id)?.key;
+  const request = requestHandler.getRequestData(data.request_id);
+
   try {
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
@@ -73,6 +75,7 @@ export const broadcastCreateProposal = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_proposal_create'),
       err_message,
     );
@@ -86,6 +89,8 @@ export const broadcastUpdateProposalVote = async (
   options?: TransactionOptions,
 ) => {
   let key = requestHandler.getRequestData(data.request_id)?.key;
+  const request = requestHandler.getRequestData(data.request_id);
+
   if (!key) {
     [key] = requestHandler.getUserKeyPair(
       data.username!,
@@ -164,6 +169,7 @@ export const broadcastUpdateProposalVote = async (
       err,
       result,
       data,
+      request?.tab!,
       messageText,
       err_message,
     );
@@ -177,6 +183,8 @@ export const broadcastRemoveProposal = async (
   options?: TransactionOptions,
 ) => {
   let err, result, ids, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
   const key = requestHandler.getRequestData(data.request_id)?.key;
   try {
     ids =
@@ -225,6 +233,7 @@ export const broadcastRemoveProposal = async (
       err,
       result,
       data,
+      request?.tab!,
       await chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
       err_message,
     );

@@ -4,7 +4,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 
-type AddAccountQRProps = {
+export type AddAccountQRMessage = {
   command: DialogCommand;
   data: KeychainRequest;
   tab: number;
@@ -12,7 +12,7 @@ type AddAccountQRProps = {
 };
 
 type Props = {
-  data: AddAccountQRProps;
+  data: AddAccountQRMessage;
 };
 
 const AddAccountQR = (props: Props) => {

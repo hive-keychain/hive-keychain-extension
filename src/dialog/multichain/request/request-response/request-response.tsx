@@ -7,14 +7,25 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
   data: ResultMessage;
+  onClose?: () => void;
 };
 
-const RequestResponse = ({ data }: Props) => {
+export const RequestResponse = ({ data, onClose }: Props) => {
   if (data.msg.success) {
     setTimeout(() => {
-      // window.close();
+      if (onClose) {
+        onClose();
+      } else {
+        close();
+      }
     }, 3000);
   }
+
+  const handleOnCloseClicked = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
 
   const getErrorMessage = () => {
     switch (data.command) {
@@ -55,10 +66,8 @@ const RequestResponse = ({ data }: Props) => {
       <ButtonComponent
         additionalClass={data.msg.success ? 'success-button' : ''}
         label="message_container_close_button"
-        onClick={close}
+        onClick={handleOnCloseClicked}
       />
     </>
   );
 };
-
-export default RequestResponse;
