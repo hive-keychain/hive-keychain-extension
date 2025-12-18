@@ -240,15 +240,17 @@ export class HiveRequestsHandler {
   }
 
   async removeRequestById(requestId: number, tabId: number) {
-    this.requestsData = this.requestsData.filter(
-      (request: RequestData) => request.request_id !== requestId,
-    );
+    this.requestsData = this.requestsData.filter((requestData: RequestData) => {
+      if (
+        requestData.request_id === requestId &&
+        requestData.tab! === requestData.tab
+      ) {
+        return false;
+      }
+      return true;
+    });
 
     await this.saveInLocalStorage();
-
-    // if (this.requestsData.length === 0) {
-    //   this.closeWindow();
-    // }
   }
 
   static async getFromLocalStorage() {

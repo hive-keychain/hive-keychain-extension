@@ -16,6 +16,7 @@ type Props = {
   tab: number;
   rpc: Rpc;
   accounts?: string[];
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
 const Delegation = (props: Props) => {

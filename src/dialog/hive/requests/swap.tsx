@@ -26,6 +26,7 @@ type Props = {
   rpc: Rpc;
   hiveEngineConfig: HiveEngineConfig;
   accounts?: string[];
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
 const Swap = (props: Props) => {

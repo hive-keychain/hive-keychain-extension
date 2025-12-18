@@ -101,7 +101,7 @@ const chromeMessageHandler = async (
         value: message,
       });
 
-      requestHandler.removeRequestById(message.request_id);
+      requestHandler.removeRequestById(message.request_id, message.tab!);
 
       break;
     }
@@ -127,7 +127,7 @@ const chromeMessageHandler = async (
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      requestHandler.removeRequestById(request.request_id);
+      requestHandler.removeRequestById(request.request_id, tab);
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {

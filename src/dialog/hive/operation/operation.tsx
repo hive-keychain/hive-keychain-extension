@@ -29,6 +29,7 @@ type Props = {
   title: string;
   children: JSX.Element[];
   onConfirm?: () => void;
+  afterCancel: (requestId: number, tab: number) => void;
   data: KeychainRequest;
   domain: string;
   tab: number;
@@ -45,6 +46,7 @@ const Operation = ({
   title,
   children,
   onConfirm,
+  afterCancel,
   domain,
   tab,
   data,
@@ -180,12 +182,20 @@ const Operation = ({
     });
   };
 
-  const genericOnCancel = () => {
-    //TODO implement on service worker
+  const genericOnCancel = async () => {
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.REJECT_TRANSACTION,
-      value: {},
+      value: {
+        success: false,
+        error: 'user_cancel',
+        result: null,
+        data: data,
+        message: await chrome.i18n.getMessage(`bgd_lifecycle_request_canceled`),
+        request_id: data.request_id,
+        tab: tab,
+      },
     });
+    afterCancel(data.request_id, tab);
   };
 
   return (

@@ -80,16 +80,15 @@ export class EvmRequestHandler {
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
-  async removeRequestById(requestId: number) {
-    this.requestsData = this.requestsData.filter(
-      (request: RequestData) => request.request_id !== requestId,
-    );
+  async removeRequestById(requestId: number, tab: number) {
+    this.requestsData = this.requestsData.filter((requestData: RequestData) => {
+      if (requestData.request_id === requestId && requestData.tab!) {
+        return false;
+      }
+      return true;
+    });
 
     await this.saveInLocalStorage();
-
-    // if (this.requestsData.length === 0) {
-    //   this.closeWindow();
-    // }
   }
 
   // Local storage methods

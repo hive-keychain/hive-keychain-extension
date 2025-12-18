@@ -14,6 +14,7 @@ type Props = {
   domain: string;
   tab: number;
   rpc: Rpc;
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
 const RemoveKeyAuthority = (props: Props) => {

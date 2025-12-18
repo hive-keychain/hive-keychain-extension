@@ -49,9 +49,10 @@ import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 
 type Props = {
   message: HiveRequestMessage | EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
-export const RequestConfirmation = ({ message }: Props) => {
+export const RequestConfirmation = ({ message, afterCancel }: Props) => {
   const displayRequest = (
     displayedMessage: HiveRequestMessage | EvmRequestMessage,
   ) => {
@@ -59,63 +60,229 @@ export const RequestConfirmation = ({ message }: Props) => {
       const request = displayedMessage.request as KeychainRequest;
       switch (request.type) {
         case KeychainRequestTypes.addAccount:
-          return <AddAccount {...displayedMessage} data={request} />;
+          return (
+            <AddAccount
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.vote:
-          return <Vote {...displayedMessage} data={request} />;
+          return (
+            <Vote
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.decode:
-          return <DecodeMemo {...displayedMessage} data={request} />;
+          return (
+            <DecodeMemo
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.encode:
-          return <EncodeMemo {...displayedMessage} data={request} />;
+          return (
+            <EncodeMemo
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.encodeWithKeys:
-          return <EncodeWithKeys {...displayedMessage} data={request} />;
+          return (
+            <EncodeWithKeys
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.custom:
-          return <CustomJson {...displayedMessage} data={request} />;
+          return (
+            <CustomJson
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.signBuffer:
-          return <SignBuffer {...displayedMessage} data={request} />;
+          return (
+            <SignBuffer
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.updateProposalVote:
-          return <UpdateProposalVote {...displayedMessage} data={request} />;
+          return (
+            <UpdateProposalVote
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.transfer:
-          return <Transfer {...displayedMessage} data={request} />;
+          return (
+            <Transfer
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.addAccountAuthority:
-          return <AddAccountAuthority {...displayedMessage} data={request} />;
+          return (
+            <AddAccountAuthority
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.removeAccountAuthority:
           return (
-            <RemoveAccountAuthority {...displayedMessage} data={request} />
+            <RemoveAccountAuthority
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
           );
         case KeychainRequestTypes.addKeyAuthority:
-          return <AddKeyAuthority {...displayedMessage} data={request} />;
+          return (
+            <AddKeyAuthority
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.removeKeyAuthority:
-          return <RemoveKeyAuthority {...displayedMessage} data={request} />;
+          return (
+            <RemoveKeyAuthority
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.delegation:
-          return <Delegation {...displayedMessage} data={request} />;
+          return (
+            <Delegation
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.powerUp:
-          return <PowerUp {...displayedMessage} data={request} />;
+          return (
+            <PowerUp
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.powerDown:
-          return <PowerDown {...displayedMessage} data={request} />;
+          return (
+            <PowerDown
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.witnessVote:
-          return <WitnessVote {...displayedMessage} data={request} />;
+          return (
+            <WitnessVote
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.proxy:
-          return <Proxy {...displayedMessage} data={request} />;
+          return (
+            <Proxy
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.signTx:
-          return <SignTx {...displayedMessage} data={request} />;
+          return (
+            <SignTx
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.convert:
-          return <Convert {...displayedMessage} data={request} />;
+          return (
+            <Convert
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.recurrentTransfer:
-          return <RecurrentTransfer {...displayedMessage} data={request} />;
+          return (
+            <RecurrentTransfer
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.createProposal:
-          return <CreateProposal {...displayedMessage} data={request} />;
+          return (
+            <CreateProposal
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.removeProposal:
-          return <RemoveProposal {...displayedMessage} data={request} />;
+          return (
+            <RemoveProposal
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.sendToken:
-          return <SendToken {...displayedMessage} data={request} />;
+          return (
+            <SendToken
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.createClaimedAccount:
-          return <CreateClaimedAccount {...displayedMessage} data={request} />;
+          return (
+            <CreateClaimedAccount
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.post:
-          return <Post {...displayedMessage} data={request} />;
+          return (
+            <Post
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.broadcast:
-          return <Broadcast {...displayedMessage} data={request} />;
+          return (
+            <Broadcast
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         case KeychainRequestTypes.swap:
-          return <Swap {...displayedMessage} data={request} />;
+          return (
+            <Swap
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
         default:
           return null;
       }

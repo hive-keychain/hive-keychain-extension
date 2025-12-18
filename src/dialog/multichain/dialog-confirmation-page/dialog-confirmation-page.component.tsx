@@ -50,24 +50,36 @@ export const DialogConfirmationPage = ({
     HiveRequestMessage | EvmRequestMessage
   >();
 
+  useEffect(() => {
+    if (requestsMessages.length > 0) {
+      setDisplayedRequest(requestsMessages[displayedRequestIndex]);
+    }
+  }, [requestsMessages, displayedRequestIndex]);
+
+  const removeRequest = (requestId: number, tab: number) => {
+    const index = requestsMessages.findIndex(
+      (message) =>
+        message.request.request_id === requestId && message.tab === tab,
+    );
+    const newMessages = requestsMessages.filter((elem, i) => i !== index);
+
+    if (newMessages.length === 0) {
+      setTimeout(() => {
+        window.close();
+      }, 250);
+    }
+    const newDisplayedIndex =
+      displayedRequestIndex === 0 ? 0 : displayedRequestIndex - 1;
+    setDisplayedRequestIndex(newDisplayedIndex);
+    setRequestsMessages(newMessages);
+  };
+
   const closeFeedBackMessage = () => {
     if (feedBackMessage) {
-      const index = requestsMessages.findIndex(
-        (message) =>
-          message.request.request_id ===
-            (feedBackMessage as any).msg.request_id &&
-          message.tab === feedBackMessage.msg.tab,
+      removeRequest(
+        (feedBackMessage.msg as any).request_id,
+        feedBackMessage.msg.tab!,
       );
-      const newMessages = requestsMessages.splice(index, 1);
-
-      if (newMessages.length === 0) {
-        console.log('should close dialog', feedBackMessage);
-        // window.close();
-      }
-      setDisplayedRequestIndex((prev) => {
-        return prev === 0 ? 0 : prev - 1;
-      });
-      setRequestsMessages(newMessages);
       setFeedBackMessage(null);
     }
   };
@@ -76,17 +88,20 @@ export const DialogConfirmationPage = ({
     setRequestsMessages([...requestsMessages, message] as RequestsMessages);
   }, [message]);
 
-  useEffect(() => {
-    if (requestsMessages.length > 0) {
-      setDisplayedRequest(requestsMessages[displayedRequestIndex]);
-    }
-  }, [requestsMessages, displayedRequestIndex]);
+  const afterCancel = (requestId: number, tabId: number) => {
+    removeRequest(requestId, tabId);
+  };
 
   const displayRequest = (displayedMessage: any) => {
     switch (displayedMessage.command) {
       case DialogCommand.SEND_DIALOG_CONFIRM:
       case DialogCommand.SEND_DIALOG_CONFIRM_EVM:
-        return <RequestConfirmation message={displayedMessage} />;
+        return (
+          <RequestConfirmation
+            message={displayedMessage}
+            afterCancel={afterCancel}
+          />
+        );
       case DialogCommand.ANONYMOUS_KEYLESS_OP:
         return <KeylessUsernameComponent data={displayedMessage} />;
       case DialogCommand.SIGN_WITH_LEDGER:
@@ -96,6 +111,10 @@ export const DialogConfirmationPage = ({
       default:
         return <div>Default screen</div>;
     }
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    setDisplayedRequestIndex(nextPage);
   };
 
   const displayFeedBackMessage = (
@@ -129,9 +148,7 @@ export const DialogConfirmationPage = ({
             <SVGIcon
               className="previous-button"
               icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() =>
-                setDisplayedRequestIndex(displayedRequestIndex - 1)
-              }
+              onClick={() => handlePageChange(displayedRequestIndex - 1)}
             />
           )}
           {displayedRequestIndex + 1} / {requestsMessages.length}
@@ -139,9 +156,7 @@ export const DialogConfirmationPage = ({
             <SVGIcon
               className="next-button"
               icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() =>
-                setDisplayedRequestIndex(displayedRequestIndex + 1)
-              }
+              onClick={() => handlePageChange(displayedRequestIndex + 1)}
             />
           )}
         </div>

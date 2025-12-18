@@ -130,6 +130,17 @@ const chromeMessageHandler = async (
         options,
       );
       break;
+    case BackgroundCommand.REJECT_TRANSACTION: {
+      const messageValue = backgroundMessage.value;
+      const { request_id, tab } = messageValue;
+      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
+      chrome.tabs.sendMessage(messageValue.tab!, {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: messageValue,
+      });
+      requestHandler.removeRequestById(request_id, tab);
+      break;
+    }
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);
       break;

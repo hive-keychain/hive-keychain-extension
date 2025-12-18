@@ -18,6 +18,7 @@ type Props = {
   tab: number;
   rpc: Rpc;
   hiveEngineConfig: HiveEngineConfig;
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
 const SendToken = (props: Props) => {

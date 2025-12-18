@@ -19,7 +19,10 @@ export const onRemoveEvm = async (winId: number) => {
             error: ProviderRpcErrorList.userReject as ProviderRpcError,
           },
         });
-        requestHandler.removeRequestById(requestData!.request!.request_id);
+        requestHandler.removeRequestById(
+          requestData!.request!.request_id,
+          requestData.tab,
+        );
       }
     }
     requestHandler.reset(true);
