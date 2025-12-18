@@ -132,6 +132,7 @@ export class HiveRequestsHandler {
     preferences: NoConfirm,
     requestId: number,
   ) {
+    this.accounts = accounts;
     for (const requestData of this.requestsData) {
       if (requestData.request_id === requestId) {
         requestData.accounts = accounts;
@@ -143,6 +144,7 @@ export class HiveRequestsHandler {
     }
 
     config.node = rpc.uri;
+    this.saveInLocalStorage();
   }
 
   closeWindow() {
@@ -207,6 +209,7 @@ export class HiveRequestsHandler {
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
     const pubKey: string = `${keyType}Pubkey`;
+    console.log(this.accounts);
     return [
       this.accounts?.find((e) => e.name === username)?.keys[keyType],
       //@ts-ignore
