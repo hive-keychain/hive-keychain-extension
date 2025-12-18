@@ -16,6 +16,9 @@ export const createPopup = async (
   let width = 435;
   //Ensuring only one window is opened by the extension at a time.
   if (requestHandler.windowId) {
+    chrome.windows.update(requestHandler.windowId, {
+      focused: true,
+    } as chrome.windows.UpdateInfo);
     callback();
   }
   //Create new window on the top right of the screen
