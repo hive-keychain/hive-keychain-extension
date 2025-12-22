@@ -25,6 +25,7 @@ interface Props {
   request: EvmRequest;
   accounts: EvmAccount[];
   data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 }
 
 interface SignTypedDataMessage {
@@ -41,7 +42,7 @@ interface SignTypedDataMessage {
 }
 
 export const SignTypedData = (props: Props) => {
-  const { accounts, data, request } = props;
+  const { accounts, data, request, afterCancel } = props;
 
   const MESSAGE_INDEX =
     request.method === EvmRequestMethod.ETH_SIGN_DATA ? 0 : 1;
@@ -262,6 +263,10 @@ export const SignTypedData = (props: Props) => {
     return formatedValue;
   };
 
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+
   return (
     <EvmOperation
       request={request}
@@ -269,6 +274,7 @@ export const SignTypedData = (props: Props) => {
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
-      transactionHook={transactionHook}></EvmOperation>
+      transactionHook={transactionHook}
+      afterCancel={handleCancel}></EvmOperation>
   );
 };

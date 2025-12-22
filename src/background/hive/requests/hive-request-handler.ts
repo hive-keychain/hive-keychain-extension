@@ -244,10 +244,7 @@ export class HiveRequestsHandler {
 
   async removeRequestById(requestId: number, tabId: number) {
     this.requestsData = this.requestsData.filter((requestData: RequestData) => {
-      if (
-        requestData.request_id === requestId &&
-        requestData.tab! === requestData.tab
-      ) {
+      if (requestData.request_id === requestId && requestData.tab! === tabId) {
         return false;
       }
       return true;
@@ -257,6 +254,9 @@ export class HiveRequestsHandler {
   }
 
   static async getFromLocalStorage() {
+    const windowId = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+    );
     const params = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
@@ -267,7 +267,7 @@ export class HiveRequestsHandler {
         params.accounts,
         params.hiveEngineConfig,
         params.defaultRpcConfig,
-        params.windowId,
+        windowId,
       );
     }
     return handler;
@@ -279,10 +279,13 @@ export class HiveRequestsHandler {
       {
         requestsData: this.requestsData,
         accounts: this.accounts,
-        windowId: this.windowId,
         hiveEngineConfig: this.hiveEngineConfig,
         defaultRpcConfig: this.defaultRpcConfig,
       },
+    );
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+      this.windowId,
     );
   }
 

@@ -60,6 +60,7 @@ export class EvmRequestHandler {
 
   setWindowId(windowId?: number) {
     this.windowId = windowId;
+    this.saveInLocalStorage();
   }
 
   setKeys(key: string, publicKey: string) {}
@@ -80,9 +81,30 @@ export class EvmRequestHandler {
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
+  getRequestData(requestId: number) {
+    return this.requestsData.find(
+      (request) => request.request_id === requestId,
+    );
+  }
+
+  getRequest(requestId: number) {
+    const requestData = this.getRequestData(requestId);
+    return requestData?.request;
+  }
+
+  setRequest(requestId: number, request: EvmRequest) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId) {
+        requestData.request = request;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
+  }
+
   async removeRequestById(requestId: number, tab: number) {
     this.requestsData = this.requestsData.filter((requestData: RequestData) => {
-      if (requestData.request_id === requestId && requestData.tab!) {
+      if (requestData.request_id === requestId && requestData.tab === tab) {
         return false;
       }
       return true;
@@ -94,6 +116,9 @@ export class EvmRequestHandler {
   // Local storage methods
 
   static async getFromLocalStorage() {
+    const windowId = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+    );
     const requestHandlersParams =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
@@ -104,7 +129,7 @@ export class EvmRequestHandler {
       await handler.initFromLocalStorage(
         requestHandlersParams.requestsData,
         requestHandlersParams.accounts,
-        requestHandlersParams.windowId,
+        windowId,
       );
     }
     const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
@@ -120,9 +145,12 @@ export class EvmRequestHandler {
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       {
         requestsData: this.requestsData,
-        windowId: this.windowId,
         accounts: this.accounts,
       },
+    );
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+      this.windowId,
     );
   }
 

@@ -298,6 +298,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               accounts={displayedMessage.accounts!}
               data={displayedMessage}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -309,6 +310,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               accounts={displayedMessage.accounts!}
               data={displayedMessage}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -319,6 +321,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               accounts={displayedMessage.accounts!}
               data={displayedMessage}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -329,6 +332,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               data={displayedMessage}
               accounts={displayedMessage.accounts!}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -339,6 +343,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               data={displayedMessage}
               accounts={displayedMessage.accounts!}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -349,6 +354,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               request={request}
               data={displayedMessage}
               accounts={displayedMessage.accounts!}
+              afterCancel={afterCancel}
             />
           );
         }
@@ -362,6 +368,7 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
                   request={request}
                   accounts={displayedMessage.accounts!}
                   data={displayedMessage}
+                  afterCancel={afterCancel}
                 />
               );
             }
@@ -369,7 +376,13 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
         }
 
         case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
-          return <AddChain request={request} data={displayedMessage} />;
+          return (
+            <AddChain
+              request={request}
+              data={displayedMessage}
+              afterCancel={afterCancel}
+            />
+          );
         }
 
         default: {

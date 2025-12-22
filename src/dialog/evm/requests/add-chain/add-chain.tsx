@@ -23,6 +23,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 interface Props {
   request: EvmRequest<AddChainRequest>;
   data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 }
 
 export const AddChain = (props: Props) => {
@@ -54,6 +55,10 @@ export const AddChain = (props: Props) => {
   useEffect(() => {
     init();
   }, []);
+
+  const handleCancel = () => {
+    props.afterCancel(request.request_id, data.tab);
+  };
 
   const init = async () => {
     const setupChains = await ChainUtils.getSetupChains();
@@ -136,6 +141,7 @@ export const AddChain = (props: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       tab={0}
+      afterCancel={handleCancel}
       title={chrome.i18n.getMessage(
         isUpdatingChain ? 'evm_update_chain' : 'evm_add_chain',
       )}

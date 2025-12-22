@@ -29,6 +29,7 @@ type Props = {
   fields?: any;
   bottomPanel?: any;
   transactionHook?: useTransactionHook;
+  afterCancel: (requestId: number, tab: number) => void;
 };
 
 export const EvmOperation = ({
@@ -43,6 +44,7 @@ export const EvmOperation = ({
   fields,
   bottomPanel,
   transactionHook,
+  afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,6 +72,7 @@ export const EvmOperation = ({
   };
 
   const onClose = () => {
+    afterCancel(request.request_id, tab);
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.REJECT_EVM_TRANSACTION,
       value: {

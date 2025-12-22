@@ -43,6 +43,7 @@ export const createEvmMessage = async (
   err: any,
   result: any,
   datas: any, // TODO change type
+  tabId: number,
   success_message: string | null,
   fail_message?: string | null,
   publicKey?: Key,
@@ -61,6 +62,7 @@ export const createEvmMessage = async (
       message: message,
       request_id,
       publicKey,
+      tab: tabId,
     },
   };
 };

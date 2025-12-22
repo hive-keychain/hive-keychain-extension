@@ -8,6 +8,8 @@ export const getEncryptionKey = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
 ) => {
+  const requestData = requestHandler.getRequestData(request.request_id);
+
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() === request.params[0].toLowerCase()
@@ -19,6 +21,7 @@ export const getEncryptionKey = async (
       null,
       res,
       request,
+      requestData?.tab!,
       await chrome.i18n.getMessage('dialog_evm_get_encryption_key_success'),
     );
   }

@@ -8,6 +8,7 @@ export const personalSign = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
 ) => {
+  const requestData = requestHandler.getRequestData(request.request_id);
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() === request.params[1].toLowerCase()
@@ -22,6 +23,7 @@ export const personalSign = async (
       null,
       res,
       request,
+      requestData?.tab!,
       await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
     );
   }

@@ -57,6 +57,8 @@ export const evmRequestWithoutConfirmation = async (
         message.value.result = connectedWallets;
       }
       sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
+      if (requestHandler.requestsData.length === 1)
+        requestHandler.closeWindow();
       break;
     }
 

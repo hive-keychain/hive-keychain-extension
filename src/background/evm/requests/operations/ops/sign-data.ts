@@ -12,6 +12,8 @@ export const signData = async (
   request: EvmRequest,
   version: SignTypedDataVersion,
 ) => {
+  const requestData = requestHandler.getRequestData(request.request_id);
+
   const TARGET_INDEX =
     request.method === EvmRequestMethod.ETH_SIGN_DATA ? 1 : 0;
   const account = requestHandler.accounts.find((account: EvmAccount) => {
@@ -36,6 +38,7 @@ export const signData = async (
         null,
         res,
         request,
+        requestData?.tab!,
         await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
       );
     } catch (e) {

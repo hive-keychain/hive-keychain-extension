@@ -10,6 +10,7 @@ export const sendEvmTransaction = async (
   request: EvmRequest,
   extraData: any,
 ) => {
+  const requestData = requestHandler.getRequestData(request.request_id);
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() ===
@@ -46,6 +47,7 @@ export const sendEvmTransaction = async (
       null,
       res.hash,
       request,
+      requestData?.tab!,
       await chrome.i18n.getMessage('evm_send_transaction_success'),
     );
   }

@@ -17,10 +17,11 @@ interface Props {
   request: EvmRequest;
   accounts: EvmAccount[];
   data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 }
 
 export const DecryptMessage = (props: Props) => {
-  const { accounts, data, request } = props;
+  const { accounts, data, request, afterCancel } = props;
   const transactionHook = useTransactionHook(data, request);
 
   const [decryptedMessage, setDecryptedMessage] = useState<
@@ -81,8 +82,13 @@ export const DecryptMessage = (props: Props) => {
     );
   };
 
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+
   return (
     <EvmOperation
+      afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
       tab={data.tab}

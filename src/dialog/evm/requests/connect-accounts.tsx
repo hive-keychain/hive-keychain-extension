@@ -21,10 +21,11 @@ interface Props {
   request: EvmRequest;
   accounts: EvmAccount[];
   data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 }
 
 export const ConnectAccounts = (props: Props) => {
-  const { accounts, data, request } = props;
+  const { accounts, data, request, afterCancel } = props;
   const [accountsToConnect, setAccountsToConnect] = useState<any>({});
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
@@ -110,9 +111,14 @@ export const ConnectAccounts = (props: Props) => {
     else return DappStatusEnum.DISCONNECTED;
   };
 
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+
   return (
     <>
       <EvmOperation
+        afterCancel={handleCancel}
         request={request}
         domain={data.dappInfo.domain}
         tab={0}

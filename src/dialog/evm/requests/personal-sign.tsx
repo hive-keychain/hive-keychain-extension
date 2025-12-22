@@ -21,10 +21,11 @@ interface Props {
   request: EvmRequest;
   accounts: EvmAccount[];
   data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
 }
 
 export const PersonalSign = (props: Props) => {
-  const { accounts, data, request } = props;
+  const { accounts, data, request, afterCancel } = props;
   const msg: string = Buffer.from(
     request.params[0].substring(2),
     'hex',
@@ -70,8 +71,13 @@ export const PersonalSign = (props: Props) => {
     transactionHook.setFields(transactionConfirmationFields);
   };
 
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+
   return (
     <EvmOperation
+      afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
       tab={data.tab}

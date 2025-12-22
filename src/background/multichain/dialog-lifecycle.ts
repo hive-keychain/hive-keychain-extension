@@ -4,7 +4,9 @@ import { onRemoveHive } from '@background/hive/hive-dialog-lifecycle';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 export const createPopup = async (
@@ -66,17 +68,31 @@ export const removeWindow = (windowId: number) => {
     }).length;
     if (hasWin) {
       chrome.windows.remove(windowId);
+      removeData();
     }
   });
 };
 
 // When a chrome window is removed, check if there are no window left open
-chrome.windows.onRemoved.addListener((id: number) => {
-  onRemoveEvm(id);
-  onRemoveHive(id);
+chrome.windows.onRemoved.addListener(async (id: number) => {
+  await onRemoveEvm(id);
+  await onRemoveHive(id);
+  removeData();
   chrome.windows.getAll((windows) => {
     if (windows.length === 0) {
       VaultUtils.removeFromVault(VaultKey.__MK);
     }
   });
 });
+
+const removeData = () => {
+  LocalStorageUtils.removeFromLocalStorage(
+    LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+  );
+  LocalStorageUtils.removeFromLocalStorage(
+    LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+  );
+  LocalStorageUtils.removeFromLocalStorage(
+    LocalStorageKeyEnum.__REQUEST_HANDLER,
+  );
+};
