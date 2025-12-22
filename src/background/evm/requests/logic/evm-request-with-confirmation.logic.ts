@@ -11,8 +11,7 @@ export const evmRequestWithConfirmation = (
   request: EvmRequest,
   dappInfo: EvmDappInfo,
 ) => {
-  if (requestHandler.windowId) {
-    // send message to notifiy of new request
+  const callback = () => {
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_CONFIRM_EVM,
       request,
@@ -20,27 +19,17 @@ export const evmRequestWithConfirmation = (
       tab,
       accounts: requestHandler.accounts,
     });
-  } else {
-    const callback = () => {
-      CommunicationUtils.runtimeSendMessage({
-        command: DialogCommand.SEND_DIALOG_CONFIRM_EVM,
-        request,
-        dappInfo,
-        tab,
-        accounts: requestHandler.accounts,
-      });
-    };
-    let height = 600;
-    if (
-      request.method === EvmRequestMethod.SEND_TRANSACTION ||
-      request.method === EvmRequestMethod.SEND_RAW_TRANSACTION
-    ) {
-      height = 800;
-    }
-
-    //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
-    createPopup(callback, requestHandler, undefined, height);
+  };
+  let height = 600;
+  if (
+    request.method === EvmRequestMethod.SEND_TRANSACTION ||
+    request.method === EvmRequestMethod.SEND_RAW_TRANSACTION
+  ) {
+    height = 800;
   }
+
+  //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
+  createPopup(callback, requestHandler, undefined, height);
 };
 
 /* istanbul ignore next */
