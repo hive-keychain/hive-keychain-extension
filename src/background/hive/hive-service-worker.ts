@@ -187,7 +187,7 @@ export const performOperationFromIndex = async (
   request: KeychainRequest,
   noConfirm: boolean,
 ) => {
-  performHiveOperation(
+  await performHiveOperation(
     requestHandler,
     request,
     tab!,

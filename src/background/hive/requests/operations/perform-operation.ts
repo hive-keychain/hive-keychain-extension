@@ -192,10 +192,6 @@ export const performHiveOperation = async (
   } finally {
     if (no_confirm) {
       addToWhitelist(request.username!, domain, request.type);
-      if (!!requestHandler.windowId) {
-        // removeWindow(requestHandler.windowId!);
-      }
     } else if (message) CommunicationUtils.runtimeSendMessage(message);
-    requestHandler.removeRequestById(request.request_id, tab);
   }
 };

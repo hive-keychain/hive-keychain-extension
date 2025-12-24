@@ -1,5 +1,6 @@
 import { performOperationFromIndex } from '@background/hive/hive-service-worker';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const requestWithoutConfirmation = async (
@@ -7,5 +8,9 @@ export const requestWithoutConfirmation = async (
   tab: number,
   request: KeychainRequest,
 ) => {
-  performOperationFromIndex(requestHandler, tab, request, true);
+  await performOperationFromIndex(requestHandler, tab, request, true);
+  if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
+    requestHandler.closeWindow();
+  }
+  requestHandler.removeRequestById(request.request_id, tab);
 };
