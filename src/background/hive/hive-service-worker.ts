@@ -17,15 +17,14 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 import MkModule from './modules/mk.module';
 import { HiveRequestsHandler } from './requests/hive-request-handler';
 import { performHiveOperation } from './requests/operations/perform-operation';
-
-import { VaultKey } from '@reference-data/vault-message-key.enum';
-import VaultUtils from 'src/utils/vault.utils';
 
 /* istanbul ignore next */
 const initializeServiceWorker = async () => {
@@ -94,7 +93,7 @@ const chromeMessageHandler = async (
             initHiveRequestHandler(
               requestData.request!,
               tab,
-              domain,
+              requestData.domain!,
               requestHandler,
             );
           }
@@ -182,13 +181,19 @@ chrome.windows.onRemoved.addListener(() => {
     }
   });
 });
-
 export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
+  noConfirm: boolean,
 ) => {
-  performHiveOperation(requestHandler, request, tab!, request.domain, false);
+  performHiveOperation(
+    requestHandler,
+    request,
+    tab!,
+    request.domain,
+    noConfirm,
+  );
 };
 
 export const HiveServiceWorker = {

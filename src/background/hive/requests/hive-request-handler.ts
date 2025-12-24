@@ -35,6 +35,7 @@ type RequestData = {
   isMultisig?: boolean;
   isWaitingForConfirmation: boolean;
   isKeyless?: boolean;
+  domain?: string;
 };
 export class HiveRequestsHandler {
   requestsData: RequestData[];
@@ -129,7 +130,7 @@ export class HiveRequestsHandler {
   async initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
-    preferences: NoConfirm,
+    noConfirmPreferences: NoConfirm,
     requestId: number,
   ) {
     this.accounts = accounts;
@@ -138,7 +139,7 @@ export class HiveRequestsHandler {
         requestData.accounts = accounts;
         requestData.rpc = rpc;
         await this.setupHiveEngine();
-        requestData.preferences = preferences;
+        requestData.preferences = noConfirmPreferences;
         break;
       }
     }
@@ -198,6 +199,7 @@ export class HiveRequestsHandler {
       request_id: msg.request_id,
       confirmed: false,
       isWaitingForConfirmation: false,
+      domain: msg.domain,
     };
     if (msg.request.rpc) {
       requestData.rpc = { uri: msg.request.rpc, testnet: false };
@@ -209,7 +211,6 @@ export class HiveRequestsHandler {
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
     const pubKey: string = `${keyType}Pubkey`;
-    console.log(this.accounts);
     return [
       this.accounts?.find((e) => e.name === username)?.keys[keyType],
       //@ts-ignore

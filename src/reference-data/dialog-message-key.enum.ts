@@ -7,6 +7,7 @@ export enum DialogCommand {
   REGISTER = 'register',
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',
   WRONG_MK = 'WRONG_MK',
+  SEND_HIVE_RESPONSE = 'sendHiveResponse',
   ANSWER_REQUEST = 'answerRequest',
   ANSWER_EVM_REQUEST = 'answerEvmRequest',
   READY = 'broadcastReady',

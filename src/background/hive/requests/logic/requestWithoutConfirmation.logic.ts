@@ -7,5 +7,5 @@ export const requestWithoutConfirmation = async (
   tab: number,
   request: KeychainRequest,
 ) => {
-  performOperationFromIndex(requestHandler, tab, request);
+  performOperationFromIndex(requestHandler, tab, request, true);
 };

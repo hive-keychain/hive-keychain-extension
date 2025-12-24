@@ -40,6 +40,7 @@ export const initHiveRequestHandler = async (
     LocalStorageKeyEnum.CURRENT_RPC,
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
   ]);
+
   let rpc = items.current_rpc || Config.rpc.DEFAULT;
   if (request.rpc) {
     const override_rpc = await RpcUtils.findRpc(request.rpc);
@@ -122,7 +123,6 @@ export const initHiveRequestHandler = async (
           const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
           requestHandler.setKeys(key!, publicKey!, request.request_id!);
-
           if (
             !isWhitelisted(items.no_confirm, req, domain, rpc) ||
             KeysUtils.requireManualConfirmation(key!)

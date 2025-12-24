@@ -39,6 +39,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
@@ -173,7 +174,12 @@ export const performHiveOperation = async (
         message = await broadcastSwap(requestHandler, request, options);
         break;
     }
-    if (message) CommunicationUtils.tabsSendMessage(tab, message);
+    if (message) {
+      if (no_confirm) {
+        message.command = DialogCommand.SEND_HIVE_RESPONSE;
+      }
+      CommunicationUtils.tabsSendMessage(tab, message);
+    }
   } catch (e) {
     Logger.error(e);
     sendErrors(
