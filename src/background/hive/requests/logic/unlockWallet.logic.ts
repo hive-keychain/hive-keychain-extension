@@ -1,6 +1,6 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { UnlockDialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -14,7 +14,7 @@ export const unlockWallet = (
   unlockCommand: UnlockDialogCommand,
 ) => {
   /* istanbul ignore next */
-  createPopup(async () => {
+  createOrUpdateDialog(async () => {
     CommunicationUtils.runtimeSendMessage({
       command: unlockCommand as UnlockDialogCommand,
       msg: {

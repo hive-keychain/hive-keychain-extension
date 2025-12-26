@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -15,7 +15,7 @@ export const addAccountRequest = (
 ) => {
   if (account) {
     /* istanbul ignore next */
-    createPopup(async () => {
+    createOrUpdateDialog(async () => {
       sendErrors(
         tab!,
         'user_cancel',
@@ -36,6 +36,6 @@ export const addAccountRequest = (
         tab,
       });
     };
-    createPopup(callback, requestHandler);
+    createOrUpdateDialog(callback, requestHandler);
   }
 };

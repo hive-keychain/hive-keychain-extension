@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -21,7 +21,7 @@ export const anonymousRequests = (
     .filter((e) => !!e.keys[filterKey])
     .map((e) => e.name);
   if (!account_candidates.length) {
-    createPopup(async () => {
+    createOrUpdateDialog(async () => {
       sendErrors(
         tab!,
         'user_cancel',
@@ -41,6 +41,6 @@ export const anonymousRequests = (
         rpc: current_rpc,
       });
     };
-    createPopup(callback, requestHandler);
+    createOrUpdateDialog(callback, requestHandler);
   }
 };

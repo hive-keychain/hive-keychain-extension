@@ -1,6 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -29,7 +29,7 @@ export const evmRequestWithConfirmation = (
   }
 
   //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
-  createPopup(callback, requestHandler, undefined, height);
+  createOrUpdateDialog(callback, requestHandler, undefined, height);
 };
 
 /* istanbul ignore next */

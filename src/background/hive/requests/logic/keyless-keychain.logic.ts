@@ -1,7 +1,7 @@
 import { performKeylessOperation } from '@background/hive/hive-service-worker';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -69,7 +69,7 @@ const createAnonymousKeylessOpPopup = async (
       domain,
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };
 
 const createAddAccountPopup = (
@@ -87,7 +87,7 @@ const createAddAccountPopup = (
       domain,
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };
 
 const createRegisterKeylessKeychainPopup = async (
@@ -107,7 +107,7 @@ const createRegisterKeylessKeychainPopup = async (
       domain,
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };
 
 const createUnsupportedOperationPopup = (
@@ -134,5 +134,5 @@ const createUnsupportedOperationPopup = (
       },
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };

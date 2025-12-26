@@ -1,7 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import {
   EvmRequest,
   ProviderRpcErrorList,
@@ -53,5 +53,5 @@ export const handleNonAuthorizedMethods = async (
       },
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };

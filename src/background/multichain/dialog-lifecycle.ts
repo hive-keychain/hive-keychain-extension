@@ -9,54 +9,67 @@ import { VaultKey } from '@reference-data/vault-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
-export const createPopup = async (
+export const createOrUpdateDialog = async (
+  callback: () => void,
+  requestHandler: HiveRequestsHandler | EvmRequestHandler,
+  popupHtml = 'dialog.html',
+  height = 600,
+) => {
+  //Ensuring only one window is opened by the extension at a time.
+  if (requestHandler.windowId) {
+    chrome.windows
+      .update(requestHandler.windowId, {
+        focused: true,
+      } as chrome.windows.UpdateInfo)
+      .catch((err) => {
+        console.log('error in update window', err);
+        createDialog(callback, requestHandler, popupHtml, height);
+      })
+      .then(() => {
+        callback();
+      });
+  } else {
+    createDialog(callback, requestHandler, popupHtml, height);
+  }
+};
+
+export const createDialog = (
   callback: () => void,
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   popupHtml = 'dialog.html',
   height = 600,
 ) => {
   let width = 435;
-  //Ensuring only one window is opened by the extension at a time.
-  if (requestHandler.windowId) {
-    chrome.windows.update(requestHandler.windowId, {
-      focused: true,
-    } as chrome.windows.UpdateInfo);
-    callback();
-  }
-  //Create new window on the top right of the screen
-  /* istanbul ignore next */
-  else {
-    chrome.windows.getCurrent((w) => {
-      chrome.windows.create(
-        {
-          url: chrome.runtime.getURL(popupHtml),
-          type: 'popup',
-          height: height,
-          width: width,
-          left: w.width! - width + w.left!,
-          top: w.top,
-          focused: false,
-        },
-        (win) => {
-          if (!win) return;
-          chrome.windows.update(
-            win.id!,
-            {
-              height: height,
-              width: width,
-              top: w.top,
-              left: w.width! - width + w.left!,
-            },
-            () => {
-              requestHandler.setWindowId(win.id);
-              requestHandler.saveInLocalStorage();
-              waitUntilDialogIsReady(100, DialogCommand.READY, callback);
-            },
-          );
-        },
-      );
-    });
-  }
+  chrome.windows.getCurrent((w) => {
+    chrome.windows.create(
+      {
+        url: chrome.runtime.getURL(popupHtml),
+        type: 'popup',
+        height: height,
+        width: width,
+        left: w.width! - width + w.left!,
+        top: w.top,
+        focused: false,
+      },
+      (win) => {
+        if (!win) return;
+        chrome.windows.update(
+          win.id!,
+          {
+            height: height,
+            width: width,
+            top: w.top,
+            left: w.width! - width + w.left!,
+          },
+          () => {
+            requestHandler.setWindowId(win.id);
+            requestHandler.saveInLocalStorage();
+            waitUntilDialogIsReady(100, DialogCommand.READY, callback);
+          },
+        );
+      },
+    );
+  });
 };
 
 // check if win exists before removing it

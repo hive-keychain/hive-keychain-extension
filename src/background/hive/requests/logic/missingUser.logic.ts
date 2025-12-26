@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
@@ -19,5 +19,5 @@ export const missingUser = (
       request,
     );
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };

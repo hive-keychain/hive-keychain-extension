@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -11,7 +11,7 @@ export const addAccountToEmptyWallet = (
   domain: string,
 ) => {
   /* istanbul ignore next */
-  createPopup(async () => {
+  createOrUpdateDialog(async () => {
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.REGISTER,
       msg: {

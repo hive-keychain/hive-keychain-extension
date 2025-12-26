@@ -50,6 +50,10 @@ export const EvmOperation = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log('transaction hook changed', transactionHook);
+  }, [transactionHook]);
+
+  useEffect(() => {
     setLoading(false);
   }, [request]);
 

@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import {
   KeychainRequest,
@@ -29,7 +29,7 @@ export const transferRequest = (
   // If a username is specified, check that its active key has been added to the wallet
   if (enforced && username && account && !account.keys.active) {
     /* istanbul ignore next */
-    createPopup(async () => {
+    createOrUpdateDialog(async () => {
       sendErrors(
         tab!,
         'user_cancel',
@@ -40,7 +40,7 @@ export const transferRequest = (
     }, requestHandler);
   } else if (account && encode && !account.keys.memo) {
     /* istanbul ignore next */
-    createPopup(async () => {
+    createOrUpdateDialog(async () => {
       sendErrors(
         tab!,
         'user_cancel',
@@ -51,7 +51,7 @@ export const transferRequest = (
     }, requestHandler);
   } else if (active_accounts.length == 0) {
     /* istanbul ignore next */
-    createPopup(async () => {
+    createOrUpdateDialog(async () => {
       sendErrors(
         tab!,
         'user_cancel',
@@ -84,7 +84,7 @@ export const transferRequest = (
         rpc: current_rpc,
       });
     };
-    createPopup(callback, requestHandler);
+    createOrUpdateDialog(callback, requestHandler);
     // }
   }
 };

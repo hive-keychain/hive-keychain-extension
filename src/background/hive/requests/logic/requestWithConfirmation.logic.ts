@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createPopup } from '@background/multichain/dialog-lifecycle';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -46,5 +46,5 @@ export const requestWithConfirmation = (
       hiveEngineConfig: requestHandler.hiveEngineConfig,
     });
   };
-  createPopup(callback, requestHandler);
+  createOrUpdateDialog(callback, requestHandler);
 };
