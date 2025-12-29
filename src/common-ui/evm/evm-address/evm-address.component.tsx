@@ -36,6 +36,7 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
           <EvmAccountImage
             address={addressDetail.fullAddress}
             avatar={addressDetail.avatar}
+            small
           />
           <CustomTooltip message={addressDetail.fullAddress} skipTranslation>
             <span>{addressDetail.label ?? addressDetail.formattedAddress}</span>

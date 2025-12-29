@@ -550,7 +550,20 @@
   height: 24px;
   width: 24px;
   border-radius: 50%;
+
+  &.shimmer {
+    @include icon-size(32px);
+  }
+
+  svg {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    border: 1px solid $light-grey-border;
+  }
+
   &.shimmer {
     @include icon-size(24px);
   }
+  background: white;
 }

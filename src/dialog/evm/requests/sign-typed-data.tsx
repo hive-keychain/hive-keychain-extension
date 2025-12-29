@@ -241,7 +241,7 @@ export const SignTypedData = (props: Props) => {
 
         formatedValue = (
           <div className="value-content-horizontal">
-            <EvmAccountImage address={value} />
+            <EvmAccountImage address={value} small />
             <CustomTooltip message={value} skipTranslation>
               <span>{formattedAddress}</span>
             </CustomTooltip>
