@@ -209,41 +209,33 @@ const Operation = ({
           flexDirection: 'column',
           rowGap: '16px',
         }}>
-        <div>
-          <DialogHeader title={title} />
-          {domainHeader && (
-            <div className={`operation-header operation-red`}>
-              {domainHeader}
-            </div>
-          )}
-          {header && (
-            <div
-              className={`operation-header ${
-                redHeader ? 'operation-red' : ''
-              }`}>
-              {header}
-            </div>
-          )}
+        <DialogHeader title={title} />
+        {domainHeader && (
+          <div className={`operation-header operation-red`}>{domainHeader}</div>
+        )}
+        {header && (
+          <div
+            className={`operation-header ${redHeader ? 'operation-red' : ''}`}>
+            {header}
+          </div>
+        )}
 
-          {useMultisig && (
-            <div
-              data-testid="use-multisig-message"
-              className="multisig-message">
-              <img src="/assets/images/multisig/logo.png" className="logo" />
-              <div className="message">
-                {chrome.i18n.getMessage('multisig_disclaimer_message')}
-              </div>
+        {useMultisig && (
+          <div data-testid="use-multisig-message" className="multisig-message">
+            <img src="/assets/images/multisig/logo.png" className="logo" />
+            <div className="message">
+              {chrome.i18n.getMessage('multisig_disclaimer_message')}
             </div>
-          )}
+          </div>
+        )}
 
-          {accounts && (
-            <RequestUsername
-              accounts={accounts}
-              username={username!}
-              setUsername={setUsername!}
-            />
-          )}
-        </div>
+        {accounts && (
+          <RequestUsername
+            accounts={accounts}
+            username={username!}
+            setUsername={setUsername!}
+          />
+        )}
         <div
           style={{
             display: 'flex',
