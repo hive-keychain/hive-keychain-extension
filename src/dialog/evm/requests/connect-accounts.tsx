@@ -29,13 +29,15 @@ export const ConnectAccounts = (props: Props) => {
   const [accountsToConnect, setAccountsToConnect] = useState<any>({});
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
-  const warningHook = useTransactionHook(data, request);
+  const transactionHook = useTransactionHook(data, request);
 
   useEffect(() => {
     init();
-  }, []);
+  }, [request]);
 
   const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
     const connected = await EvmWalletUtils.getConnectedWallets(
       data.dappInfo.domain,
     );
@@ -54,13 +56,17 @@ export const ConnectAccounts = (props: Props) => {
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
-    warningHook.setUnableToReachBackend(
+    transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
     transactionConfirmationFields.otherFields.push(
-      await warningHook.getDomainWarnings(transactionInfo),
+      await transactionHook.getDomainWarnings(transactionInfo),
     );
-    warningHook.setFields(transactionConfirmationFields);
+    transactionHook.setFields(transactionConfirmationFields);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
   };
 
   const toggleAccount = (address: string) => {
@@ -70,8 +76,8 @@ export const ConnectAccounts = (props: Props) => {
   };
 
   const saveInStorage = async () => {
-    if (warningHook.hasWarning()) {
-      warningHook.setWarningsPopupOpened(true);
+    if (transactionHook.hasWarning()) {
+      transactionHook.setWarningsPopupOpened(true);
     } else {
       const addresses: string[] = [];
       for (const address of Object.keys(accountsToConnect)) {
@@ -127,7 +133,9 @@ export const ConnectAccounts = (props: Props) => {
         caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
           data.dappInfo.domain,
         ])}
-        fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
+        fields={
+          <EvmTransactionWarningsComponent warningHook={transactionHook} />
+        }
         bottomPanel={
           connectedAccounts &&
           accounts &&
@@ -145,7 +153,7 @@ export const ConnectAccounts = (props: Props) => {
             </CheckboxPanelComponent>
           ))
         }
-        transactionHook={warningHook}></EvmOperation>
+        transactionHook={transactionHook}></EvmOperation>
     </>
   );
 };

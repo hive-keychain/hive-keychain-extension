@@ -1,7 +1,7 @@
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -19,7 +19,7 @@ export const EvmTransactionWarningsComponent = ({
   tokenInfo,
 }: Props) => {
   return (
-    <>
+    <Fragment key={warningHook.fields?.operationName}>
       {warningHook.fields?.operationName && (
         <div className="transaction-operation-name">
           {warningHook.fields.operationName}
@@ -71,6 +71,6 @@ export const EvmTransactionWarningsComponent = ({
             />
           );
         })}
-    </>
+    </Fragment>
   );
 };

@@ -28,7 +28,7 @@ interface Props {
 
 export const AddChain = (props: Props) => {
   const { request, data } = props;
-  const warningHook = useTransactionHook(data, request);
+  const transactionHook = useTransactionHook(data, request);
 
   const addChainRequest = request.params[0] as AddChainRequest;
 
@@ -54,13 +54,15 @@ export const AddChain = (props: Props) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [request]);
 
   const handleCancel = () => {
     props.afterCancel(request.request_id, data.tab);
   };
 
   const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
     const setupChains = await ChainUtils.getSetupChains();
     if (
       setupChains.find((chain) => chain.chainId === addChainRequest.chainId)
@@ -92,7 +94,11 @@ export const AddChain = (props: Props) => {
       type: EvmInputDisplayType.LONG_TEXT,
     });
 
-    warningHook.setFields(fields);
+    transactionHook.setFields(fields);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
   };
 
   const saveNewChain = async () => {
@@ -150,7 +156,7 @@ export const AddChain = (props: Props) => {
         isUpdatingChain ? 'evm_update_chain_caption' : 'evm_add_chain_caption',
         [data.dappInfo.domain],
       )}
-      fields={<EvmTransactionWarningsComponent warningHook={warningHook} />}
+      fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={
         <></>
         // <FormContainer onSubmit={saveNewChain}>
@@ -195,6 +201,6 @@ export const AddChain = (props: Props) => {
         //   />
         // </FormContainer>
       }
-      transactionHook={warningHook}></EvmOperation>
+      transactionHook={transactionHook}></EvmOperation>
   );
 };

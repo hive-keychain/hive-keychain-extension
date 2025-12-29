@@ -22,9 +22,11 @@ export const GetEncryptionKey = (props: Props) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [request]);
 
   const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
     let transactionConfirmationFields = {
       otherFields: [],
     } as TransactionConfirmationFields;
@@ -57,6 +59,10 @@ export const GetEncryptionKey = (props: Props) => {
     );
 
     transactionHook.setFields(transactionConfirmationFields);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
   };
 
   const handleCancel = () => {

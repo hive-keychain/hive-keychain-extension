@@ -59,9 +59,11 @@ export const SignTypedData = (props: Props) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [request]);
 
   const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
     let transactionConfirmationFields = {
       otherFields: [],
       operationName: chrome.i18n.getMessage('dialog_evm_sign_data_title'),
@@ -163,6 +165,10 @@ export const SignTypedData = (props: Props) => {
     }
 
     transactionHook.setFields(transactionConfirmationFields);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
   };
 
   const parseTypes = (

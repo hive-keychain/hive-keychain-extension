@@ -83,7 +83,7 @@ export const SendTransaction = (props: Props) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [request]);
 
   useEffect(() => {
     if (tokenInfo && selectedAccount && transferAmount !== undefined) {
@@ -92,6 +92,8 @@ export const SendTransaction = (props: Props) => {
   }, [tokenInfo, selectedAccount, transferAmount]);
 
   const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
 
     const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
@@ -678,8 +680,10 @@ export const SendTransaction = (props: Props) => {
     } else {
       Logger.error('No corresponding account found');
     }
-    transactionHook.setReady(true);
-    transactionHook.setLoading(false);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
   };
 
   const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
