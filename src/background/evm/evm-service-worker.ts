@@ -101,8 +101,7 @@ const chromeMessageHandler = async (
         value: message,
       });
 
-      requestHandler.removeRequestById(message.request_id, message.tab!);
-
+      // requestHandler.removeRequestById(message.request_id, message.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:

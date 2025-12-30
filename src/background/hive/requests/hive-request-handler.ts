@@ -1,6 +1,7 @@
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
+import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -151,6 +152,7 @@ export class HiveRequestsHandler {
   closeWindow() {
     if (this.windowId) {
       removeWindow(this.windowId);
+      RequestHandlerUtils.removeWindowId();
     }
   }
 
@@ -250,6 +252,10 @@ export class HiveRequestsHandler {
       }
       return true;
     });
+
+    if ((await RequestHandlerUtils.countPendingRestrictedRequest()) === 0) {
+      if (this.windowId) chrome.windows.remove(this.windowId);
+    }
 
     await this.saveInLocalStorage();
   }

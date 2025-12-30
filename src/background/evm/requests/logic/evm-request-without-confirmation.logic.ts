@@ -4,7 +4,6 @@ import {
 } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import {
   EvmDappInfo,
   EvmEventName,
@@ -162,9 +161,9 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
   }
-  if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
-    requestHandler.closeWindow();
-  }
+  // if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
+  //   requestHandler.closeWindow();
+  // }
   requestHandler.removeRequestById(request.request_id, tab);
   CommunicationUtils.tabsSendMessage(tab, message);
 };

@@ -1,5 +1,6 @@
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
+import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import {
   EvmRequest,
   KeychainEvmRequestWrapper,
@@ -44,6 +45,7 @@ export class EvmRequestHandler {
   closeWindow() {
     if (this.windowId) {
       removeWindow(this.windowId);
+      RequestHandlerUtils.removeWindowId();
     }
   }
 
@@ -109,6 +111,10 @@ export class EvmRequestHandler {
       }
       return true;
     });
+
+    if ((await RequestHandlerUtils.countPendingRestrictedRequest()) === 0) {
+      if (this.windowId) chrome.windows.remove(this.windowId);
+    }
 
     await this.saveInLocalStorage();
   }
