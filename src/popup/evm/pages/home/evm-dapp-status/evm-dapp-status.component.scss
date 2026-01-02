@@ -1,7 +1,6 @@
 .dapp-status-details {
   padding: 20px;
   .popup-content {
-    overflow-y: scroll;
     height: 90%;
     .dapp-status-details-wrapper {
       display: flex;
@@ -24,29 +23,35 @@
           text-align: center;
         }
       }
-      .account-section-title {
-        @include poppins600(14px);
-        color: var(--main-font-color);
-        width: 100%;
-      }
-      .account-section-item {
+      .accounts-section {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        .account-section-icon {
-          display: none;
-          svg path {
-            stroke-width: 2;
+        flex-direction: column;
+        row-gap: 16px;
+        overflow: auto;
+        .account-section-title {
+          @include poppins600(14px);
+          color: var(--main-font-color);
+          width: 100%;
+        }
+        .account-section-item {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          .account-section-icon {
+            display: none;
+            svg path {
+              stroke-width: 2;
+            }
           }
         }
-      }
 
-      .account-section-item:hover {
-        .account-section-icon {
-          display: block;
-          cursor: pointer;
+        .account-section-item:hover {
+          .account-section-icon {
+            display: block;
+            cursor: pointer;
+          }
         }
       }
     }
