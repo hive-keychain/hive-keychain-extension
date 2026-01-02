@@ -23,7 +23,7 @@ export const DappStatusComponent = ({
     if (onClick) onClick();
   };
   return (
-    <div className={`evm-dapp-status-container ${onClick && 'pointer'}`}>
+    <div className={`evm-dapp-status-container ${onClick ? 'pointer' : ''}`}>
       {address && <EvmAccountImage address={address} />}
       {imageUrl && <img src={imageUrl} onClick={handleOnClick} />}
       {status && <div className={`indicator ${status}`}></div>}

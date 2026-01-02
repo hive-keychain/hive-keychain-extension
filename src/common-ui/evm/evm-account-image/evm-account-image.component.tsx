@@ -18,41 +18,8 @@ export const EvmAccountImage = ({ address, avatar, small }: Props) => {
         />
       )}
       {!avatar && address && (
-        // <div
-        //   className="user-picture"
-        //   dangerouslySetInnerHTML={{
-        //     __html: sanitizeHtml(
-        //       EvmAddressesUtils.getIdenticonFromAddress(address),
-        //       {
-        //         allowedTags: [
-        //           'svg',
-        //           'g',
-        //           'defs',
-        //           'linearGradient',
-        //           'stop',
-        //           'circle',
-        //           'rect',
-        //         ],
-        //         allowedAttributes: {
-        //           '*': [
-        //             'x',
-        //             'y',
-        //             'height',
-        //             'width',
-        //             'viewBox',
-        //             'xmlns',
-        //             'fill',
-        //           ],
-        //         },
-        //         parser: {
-        //           lowerCaseAttributeNames: false,
-        //         },
-        //       },
-        //     ),
-        //   }}></div>
-        //
         <div
-          className="user-picture"
+          className={`user-picture no-padding ${small ? 'small' : 'normal'}`}
           dangerouslySetInnerHTML={{
             __html: identicon.svg,
           }}
