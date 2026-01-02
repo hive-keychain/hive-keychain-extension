@@ -73,7 +73,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
           )}
       </div>
 
-      {EvmTransactionParserUtils.getHighestWarning(
+      {EvmTransactionParserUtils.getHighestWarningLevel(
         warningHook.getAllNotIgnoredWarnings(),
       ) === EvmTransactionWarningLevel.HIGH && (
         <CheckboxPanelComponent
@@ -97,7 +97,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
           onClick={warningHook.ignoreAllWarnings}
           height="small"
           disabled={
-            EvmTransactionParserUtils.getHighestWarning(
+            EvmTransactionParserUtils.getHighestWarningLevel(
               warningHook.getAllNotIgnoredWarnings(),
             ) === EvmTransactionWarningLevel.HIGH && !warningHook.bypassWarning
           }

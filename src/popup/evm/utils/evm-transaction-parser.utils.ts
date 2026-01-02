@@ -279,6 +279,34 @@ const getAllWarnings = async (
 };
 
 const getHighestWarning = (warnings: EvmTransactionWarning[]) => {
+  let highestWarning: EvmTransactionWarning;
+  let highestWarningLevel = -1;
+
+  let warningIndex = 0;
+  for (let index = 0; index < warnings.length; index++) {
+    const warning = warnings[index];
+    let level = 0;
+    switch (warning.level) {
+      case EvmTransactionWarningLevel.HIGH:
+        level = 2;
+        break;
+      case EvmTransactionWarningLevel.MEDIUM:
+        level = 1;
+        break;
+      case EvmTransactionWarningLevel.LOW:
+        level = 0;
+        break;
+    }
+    if (level > highestWarningLevel) {
+      highestWarningLevel = level;
+      highestWarning = warning;
+      warningIndex = index;
+    }
+  }
+  return highestWarning!;
+};
+
+const getHighestWarningLevel = (warnings: EvmTransactionWarning[]) => {
   let highestWarning = 0;
 
   for (const warning of warnings) {
@@ -701,6 +729,7 @@ export const EvmTransactionParserUtils = {
   shouldDisplayBalanceChange,
   getFieldWarnings,
   getAllWarnings,
+  getHighestWarningLevel,
   getHighestWarning,
   getDomainWarnings,
   verifyTransactionInformation,

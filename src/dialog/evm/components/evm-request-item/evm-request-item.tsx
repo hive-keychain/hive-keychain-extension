@@ -1,6 +1,12 @@
-import { TransactionConfirmationField } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
-import React from 'react';
+import {
+  EvmTransactionWarning,
+  TransactionConfirmationField,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmInputDisplayType,
+  EvmTransactionParserUtils,
+} from '@popup/evm/utils/evm-transaction-parser.utils';
+import React, { useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmRequestItemLongText } from 'src/dialog/evm/components/evm-request-item/evm-request-item-long-text/evm-request-item-long-text';
@@ -17,6 +23,7 @@ export const EvmRequestItem = ({
   field,
   onWarningClicked,
 }: EvmRequestItemProps) => {
+  const [showWarnings, setShowWarnings] = useState(false);
   const fieldTitle = useFieldTitle(field.name);
   const renderField = () => {
     switch (field.type) {
@@ -39,10 +46,39 @@ export const EvmRequestItem = ({
     if (onWarningClicked) onWarningClicked(index);
   };
 
+  const displayWarningIcon = (warnings: EvmTransactionWarning[]) => {
+    const highestWarning =
+      EvmTransactionParserUtils.getHighestWarning(warnings);
+
+    return (
+      <>
+        {!highestWarning.ignored && (
+          <SVGIcon
+            className={`warning-icon ${highestWarning.level}`}
+            icon={SVGIcons.GLOBAL_WARNING}
+            onClick={() => setShowWarnings(!showWarnings)}
+          />
+        )}
+        {highestWarning.ignored && (
+          <SVGIcon
+            className={`warning-icon`}
+            icon={SVGIcons.GLOBAL_CHECK}
+            onClick={() => setShowWarnings(!showWarnings)}
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="field-container" style={field.style}>
-      <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
-      {field.warnings && field.warnings.length > 0 && (
+      <div className="field-content">
+        {field.warnings && field.warnings.length > 0 && (
+          <div className="warning">{displayWarningIcon(field.warnings)}</div>
+        )}
+        <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
+      </div>
+      {showWarnings && field.warnings && field.warnings.length > 0 && (
         <div className="warning-container">
           {field.warnings.map((warning, index) => (
             <div className="warning" key={`warning-${index}`}>

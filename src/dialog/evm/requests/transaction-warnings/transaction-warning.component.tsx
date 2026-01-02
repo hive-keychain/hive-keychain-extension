@@ -1,3 +1,4 @@
+import { Separator } from '@common-ui/separator/separator.component';
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -58,17 +59,23 @@ export const EvmTransactionWarningsComponent = ({
       {warningHook.fields &&
         warningHook.fields.otherFields?.map((f, index) => {
           return (
-            <EvmRequestItem
-              key={`${f.name}-${index}`}
-              field={f}
-              onWarningClicked={(warningIndex: number) =>
-                warningHook.openSingleWarningPopup(
-                  index,
-                  warningIndex,
-                  f.warnings![warningIndex],
-                )
-              }
-            />
+            <>
+              <EvmRequestItem
+                key={`${f.name}-${index}`}
+                field={f}
+                onWarningClicked={(warningIndex: number) =>
+                  warningHook.openSingleWarningPopup(
+                    index,
+                    warningIndex,
+                    f.warnings![warningIndex],
+                  )
+                }
+              />
+              {/* TODO confirm design for separator */}
+              {index !== warningHook.fields!.otherFields.length - 1 && (
+                <Separator type="horizontal" fullSize />
+              )}
+            </>
           );
         })}
     </Fragment>

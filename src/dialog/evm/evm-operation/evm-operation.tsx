@@ -12,7 +12,6 @@ import ButtonComponent, {
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
-import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
@@ -48,10 +47,6 @@ export const EvmOperation = ({
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log('transaction hook changed', transactionHook);
-  }, [transactionHook]);
 
   useEffect(() => {
     setLoading(false);
@@ -95,7 +90,7 @@ export const EvmOperation = ({
   return (
     <>
       <div className={`operation ${caption ? 'has-caption' : ''}`}>
-        <DialogHeader title={title} />
+        {/* <DialogHeader title={title} /> */}
         <div className="scrollable">
           {header && (
             <div
