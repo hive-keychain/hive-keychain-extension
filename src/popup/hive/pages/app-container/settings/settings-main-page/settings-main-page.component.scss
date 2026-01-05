@@ -9,32 +9,4 @@
     text-align: center;
     color: var(--main-font-color);
   }
-  .link-panel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    column-gap: 8px;
-    cursor: pointer;
-    .network-icon {
-      & > div {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      background: var(--network-icon-bg-color);
-      border-radius: 66px 66px 0px 0px;
-      border: 1px solid var(--menu-icon-border-color);
-      padding: 14px 12px 8px 12px;
-      width: 53px;
-      height: 44px;
-      box-sizing: border-box;
-
-      &:hover {
-        background: $red;
-        border-radius: 66px 66px 0px 10px;
-        --menu-bottom-bar-icon-color: white;
-      }
-    }
-  }
 }

@@ -3,6 +3,8 @@
   border: 1px solid var(--menu-border-color);
   background: var(--menu-background);
   margin: 0px 18px;
+  max-height: 440px;
+  overflow: auto;
 
   .menu-item-container {
     display: flex;
@@ -17,6 +19,37 @@
       .menu-item {
         border-radius: 0px 0px 12px 12px;
       }
+    }
+  }
+}
+
+.link-panel {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  column-gap: 8px;
+  cursor: pointer;
+  .network-icon {
+    & > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    background: var(--network-icon-bg-color);
+    border-radius: 66px 66px 0px 0px;
+    border: 1px solid var(--menu-icon-border-color);
+    padding: 14px 12px 8px 12px;
+    width: 53px;
+    height: 44px;
+    box-sizing: border-box;
+
+    &:hover {
+      background: $red;
+      border-radius: 66px 66px 0px 10px;
+      --menu-bottom-bar-icon-color: white;
     }
   }
 }

@@ -1,3 +1,4 @@
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -48,19 +49,60 @@ const Menu = ({
     }
   };
 
+  const goToDiscord = () => {
+    chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
+  };
+  const goToPeakD = () => {
+    chrome.tabs.create({ url: 'https://peakd.com/@keychain' });
+  };
+  const goToTwitter = () => {
+    chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
+  };
+  const goToMedium = () => {
+    chrome.tabs.create({ url: 'https://medium.com/@hivekeychain' });
+  };
+
   return (
-    <div className="menu-page">
-      <div className="menu">
-        {menuItems.map((menuItem, index) => (
-          <MenuItemComponent
-            menuItem={menuItem}
-            key={index}
-            handleMenuItemClick={handleMenuItemClick}
-            isLast={menuItems.length - 1 === index}
-          />
-        ))}
+    <>
+      <div className="menu-page">
+        <div className="menu">
+          {menuItems.map((menuItem, index) => (
+            <MenuItemComponent
+              menuItem={menuItem}
+              key={index}
+              handleMenuItemClick={handleMenuItemClick}
+              isLast={menuItems.length - 1 === index}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <div className="link-panel">
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_HIVE}
+          onClick={goToPeakD}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
+          onClick={goToDiscord}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
+          onClick={goToTwitter}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_MEDIUM}
+          onClick={goToMedium}
+          hoverable
+        />
+      </div>
+    </>
   );
 };
 
